@@ -1,14 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Space.hh
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of class Ordinate_Space
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Ordinate_Space.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_Space_hh
 #define quadrature_Ordinate_Space_hh
@@ -21,39 +19,39 @@
 namespace rtt_quadrature {
 using std::ostream;
 
-//=======================================================================================//
+//============================================================================//
 /*!
  * \class Ordinate_Space
  * \brief Describes a choice of discrete ordinate and truncated moment
- * representations of ordinate space.
+ *        representations of ordinate space.
  *
  * This class encapsulates descriptions of a discrete ordinate space and a
  * truncated moment space and provides representations of a set of operators
  * operating on these spaces. The moment space is diagonal in any scattering
- * operator for an isotropic material and thus is preferred for coupling to
- * the physics.
+ * operator for an isotropic material and thus is preferred for coupling to the
+ * physics.
  *
  * The discrete ordinate space is described by the methods and data inherited
  * from Ordinate_Set. The heart of this description is the vector<Ordinate>
  * returned by the Ordinate_Set::ordinates method.
  *
- * The moment space is described by the moment to discrete transformation
- * matrix returned by Ordinate_Space::M() and the discrete to moment
- * transformation matrix returned by Ordinate_Space::D(). The moment rank of
- * these matrices is returned by Ordinate_Space::number_of_ordinates while the
- * ordinate rank is given by Ordinate_Set::ordinates().size(). The number of
- * moments of each order in the moment space is returned as a vector<unsigned>
- * by Ordinate_Space::moments_per_order(), and so the size of
+ * The moment space is described by the moment to discrete transformation matrix
+ * returned by Ordinate_Space::M() and the discrete to moment transformation
+ * matrix returned by Ordinate_Space::D(). The moment rank of these matrices is
+ * returned by Ordinate_Space::number_of_ordinates while the ordinate rank is
+ * given by Ordinate_Set::ordinates().size(). The number of moments of each
+ * order in the moment space is returned as a vector<unsigned> by
+ * Ordinate_Space::moments_per_order(), and so the size of
  * Ordinate_Space::moments_per_order() is one more than the moment expansion
  * order. The actual L and M of the spherical harmonic corresponding to each
  * moment is returned by Ordinate_Space::moments().
  *
  * There is a subtlety here: Ordinate_Space::moments.size() is greater than
- * Ordinate_Space::number_of_moments() because the former may contain
- * additional moments, of higher order than the specified expansion order,
- * used to construct the M and D matrices but not included in the actual
- * scattering expansion. See Galerkin_Ordinate_Space for an example where this
- * is done with an explanation of why it is useful.
+ * Ordinate_Space::number_of_moments() because the former may contain additional
+ * moments, of higher order than the specified expansion order, used to
+ * construct the M and D matrices but not included in the actual scattering
+ * expansion. See Galerkin_Ordinate_Space for an example where this is done with
+ * an explanation of why it is useful.
  *
  * The actual spherical harmonic basis used for the moment space is given by
  * rtt_sf::Ylm, which is a real representation in which m=0 is the axially
@@ -68,8 +66,8 @@ using std::ostream;
  * The mu, eta, and xi reflection maps give, for each ordinate i, the index of
  * the ordinate that is the reflection of i in the specified coordinate
  * plane. Thus, on a reflection plane reflecting the first coordinate, the
- * specific intensity of ordinate i is reflected into the specific intensity
- * of ordinate reflec_mu[i]. This greatly simplifies implementing reflection
+ * specific intensity of ordinate i is reflected into the specific intensity of
+ * ordinate reflec_mu[i]. This greatly simplifies implementing reflection
  * boundary conditions.
  *
  * In curvilinear geometry, the streaming operator includes a nontrivial angle
@@ -119,10 +117,9 @@ using std::ostream;
  *
  * \f$\psi_{m+1/2} = B_m\psi_m-(1-B_m)\psi_{m-1/2})\f$
  *
- * Similar expressions can be written for spherical geometry. The
- * Ordinate_Space interface hides these details, presenting only the
- * \f$P_m\f$, \f$S_m\f$, and \f$B_m\f$ coefficients required for actual
- * computation.
+ * Similar expressions can be written for spherical geometry. The Ordinate_Space
+ * interface hides these details, presenting only the \f$P_m\f$, \f$S_m\f$, and
+ * \f$B_m\f$ coefficients required for actual computation.
  *
  * Note that this discretization of the angle derivative terms must still be
  * substituted into the transport equation, which is then further discretized in
@@ -218,13 +215,13 @@ public:
   virtual vector<double> M() const = 0;
 
   //! Should the moment space be pruned to the specified order?
-  virtual bool prune() const {
-    return true;
-    // By default, prune any moments beyond the user-specified expansion
-    // order. Such moments are included in Galerkin methods for purposes
-    // of computing the M and D matrices, but are then removed from the
-    // moment space unless the GQF interpolation model has been specified.
-  }
+  // virtual bool prune() const {
+  //   return true;
+  //   // By default, prune any moments beyond the user-specified expansion
+  //   // order. Such moments are included in Galerkin methods for purposes of
+  //   // computing the M and D matrices, but are then removed from the moment
+  //   // space unless the GQF interpolation model has been specified.
+  // }
 
   //! Return the scattering moment to flux map.
   virtual void moment_to_flux(unsigned flux_map[3], double flux_fact[3]) const;
@@ -284,8 +281,8 @@ private:
   vector<unsigned> reflect_mu_, reflect_eta_, reflect_xi_;
 
   /*! Coefficients for angle derivative terms.  These are defined in
-     * Morel's research note of 12 May 2003 for axisymmetric geometry.
-     */
+   * Morel's research note of 12 May 2003 for axisymmetric geometry.
+   */
   vector<double> alpha_;
   vector<double> tau_;
 

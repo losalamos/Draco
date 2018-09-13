@@ -35,7 +35,7 @@ template <typename T>
 unsigned int kronecker_delta(
     T const test_value, T const offset,
     typename std::enable_if<std::is_floating_point<T>::value>::type * = 0) {
-  double const eps = std::numeric_limits<T>::epsilon();
+  T const eps = std::numeric_limits<T>::epsilon();
   return rtt_dsxx::soft_equiv(test_value, offset, eps) ? 1 : 0;
 }
 

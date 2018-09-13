@@ -5,10 +5,7 @@
  * \date   Fri Jan 14 13:00:32 2005
  * \brief  Header file for Norms_Index.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_norms_Norms_Index_hh
@@ -35,11 +32,11 @@ namespace rtt_norms {
 
   The norms are computed by making consecutive calls to Norms_Index<>::add.
   Each call to Norms_Index<>::add adds a term to the above summations.
-  Norms_Index<>::reset() re-initializes the sums to zero.  The member
-  functions Norms_Base::L1, Norms_Base::L2, and Norms_Base::Linf compute
-  their values on-processor.  In order to compute these norms across
-  processors, the results must be accumulated to a single processor, using a
-  call to Norms_Index<>::comm.
+  Norms_Index<>::reset() re-initializes the sums to zero.  The member functions
+  Norms_Base::L1, Norms_Base::L2, and Norms_Base::Linf compute their values
+  on-processor.  In order to compute these norms across processors, the results
+  must be accumulated to a single processor, using a call to
+  Norms_Index<>::comm.
 
   Some member functions are documented in the base class Norms_Base.
 
@@ -74,7 +71,7 @@ public:
   void comm(const size_t n = 0);
 
   // Re-initializes the norm values.
-  void reset();
+  // void reset();
 
   // Equality operator.
   bool operator==(const Norms_Index &n) const;

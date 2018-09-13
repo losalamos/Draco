@@ -82,39 +82,39 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
 }
 
 //---------------------------------------------------------------------------//
-Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
-    const sf_double &groups, const sf_double &bands,
-    rtt_cdi::Reaction reaction_in, string const &cont_file, int number_of_lines,
-    double line_peak, double line_width, int number_of_edges, double edge_ratio,
-    double Tref, double Tpow, double emin, double emax, Averaging averaging,
-    unsigned qpoints, unsigned seed)
-    : Analytic_Odfmg_Opacity(groups, bands, reaction_in),
-      Pseudo_Line_Base(cont_file, number_of_lines, line_peak, line_width,
-                       number_of_edges, edge_ratio, Tref, Tpow, emin, emax,
-                       seed),
-      averaging_(averaging), qpoints_(qpoints), baseline_() {
-  Require(qpoints > 0);
+// Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
+//     const sf_double &groups, const sf_double &bands,
+//     rtt_cdi::Reaction reaction_in, string const &cont_file, int number_of_lines,
+//     double line_peak, double line_width, int number_of_edges, double edge_ratio,
+//     double Tref, double Tpow, double emin, double emax, Averaging averaging,
+//     unsigned qpoints, unsigned seed)
+//     : Analytic_Odfmg_Opacity(groups, bands, reaction_in),
+//       Pseudo_Line_Base(cont_file, number_of_lines, line_peak, line_width,
+//                        number_of_edges, edge_ratio, Tref, Tpow, emin, emax,
+//                        seed),
+//       averaging_(averaging), qpoints_(qpoints), baseline_() {
+//   Require(qpoints > 0);
 
-  precalculate(groups, bands, Tref);
-}
+//   precalculate(groups, bands, Tref);
+// }
 
 //---------------------------------------------------------------------------//
-Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
-    const sf_double &groups, const sf_double &bands,
-    rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
-    double R, int number_of_lines, double line_peak, double line_width,
-    int number_of_edges, double edge_ratio, double Tref, double Tpow,
-    double emin, double emax, Averaging averaging, unsigned qpoints,
-    unsigned seed)
-    : Analytic_Odfmg_Opacity(groups, bands, reaction_in),
-      Pseudo_Line_Base(nu0, C, Bn, Bd, R, number_of_lines, line_peak,
-                       line_width, number_of_edges, edge_ratio, Tref, Tpow,
-                       emin, emax, seed),
-      averaging_(averaging), qpoints_(qpoints), baseline_() {
-  Require(qpoints > 0);
+// Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
+//     const sf_double &groups, const sf_double &bands,
+//     rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
+//     double R, int number_of_lines, double line_peak, double line_width,
+//     int number_of_edges, double edge_ratio, double Tref, double Tpow,
+//     double emin, double emax, Averaging averaging, unsigned qpoints,
+//     unsigned seed)
+//     : Analytic_Odfmg_Opacity(groups, bands, reaction_in),
+//       Pseudo_Line_Base(nu0, C, Bn, Bd, R, number_of_lines, line_peak,
+//                        line_width, number_of_edges, edge_ratio, Tref, Tpow,
+//                        emin, emax, seed),
+//       averaging_(averaging), qpoints_(qpoints), baseline_() {
+//   Require(qpoints > 0);
 
-  precalculate(groups, bands, Tref);
-}
+//   precalculate(groups, bands, Tref);
+// }
 
 //---------------------------------------------------------------------------//
 // OPACITY INTERFACE FUNCTIONS
@@ -234,9 +234,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided vector of
- *     temperatures and a single density value.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided vector of temperatures and a
+ *        single density value.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
@@ -252,16 +252,16 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided
- *     temperature and a vector of density values.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided temperature and a vector of
+ *        density values.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
     double targetTemperature, const std::vector<double> &targetDensity) const {
   std::vector<std::vector<std::vector<double>>> opacity(targetDensity.size());
 
-  //call our regular getOpacity function for every target density
+  // call our regular getOpacity function for every target density
   for (size_t i = 0; i < targetDensity.size(); ++i) {
     opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
   }
@@ -289,17 +289,23 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getDataDescriptor() const {
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+/*!
+ * \brief Packing function for Pseudo_Line_Analytic_Odfmg_Opacity
+ */
 Analytic_MultigroupOpacity::sf_char
 Pseudo_Line_Analytic_Odfmg_Opacity::pack() const {
-  sf_char const pdata = Analytic_Odfmg_Opacity::pack();
-  sf_char const pdata2 = Pseudo_Line_Base::pack();
+  Insist(
+      false,
+      std::string("We are missing a unit test for ") +
+          " Pseudo_Line_Analytic_Odfmg_Opacity::pack().  Please add a test " +
+          "and reactiveate this code");
+  // sf_char const pdata = Analytic_Odfmg_Opacity::pack();
+  // sf_char const pdata2 = Pseudo_Line_Base::pack();
 
-  sf_char Result(pdata.size() + pdata2.size());
-  copy(pdata.begin(), pdata.end(), Result.begin());
-  copy(pdata2.begin(), pdata2.end(), Result.begin() + pdata.size());
-  return pdata;
+  // sf_char Result(pdata.size() + pdata2.size());
+  // copy(pdata.begin(), pdata.end(), Result.begin());
+  // copy(pdata2.begin(), pdata2.end(), Result.begin() + pdata.size());
+  // return pdata;
 }
 
 } // end namespace rtt_cdi_analytic

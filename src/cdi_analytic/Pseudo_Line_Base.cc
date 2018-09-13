@@ -106,74 +106,74 @@ Pseudo_Line_Base::Pseudo_Line_Base(
   setup_(emin, emax);
 }
 
-Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
-                                   double line_peak, double line_width,
-                                   int number_of_edges, double edge_ratio,
-                                   double Tref, double Tpow, double emin,
-                                   double emax, unsigned seed)
-    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
-      nu0_(-1), // as fast flag
-      C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),
-      number_of_lines_(number_of_lines), line_peak_(line_peak),
-      line_width_(line_width), number_of_edges_(number_of_edges),
-      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
-      center_(std::vector<double>()), edge_(abs(number_of_edges)),
-      edge_factor_(abs(number_of_edges)) {
-  Require(cont_file.size() > 0);
-  Require(line_peak >= 0.0);
-  Require(line_width >= 0.0);
-  Require(edge_ratio >= 0.0);
-  Require(emin >= 0.0);
-  Require(emax > emin);
-  // Require parameter (other than emin and emax) to be same on all processors
+//----------------------------------------------------------------------------//
+// Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
+//                                    double line_peak, double line_width,
+//                                    int number_of_edges, double edge_ratio,
+//                                    double Tref, double Tpow, double emin,
+//                                    double emax, unsigned seed)
+//     : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
+//       nu0_(-1), // as fast flag
+//       C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),
+//       number_of_lines_(number_of_lines), line_peak_(line_peak),
+//       line_width_(line_width), number_of_edges_(number_of_edges),
+//       edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
+//       center_(std::vector<double>()), edge_(abs(number_of_edges)),
+//       edge_factor_(abs(number_of_edges)) {
+//   Require(cont_file.size() > 0);
+//   Require(line_peak >= 0.0);
+//   Require(line_width >= 0.0);
+//   Require(edge_ratio >= 0.0);
+//   Require(emin >= 0.0);
+//   Require(emax > emin);
+//   // Require parameter (other than emin and emax) to be same on all processors
 
-  ifstream in(cont_file.c_str());
-  if (!in) {
-    throw invalid_argument(("could not open " + cont_file).c_str());
-  }
-  while (in) {
-    double x, y, z; // we will ignore x and z and fit table to emax
-    in >> x >> y >> z;
-    continuum_table_.push_back(y);
-  }
+//   ifstream in(cont_file.c_str());
+//   if (!in) {
+//     throw invalid_argument(("could not open " + cont_file).c_str());
+//   }
+//   while (in) {
+//     double x, y, z; // we will ignore x and z and fit table to emax
+//     in >> x >> y >> z;
+//     continuum_table_.push_back(y);
+//   }
 
-  rtt_c4::global_max(emax_);
+//   rtt_c4::global_max(emax_);
 
-  setup_(emin, emax);
-}
-
-//---------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
-                                   double R, int number_of_lines,
-                                   double line_peak, double line_width,
-                                   int number_of_edges, double edge_ratio,
-                                   double Tref, double Tpow, double emin,
-                                   double emax, unsigned seed)
-    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
-      nu0_(nu0), C_(C), Bn_(Bn), Bd_(Bd), R_(R), seed_(seed),
-      number_of_lines_(number_of_lines), line_peak_(line_peak),
-      line_width_(line_width), number_of_edges_(number_of_edges),
-      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
-      center_(std::vector<double>()), edge_(abs(number_of_edges)),
-      edge_factor_(abs(number_of_edges)) {
-  Require(nu0_ > 0.0);
-  Require(C_ >= 0.0);
-  Require(Bn_ >= 0.0);
-  Require(Bd_ >= 0.0);
-  Require(R_ >= 0.0);
-  Require(line_peak >= 0.0);
-  Require(line_width >= 0.0);
-  Require(edge_ratio >= 0.0);
-  Require(emin >= 0.0);
-  Require(emax > emin);
-  // Require parameter (other than emin and emax) to be same on all processors
-
-  setup_(emin, emax);
-}
+//   setup_(emin, emax);
+// }
 
 //---------------------------------------------------------------------------//
-// Packing function
+// Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
+//                                    double R, int number_of_lines,
+//                                    double line_peak, double line_width,
+//                                    int number_of_edges, double edge_ratio,
+//                                    double Tref, double Tpow, double emin,
+//                                    double emax, unsigned seed)
+//     : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
+//       nu0_(nu0), C_(C), Bn_(Bn), Bd_(Bd), R_(R), seed_(seed),
+//       number_of_lines_(number_of_lines), line_peak_(line_peak),
+//       line_width_(line_width), number_of_edges_(number_of_edges),
+//       edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
+//       center_(std::vector<double>()), edge_(abs(number_of_edges)),
+//       edge_factor_(abs(number_of_edges)) {
+//   Require(nu0_ > 0.0);
+//   Require(C_ >= 0.0);
+//   Require(Bn_ >= 0.0);
+//   Require(Bd_ >= 0.0);
+//   Require(R_ >= 0.0);
+//   Require(line_peak >= 0.0);
+//   Require(line_width >= 0.0);
+//   Require(edge_ratio >= 0.0);
+//   Require(emin >= 0.0);
+//   Require(emax > emin);
+//   // Require parameter (other than emin and emax) to be same on all processors
 
+//   setup_(emin, emax);
+// }
+
+//---------------------------------------------------------------------------//
+//! Packing function for Pseudo_Line_Base objects.
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
   // Because we haven't implemented packing functionality for Expression trees

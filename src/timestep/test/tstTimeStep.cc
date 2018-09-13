@@ -121,8 +121,9 @@ void run_tests(rtt_dsxx::UnitTest &ut) {
 
     sp_dt->set_fixed_value(dt);
     if (override_flag) {
-      sp_ovr->activate();
-      sp_ovr->set_fixed_value(override_dt);
+      ITFAILS;
+      // sp_ovr->activate();
+      // sp_ovr->set_fixed_value(override_dt);
     } else {
       sp_ovr->deactivate();
     }

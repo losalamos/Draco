@@ -143,13 +143,15 @@ Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
  *
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
+ *
+ * \bug Not tested so commented out.
  */
-Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
-  Check(i < INT_MAX && i > -1 * INT_MAX);
-  int const j = static_cast<int>(i);
-  *this << j;
-  return *this;
-}
+// Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
+//   Check(i < INT_MAX && i > -1 * INT_MAX);
+//   int const j = static_cast<int>(i);
+//   *this << j;
+//   return *this;
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -157,13 +159,15 @@ Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
  *
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
+ *
+ * \bug Not tested so commented out.
  */
-Ensight_Stream &Ensight_Stream::operator<<(const uint64_t i) {
-  Check(i < INT_MAX);
-  int const j = static_cast<int>(i);
-  *this << j;
-  return *this;
-}
+// Ensight_Stream &Ensight_Stream::operator<<(const uint64_t i) {
+//   Check(i < INT_MAX);
+//   int const j = static_cast<int>(i);
+//   *this << j;
+//   return *this;
+// }
 
 //---------------------------------------------------------------------------//
 /*!

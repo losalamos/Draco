@@ -125,6 +125,8 @@ void insist_ptr(char const *const cond, char const *const msg,
   insist(cond, msg, file, line);
 }
 
+#if DBC & 16
+
 //---------------------------------------------------------------------------//
 //!  Conditionally throw a rtt_dsxx::assertion for Insist macros.
 void check_insist(bool const cond, char const *const condstr,
@@ -157,6 +159,8 @@ void check_insist_ptr(bool const cond, char const *const condstr,
   if (!cond)
     check_insist(cond, condstr, msg, file, line);
 }
+
+#endif
 
 //---------------------------------------------------------------------------//
 /*! \brief Add hostname and pid to error messages.

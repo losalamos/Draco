@@ -27,9 +27,8 @@ using std::pair;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity
-    : public Analytic_Odfmg_Opacity,
-      public Pseudo_Line_Base {
+class Pseudo_Line_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity,
+                                           public Pseudo_Line_Base {
 private:
   Averaging averaging_;
   unsigned qpoints_;
@@ -48,23 +47,33 @@ public:
       double edge_ratio, double Tref, double Tpow, double emin, double emax,
       Averaging averaging, unsigned qpoints, unsigned seed);
 
-  // Constructor.
-  Pseudo_Line_Analytic_Odfmg_Opacity(
-      const sf_double &groups, const sf_double &bands,
-      rtt_cdi::Reaction reaction_in, string const &cont_file,
-      int number_of_lines, double line_peak, double line_width,
-      int number_of_edges, double edge_ratio, double Tref, double Tpow,
-      double emin, double emax, Averaging averaging, unsigned qpoints,
-      unsigned seed);
+  /*!
+   * \brief Constructor 2
+   * \bug No doxygen documentation
+   * \bug No unit test in Draco but used by Capsaicin in
+   *      thermal_data/microphysics_parser.cc.
+   */
+  // Pseudo_Line_Analytic_Odfmg_Opacity(
+  //     const sf_double &groups, const sf_double &bands,
+  //     rtt_cdi::Reaction reaction_in, string const &cont_file,
+  //     int number_of_lines, double line_peak, double line_width,
+  //     int number_of_edges, double edge_ratio, double Tref, double Tpow,
+  //     double emin, double emax, Averaging averaging, unsigned qpoints,
+  //     unsigned seed);
 
-  // Constructor.
-  Pseudo_Line_Analytic_Odfmg_Opacity(
-      const sf_double &groups, const sf_double &bands,
-      rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
-      double R, int number_of_lines, double line_peak, double line_width,
-      int number_of_edges, double edge_ratio, double Tref, double Tpow,
-      double emin, double emax, Averaging averaging, unsigned qpoints,
-      unsigned seed);
+  /*!
+   * \brief Constructor 3
+   * \bug No doxygen documentation
+   * \bug No unit test in Draco but used by Capsaicin in
+   *      thermal_data/microphysics_parser.cc.
+   */
+  // Pseudo_Line_Analytic_Odfmg_Opacity(
+  //     const sf_double &groups, const sf_double &bands,
+  //     rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
+  //     double R, int number_of_lines, double line_peak, double line_width,
+  //     int number_of_edges, double edge_ratio, double Tref, double Tpow,
+  //     double emin, double emax, Averaging averaging, unsigned qpoints,
+  //     unsigned seed);
 
   // Constructor for packed Pseudo_Line_Analytic_Odfmg_Opacities
   explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);

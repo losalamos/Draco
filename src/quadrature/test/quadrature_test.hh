@@ -4,8 +4,7 @@
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef quadrature_quadrature_test_hh

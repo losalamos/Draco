@@ -366,6 +366,9 @@ int main(int argc, char *argv[]) {
     messages.str("");
     ssut.check(true, "this test must pass");
     ut.check(messages.str().size() == 0, "verbose==false is silent");
+
+    // Check the status member function
+    ut.status();
   }
 
   catch (rtt_dsxx::assertion &err) {

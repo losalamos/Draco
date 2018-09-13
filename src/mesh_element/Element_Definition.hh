@@ -414,7 +414,7 @@ private:
   void construct_bar();
   void construct_tri();
   void construct_quad();
-  void construct_pentagon();
+  // void construct_pentagon();
   void construct_tetra();
   void construct_pyra();
   void construct_penta();
