@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \brief  memory utilities for diagnostic purposes
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: memory.hh 7239 2013-10-07 20:29:39Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef memory_memory_hh
@@ -26,10 +23,12 @@ uint64_t total_allocation();
 uint64_t peak_allocation();
 uint64_t largest_allocation();
 
-void report_leaks(std::ostream &);
+//! Untested functions, commented out.
+
+// void report_leaks(std::ostream &);
 
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
-void out_of_memory_handler(void);
+// void out_of_memory_handler(void);
 
 } // namespace rtt_memory
 

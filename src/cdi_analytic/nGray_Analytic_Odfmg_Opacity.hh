@@ -25,8 +25,7 @@ namespace rtt_cdi_analytic {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity
-    : public Analytic_Odfmg_Opacity {
+class nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
@@ -67,9 +66,9 @@ public:
    *        density.
    *
    * \param targetTemperature The temperature value for which an opacity value
-   *     is being requested.
+   *             is being requested.
    * \param targetDensity The density value for which an opacity value is being
-   *     requested.
+   *             requested.
    * \return A vector of opacities.
    */
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
@@ -91,9 +90,7 @@ public:
 };
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Return a string describing the opacity model.
- */
+//! Return a string describing the opacity model.
 nGray_Analytic_Odfmg_Opacity::std_string
 nGray_Analytic_Odfmg_Opacity::getDataDescriptor() const {
   std_string descriptor;

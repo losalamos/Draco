@@ -25,13 +25,13 @@ namespace rtt_c4 {
  * \brief POSIX standard timer.
  *
  * The Timer class is used to calculate wall clock, user cpu, and system cpu
- * timings.  It uses the POSIX standard times function, so it should work
- * well on all (POSIX) systems.
+ * timings.  It uses the POSIX standard times function, so it should work well
+ * on all (POSIX) systems.
  *
- * On systems where the PAPI performance tool is available, the Timer class
- * also records some basic cache perfomance statistics. This is much less
- * portable, but is also not as important.
- * \sa http://icl.cs.utk.edu/projects/papi/wiki/Timers
+ * On systems where the PAPI performance tool is available, the Timer class also
+ * records some basic cache perfomance statistics. This is much less portable,
+ * but is also not as important.  \sa
+ * http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
  * Usage:
  * \code
@@ -71,9 +71,9 @@ namespace rtt_c4 {
  * };
  * \endcode
  *
- * Store the CPU time used by this process and all its dead children (and
- * their dead children) in \c BUFFER. Return the elapsed real time, or (\c
- * clock_t) -1 for errors.  All times are in \c CLK_TCK ths of a second.
+ * Store the CPU time used by this process and all its dead children (and their
+ * dead children) in \c BUFFER. Return the elapsed real time, or (\c clock_t) -1
+ * for errors.  All times are in \c CLK_TCK ths of a second.
  *
  * \code
  * extern clock_t times (struct tms *__buffer) __THROW;
@@ -182,8 +182,8 @@ private:
 public:
   Timer(); //! default constructor
   // Use default copy constructor and assignment operator
-  // Timer const & operator=( Timer const & rhs ); //! assignment operator
-  // Timer( Timer const & rhs ); //! copy constructor
+  Timer const &operator=(Timer const &rhs) = delete; //! assignment operator
+  Timer(Timer const &rhs) = delete;                  //! copy constructor
   virtual ~Timer(){/* empty */};
   inline void start();
   inline void stop();
@@ -230,10 +230,11 @@ public:
   long long sum_cache_misses() const { return 0; }
   long long sum_cache_hits() const { return 0; }
   long long sum_floating_operations() const { return 0; }
-  long long sum_papi_wc_cycles() const { return 0; }
-  long long sum_papi_wc_usecs() const { return 0; }
-  long long sum_papi_virt_cycles() const { return 0; }
-  long long sum_papi_virt_usecs() const { return 0; }
+  // Not tested, so commented out.
+  // long long sum_papi_wc_cycles() const { return 0; }
+  // long long sum_papi_wc_usecs() const { return 0; }
+  // long long sum_papi_virt_cycles() const { return 0; }
+  // long long sum_papi_virt_usecs() const { return 0; }
 #endif
 
   inline void reset();

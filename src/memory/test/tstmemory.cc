@@ -4,18 +4,14 @@
  * \author Kent G. Budge, Kelly G. Thompson
  * \brief  memory test.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-//! \version $Id: tstProcmon.cc 5830 2011-05-05 19:43:43Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "memory/memory.hh"
-#include <sstream>
-//#include <new> // std::set_new_handler
 #include <limits>
+#include <sstream>
 
 using namespace std;
 using namespace rtt_memory;

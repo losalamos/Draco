@@ -1,20 +1,19 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/QIM_parser.cc
  * \author Kent Budge
- * \brief  Define a parse routine for quadrature interpolation model specifications.
- * \note   © Copyright 2016 LANSLLC All rights reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: QIM.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ * \brief  Define a parse routine for quadrature interpolation model
+ *         specifications.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "QIM.hh"
 
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * /param tokens Token stream from which to parse the specification.
  *
@@ -44,6 +43,8 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
   }
 }
 
+//----------------------------------------------------------------------------//
+//! Provide a string representation of the provided quadrature enum.
 std::string quadrature_interpolation_model_as_text(QIM q) {
   switch (q) {
   case SN:
@@ -62,6 +63,6 @@ std::string quadrature_interpolation_model_as_text(QIM q) {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//              end of quadrature/QIM.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// end of quadrature/QIM.hh
+//----------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:00:47 2005
  * \brief  Implemention for Norms_Index class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -46,10 +46,10 @@ void Norms_Index<Index_t>::add(const double v, const Index_t &index,
 
 //---------------------------------------------------------------------------//
 //! Re-initializes the norm values.
-template <typename Index_t> void Norms_Index<Index_t>::reset() {
-  Norms_Base::reset();
-  d_index_Linf = Index_t();
-}
+// template <typename Index_t> void Norms_Index<Index_t>::reset() {
+//   Norms_Base::reset();
+//   d_index_Linf = Index_t();
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -58,7 +58,7 @@ template <typename Index_t> void Norms_Index<Index_t>::reset() {
   After calling this function, processor \a n contains the norms over all
   processors.  All processors other than \a n still contain their same
   norm values.
-  
+
   \param n Processor on which norms are summed.
 */
 //---------------------------------------------------------------------------//

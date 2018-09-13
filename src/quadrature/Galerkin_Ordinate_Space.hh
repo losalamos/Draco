@@ -19,14 +19,14 @@ using std::ostream;
 //===========================================================================//
 /*!
  * \class Galerkin_Ordinate_Space
- * \brief Represents ordinate operators for a Galerkin moment space. 
+ * \brief Represents ordinate operators for a Galerkin moment space.
  *
  * The moment space contains all moments (that are not identically zero due to
  * symmetry) up to the specified scattering order, but the moment to discrete
- * operator M and discrete to moment operator D are computed as if enough 
- * additional higher moments are included in the moment space to make D and M 
+ * operator M and discrete to moment operator D are computed as if enough
+ * additional higher moments are included in the moment space to make D and M
  * square. The higher moment terms are then discarded, but the non-square D and
- * M retain the property that DM is the identity. This stabilizes the moment 
+ * M retain the property that DM is the identity. This stabilizes the moment
  * to discrete and discrete to moment operations at high scattering orders.
  *
  * When the additional moments are added, the SN quadrature order is provided,

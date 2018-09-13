@@ -112,11 +112,12 @@ public:
                                          bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
+
   /*!
    * \brief Provide a summary of the test status
    *
    * This pure virtual function must be provided by the inherited class.  It
-   *        should provide output concerning the status of UnitTest.
+   * should provide output concerning the status of UnitTest.
    */
   void status(void) const {
     out << resultMessage() << std::endl;
@@ -128,6 +129,7 @@ public:
     numFails = 0;
     return;
   }
+
   bool dbcRequire(void) const { return m_dbcRequire; }
   bool dbcCheck(void) const { return m_dbcCheck; }
   bool dbcEnsure(void) const { return m_dbcEnsure; }

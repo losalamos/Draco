@@ -5,20 +5,16 @@
  * \date   Mon Nov  3 22:35:14 2003
  * \brief  test the PhysicalConstants class
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <iomanip>
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 #include "units/PhysicalConstantsSI.hh"
+#include <iomanip>
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -473,6 +469,18 @@ void test_scaled_values(rtt_dsxx::UnitTest &ut) {
         << "\tvalue =  " << std::setprecision(16)
         << pc.classicalElectronRadius() << " != " << std::setprecision(16)
         << dev << "." << endl;
+    FAILMSG(msg.str());
+  }
+  // test alias
+  if (soft_equiv(pc.re(), dev, 2e-9)) {
+    ostringstream msg;
+    msg << "Scaled classical electron radius looks correct." << endl;
+    PASSMSG(msg.str());
+  } else {
+    ostringstream msg;
+    msg << "Scaled classical electron radius is not correct." << endl
+        << "\tvalue =  " << std::setprecision(16) << pc.re()
+        << " != " << std::setprecision(16) << dev << "." << endl;
     FAILMSG(msg.str());
   }
 

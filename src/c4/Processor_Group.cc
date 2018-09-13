@@ -21,11 +21,12 @@ using namespace std;
 
 //--------------------------------------------------------------------------//
 /*!
+ * \brief Constructor for Processor_Group
  * \param stride Number of processor groups to create. Each processor with
  *        rank \c pid will be assigned to processor group <code> pid mod
- *        stride</code>. For example, if the stride is 3, then processors 0, 
- *        3, 6, ... form the first processor group, processors 1, 4, 7, ... 
- *        form the second processor group, and processors 2, 5, 8, ... form 
+ *        stride</code>. For example, if the stride is 3, then processors 0,
+ *        3, 6, ... form the first processor group, processors 1, 4, 7, ...
+ *        form the second processor group, and processors 2, 5, 8, ... form
  *        the third processor group.
  */
 Processor_Group::Processor_Group(unsigned const stride)

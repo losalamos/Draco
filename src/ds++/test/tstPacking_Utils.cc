@@ -116,6 +116,27 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
   }
 
+  // Now test the global function pack_vec_double.
+  {
+    uint32_t buffer_size(static_cast<unsigned>(vd.size() * sizeof(double)));
+    vector<char> buffer(buffer_size);
+    bool byte_swap = false;
+    rtt_dsxx::pack_vec_double(&vd[0], &buffer[0], vd.size(), byte_swap);
+
+    Unpacker u;
+    u.set_buffer(buffer.size(), &buffer[0]);
+
+    if (static_cast<int>(u.size()) != u.end() - u.begin())
+      ITFAILS;
+
+    for (size_t i = 0; i < vd.size(); ++i) {
+      double d;
+      u >> d;
+      if (!soft_equiv(d, vd[i]))
+        ITFAILS;
+    }
+  }
+
   if (ut.numFails == 0)
     PASSMSG("compute_buffer_size_test() worked fine.");
 

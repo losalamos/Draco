@@ -93,6 +93,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   t.start();
 
+  FAIL_IF_NOT(t.on());
+
   // do some work
   if (rtt_c4::node() == 0)
     std::cout << "\nDoing some work..." << std::endl;
@@ -107,6 +109,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   double end = rtt_c4::wall_clock_time();
   t.stop();
+
+  FAIL_IF(t.on());
 
   double const error(t.wall_clock() - (end - begin));
   if (std::fabs(error) <= prec) {

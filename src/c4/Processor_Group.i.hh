@@ -37,6 +37,13 @@ void Processor_Group::sum(RandomAccessContainer &x) {
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Assemble a set of local vectors into global vectors (container-based
+ *        version).
+ *
+ * \param[in]  local  Points to a region of storage of size N.
+ * \param[out] global Points to a region of storage of size N*this->size()
+ */
 template <typename T>
 void Processor_Group::assemble_vector(std::vector<T> const &local,
                                       std::vector<T> &global) const {
@@ -54,9 +61,12 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
 
 //---------------------------------------------------------------------------//
 /*!
- * \param local Points to a region of storage of size N.
- * \param global Points to a region of storage of size N*this->size()
- * \param N Number of local quantities to assemble.
+ * \brief Assemble a set of local vectors into global vectors (pointer-based
+ *        version).
+ *
+ * \param[in]  local  Points to a region of storage of size N.
+ * \param[out] global Points to a region of storage of size N*this->size()
+ * \param[in]  N      Number of local quantities to assemble.
  */
 template <typename T>
 void Processor_Group::assemble_vector(T const *local, T *global,

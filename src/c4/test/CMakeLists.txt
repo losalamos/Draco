@@ -78,7 +78,10 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
 endif()
 
 # Exclude tstTime from valgrind checks.
-set( nomemcheck_tests ${PROJECT_SOURCE_DIR}/tstTime.cc )
+set( nomemcheck_tests
+  ${PROJECT_SOURCE_DIR}/tstTime.cc
+  ${PROJECT_SOURCE_DIR}/tstGlobalTimer.cc
+  )
 list( REMOVE_ITEM test_sources ${nomemcheck_tests} )
 add_parallel_tests(
   SOURCES   "${nomemcheck_tests}"

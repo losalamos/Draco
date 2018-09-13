@@ -288,15 +288,19 @@ Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
   if (dim == 3) {
     return compute_n2lk_3D_(quadrature_class, sn_order);
   } else if (dim == 2) {
-    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+    if (geometry == rtt_mesh_element::AXISYMMETRIC) {
+      // Insist(false, std::string("There are no unit tests for this branch, so ")
+      //       + "it was commented out.");
       return compute_n2lk_2Da_(quadrature_class, sn_order);
-    else
+    } else
       return compute_n2lk_2D_(quadrature_class, sn_order);
   } else {
     Check(dim == 1);
-    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+    if (geometry == rtt_mesh_element::AXISYMMETRIC) {
+      // Insist(false, std::string("There are no unit tests for this branch, so ")
+      //       + "it was commented out.");
       return compute_n2lk_1Da_(quadrature_class, sn_order);
-    else
+    } else
       return compute_n2lk_1D_(quadrature_class, sn_order);
   }
 }
@@ -305,7 +309,7 @@ Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
 /*! Compute the description of the moment space.
  *
  * N.B. This must not be called in the Ordinate_Space constructor, but in the
- * child class constructor, because it uses virtual functions of the child 
+ * child class constructor, because it uses virtual functions of the child
  * class that are not set up until the child class is constructed.
  */
 void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
@@ -318,7 +322,9 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
     number_of_moments_ = 0;
     for (unsigned n = 0; n < moments_.size(); ++n) {
       int const l = moments_[n].L();
-      if (l <= Lmax || !prune()) {
+      // member function prune() always returns true?
+      // if (l <= Lmax || !prune()) {
+      if (l <= Lmax) {
         if (l > Lmax) {
           Lmax = l;
           moments_per_order_.resize(Lmax + 1, 0U);
@@ -402,7 +408,7 @@ double Ordinate_Space::psi_coefficient(unsigned const a) const {
 
 //---------------------------------------------------------------------------//
 /*!
- * The source coefficient is used to compute the previous midpoint angle term 
+ * The source coefficient is used to compute the previous midpoint angle term
  * in the angle derivative term of the streaming operator.
  */
 double Ordinate_Space::source_coefficient(unsigned const a) const {
@@ -497,7 +503,7 @@ void Ordinate_Space::compute_reflection_maps_() {
 /*!
  * Return a mapping from the moments to the components of the astrophysical
  * flux. The astrophysical flux is defined consistently with the mean intensity
- * as \f$ F_i = \frac{1}{4 \pi}\int_{4 \pi}\Omega_i \psi d\omega\f$, that is, 
+ * as \f$ F_i = \frac{1}{4 \pi}\int_{4 \pi}\Omega_i \psi d\omega\f$, that is,
  * it is the physical flux divided by \f$4 \pi\f$.
  *
  * The zeroth moment is presently always assumed to be equal to the mean
@@ -509,7 +515,7 @@ void Ordinate_Space::compute_reflection_maps_() {
  *        corresponding to each astrophysical flux component. That is,
  *        flux_map[i] is the index (starting at zero) of the moment which
  *        corresponds to the ith astrophysical flux component.
- * \param flux_fact On return, contains the normalization factors for 
+ * \param flux_fact On return, contains the normalization factors for
  *        converting the the first moments to astrophysical flux components.
  *
  * Thus, if you are in 2-D Cartesian geometry, and phi contains the moments at
