@@ -273,9 +273,9 @@ class UnitTest:
   def aut_runTests(self, continue_on_error=False ):
 
     try:
-      print("\n=============================================")
+      print("\n=======================================================")
       print("=== {0}".format(self.testname))
-      print("=============================================")
+      print("=======================================================")
 
       # run draco --version with correct run command
       draco_info_numPE = ""

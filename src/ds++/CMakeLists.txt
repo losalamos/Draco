@@ -79,6 +79,9 @@ list( APPEND headers
    ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
+set_source_files_properties( Release.cc PROPERTIES 
+  COMPILE_DEFINITIONS BUILD_TYPE="$<CONFIG>" )
+
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
