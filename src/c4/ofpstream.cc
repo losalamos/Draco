@@ -8,10 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "C4_Functions.hh"
 #include "ofpstream.hh"
+#include "C4_Functions.hh"
 
 namespace rtt_c4 {
 using namespace std;
@@ -22,9 +20,9 @@ using namespace std;
  * Create an ofpstream that synchronizes output to the specified file by MPI
  * rank.
  *
- * \param filename Name of the file to which synchronized output is to be
+ * \param[in] filename Name of the file to which synchronized output is to be
  * written.
- * \param (optional) mode File write mode (ascii/binary)-- defaults to ascii
+ * \param[in] (optional) mode File write mode (ascii/binary)-- defaults to ascii
  */
 ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
     : std::ostream(&sb_) {
@@ -44,32 +42,40 @@ ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
 void ofpstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
   if (pid == 0) {
-    if (mode_ == ios_base::binary)
-      out_.write(&buffer_[0], buffer_.size());
-    else {
-      buffer_.push_back('\0');
+    if (mode_ == ios_base::binary) {
+      if (buffer_.size() > 0) {
+        out_.write(&buffer_[0], buffer_.size());
+      }
+    } else {
+      buffer_.push_back('\0'); // guarantees that buffer_.size() > 0
       out_ << &buffer_[0];
     }
     buffer_.clear();
     unsigned const pids = rtt_c4::nodes();
     for (unsigned i = 1; i < pids; ++i) {
-      unsigned N;
+      unsigned N(0);
       receive(&N, 1, i);
-      buffer_.resize(N);
-      rtt_c4::receive(&buffer_[0], N, i);
-      if (mode_ == ios_base::binary)
-        out_.write(&buffer_[0], buffer_.size());
-      else {
-        buffer_.push_back('\0');
+      if (N > 0) {
+        buffer_.resize(N); // N could be 0
+        rtt_c4::receive(&buffer_[0], N, i);
+      }
+      if (mode_ == ios_base::binary) {
+        if (buffer_.size() > 0) {
+          out_.write(&buffer_[0], buffer_.size());
+        }
+      } else {
+        buffer_.push_back('\0'); // guarantees that buffer_.size() > 0
         out_ << &buffer_[0];
       }
     }
+
   } else {
 
     Check(buffer_.size() < UINT_MAX);
     unsigned N = static_cast<unsigned>(buffer_.size());
     rtt_c4::send(&N, 1, 0);
-    rtt_c4::send(&buffer_[0], N, 0);
+    if (N > 0)
+      rtt_c4::send(&buffer_[0], N, 0);
   }
   buffer_.clear();
   out_.flush();
@@ -84,13 +90,13 @@ void ofpstream::mpibuf::send() {
  * internal buffer. This is not actually that inefficient for this class,
  * since it means that when the stream using the buffer wants to insert
  * data, it checks the buffer's cursor pointer, always finds that it is null,
- * and and calls overlow intead. These are not expensive operations. Should
- * we see any evidene this class is taking significant time, which should not
+ * and calls overflow instead. These are not expensive operations. Should
+ * we see any evidence this class is taking significant time, which should not
  * happen for its intended use (synchronizing diagnostic output), we can
- * reimplement to let the stream do explicitly buffered insertions without
+ * re-implement to let the stream do explicitly buffered insertions without
  * this change affecting any user code -- this interface is all private.
  *
- * \param c Next character to add to the internal buffer.
+ * \param[in] c Next character to add to the internal buffer.
  *
  * \return Integer representation of the character just added to the buffer.
  */

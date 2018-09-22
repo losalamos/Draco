@@ -109,7 +109,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
 // On Linux, it appears that long == 'int64_t' if Linux is 64-bit
 // (__WORDSIZE == 64).
 //
-// If we are using Visual Studio, we need these defintions. I expect that they
+// If we are using Visual Studio, we need these definitions. I expect that they
 // will be needed for 32-bit Linux as well, but I can't test that.
 // Might need to add "|| (defined(__GNUC__) && __WORDSIZE != 64)"
 #if defined(WIN32)

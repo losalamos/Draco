@@ -112,11 +112,12 @@ public:
                                          bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
+
   /*!
    * \brief Provide a summary of the test status
    *
    * This pure virtual function must be provided by the inherited class.  It
-   *        should provide output concerning the status of UnitTest.
+   * should provide output concerning the status of UnitTest.
    */
   void status(void) const {
     out << resultMessage() << std::endl;
@@ -128,6 +129,7 @@ public:
     numFails = 0;
     return;
   }
+
   bool dbcRequire(void) const { return m_dbcRequire; }
   bool dbcCheck(void) const { return m_dbcCheck; }
   bool dbcEnsure(void) const { return m_dbcEnsure; }
@@ -165,7 +167,7 @@ public:
   }
   /*!
    * \brief Returns the path of the test source directory (useful for locating
-   * input files).
+   *        input files).
    *
    * This function depends on the cmake build system setting the
    * COMPILE_DEFINITIONS target property. This should be done in

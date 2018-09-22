@@ -189,12 +189,10 @@ void Ensight_Translator::ensight_dump(
   Require(rgn_numbers.size() == nrgn);
 
   // create the parts list
-  vector<int>::const_iterator find_location_c;
-  vector<int>::iterator find_location;
-  vector<int> parts_list;
+  ISF parts_list;
 
   for (size_t i = 0; i < ncells; ++i) {
-    find_location =
+    auto const find_location =
         find(parts_list.begin(), parts_list.end(), cell_rgn_index[i]);
 
     if (find_location == parts_list.end())
@@ -208,7 +206,7 @@ void Ensight_Translator::ensight_dump(
   vector<string> part_names;
 
   for (size_t i = 0; i < nparts; ++i) {
-    find_location_c =
+    auto const find_location_c =
         find(rgn_numbers.begin(), rgn_numbers.end(), parts_list[i]);
 
     if (find_location_c != rgn_numbers.end()) {
@@ -237,13 +235,14 @@ void Ensight_Translator::ensight_dump(
   // Initialize cells_of_type and vertices_of_part.
 
   for (size_t i = 0; i < ncells; ++i) {
-    find_location =
+    auto const find_location =
         find(parts_list.begin(), parts_list.end(), cell_rgn_index[i]);
 
     Check(find_location != parts_list.end());
-    Check(iel_type[i] < static_cast<int>(d_num_cell_types));
+    Check(iel_type[i] >= 0);
+    Check(static_cast<unsigned>(iel_type[i]) < d_num_cell_types);
 
-    auto ipart = find_location - parts_list.begin();
+    auto const ipart = find_location - parts_list.begin();
 
     Check(i < INT_MAX);
     cells_of_type[ipart][iel_type[i]].push_back(static_cast<int>(i));
@@ -365,7 +364,8 @@ void Ensight_Translator::write_part(
   sf2_int cells_of_type(d_num_cell_types);
 
   for (size_t i = 0; i < ncells; ++i) {
-    Check(iel_type[i] < static_cast<int>(d_num_cell_types));
+    Check(iel_type[i] >= 0);
+    Check(static_cast<unsigned>(iel_type[i]) < d_num_cell_types);
     Check(i < INT_MAX);
     cells_of_type[iel_type[i]].push_back(static_cast<int>(i));
   }

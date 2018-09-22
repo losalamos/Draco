@@ -3,12 +3,8 @@
  * \file   c4/Compare.cc
  * \author Mike Buksas
  * \date   Thu May  1 14:42:10 2008
- * \brief  
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Compare.hh"
@@ -26,7 +22,7 @@ namespace rtt_c4 {
  * integer across all processors.  This is used for Design By Contract
  * analysis in the Source_Builder codes.
  *
- * \param local_value integer value to check against
+ * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
 bool check_global_equiv(int local_value) {
@@ -77,7 +73,7 @@ bool check_global_equiv(int local_value) {
  * integer across all processors.  This is used for Design By Contract
  * analysis in the Source_Builder codes.
  *
- * \param local_value integer value to check against
+ * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
 bool check_global_equiv(unsigned long local_value) {
@@ -128,7 +124,7 @@ bool check_global_equiv(unsigned long local_value) {
  * integer across all processors.  This is used for Design By Contract
  * analysis in the Source_Builder codes.
  *
- * \param local_value integer value to check against
+ * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
 bool check_global_equiv(unsigned long long local_value) {
@@ -179,7 +175,7 @@ bool check_global_equiv(unsigned long long local_value) {
  * integer across all processors.  This is used for Design By Contract
  * analysis in the Source_Builder codes.
  *
- * \param local_value integer value to check against
+ * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
 bool check_global_equiv(long local_value) {
@@ -230,7 +226,7 @@ bool check_global_equiv(long local_value) {
  * integer across all processors.  This is used for Design By Contract
  * analysis in the Source_Builder codes.
  *
- * \param local_value integer value to check against
+ * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
 bool check_global_equiv(long long local_value) {
@@ -279,8 +275,8 @@ bool check_global_equiv(long long local_value) {
  * This function is the same as check_global_equiv(int) except that doubles
  * are compared to precision eps.
  *
- * \param local_value integer value to check against
- * \param eps precision of double, default 1e-8
+ * \param[in] local_value integer value to check against
+ * \param[in] eps precision of double, default 1e-8
  * \return true if equivalent across all processors; false if not 
  */
 bool check_global_equiv(double local_value, double eps) {

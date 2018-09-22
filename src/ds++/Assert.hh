@@ -23,6 +23,12 @@
 #pragma warning(disable : 4275)
 #endif
 
+// DBC should be defined in ds++/config.h and can be set via cmake as
+// DRACO_DBC_LEVEL=[0-31]
+#if !defined(DBC)
+#define DBC 7
+#endif
+
 namespace rtt_dsxx {
 
 //===========================================================================//
@@ -183,6 +189,7 @@ DLL_PUBLIC_dsxx void check_cookies(bool cond, char const *cond_text,
 //! Print error w/o throw
 DLL_PUBLIC_dsxx void show_cookies(std::string const &cond,
                                   std::string const &file, int const line);
+
 //! Throw a rtt_dsxx::assertion for Insist.
 [[noreturn]] DLL_PUBLIC_dsxx void insist(std::string const &cond,
                                          std::string const &msg,
@@ -195,6 +202,7 @@ DLL_PUBLIC_dsxx void show_cookies(std::string const &cond,
                                              char const *const file,
                                              int const line);
 
+#if DBC & 16
 //! Check version of insist
 DLL_PUBLIC_dsxx void check_insist(bool cond, char const *const condstr,
                                   std::string const &msg,
@@ -204,6 +212,7 @@ DLL_PUBLIC_dsxx void check_insist(bool cond, char const *const condstr,
 DLL_PUBLIC_dsxx void check_insist_ptr(bool cond, char const *const condstr,
                                       char const *const msg,
                                       char const *const file, int const line);
+#endif
 
 //! Add hostname and pid to error messages.
 DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
@@ -304,10 +313,6 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 
 // clang-format off
-
-#if !defined(DBC)
-#define DBC 7
-#endif
 
 //---------------------------------------------------------------------------//
 // No-throw versions of DBC

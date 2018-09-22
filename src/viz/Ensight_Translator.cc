@@ -169,8 +169,8 @@ void Ensight_Translator::create_filenames(const std_string &prefix) {
 /*!
  * \brief Common initializer for constructors.
  *
- * \param graphics_continue If true, use existing ensight directory.
- * If false, create or wipe out the existing directory.
+ * \param[in] graphics_continue If true, use existing ensight directory. If
+ *               false, create or wipe out the existing directory.
  */
 void Ensight_Translator::initialize(const bool graphics_continue) {
   using std::strerror;
@@ -232,8 +232,8 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
 
   // build the ensight directory if this is not a continuation
   if (!graphics_continue) {
-    // We have guaranteed that our prefix directory exists at this
-    // point.  Now, wipe out files that we might have created in there...
+    // We have guaranteed that our prefix directory exists at this point.  Now,
+    // wipe out files that we might have created in there...
     if (!stat_ret) {
       rtt_dsxx::draco_remove_dir(d_prefix);
       rtt_dsxx::draco_mkdir(d_prefix);
