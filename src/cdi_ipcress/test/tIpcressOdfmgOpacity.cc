@@ -171,7 +171,8 @@ int main(int argc, char *argv[]) {
   bool itPassed;
 
   // get the ipcress file name, and create the ipcress file
-  string ipcressFileName = "odfregression10.ipcress";
+  string ipcressFileName =
+      ut.getTestSourcePath() + std::string("odfregression10.ipcress");
   std::shared_ptr<IpcressFile const> file;
   try {
     file.reset(new IpcressFile(ipcressFileName));
@@ -284,15 +285,15 @@ bool checkData(rtt_dsxx::ScalarUnitTest &ut, SP_Goo spGandOpacity) {
     ITFAILS;
 
   rtt_cdi::Model om(spGandOpacity->getModelType());
-  if (om != rtt_cdi::ROSSELAND)
-    ITFAILS;
+  FAIL_IF_NOT(om == rtt_cdi::ROSSELAND);
 
   rtt_cdi::Reaction rt(spGandOpacity->getReactionType());
-  if (rt != rtt_cdi::ABSORPTION)
-    ITFAILS;
+  FAIL_IF_NOT(rt == rtt_cdi::ABSORPTION);
 
+  string const expectedIpcressFileName =
+      ut.getTestSourcePath() + std::string("odfregression10.ipcress");
   std::string dataFilename(spGandOpacity->getDataFilename());
-  if (dataFilename != std::string("odfregression10.ipcress"))
+  if (dataFilename != expectedIpcressFileName)
     ITFAILS;
 
   std::string ddesc(spGandOpacity->getDataDescriptor());

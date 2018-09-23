@@ -221,7 +221,6 @@ void ipcress_file_read(std::string const &op_data_file) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   // Process known command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;

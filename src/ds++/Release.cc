@@ -65,8 +65,8 @@ const std::string release() {
               << "_" << Draco_VERSION_PATCH;
 
   // build date and type
-  std::string const build_date(DRACO_BUILD_DATE);
-  std::string const build_type(DRACO_BUILD_TYPE);
+  std::string const build_date(Draco_BUILD_DATE);
+  std::string const build_type(BUILD_TYPE);
   pkg_release << ", build date " << build_date << "; build type: " << build_type
 #ifdef DBC
               << "; DBC: " << DBC
@@ -110,7 +110,6 @@ const std::string author_list() {
   current_developers.insert(fomdev(130, "Ryan T. Wollaeger"));
   current_developers.insert(fomdev(85, "Andrew T. Till"));
   current_developers.insert(fomdev(25, "Daniel Holladay"));
-  current_developers.insert(fomdev(9, "Massimiliano Rosa"));
   current_developers.insert(fomdev(1, "Kris C. Garrett"));
 
   mmdevs prior_developers;
@@ -125,6 +124,7 @@ const std::string author_list() {
   // < 100 lines
   // prior_developers.insert(fomdev(82, "Peter Ahrens"));
   // prior_developers.insert(fomdev(44, "Nick Myers"));
+  // prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
   // prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
 
   // Previous authors with no current LOC attribution: Tom Evans, Todd Adams,

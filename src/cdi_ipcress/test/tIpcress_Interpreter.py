@@ -9,6 +9,19 @@
 import sys
 import re
 
+#------------------------------------------------------------------------------#
+def check_for_expected_string(ut, expstr):
+    string_found = ut.output_contains(expstr)
+    if(string_found):
+      ut.passmsg("Found expected string \"{0}\"".format(expstr))
+    else:
+      string_found = ut.error_contains(expstr)
+      if(string_found):
+        ut.passmsg("Found expected string \"{0}\"".format(expstr))
+      else:
+        ut.failmsg("Did not find expected string \"{0}\"".format(expstr))
+
+#------------------------------------------------------------------------------#
 try:
 
   #----------------------------------------------------------------------------#
@@ -29,44 +42,57 @@ try:
 
   # Setup test using sys.argv and run:
   tIpcress_Interpreter = UnitTest()
-  tIpcress_Interpreter.aut_runTests()
-
+  tIpcress_Interpreter.aut_runTests(True)
+ 
   ##---------------------------------------------------------------------------##
   ## Check the output
   ##---------------------------------------------------------------------------##
 
-  print("Checking the generated output file...\n")
+  print("Checking the generated output file...\n")  
 
-  # These strings should be found:
-
-  string_found = \
-    tIpcress_Interpreter.output_contains("This opacity file has 2 materials:")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found 2 materials.")
+  ##---------------------------------------------------------------------------##
+  if tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_v":
+  
+    check_for_expected_string(tIpcress_Interpreter, "Ipcress_Interpreter")
+    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_h":
+  
+    check_for_expected_string(tIpcress_Interpreter, "Usage: IpcressInterpreter")
+    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, "Follow the prompts")
+    
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == \
+    "cdi_ipcress_tIpcress_Interpreter_missingfile_ipcress":
+  
+    check_for_expected_string(tIpcress_Interpreter, 
+      "Error: Can't open file missingfile.ipcress. Aborting")
+    check_for_expected_string(tIpcress_Interpreter, 
+      "Could not located requested ipcress file")
+    
+  ##---------------------------------------------------------------------------##
   else:
-    tIpcress_Interpreter.failmsg("Did not find 2 materials.")
 
-  string_found = \
-    tIpcress_Interpreter.output_contains("Material 1 has ID number 10001")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found material ID 10001.")
-  else:
-    tIpcress_Interpreter.failmsg("Did not find material ID 10001.")
+    # These strings should be found:
 
-  string_found = \
-    tIpcress_Interpreter.output_contains("Frequency grid")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found Frequency grid.")
-  else:
-    tIpcress_Interpreter.failmsg("Did not find Frequency grid.")
-  print(" ")
+    check_for_expected_string(tIpcress_Interpreter, 
+      "This opacity file has 2 materials:")
+    check_for_expected_string(tIpcress_Interpreter, 
+      "Material 1 has ID number 10001")
+    check_for_expected_string(tIpcress_Interpreter, "Frequency grid")
+    print(" ")
 
-  # Diff the output vs a gold file.
-  tIpcress_Interpreter.aut_numdiff()
+    # Diff the output vs a gold file.
+    # - use no extra options for numdiff
+    # - run 'ndselect -b 2' to omit the 1st line of output.
+    tIpcress_Interpreter.aut_numdiff(" ", "-b 2")
 
   ##---------------------------------------------------------------------------##
   ## Final report
   ##---------------------------------------------------------------------------##
+  print(" ")
   tIpcress_Interpreter.aut_report()
 
 ##----------------------------------------------------------------------------##

@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     ipcressFileName = argv[argc - 1];
   else
     ipcressFileName =
-        ut.getTestInputPath() + std::string("odfregression10.ipcress");
+        ut.getTestSourcePath() + std::string("odfregression10.ipcress");
 
   std::shared_ptr<const IpcressFile> file;
   try {

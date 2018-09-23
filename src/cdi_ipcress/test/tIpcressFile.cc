@@ -20,17 +20,15 @@ using rtt_cdi_ipcress::IpcressFile;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-/*!
- * \brief Tests the IpcressFile constructor and access routines.
- */
+
+//! Tests the IpcressFile constructor and access routines.
 void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
-  // Ipcress data filename (IPCRESS format required)
-  const std::string op_data_file = "Al_BeCu.ipcress";
+
+  const std::string op_data_file = ut.getTestSourcePath() + "Al_BeCu.ipcress";
 
   // Start the test.
 
-  std::cout << std::endl
-            << "Testing the IpcressFile component of the "
+  std::cout << "\nTesting the IpcressFile component of the "
             << "cdi_ipcress package." << std::endl;
 
   // Create a IpcressFile Object
@@ -83,7 +81,7 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  std::cout << std::endl << "Materials found in the data file:" << std::endl;
+  std::cout << "\nMaterials found in the data file:" << std::endl;
 
   for (size_t i = 0; i < spGF->getNumMaterials(); ++i)
     std::cout << "  Material " << i << " has the identification number "
@@ -110,17 +108,8 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
       std::cout << tgrid[i] << ", ";
     std::cout << tgrid[tgrid.size() - 1] << " }\n" << std::endl;
 
-    std::vector<double> tgrid_expect(10);
-    tgrid_expect[0] = 0.0005;
-    tgrid_expect[1] = 0.0015;
-    tgrid_expect[2] = 0.004;
-    tgrid_expect[3] = 0.0125;
-    tgrid_expect[4] = 0.04;
-    tgrid_expect[5] = 0.125;
-    tgrid_expect[6] = 0.4;
-    tgrid_expect[7] = 1.25;
-    tgrid_expect[8] = 4.0;
-    tgrid_expect[9] = 15.0;
+    std::vector<double> tgrid_expect = {0.0005, 0.0015, 0.004, 0.0125, 0.04,
+                                        0.125,  0.4,    1.25,  4.0,    15.0};
     if (rtt_dsxx::soft_equiv(tgrid_expect.begin(), tgrid_expect.end(),
                              tgrid.begin(), tgrid.end()))
       PASSMSG("tgrid for mat 10001 has the expected values.");
@@ -130,7 +119,6 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
