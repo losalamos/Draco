@@ -32,7 +32,7 @@ using rtt_dsxx::soft_equiv;
 
 void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = "Al_BeCu.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "Al_BeCu.ipcress";
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -261,7 +261,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   //-----------------------------------------------------------------
 
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = "analyticOpacities.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -711,7 +711,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
 void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = "analyticOpacities.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -1071,11 +1071,11 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
 void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   vector<char> packed;
+  // Ipcress data filename (IPCRESS format required)
+  string const op_data_file =
+      ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
   {
-    // Ipcress data filename (IPCRESS format required)
-    string op_data_file = "analyticOpacities.ipcress";
-
     // ------------------------- //
     // Create IpcressFile object //
     // ------------------------- //
@@ -1123,7 +1123,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // some simple tests
-  if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+  if (unpacked_opacity->getDataFilename() != op_data_file)
     ITFAILS;
 
   if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION)
@@ -1164,11 +1164,11 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
 void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   vector<char> packed;
+  // Ipcress data filename (IPCRESS format required)
+  string const op_data_file =
+      ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
   {
-    // Ipcress data filename (IPCRESS format required)
-    string op_data_file = "analyticOpacities.ipcress";
-
     // ------------------------- //
     // Create IpcressFile object //
     // ------------------------- //
@@ -1225,7 +1225,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // some simple tests
-  if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+  if (unpacked_opacity->getDataFilename() != op_data_file)
     ITFAILS;
 
   if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION)

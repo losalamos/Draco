@@ -85,7 +85,9 @@ try:
     print(" ")
 
     # Diff the output vs a gold file.
-    tIpcress_Interpreter.aut_numdiff()
+    # - use no extra options for numdiff
+    # - run 'ndselect -b 2' to omit the 1st line of output.
+    tIpcress_Interpreter.aut_numdiff(" ", "-b 2")
 
   ##---------------------------------------------------------------------------##
   ## Final report

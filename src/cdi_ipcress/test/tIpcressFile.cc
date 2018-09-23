@@ -24,7 +24,7 @@ using rtt_cdi_ipcress::IpcressFile;
 //! Tests the IpcressFile constructor and access routines.
 void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
 
-  const std::string op_data_file = ut.getTestInputPath() + "Al_BeCu.ipcress";
+  const std::string op_data_file = ut.getTestSourcePath() + "Al_BeCu.ipcress";
 
   // Start the test.
 

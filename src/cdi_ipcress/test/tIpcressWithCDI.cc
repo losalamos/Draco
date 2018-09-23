@@ -48,7 +48,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   //-----------------------------------------------------------------
 
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = "analyticOpacities.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";  
 
   // ------------------------- //
   // Create IpcressFile object //

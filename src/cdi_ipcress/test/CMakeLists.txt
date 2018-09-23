@@ -37,7 +37,7 @@ include( ApplicationUnitTest )
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
-  TEST_ARGS "-v;-h;${CMAKE_CURRENT_SOURCE_DIR}/Al_BeCu.ipcress;missingfile.ipcress"
+  TEST_ARGS "-v;-h;${PROJECT_SOURCE_DIR}/Al_BeCu.ipcress;missingfile.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
   GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
   )
