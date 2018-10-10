@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------#
 
 # Use:
 #   cmake -PconfigureFileOnMake.cmake -DINFILE=$infile \
