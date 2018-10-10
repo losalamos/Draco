@@ -76,8 +76,7 @@ set( tests_with_env_reqs
   dsxx_tstIndex_Set
   dsxx_tstEndian )
 
-set_tests_properties( ${tests_with_env_reqs}
-  PROPERTIES ENVIRONMENT FOO="${CMAKE_CURRENT_SOURCE_DIR}")
+set_tests_properties( ${tests_with_env_reqs} PROPERTIES ENVIRONMENT FOO=bar)
 
 #------------------------------------------------------------------------------#
 # end ds++/test/CMakeLists.txt
