@@ -166,6 +166,9 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
+    string var = getenv("FOO");
+    std::cout << "var = " << var << std::endl;
+    FAIL_IF_NOT(var == std::string("bar"));
     test_index_set(ut);
   }
   UT_EPILOG(ut);

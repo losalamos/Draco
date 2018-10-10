@@ -336,6 +336,11 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
+
+    string var = getenv("DRACO_INCLUDE_PATH");
+    std::cout << "var = " << var << std::endl;
+    FAIL_IF_NOT(var == std::string("bar"));
+
     tstParallel_File_Token_Stream(ut);
   }
   UT_EPILOG(ut);

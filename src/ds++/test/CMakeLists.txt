@@ -72,6 +72,12 @@ add_app_unit_test(
   TEST_ARGS "0;1;2;3"
   LABELS    "nomemcheck")
 
+set( tests_with_env_reqs
+  dsxx_tstIndex_Set
+  dsxx_tstEndian )
+
+set_tests_properties( ${tests_with_env_reqs} PROPERTIES ENVIRONMENT FOO=bar)
+
 #------------------------------------------------------------------------------#
 # end ds++/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

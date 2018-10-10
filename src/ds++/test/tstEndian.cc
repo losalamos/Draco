@@ -187,6 +187,11 @@ void test_externc(ScalarUnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
   try {
+
+    string var = getenv("FOO");
+    std::cout << "var = " << var << std::endl;
+    FAIL_IF_NOT(var == std::string("bar"));
+
     test_char_data(ut);
     test_integer(ut);
     test_int64(ut);
