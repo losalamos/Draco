@@ -23,13 +23,19 @@ namespace rtt_mesh {
  * \brief X3D_Draco_Mesh_Reader constructor.
  *
  * \param[in] filename_ name of file to be parsed
+ * \param[in] bdy_filenames_ names of files with lists of side node indexes
+ * \param[in] bdy_flags_ uint indicating B.C. per side file (bdy_filenames_)
  */
 X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(
     const std::string &filename_,
-    const std::vector<std::string> &bdy_filenames_)
-    : filename(filename_), bdy_filenames(bdy_filenames_) {
+    const std::vector<std::string> &bdy_filenames_,
+    const std::vector<unsigned> &bdy_flags_)
+    : filename(filename_), bdy_filenames(bdy_filenames_),
+      bdy_flags(bdy_flags_) {
   // check for valid file name
   Insist(filename_.size() > 0, "No file name supplied.");
+  Insist(bdy_flags_.size() <= bdy_filenames_.size(),
+         "Number of B.C.s > number of boundary (side) node files.");
 }
 
 //---------------------------------------------------------------------------//
@@ -278,8 +284,11 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
   Require(x3d_header_map.size() > 0);
   Require(x3d_facenode_map.size() > 0);
 
-  std::vector<unsigned> side_node_vec;
+  const size_t num_flag = bdy_flags.size();
+  const size_t num_bdy = bdy_filenames.size();
+  std::map<size_t, std::vector<unsigned>> flag_node_map;
 
+  size_t bdy_key = 0;
   for (auto bdy_fname : bdy_filenames) {
 
     // open file
@@ -311,47 +320,57 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
         Insist(false, err.what());
       }
 
-      // add to side-node vector
-      side_node_vec.push_back(side_node);
+      // add to flag-node map
+      flag_node_map[bdy_key].push_back(side_node);
     }
 
     // close the file
     bdy_file.close();
+
+    // increment boundary key
+    bdy_key++;
   }
 
-  // reduce side-node vector to unique entries
-  std::sort(side_node_vec.begin(), side_node_vec.end());
-  side_node_vec.erase(std::unique(side_node_vec.begin(), side_node_vec.end()),
-                      side_node_vec.end());
-
   // Insist that there was at least one side node in all the files
-  Insist(side_node_vec.size() > 0, "Bdy file(s) read, but no side nodes.");
+  Insist(flag_node_map.size() > 0, "Bdy file(s) read, but no side nodes.");
 
   // treat sides as a subset of cell faces here
   int num_side = 0;
-  for (auto face_nodes : x3d_facenode_map) {
+  for (size_t bdy = 0; bdy < num_bdy; ++bdy) {
 
-    // sort vector of nodes associated with this face
-    std::vector<unsigned> fnode_vec = get_facenodes(face_nodes.first);
-    std::sort(fnode_vec.begin(), fnode_vec.end());
+    // calculate flag key and get reference to associated side node vector
+    const unsigned flag_key = bdy < num_flag ? bdy_flags[bdy] : 0;
+    std::vector<unsigned> &flag_node_vec = flag_node_map[bdy];
+    std::sort(flag_node_vec.begin(), flag_node_vec.end());
 
-    // \todo: check for node index duplicates
+    // find the mesh faces that have nodes in this flags set
+    for (auto face_nodes : x3d_facenode_map) {
 
-    // find commond nodes between side nodes and face
-    std::vector<unsigned> nodes_in_common;
-    std::set_intersection(side_node_vec.begin(), side_node_vec.end(),
-                          fnode_vec.begin(), fnode_vec.end(),
-                          std::back_inserter(nodes_in_common));
+      // sort vector of nodes associated with this face
+      std::vector<unsigned> fnode_vec = get_facenodes(face_nodes.first);
+      std::sort(fnode_vec.begin(), fnode_vec.end());
 
-    // if the face is entirely composed of side nodes, then it is a side
-    if (nodes_in_common == fnode_vec) {
+      // \todo: check for node index duplicates
 
-      // add to the side-node map
-      x3d_sidenode_map.insert(
-          std::pair<int, std::vector<unsigned>>(num_side, fnode_vec));
+      // find commond nodes between side nodes and face
+      std::vector<unsigned> nodes_in_common;
+      std::set_intersection(flag_node_vec.begin(), flag_node_vec.end(),
+                            fnode_vec.begin(), fnode_vec.end(),
+                            std::back_inserter(nodes_in_common));
 
-      // increment side counter
-      num_side++;
+      // if the face is entirely composed of side nodes, then it is a side
+      if (nodes_in_common == fnode_vec) {
+
+        // add to the side-node map
+        x3d_sidenode_map.insert(
+            std::pair<int, std::vector<unsigned>>(num_side, fnode_vec));
+
+        // add to the side-flag map
+        x3d_sideflag_map.insert(std::pair<int, unsigned>(num_side, flag_key));
+
+        // increment side counter
+        num_side++;
+      }
     }
   }
 

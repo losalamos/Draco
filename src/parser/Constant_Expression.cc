@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Constant_Expression.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Definition of methods of class Constant_Expression
  * \note   Copyright (C) 2006-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
 #include <cmath>
@@ -15,7 +15,7 @@
 namespace {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void upper(ostream &out, char const *const label, double const power,
            bool &first, unsigned &icount) {
   if (power > 0.0) {
@@ -37,7 +37,7 @@ void upper(ostream &out, char const *const label, double const power,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void lower(ostream &out, char const *const label, double const power,
            bool &first) {
   if (power < 0.0) {
@@ -46,23 +46,15 @@ void lower(ostream &out, char const *const label, double const power,
     }
     first = false;
     unsigned ipower = static_cast<unsigned>(-power);
-    // This can never occur! ipower >= 0 && power < 0
-    // if (power == ipower) {
-    //   out << label;
-    //   for (unsigned i = 1; i < ipower; ++i) {
-    //    out << '*' << label;
-    //  }
-    //} else {
     out << "pow(" << label << "," << ipower << ")";
-    // }
   }
 }
 
 } // namespace
 
 namespace rtt_parser {
-using namespace rtt_parser;
-//---------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
 void write_c(Unit const &u, ostream &out) {
   double const eps = std::numeric_limits<double>::epsilon();
   double const mrv = std::numeric_limits<double>::min();
@@ -160,6 +152,6 @@ void write_c(Unit const &u, ostream &out) {
 
 } // end namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of parser/Constant_Expression.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

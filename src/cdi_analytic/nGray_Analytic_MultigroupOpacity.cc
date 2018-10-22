@@ -59,9 +59,7 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_char &packed)
     : Analytic_MultigroupOpacity(packed), group_models() {
   // get the number of group boundaries
-  sf_double const &group_boundaries = getGroupBoundaries();
-  size_t const ngrp_bounds = group_boundaries.size();
-  size_t const num_groups = ngrp_bounds - 1;
+  size_t const num_groups = getGroupBoundaries().size() - 1;
   unsigned const base_size = Analytic_MultigroupOpacity::packed_size();
 
   // make an unpacker
@@ -109,7 +107,7 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     Ensure(group_models[i]);
   }
 
-  Ensure(group_boundaries.size() - 1 == group_models.size());
+  Ensure(num_groups == group_models.size());
 }
 
 //---------------------------------------------------------------------------//

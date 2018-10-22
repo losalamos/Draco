@@ -198,6 +198,12 @@ fi
 ## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
 
+# Darwin salloc inherits the user environment, so we need to bypass the
+# "already-done" logic
+if [[ ${SLURM_CLUSTER_NAME} == "darwin" ]]; then
+  export DRACO_BASHRC_DONE=no
+fi
+
 if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
 
   # Clean up the default path to remove duplicates
@@ -258,6 +264,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
     # machine with GPUs
     # backend nodes with GPUs are cn[1-4].
     darwin-fe* | cn[0-9]*)
+      if [[ $verbose ]]; then echo "this is Darwin"; fi
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
       ;;
 
@@ -266,8 +273,8 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 
-    # Snow | Badger | Fire | Ice
-    sn* | ba* | fi* | ic* )
+    # Badger | Fire | Grizzly | Ice | Snow
+    ba* | fi* | gr* | ic* | sn* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
       ;;
 

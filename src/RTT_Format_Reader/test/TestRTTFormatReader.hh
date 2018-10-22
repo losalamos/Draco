@@ -5,23 +5,20 @@
  * \date   Tue Mar 14 09:48:00 2000
  * \brief  Header file for the RTT_Format_Reader class unit test.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __test_TestRTT_Format_Reader_hh__
 #define __test_TestRTT_Format_Reader_hh__
 
-#include "../RTT_Format_Reader.hh"
+#include "RTT_Format_Reader/RTT_Format_Reader.hh"
 #include "ds++/UnitTest.hh"
 #include <map>
 
 using rtt_dsxx::UnitTest;
 typedef rtt_RTT_Format_Reader::RTT_Format_Reader RTT_Format_Reader;
 
-enum Meshes { DEFINED };
+enum Meshes { DEFINED, MESHES_LASTENTRY };
 
 // All function tests with the exception of check_header and check_dims
 // require that the Dims data has been properly processed, and use the

@@ -311,11 +311,11 @@ void Galerkin_Ordinate_Space::compute_operators() {
 
     // and reset ordinate weights to the first row of D
 
-    vector<Ordinate> &ordinates(this->ordinates());
+    vector<Ordinate> &lordinates(this->ordinates());
     for (unsigned i = 0; i < numOrdinates; ++i) {
-      if (std::abs(ordinates[i].wt()) >
-          std::numeric_limits<decltype(ordinates[i].wt())>::min()) {
-        ordinates[i].set_wt(
+      if (std::abs(lordinates[i].wt()) >
+          std::numeric_limits<decltype(lordinates[i].wt())>::min()) {
+        lordinates[i].set_wt(
             cartesian_D[indexes[i] + 0 * numCartesianOrdinates]);
       }
     }

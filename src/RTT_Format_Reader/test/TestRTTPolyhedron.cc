@@ -69,12 +69,12 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
   // Read polyhedron mesh file - this is the mesh that is of most interest in
   // this test
   {
-    vector<string> filenames = {"rttpolyhedron.mesh", "rttpolyhedron.2.mesh",
-                                "rttpolyhedron.2o.mesh", "rttpolyhedron.3.mesh",
-                                "rttpolyhedron.4.mesh"};
+    vector<string> more_filenames = {
+        "rttpolyhedron.mesh", "rttpolyhedron.2.mesh", "rttpolyhedron.2o.mesh",
+        "rttpolyhedron.3.mesh", "rttpolyhedron.4.mesh"};
 
-    for (unsigned i = 0; i < filenames.size(); ++i) {
-      string filename(filenames[i]);
+    for (unsigned i = 0; i < more_filenames.size(); ++i) {
+      string filename(more_filenames[i]);
       shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
 
       ostringstream m;

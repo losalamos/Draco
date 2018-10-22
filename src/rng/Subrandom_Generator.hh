@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \brief  Definition of class Subrandom_Generator
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rng_Subrandom_Generator_hh
@@ -35,13 +34,14 @@ namespace rtt_rng {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Subrandom_Generator {
+class Subrandom_Generator {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
   // CREATORS
 
-  virtual ~Subrandom_Generator() {}
+  virtual ~Subrandom_Generator() { /* empty */
+  }
 
   //! Advance sequence to the next vector.
   virtual void shift_vector() = 0;
@@ -58,7 +58,13 @@ protected:
 
   // IMPLEMENTATION
 
-  Subrandom_Generator(unsigned count);
+  /*!
+   * \brief Constructor for Subrandom_Generator.
+   * \param[in] count Dimension of the vector calculated by this generator.
+   */
+  explicit Subrandom_Generator(unsigned count)
+      : count_(count), element_(0) { /* empty */
+  }
 
   // MANIPULATORS
 

@@ -52,7 +52,7 @@ class CellDef {
   // Add the capability to maintain the sense of the outward normals.
   vector_vector_uint ordered_sides;
   // Mapping between the old and new cell definition nodes.
-  vector_int node_map;
+  vector_uint node_map;
 
 public:
   CellDef(const CellDefs &cellDefs_, const string &name_)
@@ -128,7 +128,7 @@ public:
    *        performed.
    * \return New nodes map.
    */
-  const vector_int &get_node_map() const { return node_map; }
+  const vector_uint &get_node_map() const { return node_map; }
 };
 
 //---------------------------------------------------------------------------//
@@ -244,12 +244,6 @@ public:
   }
 
   /*!
-   * \brief Returns the number of unique cell type definitions.
-   * \return The number of cell definitions.
-   */
-  //    int get_ncell_defs() const { return dims.get_ncell_defs(); }
-
-  /*!
    * \brief Returns the status of the flag indicating that the cell
    * definitions
    *        have been redefined.
@@ -262,8 +256,8 @@ public:
    *        redefinition has been performed.
    * \param cell_def Cell definition index.
    * \return New cell definition node map.
-  */
-  const vector_int &get_node_map(int cell_def) const {
+   */
+  const vector_uint &get_node_map(int cell_def) const {
     return defs[cell_def]->get_node_map();
   }
 };

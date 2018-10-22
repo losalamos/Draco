@@ -104,7 +104,7 @@ void Cells::redefineCells() {
   vector_uint temp_nodes;
   for (size_t ct = 0; ct < dims.get_ncell_types(); ct++) {
     int this_cell_type = dims.get_cell_types(ct);
-    vector_int node_map(cellDefs.get_node_map(this_cell_type));
+    vector_uint node_map(cellDefs.get_node_map(this_cell_type));
     Insist(node_map.size() == cellDefs.get_nnodes(this_cell_type),
            "Error in Cells redefinition.");
 

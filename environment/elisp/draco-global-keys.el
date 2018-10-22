@@ -4,7 +4,7 @@
 ;; 8 Dec 2004
 ;;
 ;; Define some global key bindings
-;; 
+;;
 ;; Usage: (require 'draco-global-keys)
 ;; ======================================================================
 
@@ -59,9 +59,9 @@
 
 ;; (if (string-match "lambda" machine-name)
 ;;     (progn
-;;       (define-key global-map [(button4)] 
+;;       (define-key global-map [(button4)]
 ;;         '(lambda () (interactive) (scroll-down 5)))
-;;       (define-key global-map [(button5)] 
+;;       (define-key global-map [(button5)]
 ;;         '(lambda () (interactive) (scroll-up 5)))))
 
 ;(if (or (string-match "ffe1" machine-name)
@@ -76,7 +76,7 @@
   "History for the `ack' command.")
 (defun ack (command-args)
   (interactive
-   (let ((ack-command 
+   (let ((ack-command
           ;; "ack --nocolor --nogroup --with-filename --all "))
           "ack --nocolor --nogroup --with-filename "))
      (list (read-shell-command "Run ack (like this): "

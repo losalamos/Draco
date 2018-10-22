@@ -49,7 +49,8 @@ enum Ensight_Cell_Types {
   eight_node_hexahedron,
   twenty_node_hexahedron,
   six_node_wedge,
-  fifteen_node_wedge
+  fifteen_node_wedge,
+  unstructured
 };
 
 //===========================================================================//

@@ -116,6 +116,30 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
   }
 
+  // Now test the global function pack_vec_double.
+  {
+    uint32_t buffer_size(static_cast<unsigned>(vd.size() * sizeof(double)));
+    vector<char> lbuffer(buffer_size);
+    bool byte_swap = false;
+    Check(vd.size() < UINT32_MAX);
+    rtt_dsxx::pack_vec_double(&vd[0], &lbuffer[0],
+                              static_cast<uint32_t>(vd.size()), byte_swap);
+
+    Unpacker localUnpacker;
+    localUnpacker.set_buffer(lbuffer.size(), &lbuffer[0]);
+
+    if (static_cast<int>(localUnpacker.size()) !=
+        localUnpacker.end() - localUnpacker.begin())
+      ITFAILS;
+
+    for (size_t i = 0; i < vd.size(); ++i) {
+      double d;
+      localUnpacker >> d;
+      if (!soft_equiv(d, vd[i]))
+        ITFAILS;
+    }
+  }
+
   if (ut.numFails == 0)
     PASSMSG("compute_buffer_size_test() worked fine.");
 
@@ -263,20 +287,20 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   // unpack
   {
     char cc[4];
-    vector<double> x(100, 0.0);
+    vector<double> lx(100, 0.0);
 
     Unpacker u;
     u.set_buffer(size, buffer);
 
-    for (size_t i = 0; i < x.size(); i++)
-      u >> x[i];
+    for (size_t i = 0; i < lx.size(); i++)
+      u >> lx[i];
 
     u.extract(4, cc);
 
     if (u.get_ptr() != buffer + size)
       ITFAILS;
 
-    if (!rtt_dsxx::soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()))
+    if (!rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()))
       ITFAILS;
 
     if (c[0] != 'c')
@@ -292,25 +316,25 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   // Skip some data and unpack
   {
     char cc[2];
-    vector<double> x(100, 0.0);
+    vector<double> lx(100, 0.0);
 
     Unpacker u;
     u.set_buffer(size, buffer);
 
     // Skip the first 50 integers.
     u.skip(50 * sizeof(double));
-    for (size_t i = 50; i < x.size(); ++i)
-      u >> x[i];
+    for (size_t i = 50; i < lx.size(); ++i)
+      u >> lx[i];
 
     // Skip the first two chatacters
     u.skip(2);
     u.extract(2, cc);
 
     for (size_t i = 0; i < 50; ++i)
-      if (!rtt_dsxx::soft_equiv(x[i], 0.0, mrv))
+      if (!rtt_dsxx::soft_equiv(lx[i], 0.0, mrv))
         ITFAILS;
-    for (size_t i = 50; i < x.size(); ++i)
-      if (!rtt_dsxx::soft_equiv(x[i], ref[i], eps))
+    for (size_t i = 50; i < lx.size(); ++i)
+      if (!rtt_dsxx::soft_equiv(lx[i], ref[i], eps))
         ITFAILS;
 
     if (cc[0] != 'a')

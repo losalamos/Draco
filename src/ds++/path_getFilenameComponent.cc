@@ -116,10 +116,11 @@ std::string getFilenameComponent(std::string const &fqName,
   }
 
   // Always convert paths to use native format.
-  if (dirSep == WinDirSep) // Windows style.
-    std::replace(retVal.begin(), retVal.end(), UnixDirSep, dirSep);
-  else
-    std::replace(retVal.begin(), retVal.end(), WinDirSep, dirSep);
+#ifdef WIN32
+  std::replace(retVal.begin(), retVal.end(), UnixDirSep, dirSep);
+#else
+  std::replace(retVal.begin(), retVal.end(), WinDirSep, dirSep);
+#endif
   return retVal;
 }
 

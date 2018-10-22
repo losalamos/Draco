@@ -22,7 +22,7 @@ namespace rtt_dsxx {
  */
 template <unsigned D, int OFFSET>
 void Index_Set<D, OFFSET>::set_size(unsigned const *const dimensions_) {
-  std::copy(dimensions_, dimensions_ + D, dimensions);
+  std::copy(dimensions_, dimensions_ + D, m_dimensions);
   Require(sizes_okay());
   compute_size();
 }
@@ -35,7 +35,7 @@ void Index_Set<D, OFFSET>::set_size(unsigned const *const dimensions_) {
  */
 template <unsigned D, int OFFSET>
 void Index_Set<D, OFFSET>::set_size(const unsigned dimension) {
-  for (unsigned *dim = dimensions; dim < dimensions + D; ++dim)
+  for (unsigned *dim = m_dimensions; dim < m_dimensions + D; ++dim)
     *dim = dimension;
   compute_size();
 }
@@ -47,9 +47,9 @@ void Index_Set<D, OFFSET>::set_size(const unsigned dimension) {
  */
 template <unsigned D, int OFFSET>
 inline bool Index_Set<D, OFFSET>::operator==(const Index_Set &rhs) const {
-  if (array_size != rhs.array_size)
+  if (m_array_size != rhs.m_array_size)
     return false;
-  return std::equal(dimensions, dimensions + D, rhs.dimensions);
+  return std::equal(m_dimensions, m_dimensions + D, rhs.m_dimensions);
 }
 
 //---------------------------------------------------------------------------//
@@ -83,7 +83,7 @@ inline bool Index_Set<D, OFFSET>::index_in_range(int index,
   Check(dimension_okay(dimension));
 
   return ((index >= OFFSET) &&
-          (index < static_cast<int>(dimensions[dimension]) + OFFSET));
+          (index < static_cast<int>(m_dimensions[dimension]) + OFFSET));
 }
 
 //---------------------------------------------------------------------------//
@@ -92,9 +92,9 @@ inline bool Index_Set<D, OFFSET>::index_in_range(int index,
 template <unsigned D, int OFFSET>
 inline void Index_Set<D, OFFSET>::compute_size() {
 
-  array_size = std::accumulate<unsigned *>(dimensions, dimensions + D, 1,
-                                           std::multiplies<unsigned>());
-  Ensure(array_size > 0);
+  m_array_size = std::accumulate<unsigned *>(m_dimensions, m_dimensions + D, 1,
+                                             std::multiplies<unsigned>());
+  Ensure(m_array_size > 0);
 }
 
 } // end namespace rtt_dsxx

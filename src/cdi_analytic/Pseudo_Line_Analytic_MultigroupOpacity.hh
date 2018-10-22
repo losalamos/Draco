@@ -30,7 +30,7 @@ using rtt_parser::Expression;
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
  */
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_MultigroupOpacity
+class Pseudo_Line_Analytic_MultigroupOpacity
     : public Analytic_MultigroupOpacity,
       public Pseudo_Line_Base {
 private:

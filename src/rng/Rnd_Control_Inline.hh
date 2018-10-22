@@ -25,7 +25,7 @@ namespace rtt_rng {
  * constructing a new generator.
  */
 //===========================================================================//
-class DLL_PUBLIC_rng Rnd_Control {
+class Rnd_Control {
 private:
   //! Seed for initialization of random number streams.
   const uint32_t d_seed;

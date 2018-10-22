@@ -157,7 +157,7 @@ public:
 /*!
  * \class Polynomial_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a polynomial
- * function for the opacity.
+ *        function for the opacity.
  *
  * The opacity is defined:
  *
@@ -167,7 +167,6 @@ public:
  *
  * \arg a = [cm^2/g * (cm^3/g)^d]
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
- *
  */
 class DLL_PUBLIC_cdi_analytic Polynomial_Analytic_Opacity_Model
     : public Analytic_Opacity_Model {
@@ -184,17 +183,16 @@ private:
 
 public:
   /*!
-     * \brief Constructor.
-     * \param a_ constant [cm^2/g (cm^3/g)^d]
-     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
-     * \param c_ temperature power
-     * \param d_ density power
-     * \param e_ frequency power
-     * \param f_ reference temperature
-     * \param g_ reference density
-     * \param h_ reference frequency
-     */
-
+   * \brief Constructor.
+   * \param[in] a_ constant [cm^2/g (cm^3/g)^d]
+   * \param[in] b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
+   * \param[in] c_ temperature power
+   * \param[in] d_ density power
+   * \param[in] e_ frequency power (default = 0)
+   * \param[in] f_ reference temperature (default = 1)
+   * \param[in] g_ reference density (default = 1)
+   * \param[in] h_ reference frequency (default = 1)
+   */
   Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_, double d_,
                                     double e_ = 0, double f_ = 1, double g_ = 1,
                                     double h_ = 1)
@@ -309,16 +307,16 @@ private:
 
 public:
   /*!
-     * \brief Constructor.
-     * \param a_ constant [cm^2/g (cm^3/g)^d]
-     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
-     * \param c_ temperature power
-     * \param d_ density power
-     * \param e_ frequency power
-     * \param f_ reference temperature
-     * \param g_ reference density
-     * \param h_ reference frequency
-     */
+   * \brief Constructor.
+   * \param a_ constant [cm^2/g (cm^3/g)^d]
+   * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
+   * \param c_ temperature power
+   * \param d_ density power
+   * \param e_ frequency power
+   * \param f_ reference temperature
+   * \param g_ reference density
+   * \param h_ reference frequency
+   */
 
   Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
                                              double d_, double e_ = 0,
@@ -454,14 +452,14 @@ public:
                                                      double rho) const = 0;
 
   /*! \brief Calculate the electron temperature given density, Electron
-     *         internal energy and the starting electron temperature.
-     */
+   *         internal energy and the starting electron temperature.
+   */
   virtual double calculate_elec_temperature(double rho, double Ue,
                                             double Tguess) const = 0;
 
   /*! \brief Calculate the ion temperature given density, Ion internal
-     *         energy and the starting ion temperature.
-     */
+   *         energy and the starting ion temperature.
+   */
   virtual double calculate_ion_temperature(double rho, double Uic,
                                            double Tguess) const = 0;
 
@@ -509,14 +507,14 @@ private:
 
 public:
   /*!
-     * \brief Constructor.
-     * \param a_ electron Cv constant [kJ/g/keV]
-     * \param b_ electron Cv temperature multiplier [kJ/g/keV^(c+1)]
-     * \param c_ electron Cv temperature power
-     * \param d_ ion Cv constant [kJ/g/keV]
-     * \param e_ ion Cv temperature multiplier [kJ/g/keV^(c+1)]
-     * \param f_ ion Cv temperature power
-     */
+   * \brief Constructor.
+   * \param a_ electron Cv constant [kJ/g/keV]
+   * \param b_ electron Cv temperature multiplier [kJ/g/keV^(c+1)]
+   * \param c_ electron Cv temperature power
+   * \param d_ ion Cv constant [kJ/g/keV]
+   * \param e_ ion Cv temperature multiplier [kJ/g/keV^(c+1)]
+   * \param f_ ion Cv temperature power
+   */
   Polynomial_Specific_Heat_Analytic_EoS_Model(double a_, double b_, double c_,
                                               double d_, double e_, double f_)
       : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_) {
@@ -531,7 +529,7 @@ public:
 
   //! Calculate the electron heat capacity in kJ/g/keV.
   double calculate_electron_heat_capacity(double T,
-                                          double Remember(rho)) const {
+                                          double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -543,7 +541,8 @@ public:
   }
 
   //! Calculate the ion heat capacity in kJ/g/keV.
-  double calculate_ion_heat_capacity(double T, double Remember(rho)) const {
+  double calculate_ion_heat_capacity(double T,
+                                     double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -555,26 +554,27 @@ public:
   }
 
   /*! Calculate the electron specific internal energy.
-     *
-     * This is done by integrating the specific heat capacity at constant
-     * density from T=0 to the specified temperature.
-     *
-     * \param T
-     * Temperature (keV) for which the specific internal energy is to be
-     * evaluated.
-     * \param rho
-     * Density (g/cm^3) for which the specific internal energy is to be
-     * evaluated. This parameter is not actually used.
-     *
-     * \return Electron specific internal energy (kJ/g)
-     *
-     * \pre \c T>=0
-     * \pre \c rho>=0
-     *
-     * \post \c U>=0
-     */
-  double calculate_electron_internal_energy(double T,
-                                            double Remember(rho)) const {
+   *
+   * This is done by integrating the specific heat capacity at constant
+   * density from T=0 to the specified temperature.
+   *
+   * \param T
+   * Temperature (keV) for which the specific internal energy is to be
+   * evaluated.
+   * \param rho
+   * Density (g/cm^3) for which the specific internal energy is to be
+   * evaluated. This parameter is not actually used.
+   *
+   * \return Electron specific internal energy (kJ/g)
+   *
+   * \pre \c T>=0
+   * \pre \c rho>=0
+   *
+   * \post \c U>=0
+   */
+  double
+  calculate_electron_internal_energy(double T,
+                                     double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -587,25 +587,26 @@ public:
   }
 
   /*! Calculate the ion specific internal energy.
-     *
-     * This is done by integrating the specific heat capacity at constant
-     * density from T=0 to the specified temperature.
-     *
-     * \param T
-     * Temperature (keV) for which the specific internal energy is to be
-     * evaluated.
-     * \param rho
-     * Density (g/cm^3) for which the specific internal energy is to be
-     * evaluated. This parameter is not actually used.
-     *
-     * \return Ion specific internal energy (kJ/g)
-     *
-     * \pre \c T>=0
-     * \pre \c rho>=0
-     *
-     * \post \c U>=0
-     */
-  double calculate_ion_internal_energy(double T, double Remember(rho)) const {
+   *
+   * This is done by integrating the specific heat capacity at constant
+   * density from T=0 to the specified temperature.
+   *
+   * \param T
+   * Temperature (keV) for which the specific internal energy is to be
+   * evaluated.
+   * \param rho
+   * Density (g/cm^3) for which the specific internal energy is to be
+   * evaluated. This parameter is not actually used.
+   *
+   * \return Ion specific internal energy (kJ/g)
+   *
+   * \pre \c T>=0
+   * \pre \c rho>=0
+   *
+   * \post \c U>=0
+   */
+  double calculate_ion_internal_energy(double T,
+                                       double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -618,30 +619,31 @@ public:
   }
 
   //! Return 0 for the number of electrons per ion.
-  double calculate_num_free_elec_per_ion(double /*T*/, double /*rho*/) const {
+  double calculate_num_free_elec_per_ion(double /*T*/,
+                                         double /*rho*/) const override {
     return 0.0;
   }
 
   //! Return 0 for the electron thermal conductivity.
   double calculate_elec_thermal_conductivity(double /*T*/,
-                                             double /*rho*/) const {
+                                             double /*rho*/) const override {
     return 0.0;
   }
 
   //!  Calculate the electron temperature given density and Electron
   //!  internal energy and initial temperature.
   double calculate_elec_temperature(double const /*rho*/, double const Ue,
-                                    double const Te0) const;
+                                    double const Te0) const override;
 
   //!  Calculate the ion temperature given density and ion internal energy
   //!  and initial temperature.
   double calculate_ion_temperature(double const /*rho*/, double const Uic,
-                                   double const Ti0) const;
+                                   double const Ti0) const override;
   //! Return the model parameters.
-  sf_double get_parameters() const;
+  sf_double get_parameters() const override;
 
   //! Pack up the class for persistence.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 /*! \brief Functor used by calculate_Te_DU.

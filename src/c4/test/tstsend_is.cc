@@ -28,10 +28,10 @@ public:
     my_ints[0] = rank;
     my_ints[1] = rank * 1000;
     my_ints[2] = rank * 10000;
-    my_doubles[0] = double(rank);
-    my_doubles[1] = double(rank * 1000);
-    my_longs[0] = rank + (long)1000000000000;
-    my_longs[1] = rank + (long)10000000000000;
+    my_doubles[0] = static_cast<double>(rank);
+    my_doubles[1] = static_cast<double>(rank * 1000);
+    my_longs[0] = rank + 100000000l;
+    my_longs[1] = rank + 1000000000l;
   }
   ~Custom() {}
 

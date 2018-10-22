@@ -35,13 +35,13 @@ enum FilenameComponent {
 
 //---------------------------------------------------------------------------//
 //! Get a specific component of a full filename.
-DLL_PUBLIC_dsxx std::string getFilenameComponent(std::string const &fqName,
-                                                 FilenameComponent fc);
+std::string getFilenameComponent(std::string const &fqName,
+                                 FilenameComponent fc);
 
 //---------------------------------------------------------------------------//
 //! Does the file exist?
-DLL_PUBLIC_dsxx bool fileExists(std::string const &filename);
-DLL_PUBLIC_dsxx bool isDirectory(std::string const &path);
+bool fileExists(std::string const &filename);
+bool isDirectory(std::string const &path);
 
 //---------------------------------------------------------------------------//
 //! Functor for printing all items in a directory tree
@@ -72,9 +72,9 @@ public:
  * \return void
  *
  * \sa draco_remove_dir Helper function to recurively delete a directory and all
- * its contents.
+ *     its contents.
  * \sa draco_dir_print Helper function that will print a directory and all its
- * contents.
+ *     contents.
  *
  * Sample implementation for Win32 (uses Win API which I don't want to do)
  * http://forums.codeguru.com/showthread.php?239271-Windows-SDK-File-System-How-to-delete-a-directory-and-subdirectories
@@ -204,9 +204,9 @@ void draco_walk_directory_tree(std::string const &dirname,
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-DLL_PUBLIC_dsxx void draco_remove_dir(std::string const &path);
+void draco_remove_dir(std::string const &path);
 //! Recursively print a directory tree.
-DLL_PUBLIC_dsxx void draco_dir_print(std::string const &path);
+void draco_dir_print(std::string const &path);
 
 } // end namespace rtt_dsxx
 

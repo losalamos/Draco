@@ -53,7 +53,9 @@ void zbrac(Function func, Real &x1, Real &x2) {
 
   Real const eps = std::numeric_limits<Real>::epsilon();
 
-  Real f1 = func(x1), f2 = func(x2), f3;
+  Real f1 = func(x1);
+  Real f2 = func(x2);
+  Real f3;
   Real af1 = (f1 > 0. ? f1 : -f1);
   Real af2 = (f2 > 0. ? f2 : -f2);
 
@@ -87,10 +89,10 @@ void zbrac(Function func, Real &x1, Real &x2) {
       //                           "could not find search interval");
       // }
       try {
-        Real const f3 = func(x3);
-        if (!rtt_dsxx::isFinite(f3))
+        Real const ff3 = func(x3);
+        if (!rtt_dsxx::isFinite(ff3))
           throw std::runtime_error("");
-        f2 = f3;
+        f2 = ff3;
         af2 = (f2 > 0. ? f2 : -f2);
         x2 = x3;
         if (scale < 0.5)

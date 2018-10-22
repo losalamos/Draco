@@ -9,6 +9,19 @@
 import sys
 import re
 
+#------------------------------------------------------------------------------#
+def check_for_expected_string(ut, expstr):
+    string_found = ut.output_contains(expstr)
+    if(string_found):
+      ut.passmsg("Found expected string \"{0}\"".format(expstr))
+    else:
+      string_found = ut.error_contains(expstr)
+      if(string_found):
+        ut.passmsg("Found expected string \"{0}\"".format(expstr))
+      else:
+        ut.failmsg("Did not find expected string \"{0}\"".format(expstr))
+
+#------------------------------------------------------------------------------#
 try:
 
   #----------------------------------------------------------------------------#
@@ -29,7 +42,7 @@ try:
 
   # Setup test using sys.argv and run:
   tIpcress_Interpreter = UnitTest()
-  tIpcress_Interpreter.aut_runTests()
+  tIpcress_Interpreter.aut_runTests(True)
 
   ##---------------------------------------------------------------------------##
   ## Check the output
@@ -37,36 +50,77 @@ try:
 
   print("Checking the generated output file...\n")
 
-  # These strings should be found:
+  ##---------------------------------------------------------------------------##
+  if tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_v":
 
-  string_found = \
-    tIpcress_Interpreter.output_contains("This opacity file has 2 materials:")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found 2 materials.")
+    check_for_expected_string(tIpcress_Interpreter, "Ipcress_Interpreter")
+    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_h":
+
+    check_for_expected_string(tIpcress_Interpreter, "Usage: IpcressInterpreter")
+    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, "Follow the prompts")
+
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == \
+    "cdi_ipcress_tIpcress_Interpreter_missingfile_ipcress":
+
+    check_for_expected_string(tIpcress_Interpreter,
+      "Error: Can't open file missingfile.ipcress. Aborting")
+    check_for_expected_string(tIpcress_Interpreter,
+      "Could not located requested ipcress file")
+
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == \
+    "cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress":
+
+    # These strings should be found:
+
+    check_for_expected_string(tIpcress_Interpreter,
+      "This opacity file has 2 materials:")
+    check_for_expected_string(tIpcress_Interpreter,
+      "Material 1 has ID number 10001")
+    check_for_expected_string(tIpcress_Interpreter, "Frequency grid")
+    print(" ")
+
+    # Diff the output vs a gold file.
+    # - use no extra options for numdiff
+    tIpcress_Interpreter.aut_numdiff()
+    
+  ##---------------------------------------------------------------------------##
+  elif tIpcress_Interpreter.testname == \
+    "cdi_ipcress_tIpcress_Interpreter_odfregression10_ipcress":
+
+    # These strings should be found:
+
+    check_for_expected_string(tIpcress_Interpreter,
+      "This opacity file has 1 materials:")
+    check_for_expected_string(tIpcress_Interpreter,
+      "Material 1 has ID number 19000")
+    check_for_expected_string(tIpcress_Interpreter, "Frequency grid")
+    check_for_expected_string(tIpcress_Interpreter, 
+      "The Gray Planck Absorption Opacity for")
+    check_for_expected_string(tIpcress_Interpreter, 
+      "The Gray Rosseland Absorption Opacity for")
+    print(" ")
+
+    # Diff the output vs a gold file.
+    # - use no extra options for numdiff
+    tIpcress_Interpreter.aut_numdiff()
+
+  ##---------------------------------------------------------------------------##
   else:
-    tIpcress_Interpreter.failmsg("Did not find 2 materials.")
 
-  string_found = \
-    tIpcress_Interpreter.output_contains("Material 1 has ID number 10001")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found material ID 10001.")
-  else:
-    tIpcress_Interpreter.failmsg("Did not find material ID 10001.")
-
-  string_found = \
-    tIpcress_Interpreter.output_contains("Frequency grid")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found Frequency grid.")
-  else:
-    tIpcress_Interpreter.failmsg("Did not find Frequency grid.")
-  print(" ")
-
-  # Diff the output vs a gold file.
-  tIpcress_Interpreter.aut_numdiff()
-
+    msg = "tIpcress_Interpreter.py error: The test '{0}' is unknown.".format(tIpcress_Interpreter.testname)
+    msg += "\nPlease add a block of code to the .py file."
+    raise ValueError(msg)
+    
   ##---------------------------------------------------------------------------##
   ## Final report
   ##---------------------------------------------------------------------------##
+  print(" ")
   tIpcress_Interpreter.aut_report()
 
 ##----------------------------------------------------------------------------##

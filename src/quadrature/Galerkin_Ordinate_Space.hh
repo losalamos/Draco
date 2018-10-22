@@ -75,7 +75,13 @@ public:
   //! Return the moment to discrete transform matrix
   virtual vector<double> M() const;
 
-  bool prune() const { return method_ != GQF; }
+  bool prune() const {
+    // Prune any moments beyond the user-specified expansion order. Such
+    // moments are included in Galerkin methods for purposes of computing
+    // the M and D matrices, but are then removed from the moment space
+    // unless the GQF interpolation model has been specified.
+    return method_ != GQF;
+  }
 
   // STATICS
 

@@ -328,13 +328,12 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
 
 #pragma omp ordered
     {
-      char c = ' ';
+      char cc = ' ';
       if (n > 0) {
         static const char charset[] = ".,c8M@jawrpogOQEPGJ";
-        c = charset[n % (sizeof(charset) - 1)];
+        cc = charset[n % (sizeof(charset) - 1)];
       }
-      // std::putchar(c);
-      image1 << c;
+      image1 << cc;
       if (x + 1 == width)
         image1 << "|\n"; //std::puts("|");
     }
@@ -364,13 +363,13 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
       n = 0;
 
     {
-      char c = ' ';
+      char cc = ' ';
       if (n > 0) {
         static const char charset[] = ".,c8M@jawrpogOQEPGJ";
-        c = charset[n % (sizeof(charset) - 1)];
+        cc = charset[n % (sizeof(charset) - 1)];
       }
       // std::putchar(c);
-      image2 << c;
+      image2 << cc;
       if (x + 1 == width)
         image2 << "|\n"; //std::puts("|");
     }

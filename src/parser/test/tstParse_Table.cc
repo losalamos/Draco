@@ -455,19 +455,19 @@ void tstParse_Table(UnitTest &ut) {
   {
     // Additional test mandated by bug discovery.
 
-    Parse_Table table;
+    Parse_Table ptable;
 
-    table.reserve(raw_table_2_size);
-    table.add(raw_table_2, raw_table_2_size);
+    ptable.reserve(raw_table_2_size);
+    ptable.add(raw_table_2, raw_table_2_size);
 
-    if (table.size() != raw_table_2_size)
+    if (ptable.size() != raw_table_2_size)
       FAILMSG("test FAILS");
 
-    File_Token_Stream token_stream(ptInputFile);
+    File_Token_Stream ltoken_stream(ptInputFile);
 
-    table.parse(token_stream);
+    ptable.parse(ltoken_stream);
 
-    if (token_stream.error_count() != 5)
+    if (ltoken_stream.error_count() != 5)
       FAILMSG("test FAILS");
   }
 

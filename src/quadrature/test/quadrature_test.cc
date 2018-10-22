@@ -196,21 +196,21 @@ void test_either(UnitTest &ut,
   // See if count matches class
 
   unsigned L = quadrature.number_of_levels();
-  size_t N = ordinate_space->ordinates().size();
+  size_t Num = ordinate_space->ordinates().size();
   switch (quadrature.quadrature_class()) {
   case TRIANGLE_QUADRATURE:
     if (dimension == 1) {
-      if (geometry == rtt_mesh_element::CARTESIAN && L != N)
+      if (geometry == rtt_mesh_element::CARTESIAN && L != Num)
         FAILMSG("ordinate count is wrong for triangular quadrature");
     } else if (dimension == 3) {
-      if (L * (L + 2) != N)
+      if (L * (L + 2) != Num)
         FAILMSG("ordinate count is wrong for triangular quadrature");
     }
     break;
 
   case SQUARE_QUADRATURE:
     if (dimension == 3) {
-      if (2 * L * L != N) {
+      if (2 * L * L != Num) {
         FAILMSG("ordinate count is wrong for square quadrature");
       }
     }
@@ -218,7 +218,7 @@ void test_either(UnitTest &ut,
 
   default:
     if (dimension == 3) {
-      if (4 * L > N) {
+      if (4 * L > Num) {
         FAILMSG("ordinate count is too small for level count");
       }
     }
@@ -228,28 +228,27 @@ void test_either(UnitTest &ut,
   // Test that mean and flux are correct
 
   {
-    vector<Ordinate> const &ordinates = ordinate_space->ordinates();
-    size_t const N = ordinates.size();
-    double J = 0.0;
+    vector<Ordinate> const &ords = ordinate_space->ordinates();
+    size_t const Nangles = ords.size();
+    double JJ = 0.0;
     double Fx = 0.0, Fy = 0.0, Fz = 0.0;
     double Fx2 = 0.0, Fy2 = 0.0, Fz2 = 0.0;
     double const MAGIC = 2.32; // avoid numerical coincidences
 
-    for (unsigned i = 0; i < N; ++i) {
-      J += MAGIC * ordinates[i].wt();
-      Fx += MAGIC * ordinates[i].mu() * ordinates[i].wt();
-      Fx2 += MAGIC * ordinates[i].mu() * ordinates[i].mu() * ordinates[i].wt();
-      Fy += MAGIC * ordinates[i].eta() * ordinates[i].wt();
-      Fy2 +=
-          MAGIC * ordinates[i].eta() * ordinates[i].eta() * ordinates[i].wt();
-      Fz += MAGIC * ordinates[i].xi() * ordinates[i].wt();
-      Fz2 += MAGIC * ordinates[i].xi() * ordinates[i].xi() * ordinates[i].wt();
+    for (unsigned i = 0; i < Nangles; ++i) {
+      JJ += MAGIC * ords[i].wt();
+      Fx += MAGIC * ords[i].mu() * ords[i].wt();
+      Fx2 += MAGIC * ords[i].mu() * ords[i].mu() * ords[i].wt();
+      Fy += MAGIC * ords[i].eta() * ords[i].wt();
+      Fy2 += MAGIC * ords[i].eta() * ords[i].eta() * ords[i].wt();
+      Fz += MAGIC * ords[i].xi() * ords[i].wt();
+      Fz2 += MAGIC * ords[i].xi() * ords[i].xi() * ords[i].wt();
     }
 
-    if (soft_equiv(J, MAGIC)) {
-      PASSMSG("J okay");
+    if (soft_equiv(JJ, MAGIC)) {
+      PASSMSG("JJ okay");
     } else {
-      FAILMSG("J NOT okay");
+      FAILMSG("JJ NOT okay");
     }
     if (soft_equiv(Fx, 0.0)) {
       PASSMSG("Fx okay");
@@ -310,14 +309,14 @@ void test_either(UnitTest &ut,
 
     if ((ordinate_space->quadrature_interpolation_model() == GQ1) ||
         (ordinate_space->quadrature_interpolation_model() == GQ2)) {
-      for (unsigned m = 0; m < number_of_moments; ++m) {
+      for (unsigned mm = 0; mm < number_of_moments; ++mm) {
         for (unsigned n = 0; n < number_of_moments; ++n) {
           double sum = 0.0;
           for (unsigned a = 0; a < number_of_ordinates; ++a) {
             sum +=
-                D[a + number_of_ordinates * m] * M[n + a * number_of_moments];
+                D[a + number_of_ordinates * mm] * M[n + a * number_of_moments];
           }
-          if (m == n) {
+          if (mm == n) {
             if (!soft_equiv(sum, 1.0)) {
               FAILMSG("diagonal element of M*D NOT 1");
               return;
@@ -415,7 +414,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
                                        Ordinate_Set::LEVEL_ORDERED);
 
     vector<Ordinate> const &ordinates = ordinate_set->ordinates();
-    size_t const N = ordinates.size();
+    size_t const Num = ordinates.size();
 
     double test_int8 = 0.0;
     double test_int6 = 0.0;
@@ -425,12 +424,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
     std::cout << "Testing S-" << quadrature.sn_order()
               << " quadrature integration" << std::endl;
 
-    for (unsigned i = 0; i < N; ++i) {
-      //cout << "  mu = " << setprecision(10) << ordinates[i].mu()
-      //     << "  eta = " << setprecision(10) << ordinates[i].eta()
-      //     << "  xi = " << setprecision(10) << ordinates[i].xi()
-      //     << " weight = " << setprecision(10) << ordinates[i].wt()
-      //     << endl;
+    for (unsigned i = 0; i < Num; ++i) {
 
       if (ordinates[i].xi() > 0) {
         test_int2 += ordinates[i].mu() * ordinates[i].mu() *
@@ -467,9 +461,10 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 }
 
 //---------------------------------------------------------------------------//
-void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
-  cout << "Testing quadrature " << quadrature.name() << endl;
-  cout << "  Parse name: " << quadrature.parse_name() << endl;
+void quadrature_test(UnitTest &ut, Quadrature &quadrature,
+                     bool const cartesian_tests_only) {
+  cout << "Testing quadrature " << quadrature.name()
+       << "\n  Parse name: " << quadrature.parse_name() << endl;
   switch (quadrature.quadrature_class()) {
   case INTERVAL_QUADRATURE:
     cout << "  This is an interval quadrature." << endl;
@@ -608,24 +603,35 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                  false, // add_extra_directions,
                  Ordinate_Set::LEVEL_ORDERED);
 
+    test_no_axis(ut, quadrature,
+                 1U, // dimension,
+                 rtt_mesh_element::CARTESIAN,
+                 1U, // expansion_order,
+                 "GQF",
+                 false, // add_extra_directions,
+                 Ordinate_Set::LEVEL_ORDERED);
+
     if (quadrature.is_open_interval()) {
       // Our curvilinear angular operator algorithm doesn't work with closed
       // interval quadratures (those for which mu=-1 is part of the set).
-      test_no_axis(ut, quadrature,
-                   1U, // dimension,
-                   rtt_mesh_element::SPHERICAL,
-                   1U, // expansion_order,
-                   "SN",
-                   false, // add_extra_directions,
-                   Ordinate_Set::LEVEL_ORDERED);
+      if (!cartesian_tests_only) {
 
-      test_no_axis(ut, quadrature,
-                   1U, // dimension,
-                   rtt_mesh_element::SPHERICAL,
-                   1U, // expansion_order,
-                   "GQ1",
-                   false, // add_extra_directions,
-                   Ordinate_Set::LEVEL_ORDERED);
+        test_no_axis(ut, quadrature,
+                     1U, // dimension,
+                     rtt_mesh_element::SPHERICAL,
+                     1U, // expansion_order,
+                     "SN",
+                     false, // add_extra_directions,
+                     Ordinate_Set::LEVEL_ORDERED);
+
+        test_no_axis(ut, quadrature,
+                     1U, // dimension,
+                     rtt_mesh_element::SPHERICAL,
+                     1U, // expansion_order,
+                     "GQ1",
+                     false, // add_extra_directions,
+                     Ordinate_Set::LEVEL_ORDERED);
+      }
     }
   }
 
@@ -690,19 +696,24 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                    Ordinate_Set::LEVEL_ORDERED);
     }
 
-    if (!quadrature.has_axis_assignments()) {
-      // Axisymmetric is hosed if axes have been reassigned, since the levels
-      // are only guaranteed on the xi axis.
-      if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
-        test_no_axis(ut, quadrature,
-                     1U, // dimension,
-                     rtt_mesh_element::AXISYMMETRIC,
-                     // expansion_order
-                     min(8U, quadrature.number_of_levels()), "GQ1",
-                     false, // add_extra_directions,
-                     Ordinate_Set::LEVEL_ORDERED);
-      }
+    if (!cartesian_tests_only) {
+      // This test can never be called due to 'if(false)'
+      /*
+      if (!quadrature.has_axis_assignments()) {
+        // Axisymmetric is hosed if axes have been reassigned, since the levels
+        // are only guaranteed on the xi axis.
+        if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
 
+          test_no_axis(ut, quadrature,
+                       1U, // dimension,
+                       rtt_mesh_element::AXISYMMETRIC,
+                       // expansion_order
+                       min(8U, quadrature.number_of_levels()), "GQ1",
+                       false, // add_extra_directions,
+                       Ordinate_Set::LEVEL_ORDERED);
+        }
+      }
+      */
       test_no_axis(ut, quadrature,
                    1U, // dimension,
                    rtt_mesh_element::AXISYMMETRIC,
@@ -741,8 +752,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 // and assign data into a "quadrature_data" type.  See
 // ftest/tstquadrature_interfaces.f90
 // --------------------------------------------------------------------------//
-extern "C" DLL_PUBLIC_quadrature_test void
-rtt_test_quadrature_interfaces(const quadrature_data &quad, int &error_code) {
+extern "C" void rtt_test_quadrature_interfaces(const quadrature_data &quad,
+                                               int &error_code) {
   using rtt_dsxx::soft_equiv;
   using std::cout;
   using std::endl;

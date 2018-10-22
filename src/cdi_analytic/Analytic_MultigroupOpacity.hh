@@ -45,8 +45,7 @@ namespace rtt_cdi_analytic {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_MultigroupOpacity
-    : public rtt_cdi::MultigroupOpacity {
+class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 public:
   // Useful typedefs.
   typedef std::vector<double> sf_double;
@@ -101,14 +100,16 @@ public:
   //! Query for model type.
   rtt_cdi::Model getModelType() const { return model; }
 
-  // Return the energy policy (gray).
-  inline std_string getEnergyPolicyDescriptor() const;
+  //! Return the energy policy descriptor (mg).
+  inline std_string getEnergyPolicyDescriptor() const {
+    return std_string("mg");
+  }
 
   // Get the data description of the opacity.
   virtual std_string getDataDescriptor() const = 0;
 
   // Get the name of the associated data file.
-  inline std_string getDataFilename() const;
+  inline std_string getDataFilename() const { return std_string(); }
 
   //! Get the temperature grid (size 0 for function-based analytic data).
   sf_double getTemperatureGrid() const { return sf_double(0); }
@@ -134,35 +135,15 @@ public:
   // Pack the Analytic_MultigroupOpacity into a character string.
   virtual sf_char pack() const = 0;
 
-  /*! \brief Returns the general opacity model type, defined in
-     * OpacityCommon.hh
-     *
-     * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
-     */
+  /*!
+   * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+   *
+   * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
+   */
   rtt_cdi::OpacityModelType getOpacityModelType() const {
     return rtt_cdi::ANALYTIC_TYPE;
   }
 };
-
-//---------------------------------------------------------------------------//
-// INLINE FUNCTIONS
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return the energy policy descriptor (mg).
- */
-Analytic_MultigroupOpacity::std_string
-Analytic_MultigroupOpacity::getEnergyPolicyDescriptor() const {
-  return std_string("mg");
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return NULL string for the data filename.
- */
-Analytic_MultigroupOpacity::std_string
-Analytic_MultigroupOpacity::getDataFilename() const {
-  return std_string();
-}
 
 } // end namespace rtt_cdi_analytic
 

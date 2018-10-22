@@ -469,7 +469,7 @@ macro( setupMPILibrariesWindows )
       message(STATUS "Looking for MPI...")
       find_package( MPI QUIET )
 
-      # For MS-MPI 5, mpifptr.h is architecture dependent. Figure out
+      # For MS-MPI, mpifptr.h is architecture dependent. Figure out
       # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH
       list( GET MPI_CXX_LIBRARIES 0 first_cxx_mpi_library )
       if( first_cxx_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
@@ -516,9 +516,8 @@ macro( setupMPILibrariesWindows )
         )
 
       # Check flavor and add optional flags
-      if("${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft HPC" OR
-          "${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft MPI")
-         set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
+      if("${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft MPI")
+         set( MPI_FLAVOR "MicrosoftMPI" CACHE STRING "Flavor of MPI." )
 
          # Use wmic to learn about the current machine
          execute_process(
@@ -588,7 +587,8 @@ macro( setupMPILibrariesWindows )
    # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
    # Instead, link to libmsmpi.a that was created via gendef.exe and
    # dlltool.exe from msmpi.dll.  Ref:
-   # http://www.geuz.org/pipermail/getdp/2012/001520.html
+   # http://www.geuz.org/pipermail/getdp/2012/001520.html, or
+   # https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment
 
    # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by
    # creating libmsmpi.a. (Last tested: 2017-08-31)

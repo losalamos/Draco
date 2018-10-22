@@ -7,8 +7,6 @@
 ! note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
-! $Id$
-!---------------------------------------------------------------------------
 
 ! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 !      http://fortranwiki.org/fortran/show/Generating+C+Interfaces

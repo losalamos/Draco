@@ -108,7 +108,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       std::string const file("DummyFile.ext");
       int const line(55);
       rtt_dsxx::toss_cookies(msg, file, line);
-      throw "Bogus!";
+      // throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies.");
     } catch (...) {
@@ -122,7 +122,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       char const *const file("DummyFile.ext");
       int const line(56);
       rtt_dsxx::toss_cookies_ptr(msg, file, line);
-      throw "Bogus!";
+      //throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies_ptr.");
     } catch (...) {
@@ -466,7 +466,7 @@ void t_catch_bad_alloc(rtt_dsxx::UnitTest &ut) {
     // instead of 'int * big = new int(999999999999999);'
     std::bad_alloc exception;
     throw exception;
-    FAILMSG("failed to catch std::bad_alloc exception.");
+    //FAILMSG("failed to catch std::bad_alloc exception.");
   } catch (std::bad_alloc & /*err*/) {
     PASSMSG("caught a manually thrown std::bad_alloc exception.");
     std::cout << rtt_dsxx::print_stacktrace("Caught a std::bad_alloc")

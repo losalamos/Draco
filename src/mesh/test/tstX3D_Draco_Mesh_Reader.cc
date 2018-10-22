@@ -33,10 +33,11 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   const std::vector<std::string> bdy_filenames = {
       inputpath + "x3d.mesh.bdy1.in", inputpath + "x3d.mesh.bdy2.in",
       inputpath + "x3d.mesh.bdy3.in", inputpath + "x3d.mesh.bdy4.in"};
+  const std::vector<unsigned> bdy_flags = {3, 1, 0, 2};
 
   // construct reader
   std::shared_ptr<X3D_Draco_Mesh_Reader> x3d_reader(
-      new X3D_Draco_Mesh_Reader(filename, bdy_filenames));
+      new X3D_Draco_Mesh_Reader(filename, bdy_filenames, bdy_flags));
 
   // read mesh
   x3d_reader->read_mesh();
@@ -89,7 +90,8 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
       ITFAILS;
 
     // boundary conditions are not supplied in X3D
-    if (x3d_reader->get_sideflag(side) != 0)
+    // (note this check is specialized for the 1-cell mesh)
+    if (x3d_reader->get_sideflag(side) != bdy_flags[side])
       ITFAILS;
 
     // check node indices

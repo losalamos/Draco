@@ -24,11 +24,11 @@ typedef std::multimap<int, std::string, std::greater<int>> mmdevs;
 typedef std::pair<int, std::string> fomdev;
 
 //! Query package for the release number.
-DLL_PUBLIC_dsxx const std::string release();
+const std::string release();
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx const std::string author_list();
+const std::string author_list();
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx const std::string copyright();
+const std::string copyright();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -40,14 +40,13 @@ DLL_PUBLIC_dsxx const std::string copyright();
  * \arg[in] list of developers
  * \return A formatted message.
  */
-DLL_PUBLIC_dsxx std::string print_devs(size_t const maxlinelen,
-                                       std::string const &line_name,
-                                       mmdevs const &devs);
+std::string print_devs(size_t const maxlinelen, std::string const &line_name,
+                       mmdevs const &devs);
 
 } // namespace rtt_dsxx
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" DLL_PUBLIC_dsxx void ec_release(char *release_string, size_t maxlen);
+extern "C" void ec_release(char *release_string, size_t maxlen);
 
 #endif // rtt_ds_Release_hh
 

@@ -70,9 +70,6 @@ public:
   std::string versionReport(void);
 
 private:
-  //! Convert the string to all lowercase except the first character.
-  std::string normalizeCapitalization(std::string in);
-
   // DATA
   // ----
 

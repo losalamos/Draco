@@ -59,11 +59,30 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, "
             "kronecker_delta is not working.");
 
-  if (kronecker_delta(lOne, lZero) == lZero)
+  if (kronecker_delta(lOne, lZero) == static_cast<unsigned>(lZero))
     PASSMSG("Found kronecker_delta<long>(uOne,uZero) == uZero, "
             "kronecker_delta is working.");
   else
     FAILMSG("Found kronecker_delta<long>(uOne,uZero) != uZero, "
+            "kronecker_delta is not working.");
+
+  float fZero(0.0);
+  float fOne(1.0);
+  double dZero(0.0);
+  double dOne(1.0);
+
+  if (kronecker_delta(fOne, fZero) == uZero)
+    PASSMSG("Found kronecker_delta<float>(fOne,fZero) == uZero, "
+            "kronecker_delta is working.");
+  else
+    FAILMSG("Found kronecker_delta<float>(fOne,fZero) != uZero, "
+            "kronecker_delta is not working.");
+
+  if (kronecker_delta(dOne, dZero) == uZero)
+    PASSMSG("Found kronecker_delta<double>(dOne,dZero) == uZero, "
+            "kronecker_delta is working.");
+  else
+    FAILMSG("Found kronecker_delta<double>(dOne,dZero) != uZero, "
             "kronecker_delta is not working.");
 
   return;

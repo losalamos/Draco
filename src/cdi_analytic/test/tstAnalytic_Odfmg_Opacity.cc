@@ -123,19 +123,19 @@ void odfmg_test(UnitTest &ut) {
 
   {
     // make an analytic multigroup opacity object for scattering
-    nGray_Analytic_Odfmg_Opacity opacity(groups, bands, models,
-                                         rtt_cdi::SCATTERING);
+    nGray_Analytic_Odfmg_Opacity opac(groups, bands, models,
+                                      rtt_cdi::SCATTERING);
     string desc = "Analytic Odfmg Scattering";
 
-    if (opacity.getDataDescriptor() != desc)
+    if (opac.getDataDescriptor() != desc)
       ITFAILS;
   }
   {
     // make an analytic multigroup opacity object for scattering
-    nGray_Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::TOTAL);
+    nGray_Analytic_Odfmg_Opacity opac(groups, bands, models, rtt_cdi::TOTAL);
     string desc = "Analytic Odfmg Total";
 
-    if (opacity.getDataDescriptor() != desc)
+    if (opac.getDataDescriptor() != desc)
       ITFAILS;
   }
 
@@ -527,7 +527,6 @@ void pseudo_line_opacity_test(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {

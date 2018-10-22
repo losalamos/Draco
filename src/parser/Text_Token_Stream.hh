@@ -15,6 +15,7 @@
 
 #include "Token_Stream.hh"
 #include <set>
+#include <stack>
 
 namespace rtt_parser {
 //-------------------------------------------------------------------------//
@@ -96,6 +97,12 @@ protected:
   //! Skip any whitespace at the cursor position.
   void eat_whitespace_(void);
 
+  //! Enter a nested file in a #include directive.
+  virtual void push_include(std::string &include_file_name) = 0;
+
+  //! Exit a nested file from a #include directive.
+  virtual void pop_include() = 0;
+
   // The following scan_ functions are for numeric scanning.  The names
   // reflect the context-free grammar given by Stroustrup in appendix A
   // of _The C++ Programming Language_.  However, we do not presently
@@ -110,17 +117,26 @@ protected:
   unsigned scan_hexadecimal_literal_(unsigned &);
   unsigned scan_octal_literal_(unsigned &);
 
+  // Scan keyword
+  Token scan_keyword();
+
+  // Scan manifest string
+  Token scan_manifest_string();
+
 private:
   // IMPLEMENTATION
 
   // DATA
 
+  std::stack<std::deque<char>> buffers_;
   std::deque<char> buffer_;
   //!< Character buffer. Refilled as needed using fill_character_buffer_()
 
   std::set<char> whitespace_;
   //!< The whitespace character list
 
+  std::stack<unsigned> lines_;
+  //!< Stack of current line values for nested input files.
   unsigned line_;
   //!< Current line in input file.
 

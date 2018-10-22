@@ -30,7 +30,7 @@ namespace rtt_rng {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Halton_Subrandom_Generator : public Subrandom_Generator {
+class Halton_Subrandom_Generator : public Subrandom_Generator {
 public:
   // CREATORS
 

@@ -83,8 +83,8 @@ private:
 
   // \todo: these arrays are convenient to store, but not necessary; keep them?
   // Cell types and node indices per cell
-  const std::vector<unsigned> cell_type;
-  const std::vector<unsigned> cell_to_node_linkage;
+  const std::vector<unsigned> m_cell_type;
+  const std::vector<unsigned> m_cell_to_node_linkage;
 
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
@@ -130,9 +130,9 @@ public:
   const std::vector<std::vector<double>> &get_node_coord_vec() const {
     return node_coord_vec;
   }
-  const std::vector<unsigned> &get_cell_type() const { return cell_type; }
+  const std::vector<unsigned> &get_cell_type() const { return m_cell_type; }
   const std::vector<unsigned> &get_cell_to_node_linkage() const {
-    return cell_to_node_linkage;
+    return m_cell_to_node_linkage;
   }
   const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
   const Layout &get_cs_linkage() const { return cell_to_side_linkage; }

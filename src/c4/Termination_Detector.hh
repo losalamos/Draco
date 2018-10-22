@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_Termination_Detector_hh
@@ -51,7 +48,7 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Termination_Detector {
+class Termination_Detector {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
@@ -103,9 +100,9 @@ private:
   // IMPLEMENTATION
 
   //! Assignment operator: not implemented.
-  Termination_Detector &operator=(const Termination_Detector &rhs);
+  Termination_Detector &operator=(const Termination_Detector &rhs) = delete;
   //! Copy constructor: not implemented.
-  Termination_Detector(const Termination_Detector &rhs);
+  Termination_Detector(const Termination_Detector &rhs) = delete;
 
   // DATA
 

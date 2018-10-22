@@ -11,11 +11,9 @@
 <a href="mailto:kgt@lanl.gov">Kelly (KT) Thompson</a>,
 <a href="mailto:kgb@lanl.gov">Kent Budge</a>,
 <a href="mailto:jhchang@lanl.gov">Jae Chang</a>
-<a href="mailto:lowrie@lanl.gov">Robert Lowrie</a>,
 <a href="mailto:warsa@lanl.gov">Jim Warsa</a>,
 <a href="mailto:@lanl.gov">Alex Long</a>,
 <a href="mailto:@lanl.gov">Matt Cleveland</a>,
-<a href="mailto:@lanl.gov">Massimiliano Rosa</a>,
 <a href="mailto:@lanl.gov">Kendra Keady</a>,
 <a href="mailto:@lanl.gov">Andrew Till</a>,
 <a href="mailto:@lanl.gov">Ryan Wollaeger</a>,
@@ -23,9 +21,10 @@
 
 \par Former contributors
 
-Jeff Densmore, Lori Pritchett-Sheats, Katherine Wang, Gabe Rockefeller, Allan
-Wollaber, Tom Evans, Todd Adams, John McGhee, Mike Buksas, Randy Roberts, Seth
-Johnson, Paul Talbot, Jeff Furnish, Paul Henning, Nick Meyers.
+Massimiliano Rosa, Rob Lowrie, Jeff Densmore, Lori Pritchett-Sheats, Katherine
+Wang, Gabe Rockefeller, Allan Wollaber, Tom Evans, Todd Adams, John McGhee, Mike
+Buksas, Randy Roberts, Seth Johnson, Paul Talbot, Jeff Furnish, Paul Henning,
+Nick Meyers.
 
 \par Executive Summary
 Draco is a C++ radiation transport component library developed by CCS-2, Los

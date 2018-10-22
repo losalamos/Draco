@@ -25,8 +25,7 @@ namespace rtt_cdi_analytic {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity
-    : public Analytic_Odfmg_Opacity {
+class nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
@@ -91,20 +90,18 @@ public:
 };
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Return a string describing the opacity model.
- */
+//! Return a string describing the opacity model.
 nGray_Analytic_Odfmg_Opacity::std_string
 nGray_Analytic_Odfmg_Opacity::getDataDescriptor() const {
   std_string descriptor;
 
-  rtt_cdi::Reaction const reaction = getReactionType();
+  rtt_cdi::Reaction const rxn = getReactionType();
 
-  if (reaction == rtt_cdi::TOTAL)
+  if (rxn == rtt_cdi::TOTAL)
     descriptor = "Analytic Odfmg Total";
-  else if (reaction == rtt_cdi::ABSORPTION)
+  else if (rxn == rtt_cdi::ABSORPTION)
     descriptor = "Analytic Odfmg Absorption";
-  else if (reaction == rtt_cdi::SCATTERING)
+  else if (rxn == rtt_cdi::SCATTERING)
     descriptor = "Analytic Odfmg Scattering";
   else
     Insist(0, "Invalid analytic multigroup model opacity!");

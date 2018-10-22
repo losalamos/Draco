@@ -5,9 +5,7 @@
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Implementation file for IpcressFile class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
@@ -24,8 +22,7 @@ namespace rtt_cdi_ipcress {
  * 1. Set some defaults (bytes per word, number of fields in the TOC).
  * 2. Try to open the file
  * 3. Load the title keys to verify that this is an ipcress file.
- * 4. Load the TOC.
- * 
+ * 4. Load the TOC. 
  *
  * \param ipcressDataFilename Name of ipcress file
  */
@@ -138,21 +135,16 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Indicate if the requested material id is available in
- *        the data file.
- */
+//! Indicate if the requested material id is available in the data file.
 bool IpcressFile::materialFound(size_t matid) const {
-  // Loop over all available materials.  If the requested
-  // material id matches on in the list then return true.
-  // If we reach the end of the list without a match return
-  // false.
+  // Loop over all available materials.  If the requested material id matches
+  // on in the list then return true. If we reach the end of the list without
+  // a match return false.
   for (size_t i = 0; i < matIDs.size(); ++i)
     if (matid == matIDs[i])
       return true;
   return false;
-
-} // end of materialFound()
+}
 
 //---------------------------------------------------------------------------//
 std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
@@ -160,29 +152,21 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
 
   // ensure a name is provided
   Insist(ipcressFile.size() > 0,
-         (std::string("You must provide a filename when constructing an") +
-          std::string(" IpcressFile object."))
-             .c_str());
-
-  // if the provided filename looks okay then use it.
-  if (rtt_dsxx::fileExists(ipcressFile))
-    return ipcressFile;
-
-  // Try prepending other  paths?
-  // string const cp = currentPath();
-
+         std::string("You must provide a filename when constructing an") +
+             " IpcressFile object.");
   Insist(rtt_dsxx::fileExists(ipcressFile),
          "Could not located requested ipcress file.");
-  return foundFile;
+
+  // if the provided filename looks okay then use it.
+  return ipcressFile;
 }
 
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Read 8 character strings from the binary file
  * 
- * \param byte_offset offset into the ipcress file where the data exists.
- * \param vdata       return value 
- * \return vdata
+ * \param[in]  byte_offset offset into the ipcress file where the data exists.
+ * \param[out] vdata       return value 
  */
 void IpcressFile::read_strings(size_t const byte_offset,
                                std::vector<std::string> &vdata) const {
@@ -207,24 +191,13 @@ void IpcressFile::read_strings(size_t const byte_offset,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief 
- * 
- * \param name description
- * \return description
- */
+//! Poplulate the materialData member data container.
 void IpcressFile::loadFieldData(void) {
   // Attempt to open the ipcress file.
-  //ipcressFileHandle.open( dataFilename.c_str(),
-  //                        std::ios::in|std::ios::binary );
   Insist(ipcressFileHandle.is_open(), "getKeys: Unable to open ipcress file.");
 
   // number of fields for the material (trid, rgrid, ...)
   size_t const numFields(toc[14]);
-  // ssize_t const numWordsPerField( toc[16] );
-  // size_t const max_num_search_keys = toc[16];
-
-  // size_t const length = toc[14]*toc[16]; // 153
 
   // read the data from the file.  each entry is 24 bytes (3 words).
   size_t byte_offset = toc[10] * ipcress_word_size;
@@ -259,10 +232,7 @@ void IpcressFile::loadFieldData(void) {
     std::vector<double> value(ds[i], 0);
     read_v(dfo[i] * ipcress_word_size, value);
 
-    materialData[matid].add_field(field,
-                                  // ds[i],
-                                  // dfo[i],
-                                  value);
+    materialData[matid].add_field(field, value);
 
     // Special treatment for comp
     if (field.substr(0, 4) == std::string("comp")) {
@@ -280,10 +250,6 @@ void IpcressFile::loadFieldData(void) {
       materialData[matid].set_zoa(zoa);
     }
   }
-
-  // Close the file
-  // ipcressFileHandle.close();
-
   return;
 }
 

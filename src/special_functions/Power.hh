@@ -53,7 +53,8 @@ namespace {
 template <int N, typename F> struct P {
   static F compute(F x, F p) {
     x *= x;
-    if ((N / 2) * 2 == N)
+    constexpr bool is_divby2 = ((N / 2) * 2 == N);
+    if (is_divby2)
       return P<N / 2, F>::compute(x, p);
     else
       return P<N / 2, F>::compute(x, x * p);
@@ -74,9 +75,11 @@ template <typename F> struct P<0, F> {
  */
 
 template <int N, typename F> F Power(F x) {
-  if (N == 0)
+  constexpr bool is_zero = (N == 0);
+  constexpr bool is_divby2 = ((N / 2) * 2 == N);
+  if (is_zero)
     return static_cast<F>(1);
-  else if ((N / 2) * 2 == N)
+  else if (is_divby2)
     return Power<N / 2>(x * x);
   else
     return P<N / 2, F>::compute(x, x);

@@ -99,15 +99,11 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     if (token.type() != OTHER || token.text() != "$")
       ITFAILS;
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      {
-        ostringstream msg;
-        msg << "Parallel_File_Token_Stream did not throw an exception when\n"
-            << "\ta syntax error was reported by Token_Stream." << endl;
-        FAILMSG(msg.str());
-      }
     } catch (const Syntax_Error &) {
+      caught = true;
       {
         ostringstream msg;
         msg << "Parallel_File_Token_Stream threw an expected exception when\n"
@@ -115,6 +111,8 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       }
     }
+    FAIL_IF_NOT(caught);
+
     if (tokens.error_count() != 1)
       ITFAILS;
 
@@ -328,6 +326,59 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     } else {
       PASSMSG("Keyword read correctly.");
     }
+  }
+
+  // Test #include directive.
+  {
+    Parallel_File_Token_Stream tokens(ut.getTestSourcePath() +
+                                      std::string("parallel_include_test.inp"));
+
+    Token token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try rewind
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try open of file in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() +
+                std::string("parallel_include_test.inp"));
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Try rewind in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Check empty stream
+    Parallel_File_Token_Stream dummy;
+    ut.check(dummy.lookahead().type() == EXIT, "empty stream returns EXIT");
   }
 }
 

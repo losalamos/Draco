@@ -215,13 +215,11 @@ public:
   virtual vector<double> M() const = 0;
 
   //! Should the moment space be pruned to the specified order?
-  // virtual bool prune() const {
-  //   return true;
-  //   // By default, prune any moments beyond the user-specified expansion
-  //   // order. Such moments are included in Galerkin methods for purposes of
-  //   // computing the M and D matrices, but are then removed from the moment
-  //   // space unless the GQF interpolation model has been specified.
-  // }
+  virtual bool prune() const {
+    return true;
+    // By default, prune any moments beyond the user-specified expansion order.
+    // Overridden by Galerkin_Ordinate_Space::prune().
+  }
 
   //! Return the scattering moment to flux map.
   virtual void moment_to_flux(unsigned flux_map[3], double flux_fact[3]) const;

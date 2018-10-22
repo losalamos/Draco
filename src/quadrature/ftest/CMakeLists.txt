@@ -66,24 +66,9 @@ if(NOT TARGET Lib_dsxx)
   include( vendor_libraries )
   setupVendorLibraries()
 
-  if(WIN32)
-    # MS-MPI 5 and gfortran/4.8 do not play nice together...
-    if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x")
-      message( FATAL_ERROR
-        "In ftest/CMakeLists.txt, CMAKE_BUILD_TYPE must be set."
-        "Note: for multi-config build tools, CMakeAddFortranSubdirectory will "
-        "set this for you.")
-    endif()
-    string( TOUPPER ${CMAKE_BUILD_TYPE} ucbt )
-    # TODO: Can this be removed?
-    if( "${CMAKE_Fortran_FLAGS_${ucbt}}" MATCHES "frange-check" )
-      string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
-        ${CMAKE_Fortran_FLAGS_DEBUG} )
-    else()
-      set( CMAKE_Fortran_FLAGS_${ucbt}
-        "${CMAKE_Fortran_FLAGS_${ucbt}} -fno-range-check")
-    endif()
-  endif()
+  # link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll,
+  # and ensure that the compiler option '-fno-range-check' is enabled.
+  cafs_fix_mpi_library()
 
 endif()
 
@@ -98,8 +83,8 @@ set( f90sources
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-# Xcode: Since cafs_create_imported_targets does not set all of the dependencies
-# between the imported libraries, we need to list them explicitly.
+# Xcode: Since cafs_create_imported_targets does not set all of the 
+# dependencies between the imported libraries, we need to list them explicitly.
 set(target_deps
     Lib_quadrature_test
     Lib_quadrature

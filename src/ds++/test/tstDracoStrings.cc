@@ -201,6 +201,27 @@ void test_tostring(UnitTest &ut) {
   return;
 }
 
+//----------------------------------------------------------------------------//
+void test_upper_lower(UnitTest &ut) {
+
+  cout << "\nBegin test_upper_lower checks...\n";
+  unsigned const nf = ut.numFails;
+
+  std::string const mixedCase("This StRiNg HAS mixed CAse.");
+  std::string const upperCase = rtt_dsxx::string_toupper(mixedCase);
+  std::string const lowerCase = rtt_dsxx::string_tolower(mixedCase);
+
+  FAIL_IF_NOT(upperCase == "THIS STRING HAS MIXED CASE.");
+  FAIL_IF_NOT(lowerCase == "this string has mixed case.");
+
+  if (ut.numFails == nf)
+    PASSMSG("test_upper_lower: All tests pass.");
+  else
+    FAILMSG("test_upper_lower: FAILED");
+
+  return;
+}
+
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -211,6 +232,7 @@ int main(int argc, char *argv[]) {
     test_parse_number(ut);
     test_string_to_numvec(ut);
     test_tostring(ut);
+    test_upper_lower(ut);
   }
   UT_EPILOG(ut);
 }

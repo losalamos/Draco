@@ -53,11 +53,11 @@ else
 
   export dracomodules="ack htop clang-format \
 intel/18.0.2 openmpi/2.1.2 mkl \
-subversion cmake/3.11.4 numdiff git totalview trilinos/12.10.1 \
+subversion cmake/3.12.1 numdiff git totalview trilinos/12.10.1 \
 superlu-dist/5.1.3 metis parmetis random123 eospac/6.3.0"
 
   if [[ `groups | grep -c ccsrad` != 0 ]]; then
-    draco_modules="$draco_modules csk ndi"
+    dracomodules="$dracomodules csk ndi"
   fi
 
 fi

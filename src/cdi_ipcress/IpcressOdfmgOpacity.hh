@@ -79,8 +79,7 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
-    : public rtt_cdi::OdfmgOpacity {
+class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity {
 
   // DATA
 
@@ -89,15 +88,13 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   // ----------------------- //
 
   /*!
-   * \brief DS++ Smart Pointer to a IpcressFile object. spIpcressFile acts as a
-   * hook to link this object to an IPCRESS file.
-   */
+   * \brief An IpcressFile object. spIpcressFile acts as a hook to link this 
+   *        object to an IPCRESS file. */
   std::shared_ptr<const IpcressFile> spIpcressFile;
 
   /*!
    * \brief Identification number for one of the materials found in the IPCRESS
-   * file pointed to by spIpcressFile.
-   */
+   *        file pointed to by spIpcressFile. */
   size_t materialID;
 
   // -------------------- //
@@ -105,9 +102,6 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   // -------------------- //
 
   // The IPCRESS file only holds specific data for each of its materials.
-
-  // Number of types of data found in the IPCRESS file.
-  //size_t numKeys;
 
   //! A list of keys known by the IPCRESS file.
   std::vector<std::string> vKnownKeys;
@@ -117,16 +111,15 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   // --------------- //
 
   /*!
-   * \brief The physics model that the current data set is based on.  {
-   * Rosseland, Plank }.  This enumeration is defined in cdi/OpacityCommon.hh.
-   */
+   * \brief The physics model that the current data set is based on. 
+   *        {Rosseland, Plank}.  This enumeration is defined in 
+   *        cdi/OpacityCommon.hh. */
   rtt_cdi::Model opacityModel;
 
   /*!
-   * \brief The type of reaction rates that the current data set represents {
-   * Total, Scattering, Absorption }. This enumeration is defined in
-   * cdi/OpacityCommon.hh.
-   */
+   * \brief The type of reaction rates that the current data set represents
+   *        {Total, Scattering, Absorption}. This enumeration is defined in
+   *        cdi/OpacityCommon.hh.  */
   rtt_cdi::Reaction opacityReaction;
 
   //! A string that identifies the energy policy for this class.
@@ -138,7 +131,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
 
   /*!
    * \brief spIpcressDataTable contains a cached copy of the requested IPCRESS
-   * opacity lookup table.
+   *        opacity lookup table.
    *
    * There is a one-to-one relationship between IpcressOpacity and
    * IpcressDataTable.
@@ -147,31 +140,31 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
 
   /*!
    * \brief The group boundaries that we use are not the same as those read in
-   * by Ipcress, because Tops pretends that the ODFs are extra groups. We
-   * therefore have to store our own group and band structure.
+   *        by Ipcress, because Tops pretends that the ODFs are extra groups. 
+   *        We therefore have to store our own group and band structure.
    */
   std::vector<double> groupBoundaries;
 
   /*!
    * \brief The band boundaries are derived from the group boundaries read from
-   * the IPCRESS file and the number of bands input by the user.  It should be a
-   * vector with size(the number of bands + 1), 0 on the left, and 1 on the
-   * right.
+   *        the IPCRESS file and the number of bands input by the user.  It 
+   *        should be a vector with size(the number of bands + 1), 0 on the 
+   *        left, and 1 on the right.
    */
   std::vector<double> bandBoundaries;
 
   /*!
    * \brief Sometimes the opacities in the IPCRESS file are in ascending order
-   * inside each band, sometimes not. Figure it out at the beginning and store
-   * the result so that we know whether to reverse it later.
+   *        inside each band, sometimes not. Figure it out at the beginning 
+   *        and store the result so that we know whether to reverse it later.
    */
   bool reverseBands;
 
   /*!
    * \brief This private function translates the group structure stored in the
-   * IPCRESS file to the correct group and band structure, given the user-input
-   * number of bands. This should only need to be called once during
-   * initialization.
+   *        IPCRESS file to the correct group and band structure, given the 
+   *        user-input number of bands. This should only need to be called 
+   *        once during initialization.
    */
   void loadGroupsAndBands(size_t const numBands);
 
@@ -182,13 +175,14 @@ public:
 
   /*!
    * \brief This is the default IpcressOdfmgOpacity constructor.  It requires
-   * four arguments plus the energy model (this class) to be instantiated.
+   *        four arguments plus the energy model (this class) to be 
+   *        instantiated.
    *
    * The combiniation of a data file and a material ID uniquely specifies a
    * material.  If we add the Model, Reaction and EnergyPolicy the opacity table
    * is uniquely defined.
    *
-   * \param spIpcressFile This smart pointer links an IPCRESS file (via the
+   * \param[in] spIpcressFile This smart pointer links an IPCRESS file (via the
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one IpcressFile
    *     object for each IpcressOpacity object.

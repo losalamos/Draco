@@ -30,16 +30,16 @@ public:
   // CREATORS
 
   //! Default constructors.
-  Index_Set() : array_size(0) { /* ... */
+  Index_Set() : m_array_size(0) { /* ... */
   }
 
   //! Construct with pointer to sizes
-  explicit Index_Set(unsigned const *const dimensions) : array_size(0) {
+  explicit Index_Set(unsigned const *const dimensions) : m_array_size(0) {
     set_size(dimensions);
   }
 
   //! Construct with all dimensions equal
-  explicit Index_Set(const unsigned dimension) : array_size(0) {
+  explicit Index_Set(const unsigned dimension) : m_array_size(0) {
     set_size(dimension);
   }
 
@@ -60,22 +60,23 @@ public:
   void set_size(const unsigned size);
 
   bool index_in_range(int index) const {
-    return (index >= OFFSET) && (index < static_cast<int>(array_size) + OFFSET);
+    return (index >= OFFSET) &&
+           (index < static_cast<int>(m_array_size) + OFFSET);
   }
   bool index_in_range(int index, unsigned dimension) const;
 
   template <typename IT> bool indices_in_range(IT indices) const;
 
-  unsigned get_size() const { return array_size; }
+  unsigned get_size() const { return m_array_size; }
   int min_of_index() const { return OFFSET; }
-  int max_of_index() const { return OFFSET + array_size - 1; }
+  int max_of_index() const { return OFFSET + m_array_size - 1; }
   int limit_of_index(const bool positive) const {
     return positive ? max_of_index() : min_of_index();
   }
 
   unsigned get_size(const unsigned d) const {
     Check(dimension_okay(d));
-    return dimensions[d];
+    return m_dimensions[d];
   }
   int min_of_index(const unsigned Remember(d)) const {
     Check(dimension_okay(d));
@@ -83,7 +84,7 @@ public:
   }
   int max_of_index(const unsigned d) const {
     Check(dimension_okay(d));
-    return OFFSET + dimensions[d] - 1;
+    return OFFSET + m_dimensions[d] - 1;
   }
   int limit_of_index(const unsigned d, const bool positive) const {
     return positive ? max_of_index(d) : min_of_index(d);
@@ -95,17 +96,17 @@ public:
 private:
   void compute_size();
 
-  unsigned array_size;    //!< Sizes of the whole index range
-  unsigned dimensions[D]; //!< Sizes of each dimension
+  unsigned m_array_size;    //!< Sizes of the whole index range
+  unsigned m_dimensions[D]; //!< Sizes of each dimension
 
 protected:
   // Make sure the index sizes are all positive when creating or resizing:
   bool sizes_okay() const {
-    return (std::find(dimensions, dimensions + D, 0) == dimensions + D);
+    return (std::find(m_dimensions, m_dimensions + D, 0u) == m_dimensions + D);
   }
 
   // Allow derived classes const access to the dimensions.
-  unsigned const *get_dimensions() const { return dimensions; }
+  unsigned const *get_dimensions() const { return m_dimensions; }
 };
 
 } // end namespace rtt_dsxx

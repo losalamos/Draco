@@ -19,10 +19,11 @@ fi
 if [[ ! ${VENDOR_DIR} ]]; then
   export VENDOR_DIR=/usr/projects/draco/vendors
   export PATH=$PATH:$VENDOR_DIR/bin
-  export DRACO_ARCH=`/usr/projects/draco/vendors/bin/target_arch`
 fi
 
 # modules
+export DRACO_ARCH=`/usr/projects/draco/vendors/bin/target_arch`
+
 if test -n "$MODULESHOME"; then
 
     module use --append ${VENDOR_DIR}/user_contrib
@@ -32,43 +33,48 @@ if test -n "$MODULESHOME"; then
     echo -e "\nLoading modules for architecture type $DRACO_ARCH. \n"
 
     case $DRACO_ARCH in
+      arm)
+        cflavor="gcc-8.2.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="git cmake gcc/8.2.0"
+        compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_8.2.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
+        # ec_mf="ndi"
+      ;;
+
       x86_64)
-        cflavor="gcc-7.1.0"
-        mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="emacs subversion git random123 numdiff/5.9.0 cmake/3.9.4"
-        compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
-        mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
-superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
-        ec_mf="ndi eospac/6.3.0"
+        cflavor="gcc-7.3.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="emacs git cmake gcc/7.3.0 ack ccache"
+        compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_7.3.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
+        ec_mf="ndi"
       ;;
 
       knl)
         cflavor="gcc-7.1.0"
-        mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="emacs subversion git random123 cmake/3.9.4"
+        mflavor="$cflavor-openmpi-2.1.0"
+        noflavor="git random123 cmake"
         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor \
 numdiff/5.9.0"
         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
         ec_mf="ndi eospac/6.3.0"
         ;;
-      power8*)
-        cflavor="gcc-7.1.0"
-        mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
-        compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
-        mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
-superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
-        # These aren't built for power architectures?
-        # ec_mf="ndi eospac/6.3.0"
-        ;;
+#       power8*)
+#         cflavor="gcc-7.1.0"
+#         mflavor="$cflavor-openmpi-2.1.0"
+#         noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
+#         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
+#         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
+#         superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
+#         ;;
       power9*)
-        cflavor="gcc-7.1.0"
-        mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
-        compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
-        mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
-superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
+        cflavor="gcc-7.3.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="git cmake gcc/7.3.0"
+        compflavor="random123 numdiff gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor openmpi/p9/3.1.2-gcc_7.3.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-netlib trilinos/12.12.1-${mflavor}-netlib"
         # These aren't built for power architectures?
         # ec_mf="ndi eospac/6.3.0"
         ;;
@@ -84,6 +90,9 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
     export CC=`which gcc`
     export FC=`which gfortran`
     export MPIEXEC_EXECUTABLE=`which mpirun`
+
+    # CMake-3.12+ doesn't want X_ROOT variables
+    unset MPI_ROOT
 
     # Previously, we used Darwin for nightly regressions with Intel-MPI.  When
     # Intel-MPI is selected, these variables must be set:

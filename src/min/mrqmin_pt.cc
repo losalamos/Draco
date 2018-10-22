@@ -5,15 +5,11 @@
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Specializations of mrqmin
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <vector>
 
 #include "mrqmin.i.hh"
+#include <vector>
 
 namespace rtt_min {
 using std::vector;
@@ -22,14 +18,13 @@ using std::vector;
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_min void
-mrqmin(vector<double> const &x, vector<double> const &y,
-       vector<double> const &sig, unsigned n, unsigned m, vector<double> &a,
-       vector<bool> &ia, vector<double> &covar, vector<double> &alpha,
-       unsigned p, double &chisq,
-       void funcs(vector<double> const &, vector<double> const &, double &,
-                  vector<double> &),
-       double &alamda);
+template void mrqmin(vector<double> const &x, vector<double> const &y,
+                     vector<double> const &sig, unsigned n, unsigned m,
+                     vector<double> &a, vector<bool> &ia, vector<double> &covar,
+                     vector<double> &alpha, unsigned p, double &chisq,
+                     void funcs(vector<double> const &, vector<double> const &,
+                                double &, vector<double> &),
+                     double &alamda);
 
 } // end namespace rtt_min
 

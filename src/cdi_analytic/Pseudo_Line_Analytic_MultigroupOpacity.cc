@@ -250,13 +250,13 @@ Pseudo_Line_Analytic_MultigroupOpacity::std_string
 Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const {
   std_string descriptor;
 
-  rtt_cdi::Reaction const reaction = getReactionType();
+  rtt_cdi::Reaction const rxn = getReactionType();
 
-  if (reaction == rtt_cdi::TOTAL)
+  if (rxn == rtt_cdi::TOTAL)
     descriptor = "Pseudo Line Multigroup Total";
-  else if (reaction == rtt_cdi::ABSORPTION)
+  else if (rxn == rtt_cdi::ABSORPTION)
     descriptor = "Pseudo Line Multigroup Absorption";
-  else if (reaction == rtt_cdi::SCATTERING)
+  else if (rxn == rtt_cdi::SCATTERING)
     descriptor = "Pseudo Line Multigroup Scattering";
   else {
     Insist(0, "Invalid Pseudo Line multigroup model opacity!");

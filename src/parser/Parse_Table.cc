@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   Parse_Table.cc
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of member functions of class Parse_Table
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved
- */
-//---------------------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved */
+//----------------------------------------------------------------------------//
 
 #include "Parse_Table.hh"
 #include "ds++/Assert.hh"
@@ -20,23 +17,21 @@
 namespace rtt_parser {
 using namespace std;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param table Pointer to an array of keywords.
  *
  * \param count Length of the array of keywords pointed to by \c table.
- *
  * \param flags Initial value for parser flags.
  *
- * \throw invalid_argument If the keyword table is ill-formed or
- * ambiguous.
+ * \throw invalid_argument If the keyword table is ill-formed or ambiguous.
  *
  * \note See documentation for \c Parse_Table::add for an explanation of the
- * low-level argument list.
+ *       low-level argument list.
  */
 Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
                          unsigned const flags)
-    : vec(), flags_(flags) {
+    : vec(), flags_(static_cast<unsigned char>(flags)) {
   Require(count == 0 || table != nullptr);
   Require(count == 0 ||
           std::find_if(table, table + count, Is_Well_Formed_Keyword));
@@ -47,10 +42,9 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
   Ensure(get_flags() == flags);
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param table Array of keywords to be added to the table.
- *
  * \param count Number of valid elements in the array of keywords.
  *
  * \throw invalid_argument If the keyword table is ill-formed or
@@ -81,14 +75,14 @@ void Parse_Table::add(Keyword const *const table,
   Ensure(check_class_invariants());
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param moniker Keyword to remove from the table.
  *
  * \throw invalid_argument If the keyword is not in the table.
  */
 void Parse_Table::remove(char const *moniker) {
-  // Yes, this is an order N operation as presently coded. N is never very large.
+  // This is an order N operation as presently coded. N is never very large.
   for (auto i = vec.begin(); i != vec.end(); ++i) {
     if (!strcmp(i->moniker, moniker)) {
       vec.erase(i);
@@ -100,7 +94,7 @@ void Parse_Table::remove(char const *moniker) {
   throw invalid_argument("keyword not found in Parse_Table::remove");
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param source Parse_Table whose keywords are to be added to this
  * Parse_Table.
@@ -123,7 +117,7 @@ void Parse_Table::add(Parse_Table const &source) noexcept(false) {
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* private */
 void Parse_Table::sort_table_() noexcept(
     false) // apparently std::sort can throw
@@ -183,7 +177,7 @@ void Parse_Table::sort_table_() noexcept(
     }
   }
 }
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Parse the stream of tokens until an END, EXIT, or ERROR token is
  * reached.
@@ -360,13 +354,12 @@ Token Parse_Table::parse(Token_Stream &tokens) const {
   }
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * Parse the stream of tokens until a keyword is found or an END, EXIT, or ERROR token is
- * reached.
+ * Parse the stream of tokens until a keyword is found or an END, EXIT, or 
+ * ERROR token is reached.
  *
- * \param tokens
- * The Token Stream from which to obtain the stream of tokens.
+ * \param tokens The Token Stream from which to obtain the stream of tokens.
  *
  * \return The terminating token: either END, EXIT, or ERROR.
  *
@@ -478,10 +471,9 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
   }
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * \param f
- * Flags to be set, ORed together.
+ * \param f Flags to be set, ORed together.
  */
 void Parse_Table::set_flags(unsigned char const f) {
   flags_ = f;
@@ -496,7 +488,7 @@ void Parse_Table::set_flags(unsigned char const f) {
   Ensure(get_flags() == f);
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for comparison predicate for sorting keyword tables.
  *
@@ -508,10 +500,8 @@ void Parse_Table::set_flags(unsigned char const f) {
 Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
     : flags_(flags) {}
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
  * \brief Comparison function for sorting keyword tables.
  *
  * This function is used by a Parse_Table to sort its keyword list using
@@ -554,9 +544,9 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
       char c1 = *m1++;
       char c2 = *m2++;
       if (islower(c1))
-        c1 = toupper(c1);
+        c1 = static_cast<char>(::toupper(c1));
       if (islower(c2))
-        c2 = toupper(c2);
+        c2 = static_cast<char>(::toupper(c2));
       if (c1 < c2)
         return -1;
       if (c1 > c2)
@@ -574,10 +564,8 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
   }
 }
 
-//-------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
  * \brief Comparison function for finding token match in keyword table.
  *
  * This function is used by a Parse_Table to match keywords to identifier
@@ -602,7 +590,6 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
  * \return <CODE>comparison(keyword.moniker,
  *                          token.text().c_str())<0 </CODE>
  */
-
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
                                                Token const &k2) const noexcept {
   Require(k1.moniker != nullptr);
@@ -625,9 +612,9 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
         char c2 = *m2++;
         if (flags_ & CASE_INSENSITIVE) {
           if (islower(c1))
-            c1 = toupper(c1);
+            c1 = static_cast<char>(::toupper(c1));
           if (islower(c2))
-            c2 = toupper(c2);
+            c2 = static_cast<char>(::toupper(c2));
         }
         if (c1 < c2)
           return -1;
@@ -657,9 +644,9 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
         char c1 = *m1++;
         char c2 = *m2++;
         if (islower(c1))
-          c1 = toupper(c1);
+          c1 = static_cast<char>(::toupper(c1));
         if (islower(c2))
-          c2 = toupper(c2);
+          c2 = static_cast<char>(::toupper(c2));
         if (c1 < c2)
           return -1;
         if (c1 > c2)
@@ -668,9 +655,9 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
       char c1 = *m1++;
       char c2 = *m2++;
       if (islower(c1))
-        c1 = toupper(c1);
+        c1 = static_cast<char>(::toupper(c1));
       if (islower(c2))
-        c2 = toupper(c2);
+        c2 = static_cast<char>(::toupper(c2));
       if (c1 < c2)
         return -1;
       if (c1 > c2)
@@ -682,7 +669,7 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
   }
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Check whether a keyword satisfies the requirements for use in
  * a Parse_Table.
@@ -727,7 +714,7 @@ bool Is_Well_Formed_Keyword(Keyword const &key) {
   }
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Parse_Table::check_class_invariants() const {
   // The keyword table must be well-formed, sorted, and unambiguous.
 
@@ -744,6 +731,6 @@ bool Parse_Table::check_class_invariants() const {
 }
 
 } // namespace rtt_parser
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Parse_Table.cc
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -308,13 +308,6 @@
 ## Numdiff
 ## ---------------------------------------------------------------------- ##
 
-# ==24572== Use of uninitialised value of size 8
-# ==24572==    at 0x38B5024F8B: __gmpn_mul_basecase (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x38B501FB23: __gmpn_mul (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x38B5008661: __gmpf_set_str (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x4043D2: init_mpa (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==24572==    by 0x40ABB6: init_mpa_support (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==24572==    by 0x40BC6F: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/uninit8/use
    Memcheck:Value8
@@ -323,12 +316,6 @@
    fun:init_mpa_support
    fun:main
 }
-# ==18912== Conditional jump or move depends on uninitialised value(s)
-# ==18912==    at 0x38B501FB03: __gmpn_mul (in /usr/lib64/libgmp.so.3.3.3)
-# ==18912==    by 0x38B5008661: __gmpf_set_str (in /usr/lib64/libgmp.so.3.3.3)
-# ==18912==    by 0x4043D2: init_mpa (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18912==    by 0x40ABB6: init_mpa_support (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18912==    by 0x40BC6F: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/e002
    Memcheck:Cond
@@ -415,18 +402,6 @@
    fun:cmp_files
    fun:main
 }
-
-
-
-#===================== text compare =============================================#
-
-# ==18889== Conditional jump or move depends on uninitialised value(s)
-# ==18889==    at 0x38B5007F48: __gmpf_set (in /usr/lib64/libgmp.so.3.3.3)
-# ==18889==    by 0x404740: Cabs (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x4052C8: cmp_fields (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x405CD2: cmp_lines (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/text1
    Memcheck:Cond
@@ -436,13 +411,6 @@
    fun:cmp_files
    fun:main
 }
-# ==18881== Use of uninitialised value of size 8
-# ==18881==    at 0x38B500C9FD: __gmpf_cmp (in /usr/lib64/libgmp.so.3.3.3)
-# ==18881==    by 0x4048BB: cmp (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x4052DB: cmp_fields (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x405CD2: cmp_lines (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/text/2
    Memcheck:Value8
@@ -452,8 +420,6 @@
    fun:cmp_files
    fun:main
 }
-# ==18871== Use of uninitialised value of size 8
-# ==18871==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
 {
    numdiff/text/3
    Memcheck:Value8
@@ -461,8 +427,6 @@
    fun:__gmpn_divrem_1
    ...
 }
-# ==25358== Use of uninitialised value of size 8
-# ==25358==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
 {
    numdiff/text/4
    Memcheck:Value8
@@ -488,6 +452,15 @@
    fun:calloc
    fun:process_substring
    fun:get_separating_string
+   ...
+}
+
+{
+   numdiff/leak/05
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
    ...
 }
 

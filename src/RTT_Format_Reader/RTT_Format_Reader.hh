@@ -42,10 +42,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::ifstream ifstream;
   typedef std::string string;
-  //  typedef std::set<int> set_int;
   typedef std::vector<int> vector_int;
-  //  typedef std::vector<std::vector<int>> vector_vector_int;
-  //  typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
   typedef std::vector<double> vector_dbl;
   typedef std::vector<std::vector<double>> vector_vector_dbl;
   typedef std::vector<string> vector_str;
@@ -74,9 +71,6 @@ private:
 public:
   //! Constructor
   explicit RTT_Format_Reader(const string &RTT_File);
-  /*!
-   * \brief Destroys an RTT_Format_Reader class object
-   */
 
   //! Destructor
   ~RTT_Format_Reader() { /*empty*/
@@ -591,19 +585,9 @@ public:
    * \param cell_def Cell definition index.
    * \return New cell definition node map.
    */
-  const vector_int &get_cell_defs_node_map(int cell_def) const {
+  const vector_uint &get_cell_defs_node_map(int cell_def) const {
     return spCellDefs->get_node_map(cell_def);
   }
-
-  /*!
-   * \brief Returns the specified new node for the specified cell definition
-   *        when redefinition has been performed.
-   * \param cell_def Cell definition index.
-   * \param node_ind Node number index.
-   * \return New node number.
-   */
-  //    int get_cell_defs_node_map(int cell_def, int node_ind) const
-  //    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
   /*!
    * \brief Returns the coordinate values for each of the nodes.

@@ -1,0 +1,125 @@
+This opacity file has 1 materials:
+Material 1 has ID number 19000
+=========================================
+For Material 1 with ID number 19000
+=========================================
+Density grid
+1	1.0000000e-02
+2	1.0000000e-01
+3	1.0000000e+00
+4	1.0000000e+01
+Temperature grid
+1	1.0000000e-03
+2	1.0000000e-02
+3	1.0000000e-01
+4	1.0000000e+00
+5	1.0000000e+01
+6	1.0000000e+02
+Frequency grid
+1	1.0000000e-02
+2	1.0302377e-02
+3	1.1058321e-02
+4	1.2570207e-02
+5	1.5593980e-02
+6	2.0129639e-02
+7	2.3153412e-02
+8	2.4665298e-02
+9	2.5118864e-02
+10	2.5878402e-02
+11	2.7777245e-02
+12	3.1574932e-02
+13	3.9170306e-02
+14	5.0563367e-02
+15	5.8158741e-02
+16	6.1956428e-02
+17	6.3095734e-02
+18	6.5003606e-02
+19	6.9773285e-02
+20	7.9312644e-02
+21	9.8391361e-02
+22	1.2700944e-01
+23	1.4608815e-01
+24	1.5562751e-01
+25	1.5848932e-01
+26	1.6328168e-01
+27	1.7526257e-01
+28	1.9922435e-01
+29	2.4714792e-01
+30	3.1903328e-01
+31	3.6695685e-01
+32	3.9091864e-01
+33	3.9810717e-01
+34	4.1014503e-01
+35	4.4023967e-01
+36	5.0042895e-01
+37	6.2080752e-01
+38	8.0137537e-01
+39	9.2175393e-01
+40	9.8194322e-01
+41	1.0000000e+00
+42	1.0302377e+00
+43	1.1058321e+00
+44	1.2570207e+00
+45	1.5593980e+00
+46	2.0129639e+00
+47	2.3153412e+00
+48	2.4665298e+00
+49	2.5118864e+00
+50	2.5878402e+00
+51	2.7777245e+00
+52	3.1574932e+00
+53	3.9170306e+00
+54	5.0563367e+00
+55	5.8158741e+00
+56	6.1956428e+00
+57	6.3095734e+00
+58	6.5003606e+00
+59	6.9773285e+00
+60	7.9312644e+00
+61	9.8391361e+00
+62	1.2700944e+01
+63	1.4608815e+01
+64	1.5562751e+01
+65	1.5848932e+01
+66	1.6328168e+01
+67	1.7526257e+01
+68	1.9922435e+01
+69	2.4714792e+01
+70	3.1903328e+01
+71	3.6695685e+01
+72	3.9091864e+01
+73	3.9810717e+01
+74	4.1014503e+01
+75	4.4023967e+01
+76	5.0042895e+01
+77	6.2080752e+01
+78	8.0137537e+01
+79	9.2175393e+01
+80	9.8194322e+01
+81	1.0000000e+02
+
+Enter 0 or q to quit.
+Please select a material from 1 to 1
+Please enter a density from 1.0000000e-02 to 1.0000000e+01
+Please select a temperature from 1.0000000e-03 to 1.0000000e+02
+Choose your opacity type:
+1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)
+3: Rosseland Absorption (MG),   4: Planck Absorption (MG)
+5: Rosseland Total (Gray)
+The Gray Rosseland Absorption Opacity for
+material 0 Id(19000) at density 1.0000000e-01, temperature 1.0000000e+00 is 4.2688147e-01
+Enter 0 or q to quit.
+Please select a material from 1 to 1
+Please enter a density from 1.0000000e-02 to 1.0000000e+01
+Please select a temperature from 1.0000000e-03 to 1.0000000e+02
+Choose your opacity type:
+1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)
+3: Rosseland Absorption (MG),   4: Planck Absorption (MG)
+5: Rosseland Total (Gray)
+The Gray Planck Absorption Opacity for
+material 0 Id(19000) at density 1.0000000e-01, temperature 1.0000000e+00 is 1.1623735e+01
+Enter 0 or q to quit.
+Please select a material from 1 to 1
+Please enter a density from 1.0000000e-02 to 1.0000000e+01
+Please select a temperature from 1.0000000e-03 to 1.0000000e+02
+Ending session.

@@ -57,6 +57,9 @@ private:
   //! Boundary file names (optional data)
   const std::vector<std::string> bdy_filenames;
 
+  //! Boundary conditions per bdy file (optional data)
+  const std::vector<unsigned> bdy_flags;
+
   //! Vector of all parsed key-value data pairs (includes valueless delimiters)
   Parsed_Elements parsed_pairs;
 
@@ -75,11 +78,15 @@ private:
   //! Side-to-node map (0-based indices, unlike other maps)
   std::map<int, std::vector<unsigned>> x3d_sidenode_map;
 
+  //! Side-to-flag map
+  std::map<int, unsigned> x3d_sideflag_map;
+
 public:
   //! Constructor
   DLL_PUBLIC_mesh
   X3D_Draco_Mesh_Reader(const std::string &filename_,
-                        const std::vector<std::string> &bdy_filenames_ = {});
+                        const std::vector<std::string> &bdy_filenames_ = {},
+                        const std::vector<unsigned> &bdy_flags_ = {});
 
   // >>> SERVICES
 
@@ -109,14 +116,16 @@ public:
   unsigned get_celltype(size_t cell) const;
   std::vector<unsigned> get_cellnodes(size_t cell) const;
 
-  // data needed from x3d boundary file (?)
-  // \todo: parse x3d boundary file
+  // data needed from x3d boundary file
   size_t get_numsides() const { return x3d_sidenode_map.size(); }
   size_t get_sidetype(size_t side) const {
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side)).size();
   }
-  unsigned get_sideflag(size_t /*side*/) const { return 0; }
+  unsigned get_sideflag(size_t side) const {
+    Check(side < INT_MAX);
+    return x3d_sideflag_map.at(static_cast<int>(side));
+  }
   std::vector<unsigned> get_sidenodes(size_t side) const {
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side));

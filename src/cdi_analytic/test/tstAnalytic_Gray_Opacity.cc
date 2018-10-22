@@ -64,13 +64,13 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::ABSORPTION);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Absorption")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::ABSORPTION);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Absorption")
       ITFAILS;
   }
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Total")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::TOTAL);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Total")
       ITFAILS;
   }
 

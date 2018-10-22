@@ -69,6 +69,22 @@ add_parallel_tests(
    PE_LIST "1;2"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
 
+# To ensure that the file token stream tests of the #include capability know
+# where to look for the included file.
+ if( "${DRACO_C4}" STREQUAL "MPI" )
+   set( tests_with_env_reqs
+     parser_tstParallel_File_Token_Stream_1
+     parser_tstParallel_File_Token_Stream_2
+     parser_tstFile_Token_Stream_1 )
+ else()
+   set( tests_with_env_reqs
+     parser_tstParallel_File_Token_Stream
+     parser_tstFile_Token_Stream )
+ endif()
+ set_tests_properties( ${tests_with_env_reqs} PROPERTIES
+   ENVIRONMENT
+   DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR})
+
 #------------------------------------------------------------------------------#
 # End parser/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

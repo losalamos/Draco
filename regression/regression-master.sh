@@ -47,7 +47,7 @@ fi
 platform_extra_params=`echo $platform_extra_params | sed -e 's/ / | /g'`
 export host=`uname -n | sed -e 's/[.].*//g'`
 case $host in
-  ba*|sn*) source $rscriptdir/cts1-options.sh ;;
+  ba*|gr*|sn*) source $rscriptdir/cts1-options.sh ;;
   ccscs*)  source $rscriptdir/ccscs-options.sh ;;
   tt*)     source $rscriptdir/tt-options.sh ;;
   *)
@@ -284,7 +284,7 @@ ifb=0
 
 # The job launch logic spawns a job for each project immediately, but the
 # *-job-launch.sh script will spin until all dependencies (jobids) are met.
-# Thus, the sn-job-launch.sh for milagro will start immediately, but it will not
+# Thus, the cts1-job-launch.sh for milagro will start immediately, but it will not
 # do any real work until both draco and clubimc have completed.
 
 # More sanity checks

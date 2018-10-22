@@ -3,8 +3,6 @@
 ;; Kelly Thompson
 ;; 20 January 2005
 ;;---------------------------------------------------------------------------;;
-;; $Id$
-;;---------------------------------------------------------------------------;;
 
 ;;---------------------------------------------------------------------------;;
 ;; Draco mode helper functions:
@@ -42,7 +40,7 @@ directory. ")
 
 (defvar draco-paper-name nil
   "This value contains the name of the LaTeX document that is being
-created.") 
+created.")
 
 ;;---------------------------------------------------------------------------;;
 ;; Get name of current directory
@@ -68,8 +66,8 @@ The default value of ndirs == 1."
 
   ;; Figure out the difference in length between dir and parent,
   ;; subtract one (for the "/"), and negate, in order to get that many
-  ;; chars off the end of dir. 
-  
+  ;; chars off the end of dir.
+
   (setq dlen (- (length dir) (length parent)))
   (setq xlen (* (- dlen 1) -1))
 
@@ -85,7 +83,7 @@ The default value of ndirs == 1."
 ;  (setq parent (expand-file-name ".."))
   (setq draco-guess-query-text "Package path: ")
   (setq draco-package-name (draco-get-local-dir-name 1))
-  
+
   (if (string= draco-package-name "test")
       (progn
 	(setq draco-package-name (substring (draco-get-local-dir-name
@@ -96,7 +94,7 @@ The default value of ndirs == 1."
       (progn
 	(setq draco-package-name (draco-get-local-dir-name 2))
 	(setq draco-guess-query-text "Package doc path: ")))
-  
+
   (read-from-minibuffer draco-guess-query-text draco-package-name)
 )
 
@@ -105,7 +103,7 @@ The default value of ndirs == 1."
 
 (defun draco-make-name-safe (name)
   "Function to get a safe name from a package name"
-  (setq safe-name 
+  (setq safe-name
 	(mapconcat (function (lambda (x)
 			       (cond
 				((eq x ?\+) "x")
@@ -125,7 +123,7 @@ The default value of ndirs == 1."
 ;;---------------------------------------------------------------------------;;
 ;; Create a new buffer, load the specified template, replace special
 ;; text with appropriate values.
-(defun draco-create-buffer-from-template (filename 
+(defun draco-create-buffer-from-template (filename
 					  template-filename
 					  &optional draco-alternate-class-name)
 "Load the file specified by template-filename into a new buffer,
@@ -159,7 +157,7 @@ ARGUMENTS:
 This function is typically called from draco-package,
 draco-package-test, draco-package-doc, draco-class, draco-cc-head,
 draco-cc-headin, draco-c-head, draco-c-headin, draco-cc-imp,
-draco-cc-pt, and draco-cc-test.  
+draco-cc-pt, and draco-cc-test.
 
 Example usage is exhibited by functions defined in draco-new-files.el.
 "
@@ -181,14 +179,14 @@ Example usage is exhibited by functions defined in draco-new-files.el.
     (if (not (boundp 'draco-class-name))
 	(setq draco-class-name filename))
 ;      (setq draco-class-name (substring filename 0 (string-match "\\." filename))))
-    
+
     ;; Create a new buffer with the correct filename - user must save
     ;; the buffer for a new file to be created.
-    (find-file filename) 
-    
+    (find-file filename)
+
     ;; Insert the text from the template file into the new buffer.
     (insert-file-contents template-filename)
-    
+
     (perform-replace "<pkg>"       draco-package-name nil nil nil )
     (goto-char (point-min))
     (perform-replace "<spkg>"      draco-safe-package-name nil nil nil )
@@ -232,9 +230,9 @@ ARGUMENTS:
 "
   ;; set values.
 
-  (setq draco-package-name 
+  (setq draco-package-name
 	(draco-guess-package-name))
-  (setq draco-safe-package-name 
+  (setq draco-safe-package-name
 	(draco-make-name-safe draco-package-name))
 
   (if draco-doc-type
@@ -245,11 +243,11 @@ ARGUMENTS:
 	(setq draco-paper-name (substring name 0 (string-match "\\.bib" name))))
 
     ;; We get here if draco-doc-type == nil
-    (setq draco-namespace 
+    (setq draco-namespace
 	  (draco-query-namespace (concat "rtt_" draco-safe-package-name))))
 
   ;; default draco-class-name to an empty string.
-  
+
   )
 
 ;;---------------------------------------------------------------------------;;

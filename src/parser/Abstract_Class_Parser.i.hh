@@ -78,11 +78,11 @@ void Abstract_Class_Parser<
   std::strcpy(cptr, keyword.c_str());
   abstract_class_parser_keys.data.push_back(cptr);
 
-  int const N = static_cast<int>(map_.size());
+  int const Num = static_cast<int>(map_.size());
 
   map_.push_back(parse_function);
 
-  Keyword key = {cptr, parse_child_, N, ""};
+  Keyword key = {cptr, parse_child_, Num, ""};
 
   get_parse_table().add(&key, 1);
 
@@ -111,11 +111,11 @@ void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
   std::strcpy(cptr, keyword.c_str());
   abstract_class_parser_keys.data.push_back(cptr);
 
-  int const N = static_cast<int>(map_.size());
+  int const Num = static_cast<int>(map_.size());
 
   map_.push_back(Parse_Function(parse_function));
 
-  Keyword key = {cptr, parse_child_, N, ""};
+  Keyword key = {cptr, parse_child_, Num, ""};
 
   get_parse_table().add(&key, 1);
 

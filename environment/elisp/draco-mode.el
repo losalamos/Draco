@@ -455,7 +455,7 @@ function or method. Width is set by draco-code-comment-width.
   (insert " * \\brief \n")
   (insert " * \n")
   (insert " * \\param[in] name description\n")
-  (insert " * \\param[inout] name description\n")
+  (insert " * \\param[in,out] name description\n")
   (insert " * \\param[out] name description\n")
   (insert " * \\return description\n")
   (insert " */\n")

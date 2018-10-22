@@ -34,7 +34,7 @@ General_Octant_Quadrature::parse(Token_Stream &tokens) {
   tokens.check_syntax(token.text() == "number of ordinates",
                       "expected number of ordinates");
 
-  unsigned N = parse_positive_integer(tokens);
+  unsigned Num = parse_positive_integer(tokens);
 
   token = tokens.shift();
   tokens.check_syntax(token.text() == "number of levels",
@@ -58,9 +58,9 @@ General_Octant_Quadrature::parse(Token_Stream &tokens) {
     }
   }
 
-  vector<double> mu(N), eta(N), xi(N), wt(N);
+  vector<double> mu(Num), eta(Num), xi(Num), wt(Num);
 
-  for (unsigned i = 0; i < N; ++i) {
+  for (unsigned i = 0; i < Num; ++i) {
     mu[i] = parse_real(tokens);
     eta[i] = parse_real(tokens);
     xi[i] = parse_real(tokens);

@@ -66,11 +66,37 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
+
 private:
+  struct letter {
+    // IMPLEMENTATION
+
+    //! Constructor
+    letter(string const &file_name);
+
+    bool check_class_invariants() const {
+      return true; // none at present
+    }
+
+    //! Open the input stream.
+    void open_();
+
+    //! Rewind the stream.
+    void rewind();
+
+    // DATA
+    string filename_; //!< File from which to take token text.
+    ifstream infile_; //!< Stream from which to take token text.
+  };
+
+  // IMPLEMENTATION
+
   // DATA
 
-  string filename_; //!< File from which to take token text.
-  ifstream infile_; //!< Stream from which to take token text.
+  std::stack<std::shared_ptr<letter>> letters_;
+  std::shared_ptr<letter> letter_;
 };
 
 } // namespace rtt_parser

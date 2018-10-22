@@ -96,8 +96,12 @@ public:
 
   // Statics
 
-  static bool is_global_active() { return global_active_; }
+  // static bool is_global_active() { return global_active_; }
 
+  /*! \bug no unit test, used in rocotillo, attempt to use in c4/test/tstTime.cc
+   *       breaks the test.  I don't understand how to use this function.
+   *  \bug no documentation!
+   */
   static void set_global_activity(bool active);
 
   static void set_selected_activity(std::set<std::string> const &timer_list,

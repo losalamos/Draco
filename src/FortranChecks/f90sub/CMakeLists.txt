@@ -68,40 +68,9 @@ if(NOT TARGET Lib_dsxx)
   include( vendor_libraries )
   setupVendorLibraries()
 
-  if(WIN32)
-    # MS-MPI and gfortran do not play nice together...
-    if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x")
-      message( FATAL_ERROR
-        "In ftest/CMakeLists.txt, CMAKE_BUILD_TYPE must be set."
-        "Note: for multi-config build tools, CMakeAddFortranSubdirectory will "
-        "set this for you.")
-    endif()
-    string( TOUPPER ${CMAKE_BUILD_TYPE} ucbt )
-    if( "${CMAKE_Fortran_FLAGS_${ucbt}}" MATCHES "frange-check" )
-      string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
-        ${CMAKE_Fortran_FLAGS_DEBUG} )
-    else()
-      set( CMAKE_Fortran_FLAGS_${ucbt}
-        "${CMAKE_Fortran_FLAGS_${ucbt}} -fno-range-check")
-    endif()
-
-    # Don't link to the C++ MS-MPI library when compiling with MinGW
-    # gfortran. Instead, link to libmsmpi.a that was created via gendef.exe and
-    # dlltool.exe from msmpi.dll.  Ref:
-    # http://www.geuz.org/pipermail/getdp/2012/001519.html
-    if( "${MPI_Fortran_LIBRARIES}none" STREQUAL "none" OR
-        "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
-      # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
-      find_file( MPI_gfortran_LIBRARIES NAMES "libmsmpi.a" )
-      if( MPI_gfortran_LIBRARIES )
-        set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-          "msmpi for gfortran" FORCE )
-      else()
-        message( FATAL_ERROR "Unable to find libmsmpi.a. This library must"
-        " be created from msmpi.dll and saved as a MinGW library. ")
-      endif()
-    endif()
-  endif()
+  # link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll,
+  # and ensure that the compiler option '-fno-range-check' is enabled.
+  cafs_fix_mpi_library()
 
 endif()
 

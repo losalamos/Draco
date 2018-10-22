@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   viz/test/tstEnsightTranslator.cc
+ * \file   viz/test/tstEnsight_Translator.cc
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
@@ -18,6 +18,7 @@ using namespace std;
 using rtt_viz::Ensight_Translator;
 
 //---------------------------------------------------------------------------//
+template <typename IT>
 void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   if (binary)
     cout << "\nGenerating binary files...\n" << endl;
@@ -33,7 +34,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   size_t nrgn = 2;
 
   typedef vector<string> vec_s;
-  typedef vector<int> vec_i;
+  typedef vector<IT> vec_i;
   typedef vector<vec_i> vec2_i;
   typedef vector<vec2_i> vec3_i;
   typedef vector<double> vec_d;
@@ -156,11 +157,8 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
       p_iel_type[i][j] = iel_type[g];
 
       for (size_t k = 0; k < ipar[g].size(); k++) {
-        int tmp = ipar[g][k] - 1;
-
-        vector<int>::iterator f =
-            find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
-
+        IT tmp = ipar[g][k] - 1;
+        auto f = find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
         Require(f != g_vrtx_indices[i].end());
         p_ipar[i][j][k] = static_cast<int>(f - g_vrtx_indices[i].begin() + 1);
       }
@@ -235,11 +233,15 @@ int main(int argc, char *argv[]) {
   try {
     // ASCII dumps
     bool binary(false);
-    ensight_dump_test(ut, binary);
+    ensight_dump_test<int>(ut, binary);
 
     // Binary dumps
     binary = true;
-    ensight_dump_test(ut, binary);
+    ensight_dump_test<int>(ut, binary);
+
+    // ASCII dumps with unsigned integer data
+    binary = false;
+    ensight_dump_test<uint32_t>(ut, binary);
   }
   UT_EPILOG(ut);
 }

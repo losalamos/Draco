@@ -1095,9 +1095,9 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
     double const T_eval = 1.0e-30;
-    std::vector<double> rosseland;
-    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, rosseland);
-    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+    std::vector<double> lrosseland;
+    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, lrosseland);
+    if (!soft_equiv(lrosseland, std::vector<double>(lrosseland.size(), 0.0)))
       ITFAILS;
   }
   // Extreme case 2. T < numeric_limits<double>::min() --> follow special logic
@@ -1105,9 +1105,9 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
     double const T_eval = 1.0e-308;
-    std::vector<double> rosseland;
-    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, rosseland);
-    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+    std::vector<double> lrosseland;
+    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, lrosseland);
+    if (!soft_equiv(lrosseland, std::vector<double>(lrosseland.size(), 0.0)))
       ITFAILS;
   }
   // Extreme case 3. This should do the normal computation, but the result is
@@ -1115,13 +1115,13 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
     double const T_eval = 1.0e-30;
-    std::vector<double> planck;
-    std::vector<double> rosseland;
-    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, planck,
-                                                rosseland);
-    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+    std::vector<double> lplanck;
+    std::vector<double> lrosseland;
+    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, lplanck,
+                                                lrosseland);
+    if (!soft_equiv(lrosseland, std::vector<double>(lrosseland.size(), 0.0)))
       ITFAILS;
-    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0)))
+    if (!soft_equiv(lplanck, std::vector<double>(lplanck.size(), 0.0)))
       ITFAILS;
   }
   // Extreme case 4. T < numeric_limits<double>::min() --> follow special logic
@@ -1129,13 +1129,13 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
     double const T_eval = 1.0e-308;
-    std::vector<double> planck;
-    std::vector<double> rosseland;
-    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, planck,
-                                                rosseland);
-    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+    std::vector<double> lplanck;
+    std::vector<double> lrosseland;
+    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, lplanck,
+                                                lrosseland);
+    if (!soft_equiv(lrosseland, std::vector<double>(lrosseland.size(), 0.0)))
       ITFAILS;
-    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0)))
+    if (!soft_equiv(lplanck, std::vector<double>(lplanck.size(), 0.0)))
       ITFAILS;
   }
 
@@ -1266,8 +1266,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
 
   // Special case 1 (opacity==0)
   {
-    // mgOpacities = { 0,0,0 }
-    std::vector<double> mgOpacities(3, 0.0);
+    std::vector<double> mgOpac(3, 0.0);
 
     // Force the spectrum to be flat.
     planck_spectrum[0] = 1.0 / 3.0;
@@ -1283,20 +1282,17 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     double opacity_pl_recip_ref(std::numeric_limits<float>::max());
     double opacity_ross_ref(0.0);
     for (size_t ig = 0; ig < bounds.size() - 1; ++ig) {
-      // opacity_pl_ref += planck_spectrum[ig]*mgOpacities[ig];
       emission_group_cdf_ref[ig] = opacity_pl_ref;
-      // opacity_ross_ref += rosseland_spectrum[ig]/mgOpacities[ig];
     }
-    // opacity_ross_ref = 1.0/opacity_ross_ref;
 
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
-        bounds, mgOpacities, planck_spectrum, emission_group_cdf);
+        bounds, mgOpac, planck_spectrum, emission_group_cdf);
     double const opacity_pl_recip =
-        CDI::collapseMultigroupReciprocalOpacitiesPlanck(bounds, mgOpacities,
+        CDI::collapseMultigroupReciprocalOpacitiesPlanck(bounds, mgOpac,
                                                          planck_spectrum);
     double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
-        bounds, mgOpacities, rosseland_spectrum);
+        bounds, mgOpac, rosseland_spectrum);
 
     if (!soft_equiv(opacity_pl, opacity_pl_ref))
       ITFAILS;
@@ -1357,7 +1353,6 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void test_odfmgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   // Test functions that collapse MG opacity data into one-group data using
   // either Planckian or Rosseland weight functions:

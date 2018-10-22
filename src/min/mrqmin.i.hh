@@ -83,10 +83,11 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
     for (j = 0, l = 0; l < ma; ++l) {
       if (ia[l]) {
         double wt = dyda[l] * sig2i;
-        unsigned k, m;
-        for (k = 0, m = 0; m < l + 1; ++m) {
-          if (ia[m]) {
-            alpha[j + ma * k++] += wt * dyda[m];
+        unsigned k;
+        unsigned mm;
+        for (k = 0, mm = 0; mm < l + 1; ++mm) {
+          if (ia[mm]) {
+            alpha[j + ma * k++] += wt * dyda[mm];
           }
         }
         beta[j++] += dy * wt;
@@ -188,7 +189,8 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
     covsrt(alpha, ia, ma, mfit);
     return;
   }
-  unsigned j, l;
+  unsigned j;
+  unsigned l;
   for (j = 0, l = 0; l < ma; ++l) {
     if (ia[l]) {
       atry[l] = a[l] + da[j++];
@@ -198,14 +200,14 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
   if (chisq < ochisq) {
     alamda *= 0.1;
     ochisq = chisq;
-    for (unsigned j = 0; j < mfit; ++j) {
+    for (unsigned jj = 0; jj < mfit; ++jj) {
       for (unsigned k = 0; k < mfit; ++k) {
-        alpha[j + ma * k] = covar[j + ma * k];
+        alpha[jj + ma * k] = covar[jj + ma * k];
       }
-      beta[j] = da[j];
+      beta[jj] = da[jj];
     }
-    for (unsigned l = 0; l < ma; ++l) {
-      a[l] = atry[l];
+    for (unsigned ll = 0; ll < ma; ++ll) {
+      a[ll] = atry[ll];
     }
   } else {
     alamda *= 10.0;

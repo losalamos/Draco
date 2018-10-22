@@ -52,19 +52,22 @@ public:
 
   // SERVICES
 
-  /*!
-   * \brief Sum a set of values over the group, returning the sum to all
-   *        processors.
-   */
+  //! Sum a set of values over the group, returning the sum to all processors.
   template <typename RandomAccessContainer>
   void sum(RandomAccessContainer &values);
 
-  //! Assemble a set of local vectors into global vectors.
+  /*!
+   * \brief Assemble a set of local vectors into global vectors (container-based
+   *        version).
+   */
   template <typename T>
   void assemble_vector(std::vector<T> const &local_vector,
                        std::vector<T> &global_vector) const;
 
-  //! Assemble a set of local vectors into global vectors.
+  /*!
+   * \brief Assemble a set of local vectors into global vectors (pointer-based
+   *        version).
+   */
   template <typename T>
   void assemble_vector(T const *local_vector, T *global_vector,
                        unsigned count) const;

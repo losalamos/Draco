@@ -212,9 +212,9 @@ double hextod(const char *cp) {
     cp += 2;
   whole = strtou64(cp, &s, 16);
   if (s[0] == '.') {
-    char *cp = ++s;
+    char *cp2 = ++s;
     frac = strtou64(s, &s, 16);
-    len = s - cp;
+    len = s - cp2;
   }
   if (s[0] == 'p') {
     s++;

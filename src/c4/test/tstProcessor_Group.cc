@@ -40,26 +40,50 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     FAILMSG("NOT correct processor group sum");
 
   // Test assemble_vector
-  vector<double> myvec;
-  size_t const vlen(5);
-  for (size_t i = 0; i < vlen; ++i)
-    myvec.push_back(pid * 1000.0 + i);
-  vector<double> globalvec;
-  comm.assemble_vector(myvec, globalvec);
-
-  if (globalvec.size() != group_pids * vlen)
-    ITFAILS;
-
-  // Check the the first 5 elements
-  vector<double> goldglobalvec;
-  for (size_t j = 0; j < group_pids; ++j)
+  {
+    vector<double> myvec;
+    size_t const vlen(5);
     for (size_t i = 0; i < vlen; ++i)
-      goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
+      myvec.push_back(pid * 1000.0 + i);
+    vector<double> globalvec;
+    comm.assemble_vector(myvec, globalvec);
 
-  if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
-                            globalvec.begin(), globalvec.end()))
-    ITFAILS;
+    if (globalvec.size() != group_pids * vlen)
+      ITFAILS;
 
+    // Check the the first 5 elements
+    vector<double> goldglobalvec;
+    for (size_t j = 0; j < group_pids; ++j)
+      for (size_t i = 0; i < vlen; ++i)
+        goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
+
+    if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
+                              globalvec.begin(), globalvec.end()))
+      ITFAILS;
+  }
+
+  // Test assemble_vector - pointer signature
+  {
+    vector<double> myvec;
+    size_t const vlen(5);
+    for (size_t i = 0; i < vlen; ++i)
+      myvec.push_back(pid * 1000.0 + i);
+    vector<double> globalvec(group_pids * vlen);
+    Check(myvec.size() < UINT32_MAX);
+    comm.assemble_vector(&myvec[0], &globalvec[0],
+                         static_cast<unsigned>(myvec.size()));
+
+    FAIL_IF_NOT(globalvec.size() == group_pids * vlen);
+
+    // Check the the first 5 elements
+    vector<double> goldglobalvec;
+    for (size_t j = 0; j < group_pids; ++j)
+      for (size_t i = 0; i < vlen; ++i)
+        goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
+
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
+                                     globalvec.begin(), globalvec.end()));
+  }
   return;
 }
 #endif // C4_MPI

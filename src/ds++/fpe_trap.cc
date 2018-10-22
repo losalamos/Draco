@@ -218,7 +218,7 @@ void fpe_trap::disable(void) {
 #pragma fenv_access(on)
 
 /* Signal handler for floating point exceptions. */
-extern "C" void trans_func(unsigned int u, PEXCEPTION_POINTERS pExp) {
+extern "C" void trans_func(unsigned int u, PEXCEPTION_POINTERS /*pExp*/) {
   std::cout << "(fpe_trap/windows_x86.cc) A SIGFPE was detected!" << std::endl;
 
   std::string mesg;
@@ -575,11 +575,10 @@ void __cdecl CCrashHandler::PureCallHandler() {
 }
 
 // CRT invalid parameter handler
-void __cdecl CCrashHandler::InvalidParameterHandler(const wchar_t *expression,
-                                                    const wchar_t *function,
-                                                    const wchar_t *file,
-                                                    unsigned int line,
-                                                    uintptr_t pReserved) {
+void __cdecl CCrashHandler::InvalidParameterHandler(
+    const wchar_t * /*expression*/, const wchar_t * /*function*/,
+    const wchar_t * /*file*/, unsigned int /*line*/, uintptr_t pReserved) {
+
   std::cout << "In CCrashHandler::InvalidParameterHandler" << std::endl;
   pReserved;
 
@@ -626,7 +625,7 @@ void CCrashHandler::SigabrtHandler(int) {
 }
 
 // CRT SIGFPE signal handler
-void CCrashHandler::SigfpeHandler(int /*code*/, int subcode) {
+void CCrashHandler::SigfpeHandler(int /*code*/, int /*subcode*/) {
   std::cout << "In CCrashHandler::SigfpeHandler" << std::endl;
   // Floating point exception (SIGFPE)
 

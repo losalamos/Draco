@@ -3,10 +3,8 @@
  * \file   quadrature/test/tstLevel_Symmetric.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------//
-// $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "quadrature_test.hh"
@@ -25,7 +23,7 @@ using namespace rtt_quadrature;
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
-    for (unsigned N = 2; N < 18; N += 2)
+    for (unsigned N = 2; N < 25; N += 2)
     // Pathological in curvilinear geometry at N>=18
     {
       cout << "Order " << N << ':' << endl;
@@ -33,7 +31,8 @@ int main(int argc, char *argv[]) {
       if (quadrature.sn_order() != N) {
         ut.failure("NOT correct SN order");
       }
-      quadrature_test(ut, quadrature);
+      bool cartesian_tests_only(N >= 18);
+      quadrature_test(ut, quadrature, cartesian_tests_only);
     }
   }
   UT_EPILOG(ut);

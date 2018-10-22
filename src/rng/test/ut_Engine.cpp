@@ -32,10 +32,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
-// Engines have multiple copy constructors, quite legal C++, disable MSVC
-// complaint
-#pragma warning(disable : 4521)
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+// - 4100: unreferenced formal parameter
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4127 4100)
 #endif
+
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused variable" warning.
@@ -274,6 +280,10 @@ int main(int, char **) {
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif
 
 //---------------------------------------------------------------------------//

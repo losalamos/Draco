@@ -169,7 +169,7 @@ void tstClass_Parser(UnitTest &ut) {
 
   bool good = false;
   try {
-    std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(etokens);
+    std::shared_ptr<DummyClass> dum = parse_class<DummyClass>(etokens);
   } catch (Syntax_Error &) {
     good = true;
   }
@@ -178,7 +178,7 @@ void tstClass_Parser(UnitTest &ut) {
   tokens.rewind();
   good = false;
   try {
-    std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(etokens, true);
+    std::shared_ptr<DummyClass> dum = parse_class<DummyClass>(etokens, true);
   } catch (Syntax_Error &) {
     good = true;
   }
@@ -186,7 +186,6 @@ void tstClass_Parser(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

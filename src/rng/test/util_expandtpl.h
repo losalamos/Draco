@@ -50,6 +50,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
 #endif
 
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4127)
+#endif
+
 #if defined(TRY_OTHER)
 TEST_TPL(mrg, 1, 32, 1)
 TEST_TPL(mt, 1, 32, 1)
@@ -81,6 +87,11 @@ TEST_TPL(threefry, 4, 64, 72)
 TEST_TPL(ars, 4, 32, 5)
 TEST_TPL(ars, 4, 32, 7)
 TEST_TPL(aesni, 4, 32, 10)
+#endif
+
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(pop)
 #endif
 
 #ifdef __clang__

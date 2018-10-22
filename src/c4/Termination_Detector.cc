@@ -5,10 +5,7 @@
  * \date   Thu Jan 12 10:27:45 2006
  * \brief  
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Termination_Detector.hh"
@@ -17,15 +14,14 @@
 #undef PRINTF_DEBUG
 
 namespace rtt_c4 {
-using namespace std;
-using namespace rtt_c4;
 
 //---------------------------------------------------------------------------//
 /*
- * \param tag Tag to use for termination algorithm messages. This must be
- * distinct from any other message tags that may simultaneously be in use.
+ * \brief Constructor
+ * \param[in] tag Tag to use for termination algorithm messages. This must be
+ *                distinct from any other message tags that may simultaneously 
+ *                be in use.
  */
-
 Termination_Detector::Termination_Detector(int const tag)
     : tag_(tag), number_of_processors_(nodes()), pid_(node()),
       parent_pid_((pid_ - 1) / 2), son_pid_(2 * pid_ + 1),
@@ -65,10 +61,7 @@ Termination_Detector::~Termination_Detector() {
 }
 
 //---------------------------------------------------------------------------//
-/*
- * \return \c true if we have terminated; \c false otherwise.
- */
-
+//! Return \c true if we have terminated; \c false otherwise.
 bool Termination_Detector::is_terminated() {
   static unsigned buffer[3];
 
@@ -101,8 +94,8 @@ bool Termination_Detector::is_terminated() {
            << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
-      // If the daughter exists, the son also exists, and the subtree
-      // counts are already initialized.
+      // If the daughter exists, the son also exists, and the subtree counts
+      // are already initialized.
 
       subtree_send_count_ += buffer[0];
 
@@ -236,8 +229,8 @@ bool Termination_Detector::is_terminated() {
              << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
-        // If the daughter exists, the son also exists, and the
-        // subtree counts are already initialized.
+        // If the daughter exists, the son also exists, and the subtree counts
+        // are already initialized.
 
         subtree_send_count_ += buffer[0];
 

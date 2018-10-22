@@ -121,7 +121,7 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     Require(dps.size() >= 3);
 
     // Vector of all ordinates in the ordinate set
-    const vector<Ordinate> &ords(os_.ordinates());
+    const vector<Ordinate> &ord(os_.ordinates());
 
     // Associate a container of indices with the dot products
     std::vector<std::pair<double, size_t>> dpsi(dps.size());
@@ -151,9 +151,8 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     w2 = 1.0 - w2;
     w3 = 1.0 - w3;
 
-    // This block selects a single ordinate in the ordinate
-    // set if one of the dot products is very near to 1.0
-    // (to within ord_tol)
+    // This block selects a single ordinate in the ordinate set if one of the
+    // dot products is very near to 1.0 (to within ord_tol)
     if (w1 > ord_tol && w2 > ord_tol && w3 > ord_tol) {
       w1 = 1.0 / w1;
       w2 = 1.0 / w2;
@@ -176,9 +175,9 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     Check(wsum > 0.0);
 
     // Normalize the 3 weights
-    w1 = w1 * ord_in.wt() / (ords[i1].wt() * wsum);
-    w2 = w2 * ord_in.wt() / (ords[i2].wt() * wsum);
-    w3 = w3 * ord_in.wt() / (ords[i3].wt() * wsum);
+    w1 = w1 * ord_in.wt() / (ord[i1].wt() * wsum);
+    w2 = w2 * ord_in.wt() / (ord[i2].wt() * wsum);
+    w3 = w3 * ord_in.wt() / (ord[i3].wt() * wsum);
 
     weights[i1] = w1;
     weights[i2] = w2;
@@ -202,7 +201,6 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
  * \param[in] weights vector in the ordinates
  *
  * \return double value for the zeroth moment
- *
  */
 double Ordinate_Set_Mapper::zeroth_moment(const vector<double> &weights) const {
   Require(weights.size() == os_.ordinates().size());

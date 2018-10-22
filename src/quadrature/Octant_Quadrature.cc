@@ -151,12 +151,12 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
     // Now sum around the axis.
     m = 0;
     numOrdinates /= 4;
-    double eta = Result[0].eta();
+    double eta0 = Result[0].eta();
     double sum = Result[0].wt();
     for (unsigned i = 1; i < numOrdinates; ++i) {
-      double old_eta = eta;
-      eta = Result[i].eta();
-      if (!soft_equiv(eta, old_eta)) {
+      double old_eta = eta0;
+      eta0 = Result[i].eta();
+      if (!soft_equiv(eta0, old_eta)) {
         // New level
         Result[m++] = Ordinate(old_eta, sum);
         sum = Result[i].wt();
@@ -166,7 +166,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
       }
     }
     // Final level
-    Result[m++] = Ordinate(eta, sum);
+    Result[m++] = Ordinate(eta0, sum);
     numOrdinates = m;
     Result.resize(numOrdinates);
 

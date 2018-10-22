@@ -4,7 +4,7 @@
 # repository is expected as a parameter.
 
 # Example:
-# .../draco/environment/git $HOME/ccs-codes/jayenne
+# .../draco/environment/git/install-hooks.sh $HOME/ccs-codes/jayenne
 
 # This file is part of a set of unofficial pre-commit hooks available
 # at github.

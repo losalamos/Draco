@@ -29,13 +29,6 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "rng/config.h"
-
-#include "Random123/conventional/gsl_cbrng.h"
-#include "ut_gsl.h"
-#include <assert.h>
-#include <gsl/gsl_randist.h>
-#include <stdio.h>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -43,9 +36,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef _MSC_FULL_VER
-// 'type cast': pointer truncation from 'char[54]' to 'long'
-#pragma warning(disable : 4311)
+// 4311 - 'type cast': pointer truncation from 'char[54]' to 'long'
+// 4202 - nonstandard extension used: non-constant aggregate initializer
+#pragma warning(push)
+#pragma warning(disable : 4311 4204)
 #endif
+
+#include "rng/config.h"
+
+#include "Random123/conventional/gsl_cbrng.h"
+#include "ut_gsl.h"
+#include <assert.h>
+#include <gsl/gsl_randist.h>
+#include <stdio.h>
 
 /* Exercise the GSL_CBRNG macro */
 
@@ -100,11 +103,11 @@ int main(int argc, char **argv) {
   printf("uniforms from %s\n", gsl_rng_name(r));
   sum = 0.;
   for (i = 0; i < 5; i++) {
-    double x = gsl_rng_uniform(r);
+    double x2 = gsl_rng_uniform(r);
     rngRemember(double y = gsl_rng_uniform(rcopy));
-    printf("%d: %.4g\n", i, x);
-    sum += x;
-    assert(x == y);
+    printf("%d: %.4g\n", i, x2);
+    sum += x2;
+    assert(x2 == y);
   }
   assert(gsl_rng_get(r) != save);
   assert(sum < 0.9 * 5 && sum > 0.1 * 5 &&
@@ -130,6 +133,10 @@ int main(int argc, char **argv) {
   printf("ut_gsl: OK\n");
   return 0;
 }
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __GNUC__
 // Restore GCC diagnostics to previous state.

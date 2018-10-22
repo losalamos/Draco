@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "quadrature_test.hh"

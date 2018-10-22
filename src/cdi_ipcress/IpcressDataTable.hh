@@ -20,8 +20,8 @@ namespace rtt_cdi_ipcress {
 //===========================================================================//
 /*!
  * \class IpcressDataTable encapsulates all of the data associated with a
- * specific opacity type (e.g.: total, plank, multigroup) for a single single
- * material.
+ *        specific opacity type (e.g.: total, plank, multigroup) for a single 
+ *        single material.
  *
  * When the user instantiates a IpcressOpacity object a IpcressDataTable
  * object is also created.  There is a one-to-one correspondence between these
@@ -32,7 +32,7 @@ namespace rtt_cdi_ipcress {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
+class IpcressDataTable {
 
   // NESTED CLASSES AND TYPEDEFS
 
@@ -41,33 +41,28 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
   /*!
    * \brief A string that specifies the type of data being stored.  Possible
    *     values are rgray, ragray, rsgray, etc.  This key is provided to the
-   *     Ipcress libraries as a data specifier.
-   */
+   *     Ipcress libraries as a data specifier. */
   std::string mutable ipcressDataTypeKey;
 
   /*!
    * \brief A string that specifies the type of data being stored.  This
-   *     variables holds an English version of ipcressDataTypeKey.
-   */
+   *     variables holds an English version of ipcressDataTypeKey. */
   std::string mutable dataDescriptor;
 
   /*!
    * \brief A string that specifies the energy model for the data being
-   *     stored.  Possible values are "mg" or "gray".
-   */
+   *     stored.  Possible values are "mg" or "gray". */
   std::string const opacityEnergyDescriptor;
 
   /*!
    * \brief An enumerated value defined in IpcressOpacity.hh that specifies
-   *     the data model.  Possible values are "Rosseland" or "Plank".
-   */
+   *     the data model.  Possible values are "Rosseland" or "Plank". */
   rtt_cdi::Model const opacityModel;
 
   /*!
    * \brief An enumerated valued defined in IpcressOpacity.hh that specifies
    *     the reaction model.  Possible values are "Total", "Absorption" or
-   *     "Scattering".
-   */
+   *     "Scattering". */
   rtt_cdi::Reaction const opacityReaction;
 
   //! A list of keys that are known by the IPCRESS file.
@@ -75,17 +70,8 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
 
   /*!
    * \brief The IPCRESS material number assocated with the data contained in
-   *     this object.
-   */
+   *     this object. */
   size_t const matID;
-
-  // Data Sizes:
-
-  /*
-   * \brief The number of entries in the opacity table.  This should be
-   *     equal to numTemperatures * numDensities * (numGroupBoundaries - 1).
-   */
-  //size_t mutable numOpacities;
 
   // Data Tables:
 
@@ -150,22 +136,11 @@ public:
   //! Retrieve the size of the energy boundary grid.
   size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
 
-  //! Retrieve the size of the opacity grid.
-  // size_t getNumOpacities() const { return numOpacities; };
-
   //! Retrieve the logarithmic temperature grid.
-  // std::vector<double> const & getLogTemperatures() const {
-  //     return logTemperatures; };
   std::vector<double> const &getTemperatures() const { return temperatures; };
 
   //! Retrieve the logarithmic density grid.
-  // std::vector<double> const & getLogDensities() const {
-  //     return logDensities; };
   std::vector<double> const &getDensities() const { return densities; };
-
-  //! Retrieve the logarithmic opacity grid.
-  // std::vector<double> const & getLogOpacities() const {
-  //     return logOpacities; };
 
   //! Retrieve the energy boundary grid.
   std::vector<double> const &getGroupBoundaries() const {
@@ -174,10 +149,6 @@ public:
 
   //! Return a "plain English" description of the data table.
   std::string const &getDataDescriptor() const { return dataDescriptor; };
-
-  //! Return a "plain English" description of the energy policy.
-  // std::string const & getEnergyPolicyDescriptor() const {
-  //     return opacityEnergyDescriptor; };
 
   //! Perform linear interploation of log(opacity) values.
   double interpOpac(double const T, double const rho,

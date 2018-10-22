@@ -38,7 +38,7 @@ namespace rtt_linear {
  * \param v On exit, contains \f$ V \f$.
  * \todo Templatize on container element type
  */
-template <class RandomContainer>
+template <typename RandomContainer>
 void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
             RandomContainer &w, RandomContainer &v) {
   Require(a.size() == m * n);
@@ -194,10 +194,10 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
       bool flag = true;
       // Check for splitting.
       Check(rtt_dsxx::soft_equiv(rv1[0] + norm, norm));
-      unsigned l = k;
-      for (; l <= k; l--) {
-        unsigned l1 = l - 1;
-        if (rtt_dsxx::soft_equiv(fabs(rv1[l]) + norm, norm, eps)) {
+      unsigned ell = k;
+      for (; ell <= k; ell--) {
+        unsigned l1 = ell - 1;
+        if (rtt_dsxx::soft_equiv(fabs(rv1[ell]) + norm, norm, eps)) {
           flag = false;
           break;
         }
@@ -205,10 +205,10 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
           break;
       }
       if (flag) {
-        unsigned l1 = l - 1;
+        unsigned l1 = ell - 1;
         double c = 0;
         double s = 1;
-        for (unsigned i = l; i <= k; i++) {
+        for (unsigned i = ell; i <= k; i++) {
           double f = s * rv1[i];
           rv1[i] *= c;
           if (!rtt_dsxx::soft_equiv(fabs(f) + norm, norm, eps)) {
@@ -227,7 +227,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
         }
       }
       double z = w[k];
-      if (l == k) {
+      if (ell == k) {
         if (z < 0.0) {
           w[k] = -z;
           for (unsigned j = 0; j < n; j++)
@@ -235,7 +235,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
         }
         break;
       } else {
-        double x = w[l];
+        double x = w[ell];
         double y = w[k1];
         g = rv1[k1];
         double h = rv1[k];
@@ -246,7 +246,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
         f = ((x - z) * (x + z) + h * (y / (f + g) - h)) / x;
         double c = 1;
         double s = 1;
-        for (unsigned j = l; j < k; j++) {
+        for (unsigned j = ell; j < k; j++) {
           int i = j + 1;
           g = rv1[i];
           y = w[i];
@@ -281,7 +281,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
             a[jj + m * i] = -y * s + z * c;
           }
         }
-        rv1[l] = 0;
+        rv1[ell] = 0;
         rv1[k] = f;
         w[k] = x;
       }

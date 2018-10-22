@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Define methods of class LC_Subrandom_Generator
  * \note   Copyright (C) 2016-2018 Los Alamos National Laboratory,
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "LC_Subrandom_Generator.hh"

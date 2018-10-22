@@ -57,7 +57,7 @@ using std::vector;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_parser Expression {
+class Expression {
 public:
   enum Precedence {
     COMMA_PRECEDENCE,

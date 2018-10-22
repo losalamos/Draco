@@ -7,6 +7,9 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+# Useful reference information:
+# https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=vs-2017
+
 #
 # Sanity Checks
 #
@@ -58,11 +61,15 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # - /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have
   #   dll-interface to be used by clients of class 'type2'
   # - /arch:[SSE|SSE2|AVX|AVX2|IA32]
-  # - /W[1234] Warning levels. - Try to ramp up to level 4...
+  # - /W[1234] Warning levels. Draco is currently using /W4 (see 
+  #            src/CMakeLists.txt), but clients default to /W2.
   # - /std:c++14 (should be added by cmake in compilerEnv.cmake)
   # - /showIncludes
   # - /FC
-  set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /arch:AVX2 /DWIN32 /D_WINDOWS /MP /wd4251" )
+  set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /DWIN32 /D_WINDOWS /MP /wd4251" )
+  if(HAVE_HARDWARE_AVX2)
+    string(APPEND CMAKE_C_FLAGS " /arch:AVX2")
+  endif()
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /DDEBUG /D_DEBUG" )
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )

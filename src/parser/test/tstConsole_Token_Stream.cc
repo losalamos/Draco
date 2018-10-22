@@ -91,12 +91,14 @@ void tstConsole_Token_Stream(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("Shift after pushback has correct value");
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      FAILMSG("Syntax error NOT correctly thrown");
     } catch (const Syntax_Error & /*msg*/) {
+      caught = true;
       PASSMSG("Syntax error correctly thrown and caught");
     }
+    FAIL_IF_NOT(caught); // FAILMSG("Syntax error NOT correctly thrown");
 
     token = tokens.shift();
     if (token.type() != KEYWORD || token.text() != "COLOR")
@@ -205,6 +207,14 @@ void tstConsole_Token_Stream(rtt_dsxx::UnitTest &ut) {
     token = tokens.shift();
     if (token.type() != KEYWORD || token.text() != "x")
       ITFAILS;
+
+    // Test that #include is treated as a syntax error (not supported)
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("#include not supported error correctly thrown and caught");
+    }
 
     token = tokens.shift();
     if (token.type() != EXIT)

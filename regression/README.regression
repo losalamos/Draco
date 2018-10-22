@@ -90,7 +90,7 @@ credentials.
 Locations:
 --------------------
 regression directory | /usr/projects/jayenne/regress
-work directories     | /net/scratch3/kellyt/cdash/<machine> - Sandbox location for actual regression operations.
+work directories     | /lustre/scratch*/kellyt/cdash/<machine> - Sandbox location for actual regression operations.
 
 Regression flavors:
 --------------------

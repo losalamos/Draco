@@ -38,11 +38,25 @@ if( NOT APPLE )
     EXE_NAME    tstEnsight_Translator
     SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator.cc
     PREFIX      Draco )
+
+  add_component_executable(
+    TARGET      Ut_viz_tstEnsight_Translator_Unstructured_exe
+    TARGET_DEPS Lib_viz
+    EXE_NAME    tstEnsight_Translator_Unstructured
+    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator_Unstructured.cc
+    PREFIX      Draco )
+
   # set( VERBOSE_DEBUG ON )
   include( ApplicationUnitTest )
   add_app_unit_test(
     DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.py
     APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_exe>
+    BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
+    )
+
+  add_app_unit_test(
+    DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator_Unstructured.py
+    APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_Unstructured_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_Unstructured_exe>
     BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
     )
 

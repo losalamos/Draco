@@ -2,7 +2,7 @@
 # file   ds++/bin/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 Nov 6
-# brief  Provide.
+# brief  Provide a sample crash handler for Windows.
 # note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
@@ -30,6 +30,23 @@ install( TARGETS Exe_testCrashHandler EXPORT draco-targets
   DESTINATION ${DBSCFGDIR}bin )
 
 endif() # WIN32
+
+# ---------------------------------------------------------------------------- #
+# Build binaries
+# ---------------------------------------------------------------------------- #
+
+add_component_executable(
+  TARGET      Exe_query_cpu
+  TARGET_DEPS Lib_dsxx
+  SOURCES     ${Draco_SOURCE_DIR}/config/query_fma.cc
+  PREFIX      Draco )
+
+# ---------------------------------------------------------------------------- #
+# Installation instructions
+# ---------------------------------------------------------------------------- #
+
+install( TARGETS Exe_query_cpu EXPORT draco-targets
+  DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # end ds++/bin/CMakeLists.txt

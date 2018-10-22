@@ -1,11 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/Packing_Utils.hh
- * \author Thomas M. Evans
+ * \author Thomas M. Evans, Tim Kelley <tkelley@lanl.gov>
  * \date   Thu Jul 19 11:27:46 2001
  * \brief  Packing Utilities, classes for packing stuff.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved. */
+ *         All rights reserved.
+ *
+ * This file contains classes and utilities that are used to "pack" data into
+ * byte-streams. The byte-streams are represented by the char* type.  The
+ * following classes are:
+ *
+ * \arg \b Packer packing class
+ * \arg \b Unpacker unpacking class
+ */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_ds_Packing_Utils_hh
@@ -17,23 +25,6 @@
 #include <vector>
 
 namespace rtt_dsxx {
-
-//===========================================================================//
-/*!
- * \file ds++/Packing_Utils.hh
- *
- * This file contains classes and utilities that are used to "pack" data into
- * byte-streams. The byte-streams are represented by the char* type.  The
- * following classes are:
- *
- * \arg \b Packer packing class
- * \arg \b Unpacker unpacking class
- */
-/*!
- * \example ds++/test/tstPacking_Utils.cc
- * Test the Packer and Unpacker classes.
- */
-//===========================================================================//
 
 //===========================================================================//
 /*!
@@ -67,6 +58,9 @@ namespace rtt_dsxx {
  * real pointers into a continguous memory \c char* stream.
  *
  * Data can be unpacked using the Unpacker class.
+ *
+ * \example ds++/test/tstPacking_Utils.cc
+ * Test the Packer and Unpacker classes.
  */
 //===========================================================================//
 
@@ -289,7 +283,7 @@ void Packer::pad(uint64_t bytes) {
  * function.  It returns a reference to the Packer object so that stream out
  * operations can be strung together.
  *
- * This function also works when compute_buffer_size_mode() is on, in which 
+ * This function also works when compute_buffer_size_mode() is on, in which
  * case the total required stream size is incremented.
  */
 template <typename T> inline Packer &operator<<(Packer &p, const T &value) {
@@ -790,9 +784,6 @@ void unpack_data(std::map<keyT, std::vector<dataT>> &unpacked_map,
  * \param[out] dest
  * \param[in]  num_elements
  * \param[in]  byte_swap (default: false)
- *
- * This function was written by Tim Kelley and previously lived in
- * jayenne/clubimc/src/imc/Bonus_Pack.hh.
  */
 inline void pack_vec_double(double const *start, char *dest,
                             uint32_t num_elements, bool byte_swap = false) {

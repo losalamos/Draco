@@ -23,7 +23,7 @@ using namespace rtt_dsxx;
 using rtt_mesh_element::Element_Definition;
 using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 
-enum Meshes { DEFINED };
+enum Meshes { DEFINED, MESHES_LASTENTRY };
 
 bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
                    Meshes const &meshtype);
@@ -43,7 +43,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   // Meshes in the header file.
   const int MAX_MESHES = 1;
   string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
-  Meshes mesh_type;
+  Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
     // Construct an RTT_Mesh_Reader class object from the data in the
