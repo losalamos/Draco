@@ -83,6 +83,7 @@ public:
 
   // The supported output stream functions.
 
+  Ensight_Stream &operator<<(const size_t i);
   Ensight_Stream &operator<<(const int32_t i);
   Ensight_Stream &operator<<(const unsigned i);
   Ensight_Stream &operator<<(const int64_t i);

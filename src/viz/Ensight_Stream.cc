@@ -124,6 +124,21 @@ Ensight_Stream &Ensight_Stream::operator<<(const int32_t i) {
 }
 
 //---------------------------------------------------------------------------//
+//! Output for size_t.
+Ensight_Stream &Ensight_Stream::operator<<(const size_t i) {
+  Require(d_stream.is_open());
+
+  if (d_binary)
+    binary_write(i);
+  else
+    d_stream << std::setw(10) << i;
+
+  Ensure(d_stream.good());
+
+  return *this;
+}
+
+//---------------------------------------------------------------------------//
 /*
  * \brief Output for unsigned
  *
