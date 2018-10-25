@@ -163,6 +163,11 @@ function startCI()
     extra=""
     edash=""
     eflag=""
+  elif [[ ${extra} == 'autodoc' ]]; then
+    extra=""
+    edash=""
+    eflag=""
+    autodoc='-a'
   else
     extrastring="(${extra}) "
     edash="-"
@@ -179,7 +184,7 @@ function startCI()
   echo "  Log: $logdir/${machine_name_short}-${build_type}-master-YYYYMMDD-hhmm.log"
   echo " "
   cmd="$rscriptdir/regression-master.sh ${rflag} -b ${build_type}"
-  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr}"
+  cmd="$cmd ${autodoc} ${eflag} ${extra} -p ${project} -f ${pr}"
   case $target in
     ccscs* )  # build one at a time.
       ;;
@@ -254,7 +259,7 @@ case $target in
 
   # CCS-NET: Release, vtest, coverage
   ccscs2*)
-    startCI ${project} Release na $pr
+    startCI ${project} Release autodoc $pr
     startCI ${project} Debug coverage $pr
     ;;
 
@@ -296,7 +301,7 @@ case $target in
 
   # These cases are not automated checks of PRs.  However, these machines are
   # supported if this script is started by a developer:
-  ccscs[134]*)
+  ccscs[14]*)
     startCI ${project} Release na $pr
     startCI ${project} Debug na $pr ;;
   ccscs[589]*)

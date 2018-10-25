@@ -257,8 +257,12 @@ if [[ "${regress_mode}" = "off" ]]; then
   export AUTODOCDIR=$work_dir/autodoc
 else
   export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
-  if test -d /ccs/codes/radtran/autodoc; then
-    export AUTODOCDIR=/ccs/codes/radtran/autodoc
+  if [[ -d /ccs/codes/radtran/autodoc ]]; then
+    if [[ $featurebranch == develop ]]; then
+      export AUTODOCDIR=/ccs/codes/radtran/autodoc
+    else
+      export AUTODOCDIR=/ccs/codes/radtran/autodoc/${featurebranch}
+    fi
   fi
 fi
 

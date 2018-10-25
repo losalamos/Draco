@@ -1,3 +1,301 @@
+2018-10-23  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* "Release draco-6_25_0":https://rtt.lanl.gov/redmine/versions/62.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Jayenne-7_18_0":https://rtt.lanl.gov/redmine/versions/61
+	  - "Capsaicin-4_14_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/WF              Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  SN/BA/GR/FI/IC     Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.1
+	                     Intel 17.0.4    Cray_MPICH2-7.7.1
+
+	* Summary of changes:
+	- 594 files changed, added or removed in 211 commits.
+	- Python is now a required component for Draco.
+	- Added support for f90cache
+	- Added a runtime_check function to rtt_c4
+	- Added a parallel output stream.
+	- Added "ythi", which is like xthi except uses std::thread instead of OpenMP.
+	- Force DbC failures to print a stacktrace (when DRACO_DIAGNOSTICS & 2).
+	- Added an Appveyor (win32) build to the CI.
+	- Complete preliminary Draco_Mesh builder, using RTT mesh parser.
+	- Added a X3D Draco_Mesh parser.
+	- Begin using Docker images for Travis CI
+	- Begin supporting 64-bit builds under Visual Studio
+	- Begin requiring cmake-3.11+
+	- Provide a basic Prefetch capability.
+	- Fix a compatibility issue related to Python3
+	- Update developer environment for Darwin.
+	- Add unstructured cell type option to Ensight translator.
+
+	Corrected defects:
+
+	- Github #379 Fix an MPI detection issue.
+	- Github #391 Fix bug in operator precedence in Expression parser.
+	- Github #396 Fix OpenMPI detection when using clang++/clang/gfortran combination.
+	- Github #401 Fix a bad entry in valgrind_suppress.txt.
+	- Github #403 Fix a bug in sync_repository.sh that prevented PRs from running.
+	- Github #407 Fix bug in Timer::printline_mean
+	- Github #409 Fix bug in compilerEnv.cmake wrt MSVC builds.
+	- Github #410 Fix broken Jayenne-win32 builds (CMakeAddFortranSubdirectory failures)
+	- Github #431 Alternate solution for Processor_Group definition/instantiation conflict.
+	- Github #429 Ensure that Processor_Group.t.hh is installed in the include/c4 directory.
+	- Github #433 Minor patch to fix a bug related to Win32 builds.
+	- Github #435 Fix a bug in .bashrc; update sample dotfiles.
+	- Github #458 Fix ambiguous type conversion issue when compiling on a MAC
+	- Github #480 Fix some issues in ofpstream that were causing McGrid to fail.
+	- Github #482 Fix broken draco_info tool.
+	- Github #483 Fix GSL discovery.
+	- Github #485 Avoid compiling for AVX2 instructions on older hardware.
+	- Github #502 Fix warnings/errors reported in Visual Studio regressions.
+	- Github #503 Remove extraneous paren in .bash_slurm
+	- Bug #1048 Capsaicin builds broken for clang
+	- Bug #1115 Travis runner for Github is broken
+	- Bug #1116 trinitite: cmake/3.10.2 breaks MPI detection
+	- Bug #1117 Snow: Draco dev environment broken after 'newgrp'
+	- Bug #1119 ccs-net: update modulefiles to LMOD
+	- Bug #1120 Add clang/4.0.1 build to standard PR checks on ccscs2
+	- Bug #1121 Visual Studio: header files not listed under project sources
+	- Bug #1128 Review constants
+	- Bug #1130 Draco configure should fail if python is not found
+	- Bug #1131 checkpr.sh did not start after sync_repository found an update for capsaicin
+	- Bug #1154 Github Travis builds currently broken
+	- Bug #1167 Cray: Build system fails if CXX doesn't point to cray compile wrapper
+	- Bug #1172 modulefile for eospac/6.3.X missing from fire/ice
+	- Bug #1177 Move some regression testing from ccscs2 to ccscs3
+	- Bug #1178 CDash mismatch between email and online report
+	- Bug #1181 Create updated vendors.tar.gz to be used with gitlab runners
+	- Bug #1198 Win32 builds crash after PR #425
+	- Bug #1203 Trinitite: Run test to verify OOM killer messages are printed.
+	- Bug #1226 Regressions/Builds finding wrong 'mpiexec' on Cray machines
+	- Bug #1228 Cap Gitlab - use docker image for tests.
+	- Bug #1237 Create PR for CMake with Cray fixes for C++14
+	- Bug #1270 1-sided RMA messaging is broken on Trinitite/Trinity
+
+	New Features:
+
+	- Github #380 Add more valgrind suppression rules.
+	- Github #381 Cleanup to support newer win32 test environment.
+	- Github #382 Clean up some files that haven't been touched in a while.
+	- Github #383 Minor tweaks to the draco developer environment.
+	- Github #384 Ensure draco's bash functions are available in a subshell.
+	- Github #385 Promote python requirement to 'always required'
+	- Github #386 Allow multiple values for extra_params in the regression system. (allows knl + vtest)
+	- Github #388 Ensure that the lapack CMake target points to a blas installation.
+	- Github #392 Improve FindEOSPAC.cmake
+	- Github #393 Eliminate a Draco bashrc error from printing.
+	- Github #394 Add support for f90cache.
+	- Github #395 Provide small changes to better support newer versions of CMake.
+	- Github #399 CCS-NET: Update developer environment to use newer tools.
+	- Github #375 Use features of cmake-3.9 to set project version, related to #231
+	- Github #378 Add a runtime_check function to rtt_c4
+	- Github #400 Load modules 1-by-1 in bash_functions2 version of dracoenv.
+	- Github #402 Patch logic used to identify the Fortran compiler flavor.
+	- Github #404 Cleanup some code to eliminate build/run warnings.
+	- Github #405 Provide basic support for the flang (LLVM) compiler.
+	- Github #406 More GitHub badges
+	- Github #408 Improve robustness of compiler and MPI detection
+	- Github #411 Fixes for gitlab style runner
+	- Github #412 Add a parallel output stream.
+	- Github #413 Unstructured mesh prototype needs-work
+	- Github #414 Added "ythi", which is like xthi except uses std::thread instead of O…
+	- Github #415 Provide a unit test for ythi.
+	- Github #416 Update environments and regression scripts.
+	- Github #417 Force DbC failures to print a stacktrace (DRACO_DIAGNOSTICS & 2).
+	- Github #418 Minor tweaks to enable new package 'mesh' to build under VS2017.
+	- Github #419 Dbgopt
+	- Github #420 Disable Travis config/build/test builds.
+	- Github #421 Minor tweaks to the configure process.
+	- Github #422 Add an Appveyor (win32) build to the CI.
+	- Github #423 Safe a call to sqrt by wrapping its argument in fabs.
+	- Github #424 1st Draco_Mesh ghost cell implementation
+	- Github #425 Try to Re-enable a baseline (no MPI) Travis build.
+	- Github #426 Tweak indentation when printing valid keywords.
+	- Github #427 Cleanup C4 to allow DRACO_C4=SCALAR on Win32.
+	- Github #432 Enable more tests in the CI systems.
+	- Github #434 Complete preliminary Draco_Mesh builder, using RTT mesh parser.
+	- Github #436 Update clang-format rules for version 6.0
+	- Github #437 Add preliminary X3D Draco_Mesh parser.
+	- Github #438 Add ability to read X3D boundary files.
+	- Github #439 Fix url in pull request template.
+	- Github #440 Attempt to use Docker for Travis CI checks.
+	- Github #441 Tweaks to eliminate build warnings for 64-bit builds under VS2017.
+	- Github #442 Move default to Intel 18
+	- Github #443 More extensions to support 64-bit builds under VS 2017.
+	- Github #444 Include lapack_wrap for Linux+LLVM and Windows builds (if lapack is found)
+	- Github #445 More build system tweaks implemented while porting to VS2017 Win64.
+	- Github #446 More tweaks for Win32...
+	- Github #447 WIP: Begin requiring cmake-3.11+.
+	- Github #449 Add binary capability to Kent's parallel output file writer
+	- Github #451 Update mesh and X3D parser in src/mesh/ directory.
+	- Github #452 Add support for 5 static analysis tools.
+	- Github #453 Improve the use of implicit type conversion.
+	- Github #455 Update ds++/config.h to provide draco_isKNL.
+	- Github #456 Small tweaks and fixes.
+	- Github #457 Prefetch
+	- Github #461 Clean up build warnings reported by VS and fix some regression scripts
+	- Github #462 A few misc. updates.
+	- Github #463 Provide helper scripts for checking code style.
+	- Github #464 Fix a compatibility issue related to Python3
+	- Github #466 Improve ds++ code coverage by adding tests or removing features
+	- Github #467 Improve c4 code coverage by adding tests or removing features
+	- Github #468 Improve mesh_element and norms code coverage
+	- Github #469 Improve units, special_functions and viz code coverage
+	- Github #473 Improve quadrature coverage by adding tests or removing features.
+	- Github #474 Attempt to fix missing codecov reports.
+	- Github #476 Add support for Grizzly.
+	- Github #477 Restore the prune function to Ordinate_Space.
+	- Github #478 Extend rtt_viz::Ensight_Translator's ensight_dump function.
+	- Github #486 Improve coverage in cdi_ipcress (and other cleanup)
+	- Github #488 WIP: Clean up CAFS portion of build system to support x86 and x64.
+	- Github #489 Improve code coverage of cdi_ipcress by extending tests.
+	- Github #490 Ensure csk and ndi are loaded by default on trinity/trinitite.
+	- Github #491 Generalize X3D boundary condition specification.
+	- Github #492 Update developer environment for Darwin.
+	- Github #493 Fix build failure on Mac's associated with parse_number_impl
+	- Github #494 Move to cmake/3.12.1 on HPC machines.
+	- Github #495 Improve unit test coverage for quadrature/Level_Symmetric.cc
+	- Github #496 Enable warning level 4 for Visual Studio
+	- Github #497 Add a file include capability to Token_Streams.
+	- Github #498 Add unstructured cell type option to Ensight translator.
+	- Github #499 Formalize unstructured cell specification for Ensight.
+	- Github #505 Add more pragmas to suppress warnings found in R123 headers.
+	- Github #506 Minor patch to CMakeAddFortranSubdirectory to support Jayenne.
+	- Github #507 Minor code cleanup to eliminate build warnings from Visual Studio
+	- Github #509 Teach the PR regression system to also build autodoc.
+	- Feature #546 C++11 features to consider
+	- Feature #547 Begin using std::chrono
+	- Feature #648 CMake: Replace DLL_PUBLIC macros with WINDOWS_EXPORT_ALL_SYMBOLS
+	- Feature #1027 Test libquo@1.3 on ccs-net
+	- Feature #1245 DBS needs a way to identify KNL
+	- Support #1247 Evaulate vim bindings for clang-format
+	- Task #640 Demonstrate ParMetis build on Win32
+	- Task #1142 Update regression system to allow multiple values for option '-e'
+	- Task #1147 ccs-net: Provide newer tools for user_contrib
+	- Task #1153 tEospac fails when linked to EOSPAC 6.3.1
+	- Task #1158 Update scripts that mirror github/gitlab and push them
+	- Task #1159 Move dracodoc repository to gitlab
+	- Task #1160 User_contrib: build out tools for intel/18.0.2
+	- Task #1161 user_contrib: Provide modulefile for eospac/6.3.1
+	- Task #1195 Release Draco-6_24_0 with intel/18.0.2
+	- Task #1209 Test performance of intel/18 for 'fp-model'
+	- Task #1210 Move default dev environment/regressions to intel/18.0.2 on CTS and ATS
+	- Task #1218 Move windows regressions to new machine
+	- Task #1219 Update CMakeAddFortranSubdirectory
+	- Task #1234 Move default dev environment to cmake/3.12.1
+
+	Known Defects:
+
+	- Bug #1292 Track CMake + nvcc issue related to pthreads
+	- Bug #1291 Review doxygen build errors
+	- Bug #1289 Move docker containers to gitlab?
+	- Bug #1282 Add support for newer superlu-dist
+	- Bug #1269 Demo CDash running in a docker container
+	- Bug #1268 memory: needs more tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature: Needs more unit tests
+	- Bug #1250 Add git-commit-precomit-hook for f90
+	- Bug #1246 Cannot delete branches from forked EAP repo
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1207 Appveyor: enable more tests
+	- Bug #1152 Visualization: consider VTK or Silo
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1149 setupMPI.cmake: use 'cmake_host_system_information'
+	- Bug #1148 perfbench time variation on snow
+	- Bug #1133 Move code from c4 that doesn't wrap MPI
+	- Bug #1090 Regressions on trinitite occasionally fail with "address in use" errors
+	- Bug #1083 Darwin: demo power9+volta nodes
+	- Bug #1062 Prepare Darwin as sierra-proxy machine
+	- Bug #1049 Visit install not working on ccs-net machines
+	- Bug #1025 Add common build options to "Enabled features" list in build summary
+	- Bug #59 cdi_eospac design flaw
+
+	* Statistics
+
+Contributers (updated Release.cc and README.md with this ordering).
+
+CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger, James S. Warsa,
+      Alex R. Long, Kendra P. Keady, Jae H. Chang, Matt A. Cleveland, Andrew T. Till,
+      Tim Kelley and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
+     Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
+     Paul W. Talbot, and Katherine J. Wang.
+
+Lines of Code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             438          13056          22744          53868
+C/C++ Header                    348           7263          21164          17309
+Lisp                             18           2033           2927          13081
+CMake                           124           2182           5727           8982
+Bourne Shell                     33            706           1527           3164
+Python                           16            447            768           1474
+Bourne Again Shell               13            267            566           1460
+CSS                               1            113             37            395
+Fortran 90                        8            113            216            380
+C                                 4             59            129            288
+C Shell                           2             32             36            163
+DOS Batch                         4             59             92            109
+YAML                              3             22            140             65
+HTML                              2              6             47             65
+CUDA                              3             19             59             40
+make                              2             22             13             39
+--------------------------------------------------------------------------------
+SUM:                           1019          26399          56192         100882
+--------------------------------------------------------------------------------
+
+Code Doverage
+-------------
+
+Directory               Function Coverage           C/D Coverage
+---------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+quadrature/fctest/       1 /     1 = 100%       0 /     0
+lapack_wrap/            12 /    12 = 100%       0 /     0
+rng/                    57 /    57 = 100%      23 /    24 =  95%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+mesh/                   53 /    53 = 100%      75 /    80 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+ds++/                  333 /   333 = 100%     490 /   548 =  89%
+special_functions/      31 /    31 = 100%     193 /   216 =  89%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+cdi_ipcress/           106 /   106 = 100%     210 /   238 =  88%
+RTT_Format_Reader/     323 /   323 = 100%     377 /   434 =  86%
+linear/                 16 /    16 = 100%     335 /   392 =  85%
+cdi/                    46 /    46 = 100%      73 /    86 =  84%
+roots/                   8 /     8 = 100%     258 /   310 =  83%
+c4/bin/                  5 /     5 = 100%      23 /    28 =  82%
+mesh_element/           23 /    23 = 100%     154 /   197 =  78%
+viz/                    32 /    32 = 100%     138 /   178 =  77%
+meshReaders/            15 /    15 = 100%     122 /   162 =  75%
+norms/                  27 /    27 = 100%      23 /    36 =  63%
+cdi_eospac/             52 /    52 = 100%      65 /   127 =  51%
+compton/                10 /    10 = 100%       2 /     4 =  50%
+FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+c4/                    181 /   182 =  99%     445 /   511 =  87%
+quadrature/            224 /   226 =  99%     603 /   732 =  82%
+timestep/               62 /    63 =  98%     104 /   178 =  58%
+parser/                318 /   327 =  97%    1261 /  1609 =  78%
+cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+diagnostics/            16 /    21 =  76%      36 /    51 =  70%
+memory/                  4 /     6 =  66%       0 /     2 =   0%
+diagnostics/qt/          0 /     5 =   0%       0 /     0
+-------------------  ---------------------  ---------------------
+Total                 2193 /  2232 =  98%    5405 /  6613 =  81%
+
 2018-03-19  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* "Release draco-6_24_0":https://rtt.lanl.gov/redmine/versions/60.

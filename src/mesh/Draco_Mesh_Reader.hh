@@ -43,6 +43,10 @@ public:
   virtual std::vector<unsigned> get_sidenodes(size_t side) const = 0;
   virtual unsigned get_celltype(size_t cell) const = 0;
   virtual size_t get_sidetype(size_t side) const = 0;
+
+  // >>> SERVICES
+
+  virtual void read_mesh() = 0;
 };
 
 } // namespace rtt_mesh

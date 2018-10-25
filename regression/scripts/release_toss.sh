@@ -26,30 +26,47 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_24_0
+ddir=draco-6_25_0
 pdir=$ddir
 
 # environment (use draco modules)
 # release for each module set
-environments="intel1704env gcc640env"
+environments="intel1802env intel1704env gcc640env"
+function intel1802env()
+{
+  export VENDOR_DIR=/usr/projects/draco/vendors
+  run "module purge"
+  run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+  run "module load friendly-testing user_contrib"
+  run "module load cmake git numdiff"
+  run "module load intel/18.0.2 openmpi/2.1.2"
+  run "module load random123 eospac/6.3.0 gsl"
+  run "module load mkl metis ndi csk"
+  run "module load parmetis superlu-dist trilinos"
+  run "module list"
+}
 function intel1704env()
 {
+  export VENDOR_DIR=/usr/projects/draco/vendors
   run "module purge"
+  run "module use --append ${VENDOR_DIR}-ec/modulefiles"
   run "module load friendly-testing user_contrib"
   run "module load cmake git numdiff"
   run "module load intel/17.0.4 openmpi/2.1.2"
-  run "module load random123 eospac/6.2.4 gsl"
+  run "module load random123 eospac/6.3.0 gsl"
   run "module load mkl metis ndi csk"
   run "module load parmetis superlu-dist trilinos"
   run "module list"
 }
 function gcc640env()
 {
+  export VENDOR_DIR=/usr/projects/draco/vendors
   run "module purge"
+  run "module use --append ${VENDOR_DIR}-ec/modulefiles"
   run "module load friendly-testing user_contrib"
   run "module load cmake git numdiff"
   run "module load gcc/6.4.0 openmpi/2.1.2"
-  run "module load random123 eospac/6.2.4 gsl"
+  run "module load random123 eospac/6.3.0 gsl"
   run "module load mkl metis ndi"
   run "module load parmetis superlu-dist trilinos"
   run "module list"

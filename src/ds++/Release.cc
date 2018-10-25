@@ -100,32 +100,33 @@ const std::string author_list() {
   mmdevs current_developers;
   // not totally fair... KT got credit for LOC when svn repository was converted
   // to git.
-  current_developers.insert(fomdev(223653, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(11611, "Kent G. Budge"));
-  current_developers.insert(fomdev(3299, "James S. Warsa"));
-  current_developers.insert(fomdev(2833, "Alex R. Long"));
-  current_developers.insert(fomdev(970, "Kendra P. Keady"));
-  current_developers.insert(fomdev(399, "Jae H. Chang"));
-  current_developers.insert(fomdev(245, "Matt A. Cleveland"));
-  current_developers.insert(fomdev(130, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(85, "Andrew T. Till"));
-  current_developers.insert(fomdev(25, "Daniel Holladay"));
+  current_developers.insert(fomdev(227428, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(12535, "Kent G. Budge"));
+  current_developers.insert(fomdev(3464, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(3070, "James S. Warsa"));
+  current_developers.insert(fomdev(2627, "Alex R. Long"));
+  current_developers.insert(fomdev(1000, "Kendra P. Keady"));
+  current_developers.insert(fomdev(398, "Jae H. Chang"));
+  current_developers.insert(fomdev(244, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(120, "Andrew T. Till"));
+  current_developers.insert(fomdev(108, "Tim Kelley"));
   current_developers.insert(fomdev(1, "Kris C. Garrett"));
 
   mmdevs prior_developers;
 
-  prior_developers.insert(fomdev(4876, "Jeff D. Densmore"));
-  prior_developers.insert(fomdev(4368, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(2361, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(1458, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(4868, "Jeff D. Densmore"));
+  prior_developers.insert(fomdev(4058, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(2289, "Allan B. Wollaber"));
+  prior_developers.insert(fomdev(1450, "Rob B. Lowrie"));
   prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
-  prior_developers.insert(fomdev(314, "Paul W. Talbot"));
-  prior_developers.insert(fomdev(265, "Katherine J. Wang"));
+  prior_developers.insert(fomdev(313, "Paul W. Talbot"));
+  prior_developers.insert(fomdev(262, "Katherine J. Wang"));
   // < 100 lines
-  // prior_developers.insert(fomdev(82, "Peter Ahrens"));
-  // prior_developers.insert(fomdev(44, "Nick Myers"));
+  // prior_developers.insert(fomdev(78, "Peter Ahrens"));
+  // prior_developers.insert(fomdev(25, "Daniel Holladay"));
   // prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
   // prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
+  // prior_developers.insert(fomdev(1, "Nick Myers"));
 
   // Previous authors with no current LOC attribution: Tom Evans, Todd Adams,
   // John McGhee, Mike Buksas, Randy Roberts, Seth Johnson, Jeff Furnish, Paul
