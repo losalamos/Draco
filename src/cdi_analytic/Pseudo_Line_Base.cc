@@ -107,11 +107,6 @@ Pseudo_Line_Base::Pseudo_Line_Base(
 }
 
 //----------------------------------------------------------------------------//
-// Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
-//                                    double line_peak, double line_width,
-//                                    int number_of_edges, double edge_ratio,
-//                                    double Tref, double Tpow, double emin,
-//                                    double emax, unsigned seed)
 Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
                                    double line_peak, double line_width,
                                    int number_of_edges, double edge_ratio,

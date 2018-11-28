@@ -23,6 +23,7 @@ uint64_t total_allocation();
 uint64_t peak_allocation();
 uint64_t largest_allocation();
 
+//! Untested functions, commented out.
 void report_leaks(std::ostream &);
 
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
