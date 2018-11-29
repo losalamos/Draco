@@ -22,25 +22,25 @@
 # Haswell
 # --------------------
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne capsaicin\"
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne capsaicin core\"
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin\"
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin core\"
 
-01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"jayenne capsaicin\" -e vtest
+01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"jayenne capsaicin core\" -e vtest
 
 # performance over time
-01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p \"jayenne capsaicin\"
+01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p \"jayenne capsaicin core\"
 
 # --------------------
 # KNL
 # --------------------
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin\" -e knl
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin core\" -e knl
 
-01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"jayenne capsaicin\" -e \"knl vtest\"
+01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"jayenne capsaicin core\" -e \"knl vtest\"
 
 # performance over time
-01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e \"knl perfbench\" -p \"capsaicin\"
+01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e \"knl perfbench\" -p \"capsaicin core\"
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

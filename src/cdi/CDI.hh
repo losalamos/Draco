@@ -52,23 +52,27 @@ static double const NORM_FACTOR = 0.25 * coeff; // 15/(4*pi^4);
  * expansion.
  *
  * The taylor expansion of the planckian integral looks as follows:
+ *
  * \code
  * I(x) = c0 ( c3 x^3 + c4 x^4 + c5 x^5 + c7 x^7 + c9 x^9 + c11 x^11 + c13 x^13 +
  *           c15 x^15 + c17 x^17 + c19 x^19 + c21 x^21 )
  * \endcode
+ *
  * If done naively, this requires 136 multiplications. If you accumulate
  * the powers of \f$ x \f$ as you go, it can be done with 24 multiplications.
  *
  * If you express the polynomaial as follows:
+ *
  * \code
  * I(x) = c0 x^3 ( c3 + x ( c4 + x (c5 + x^2 ( c7 + x^2 ( c9 + x^2 ( c11 + x^2
  * ( c13 + x^2 ( c15 + x^2 ( c17 + x^2 ( c19 + x^2 c21 ) ) ) ) ) ) ) ) ) )
  * \endcode
+ *
  * the evaluation can be done with 13 multiplications. Furthermore, we do not
  * need to worry about overflow on large powers of \f$ x \f$, since the
  * largest power we compute is \f$ x^3 \f$.
  *
- * \param  The point at which the Planck integral is evaluated.
+ * \param[in] x The point at which the Planck integral is evaluated.
  * \return The integral value.
  */
 static inline double taylor_series_planck(double x) {
@@ -535,6 +539,7 @@ class DLL_PUBLIC_cdi CDI {
   //! Integrate the normalized Planckian from 0 to x (hnu/kT).
   inline static double integrate_planck(double const scaled_frequency);
 
+  //! Integrate the normalized Planckian from 0 to x (hnu/kT).
   inline static double integrate_planck(double const scaled_frequency,
                                         double const exp_scaled_freqeuency);
 
@@ -646,16 +651,16 @@ public:
   // -----------------------
 
   //! Integrate the normalized Planckian over a frequency range.
-  static double integratePlanckSpectrum(double const lowf, double const hif,
+  static double integratePlanckSpectrum(double const low, double const high,
                                         double const T);
 
   //! Integrate the normalized Rosseland over a frequency range.
-  static double integrateRosselandSpectrum(double const lowf, double const hif,
+  static double integrateRosselandSpectrum(double const low, double const high,
                                            double const T);
 
   //! Integrate the Planckian and Rosseland over a frequency range.
-  static void integrate_Rosseland_Planckian_Spectrum(double const lowf,
-                                                     double const hif,
+  static void integrate_Rosseland_Planckian_Spectrum(double const low,
+                                                     double const high,
                                                      double const T,
                                                      double &planck,
                                                      double &rosseland);
@@ -726,7 +731,8 @@ double CDI::integrate_planck(double const scaled_freq) {
  *        (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq upper integration limit, scaled by the temperature.
- *
+ * \param exp_scaled_freq upper integration limit, scaled by an exponential 
+ *           function.
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
  * There are 3 cases to consider:
@@ -766,6 +772,8 @@ double CDI::integrate_planck(double const scaled_freq,
  *         \f$ x (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq frequency upper integration limit scaled by temperature
+ * \param exp_scaled_freq upper integration limit, scaled by an exponential 
+ *           function.
  * \param planck Variable to return the Planck integral
  * \param rosseland Variable to return the Rosseland integral
  */

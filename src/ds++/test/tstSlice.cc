@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   container/test/tstSlice.cc
+ * \file   ds++/test/tstSlice.cc
  * \author Kent Budge
  * \date   Thu Jul  8 08:02:51 2004
  * \brief  Test the Slice subset container class.

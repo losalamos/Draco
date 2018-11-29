@@ -78,7 +78,16 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-//! trim whitespace (or other characters) from before and after main text.
+/*!
+ * \brief trim whitespace (or other characters) from before and after main 
+ *        text.
+ *
+ * \param[in] str The string that will be processed
+ * \param[in] whitespace A set of characters that will be removed.
+ *              (default: " \t")
+ * \return A new, probably shortened, string without unwanted leading/training
+ *         characters.
+ */
 std::string trim(std::string const &str, std::string const &whitespace) {
   auto const strBegin = str.find_first_not_of(whitespace);
   if (strBegin == std::string::npos)

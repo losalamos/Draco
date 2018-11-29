@@ -36,7 +36,7 @@ namespace rtt_cdi_eospac {
  * return types defined by EOSPAC.  Some data tables provide information for
  * more than one return type.
  *
- * \example cdi_eospac/test/tEospac.cc
+ * \sa cdi_eospac/test/tEospac.cc
  */
 //===========================================================================//
 

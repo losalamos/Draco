@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F_eta.hh
+ * \file   special_functions/F_eta.hh
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  For a fermionic species, calculate the dimensionless number
@@ -13,8 +13,6 @@
  */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 #ifndef sf_F_eta_hh
 #define sf_F_eta_hh
 
@@ -23,7 +21,7 @@
 namespace rtt_sf {
 
 //! Calculate the relativistic Fermi-Dirac dimensionless number density.
-DLL_PUBLIC_special_functions double F_eta(double eta, double gamma);
+DLL_PUBLIC_special_functions double F_eta(double const eta, double const gamma);
 
 } // end namespace rtt_sf
 

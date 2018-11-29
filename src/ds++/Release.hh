@@ -26,7 +26,7 @@ typedef std::pair<int, std::string> fomdev;
 //! Query package for the release number.
 const std::string release();
 //! Return a list of Draco authors
-const std::string author_list();
+const std::string author_list(bool const use_doxygen_formatting = false);
 //! Return a list of Draco authors
 const std::string copyright();
 

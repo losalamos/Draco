@@ -15,7 +15,7 @@
 # CONFIGURATION:
 # select which pre-commit hooks are going to be installed
 #HOOKS="pre-commit pre-commit-compile pre-commit-uncrustify"
-HOOKS="pre-commit pre-commit-clang-format"
+HOOKS="pre-commit pre-commit-clang-format pre-commit-f90-format f90-format.el"
 ###########################################################
 # There should be no need to change anything below this line.
 
@@ -46,16 +46,14 @@ SCRIPTPATH="$(dirname -- "$SCRIPT")"
 # copy hooks to the directory specified as parameter
 copy_hooks() {
   echo "Copying hooks to destination directory:"
-  for hook in $HOOKS
-  do
+  for hook in $HOOKS; do
     echo "Copying $hook to $dotgitdir/hooks/."
     cp -i -- "$SCRIPTPATH/$hook" "$dotgitdir/hooks/." || true
   done
 
   echo ""
   echo "Checking if hooks are executable:"
-  for hook in $HOOKS
-  do
+  for hook in $HOOKS; do
     if [ ! -x "$dotgitdir/hooks/$hook" ] ; then
       chmod +x $dotgitdir/hooks/$hook
     else

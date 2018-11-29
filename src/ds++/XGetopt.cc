@@ -44,7 +44,7 @@ std::vector<char> XGetopt::decompose_shortopts(std::string const &shortopts) {
 /*!
  * \brief Convert a map<char,string> into easy-to-parse vectors and strip
  *        colons.
- * \param[in] longopts A map<char,string> data structure that contains all
+ * \param[in] longopts_ A map<char,string> data structure that contains all
  *            supported options that are to be registered. Each entry pair
  *            represents one option that is registered, a short option that is
  *            used with a single dash (-h) and a long option that is used with a

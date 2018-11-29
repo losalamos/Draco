@@ -18,7 +18,8 @@ using rtt_dsxx::soft_equiv;
 
 //=======================================================================================//
 /*!
- * \class Ordinate \brief Class containing angle cosines and weights for an
+ * \class Ordinate 
+ * \brief Class containing angle cosines and weights for an
  *        element of an ordinate set.
  *
  * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x

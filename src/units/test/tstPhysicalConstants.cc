@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   src/units/tstPhysicalConstants.cc
+ * \file   src/units/test/tstPhysicalConstants.cc
  * \author Kelly Thompson
  * \date   Mon Nov  3 22:35:14 2003
  * \brief  test the PhysicalConstants class

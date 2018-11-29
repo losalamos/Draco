@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {

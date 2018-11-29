@@ -105,7 +105,7 @@ void print_text_with_word_wrap(std::string const &longstring,
 }
 
 //---------------------------------------------------------------------------//
-std::string DracoInfo::fullReport(void) {
+std::string DracoInfo::fullReport(void) const {
   using std::cout;
   using std::endl;
 
@@ -180,7 +180,7 @@ std::string DracoInfo::fullReport(void) {
 }
 
 //---------------------------------------------------------------------------//
-std::string DracoInfo::briefReport(void) {
+std::string DracoInfo::briefReport(void) const {
   std::ostringstream infoMessage;
 
   // Print version and copyright information to the screen:
@@ -192,7 +192,7 @@ std::string DracoInfo::briefReport(void) {
 
 //---------------------------------------------------------------------------//
 //! extract the single-line version info from release and return it
-std::string DracoInfo::versionReport(void) {
+std::string DracoInfo::versionReport(void) const {
   std::ostringstream infoMessage;
   print_text_with_word_wrap(release, 5, 80, infoMessage, ";");
   infoMessage << "\n" << std::endl;

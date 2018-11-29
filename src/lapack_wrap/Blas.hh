@@ -3,9 +3,7 @@
  * \file   lapack_wrap/Blas.hh
  * \brief  Header for BLAS functions.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __lapack_wrap_Blas_hh__
@@ -76,23 +74,6 @@ inline void blas_copy(const std::vector<T> &x, int increment_x,
 }
 
 //---------------------------------------------------------------------------//
-// x <- ax (SCAL)
-//---------------------------------------------------------------------------//
-/*!
- * \brief Do \f$ x\leftarrow\alpha x \f$ for type float.
- */
-// inline void blas_scal(int    N,
-//                       float  alpha,
-//                       float *x,
-//                       int    increment_x)
-// {
-//     Check (N >= 0);
-//     Check (x);
-
-//     FC_GLOBAL(sscal,SSCAL)(&N, &alpha, x, &increment_x);
-// }
-
-//---------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ x\leftarrow\alpha x \f$ for type double.
  */
@@ -108,7 +89,6 @@ inline void blas_scal(int N, double alpha, double *x, int increment_x) {
  * \brief Do \f$ x\leftarrow\alpha x \f$ for vector<T> type.
  *
  * \param x vector<T> array
- * \param increment_x x stride
  * \param alpha scalar of type T
  *
  * The results are written into x.
@@ -119,28 +99,6 @@ inline void blas_scal(T alpha, std::vector<T> &x, int /*increment_x*/) {
 
   blas_scal(static_cast<int>(x.size()), alpha, &x[0], 1);
 }
-
-//---------------------------------------------------------------------------//
-// dot <- x^T y (DOT)
-//---------------------------------------------------------------------------//
-/*!
- * \brief Do \f$ \mbox{dot}\leftarrow x^{T}y \f$ for type float.
- */
-// inline float blas_dot(int          N,
-//                       const float *x,
-//                       int          increment_x,
-//                       const float *y,
-//                       int          increment_y)
-// {
-//     Check (N >= 0);
-//     Check (x);
-//     Check (y);
-
-//     // do a single precision dot (inner) product
-//     return FC_GLOBAL(sdot,SDOT)(&N,
-//                                 const_cast<float *>(x), &increment_x,
-//                                 const_cast<float *>(y), &increment_y);
-// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -177,30 +135,6 @@ inline T blas_dot(const std::vector<T> &x, int increment_x,
   return blas_dot(static_cast<int>(x.size()), &x[0], increment_x, &y[0],
                   increment_y);
 }
-
-//---------------------------------------------------------------------------//
-// y <- ax + y (AXPY)
-//---------------------------------------------------------------------------//
-/*!
- * \brief Do \f$ y\leftarrow\alpha x + y \f$ for type float.
- *
- * Results are written into y.
- */
-// inline void blas_axpy(int          N,
-//                       float        alpha,
-//                       const float *x,
-//                       int          increment_x,
-//                       float       *y,
-//                       int          increment_y)
-// {
-//     Check (N >= 0);
-//     Check (x);
-//     Check (y);
-
-//     // do a single precision axpy
-//     FC_GLOBAL(saxpy,SAXPY)(&N, &alpha, const_cast<float *>(x), &increment_x, y,
-//                            &increment_y);
-// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -240,26 +174,6 @@ inline void blas_axpy(T alpha, const std::vector<T> &x, int increment_x,
   blas_axpy(static_cast<int>(x.size()), alpha, &x[0], increment_x, &y[0],
             increment_y);
 }
-
-//---------------------------------------------------------------------------//
-// nrm2 <- ||x||_2 (NRM2)
-//---------------------------------------------------------------------------//
-/*!
- * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ for type float.
- */
-// inline float blas_nrm2(int          N,
-//                        const float *x,
-//                        int          increment_x)
-// {
-//     Check (N >= 0);
-//     Check (x);
-
-//     // do a single precision 2-norm
-//     float nrm2 = FC_GLOBAL(snrm2,SNRM2)(&N, const_cast<float *>(x),
-//                                         &increment_x);
-//     Check (nrm2 >= 0.0);
-//     return nrm2;
-// }
 
 //---------------------------------------------------------------------------//
 /*!

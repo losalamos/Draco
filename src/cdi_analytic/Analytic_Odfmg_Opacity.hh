@@ -50,11 +50,11 @@ private:
   rtt_cdi::Model model;
 
   /*!
-     * \brief The band boundaries should be the same as in the rest of the
-     * problem.
-     * It should be a vector with size(the number of bands + 1), 0 on the left,
-     * and 1 on the right.
-     */
+   * \brief The band boundaries should be the same as in the rest of the
+   * problem.
+   * It should be a vector with size(the number of bands + 1), 0 on the left,
+   * and 1 on the right.
+   */
   std::vector<double> bandBoundaries;
 
 protected:
@@ -76,45 +76,45 @@ public:
   // >>> INTERFACE SPECIFIED BY rtt_cdi::OdfmgOpacity
 
   /*!
-     * \brief Opacity accessor that returns a 2-D vector of opacities (
-     *     groups * bands ) that correspond to the
-     *     provided temperature and density.
-     *
-     * \param targetTemperature The temperature value for which an
-     *     opacity value is being requested.
-     * \param targetDensity The density value for which an opacity
-     *     value is being requested.
-     * \return A vector of opacities.
-     */
+   * \brief Opacity accessor that returns a 2-D vector of opacities (
+   *     groups * bands ) that correspond to the
+   *     provided temperature and density.
+   *
+   * \param targetTemperature The temperature value for which an
+   *     opacity value is being requested.
+   * \param targetDensity The density value for which an opacity
+   *     value is being requested.
+   * \return A vector of opacities.
+   */
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
                                               double targetDensity) const = 0;
 
   /*!
-     * \brief Opacity accessor that returns a vector of multigroupband
-     *     opacity 2-D vectors that correspond to the provided vector of
-     *     temperatures and a single density value.
-     *
-     * \param targetTemperature A vector of temperature values for
-     *     which opacity values are being requested.
-     * \param targetDensity The density value for which an opacity
-     *     value is being requested.
-     * \return A vector of vectors of opacities.
-     */
+   * \brief Opacity accessor that returns a vector of multigroupband
+   *     opacity 2-D vectors that correspond to the provided vector of
+   *     temperatures and a single density value.
+   *
+   * \param targetTemperature A vector of temperature values for
+   *     which opacity values are being requested.
+   * \param targetDensity The density value for which an opacity
+   *     value is being requested.
+   * \return A vector of vectors of opacities.
+   */
   std::vector<std::vector<std::vector<double>>>
   getOpacity(const std::vector<double> &targetTemperature,
              double targetDensity) const = 0;
 
   /*!
-     * \brief Opacity accessor that returns a vector of 2-D vectors of
-     *     opacities that correspond to the provided vector of
-     *     densities and a single temperature value.
-     *
-     * \param targetTemperature The temperature value for which an
-     *     opacity value is being requested.
-     * \param targetDensity A vector of density values for which
-     *     opacity values are being requested.
-     * \return A vector of vectors of opacities.
-     */
+   * \brief Opacity accessor that returns a vector of 2-D vectors of
+   *     opacities that correspond to the provided vector of
+   *     densities and a single temperature value.
+   *
+   * \param targetTemperature The temperature value for which an
+   *     opacity value is being requested.
+   * \param targetDensity A vector of density values for which
+   *     opacity values are being requested.
+   * \return A vector of vectors of opacities.
+   */
   std::vector<std::vector<std::vector<double>>>
   getOpacity(double targetTemperature,
              const std::vector<double> &targetDensity) const = 0;
@@ -159,34 +159,34 @@ public:
   size_t getNumGroups() const { return groupBoundaries.size() - 1; }
 
   /*!
-     * \brief Returns a vector of points along the cumulative opacity
-     *          distribution that mark the fraction of each band. First point is
-     *          always zero, last point is always one.
-     */
+   * \brief Returns a vector of points along the cumulative opacity
+   *          distribution that mark the fraction of each band. First point is
+   *          always zero, last point is always one.
+   */
   std::vector<double> getBandBoundaries() const { return bandBoundaries; }
 
   /*!
-     * \brief Returns the number of group boundaries found in the
-     *     current multigroup data set.
-     */
+   * \brief Returns the number of group boundaries found in the
+   *     current multigroup data set.
+   */
   size_t getNumBandBoundaries() const { return bandBoundaries.size(); }
 
   /*!
-     * \brief Returns the number of band boundaries set in the
-     *     current multigroup data set. The lower boundary is always zero,
-     *     and the upper boundary is always one. Analagous to multigroup:
-     *     numBands = numBandBoundaries - 1.
-     */
+   * \brief Returns the number of band boundaries set in the
+   *     current multigroup data set. The lower boundary is always zero,
+   *     and the upper boundary is always one. Analagous to multigroup:
+   *     numBands = numBandBoundaries - 1.
+   */
   size_t getNumBands() const { return getNumBandBoundaries() - 1; }
 
   // Pack the Analytic_Odfmg_Opacity into a character string.
   virtual sf_char pack() const = 0;
 
   /*!
-     * \brief Returns the general opacity model type, defined in OpacityCommon.hh
-     *
-     * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
-     */
+   * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+   *
+   * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
+   */
   rtt_cdi::OpacityModelType getOpacityModelType() const {
     return rtt_cdi::ANALYTIC_TYPE;
   }

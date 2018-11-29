@@ -45,10 +45,7 @@ namespace rtt_roots {
  *
  * \param x Initial estimate of the solution of the set of equations.  On
  *         return, contains the best solution found.
- * \param STPMX Set size parameter.  A large value dials a large initial step in
- *         line minimization; a small value dials a small initial step.  Larger
- *         is better unless this takes the argument to the function outside the
- *         function's domain.  A typical choice for this parameter is 100.
+
  * \param vecfunc A Function_N_to_N object representing the set of nonlinear
  *         equations.
  * \param alf Success determination parameter for line search.  A value of 0
@@ -56,6 +53,12 @@ namespace rtt_roots {
  *         successful search.
  *
  * \pre \c x.size()>0
+ */
+/* (no doxygen)
+ * \param STPMX Set size parameter.  A large value dials a large initial step in
+ *         line minimization; a small value dials a small initial step.  Larger
+ *         is better unless this takes the argument to the function outside the
+ *         function's domain.  A typical choice for this parameter is 100.
  *
  * \bug KGB: STPMX is not a very useful tuning parameter.  In general, the
  *      search parameters are not very well thought out for this procedure.
@@ -278,12 +281,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
  *
  * \param x Initial estimate of the solution of the set of equations.  On
  *         return, contains the best solution found.
- *
- * \param STPMX Set size parameter.  A large value dials a large initial step in
- *         line minimization; a small value dials a small initial step.  Larger
- *         is better unless this takes the argument to the function outside the
- *         function's domain.  A typical choice for this parameter is 100.
- *
+
  * \param vecfunc A Function_N_to_N object representing the set of nonlinear
  *         equations.
  *
@@ -295,9 +293,15 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
  *         successful search.
  *
  * \param min_lambda Mimimum line search parameter at which to give up.
+ */
+/* (no doxygen)
+ * \param STPMX Set size parameter.  A large value dials a large initial step in
+ *         line minimization; a small value dials a small initial step.  Larger
+ *         is better unless this takes the argument to the function outside the
+ *         function's domain.  A typical choice for this parameter is 100.
  *
- * \bug KGB: STPMX is not a very useful tuning parameter.  In general,
- * the search parameters are not very well thought out for this procedure.
+ * \bug KGB: STPMX is not a very useful tuning parameter.  In general, the
+ *      search parameters are not very well thought out for this procedure.
  */
 template <class Field, class Function_N_to_N, class Function_N_to_NN>
 void broydn(std::vector<Field> &x, const double /*STPMX*/,

@@ -79,8 +79,14 @@ list( APPEND headers
    ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
-set_source_files_properties( Release.cc PROPERTIES 
-  COMPILE_DEFINITIONS BUILD_TYPE="$<CONFIG>" )
+if( ${CMAKE_GENERATOR} MATCHES "Xcode" )
+  # Xcode does not support per file, per configuration compile definitions, so
+  # we add this compile definition for all files
+  add_compile_definitions( BUILD_TYPE="$<CONFIG>" )
+else()
+  set_source_files_properties( Release.cc PROPERTIES
+    COMPILE_DEFINITIONS BUILD_TYPE="$<CONFIG>" )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Build package library

@@ -1,13 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F12.hh
+ * \file   special_functions/F12.hh
  * \author Kent Budge
  * \brief  Compute Fermi-Dirac function of 1/2 order
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef sf_F12_hh

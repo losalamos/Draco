@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Parse_Table_HH
-#define CCS4_Parse_Table_HH
+#ifndef rtt_Parse_Table_HH
+#define rtt_Parse_Table_HH
 
 #include "Token_Stream.hh"
 #include <cstring> // strcmp
@@ -294,7 +291,7 @@ DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // namespace rtt_parser
 
-#endif // CCS4_Parse_Table_HH
+#endif // rtt_Parse_Table_HH
 
 //---------------------------------------------------------------------------//
 // end of Parse_Table.hh

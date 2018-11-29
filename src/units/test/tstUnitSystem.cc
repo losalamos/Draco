@@ -1,11 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   src/units/tstUnitSystem.cc
+ * \file   src/units/test/tstUnitSystem.cc
  * \brief  test the UnitSystem class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved
- * \version $Id$
- */
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"

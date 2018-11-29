@@ -11,20 +11,15 @@
 #ifndef __cdi_ipcress_IpcressGrayOpacity_hh__
 #define __cdi_ipcress_IpcressGrayOpacity_hh__
 
-#include "IpcressDataTable.hh" // we have a smart pointer to a
-                               // IpcressDataTable object.
-// cdi_ipcress dependencies
+#include "IpcressDataTable.hh" // IpcressDataTable object.
 #include "cdi/GrayOpacity.hh"
 #include "cdi/OpacityCommon.hh"
-
-// Draco dependencies
-#include "ds++/Assert.hh"
-
-// C++ standard library dependencies
+#include "ds++/Assert.hh" // DbC
 #include <string>
 #include <vector>
 
 namespace rtt_cdi_ipcress {
+
 // -------------------- //
 // Forward declarations //
 // -------------------- //
@@ -90,7 +85,7 @@ class IpcressFile;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressGrayOpacity : public rtt_cdi::GrayOpacity {
+class IpcressGrayOpacity : public rtt_cdi::GrayOpacity {
 
   // DATA
 
@@ -98,15 +93,12 @@ class DLL_PUBLIC_cdi_ipcress IpcressGrayOpacity : public rtt_cdi::GrayOpacity {
   // Specify unique material //
   // ----------------------- //
 
-  /*!
-   * \brief The name of the ipcress data file.  This is saved for the packer
-   *         routines
-   */
+  //! The name of the ipcress data file.  This is saved for the packer routines
   std::string mutable ipcressFilename;
 
   /*!
    * \brief Identification number for one of the materials found in the
-   *     IPCRESS file pointed to by spIpcressFile.
+   *        IPCRESS file pointed to by spIpcressFile.
    */
   size_t materialID;
 
@@ -125,15 +117,15 @@ class DLL_PUBLIC_cdi_ipcress IpcressGrayOpacity : public rtt_cdi::GrayOpacity {
 
   /*!
    * \brief The physics model that the current data set is based on.
-   *     {Rosseland, Plank}.  This enumeration is defined in
-   *     cdi/OpacityCommon.hh.
+   *        {Rosseland, Plank}.  This enumeration is defined in
+   *        cdi/OpacityCommon.hh.
    */
   rtt_cdi::Model opacityModel;
 
   /*!
    * \brief The type of reaction rates that the current data set represents
-   *     { Total, Scattering, Absorption }. This enumeration is defined in
-   *     cdi/OpacityCommon.hh.
+   *        {Total, Scattering, Absorption}. This enumeration is defined in
+   *        cdi/OpacityCommon.hh.
    */
   rtt_cdi::Reaction opacityReaction;
 
@@ -146,7 +138,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressGrayOpacity : public rtt_cdi::GrayOpacity {
 
   /*!
    * \brief spIpcressDataTable contains a cached copy of the requested
-   *     IPCRESS opacity lookup table.
+   *        IPCRESS opacity lookup table.
    *
    * There is a one-to-one relationship between IpcressGrayOpacity and
    * IpcressDataTable.
@@ -160,8 +152,8 @@ public:
 
   /*!
    * \brief This is the default IpcressGrayOpacity constructor.  It requires
-   *     four arguments plus the energy policy (this class) to be
-   *     instantiated.
+   *        four arguments plus the energy policy (this class) to be
+   *        instantiated.
    *
    * The combiniation of a data file and a material ID uniquely specifies a
    * material.  If we add the Model, Reaction and EnergyPolicy the opacity
@@ -171,16 +163,16 @@ public:
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one
    *     IpcressFile object for each IpcressOpacity object.
-   * \param materialID An identifier that links the IpcressOpacity object to
+   * \param in_materialID An identifier that links the IpcressOpacity object to
    *     a single material found in the specified IPCRESS file.
-   * \param opacityModel The physics model that the current data set is
+   * \param in_opacityModel The physics model that the current data set is
    *     based on.
-   * \param opacityReaction The type of reaction rate that the current data
+   * \param in_opacityReaction The type of reaction rate that the current data
    *     set represents.
    */
   IpcressGrayOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
-                     size_t materialID, rtt_cdi::Model opacityModel,
-                     rtt_cdi::Reaction opacityReaction);
+                     size_t in_materialID, rtt_cdi::Model in_opacityModel,
+                     rtt_cdi::Reaction in_opacityReaction);
 
   /*!
    * \brief Unpacking constructor.
@@ -207,11 +199,11 @@ public:
   // --------- //
 
   /*!
-   * \brief Opacity accessor that utilizes STL-like iterators.  This
-   *     accessor expects a list of (temperature,density) tuples.  An
-   *     opacity value will be returned for each tuple.  The temperature and
-   *     density iterators are required to be the same length.  The opacity
-   *     iterator should also have this same length.
+   * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
+   *        expects a list of (temperature,density) tuples.  An opacity value
+   *        will be returned for each tuple.  The temperature and density 
+   *        iterators are required to be the same length.  The opacity
+   *        iterator should also have this same length.
    *
    * \param temperatureFirst The beginning position of a STL container that
    *     holds a list of temperatures.
@@ -227,19 +219,18 @@ public:
    *     These opacities correspond to the temperature and density values
    *     provied in the two InputIterators.
    */
-  template <class TemperatureIterator, class DensityIterator,
-            class OpacityIterator>
+  template <typename TemperatureIterator, typename DensityIterator,
+            typename OpacityIterator>
   OpacityIterator
   getOpacity(TemperatureIterator temperatureFirst,
              TemperatureIterator temperatureLast, DensityIterator densityFirst,
              DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
-   * \brief Opacity accessor that utilizes STL-like iterators.  This
-   *     accessor expects a list of temperatures in an STL container.
-   *     An opacity value will be returned for each temperature
-   *     provided.  The opacity iterator should be the same length
-   *     as the temperature STL container.
+   * \brief Opacity accessor that utilizes STL-like iterators.  This accessor 
+   *        expects a list of temperatures in an STL container.  An opacity 
+   *        value will be returned for each temperature provided.  The opacity 
+   *        iterator should be the same length as the temperature STL container.
    *
    * \param temperatureFirst The beginning position of a STL
    *     container that holds a list of temperatures.
@@ -254,7 +245,7 @@ public:
    *     returned.  These opacities correspond to the temperature
    *     and density values provied.
    */
-  template <class TemperatureIterator, class OpacityIterator>
+  template <typename TemperatureIterator, typename OpacityIterator>
   OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
                              TemperatureIterator temperatureLast,
                              double targetDensity,
@@ -280,7 +271,7 @@ public:
    *     returned.  These opacities correspond to the temperature
    *     and density values provied.
    */
-  template <class DensityIterator, class OpacityIterator>
+  template <typename DensityIterator, typename OpacityIterator>
   OpacityIterator
   getOpacity(double targetTemperature, DensityIterator densityFirst,
              DensityIterator densityLast, OpacityIterator opacityFirst) const;
@@ -445,8 +436,8 @@ public:
 // getOpacity with Tuple of (T,rho) arguments //
 // ------------------------------------------ //
 
-template <class TemperatureIterator, class DensityIterator,
-          class OpacityIterator>
+template <typename TemperatureIterator, typename DensityIterator,
+          typename OpacityIterator>
 OpacityIterator IpcressGrayOpacity::getOpacity(
     TemperatureIterator tempIter, TemperatureIterator tempLast,
     DensityIterator densIter, DensityIterator Remember(densLast),
@@ -466,7 +457,7 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
 // getOpacity() with container of temps //
 // ------------------------------------ //
 
-template <class TemperatureIterator, class OpacityIterator>
+template <typename TemperatureIterator, typename OpacityIterator>
 OpacityIterator IpcressGrayOpacity::getOpacity(TemperatureIterator tempIter,
                                                TemperatureIterator tempLast,
                                                double targetDensity,
@@ -483,7 +474,7 @@ OpacityIterator IpcressGrayOpacity::getOpacity(TemperatureIterator tempIter,
 // getOpacity() with container of densities //
 // ---------------------------------------- //
 
-template <class DensityIterator, class OpacityIterator>
+template <typename DensityIterator, typename OpacityIterator>
 OpacityIterator IpcressGrayOpacity::getOpacity(double targetTemperature,
                                                DensityIterator densIter,
                                                DensityIterator densLast,

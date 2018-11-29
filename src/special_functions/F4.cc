@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F4.cc
+ * \file   special_functions/F4.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of F4 
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "F4.hh"

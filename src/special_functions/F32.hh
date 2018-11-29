@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F32.hh
+ * \file   special_functions/F32.hh
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Compute Fermi-Dirac function of 1/2 order
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef sf_F32_hh

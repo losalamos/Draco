@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/C4_MPI_swap_pt.cc
+ * \file   c4/swap_pt.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate swap instantiations.
@@ -45,5 +45,5 @@ determinate_swap(std::vector<std::vector<unsigned>> const &outgoing_data,
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-// end of C4_MPI_swap_pt.cc
+// end of swap_pt.cc
 //---------------------------------------------------------------------------//

@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F_eta.cc
+ * \file   special_functions/F_eta.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta.
@@ -29,53 +29,6 @@ using rtt_units::PI;
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Integrand of integral representation of F_eta
- *
- * \param x[in] Argument
- *
- * \return Value of integrand at the argument,
- *         \f$\frac{(x^2+2x)^{3/2}}{e^\frac{x-\eta}{\gamma}+1}\f$
- *
- * \post \c Result>=0
- *
- * \bug no unit tests cover this function, so commenting it out.
- */
-// static double Feta_integrand(double x) {
-//   double const y = x * x + 2 * x;
-//   double const d = (2 * lgamma * lgamma * sqrt(2 * lgamma));
-//   double const expp1 = exp((x - leta) / lgamma) + 1;
-//   double const dexpp1 = -exp((x - leta) / lgamma) / lgamma;
-//   double const Result = -dexpp1 * cube(sqrt(y)) / (square(expp1) * d);
-
-//   Ensure(Result >= 0.0);
-//   return Result;
-// }
-
-//----------------------------------------------------------------------------//
-//! \bug no unit tests cover this function, so commenting it out.
-// static double Feta_brute(double const eta, double const gamma) {
-//   // Partial degenerate: Sommerfeld expansion not sufficiently accurate.  Must
-//   // integrate explicitly.
-//   leta = eta;
-//   lgamma = gamma;
-//   double const max1 = (eta > 0 ? Feta_integrand(eta) : 0);
-//   double const max2 = Feta_integrand(1.5 * gamma);
-//   double const max3 = Feta_integrand(3 * gamma);
-//   double tol = numeric_limits<double>::epsilon() * max(max1, max(max2, max3)) *
-//                (max(eta, 0.0) + gamma);
-
-//   // help the compiler out by telling it that rkqs is a function pointer that
-//   // returns void and has the following argument list.  We have added this
-//   // typedef because cxx needs help parsing the call to quad(...).
-//   typedef void (*fpv)(std::vector<double> &, std::vector<double> const &,
-//                       double &, double, double, std::vector<double> const &,
-//                       double &, double &, Quad_To_ODE<double (*)(double)>);
-//   fpv rkqs_fpv = &rkqs<double, Quad_To_ODE<double (*)(double)>>;
-//   return quad(&Feta_integrand, 0.0, max(eta, 0.0) + 50 * gamma, tol, rkqs_fpv);
-// }
-
-//---------------------------------------------------------------------------//
-/*!
  * \brief Evaluate the relativistic Fermi-Dirac integral
  *
  * The relativistic Fermi-Dirac integral is defined as
@@ -85,8 +38,8 @@ using rtt_units::PI;
  * \f]
  * The dimensionless number density is its partial derivative with eta.
  *
- * \param eta[in] Dimensionless chemical potential \f$\eta=\frac{\mu}{kT}\f$
- * \param gamma[in] Dimensionless temperature \f$\gamma=\frac{kT}{mc^2}\f$
+ * \param[in] eta Dimensionless chemical potential \f$\eta=\frac{\mu}{kT}\f$
+ * \param[in] gamma Dimensionless temperature \f$\gamma=\frac{kT}{mc^2}\f$
  *
  * \return Dimensionless number density \f$\frac{\partial
  *         F_{3/2}}{\partial\eta}=\frac{3Nh^3}{8\pi m^3c^3}\f$.

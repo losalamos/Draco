@@ -106,10 +106,14 @@
 #endif
 #ifndef HAVE_HOST_NAME_MAX
     #ifdef HAVE_MAXHOSTNAMELEN
+        #ifndef HOST_NAME_MAX
         #define HOST_NAME_MAX MAXHOSTNAMELEN
+        #endif
         #define HAVE_HOST_NAME_MAX
     #else
+        #ifndef HOST_NAME_MAX
         #define HOST_NAME_MAX 256
+        #endif
         #define HAVE_HOST_NAME_MAX
     #endif
 #endif

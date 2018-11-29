@@ -10,8 +10,8 @@
 
 //---------------------------------------------------------------------------//
 
-#ifndef CCS4_String_Token_Stream_HH
-#define CCS4_String_Token_Stream_HH
+#ifndef rtt_String_Token_Stream_HH
+#define rtt_String_Token_Stream_HH
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
@@ -93,7 +93,7 @@ private:
 
 } // namespace rtt_parser
 
-#endif // CCS4_String_Token_Stream_HH
+#endif // rtt_String_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of String_Token_Stream.hh

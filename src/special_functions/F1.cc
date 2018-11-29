@@ -1,12 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F1.cc
+ * \file   special_functions/F1.cc
  * \author Kent Budge
  * \brief  Implementation of F1
- * \note   © Copyright 2016 LANSLLC All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security,
+*          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "F1.hh"
@@ -27,7 +25,7 @@ using namespace std;
  * expansion to get the fermi-dirac integral. Reference: antia apjs 84,101
  * 1993
  * 
- * \param eta Dimensionless chemical potential \f$\eta\f$
+ * \param x Dimensionless chemical potential \f$\eta\f$
  *
  * \return Value of \f$F_1(\eta)\f$
  *
@@ -91,5 +89,5 @@ double F1(double const x) {
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F1.cc
+// end of F1.cc
 //---------------------------------------------------------------------------//

@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   fpe_trap/test/do_exception.cc
+ * \file   ds++/test/do_exception.cc
  * \author Rob Lowrie
  * \date   Thu Oct 13 14:33:59 2005
  * \brief  Does a floating-point exception.

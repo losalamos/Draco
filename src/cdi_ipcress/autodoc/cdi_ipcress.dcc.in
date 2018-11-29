@@ -1,24 +1,18 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-C++-*-----------------------------------//
 // cdi_ipcress.dcc
 // cdi_ipcress Overview page
 // Thomas M. Evans
 // Mon Apr 19 14:18:09 2004
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_cdi_ipcress Overview of the cdi_ipcress package
 \version Draco-@Draco_VERSION@
 \author Kelly Thompson
 
-The cdi_ipcress package is part of cdi.  It provides an interface to
-the IPCRESS opacities library.
-
-<!---------------------------------------------------------------------------->
+The cdi_ipcress package is part of cdi.  It provides an interface to the IPCRESS
+opacities library.
 
 */
 

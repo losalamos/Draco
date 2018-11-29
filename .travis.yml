@@ -66,6 +66,7 @@ env:
   - STYLE=ON
   - WERROR=ON COVERAGE=ON DRACO_C4=SCALAR
   - WERROR=ON COVERAGE=ON DRACO_C4=MPI
+  - WERROR=ON DRACO_C4=MPI AUTODOC=ON
 
 # matrix:
 #   allow_failures:
@@ -85,7 +86,7 @@ install:
 
 script:
   - if [[ ${COVERAGE:-OFF} == "ON" ]]; then ci_env=`/bin/bash <(curl -s https://codecov.io/env)`; fi
-  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} kinetictheory/draco-travis-ci /bin/bash -l -c "${SOURCE_DIR}/regression/travis-run-tests.sh"
+  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CI=${CI} -e TRAVIS=${TRAVIS} kinetictheory/draco-travis-ci /bin/bash -l -c "${SOURCE_DIR}/regression/travis-run-tests.sh"
 
 #------------------------------------------------------------------------------#
 # See also:

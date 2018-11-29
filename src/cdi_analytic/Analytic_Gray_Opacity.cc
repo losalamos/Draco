@@ -10,7 +10,6 @@
 
 #include "Analytic_Gray_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
-#include <cmath>
 
 namespace rtt_cdi_analytic {
 
@@ -26,10 +25,10 @@ namespace rtt_cdi_analytic {
  * The reaction type for this instance of the class is determined by the
  * rtt_cdi::Reaction argument.
  *
- * \param analytic_model_in shared_ptr to a derived
- * rtt_cdi_analytic::Analytic_Opacity_Model object
- *
+ * \param model_in shared_ptr to a derived
+ *           rtt_cdi_analytic::Analytic_Opacity_Model object
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
+ * \param cdi_model_in CDI model type
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
                                              rtt_cdi::Reaction reaction_in,

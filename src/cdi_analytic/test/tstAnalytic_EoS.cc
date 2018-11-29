@@ -454,7 +454,6 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

@@ -66,9 +66,9 @@ public:
    *        density.
    *
    * \param targetTemperature The temperature value for which an opacity value
-   *     is being requested.
+   *             is being requested.
    * \param targetDensity The density value for which an opacity value is being
-   *     requested.
+   *             requested.
    * \return A vector of opacities.
    */
   std::vector<std::vector<double>> getOpacity(double targetTemperature,

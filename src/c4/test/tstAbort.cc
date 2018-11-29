@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4_test/test/tstAbort.cc
+ * \file   c4/test/tstAbort.cc
  * \author Thomas M. Evans
  * \date   Thu Jun  2 09:28:02 2005
  * \brief  C4 Abort test.

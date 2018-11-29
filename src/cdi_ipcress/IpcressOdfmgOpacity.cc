@@ -9,15 +9,8 @@
 //---------------------------------------------------------------------------//
 
 #include "IpcressOdfmgOpacity.hh"
-#include "IpcressDataTable.hh"
-#include "IpcressFile.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 
 namespace rtt_cdi_ipcress {
 

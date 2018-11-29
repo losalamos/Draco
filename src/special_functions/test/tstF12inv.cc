@@ -1,24 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/tstF12inv.cc
+ * \file   special_functions/test/tstF12inv.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \brief
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <cmath>
-#include <limits>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "special_functions/F12.hh"
 #include "special_functions/F12inv.hh"
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace rtt_dsxx;

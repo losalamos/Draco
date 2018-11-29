@@ -31,23 +31,19 @@ template <typename T> void tst_copy(rtt_dsxx::UnitTest &ut) {
     x[i] = static_cast<T>(1.2 + i);
 
   blas_copy(10, &x[0], 1, &y[0], 1);
-  if (!soft_equiv(x.begin(), x.end(), y.begin(), y.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
 
   std::fill(y.begin(), y.end(), static_cast<T>(0.0));
-  if (soft_equiv(x.begin(), x.end(), y.begin(), y.end()))
-    ITFAILS;
+  FAIL_IF(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
 
   blas_copy(x, 1, y, 1);
-  if (!soft_equiv(x.begin(), x.end(), y.begin(), y.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
 
   string ttype(typeid(T).name());
   if (ut.numFails == 0)
-    PASSMSG(std::string("BLAS copy (") + ttype +
-            std::string("float) tests ok."));
+    PASSMSG(std::string("BLAS copy (") + ttype + "float) tests ok.");
   else
-    PASSMSG(std::string("BLAS copy (") + ttype + std::string("float) fails."));
+    FAILMSG(std::string("BLAS copy (") + ttype + "float) fails.");
   return;
 }
 
@@ -66,20 +62,17 @@ template <typename T> void tst_scal(rtt_dsxx::UnitTest &ut) {
 
   x = y;
   blas_scal(10, alpha, &x[0], 1);
-  if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()));
 
   x = y;
   blas_scal(alpha, x, 1);
-  if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()));
 
   string ttype(typeid(T).name());
   if (ut.numPasses > 0 && ut.numFails == 0)
-    PASSMSG(std::string("BLAS scal (") + ttype +
-            std::string("float) tests ok."));
+    PASSMSG(std::string("BLAS scal (") + ttype + "float) tests ok.");
   else
-    PASSMSG(std::string("BLAS scal (") + ttype + std::string("float) fails."));
+    FAILMSG(std::string("BLAS scal (") + ttype + "float) fails.");
   return;
 }
 
@@ -98,21 +91,18 @@ template <typename T> void tst_dot(rtt_dsxx::UnitTest &ut) {
   }
 
   dot = blas_dot(10, &x[0], 1, &y[0], 1);
-  if (!soft_equiv(dot, ref))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(dot, ref));
   dot = 0.0;
 
   dot = blas_dot(x, 1, y, 1);
-  if (!soft_equiv(dot, ref))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(dot, ref));
   dot = 0.0;
 
   string ttype(typeid(T).name());
   if (ut.numPasses > 0 && ut.numFails == 0)
-    PASSMSG(std::string("BLAS dot (") + ttype +
-            std::string("float) tests ok."));
+    PASSMSG(std::string("BLAS dot (") + ttype + "float) tests ok.");
   else
-    PASSMSG(std::string("BLAS dot (") + ttype + std::string("float) fails."));
+    FAILMSG(std::string("BLAS dot (") + ttype + "float) fails.");
   return;
 }
 
@@ -130,20 +120,17 @@ template <typename T> void tst_axpy(rtt_dsxx::UnitTest &ut) {
   }
 
   blas_axpy(10, alpha, &x[0], 1, &y[0], 1);
-  if (!soft_equiv(y.begin(), y.end(), ref.begin(), ref.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(y.begin(), y.end(), ref.begin(), ref.end()));
 
   fill(y.begin(), y.end(), 1.0);
   blas_axpy(alpha, x, 1, y, 1);
-  if (!soft_equiv(y.begin(), y.end(), ref.begin(), ref.end()))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(y.begin(), y.end(), ref.begin(), ref.end()));
 
   string ttype(typeid(T).name());
   if (ut.numPasses > 0 && ut.numFails == 0)
-    PASSMSG(std::string("BLAS axpy (") + ttype +
-            std::string("float) tests ok."));
+    PASSMSG(std::string("BLAS axpy (") + ttype + "float) tests ok.");
   else
-    PASSMSG(std::string("BLAS axpy (") + ttype + std::string("float) fails."));
+    FAILMSG(std::string("BLAS axpy (") + ttype + "float) fails.");
   return;
 }
 
@@ -161,25 +148,21 @@ template <typename T> void tst_nrm2(rtt_dsxx::UnitTest &ut) {
   ref = sqrt(ref);
 
   nrm = blas_nrm2(10, &x[0], 1);
-  if (!soft_equiv(nrm, ref))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(nrm, ref));
   nrm = 0.0;
 
   nrm = blas_nrm2(x.begin(), x.end());
-  if (!soft_equiv(nrm, ref))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(nrm, ref));
   nrm = 0.0;
 
   nrm = blas_nrm2(x, 1);
-  if (!soft_equiv(nrm, ref))
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(nrm, ref));
 
   string ttype(typeid(T).name());
   if (ut.numPasses > 0 && ut.numFails == 0)
-    PASSMSG(std::string("BLAS nrm2 (") + ttype +
-            std::string("float) tests ok."));
+    PASSMSG(std::string("BLAS nrm2 (") + ttype + "float) tests ok.");
   else
-    PASSMSG(std::string("BLAS nrm2 (") + ttype + std::string("float) fails."));
+    FAILMSG(std::string("BLAS nrm2 (") + ttype + "float) fails.");
   return;
 }
 

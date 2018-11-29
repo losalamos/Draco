@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F12inv.cc
+ * \file   special_functions/F12inv.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of F12inv
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "F12inv.hh"

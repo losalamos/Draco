@@ -51,7 +51,7 @@ else
   module load friendly-testing
   module use --append ${VENDOR_DIR}-ec/modulefiles
 
-  export dracomodules="ack htop clang-format \
+  export dracomodules="ack htop clang-format python \
 intel/18.0.2 openmpi/2.1.2 mkl \
 subversion cmake/3.12.1 numdiff git totalview trilinos/12.10.1 \
 superlu-dist/5.1.3 metis parmetis random123 eospac/6.3.0"

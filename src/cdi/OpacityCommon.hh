@@ -5,9 +5,7 @@
  * \date   Mon Jan 19 13:41:01 2001
  * \brief  Datatypes needed in GrayOpacity and MultigroupOpacity
  * \note   Copyright (C) 2016-2018 Los Alamos National Securty, LLC.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_OpacityCommon_hh__
@@ -60,17 +58,20 @@ enum Reaction {
   LAST_VALUE  /*!< dummy value */
 };
 
+//---------------------------------------------------------------------------//
 /*!
- * \brief Type of opacity model: analytic, or gandolf. Used in Milagro 
- * Material_Data in packing the objects, returned by each opacity type.
- * It was previously defined as \code
- * typeid(rtt_cdi_analytic::Analytic_Odfmg_Opacity)
+ * \brief Type of opacity model: analytic, or gandolf. 
+ * 
+ * Used in Milagro Material_Data in packing the objects, returned by each 
+ * opacity type. It was previously defined as 
+ * \code 
+ *   typeid(rtt_cdi_analytic::Analytic_Odfmg_Opacity)
  * \endcode
- * mapping to 1, and \code
- * typeid(rtt_cdi_gandolf::GandolfOdfmgOpacity)
+ * mapping to 1, and 
+ * \code
+ *   typeid(rtt_cdi_gandolf::GandolfOdfmgOpacity)
  * \endcode
  * mapping to 2.
- * 
  */
 enum OpacityModelType {
   UNASSIGNED_TYPE =

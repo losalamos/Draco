@@ -18,37 +18,6 @@
 
 using namespace rtt_units;
 
-/*
-static void print_matrix(std::string const &matrix_name,
-                         std::vector<double> const &x,
-                         std::vector<unsigned> const &dims) {
-  using std::cout;
-  using std::endl;
-  using std::string;
-
-  Require(dims[0] * dims[1] == x.size());
-
-  unsigned pad_len(matrix_name.length() + 2);
-  string padding(pad_len, ' ');
-  cout << matrix_name << " =";
-  // row
-  for (unsigned i = 0; i < dims[1]; ++i) {
-    if (i != 0)
-      cout << padding;
-
-    cout << "{ ";
-
-    for (unsigned j = 0; j < dims[0] - 1; ++j)
-      cout << std::setprecision(10) << x[j + dims[0] * i] << ", ";
-
-    cout << std::setprecision(10) << x[dims[0] - 1 + dims[0] * i] << " }."
-         << endl;
-  }
-  cout << endl;
-  return;
-}
-*/
-
 namespace rtt_quadrature {
 
 //----------------------------------------------------------------------------//
@@ -170,6 +139,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
  *             levels for triangular and square quadratures.
  * \param expansion_order Expansion order of the desired scattering moment
  *             space.
+ * \param method Enum value specifying the desired quadrature type.
  * \param extra_starting_directions Add extra directions to each level set. In
  *             most geometries, an additional ordinate is added that is opposite
  *             in direction to the starting direction. This is used to implement
@@ -327,50 +297,6 @@ void Galerkin_Ordinate_Space::compute_operators() {
     Insist(
         false,
         "This branch commented out because there are no supporting unit tests");
-
-    /*
-
-    // compute a D matrix by inverting
-    Check(numMoments < UINT_MAX);
-    Check(numCartesianOrdinates < UINT_MAX);
-    vector<double> temp_D(compute_inverse(
-        static_cast<unsigned>(numMoments),
-        static_cast<unsigned>(numCartesianOrdinates), cartesian_M_SN));
-
-    // set cartesian_ordinate weights to the first row of D
-
-    for (unsigned i = 0; i < numCartesianOrdinates; ++i) {
-      //std::cout << " changing weight from " << cartesian_ordinates[i].wt();
-      cartesian_ordinates[i].set_wt(temp_D[i + 0 * numCartesianOrdinates]);
-      //std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
-    }
-
-    // and reset ordinate weights to the first row of D
-
-    vector<Ordinate> &ordinates(this->ordinates());
-    for (unsigned i = 0; i < numOrdinates; ++i) {
-      if (std::abs(ordinates[i].wt()) >
-          std::numeric_limits<decltype(ordinates[i].wt())>::min()) {
-        ordinates[i].set_wt(temp_D[indexes[i] + 0 * numCartesianOrdinates]);
-      }
-    }
-
-    // recompute D using the new weights and invert to find M
-
-    vector<double> temp_M = compute_M_SN(cartesian_ordinates);
-
-    // -------------------------------------------------------------------------
-    // invert the (n x m) discrete-to-moment D to compute the moment-to-discrete
-    // matrix M
-    // -------------------------------------------------------------------------
-
-    cartesian_D = compute_D_SN(cartesian_ordinates, temp_M);
-    Check(numMoments < UINT_MAX);
-    Check(numCartesianOrdinates < UINT_MAX);
-    cartesian_M =
-        compute_inverse(static_cast<unsigned>(numCartesianOrdinates),
-                        static_cast<unsigned>(numMoments), cartesian_D);
-    */
   } else
     Insist(false, "Could not identify Galerkin Quadrature method.");
 
@@ -396,24 +322,6 @@ void Galerkin_Ordinate_Space::compute_operators() {
     std::cout << " moment " << n << "     l = " << ell << " k = " << k
               << std::endl;
   }
-
-  /*
-    std::vector<unsigned> dimsM;
-    dimsM.push_back(numMoments);
-    dimsM.push_back(numOrdinates);
-    print_matrix("M", M_, dimsM);
-
-    std::vector<unsigned> dimsD;
-    dimsD.push_back(numOrdinates);
-    dimsD.push_back(numMoments);
-    print_matrix("D", D_, dimsD);
-
-    std::cout << " Ordinate Set (may differ from quadrature) " << std::endl;
-    for (unsigned i = 0; i < numOrdinates; ++i)
-      std::cout << "   " << i << "   " << ordinates[i].mu() << "   "
-                << ordinates[i].eta() << "   " << ordinates[i].xi() << "   "
-                << ordinates[i].wt() << std::endl;
-    */
 }
 
 //----------------------------------------------------------------------------//
@@ -483,7 +391,6 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
 }
 
 //----------------------------------------------------------------------------//
-
 vector<double>
 Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
   using rtt_sf::Ylm;
@@ -544,67 +451,11 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
           M[n + m * numMoments] = Ylm(ell, k, xi, phi, sumwt);
         }
       }
-
-      /*
-      if (n == 0)
-        std::cout << "   " << m << "   " << ordinates[m].mu() << "   "
-                  << ordinates[m].eta() << "   " << ordinates[m].xi() << "   "
-                  << ordinates[m].wt() << "   " << polar << "   "
-                  << azimuthal * 180.0 / 3.141592653589793238462643383279
-                  << std::endl;
-      */
-
     } // ordinate loop
   }   // moment loop
 
   return M;
 }
-
-//----------------------------------------------------------------------------//
-/*! This computation uses an existing moment-to-discrete matrix M and ordinate
- *  weights W to compute a discrete-to-moment matrix D = M^{T} W
- */
-// vector<double>
-// Galerkin_Ordinate_Space::compute_D_SN(vector<Ordinate> const &ordinates,
-//                                       vector<double> const &Min) {
-
-//   Insist(!Min.empty(), "The GQ ordinate space computation for the standard SN "
-//                        "expression for D requires that M be available.");
-
-//   vector<Moment> const &n2lk = this->moments();
-//   size_t const numMoments = n2lk.size();
-//   size_t const numOrdinates = ordinates.size();
-
-//   // ---------------------------------------------------
-//   // Create diagonal matrix of quadrature weights
-//   // ---------------------------------------------------
-
-//   gsl_matrix *gsl_W = gsl_matrix_alloc(numOrdinates, numOrdinates);
-//   gsl_matrix_set_identity(gsl_W);
-
-//   for (unsigned m = 0; m < numOrdinates; ++m)
-//     gsl_matrix_set(gsl_W, m, m, ordinates[m].wt());
-
-//   // ---------------------------------------------------
-//   // Create the discrete-to-moment matrix
-//   // ---------------------------------------------------
-
-//   std::vector<double> M(Min);
-//   gsl_matrix_view gsl_M =
-//       gsl_matrix_view_array(&M[0], numOrdinates, numMoments);
-
-//   std::vector<double> D(numMoments * numOrdinates); // rows x cols
-//   gsl_matrix_view gsl_D =
-//       gsl_matrix_view_array(&D[0], numMoments, numOrdinates);
-
-//   unsigned ierr = gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &gsl_M.matrix,
-//                                  gsl_W, 0.0, &gsl_D.matrix);
-//   Insist(!ierr, "GSL blas interface error");
-
-//   gsl_matrix_free(gsl_W);
-
-//   return D;
-// }
 
 //----------------------------------------------------------------------------//
 vector<double>

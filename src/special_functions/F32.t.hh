@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F32.t.cc
+ * \file   special_functions/F32.t.hh
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Implementation of F32
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef sf_F32_t_hh
@@ -31,9 +28,9 @@ using namespace std;
  * Astrophysical Flash Center.  This uses a rational function expansion to get
  * the fermi-dirac integral. Reference: antia apjs 84,101 1993
  * 
- * \param eta Dimensionless chemical potential \f$\eta\f$
+ * \param x Dimensionless chemical potential \f$\eta\f$
  *
- * \return Value of \f$F_{4/2}(\eta)\f$
+ * \return Value of \f$F_{4/2}(x)\f$
  *
  * \post \c Result>=0
  */

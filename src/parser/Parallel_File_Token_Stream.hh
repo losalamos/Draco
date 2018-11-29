@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Definition of class Parallel_File_Token_Stream.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Parallel_File_Token_Stream_HH
-#define CCS4_Parallel_File_Token_Stream_HH
+#ifndef rtt_Parallel_File_Token_Stream_HH
+#define rtt_Parallel_File_Token_Stream_HH
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
@@ -46,8 +43,7 @@ public:
   Parallel_File_Token_Stream(string const &filename);
 
   //! Construct a Parallel_File_Token_Stream from a file.
-  Parallel_File_Token_Stream(string const &filename,
-                             set<char> const &whitespace);
+  Parallel_File_Token_Stream(string const &file_name, set<char> const &ws);
 
   // MANIPULATORS
 
@@ -124,7 +120,7 @@ private:
 
 } // namespace rtt_parser
 
-#endif // CCS4_Parallel_File_Token_Stream_HH
+#endif // rtt_Parallel_File_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of Parallel_File_Token_Stream.hh

@@ -53,6 +53,9 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
   mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
 
+# LTO (option '-flto') is controlled via the cmake variable
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION, see config/compilerEnv.cmake.
+
 #
 # Compiler Flags
 #
@@ -88,9 +91,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
-    # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
-    # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
-
     # See https://gcc.gnu.org/gcc-5/changes.html
     # UndefinedBehaviorSanitizer gained a few new sanitization options:
     #  -fsanitize=float-divide-by-zero: detect floating-point division by 0

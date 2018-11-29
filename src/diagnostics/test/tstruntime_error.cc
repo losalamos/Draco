@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   diagnostics/test/tstSwap.cc
+ * \file   diagnostics/test/tstruntime_error.cc
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test runtime_error function.

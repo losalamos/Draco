@@ -4,9 +4,9 @@
 
 01 23 * * 0-6 /usr/projects/draco/regress/draco/regression/sync_repository.sh
 
-01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin"
+01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin core"
 
-01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin"
+01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin core"
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

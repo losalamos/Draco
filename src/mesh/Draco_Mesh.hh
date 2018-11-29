@@ -73,10 +73,10 @@ private:
 
   // Ghost cell indices local to a different node, subscripted with a local
   // ghost cell index
-  const std::vector<unsigned> ghost_cell_number;
+  const std::vector<int> ghost_cell_number;
 
   // Node index for each ghost cell, subscripted with local ghost cell index
-  const std::vector<unsigned> ghost_cell_rank;
+  const std::vector<int> ghost_cell_rank;
 
   // Vector subscripted with node index with coordinate vector
   const std::vector<std::vector<double>> node_coord_vec;
@@ -112,8 +112,8 @@ public:
              const std::vector<unsigned> &global_node_number_,
              const std::vector<unsigned> &ghost_cell_type_ = {},
              const std::vector<unsigned> &ghost_cell_to_node_linkage_ = {},
-             const std::vector<unsigned> &ghost_cell_number_ = {},
-             const std::vector<unsigned> &ghost_cell_rank_ = {});
+             const std::vector<int> &ghost_cell_number_ = {},
+             const std::vector<int> &ghost_cell_rank_ = {});
 
   // >>> ACCESSORS
 
@@ -124,10 +124,10 @@ public:
   const std::vector<unsigned> &get_side_set_flag() const {
     return side_set_flag;
   }
-  const std::vector<unsigned> &get_ghost_cell_numbers() const {
+  const std::vector<int> &get_ghost_cell_numbers() const {
     return ghost_cell_number;
   }
-  const std::vector<unsigned> &get_ghost_cell_ranks() const {
+  const std::vector<int> &get_ghost_cell_ranks() const {
     return ghost_cell_rank;
   }
   const std::vector<std::vector<double>> &get_node_coord_vec() const {

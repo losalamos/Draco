@@ -1,6 +1,6 @@
 /*-----------------------------------*-C-*-----------------------------------*/
 /*!
- * \file   rng/time_serial.h
+ * \file   rng/test/time_serial.h
  * \author Gabriel M. Rockefeller
  * \date   Mon Nov 19 10:35:04 2012
  * \brief  time_serial header file.

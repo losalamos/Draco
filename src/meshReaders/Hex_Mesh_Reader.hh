@@ -12,9 +12,6 @@
 #define __meshReaders_Hex_Mesh_Reader_hh__
 
 #include "Mesh_Reader.hh"
-#include "mesh_element/Element_Definition.hh"
-#include <string>
-#include <vector>
 
 namespace rtt_meshReaders {
 
@@ -26,7 +23,7 @@ namespace rtt_meshReaders {
  *
  * \sa The rtt_mesh_element::Element_Definition class provides information on
  *     the hex, quad, and line elements used in this class. The \ref
- *     rtt_meshreaders_overview page provides an overview of the other utilities
+ *     overview_rtt_format_reader page provides an overview of the other utilities
  *     in the rtt_meshReaders namespace. the \ref rtt_meshreaders_hexformat page
  *     provides a description of the Hex file format.
  */

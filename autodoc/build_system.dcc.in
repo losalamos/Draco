@@ -1,10 +1,8 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*------------------------------------//
 // build_system.dcc
 // The Draco Build System Documenation
 // This file is prepared by doxygen so that it can be part of the CCS-4
 // development web site as well as a written report.
-//---------------------------------------------------------------------------//
-
 //---------------------------------------------------------------------------//
 
 /*!
@@ -13,17 +11,10 @@
 \version LA-UR-03-0000
 \author Tom Evans
 
-\bug Should this document specify version numbers for supported compilers? 
-     --kellyt (06/27/2003) TID#1562 
-\bug Need to add details for Trilinos vendor (assigned to warsa) 
-     --kellyt (06/27/2003) TID#1583
-\bug Need to add details for Parmetis vendor (assigned to warsa) 
-     --kellyt (06/27/2003) TID#1582
-
-Draco is a C++ radiation transport component library developed by CCS-4, Los
+Draco is a C++ radiation transport component library developed by CCS-2, Los
 Alamos National Laboratory. In addition to providing infrastructure for
 radiation transport code developmfent, Draco serves as a "model Development
-Environment (DE)" for code development activities within CCS-4.  Most CCS-4
+Environment (DE)" for code development activities within CCS-2.  Most CCS-4
 code projects are based on the coding standards, idioms, style, organization,
 and architecture of Draco.  In this vein, an important service that Draco
 provides is its configure/make system, forwith referred to as the Draco Build
@@ -43,15 +34,11 @@ The Draco build system has the following highlighted features:
 \arg a well-defined C++ template instantiation model
 \arg extensible vendor support for 
      <a href="http://www.mcs.anl.gov/mpi/index.html" 
-        target="external">MPI</a>, 
-     <a href="http://sprng.cs.fsu.edu" 
-        target="external">SPRNG</a>,
+        target="external">MPI</a>,
      <a href="http://www.netlib.org" 
         target="external"> LAPACK and BLAS, ATLAS</a>,
      <a href="http://www.cs.sandia.gov/~mheroux/Trilinos/" 
         target="external">AztecOO, Epetra and Trilinos</a>,
-     <a href="http://velvet.lanl.gov/PROJECTS/DATA/atomic/gandolf/intro.lasso" 
-        target="external">GANDOLF</a>
      <a href="http://laurel.lanl.gov/PROJECTS/DATA/eos/eos.shtml"
         target="external">EOSPAC</a>, and 
      <a href="http://www-users.cs.umn.edu/~karypis/metis/parmetis/" 
@@ -69,9 +56,9 @@ The Draco build system has the following highlighted features:
 Currently, the Draco Build System is supported on the following
 systems/operating systems:
 
-- SGI (IRIX64)
-- Compaq (Tru64)
-- Linux (i686-based platforms)
+- Linux (x86_64-based platforms)
+- Windows (x86_64)
+- OSX 
 - IBM (AIX)
 
 The DBS has been tested and verified on these systems.  
@@ -504,9 +491,14 @@ makefiles and variables defined in the DBS.
 
 Draco packages co-exist according the the principles of Levelized Software
 Design (Lakos, J. \e Large-scale \e C++ \e software \e design. 1996).   The
-current hierarchy of Draco packages is as follows:
+current hierarchy of Draco packages is as follows can be displayed in doxygen autodoc:
 
-\dotfile level.dot "Levelization diagram of the Draco packages. Dotted lines indicate testing dependencies" 
+1. Visit the documentation for Assert.hh.
+2. In the horizontal toolbar above the file documentation, select the 'src' level.  
+
+This should provide an diagram similar to the following
+
+\image html draco_package_level_diagram.jpg "Draco Package Level Diagram"
 
 The Draco levelized architecture has significance for clients.
 Clients wishing to use a high-level package must also include all of
@@ -514,9 +506,9 @@ its dependencies in the proper order.  For example, a client wishing
 to utilize services in the \c mc package must include the following
 libraries (packages) at link time:
 
-\verbatim
+\code
   -lrtt_mc -lrtt_viz -lrtt_meshReaders -lrtt_traits -lrtt_rng -lrtt_c4 -lrtt_ds++
-\endverbatim
+\endcode
 
 Notice that \c mc depends on \c traits through its association with
 the \c viz package.  Likewise, a Draco package utilizing \c mc will

@@ -12,9 +12,7 @@
 #define __meshReaders_test_TestHexMeshReader_hh__
 
 #include "ds++/ScalarUnitTest.hh"
-#include <map>
 #include <set>
-#include <string>
 
 namespace rtt_meshReaders {
 class Hex_Mesh_Reader;

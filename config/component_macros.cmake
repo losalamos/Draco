@@ -117,6 +117,9 @@ or the target must be labeled NOEXPORT.")
     add_executable( ${ace_TARGET} ${ace_SOURCES} )
   endif()
 
+  # Some properties are set at a global scope in compilerEnv.cmake:
+  # - C_STANDARD, C_EXTENSIONS, CXX_STANDARD, CXX_EXTENSIONS,
+  #   CXX_STANDARD_REQUIRED, and POSITION_INDEPENDENT_CODE
   set_target_properties( ${ace_TARGET} PROPERTIES
     OUTPUT_NAME ${ace_EXE_NAME}
     FOLDER      ${ace_FOLDER}
@@ -310,6 +313,9 @@ macro( add_component_library )
   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
 
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
+  # Some properties are set at a global scope in compilerEnv.cmake:
+  # - C_STANDARD, C_EXTENSIONS, CXX_STANDARD, CXX_EXTENSIONS,
+  #   CXX_STANDARD_REQUIRED, and POSITION_INDEPENDENT_CODE
   set_target_properties( ${acl_TARGET} PROPERTIES
     # ${compdefs}
     # Use custom library naming
@@ -853,6 +859,9 @@ macro( add_scalar_tests test_sources )
 
     get_filename_component( testname ${file} NAME_WE )
     add_executable( Ut_${compname}_${testname}_exe ${file} )
+    # Some properties are set at a global scope in compilerEnv.cmake:
+    # - C_STANDARD, C_EXTENSIONS, CXX_STANDARD, CXX_EXTENSIONS,
+    #   CXX_STANDARD_REQUIRED, and POSITION_INDEPENDENT_CODE
     set_target_properties( Ut_${compname}_${testname}_exe
       PROPERTIES
       OUTPUT_NAME ${testname}
@@ -1001,6 +1010,9 @@ macro( add_parallel_tests )
       )")
     endif()
     add_executable( Ut_${compname}_${testname}_exe ${file} )
+    # Some properties are set at a global scope in compilerEnv.cmake:
+    # - C_STANDARD, C_EXTENSIONS, CXX_STANDARD, CXX_EXTENSIONS,
+    #   CXX_STANDARD_REQUIRED, and POSITION_INDEPENDENT_CODE
     set_target_properties(
       Ut_${compname}_${testname}_exe
       PROPERTIES
@@ -1194,6 +1206,15 @@ macro( process_autodoc_pages )
     configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc
       @ONLY )
   endforeach()
+  file( GLOB images_in autodoc/*.jpg autodoc/*.png autodoc/*.gif )
+  list( LENGTH images_in num_images )
+  if( ${num_images} GREATER 0 )
+    list( APPEND DOXYGEN_IMAGE_PATH "${PROJECT_SOURCE_DIR}/autodoc" )
+  endif()
+  set( DOXYGEN_IMAGE_PATH "${DOXYGEN_IMAGE_PATH}" CACHE PATH
+     "List of directories that contain images for doxygen pages." FORCE )
+  unset( images_in )
+  unset( num_images )
 endmacro()
 
 #------------------------------------------------------------------------------#

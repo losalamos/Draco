@@ -29,10 +29,9 @@ namespace rtt_cdi_test {
  *     heat capacity   = temperature + density/1000
  *     num free electrons = temperature/100
  *     thermal conductivity = 1000*temperature + density
- */
-/*!
- * \example cdi/test/tEoS.cc
- * \example cdi/test/tCDI.cc
+ * 
+ * \sa cdi/test/tEoS.cc
+ * \sa cdi/test/tCDI.cc
  */
 //========================================================================
 
@@ -84,9 +83,9 @@ public:
    *
    *    internal energy[i] = temperature[i] + 1000*density[i]
    *
-   * \param temperature A vector of temperature values for which the EoS values
+   * \param vtemperature A vector of temperature values for which the EoS values
    *        are being requested (Kelvin).
-   * \param density A vector of density values for which the EoS values are
+   * \param vdensity A vector of density values for which the EoS values are
    *        being requested (g/cm^3).
    * \return A vector of specific electron internal energies (kJ/g).
    */
@@ -113,8 +112,8 @@ public:
    *
    *     heat capacity = temperature + density/1000
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in Kelvin.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in Kelvin.
    * \return The electron based heat capacity in kJ/g/K.
    */
   std::vector<double>
@@ -140,8 +139,8 @@ public:
    *
    *     internal energy = temperature + 1000*density
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in Kelvin.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in Kelvin.
    * \return A vector of specific ion internal energies in kJ/g.
    */
   std::vector<double>
@@ -166,8 +165,8 @@ public:
    *
    *     heat capacity   = temperature + density/1000
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in Kelvin.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in Kelvin.
    * \return A vector of ion based heat capacities in kJ/g/K.
    */
   std::vector<double>
@@ -191,8 +190,8 @@ public:
    *        that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in Kelvin.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in Kelvin.
    * \return A vector of the number of free electrons per ion.
    */
   std::vector<double>
@@ -219,8 +218,8 @@ public:
    *
    *     thermal conductivity = 1000*temperature + density
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in Kelvin.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in Kelvin.
    * \return A vector of electron based thermal conductivities in 1/s/cm.
    */
   std::vector<double>

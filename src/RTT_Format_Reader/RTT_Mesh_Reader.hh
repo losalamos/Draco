@@ -13,7 +13,6 @@
 
 #include "RTT_Format_Reader.hh"
 #include "meshReaders/Mesh_Reader.hh"
-#include "mesh_element/Element_Definition.hh"
 
 namespace rtt_RTT_Format_Reader {
 //===========================================================================//

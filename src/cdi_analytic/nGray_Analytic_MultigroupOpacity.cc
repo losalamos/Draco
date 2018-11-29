@@ -35,6 +35,7 @@ namespace rtt_cdi_analytic {
  * \param models vector containing shared_ptrs to Analytic_Model derived types
  *        for each group, the size should be groups.size() - 1
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
+ * \param model_in Enum specifying CDI model.
  */
 nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_double &groups, const sf_Analytic_Model &models,

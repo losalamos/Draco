@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Definition of class Token_Stream.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Token_Stream_HH
-#define CCS4_Token_Stream_HH
+#ifndef rtt_Token_Stream_HH
+#define rtt_Token_Stream_HH
 
 #include "Token.hh"
 #include <deque>
@@ -24,7 +21,6 @@ namespace rtt_parser {
  *
  * This is an exception class for reporting syntax errors in simple parsers.
  */
-
 class Syntax_Error : public std::runtime_error {
 public:
   // CREATORS
@@ -58,7 +54,7 @@ public:
  *
  * Modern input readers split the task of reading a problem specification taxt
  * into scanning and parsing. Scanning is the task of converting the raw text
- * into a sequence of \b tokens\b, which represent the keywords, numerical or
+ * into a sequence of \b tokens, which represent the keywords, numerical or
  * string values, and other lowest-level constructs in the problem
  * specification language. This sequence or stream of tokens is then analyzed
  * by a parser that understands the syntax of the problem specification
@@ -271,7 +267,7 @@ inline Token_Stream::Token_Stream() : error_count_(0), deq() {
 
 } // namespace rtt_parser
 
-#endif // CCS4_Token_Stream_HH
+#endif // rtt_Token_Stream_HH
 //---------------------------------------------------------------------------//
 // end of Token_Stream.hh
 //---------------------------------------------------------------------------//

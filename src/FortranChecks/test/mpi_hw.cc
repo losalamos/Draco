@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   FortranCheck/test/mpi_hw.cc
+ * \file   FortranChecks/test/mpi_hw.cc
  * \author Kelly Thompson
  * \date   Thursday, Nov 12, 2015, 10:35 am
  * \brief  Test C++ main linking a Fortran library that uses MPI

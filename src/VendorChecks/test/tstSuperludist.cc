@@ -245,7 +245,7 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
  * \param[out] A    local matrix A in NR_loc format.
  * \param[in]  nrhs number of right-hand sides.
  * \param[out] rhs  the right-hand side matrix.
- * \param[out] lbd  leading dimension of the right-hand side matrix.
+ * \param[out] ldb  leading dimension of the right-hand side matrix.
  * \param[out] x    the true solution matrix.
  * \param[out] ldx  the leading dimension of the true solution matrix.
  * \param[in]  fp   the matrix file pointer.

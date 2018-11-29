@@ -120,34 +120,34 @@ Ensight_Translator::Ensight_Translator(
  * \param time elapsed problem time
  * \param dt current problem timestep
  *
- * \param ipar IVF field of pointers to vertices.  Dimensioned [0:ncells-1,
+ * \param[in] ipar_in IVF field of pointers to vertices.  Dimensioned [0:ncells-1,
  *           0:n_local_vertices_per_cell-1], where n_local_vertices_per_cell is
  *           the number of vertices that make up the cell.  ipar(i,j) maps the
  *           jth+1 vertex number, in the ith+1 cell, to Ensight's "vertex
  *           number."  The "vertex number" is in [1:nvertices], so that for
  *           example, the corresponding x-coordinate is pt_coor(ipar(i,j)-1, 0).
- * \param iel_type ISF field of Ensight_Cell_Types.  Dimensioned [0:ncells-1].
+ * \param[in] iel_type ISF field of Ensight_Cell_Types.  Dimensioned [0:ncells-1].
  *           Each cell in the problem must be associated with a
  *           Ensight_Cell_Types enumeration object.
- * \param cell_rgn_index ISF field of region identifiers.  Dimensioned
+ * \param[in] cell_rgn_index ISF field of region identifiers.  Dimensioned
  *           [0:ncells-1].  This matches a region index to each cell in the
  *           problem.
- * \param pt_coor FVF field of vertex coordinates. pt_coor is dimensioned
+ * \param[in] pt_coor_in FVF field of vertex coordinates. pt_coor is dimensioned
  *           [0:nvertices-1, 0:ndim-1].  For each vertex point give the value in
  *           the appropriate dimension.
- * \param vrtx_data FVF field of vertex data.  vrtx_data is dimensioned
+ * \param[in] vrtx_data_in FVF field of vertex data.  vrtx_data is dimensioned
  *           [0:nvertices-1, 0:number of vertex data fields - 1].  The ordering
  *           of the second index must match the vdata_names field input argument
  *           to Ensight_Translator::Ensight_Translator().  The ordering of the
  *           first index must match the vertex ordering from pt_coor.
- * \param cell_data FVF field of cell data.  cell_data is dimensioned
+ * \param[in] cell_data_in FVF field of cell data.  cell_data is dimensioned
  *           [0:ncells-1, 0:number of cell data fields - 1].  The ordering of
  *           the second index must match the cdata_names field input argument to
  *           Ensight_Translator::Ensight_Translator().  The ordering of the
  *           first index must match the cell ordering from ipar.
- * \param rgn_numbers ISF field of unique region ids.  This has dimensions of
+ * \param[in] rgn_numbers ISF field of unique region ids.  This has dimensions of
  *           the number of unique values found in the cell_rgn_index field.
- * \param rgn_name SSF field of unique region names.  This has the same
+ * \param[in] rgn_name SSF field of unique region names.  This has the same
  *           dimensions and ordering as rgn_numbers.  In summary, rgn_numbers
  *           gives a list of the unique region ids in the problem and rgn_name
  *           gives a list of the names associated with each region id.
@@ -307,18 +307,18 @@ void Ensight_Translator::ensight_dump(
  *
  * \param part_num A part number to be used by Ensight.  Must be positive.
  * \param part_name A name for the part.
- * \param ipar See ensight_dump().
+ * \param ipar_in See ensight_dump().
  * \param iel_type See ensight_dump().
- * \param pt_coor See ensight_dump().
- * \param vrtx_data See ensight_dump().
- * \param cell_data See ensight_dump().
- * \param g_vrtx_indices.  Global vertex indices.  These are used by Ensight as
+ * \param pt_coor_in See ensight_dump().
+ * \param vrtx_data_in See ensight_dump().
+ * \param cell_data_in See ensight_dump().
+ * \param g_vrtx_indices Global vertex indices.  These are used by Ensight as
  *           integer labels for each vertex.  Specifically, let i access the
  *           i'th value in \a vrtx_data.  Then \a g_vrtx_indices[i] gives the
  *           "global index" (or label index) for i.  This is referred to as
  *           "global" because \a g_vrtx_indices can be used to map each
  *           processor's local indices to global index space.
- * \param g_cell_indices. Global cell indices.  Analogous to \a g_vrtx_indices,
+ * \param g_cell_indices Global cell indices.  Analogous to \a g_vrtx_indices,
  *           but for cell indices.
  *
  * \sa \ref Ensight_Translator_strings "Ensight_Translator class" for

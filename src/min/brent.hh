@@ -12,7 +12,6 @@
 #define min_brent_hh
 
 #include "ds++/DracoMath.hh"
-#include <limits>
 
 namespace rtt_min {
 

@@ -15,7 +15,6 @@
 #include "ds++/Packing_Utils.hh"
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
-#include "units/PhysicalConstantsSI.hh"
 #include <fstream>
 
 namespace rtt_cdi_analytic {
@@ -127,12 +126,11 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
  * analytic opacity model is specified in the constructor
  * (Pseudo_Line_Analytic_Odfmg_Opacity()).
  *
- * \param temperature material temperature in keV
- * \param density material density in g/cm^3
+ * \param targetTemperature material temperature in keV
  * \return group opacities (coefficients) in cm^2/g
  */
 std::vector<std::vector<double>>
-Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
+Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
                                                double /* rho */) const {
   sf_double const &group_bounds = this->getGroupBoundaries();
   sf_double const &bands = this->getBandBoundaries();
@@ -143,7 +141,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
 
   unsigned const N = qpoints_;
 
-  double const Tf = pow(T / Tref(), Tpow());
+  double const Tf = pow(targetTemperature / Tref(), Tpow());
 
   switch (averaging_) {
   case NONE:
@@ -185,9 +183,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
           double const x0 = baseline_[q + N * g].second.first;
           double const x1 = baseline_[q + N * g].second.second;
 
-          double weight =
-              CDI::integrateRosselandSpectrum(x0 / keV.conv, x1 / keV.conv, T) +
-              numeric_limits<double>::min();
+          double weight = CDI::integrateRosselandSpectrum(
+                              x0 / keV.conv, x1 / keV.conv, targetTemperature) +
+                          numeric_limits<double>::min();
 
           t += weight / baseline_[q + N * g].first;
           w += weight;
@@ -212,9 +210,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
           double const x0 = baseline_[q + N * g].second.first;
           double const x1 = baseline_[q + N * g].second.second;
 
-          double weight =
-              CDI::integratePlanckSpectrum(x0 / keV.conv, x1 / keV.conv, T) +
-              numeric_limits<double>::min();
+          double weight = CDI::integratePlanckSpectrum(
+                              x0 / keV.conv, x1 / keV.conv, targetTemperature) +
+                          numeric_limits<double>::min();
 
           t += weight * baseline_[q + N * g].first;
           w += weight;
@@ -234,9 +232,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided vector of
- *     temperatures and a single density value.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided vector of temperatures and a
+ *        single density value.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
@@ -252,16 +250,16 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided
- *     temperature and a vector of density values.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided temperature and a vector of
+ *        density values.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
     double targetTemperature, const std::vector<double> &targetDensity) const {
   std::vector<std::vector<std::vector<double>>> opacity(targetDensity.size());
 
-  //call our regular getOpacity function for every target density
+  // call our regular getOpacity function for every target density
   for (size_t i = 0; i < targetDensity.size(); ++i) {
     opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
   }
@@ -289,8 +287,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getDataDescriptor() const {
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+/*!
+ * \brief Packing function for Pseudo_Line_Analytic_Odfmg_Opacity
+ */
 Analytic_MultigroupOpacity::sf_char
 Pseudo_Line_Analytic_Odfmg_Opacity::pack() const {
   sf_char const pdata = Analytic_Odfmg_Opacity::pack();

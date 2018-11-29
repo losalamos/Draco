@@ -9,24 +9,6 @@
 ##---------------------------------------------------------------------------##
 ##
 ## Summary: Misc bash functions useful during development of code.
-##
-## Functions
-## ---------
-## die           - exit with a message
-## run           - echo a command and then run it.
-## fn_exists     - return true if named bash function is defined
-## establish_permissions - Change group to othello, dacodes or draco and change
-##                 permissions to g+rwX,o-rwX
-## machineName   - return a string to represent the current machine.
-## osName        - return a string to represent the current machine's OS.
-## flavor        - build a string that looks like fire-openmpi-2.0.2-intel-17.0.1
-## selectscratchdir - find a scratch drive
-## lookupppn     - return PE's per node.
-## npes_build    - return PE's to be used for compiling.
-## npes_test     - return PE's to be used for testing.
-## install_verions - helper for doing releases (see release_toss2.sh)
-## publish_release - helper for doing releases (see release_toss2.sh)
-## allow_file_to_age - pause a program until a file is 'old'
 
 ##---------------------------------------------------------------------------##
 ## Helpful functions
@@ -37,6 +19,7 @@ function dracohelp()
 echo -e "Bash functions defined by Draco:\n\n"
 echo -e "Also try 'slurmhelp'\n"
 echo "allow_file_to_age - pause a program until a file is 'old'"
+echo "canonicalize_filename - standardize paths to files"
 echo "cleanemacs    - remove ~ and .elc files."
 echo "die           - exit with a message"
 echo "dracoenv/rmdracoenv - load/unload the draco environment"
@@ -46,6 +29,7 @@ echo "fn_exists     - return true if named bash function is defined"
 echo "install_verions - helper for doing releases (see release_toss2.sh)"
 echo "lookupppn     - return PE's per node."
 echo "machineName   - return a string to represent the current machine."
+echo "matches_extension - Does the provided filename have a matching extension?"
 echo "npes_build    - return PE's to be used for compiling."
 echo "npes_test     - return PE's to be used for testing."
 echo "osName        - return a string to represent the current machine's OS."
@@ -55,13 +39,14 @@ echo "qrm           - quick rm for directories located in lustre scratch spaces.
 echo "rdde          - more agressive reset of the draco environment."
 echo "run           - echo a command and then run it."
 echo "selectscratchdir - find a scratch drive"
+echo "version_gt    - compare versions"
 echo "whichall      - Find all matchs."
 echo "xfstatus      - print status 'transfered' files."
 echo -e "\nUse 'type <function>' to print the full content of any function.\n"
 }
 
 #------------------------------------------------------------------------------#
-#
+# Function Definitions
 #------------------------------------------------------------------------------#
 
 # Print an error message and exit.
@@ -508,7 +493,11 @@ function install_versions
         run "ctest -L nr -j $test_pe" ;;
       *)
         # run all tests
-        run "ctest -j $test_pe" ;;
+        run "ctest -j $test_pe --output-on-failure"
+        if [[ $? != 0 ]]; then
+          run "ctest -j $test_pe --output-on-failure --rerun-failed"
+        fi
+        ;;
     esac
   fi
   if ! test ${build_permissions:-notset} = "notset"; then
@@ -671,6 +660,77 @@ echo " "
 }
 
 ##----------------------------------------------------------------------------##
+# Canonicalize_filename:
+# See http://stackoverflow.com/questions/1055671/how-can-i-get-the-behavior-of-gnus-readlink-f-on-a-mac
+##----------------------------------------------------------------------------##
+canonicalize_filename () {
+    local target_file=$1
+    local physical_directory=""
+    local result=""
+
+    # Need to restore the working directory after work.
+    pushd `pwd` > /dev/null
+
+    cd "$(dirname "$target_file")"
+    target_file=`basename $target_file`
+
+    # Iterate down a (possible) chain of symlinks
+    while [ -L "$target_file" ]
+    do
+        target_file=$(readlink "$target_file")
+        cd "$(dirname "$target_file")"
+        target_file=$(basename "$target_file")
+    done
+
+    # Compute the canonicalized name by finding the physical path
+    # for the directory we're in and appending the target file.
+    physical_directory=`pwd -P`
+    result="$physical_directory"/"$target_file"
+
+    # restore the working directory after work.
+    popd > /dev/null
+
+    echo "$result"
+}
+
+##----------------------------------------------------------------------------##
+# Compare versions
+#
+# Example:
+#
+# EMACSVER=`emacs --version | head -n 1 | sed -e 's/.*Emacs //'`
+# if `version_gt "24.0.0" $EMACSVER` ; then echo yes; fi
+##----------------------------------------------------------------------------##
+function version_gt()
+{
+  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+
+##----------------------------------------------------------------------------##
+# check whether the given file matches any of the set extensions
+#
+# Example:
+#
+# FILE_EXTS=".f90 .F90"
+# FILE_ENDINGS="_f.h _f77.h _f90.h"
+# for file in $modified_files; do
+#   if ! matches_extension $file; then
+#      continue;
+#   fi
+#   <do stuff>
+# done
+##----------------------------------------------------------------------------##
+matches_extension() {
+    local filename=$(basename "$1")
+    local extension=".${filename##*.}"
+    local end
+    local ext
+    for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
+    for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
+    return 1
+}
+
+##----------------------------------------------------------------------------##
 export die
 export run
 export establish_permissions
@@ -682,6 +742,9 @@ export npes_build
 export npes_test
 export install_versions
 export job_launch_sanity_checks
+export version_gt
+export canonicalize_filename
+export matches_extension
 
 ##----------------------------------------------------------------------------##
 ## End common.sh

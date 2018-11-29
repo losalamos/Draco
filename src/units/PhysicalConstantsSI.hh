@@ -5,10 +5,7 @@
  *          light, etc) are defined in SI units.
  *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: PhysicalConstants.hh 7431 2015-02-24 17:10:44Z kellyt $
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __units_PhysicalConstantsSI_hh__
@@ -19,28 +16,30 @@
 
 //! \namespace rtt_units Namespace for units and physical constants
 namespace rtt_units {
+
 // Base physical constants in SI units:
 
 //    m - meters, kg - kilograms, s - seconds, K - kelvin
 //    W - watts, J - joules, C - coulombs, F - farads
 //    mol - mole
 
-//---------------------------------------------------------------------------//
-// FUNDAMENTAL CONSTANTS
-//
-// NIST Reference on Constants, Units and Uncertainty
-// CODATA internationally recommended values of the Fundamental Physical
-// Constants, http://physics.nist.gov/cuu/Constants/
-//
-// The units of these fundamental constants should be factors of 10X different
-// from the official NIST 2010 CODATA report data to allow for easy comparison
-// between these values and the NIST data.
-//
-// Fundamental constants are listed first.
-// Derived constants are listed second.
-// Actual data is placed in a user-defined type for C-interoperatbility.
-//
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+/*!
+ * FUNDAMENTAL CONSTANTS
+ *
+ * NIST Reference on Constants, Units and Uncertainty CODATA internationally
+ * recommended values of the Fundamental Physical Constants,
+ * http://physics.nist.gov/cuu/Constants/
+ *
+ * The units of these fundamental constants should be factors of 10X different
+ * from the official NIST 2010 CODATA report data to allow for easy comparison
+ * between these values and the NIST data.
+ *
+ * - Fundamental constants are listed first.
+ * - Derived constants are listed second.
+ * - Actual data is placed in a user-defined type for C-interoperatbility.
+ */
+//----------------------------------------------------------------------------//
 
 //! [c] SPEED OF LIGHT (M/S)
 // exact value by NIST definition
@@ -58,13 +57,21 @@ static double const planckSI = 6.62606957e-34; // J s
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps 9.1e-7)
 static double const gasConstantSI = 8.3144621; // J/mol/K
 
-//! [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
-// If this changes you msut update the Enumerated Temperature Type in UnitSystemEnusm.hh!
+/*!
+ * \brief [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
+ *
+ * \note If this changes you msut update the Enumerated Temperature Type in
+ *       UnitSystemEnusm.hh!
+ */
 static double const boltzmannSI = 1.380648800E-23; // J K^-1
 
-//! [e] ELECTRON CHARGE (COULOMBS)
-// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 2.2e-8)
-// If this changes you msut update the Enumerated Temperature Type in UnitSystemEnusm.hh!
+/*!
+ * \brief [e] ELECTRON CHARGE (COULOMBS)
+ *
+ * Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 2.2e-8)
+ * \note If this changes you msut update the Enumerated Temperature Type in
+ *       UnitSystemEnusm.hh!
+ */
 static double const electronChargeSI = 1.602176565e-19; // Amp / sec
 
 //! [me] ELECTRON REST MASS (KG)	 s
@@ -94,21 +101,22 @@ static double const protonMassSI = 1.672621777e-27; // kg
  *
  * (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
  *
- * If this number is changed, you must also update the conversion factor found
- * in UniSystemUnums.hh.
+ * \note If this number is changed, you must also update the conversion factor
+ *       found in UniSystemUnums.hh.
  */
 static double const EV2K = electronChargeSI / boltzmannSI;
 
-/*! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
+/*! 
+ * \brief [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
  *
- * /f
+ * \f[
  * \sigma_{SB} = \frac{2 \pi^5 k^4} {15 h^3 c^2}
  *             = 5.670373e-8
- * /f
+ * \f]
  */
 static double const stefanBoltzmannSI =
-    static_cast<double>(2.0) * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
-    (static_cast<double>(15.0) * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
+    2.0 * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
+    (15.0 * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
 
 //! [F] Faraday constant == Na * e
 static double const faradayConstantSI = AVOGADRO * electronChargeSI;
@@ -129,6 +137,6 @@ static double const classicalElectronRadiusSI =
 
 #endif // __units_PhysicalConstantsSI_hh__
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of units/PhysicalConstantsSI.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

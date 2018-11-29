@@ -581,11 +581,8 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
  * conversion to uppercase if CASE_INSENSITIVE is also set.  For example,
  * the token "ABD" matches the keyword "ABDEF" but not the keyword "AB".
  *
- * \param keyword
- * The Keyword to be compared.
- *
- * \param token
- * The token to be compared.
+ * \param k1 The Keyword to be compared.
+ * \param k2 The token to be compared.
  *
  * \return <CODE>comparison(keyword.moniker,
  *                          token.text().c_str())<0 </CODE>

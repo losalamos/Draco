@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F2.cc
+ * \file   special_functions/F2.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of F2
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "F2.hh"
@@ -28,7 +25,7 @@ using namespace std;
  * Astrophysical Flash Center.  This uses a rational function expansion to get
  * the fermi-dirac integral. Reference: antia apjs 84,101 1993
  * 
- * \param eta Dimensionless chemical potential \f$\eta\f$
+ * \param x Dimensionless chemical potential \f$\eta\f$
  *
  * \return Value of \f$F_2(\eta)\f$
  *

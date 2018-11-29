@@ -31,20 +31,20 @@ double unary_log(double x) { return std::log(x); }
  * this information the DataTypeKey is set, then the data table sizes are
  * loaded and finally the table data is loaded.
  *
- * \param[in] opacityEnergyDescriptor This string variable specifies the energy
+ * \param[in] in_opacityEnergyDescriptor This string variable specifies the energy
  *     model { "gray" or "mg" } for the opacity data contained in this
  *     IpcressDataTable object.
- * \param opacityModel This enumerated value specifies the physics model {
+ * \param in_opacityModel This enumerated value specifies the physics model {
  *     Rosseland or Planck } for the opacity data contained in this object.
  *     The enumeration is defined in IpcressOpacity.hh
- * \param opacityReaction This enumerated value specifies the interaction
+ * \param in_opacityReaction This enumerated value specifies the interaction
  *     model { total, scattering, absorption " for the opacity data contained
  *     in this object.  The enumeration is defined in IpcressOpacity.hh
- * \param fieldNames This vector of strings is a list of data keys that the
+ * \param in_fieldNames This vector of strings is a list of data keys that the
  *     IPCRESS file knows about.  This list is read from the IPCRESS file when
  *     a IpcressOpacity object is instantiated but before the associated
  *     IpcressDataTable object is created.
- * \param matID The material identifier that specifies a particular material
+ * \param in_matID The material identifier that specifies a particular material
  *     in the IPCRESS file to associate with the IpcressDataTable container.
  * \param spIpcressFile A ds++ SmartPointer to a IpcressFile object.  One
  *     GanolfFile object should exist for each IPCRESS file.  Many

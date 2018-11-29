@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/test_sf.cc
+ * \file   special_functions/test/tstSpecialFunctions.cc
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
  * \brief  Unit tests for kronecker_delta and factorial.

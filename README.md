@@ -48,6 +48,7 @@ Synopsis of Active Draco Packages
 * linear - linear equations
   * Routines to solve small systems of linear equations.
 * meshReaders - Read RTT format mesh files.
+* mesh - Encapsulate mesh definition and accessors.
 * mesh_element - Provide a description of unstructured mesh. Used by meshReaders and RTT_Format_Reader.
 * min - Optimizaiton routines. Find the minimum of a function.
 * norms - Calculate norms for data sets.
@@ -73,13 +74,13 @@ Many thanks go to Draco's [contributors](https://github.com/lanl/Draco/graphs/co
 
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 
-> *CCS-2 Draco Team:* Kelly G. Thompson, Kent G. Budge, James S. Warsa, Alex
-> R. Long, Kendra P. Keady, Jae H. Chang, Matt A. Cleveland, Ryan T. Wollaeger,
-> Andrew T. Till, Daniel Holladay, Massimiliano Rosa, and Kris C. Garrett.
+> *CCS-2 Draco Team:* Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+> James S. Warsa, Alex R. Long, Kendra P. Keady, Jae H. Chang,
+> Matt A. Cleveland, Andrew T. Till, Tim Kelley, and Kris C. Garrett.
 
-> *Prior Contributers:* Jeff D. Densmore, Gabriel M. Rockefeller, Allan
-> B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats, Paul W. Talbot, and
-> Katherine J. Wang.
+> *Prior Contributers:* Jeff D. Densmore, Gabriel M. Rockefeller,
+> Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
+> Paul W. Talbot, and Katherine J. Wang.
 
 Release
 ----------------

@@ -3,10 +3,8 @@
  * \file   Token.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token helper functions.
- * \note   Copyright © 2016-2018 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Token.hh"
@@ -17,10 +15,7 @@
 namespace rtt_parser {
 
 //-----------------------------------------------------------------------//
-/*!
- * Is the argument a token type that has no associated text?
- */
-
+//! Is the argument a token type that has no associated text?
 bool Is_Text_Token(Token_Type const type) {
   return type != rtt_parser::ERROR && type != EXIT && type != END;
 }
@@ -33,7 +28,6 @@ bool Is_Text_Token(Token_Type const type) {
  * that does not fit any other token type pattern, or if the argument points
  * to a string of two or three characters from a recognized standard set.
  */
-
 bool Is_Other_Text(char const *text) {
   Require(text != NULL);
 
@@ -59,7 +53,6 @@ bool Is_Other_Text(char const *text) {
  * \return \c true if the argument points to a string consisting of a
  * sequence of  C++ identifiers separated by single spaces.
  */
-
 bool Is_Keyword_Text(char const *text) {
   Require(text != NULL);
 
@@ -84,7 +77,6 @@ bool Is_Keyword_Text(char const *text) {
  * \return \c true if the argument points to a string consisting of a
  * single C++ string constant, including the delimiting quotes.
  */
-
 bool Is_String_Text(char const *text) {
   Require(text != NULL);
 
@@ -111,7 +103,6 @@ bool Is_String_Text(char const *text) {
  * \return \c true if the argument points to a string consisting of a
  * single C++ floating-point constant.
  */
-
 bool Is_Real_Text(char const *text) {
   Require(text != NULL);
 
@@ -127,7 +118,6 @@ bool Is_Real_Text(char const *text) {
  * \return \c true if the argument points to a string consisting of a
  * single C++ integer constant.
  */
-
 bool Is_Integer_Text(char const *text) {
   Require(text != NULL);
 
@@ -143,7 +133,6 @@ bool Is_Integer_Text(char const *text) {
  *
  * \return \c true if the two tokens are equal.
  */
-
 bool operator==(Token const &a, Token const &b) {
   return a.type() == b.type() && a.text() == b.text() &&
          a.location() == b.location();
@@ -158,7 +147,6 @@ bool operator==(Token const &a, Token const &b) {
  *
  * \return \c true if the invariants are all satisfied; \c false otherwise
  */
-
 bool Token::check_class_invariant() const {
   return (Is_Text_Token(type_) || text_ == "") &&
          (type_ != KEYWORD || Is_Keyword_Text(text_.c_str())) &&
@@ -170,5 +158,5 @@ bool Token::check_class_invariant() const {
 
 } // namespace rtt_parser
 //---------------------------------------------------------------------------//
-//                          end of Token_Stream.cc
+// end of Token_Stream.cc
 //---------------------------------------------------------------------------//

@@ -28,7 +28,7 @@ namespace rtt_cdi_eospac {
  *
  * \sa The definition of rtt_cdi_eospac::SesameTables.
  *
- * \param SesTabs A rtt_cdi_eospac::SesameTables object that defines what data
+ * \param in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what data
  * tables will be available for queries from the Eospac object.
  */
 Eospac::Eospac(SesameTables const &in_SesTabs)
@@ -353,37 +353,28 @@ std::vector<char> Eospac::pack() const { return SesTabs.pack(); }
 // -------------- //
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Retrieves the EoS data associated with the returnType specified and
- *        the given (density, temperature) tuples.
- *
- * Each of the public access functions calls either getF() or getdFdT() after
- * assigning the correct value to "returnType".
- *
- * \param vx       A vector of independent values (e.g. temperature or density).
- * \param vy       A vector of independent values (e.g. temperature or density).
- * \param returnType The integer index that corresponds to the type of data
- *                 being retrieved from the EoS tables.
+/*! \brief Retrieves the EoS data associated with the returnType specified 
+ *         and the given (density, temperature) tuples.
  */
-std::vector<double> Eospac::getF(std::vector<double> const &vx,
-                                 std::vector<double> const &vy,
+std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
+                                 std::vector<double> const &vtemperature,
                                  EOS_INTEGER const returnType,
                                  EosTableDataDerivative const etdd) const {
   // The density and vector parameters must be a tuple.
-  Require(vy.size() == vx.size());
+  Require(vtemperature.size() == vdensity.size());
 
   unsigned returnTypeTableIndex(tableIndex(returnType));
 
   // There is one piece of returned information for each (density, temperature)
   // tuple.
-  int returnSize = vy.size();
+  int returnSize = vtemperature.size();
 
   std::vector<double> returnVals(returnSize);
   std::vector<double> dFx(returnSize);
   std::vector<double> dFy(returnSize);
   int errorCode = 0;
-  std::vector<double> nc_vx(vx);
-  std::vector<double> nc_vy(vy);
+  std::vector<double> nc_vx(vdensity);
+  std::vector<double> nc_vy(vtemperature);
 
   eos_Interpolate(&tableHandles[returnTypeTableIndex], &returnSize, &nc_vx[0],
                   &nc_vy[0], &returnVals[0], &dFx[0], &dFy[0], &errorCode);

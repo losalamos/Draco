@@ -23,7 +23,7 @@ namespace rtt_timestep {
  *        into the time-step calculation.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref timestep_overview page gives a summary of the Draco time 
+ * The \ref overview_timestep page gives a summary of the Draco time 
  * step control utilities. 
  *
  * This is useful to set min and max timesteps, or to force a
@@ -37,36 +37,36 @@ class DLL_PUBLIC_timestep fixed_ts_advisor : public ts_advisor {
 
 private:
   /*!
-     * \brief Value used to oompute a fixed advisor recommended timestep.
-     */
+   * \brief Value used to oompute a fixed advisor recommended timestep.
+   */
   double fixed_value;
 
   // CREATORS
 
 public:
   /*!
-     * \brief Constructs a fixed time-step advisor.
-     * \param name_ A unique name for the advisor.
-     * \param usage_ How the advisor is to be used.
-     * \param const_value_ The desired value for the timestep.
-     * \param active_ Turns the advisor on/off.
-     */
+   * \brief Constructs a fixed time-step advisor.
+   * \param name_ A unique name for the advisor.
+   * \param usage_ How the advisor is to be used.
+   * \param const_value_ The desired value for the timestep.
+   * \param active_ Turns the advisor on/off.
+   */
   fixed_ts_advisor(const std::string &name_ = std::string("Unlabeled"),
                    const usage_flag usage_ = max,
                    const double const_value_ = large(),
                    const bool active_ = true);
 
   /*!
-     * \brief Destroys a fixed time-step advisor.
-     */
-  ~fixed_ts_advisor();
+   * \brief Destroys a fixed time-step advisor.
+   */
+  ~fixed_ts_advisor(){};
 
   // MANIPULATORS
 
   /*!
-     * \brief Sets the fixed value.
-     * \param value_ The fixed value.
-     */
+   * \brief Sets the fixed value.
+   * \param value_ The fixed value.
+   */
   void set_fixed_value(const double value_ = large()) {
     Require(value_ > 0.0);
     fixed_value = value_;
@@ -75,22 +75,22 @@ public:
   // ACCESSORS
 
   /*!
-     * \brief Returns the time-step recommended by a fixed  advisor.
-     * \param tsm The time step manager in which the advisor resides.
-     * \return The recommended timestep.
-     */
+   * \brief Returns the time-step recommended by a fixed  advisor.
+   * \param tsm The time step manager in which the advisor resides.
+   * \return The recommended timestep.
+   */
   double get_dt_rec(const ts_manager &tsm) const;
 
   /*! 
-      \brief Prints the state of a fixed advisor.
-      \return Prints the internal state of the advisor to std out.
-     */
+    \brief Prints the state of a fixed advisor.
+    \return Prints the internal state of the advisor to std out.
+   */
   void print_state(std::ostream &out = std::cout) const;
 
   /*! 
-      \brief Fixed advisor invariant function.
-      \return True if the invariant is satisfied.
-     */
+    \brief Fixed advisor invariant function.
+    \return True if the invariant is satisfied.
+   */
   bool invariant_satisfied() const;
 };
 

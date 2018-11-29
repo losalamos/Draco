@@ -1,15 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/tstF3.cc
+ * \file   special_functions/test/tstF3.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"

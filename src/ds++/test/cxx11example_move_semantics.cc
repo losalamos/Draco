@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   ds++/test/cxx11example_move_sematics.cc
+ * \file   ds++/test/cxx11example_move_semantics.cc
  * \author Tim M. Kelley <tkelley@lanl.gov>, Kelly G. Thompson <kgt@lanl.gov>
  * \date   Wednesday, May 24, 2017, 11:06 am
  * \brief  Demonstrate proper and improper use of std::move
@@ -27,18 +27,18 @@ void report_memory_locations(std::vector<double> const &v,
 
 //============================================================================//
 /*!
- * \class A
+ * \class Apple
  * \brief Improper use of move semantics in constructor.
  */
 //============================================================================//
-struct A {
+struct Apple {
 
 public:
   /*!
    * \brief Constructor
    * \param[in] v_in v_in is lvalue; its type is rval ref
    */
-  explicit A(std::vector<double> &&v_in)
+  explicit Apple(std::vector<double> &&v_in)
       : v_(v_in) // regular vector copy ctor called b/c lvalue
   {
     /* empty */
@@ -50,17 +50,17 @@ public:
 
 //============================================================================//
 /*!
- * \class B
+ * \class Banana
  * \brief Proper use of move semantics in constructor.
  */
 //============================================================================//
-struct B {
+struct Banana {
 
   /*!
    * \brief Constructor
    * \param[in] v_in v_in is lvalue; its type is rval ref
    */
-  explicit B(std::vector<double> &&v_in)
+  explicit Banana(std::vector<double> &&v_in)
       : v_(std::move(v_in)) /* move casts to rval, move ctor called */
   {
     /* empty */
@@ -71,12 +71,13 @@ struct B {
 };
 
 //----------------------------------------------------------------------------//
-/*! \breif Demonstration of move semantics
+/*!
+ * \brief Demonstration of move semantics
  *
  * 1. Create a vector
- * 2. Attempt to construct a class (A), demonstrate that ownership is not
+ * 2. Attempt to construct a class (Apple), demonstrate that ownership is not
  *    transferred.
- * 3. Attempt to construct another class (B), demonstrate that ownership is
+ * 3. Attempt to construct another class (Banana), demonstrate that ownership is
  *    transferred.
  */
 //----------------------------------------------------------------------------//
@@ -96,9 +97,9 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   // Case 1:
   // Create an object, attempt to transfer ownership from v1 to a.
   // This will fail.
-  cout << "\nCreate an instantiation of A that owns a copy of v1.";
-  A a(move(v1));
-  cout << "\nAfter call to A::ctor\n";
+  cout << "\nCreate an instantiation of Apple that owns a copy of v1.";
+  Apple a(move(v1));
+  cout << "\nAfter call to Apple::ctor\n";
   report_memory_locations(v1, "v1");
   report_memory_locations(a.v_, "a.v_");
 
@@ -118,7 +119,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   if (rtt_dsxx::soft_equiv(v1.begin(), v1.end(), a.v_.begin(), a.v_.end()))
     PASSMSG("a.v_ matches v1.");
   else
-    FAILMSG("A's constructor did not copy the vector's data correctly.");
+    FAILMSG("Apple's constructor did not copy the vector's data correctly.");
 
   // change the data in the vector. Print the new state.
   cout << "\nExamine the behavior of 'swap'.\n";
@@ -147,9 +148,10 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   // Case 2:
   // Create an object, attempt to transfer ownership from v1 to b.
   // This works.
-  cout << "\nCreate an instantiation of B that takes ownership of v1's data.";
-  B b(move(v1));
-  cout << "\nAfter call to B::ctor\n";
+  cout << "\nCreate an instantiation of Banana that takes ownership of v1's "
+       << "data.";
+  Banana b(move(v1));
+  cout << "\nAfter call to Banana::ctor\n";
   report_memory_locations(v1, "v1");
   report_memory_locations(b.v_, "b.v_");
 
@@ -159,16 +161,17 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   if (v1.size() != 0)
     ITFAILS;
   else
-    PASSMSG("v1 no longer has a data store (transfered to B)");
+    PASSMSG("v1 no longer has a data store (transfered to Banana)");
   if (v1_loc == &b.v_)
     ITFAILS;
-  // v1_data_loc was set before B was constructed
+  // v1_data_loc was set before Banana was constructed
   if (v1_data_loc == &b.v_[0] && b.v_.size() > 0)
     PASSMSG("Object 'b' has member data taken from v1.");
   else
     ITFAILS;
   if (rtt_dsxx::soft_equiv(v1.begin(), v1.end(), b.v_.begin(), b.v_.end()))
-    FAILMSG("B's constructor did not invalidate the vector's data correctly.");
+    FAILMSG(std::string("Banana's constructor did not invalidate the ") +
+            "vector's data correctly.");
   else
     PASSMSG("'b' has taken full owndership of v1's data.");
 

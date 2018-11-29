@@ -35,7 +35,7 @@ double expm1(double const &x);
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
  */
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Base {
+class Pseudo_Line_Base {
 public:
   enum Averaging {
     NONE,      //!< evaluate opacity at band center
@@ -47,7 +47,7 @@ public:
 
 private:
   // Coefficients
-  std::shared_ptr<Expression const> continuum_; // continuum opacity [cm^2/g]
+  std::shared_ptr<Expression const> continuum_; //!< continuum opacity [cm^2/g]
   vector<double> continuum_table_;
   double emax_;
 
@@ -59,17 +59,17 @@ private:
 
   unsigned seed_;
   int number_of_lines_;
-  double line_peak_;  // peak line opacity [cm^2/g]
-  double line_width_; // line width as fraction of line frequency.
+  double line_peak_;  //!< peak line opacity [cm^2/g]
+  double line_width_; //!< line width as fraction of line frequency.
   int number_of_edges_;
   double edge_ratio_;
 
-  double Tref_; // reference temperature for temperature dependence
-  double Tpow_; // temperature dependence exponent
+  double Tref_; //!< reference temperature for temperature dependence
+  double Tpow_; //!< temperature dependence exponent
 
-  vector<double> center_;      // line centers for this realization
-  vector<double> edge_;        // edges for this realization
-  vector<double> edge_factor_; // opacity at threshold
+  vector<double> center_;      //!< line centers for this realization
+  vector<double> edge_;        //!< edges for this realization
+  vector<double> edge_factor_; //!< opacity at threshold
 
   void setup_(double emin, double emax);
 
@@ -79,11 +79,23 @@ public:
                    int number_of_edges, double edge_ratio, double Tref,
                    double Tpow, double emin, double emax, unsigned seed);
 
+  /*!
+   * \brief Second constructor for Pseudo_Line_Base.
+   * \bug No unit test, but needed by Capsaicin
+   *      thermal_data/microphysics_parser.cc ->
+   *      cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.cc -> Pseudo_Line_Base
+   */
   Pseudo_Line_Base(string const &cont_file, int number_of_lines,
                    double line_peak, double line_width, int number_of_edges,
                    double edge_ratio, double Tref, double Tpow, double emin,
                    double emax, unsigned seed);
 
+  /*!
+   * \brief Third constructor for Pseudo_Line_Base.
+   * \bug No unit test, but needed by Capsaicin
+   *      thermal_data/microphysics_parser.cc ->
+   *      cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.cc -> Pseudo_Line_Base
+   */
   Pseudo_Line_Base(double nu0, double C, double Bn, double Bd, double R,
                    int number_of_lines, double line_peak, double line_width,
                    int number_of_edges, double edge_ratio, double Tref,

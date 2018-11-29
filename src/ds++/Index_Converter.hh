@@ -22,20 +22,19 @@ namespace rtt_dsxx {
  *        N-dimensional ones.
  *
  * \sa Index_Converter.cc for detailed descriptions.
- */
-/*!
- * \example ds++/test/tstIndex_Converter.cc
+ *
+ * \example ds++/test/tstIndex_Converter.cc 
+ * Example use of Index_Converter
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
 class Index_Converter : public Index_Set<D, OFFSET> {
 public:
   typedef Index_Set<D, OFFSET> Base;
-
   typedef Index_Counter<D, OFFSET> Counter;
 
-  //! Default constructor
-  Index_Converter() { /* ... */
+  //! default constructor
+  Index_Converter(void) { /*empty*/
   }
 
   //! Construct with just a pointer to the sizes
@@ -44,12 +43,9 @@ public:
   //! Construct a with all dimensions equal
   Index_Converter(const unsigned dimension) { set_size(dimension); }
 
-  //! Destructor.
-  virtual ~Index_Converter() { /* ... */
+  //! Destructor
+  virtual ~Index_Converter(void) { /*empty*/
   }
-
-  //! Assignment operator for Index_Converter.
-  // Index_Converter& operator=(const Index_Converter &rhs);
 
   //! Re-assignment operator
   void set_size(const unsigned *dimensions);
@@ -80,7 +76,9 @@ public:
   int get_next_index(int index, int direction) const;
 
   //! Get the next index from an Index_Counter and direction
-  int get_next_index(const Counter &counter, int direction) const;
+  int get_next_index(
+      const typename Index_Converter<D, OFFSET>::Counter &counter,
+      int direction) const;
 
   //! Create an iterator over the index set
   Counter counter() const { return Counter(*this); }

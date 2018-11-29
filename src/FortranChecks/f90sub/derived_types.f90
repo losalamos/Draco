@@ -33,7 +33,7 @@ module rtt_test_derived_types
   ! Now create an interface to the C routine that accepts that type
   interface
      subroutine rtt_test_derived_type(dt_in, err_code) bind(C, &
-          & name="rtt_test_derived_type")
+          name="rtt_test_derived_type")
        use iso_c_binding, only : c_int
        import my_informative_type  ! F2003 standard, brings in host scope
        implicit none
@@ -74,7 +74,8 @@ subroutine test_derived_types() bind(c)
 
   error_code = -1
 
-  print '(a,f7.5)', "On Fortran side, derived type contains double = ", mit%some_double
+  print '(a,f7.5)', "On Fortran side, derived type contains double = ", &
+       mit%some_double
   print '(a,i3)', "integer = ", mit%some_int
   print '(a,i11)', "large integer = ", mit%some_large_int
   print '(a,i4)', "int_array(1) = ", int_array(1)

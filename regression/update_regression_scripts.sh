@@ -96,19 +96,23 @@ if ! [[ -d $REGDIR ]]; then
   run "chmod g+s ${REGDIR}"
 fi
 
-# Draco/Jayenne/Capsaicin
-projects="draco jayenne capsaicin CSK"
-for p in $projects; do
-  echo -e "\nUpdating $REGDIR/$p..."
-  if test -d ${REGDIR}/$p; then
-    run "cd ${REGDIR}/$p; git pull"
+# List of repositories (also used by push_repositories_xf.sh and
+# pull_repositories_xf.sh).  It defines $github_projects and $gitlab_projects.
+source ${scriptdir}/repository_list.sh
+
+for project in ${github_projects[@]}; do
+  namespace=`echo $p | sed -e 's%/.*%%'`
+  repo=`echo $p | sed -e 's%.*/%%'`
+  echo -e "\nUpdating $REGDIR/$repo..."
+  if test -d ${REGDIR}/$repo; then
+    run "cd ${REGDIR}/$repo; git pull"
   else
-    case $p in
-      draco)
-        run "cd ${REGDIR}; git clone git@github.com:lanl/Draco.git $p"
+    case $repo in
+      draco|branson)
+        run "cd ${REGDIR}; git clone git@github.com:$project $repo"
         ;;
       *)
-        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${p}/${p}.git"
+        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${project}.git"
         ;;
     esac
   fi

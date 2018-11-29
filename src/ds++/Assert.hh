@@ -89,7 +89,7 @@ namespace rtt_dsxx {
  *
  * Let rtt_dsxx::assertion derive from std::runtime_error.  G. Furnish intended
  * for the design to follow this model but the C++ compilers at time did not
- * have full support for \c <stdexcept>.  API is unchanged but the guts of the
+ * have full support for \c "stdexcept".  API is unchanged but the guts of the
  * class are significantly different (i.e.: use copy and assignment operators
  * from base class, use string instead of \c const \c char \c *, etc.).
  *
@@ -465,7 +465,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  *           function type, a reference to function type, a pointer to member
  *           function type. It may appear on the declarator of a parameter or on
  *           the declarator of a return type.
- *           \ref http://en.cppreference.com/w/cpp/language/except_spec
+ *           \sa http://en.cppreference.com/w/cpp/language/except_spec
  */
 //----------------------------------------------------------------------------//
 

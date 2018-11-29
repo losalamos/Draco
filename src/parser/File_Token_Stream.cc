@@ -25,7 +25,6 @@ using namespace std;
  * code that combines output files produced by each processor in a parallel
  * run.
  */
-
 File_Token_Stream::File_Token_Stream(void) : letters_(), letter_(nullptr) {
   Ensure(check_class_invariants());
   Ensure(location_() == "<uninitialized>");
@@ -43,7 +42,6 @@ File_Token_Stream::File_Token_Stream(void) : letters_(), letter_(nullptr) {
  *
  * \todo Make this constructor failsafe.
  */
-
 File_Token_Stream::File_Token_Stream(string const &file_name)
     : letters_(), letter_(make_shared<letter>(file_name)) {
   Ensure(check_class_invariants());
@@ -56,14 +54,12 @@ File_Token_Stream::File_Token_Stream(string const &file_name)
  * file. If the file cannot be opened, then \c error() will test true. Use the
  * default Text_Token_Stream user-defined whitespace characters.
  *
- * \param file_name
- * Name of the file from which to extract tokens.
+ * \param file_name Name of the file from which to extract tokens.
  *
  * \throw invalid_argument If the input stream cannot be opened.
  *
  * \todo Make this constructor failsafe.
  */
-
 File_Token_Stream::letter::letter(string const &file_name)
     : filename_(file_name), infile_(file_name.c_str(), std::ios::in) {
   if (!infile_) {
@@ -93,7 +89,6 @@ File_Token_Stream::letter::letter(string const &file_name)
  *
  * \throw invalid_argument If the input stream cannot be opened.
  */
-
 File_Token_Stream::File_Token_Stream(string const &file_name,
                                      set<char> const &ws,
                                      bool const no_nonbreaking_ws)
@@ -109,11 +104,8 @@ File_Token_Stream::File_Token_Stream(string const &file_name,
 /*!
  * \brief Attach the File_Token_Stream to a different file.
  *
- * \param file_name Name of the file to which to attach the token stream.
- *
  * \throw invalid_argument If the input stream cannot be opened.
  */
-
 void File_Token_Stream::letter::open_() {
   infile_.close();
   infile_.clear();
@@ -286,10 +278,10 @@ void File_Token_Stream::letter::rewind() {
 }
 
 //---------------------------------------------------------------------------//
-void File_Token_Stream::push_include(std::string &filename) {
-  Text_Token_Stream::push_include(filename);
+void File_Token_Stream::push_include(std::string &file_name) {
+  Text_Token_Stream::push_include(file_name);
   letters_.push(letter_);
-  letter_ = make_shared<letter>(filename);
+  letter_ = make_shared<letter>(file_name);
 }
 
 //---------------------------------------------------------------------------//

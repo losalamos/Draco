@@ -44,40 +44,28 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // >>> CHECK HEADER DATA
 
-  if (x3d_reader->get_process() != 0)
-    ITFAILS;
-
-  if (x3d_reader->get_numdim() != 2)
-    ITFAILS;
-
-  if (x3d_reader->get_numcells() != 1)
-    ITFAILS;
-
-  if (x3d_reader->get_numnodes() != 4)
-    ITFAILS;
+  FAIL_IF_NOT(x3d_reader->get_process() == 0);
+  FAIL_IF_NOT(x3d_reader->get_numdim() == 2);
+  FAIL_IF_NOT(x3d_reader->get_numcells() == 1);
+  FAIL_IF_NOT(x3d_reader->get_numnodes() == 4);
 
   // >>> CHECK CELL-NODE DATA
 
-  if (x3d_reader->get_celltype(0) != 4)
-    ITFAILS;
+  FAIL_IF_NOT(x3d_reader->get_celltype(0) == 4);
 
   std::vector<unsigned> test_cellnodes = {0, 1, 3, 2};
-  if (x3d_reader->get_cellnodes(0) != test_cellnodes)
-    ITFAILS;
+  FAIL_IF_NOT(x3d_reader->get_cellnodes(0) == test_cellnodes);
 
   // >>> CHECK NODE-COORD DATA
 
   std::vector<std::vector<double>> test_coords = {
       {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0}};
-  for (int node = 0; node < 4; ++node) {
-    if (x3d_reader->get_nodecoord(node) != test_coords[node])
-      ITFAILS;
-  }
+  for (int node = 0; node < 4; ++node)
+    FAIL_IF_NOT(x3d_reader->get_nodecoord(node) == test_coords[node]);
 
   // >>> CHECK SIDE DATA
 
-  if (x3d_reader->get_numsides() != 4)
-    ITFAILS;
+  FAIL_IF_NOT(x3d_reader->get_numsides() == 4);
 
   std::vector<std::vector<unsigned>> test_sidenodes = {
       {0, 1}, {1, 3}, {2, 3}, {0, 2}};
@@ -86,17 +74,28 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   for (int side = 0; side < 4; ++side) {
 
     // sides must always give 2 nodes per face in X3D
-    if (x3d_reader->get_sidetype(side) != 2)
-      ITFAILS;
+    FAIL_IF_NOT(x3d_reader->get_sidetype(side) == 2);
 
     // boundary conditions are not supplied in X3D
     // (note this check is specialized for the 1-cell mesh)
-    if (x3d_reader->get_sideflag(side) != bdy_flags[side])
-      ITFAILS;
+    FAIL_IF_NOT(x3d_reader->get_sideflag(side) == bdy_flags[side]);
 
     // check node indices
-    if (x3d_reader->get_sidenodes(side) != test_sidenodes[side])
-      ITFAILS;
+    FAIL_IF_NOT(x3d_reader->get_sidenodes(side) == test_sidenodes[side]);
+  }
+
+  // >>> CHECK BC-NODE MAP
+
+  const std::map<size_t, std::vector<unsigned>> &bc_node_map =
+      x3d_reader->get_bc_node_map();
+
+  FAIL_IF_NOT(bc_node_map.size() == 4);
+
+  std::vector<std::vector<unsigned>> test_bc_nodes = {
+      {0, 1}, {1, 3}, {2, 3}, {0, 2}};
+
+  for (size_t ibc = 0; ibc < 4; ++ibc) {
+    FAIL_IF_NOT(bc_node_map.at(ibc) == test_bc_nodes[ibc]);
   }
 
   // successful test output

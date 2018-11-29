@@ -19,7 +19,7 @@
 #    valgrind
 #------------------------------------------------------------------------------#
 
-# 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin\" -e valgrind
+# 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin core\" -e valgrind
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

@@ -221,12 +221,12 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex,
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
  * \param T          The temperature in keV (must be greater than 0.0)
- * \param PL         Reference argument for the Planckian integral
- * \param ROSL       Reference argument for the Rosseland integral
+ * \param planck     Reference argument for the Planckian integral
+ * \param rosseland  Reference argument for the Rosseland integral
  *
  * \return The integrated normalized Planckian and Rosseland over the requested
- *         frequency group. These are returned as references in argument PL and
- *         ROSL
+ *         frequency group. These are returned as references in argument planck and
+ *         rosseland
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex,
                                                  const double T, double &planck,
@@ -427,9 +427,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  *        weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \param emission_group_cdf
@@ -439,9 +438,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  * function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupOpacitiesPlanck(
-    std::vector<double> const &groupBounds,
-    //    double              const & T,
-    std::vector<double> const &opacity,
+    std::vector<double> const &groupBounds, std::vector<double> const &opacity,
     std::vector<double> const &planckSpectrum,
     std::vector<double> &emission_group_cdf) {
   Require(groupBounds.size() > 0);
@@ -497,7 +494,7 @@ double CDI::collapseMultigroupOpacitiesPlanck(
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \return A single interval Planckian weighted reciprocal opacity value.
@@ -553,7 +550,6 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
  *        weighted by the Rosseland function.
  *
  * \param groupBounds The vector of group boundaries. Size n+1
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
  * \param rosselandSpectrum A vector of Rosseland integrals for all groups in
  *                  the spectrum (normally generated via
@@ -636,11 +632,11 @@ double CDI::collapseMultigroupOpacitiesRosseland(
  *        representative value weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param bandWidths Vector of energy band widths
  * \param emission_group_cdf
  * \return A single interval Planckian weighted opacity value.
  *
@@ -718,9 +714,10 @@ double CDI::collapseOdfmgOpacitiesPlanck(
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param bandWidths Vector of energy band widths
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
  * function to obtain planckSpectrum.
@@ -824,7 +821,7 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp) {
  * CDI::reset() first.  You cannot overwrite registered objects with the
  * setMultigroupOpacity() function!
  *
- * \param spGOp smart pointer to a MultigroupOpacity object
+ * \param spMGOp smart pointer to a MultigroupOpacity object
  */
 void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
   using rtt_dsxx::soft_equiv;
@@ -875,7 +872,7 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
  * set of OdfmgOpacity objects call CDI::reset() first.  You cannot overwrite
  * registered objects with the setOdfmgOpacity() function!
  *
- * \param spGOp smart pointer to a OdfmgOpacity object
+ * \param spODFOp smart pointer to a OdfmgOpacity object
  */
 void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) {
   using rtt_dsxx::soft_equiv;

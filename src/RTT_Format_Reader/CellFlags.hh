@@ -13,11 +13,7 @@
 
 #include "Dims.hh"
 #include "Flags.hh"
-#include <fstream>
-#include <iostream>
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 

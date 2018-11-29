@@ -28,7 +28,7 @@ using namespace std;
  * \param dash A dash is required after the last component written to the
  *             stream.  May be modified on return.
  * \param value Unit dimension value
- * \param unit Unit name
+ * \param name Unit name
  */
 void dash_insert(ostream &str, bool &dash, double const value,
                  char const *const name) {

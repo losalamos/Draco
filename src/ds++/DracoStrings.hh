@@ -69,22 +69,14 @@ std::string to_string(T const num, unsigned int const precision = 23) {
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief trim whitespace (or other characters) from before and after main text.
- *
- * \param[in] str The string that will be processed
- * \param[in] whitespace A set of characters that will be removed.
- *                 (default: " \t")
- * \return A new, probably shortened, string without unwanted leading/training
- *         characters.
- */
+//! trim whitespace (or other characters) from before and after main text.
 std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
 //----------------------------------------------------------------------------//
 /*!
  * \brief Removes all specified characters from a string.
  *
- * \param[in] str The string that will be processed
+ * \param[in] orig_str The string that will be processed
  * \param[in] chars_to_remove A set of characters (as a std::string) that will
  *         be removed.
  * \return A new, possibly shortened, string that does not contain the unwanted
@@ -204,7 +196,7 @@ auto parse_number(std::string const &str, bool verbose = true) -> T;
  * \param[in] str The string that contains a number.
  * \param[in] range_symbols Parenthesis or braces that mark the beginning or end
  *                 of the value range. (default: "{}")
- * \param[in] delimiter A character that separates each numeric entry.
+ * \param[in] delimiters A character that separates each numeric entry.
  *                 (default: ",")
  * \return A vector of numeric values.
  *

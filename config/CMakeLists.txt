@@ -52,7 +52,8 @@ set( file_list
   ${CMake_src}
   ${CMake_in}
   ${Python_src}
-  ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
+  ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake
+  ${Draco_SOURCE_DIR}/autodoc/html/doxygen.css)
 
 install( FILES ${file_list}  DESTINATION cmake/draco )
 install( FILES ${CMake_AFSD}

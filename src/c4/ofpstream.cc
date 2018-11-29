@@ -21,8 +21,8 @@ using namespace std;
  * rank.
  *
  * \param[in] filename Name of the file to which synchronized output is to be
- * written.
- * \param[in] (optional) mode File write mode (ascii/binary)-- defaults to ascii
+ *               written.
+ * \param[in] mode File write mode (ascii/binary)-- defaults to ascii
  */
 ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
     : std::ostream(&sb_) {

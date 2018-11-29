@@ -308,6 +308,8 @@ void parse_vector(Token_Stream &tokens, double x[]) {
 /*!
  * \param tokens Token stream from which to parse the quantity.
  * \param x On return, contains the parsed vector components.
+ * \param size size of parameter x.
+ *
  * \pre \c x!=NULL
  */
 void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
@@ -335,7 +337,7 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
  * name.
  *
  * \param tokens Token_Stream from which to parse.
- * \param pos Position in Token_Stream at which to parse.  This lookahead
+ * \param position Position in Token_Stream at which to parse.  This lookahead
  * capability is needed by parse_unit to see if a hyphen '-' is part of a unit
  * expression.
  *

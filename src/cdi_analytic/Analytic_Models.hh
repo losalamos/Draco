@@ -35,6 +35,7 @@ enum Opacity_Models {
   STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL,
 };
 
+//----------------------------------------------------------------------------//
 /*!
  * \brief Enumeration describing the eos  models that are available.
  *
@@ -50,27 +51,26 @@ enum EoS_Models { POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL };
  * \brief Analytic_Opacity_Model base class.
  *
  * This is a base class that defines the interface given to
- * Analytic_Gray_Opacity or Analytic_MultiGroup_Opacity constructors.  The
- * user can define any derived model class that will work with these analtyic
- * opacity generation classes as long as it contains the following function:
- * (declared pure virtual in this class).
+ * Analytic_Gray_Opacity or Analytic_MultiGroup_Opacity constructors.  The user
+ * can define any derived model class that will work with these analtyic opacity
+ * generation classes as long as it contains the following function: (declared
+ * pure virtual in this class).
  *
  * \arg double calculate_opacity(double T, double rho)
  *
  * To enable packing functionality, the class must be registered in the
- * Opacity_Models enumeration.  Also, it must contain the following pure
- * virtual function:
+ * Opacity_Models enumeration.  Also, it must contain the following pure virtual
+ * function:
  *
  * \arg vector<char> pack() const;
  *
  * This class is a pure virtual base class.
  *
  * The returned opacity should have units of cm^2/g.
- *
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_Opacity_Model {
+class Analytic_Opacity_Model {
 public:
   // Typedefs.
   typedef std::vector<char> sf_char;
@@ -105,8 +105,7 @@ public:
 //---------------------------------------------------------------------------//
 /*!
  * \class Constant_Analytic_Opacity_Model
- * \brief Derived Analytic_Opacity_Model class that defines a constant
- *  opacity.
+ * \brief Derived Analytic_Opacity_Model class that defines a constant opacity.
  *
  * The opacity is defined:
  *
@@ -115,10 +114,8 @@ public:
  * where the coefficient has the following units:
  *
  * \arg a = [cm^2/g]
- *
  */
-class DLL_PUBLIC_cdi_analytic Constant_Analytic_Opacity_Model
-    : public Analytic_Opacity_Model {
+class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model {
 private:
   // Constant opacity.
   double sigma;
@@ -168,18 +165,17 @@ public:
  * \arg a = [cm^2/g * (cm^3/g)^d]
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
  */
-class DLL_PUBLIC_cdi_analytic Polynomial_Analytic_Opacity_Model
-    : public Analytic_Opacity_Model {
+class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model {
 private:
   // Coefficients
-  double a; // constant [cm^2/g * (cm^3/g)^d]
-  double b; // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
-  double c; // temperature power
-  double d; // density power
-  double e; // frequency power
-  double f; // reference temperature
-  double g; // reference density
-  double h; // reference frequency
+  double a; //!< constant [cm^2/g * (cm^3/g)^d]
+  double b; //!< temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
+  double c; //!< temperature power
+  double d; //!< density power
+  double e; //!< frequency power
+  double f; //!< reference temperature
+  double g; //!< reference density
+  double h; //!< reference frequency
 
 public:
   /*!
@@ -262,7 +258,7 @@ public:
 /*!
  * \class Stimulated_Emission_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a polynomial
- * function for the opacity that includes stimulated emission.
+ *        function for the opacity that includes stimulated emission.
  *
  * The opacity is defined:
  *
@@ -284,26 +280,23 @@ public:
  * \arg d = constant
  * \arg e = -3
  *
- * This produces a Planck or Rosseland opacity of the form
- *         \f[ \overline{\sigma} \propto T^{-7/2} \f]
- * which is also known as Kramers' Opacity Law.
+ * This produces a Planck or Rosseland opacity of the form \f[ \overline{\sigma}
+ * \propto T^{-7/2} \f] which is also known as Kramers' Opacity Law.
+ *
  * \sa{ http://en.wikipedia.org/wiki/Kramers'_opacity_law }
- *
- *
  */
-
-class DLL_PUBLIC_cdi_analytic Stimulated_Emission_Analytic_Opacity_Model
+class Stimulated_Emission_Analytic_Opacity_Model
     : public Analytic_Opacity_Model {
 private:
   // Coefficients
-  double a; // constant [cm^2/g * (cm^3/g)^d]
-  double b; // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
-  double c; // temperature power
-  double d; // density power
-  double e; // frequency power
-  double f; // reference temperature
-  double g; // reference density
-  double h; // reference frequency
+  double a; //!< constant [cm^2/g * (cm^3/g)^d]
+  double b; //!< temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
+  double c; //!< temperature power
+  double d; //!< density power
+  double e; //!< frequency power
+  double f; //!< reference temperature
+  double g; //!< reference density
+  double h; //!< reference frequency
 
 public:
   /*!
@@ -316,8 +309,9 @@ public:
    * \param f_ reference temperature
    * \param g_ reference density
    * \param h_ reference frequency
+   *
+   * \bug no unit test exists.
    */
-
   Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
                                              double d_, double e_ = 0,
                                              double f_ = 1, double g_ = 1,
@@ -327,6 +321,7 @@ public:
   }
 
   //! Constructor for packed state.
+  //! \bug no unit test exists.
   explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed);
 
   //! Calculate the opacity in units of cm^2/g
@@ -374,9 +369,11 @@ public:
   }
 
   //! Return the model parameters.
+  //! \bug no unit test exists.
   sf_double get_parameters() const;
 
   //! Pack up the class for persistence.
+  //! \bug no unit test exists.
   sf_char pack() const;
 };
 
@@ -386,8 +383,8 @@ public:
  * \brief Analytic_EoS_Model base class.
  *
  * This is a base class that defines the interface given to Analytic_EoS
- * constructors.  The user can define any derived Analytic_EoS class to give
- * to an analytic EoS class as long as it contains the following functions:
+ * constructors.  The user can define any derived Analytic_EoS class to give to
+ * an analytic EoS class as long as it contains the following functions:
  * (declared virtual in this class).
  *
  * \arg double calculate_electron_internal_energy(double T, double rho)
@@ -405,12 +402,11 @@ public:
  * \arg ion heat capacity             = kJ/g/keV
  * \arg electron thermal conductivity = /s/cm
  *
- * These units correspond to the units defined by the rtt_cdi::EoS base
- * class.
+ * These units correspond to the units defined by the rtt_cdi::EoS base class.
  *
  * To enable packing functionality, the class must be registered in the
- * EoS_Models enumeration.  Also, it must contain the following pure
- * virtual function:
+ * EoS_Models enumeration.  Also, it must contain the following pure virtual
+ * function:
  *
  * \arg vector<char> pack() const;
  *
@@ -418,7 +414,7 @@ public:
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_EoS_Model {
+class Analytic_EoS_Model {
 public:
   // Typedefs.
   typedef std::vector<char> sf_char;
@@ -473,8 +469,8 @@ public:
 //---------------------------------------------------------------------------//
 /*!
  * \class Polynomial_Specific_Heat_Analytic_EoS_Model
- * \brief Derived Analytic_EoS_Model class that defines polymomial
- * functions for EoS specific heat data.
+ * \brief Derived Analytic_EoS_Model class that defines polymomial functions for
+ *        EoS specific heat data.
  *
  * The electron and ion specific heats are defined:
  *
@@ -486,24 +482,22 @@ public:
  * \arg a,d = [kJ/g/keV]
  * \arg b,e = [kJ/g/keV^(c+1,f+1)]
  *
- * The additional data that is required by the Analytic_EoS_Model base class
- * is set to zero by default. The Polynomial_Specific_Heat_Analytic_EoS_Model
- * class is intended to be used by radiation-only packages for testing and
+ * The additional data that is required by the Analytic_EoS_Model base class is
+ * set to zero by default. The Polynomial_Specific_Heat_Analytic_EoS_Model class
+ * is intended to be used by radiation-only packages for testing and
  * verification purposes.  More complex analytic EoS models can be easily
  * defined if they are required; however, radiation-only packages (without
  * Compton scatter) only require specfic heat data.
- *
  */
-class DLL_PUBLIC_cdi_analytic Polynomial_Specific_Heat_Analytic_EoS_Model
-    : public Analytic_EoS_Model {
+class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model {
 private:
   // Coefficients.
-  double a; // electron Cv constant [kJ/g/keV]
-  double b; // electron Cv temperature multiplier [kJ/g/keV^(c+1)]
-  double c; // electron Cv temperature power
-  double d; // ion Cv constant [kJ/g/keV]
-  double e; // ion Cv temperature multiplier [kJ/g/keV^(c+1)]
-  double f; // ion Cv temperature power
+  double a; //!< electron Cv constant [kJ/g/keV]
+  double b; //!< electron Cv temperature multiplier [kJ/g/keV^(c+1)]
+  double c; //!< electron Cv temperature power
+  double d; //!< ion Cv constant [kJ/g/keV]
+  double e; //!< ion Cv temperature multiplier [kJ/g/keV^(c+1)]
+  double f; //!< ion Cv temperature power
 
 public:
   /*!
@@ -553,30 +547,23 @@ public:
     return Cv;
   }
 
-  /*! Calculate the electron specific internal energy.
+  /*!
+   * \brief Calculate the electron specific internal energy.
    *
-   * This is done by integrating the specific heat capacity at constant
-   * density from T=0 to the specified temperature.
+   * This is done by integrating the specific heat capacity at constant density
+   * from T=0 to the specified temperature.
    *
-   * \param T
-   * Temperature (keV) for which the specific internal energy is to be
-   * evaluated.
-   * \param rho
-   * Density (g/cm^3) for which the specific internal energy is to be
-   * evaluated. This parameter is not actually used.
-   *
+   * \param T Temperature (keV) for which the specific internal energy is to be
+   *          evaluated.
    * \return Electron specific internal energy (kJ/g)
    *
    * \pre \c T>=0
    * \pre \c rho>=0
-   *
    * \post \c U>=0
    */
-  double
-  calculate_electron_internal_energy(double T,
-                                     double Remember(rho)) const override {
+  double calculate_electron_internal_energy(double T,
+                                            double /*rho*/) const override {
     Require(T >= 0.0);
-    Require(rho >= 0.0);
 
     Check(c >= 0.0);
     double T_power = std::pow(T, c + 1.0);
@@ -586,29 +573,23 @@ public:
     return U;
   }
 
-  /*! Calculate the ion specific internal energy.
+  /*!
+   * \brief Calculate the ion specific internal energy.
    *
-   * This is done by integrating the specific heat capacity at constant
-   * density from T=0 to the specified temperature.
+   * This is done by integrating the specific heat capacity at constant density
+   * from T=0 to the specified temperature.
    *
-   * \param T
-   * Temperature (keV) for which the specific internal energy is to be
-   * evaluated.
-   * \param rho
-   * Density (g/cm^3) for which the specific internal energy is to be
-   * evaluated. This parameter is not actually used.
-   *
+   * \param T Temperature (keV) for which the specific internal energy is to be
+   *          evaluated.
    * \return Ion specific internal energy (kJ/g)
    *
    * \pre \c T>=0
    * \pre \c rho>=0
-   *
    * \post \c U>=0
    */
   double calculate_ion_internal_energy(double T,
-                                       double Remember(rho)) const override {
+                                       double /*rho*/) const override {
     Require(T >= 0.0);
-    Require(rho >= 0.0);
 
     Check(f >= 0.0);
     double T_power = std::pow(T, f + 1.0);
@@ -630,13 +611,17 @@ public:
     return 0.0;
   }
 
-  //!  Calculate the electron temperature given density and Electron
-  //!  internal energy and initial temperature.
+  /*!
+   * \brief Calculate the electron temperature given density and Electron
+   *        internal energy and initial temperature.
+   */
   double calculate_elec_temperature(double const /*rho*/, double const Ue,
                                     double const Te0) const override;
 
-  //!  Calculate the ion temperature given density and ion internal energy
-  //!  and initial temperature.
+  /*!
+   * \brief Calculate the ion temperature given density and ion internal energy
+   *        and initial temperature.
+   */
   double calculate_ion_temperature(double const /*rho*/, double const Uic,
                                    double const Ti0) const override;
   //! Return the model parameters.
@@ -646,7 +631,9 @@ public:
   sf_char pack() const override;
 };
 
-/*! \brief Functor used by calculate_Te_DU.
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Functor used by calculate_Te_DU.
  *
  * This functor is associated with Polynomial_Specific_Heat_Analytic_EoS_Model
  * and is used when solving for Ti via a root finding algorithm.
@@ -654,10 +641,10 @@ public:
  * We solve for the new T by minimizing the function \f$ f(T) \f$ :
  *
  * \f[
- * f(T) = U_e(T_i) - \int_0^{T_i}{C_{v_e}(T) dT}
+ *     f(T) = U_e(T_i) - \int_0^{T_i}{C_{v_e}(T) dT}
  * \f]
  * \f[
- * f(T) = U_e(T_i) - a T_i - \frac{b}{c+1} T_i^{c+1}
+ *     f(T) = U_e(T_i) - a T_i - \frac{b}{c+1} T_i^{c+1}
  * \f]
  *
  */

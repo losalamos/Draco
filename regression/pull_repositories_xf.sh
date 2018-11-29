@@ -17,7 +17,10 @@
 #    jayenne         jayenne_jayenne.git.tar
 #    imcdoc          jayenne_imcdoc.git.tar
 #    capsaicin       capsaicin_capsaicin.git.tar
+#    capsaicin/core  capsaicin_core.git.tar
 #    capsaicin/docs  capsaicin_docs.git.tar
+#    capsaicin/npt   capsaicin_npt.git.tar
+#    capsaicin/trt   capsaicin_trt.git.tar
 # 2. Git repositories live at /usr/projects/draco/git
 # 3. Kerberos keytab files is at $HOME/.ssh/xfkeytab and is signed
 #    with principal transfer/${USER}push@lanl.gov

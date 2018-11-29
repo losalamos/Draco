@@ -25,7 +25,9 @@ class field_ts_advisor;
 namespace rtt_timestep_test {
 
 //===========================================================================//
-/*! \class dummy_package - Exercizes the field time-step advisors.
+/*! 
+ * \class dummy_package 
+ * \brief Exercizes the field time-step advisors.
  *
  * This class serves as an example of how any particular package can make use
  * of the time-step manaager/advisor utility. It also exercizes the field

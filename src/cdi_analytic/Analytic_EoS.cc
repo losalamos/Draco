@@ -22,7 +22,7 @@ namespace rtt_cdi_analytic {
  * This constructor builds an analytic EoS model defined by the
  * rtt_cdi_analytic::Analytic_EoS_Model derived class argument.
  *
- * \param analytic_model_in shared_ptr to a derived
+ * \param model_in shared_ptr to a derived
  *        rtt_cdi_analytic::Analytic_EoS_Model object
  */
 Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)

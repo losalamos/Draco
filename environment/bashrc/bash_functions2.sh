@@ -19,6 +19,7 @@ if test $fn_exists = 0; then
     for m in $dracomodules; do
 	module load $m
     done
+    unset MPI_ROOT
   }
   function rmdracoenv ()
   {

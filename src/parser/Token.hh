@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Define class Token and enum Token_Type
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Token_HH
-#define CCS4_Token_HH
+#ifndef rtt_Token_HH
+#define rtt_Token_HH
 
 #include "ds++/Assert.hh"
 
@@ -30,13 +27,13 @@ using std::string;
 enum Token_Type {
   END,
   /*!< The identifier <CODE>end</CODE>, denoting that the Parse_Table
-     *   should return control to its client.  Can be used to implement
-     *   nested parse tables.*/
+   *   should return control to its client.  Can be used to implement
+   *   nested parse tables.*/
 
   EXIT,
   /*!< Denotes that the end of the Token_Stream has been reached.
-     *   The Token_Stream will continue to return EXIT indefinitely
-     *   once its end has been reached. */
+   *   The Token_Stream will continue to return EXIT indefinitely
+   *   once its end has been reached. */
 
   KEYWORD,
   /*!< A sequence of one or more C++ identifiers separated by whitespace. */
@@ -52,13 +49,13 @@ enum Token_Type {
 
   ERROR,
   /*!< The error token, indicating something wrong with the token stream.
-     *   For example, a file-based token stream would return this token if
-     *   the file failed to open. */
+   *   For example, a file-based token stream would return this token if
+   *   the file failed to open. */
 
   OTHER
   /*! A single character or sequence of characters (such as "==") that does
-     *  not belong to one of the regular token types described above.
-     */
+   *  not belong to one of the regular token types described above.
+   */
 };
 
 //-------------------------------------------------------------------------//
@@ -69,22 +66,21 @@ enum Token_Type {
  * for analysis codes.  The token is characterized by its type, value, and
  * location.
  */
-
 class DLL_PUBLIC_parser Token {
 public:
   // CREATORS
 
   //! Construct a Token with the specified non-text type and location.
-  inline Token(Token_Type t, string const &loc);
+  inline Token(Token_Type type, string const &location);
 
   //! Construct a single-character OTHER token with the specified location.
-  inline Token(char c, string const &loc);
+  inline Token(char c, string const &location);
 
   //! Construct a Token with specified type, text, and location.
-  inline Token(Token_Type ty, string const &tx, string const &loc);
+  inline Token(Token_Type type, string const &text, string const &location);
 
   //! Construct a Token with specified type, text, and location.
-  inline Token(Token_Type ty, string &&tx, string &&loc);
+  inline Token(Token_Type type, string &&text, string &&location);
 
   //! Default constructor
   inline Token(/*empty*/) : type_(END), text_(), location_() { /* empty */
@@ -131,14 +127,9 @@ DLL_PUBLIC_parser bool operator==(Token const &, Token const &);
 
 //-------------------------------------------------------------------------//
 /*!
- * \param type
- * Type of the Token.
- *
- * \param text
- * Text of the Token.
- *
- * \param location
- * The token location.
+ * \param type Type of the Token.
+ * \param text Text of the Token.
+ * \param location The token location.
  */
 inline Token::Token(Token_Type const type, string const &text,
                     string const &location)
@@ -160,14 +151,9 @@ inline Token::Token(Token_Type const type, string const &text,
 /*!
  * Move version of previous constructor.
  *
- * \param type
- * Type of the Token.
- *
- * \param text
- * Text of the Token.
- *
- * \param location
- * The token location.
+ * \param type Type of the Token.
+ * \param text Text of the Token.
+ * \param location The token location.
  */
 inline Token::Token(Token_Type const type, string &&text, string &&location)
     : type_(type), text_(text), location_(location) {
@@ -186,11 +172,8 @@ inline Token::Token(Token_Type const type, string &&text, string &&location)
 
 //-------------------------------------------------------------------------//
 /*!
- * \param c
- * The token text (a single character)
- *
- * \param location
- * The token location.
+ * \param c The token text (a single character)
+ * \param location The token location.
  */
 inline Token::Token(char const c, string const &location)
     : type_(OTHER), text_(1, c), location_(location) {
@@ -204,11 +187,8 @@ inline Token::Token(char const c, string const &location)
 
 //-------------------------------------------------------------------------//
 /*!
- * \param type
- * Token type to create; must be one of END, EXIT, or ERROR.
- *
- * \param location
- * The token location
+ * \param type Token type to create; must be one of END, EXIT, or ERROR.
+ * \param location The token location
  *
  * These token types have no associated text.
  */
@@ -224,7 +204,7 @@ inline Token::Token(Token_Type const type, string const &location)
 
 } // namespace rtt_parser
 
-#endif // CCS4_Token_HH
+#endif // rtt_Token_HH
 
 //--------------------------------------------------------------------//
 // end of Token.hh

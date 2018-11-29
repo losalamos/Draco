@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   quadrature/QIM_parser.cc
+ * \file   quadrature/QIM__Parser.cc
  * \author Kent Budge
  * \brief  Define a parse routine for quadrature interpolation model
  *         specifications.

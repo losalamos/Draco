@@ -17,6 +17,8 @@
 #include "multigroup_data_types.hh"
 #include "multigroup_lib_builder.hh"
 
+#ifdef COMPTON_FOUND
+
 namespace rtt_compton {
 
 // ------------ //
@@ -170,4 +172,11 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
   // call the appropriate routine in the electron interp object
   return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
+
 } // namespace rtt_compton
+
+#endif
+
+//---------------------------------------------------------------------------//
+// End compton/Compton.cc
+//---------------------------------------------------------------------------//

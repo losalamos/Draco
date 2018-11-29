@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/C4_MPI_gatherv_pt.cc
+ * \file   c4/gatherv_pt.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate gatherv instantiations.

@@ -1160,6 +1160,9 @@ double Expression::operator()(vector<double> const &x) const {
  *
  * \return Pointer to the Expression. If null, the expression was empty or
  *         grammatically ill-formed.
+ *
+ * \bug Doxygen doesn't like this definition
+ * \cond doxygen_skip_this
  */
 std::shared_ptr<Expression>
 Expression::parse(unsigned const number_of_variables,
@@ -1237,6 +1240,8 @@ void Expression::write(Precedence const p, vector<string> const &vars,
 
   write_(p, vars, out);
 }
+
+//! \endcond
 
 } // end namespace rtt_parser
 

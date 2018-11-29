@@ -1,23 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/tstF32.cc
+ * \file   special_functions/test/tstF32.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <fstream>
-#include <gsl/gsl_sf_gamma.h>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "special_functions/F32.hh"
 #include "units/PhysicalConstants.hh"
+#include <fstream>
+#include <gsl/gsl_sf_gamma.h>
 
 using namespace std;
 using namespace rtt_dsxx;

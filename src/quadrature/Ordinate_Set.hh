@@ -47,11 +47,11 @@ public:
 
   // CREATORS
 
-  Ordinate_Set(unsigned const dimension, Geometry geometry,
+  Ordinate_Set(unsigned const dimension, Geometry const geometry,
                vector<Ordinate> const &ordinates,
                bool const has_starting_directions = true,
                bool const has_extra_starting_directions = false,
-               Ordering ordering = LEVEL_ORDERED);
+               Ordering const ordering = LEVEL_ORDERED);
 
   //! destructor
   virtual ~Ordinate_Set() {}

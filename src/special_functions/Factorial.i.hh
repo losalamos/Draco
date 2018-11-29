@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/factorial.i.hh
+ * \file   special_functions/factorial.i.hh
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.

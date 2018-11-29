@@ -58,7 +58,7 @@ private:
 
 public:
   // Constructor.
-  explicit Analytic_EoS(SP_Analytic_Model);
+  explicit Analytic_EoS(SP_Analytic_Model model_in);
 
   // Unpacking constructor.
   explicit Analytic_EoS(const sf_char &);

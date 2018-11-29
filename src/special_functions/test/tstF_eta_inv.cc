@@ -1,22 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/tstF_eta_inv.cc
+ * \file   special_functions/test/tstF_eta_inv.cc
  * \author Kent Budge
  * \date   Mon Sep 20 14:55:09 2004
  * \brief  Test the F_eta_inv function
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <cmath> // fabs
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "special_functions/F_eta.hh"
 #include "special_functions/F_eta_inv.hh"
+#include <cmath> // fabs
 
 //---------------------------------------------------------------------------//
 // TESTS

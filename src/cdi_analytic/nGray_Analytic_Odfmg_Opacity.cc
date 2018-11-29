@@ -32,13 +32,13 @@ namespace rtt_cdi_analytic {
  * must be equal to the number of groups.
  *
  * \param groups vector containing the group boundaries in keV from lowest to
- * highest
- *
+ *           highest
+ * \param bands vector containing the band boundaries in keV from lowest to
+ *           highest
  * \param models vector containing shared_ptrs to Analytic_Model derived types
- * for each group, the size should be groups.size() - 1
- *
+ *           for each group, the size should be groups.size() - 1
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
+ * \param model_in An enumeration for the model.
  */
 nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
     const sf_double &groups, const sf_double &bands,
@@ -137,10 +137,9 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
  * analytic opacity model is specified in the constructor
  * (nGray_Analytic_Odfmg_Opacity()).
  *
- * \param temperature material temperature in keV
- * \param density material density in g/cm^3
+ * \param targetTemperature material temperature in keV
+ * \param targetDensity material density in g/cm^3
  * \return group opacities (coefficients) in cm^2/g
- *
  */
 std::vector<std::vector<double>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
@@ -180,9 +179,9 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided vector of
- *     temperatures and a single density value.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided vector of temperatures and a
+ *        single density value.
  */
 std::vector<std::vector<std::vector<double>>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(
@@ -198,9 +197,9 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided
- *     temperature and a vector of density values.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided temperature and a vector of
+ *        density values.
  */
 std::vector<std::vector<std::vector<double>>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(
@@ -218,9 +217,9 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(
 /*!
  * \brief Pack an analytic odfmg opacity.
  *
- * This function will pack up the Analytic_Mulitgroup_Opacity into a char
- * array (represented by a vector<char>).  The nGray_Analytic_Opacity_Model
- * derived class must have a pack function; this is enforced by the virtual
+ * This function will pack up the Analytic_Mulitgroup_Opacity into a char array
+ * (represented by a vector<char>).  The nGray_Analytic_Opacity_Model derived
+ * class must have a pack function; this is enforced by the virtual
  * nGray_Analytic_Opacity_Model base class.
  */
 nGray_Analytic_Odfmg_Opacity::sf_char
@@ -244,9 +243,9 @@ nGray_Analytic_Odfmg_Opacity::pack() const {
   }
 
   // now add up the total size; number of groups + 1 size_t for number of
-  // groups, number of bands + 1 size_t for number of
-  // bands, number of models + size in each model + models, 1 size_t for
-  // reaction type, 1 size_t for model type
+  // groups, number of bands + 1 size_t for number of bands, number of models +
+  // size in each model + models, 1 size_t for reaction type, 1 size_t for model
+  // type
   size_t base_size = packed.size();
   size_t size = models.size() * sizeof(int) + num_bytes_models;
 

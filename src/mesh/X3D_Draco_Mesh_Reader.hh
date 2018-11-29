@@ -81,6 +81,9 @@ private:
   //! Side-to-flag map
   std::map<int, unsigned> x3d_sideflag_map;
 
+  //! B.C. index-to-node map
+  std::map<size_t, std::vector<unsigned>> bc_node_map;
+
 public:
   //! Constructor
   DLL_PUBLIC_mesh
@@ -129,6 +132,9 @@ public:
   std::vector<unsigned> get_sidenodes(size_t side) const {
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side));
+  }
+  const std::map<size_t, std::vector<unsigned>> &get_bc_node_map() const {
+    return bc_node_map;
   }
 
 private:

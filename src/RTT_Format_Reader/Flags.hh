@@ -59,21 +59,20 @@ public:
 
   /*!
    * \brief Returns the name of specified flag type
-   * \param flagtype Flag type number.
    * \return The Flag type name.
    */
   string getFlagType() const { return name; }
 
   /*!
    * \brief Returns the flag number associated with the specified flag index.
-   * \param flag_index Flag index.
+   * \param flag Flag index.
    * \return The Flag number.
    */
   int getFlagNumber(size_t flag) const { return flag_nums[flag]; }
 
   /*!
    * \brief Returns the flag name associated with the specified index.
-   * \param flag_index Flag index.
+   * \param flag Flag index.
    * \return The flag name.
    */
   string getFlagName(size_t flag) const { return flag_names[flag]; }

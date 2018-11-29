@@ -4,10 +4,7 @@
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Data_Table.hh"
@@ -18,7 +15,6 @@ using namespace std;
 using rtt_dsxx::Data_Table;
 
 //---------------------------------------------------------------------------//
-
 void test_array(rtt_dsxx::UnitTest &ut) {
   const int array[3] = {10, 11, 12};
 
@@ -28,8 +24,7 @@ void test_array(rtt_dsxx::UnitTest &ut) {
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;
   }
-  if (caught)
-    ITFAILS;
+  FAIL_IF(caught);
 
   caught = false;
   try {
@@ -37,63 +32,41 @@ void test_array(rtt_dsxx::UnitTest &ut) {
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF_NOT(caught);
 
   Data_Table<int> dt(array, array + 3);
 
   caught = false;
   try {
-    if (dt.size() != 3)
-      ITFAILS;
-    if (dt[0] != array[0])
-      ITFAILS;
-    if (dt[1] != array[1])
-      ITFAILS;
-    if (dt[2] != array[2])
-      ITFAILS;
-    if (dt.front() != array[0])
-      ITFAILS;
-    if (dt.back() != array[2])
-      ITFAILS;
+    FAIL_IF_NOT(dt.size() == 3);
+    FAIL_IF_NOT(dt[0] == array[0]);
+    FAIL_IF_NOT(dt[1] == array[1]);
+    FAIL_IF_NOT(dt[2] == array[2]);
+    FAIL_IF_NOT(dt.front() == array[0]);
+    FAIL_IF_NOT(dt.back() == array[2]);
+    FAIL_IF_NOT(dt.begin() == array);
+    FAIL_IF_NOT(dt.end() == array + 3);
 
-    if (dt.begin() != array)
-      ITFAILS;
-    if (dt.end() != array + 3)
-      ITFAILS;
-
-    if (dt.access() != &dt[0])
-      ITFAILS;
+    FAIL_IF_NOT(dt.access() == &dt[0]);
 
     {
       Data_Table<int> dt3(dt);
-      if (dt3.size() != dt.size())
-        ITFAILS;
-      if (dt3.begin() != dt.begin())
-        ITFAILS;
-      if (dt3.end() != dt.end())
-        ITFAILS;
-      if (dt3.front() != dt.front())
-        ITFAILS;
-      if (dt3.back() != dt.back())
-        ITFAILS;
+      FAIL_IF_NOT(dt3.size() == dt.size());
+      FAIL_IF_NOT(dt3.begin() == dt.begin());
+      FAIL_IF_NOT(dt3.end() == dt.end());
+      FAIL_IF_NOT(dt3.front() == dt.front());
+      FAIL_IF_NOT(dt3.back() == dt.back());
     }
 
     {
       Data_Table<int> dt3;
-      if (dt3.size() != 0)
-        ITFAILS;
+      FAIL_IF_NOT(dt3.size() == 0);
       dt3 = dt;
-      if (dt3.size() != dt.size())
-        ITFAILS;
-      if (dt3.begin() != dt.begin())
-        ITFAILS;
-      if (dt3.end() != dt.end())
-        ITFAILS;
-      if (dt3.front() != dt.front())
-        ITFAILS;
-      if (dt3.back() != dt.back())
-        ITFAILS;
+      FAIL_IF_NOT(dt3.size() == dt.size());
+      FAIL_IF_NOT(dt3.begin() == dt.begin());
+      FAIL_IF_NOT(dt3.end() == dt.end());
+      FAIL_IF_NOT(dt3.front() == dt.front());
+      FAIL_IF_NOT(dt3.back() == dt.back());
     }
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;
@@ -126,48 +99,34 @@ void test_array(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void test_scalar(rtt_dsxx::UnitTest &ut) {
   Data_Table<int> dt(32);
 
   bool caught = false;
   try {
-    if (dt.size() != 1)
-      ITFAILS;
-    if (dt[0] != 32)
-      ITFAILS;
+    FAIL_IF_NOT(dt.size() == 1);
+    FAIL_IF_NOT(dt[0] == 32);
 
     Data_Table<int> dt2;
     dt2 = dt;
-    if (dt[0] != dt2[0])
-      ITFAILS;
-    if (&(dt[0]) == &(dt2[0]))
-      ITFAILS;
-    if (dt.front() != 32)
-      ITFAILS;
-    if (dt.back() != 32)
-      ITFAILS;
-    if (*(dt.begin()) != 32)
-      ITFAILS;
-    if ((dt.end() - dt.begin()) != 1)
-      ITFAILS;
+    FAIL_IF_NOT(dt[0] == dt2[0]);
+    FAIL_IF(&(dt[0]) == &(dt2[0]));
+    FAIL_IF_NOT(dt.front() == 32);
+    FAIL_IF_NOT(dt.back() == 32);
+    FAIL_IF_NOT(*(dt.begin()) == 32);
+    FAIL_IF_NOT((dt.end() - dt.begin()) == 1);
 
     Data_Table<int> dt3(dt2);
-    if (dt[0] != dt3[0])
-      ITFAILS;
-    if (&(dt[0]) == &(dt3[0]))
-      ITFAILS;
+    FAIL_IF_NOT(dt[0] == dt3[0]);
+    FAIL_IF(&(dt[0]) == &(dt3[0]));
 
     dt3 = dt3;
-    if (dt[0] != dt3[0])
-      ITFAILS;
-    if (&(dt[0]) == &(dt3[0]))
-      ITFAILS;
+    FAIL_IF_NOT(dt[0] == dt3[0]);
+    FAIL_IF(&(dt[0]) == &(dt3[0]));
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;
   }
-  if (caught)
-    ITFAILS;
+  FAIL_IF(caught);
 
   caught = false;
   try {
@@ -175,8 +134,7 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF_NOT(caught);
 
   if (ut.numFails == 0)
     PASSMSG("test_scalar");
@@ -186,62 +144,6 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-/*!
-  As noted in the Class Declaration/Definition, this use of Data_Table is no
-  longer supported because it did not conform to the C++ standard.
-*/
-
-// void test_vector()
-// {
-//     std::vector<char> v;
-//     v.push_back('a');
-//     v.push_back('b');
-//     v.push_back('c');
-
-//     Data_Table<char> dt(v);
-
-//     bool caught = false;
-//     try
-//     {
-//         if(dt.size() != 3) ITFAILS;
-//         if(dt[0] != 'a') ITFAILS;
-//         if(dt[1] != 'b') ITFAILS;
-//         if(dt[2] != 'c') ITFAILS;
-
-//         Data_Table<char> dt2;
-//         dt2 = dt;
-//         if(dt[0] != dt2[0]) ITFAILS;
-//         if(&(dt[0]) != &(dt2[0])) ITFAILS;
-//         if(dt.front() != 'a') ITFAILS;
-//         if(dt.back() != 'c') ITFAILS;
-//         if(*(dt.begin()) != 'a') ITFAILS;
-//         if((dt.end() - dt.begin()) != 3) ITFAILS;
-//     }
-//     catch(rtt_dsxx::assertion &ass)
-//     {
-//         caught = true;
-//     }
-//     if(caught) ITFAILS;
-
-//     caught = false;
-//     try
-//     {
-//         std::cout << dt[3];
-//     }
-//     catch(rtt_dsxx::assertion &ass)
-//     {
-//         caught = true;
-//     }
-//     if(!caught) ITFAILS;
-
-//     if (rtt_ds_test::passed)
-// 	PASSMSG("test_vector");
-//     else
-// 	FAILMSG("test_vector FAILED!");
-// }
-
-//---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   if (ut.dbcOn() && !ut.dbcNothrow()) {
@@ -249,7 +151,6 @@ int main(int argc, char *argv[]) {
       // >>> UNIT TESTS
       test_array(ut);
       test_scalar(ut);
-      //        test_vector(ut);
     } catch (rtt_dsxx::assertion &error) {
       cout << "ERROR: While testing tstData_Table_Ptr, " << error.what()
            << endl;

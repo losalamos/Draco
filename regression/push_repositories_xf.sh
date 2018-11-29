@@ -74,7 +74,7 @@ for project in ${git_projects[@]}; do
 
   # Remove the old tar file.
   if [[ -f ${namespace}_${repo}.git.tar ]]; then
-    run "rm -f {namespace}_${repo}.git.tar"
+    run "rm -f ${namespace}_${repo}.git.tar"
   fi
 
   if [[ -d ${gitroot}/${namespace}/${repo}.git ]]; then

@@ -60,7 +60,7 @@ print_use()
     echo " "
     echo "Usage: $0 -e \"email1 [email2]\" -p \"project1 [project2]\""
     echo " "
-    echo "   [projects] = { draco, jayenne, capsaicin }."
+    echo "   [projects] = { draco, jayenne, capsaicin, core }."
     echo "   - Multiple projects or emails must be space delimeted and"
     echo "     in quotes."
 }
@@ -216,6 +216,10 @@ elif test "${projects}" = "draco jayenne"; then
 elif test "${projects}" = "draco capsaicin"; then
    project_name="Capsaicin"
    pp=" - Combined report for Draco and Capsaicin"
+   let ntrim_lines+=2
+elif test "${projects}" = "draco core"; then
+   project_name="Core"
+   pp=" - Combined report for Draco and Core"
    let ntrim_lines+=2
 elif test "${projects}" = "draco jayenne capsaicin"; then
    project_name="Jayenne and Capsaicin"

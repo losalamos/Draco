@@ -20,7 +20,6 @@
 
 using namespace std;
 using namespace rtt_cdi_analytic;
-
 using namespace rtt_dsxx;
 using rtt_cdi::CDI;
 using rtt_cdi::OdfmgOpacity;
@@ -521,9 +520,10 @@ void pseudo_line_opacity_test(UnitTest &ut) {
 
   // Try pack
 
-  //    vector<char> data = model.pack();
   // kgbudge: Doesn't work yet, because we haven't implemented packing for
   // expression trees yet.
+
+  // vector<char> data = model.pack();
 }
 
 //---------------------------------------------------------------------------//

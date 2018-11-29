@@ -249,8 +249,8 @@ auto-mode-alist.
 		      ("\\.c$"      . c-mode)   ; to edit C code
 		      ("\\.cu$"     . c-mode)   ; to edit CUDA kernels
 		      ("\\.h$"      . c-mode)   ; to edit C code
-		      ("\\.dcc$"    . c-mode)   ; to edit C code
-		      ("\\.dcc.in$" . c-mode)   ; to edit C code
+		      ("\\.dcc$"    . c++-mode)   ; to edit C code
+		      ("\\.dcc.in$" . c++-mode)   ; to edit C code
  		      ("\\.dot$"    . c-mode)  ; for dot files
 		      ) auto-mode-alist))
       (defun draco-menu-insert-comments-cc ()

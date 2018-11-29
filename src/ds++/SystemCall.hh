@@ -4,8 +4,7 @@
  * \brief  Wrapper for system calls. Hide differences between Unix/Windows
  *         system calls.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_SystemCall_hh
@@ -37,7 +36,8 @@ std::string const exeExtension("");
 // General discussion.  See .cc file for detailed implementation discussion
 // (mostly Linux vs. Windows issues).
 //===========================================================================//
-/*! \section HOST_NAME_MAX
+
+/*! \section HOST_NAME_MAX HOST_NAME_MAX
  *
  * The selection of a value for HOST_NAME_MAX is completed by
  * ds++/CMakeLists.txt and ds++/config.h.in.
@@ -52,8 +52,8 @@ std::string const exeExtension("");
  *
  * - The minumum POSIX guarantee is \c HOST_NAME_MAX = \c 256.
  * - An alternate value used by some Unix systems is \c MAXHOSTNAMELEN as
- *   defined in \c <sys/param.h>
- * - On Windows, the variable \c MAX_COMPUTERNAME_LENGTH from \c <windows.h>
+ *   defined in \c \<sys/param.h\>
+ * - On Windows, the variable \c MAX_COMPUTERNAME_LENGTH from \c \<windows.h\>
  *   can be used. See http://msdn.microsoft.com/en-us/library/windows/desktop/ms738527%28v=vs.85%29.aspx
  *  - On Mac OSX, we use \c _POSIX_HOST_NAME_MAX.
  */
@@ -92,9 +92,9 @@ public:
   bool isdir(void);
   int errorCode(void) { return stat_return_code; }
   /*!
-     * \brief Determine if the file has the requested permission bits set.
-     * \note The leading zero for the mask is important.
-     */
+   * \brief Determine if the file has the requested permission bits set.
+   * \note The leading zero for the mask is important.
+   */
   bool has_permission_bit(int mask = 0777);
 };
 

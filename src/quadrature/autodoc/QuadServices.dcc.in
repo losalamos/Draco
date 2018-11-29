@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   quadrature/autodoc QuadServices.dcc
+ * \file   quadrature/autodoc/QuadServices.dcc
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide doxygen documentation for QuadServices class
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 //===========================================================================//
@@ -24,7 +21,7 @@
  * Some code was derived from the Partisn source file "galerkq.f."  Other
  * pieces were derived from the Snac2 soure file "sncYnm.f90."
  *
- * \subsection quadservices_background Background:
+ * \section quadservices_background Background:
  *
  * Start with the steady state transport equation for neutrons,
  *
@@ -51,7 +48,7 @@
  * \f]
  *
  * We have defined the moment based scattering cross section and the flux
- * moments in terms of \ref assoc_leg_poly "Legendre polynomials" and \ref
+ * moments in terms of \ref sf_assoc_leg_poly "Legendre polynomials" and \ref
  * sf_sph "spherical harmonics",
  *
  * \f[
@@ -202,11 +199,6 @@
  * \\ index, m is the discrete angle index and numMoments are the number
  * \\ moments used by myQS.
  * \endcode
- */
-/*!
- * \example quadrature/test/tQuadServices.cc
- *
- * description of example
  */
 //===========================================================================//
 

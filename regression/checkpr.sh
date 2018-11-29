@@ -58,14 +58,14 @@ regress_mode="off"
 print_use()
 {
   echo " "
-  echo "Usage: ${0##*/} -h -p [draco|jayenne|capsaicin]"
+  echo "Usage: ${0##*/} -h -p [draco|jayenne|capsaicin|core]"
   echo "       -f <git branch name> -r"
   echo " "
   echo "All arguments are optional,  The first value listed is the default value."
   echo "   -h    help           prints this message and exits."
   echo "   -f    git feature branch, default=develop"
   echo "         common: 'develop', '42'"
-  echo "   -p    project name = { draco, jayenne, capsaicin }"
+  echo "   -p    project name = { draco, jayenne, capsaicin, core }"
   echo "   -r    special run mode that uses the regress account's credentials."
   echo "   -t    remove the last-draco tagfile."
   echo " "
@@ -97,7 +97,7 @@ done
 ##---------------------------------------------------------------------------##
 
 case $project in
-  draco | jayenne | capsaicin ) # known projects, continue
+  draco | jayenne | capsaicin | core ) # known projects, continue
     ;;
   *)  echo "" ;echo "FATAL ERROR: unknown project name (-p) = ${proj}"
     print_use; exit 1 ;;
@@ -221,7 +221,7 @@ if [[ $rmlastdracotag == "on" ]]; then
 fi
 
 case $project in
-  jayenne|capsaicin)
+  jayenne|capsaicin|core)
     # Do we need to build draco? Only build draco-develop once per day.
     eval "$(date +'today=%F now=%s')"
     midnight=$(date -d "$today 0" +%s)
@@ -232,7 +232,7 @@ case $project in
     fi
     if [[ $midnight -gt $draco_last_built ]]; then
       echo " "
-      echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."
+      echo "Found a Jayenne or Capsaicin  PR, but we need to build draco-develop first..."
       echo " "
 
       # Call this script recursively to build the draco 'develop' branch.

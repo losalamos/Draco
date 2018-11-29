@@ -9,8 +9,6 @@
 !
 ! This is a modified version of jayenne/src/wedgehog/ftest/Wedgehog_MPI.F90
 !---------------------------------------------------------------------------
-! $Id$
-!---------------------------------------------------------------------------
 
 module draco_mpi
   use iso_c_binding, only : c_double, c_intptr_t
@@ -98,3 +96,7 @@ contains
   end subroutine f90_mpi_barrier
 
 end module draco_mpi
+
+!-----------------------------------------------------------------------------!
+! End Draco_MPI.F90
+!-----------------------------------------------------------------------------!

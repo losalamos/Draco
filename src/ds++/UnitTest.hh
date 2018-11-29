@@ -67,8 +67,9 @@ public:
   // CREATORS
 
   //! Default constructors.
-  DLL_PUBLIC_dsxx UnitTest(int &argc, char **&argv, string_fp_void release_,
-                           std::ostream &out_ = std::cout, bool verbose = true);
+  DLL_PUBLIC_dsxx UnitTest(int & /* argc */, char **&argv,
+                           string_fp_void release_, std::ostream &out_,
+                           bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;

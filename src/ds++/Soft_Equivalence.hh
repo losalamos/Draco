@@ -111,8 +111,8 @@ public:
    *
    * \param[in] value floating point field of values
    * \param[in] value_end one past the end of the floating point field of values
-   * \param[in] reference floating point field to which values are compared
-   * \param[in] reference_end one past the end of the floating point field to
+   * \param[in] ref floating point field to which values are compared
+   * \param[in] ref_end one past the end of the floating point field to
    *      which values are compared
    * \param[in] precision tolerance of relative error (default 1.0e-12)
    * \return true if values are the same within relative error specified by
@@ -170,8 +170,10 @@ public:
  * \brief Compare two floating point fields for equivalence to a specified
  *        tolerance.
  *
- * \param[in] value  floating point field of values
- * \param[in] reference floating point field to which values are compared
+ * \param[in] value floating point field of values
+ * \param[in] value_end end iterator for values
+ * \param[in] ref floating point field to which values are compared
+ * \param[in] ref_end end iterator for reference values
  * \param[in] precision tolerance of relative error (default 1.0e-12)
  *
  * \return true if values are the same within relative error specified by

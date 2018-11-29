@@ -286,7 +286,6 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
   const size_t num_flag = bdy_flags.size();
   const size_t num_bdy = bdy_filenames.size();
-  std::map<size_t, std::vector<unsigned>> flag_node_map;
 
   size_t bdy_key = 0;
   for (auto bdy_fname : bdy_filenames) {
@@ -321,7 +320,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
       }
 
       // add to flag-node map
-      flag_node_map[bdy_key].push_back(side_node);
+      bc_node_map[bdy_key].push_back(side_node);
     }
 
     // close the file
@@ -332,7 +331,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
   }
 
   // Insist that there was at least one side node in all the files
-  Insist(flag_node_map.size() > 0, "Bdy file(s) read, but no side nodes.");
+  Insist(bc_node_map.size() > 0, "Bdy file(s) read, but no side nodes.");
 
   // treat sides as a subset of cell faces here
   int num_side = 0;
@@ -340,7 +339,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
     // calculate flag key and get reference to associated side node vector
     const unsigned flag_key = bdy < num_flag ? bdy_flags[bdy] : 0;
-    std::vector<unsigned> &flag_node_vec = flag_node_map[bdy];
+    std::vector<unsigned> &flag_node_vec = bc_node_map[bdy];
     std::sort(flag_node_vec.begin(), flag_node_vec.end());
 
     // find the mesh faces that have nodes in this flags set
@@ -352,7 +351,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
       // \todo: check for node index duplicates
 
-      // find commond nodes between side nodes and face
+      // find common nodes between side nodes and face
       std::vector<unsigned> nodes_in_common;
       std::set_intersection(flag_node_vec.begin(), flag_node_vec.end(),
                             fnode_vec.begin(), fnode_vec.end(),
@@ -378,6 +377,11 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
   for (int j = 0; j < num_side; ++j) {
     for (size_t i = 0; i < x3d_sidenode_map.at(j).size(); ++i)
       x3d_sidenode_map.at(j)[i]--;
+  }
+  for (size_t j = 0; j < bc_node_map.size(); ++j) {
+    for (size_t i = 0; i < bc_node_map.at(j).size(); ++i) {
+      bc_node_map.at(j)[i]--;
+    }
   }
 
   Ensure(x3d_sidenode_map.size() > 0);

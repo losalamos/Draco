@@ -1,14 +1,10 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // device.dcc
 // device Overview page
 // Kelly Thompson
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_device Overview of the device package
 \version Draco-@Draco_VERSION@
@@ -20,8 +16,6 @@ nodes). The package consists of the following core classes:
 
 \arg \b GPU_Device interface class (GPU_Device.hh)
 \arg \b GPU_Module dynamnically loadable packages and data (CPU_Module.hh)
-
-<!---------------------------------------------------------------------------->
 
 */
 

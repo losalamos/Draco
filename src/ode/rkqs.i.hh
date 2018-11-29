@@ -31,7 +31,6 @@ namespace rtt_ode {
  *
  * \param y Values of dependent variables at start of step.
  * \param dydx Values of derivatives of dependent variables at start of step.
- * \param n Number of dependent variables.
  * \param x Dependent variable at start of step.
  * \param h Step size.
  * \param yout On return, contains values of dependent variables at end of step.

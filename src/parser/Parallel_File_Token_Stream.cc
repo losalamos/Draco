@@ -89,7 +89,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 /*!
  * \brief Reopen a Parallel_File_Token_Stream with a new file.
  *
- * This flushes the #include stack.
+ * This flushes the include stack.
  *
  * \param file_name Name of the file from which to extract tokens.
  *
@@ -414,6 +414,11 @@ bool Parallel_File_Token_Stream::letter::check_class_invariants() const {
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \param filename Name of file to be included at this point. On
+ * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
+ * relative path did not exist.
+ */
 void Parallel_File_Token_Stream::push_include(std::string &filename) {
   Text_Token_Stream::push_include(filename);
   letters_.push(letter_);

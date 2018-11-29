@@ -5,10 +5,7 @@
  * \date   Thu Oct 20 15:28:48 2011
  * \brief  
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "GPU_Device.hh"
@@ -129,6 +126,7 @@ void GPU_Device::printDeviceSummary(int const idevice,
   return;
 }
 
+#ifdef DBC
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Convert a CUDA return enum value into a descriptive string.
@@ -139,13 +137,19 @@ void GPU_Device::printDeviceSummary(int const idevice,
  * For optimized builds with DRACO_DBC_LEVEL=0, this function will be empty
  * and any decent compiler will optimize this call away.
  */
-#ifdef DBC
-void GPU_Device::checkForCudaError(cudaError_enum const err) {
+void GPU_Device::checkForCudaError(cudaError_enum const errorCode) {
   std::ostringstream msg;
-  msg << "A CUDA call returned the error: \"" << getErrorMessage(err) << "\"";
-  Insist(err == CUDA_SUCCESS, msg.str());
+  msg << "A CUDA call returned the error: \"" << getErrorMessage(errorCode)
+      << "\"";
+  Insist(errorCode == CUDA_SUCCESS, msg.str());
 }
+
 #else
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Convert a CUDA return enum value into a descriptive string.
+ * \return descriptive string associated with
+ */
 void GPU_Device::checkForCudaError(cudaError_enum const) { /* empty */
 }
 #endif

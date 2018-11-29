@@ -158,7 +158,7 @@ void CellDef::readDef(ifstream &meshfile) {
  *        CYGNUS).
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
- * \param dimension Topological dimension of the cells in the mesh.
+ * \param ndim Topological dimension of the cells in the mesh.
  */
 void CellDef::redefineCellDef(vector_uint const &new_side_types,
                               vector_vector_uint const &new_ordered_sides,

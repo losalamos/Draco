@@ -5,10 +5,7 @@
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the base class time-step advisor.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_ts_advisor_hh__
@@ -29,21 +26,22 @@ class ts_manager;
 /*!
  * \brief Defines the base class time-step advisor.
  *
- * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref timestep_overview page gives a summary of the Draco time
- * step control utilities.
+ * \sa The ts_manager class provides a means to manage this advisor. The \ref 
+ *     overview_timestep page gives a summary of the Draco time step control
+ *     utilities.
  */
-//
 //===========================================================================//
 class DLL_PUBLIC_timestep ts_advisor {
 
   // NESTED CLASSES AND TYPEDEFS
 
 public:
-  //! Flag to determine how the recommended timestep is to be used.
-  /*! The recommended value "dt_rec" is to be used as indicated by
-     *  the enumeration value selected
-     */
+  /*! 
+   * \brief Flag to determine how the recommended timestep is to be used.
+   *
+   * The recommended value "dt_rec" is to be used as indicated by the
+   * enumeration value selected
+   */
   enum usage_flag {
     min,       //!< use as a lower limit
     max,       //!< use as a upper limit
@@ -79,11 +77,13 @@ public:
 
   // CREATORS
 
-  //! Constucts the advisor
-  /*! \param name the name of the advisor
-     *  \param usage_ Specifies how the advisor is to be used
-     *  \param active_ turns the advisor on/off
-     */
+  /*!
+   * \brief Constucts the advisor
+   *
+   * \param name_ the name of the advisor
+   * \param usage_ Specifies how the advisor is to be used
+   * \param active_ turns the advisor on/off
+   */
   ts_advisor(const std::string &name_ = std::string("Unlabeled"),
              const usage_flag usage_ = max, const bool active_ = true);
 
@@ -93,7 +93,8 @@ public:
   //MANIPULATORS
 
   //! Turn the advisor on
-  void activate() { active = true; }
+  // void activate() { active = true; }
+
   //! Turn the advisor off
   void deactivate() { active = false; }
 
@@ -102,14 +103,18 @@ public:
   //! Determine if the advisor is active or not
   bool is_active() const { return active; }
 
-  //! Update and/or produce the time-step recommended by this advisor
-  /*! \param tsm the timestep manager in which the advisor resides
-     */
+  /*!
+   * \brief Update and/or produce the time-step recommended by this advisor
+   * \param tsm the timestep manager in which the advisor resides
+   */
   virtual double get_dt_rec(const ts_manager &tsm) const = 0;
 
-  //! Determine if the advisor is fit to use in a time-step calculation
-  /*! \param tsm the timestep manager in which the advisor resides
-     */
+  /*!
+   * \brief Determine if the advisor is fit to use in a time-step calculation
+   *
+   * Derived classes will have parameter 'tsm', the timestep manager in which 
+   * the advisor resides.
+   */
   virtual bool advisor_usable(const ts_manager & /*tsm*/) const
 
   {
@@ -125,17 +130,17 @@ public:
   //! Vomit the entire internal state of the advisor to std out
   virtual void print_state(std::ostream &out = std::cout) const = 0;
 
-  //! Invariant function
-  /*! \return True if the invariant is satisfied.
-     */
+  //! True if the invariant is satisfied.
   virtual bool invariant_satisfied() const {
     return name.length() != 0 && 0 <= usage && usage < last_usage;
   }
 
-  //! Print out advisor data
-  /*! \param tsm the timestep manager in which the advisor resides
-     *  \param controlling flags the advisor as the controlling advisor
-     */
+  /*!
+   * \brief Print out advisor data
+   *
+   * \param tsm the timestep manager in which the advisor resides
+   * \param controlling flags the advisor as the controlling advisor
+   */
   virtual void print(const ts_manager &tsm,
                      const bool controlling = false) const;
 };

@@ -61,8 +61,8 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &global_node_number_,
                        const std::vector<unsigned> &ghost_cell_type_,
                        const std::vector<unsigned> &ghost_cell_to_node_linkage_,
-                       const std::vector<unsigned> &ghost_cell_number_,
-                       const std::vector<unsigned> &ghost_cell_rank_)
+                       const std::vector<int> &ghost_cell_number_,
+                       const std::vector<int> &ghost_cell_rank_)
     : dimension(dimension_), geometry(geometry_),
       num_cells(safe_convert_from_size_t(cell_type_.size())),
       num_nodes(safe_convert_from_size_t(global_node_number_.size())),
@@ -144,6 +144,8 @@ std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
  * \param[in] cell_to_node_linkage serial map of cell index to node indices.
  * \param[in] side_node_count number of verices per side.
  * \param[in] side_to_node_linkage serial map of side index to node indices.
+ * \param[in] ghost_cell_type help me
+ * \param[in] ghost_cell_to_node_linkage help me
  */
 void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_type,
@@ -172,7 +174,6 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   Remember(const size_t num_sides =
                safe_convert_from_size_t(side_node_count.size()));
   Check(dimension == 2 ? side_to_node_linkage.size() == 2 * num_sides : true);
-  Check(node_to_side_map.size() == num_sides);
 
   // STEP 3: create a node-to-ghost-cell map
 

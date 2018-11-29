@@ -1,0 +1,265 @@
+#!/bin/bash
+
+# git pre-commit hook that runs a f90-format stylecheck.
+# Features:
+#  - abort commit when commit does not comply with the style guidelines
+
+##################################################################
+# SETTINGS
+# set path to f90-format binary. If f90-format is not available, then don't
+# run this hook. Style issues will be caught during by the pull request process.
+
+# make tmp file readable only by owner
+umask 0077
+
+debug=off
+function debugprint()
+{
+  if [[ "$debug" == "on" ]]; then
+    echo $@
+  fi
+}
+
+function version_gt()
+{
+  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+
+# Defaults ----------------------------------------
+EMACS=`which emacs`
+if [[ $EMACS ]]; then
+  EMACSVER=`$EMACS --version | head -n 1 | sed -e 's/.*Emacs //'`
+  if [[ `version_gt "24.0.0" $EMACSVER`  ]]; then
+    echo "ERROR: Your version of emacs is too old. Expecting v 24.0+."
+    echo "       pre-commit-hook partially disabled (f90 indentation)"
+    unset EMACS
+  fi
+fi
+
+# Allow developers to opt-out
+auto_apply=false
+if [[ ${DRACO_AUTO_CLANG_FORMAT:-YES} ]]; then
+  case $DRACO_AUTO_CLANG_FORMAT in
+    NO | OFF | FALSE | no | off | false ) exit 0 ;;
+    YES | ON | TRUE | yes | on | true) auto_apply=true ;;
+    DIFF | diff) auto_apply=false ;;
+  esac
+fi
+
+# remove any older patches from previous commits. Set to true or false.
+# DELETE_OLD_PATCHES=false
+DELETE_OLD_PATCHES=true
+
+# only parse files with the extensions in FILE_EXTS. Set to true or false.
+# if false every changed file in the commit will be parsed with f90-format.
+# if true only files matching one of the extensions are parsed with f90-format.
+# PARSE_EXTS=true
+PARSE_EXTS=true
+
+# file types to parse. Only effective when PARSE_EXTS is true.
+# FILE_EXTS=".c .h .cpp .hpp"
+FILE_EXTS=".f90 .F90"
+
+# file endings for files to exclude from parsing when PARSE_EXTS is true.
+FILE_ENDINGS="_f.h _f77.h _f90.h"
+
+##################################################################
+# There should be no need to change anything below this line.
+
+# Reference: http://stackoverflow.com/questions/1055671/how-can-i-get-the-behavior-of-gnus-readlink-f-on-a-mac
+canonicalize_filename () {
+    local target_file=$1
+    local physical_directory=""
+    local result=""
+
+    # Need to restore the working directory after work.
+    pushd `pwd` > /dev/null
+
+    cd "$(dirname "$target_file")"
+    target_file=`basename $target_file`
+
+    # Iterate down a (possible) chain of symlinks
+    while [ -L "$target_file" ]
+    do
+        target_file=$(readlink "$target_file")
+        cd "$(dirname "$target_file")"
+        target_file=$(basename "$target_file")
+    done
+
+    # Compute the canonicalized name by finding the physical path
+    # for the directory we're in and appending the target file.
+    physical_directory=`pwd -P`
+    result="$physical_directory"/"$target_file"
+
+    # restore the working directory after work.
+    popd > /dev/null
+
+    echo "$result"
+}
+
+# exit on error
+# set -e
+
+# check whether the given file matches any of the set extensions
+matches_extension() {
+    local filename=$(basename "$1")
+    local extension=".${filename##*.}"
+    local end
+    local ext
+
+    for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
+
+    for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
+
+    return 1
+}
+
+# Absolute path this script is in, thus /home/user/bin
+SCRIPT="$(canonicalize_filename "$0")"
+SCRIPTPATH="$(dirname -- "$SCRIPT")"
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+if [ ! -x "$EMACS" ] ; then
+    printf "Error: emacs executable not found.\n"
+    printf "Set the correct path in $(canonicalize_filename "$0").\n"
+    exit 1
+fi
+
+# create a random filename to store our generated patch
+prefix="pre-commit-f90-format"
+suffix="$(date +%s)"
+
+# clean up any older f90-format patches
+$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.*
+$DELETE_OLD_PATCHES && rm -f /tmp/f90-format-*
+
+patch=$(mktemp /tmp/$prefix-$suffix.patch.XXXXXXXX)
+
+# create one patch containing all changes to the files
+git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+do
+    # ignore file if we do check for file extensions and the file
+    # does not match any of the extensions specified in $FILE_EXTS
+    if $PARSE_EXTS && ! matches_extension "$file"; then
+        continue;
+    fi
+
+    file_nameonly=`basename $file`
+    tmpfile1=/tmp/f90-format-$file_nameonly
+    debugprint "cp -f $file $tmpfile1"
+    cp -f $file $tmpfile1
+    debugprint "$EMACS -batch ${tmpfile1} -l ${SCRIPTPATH}/f90-format.el -f emacs-format-f90-sources"
+    $EMACS -batch ${tmpfile1} -l ${SCRIPTPATH}/f90-format.el -f emacs-format-f90-sources
+    diff -u "${file}" "${tmpfile1}" | \
+        sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
+    debugprint "rm $tmpfile1"
+    rm $tmpfile1
+
+done
+
+# if no patch has been generated all is ok, clean up the file stub and exit
+found_issue=1
+if [ ! -s "$patch" ] ; then
+    printf "Files in this commit comply with the emacs-based f90-format rules.\n"
+    rm -f "$patch"
+    found_issue=0
+fi
+
+if [[ $found_issue == 0 ]]; then
+
+  # Check file lengths
+  printf "Now, checking file lengths...\n"
+
+  filelist=`git diff-index --cached --diff-filter=ACMR --name-only $against --`
+  tmpfile2=$(mktemp /tmp/pre-commit-f90-format-line-len.XXXXXXXX)
+
+  for file in $filelist; do
+
+    # ignore file if we do check for file extensions and the file does not
+    # match any of the extensions specified in $FILE_EXTS
+    if $PARSE_EXTS && ! matches_extension "$file"; then
+      continue;
+    fi
+
+    header_printed=0
+    lindeno=0
+
+    cat "$file" | while read line; do
+      let lineno++
+      # Exceptions:
+      # - Long URLs
+      exception=`echo $line | grep -i -c http`
+      if [[ ${#line} -gt 80 && ${exception} == 0 ]]; then
+        if [[ ${header_printed} == 0 ]]; then
+          echo -e "\nFile: ${file} [code line too long]\n" >> $tmpfile2
+          echo "  line   length content" >> $tmpfile2
+          echo "  ------ ------ --------------------------------------------------------------------------------" >> $tmpfile2
+          header_printed=1
+        fi
+        printf "  %-6s %-6s %s\n" "${lineno}" "${#line}" "${line}" >> $tmpfile2
+      fi
+      # reset exception flag
+      exception=0
+    done
+  done
+
+  len_issue=`cat $tmpfile2 | wc -l`
+  if [[ $len_issue -gt 0 ]]; then
+    echo -e "\nError: Found source code lines that are longer than 80 columns!"
+    cat $tmpfile2
+    echo -ne "\nPlease reformat lines listed above to fit into 80 columns and"
+    echo -e "attempt your\ncommit again.\n"
+    found_issue=$len_issue
+  fi
+
+  if [[ -f $tmpfile2 ]]; then
+    echo "remove $tmpfile2"
+    rm $tmpfile2
+  fi
+
+  if [[ $found_issue != 0 ]]; then
+    exit $found_issue
+  fi
+fi
+
+if [[ $found_issue == 0 ]]; then
+  exit 0
+fi
+
+# There are files that don't comply...
+
+# If user wants to automatically apply these changes, then do it, otherwise,
+# print the diffs and reject the commit.
+if test $auto_apply = true; then
+  debugprint "git apply $patch"
+  git apply "$patch"
+  printf "\nFiles in this commit were updated to comply with the f90-format rules.\n"
+  printf "You must check and test these changes and then stage these updates to\n"
+  printf "be part of your current change set and retry the commit.\n\n"
+  git status
+  printf "The following changes were applied:\n\n"
+  cat "$patch"
+  rm -f "$patch"
+  exit 1
+fi
+
+# a patch has been created, notify the user and exit
+printf "\nThe following differences were found between the code to commit "
+printf "and the f90-format rules:\n\n"
+cat "$patch"
+
+printf "\nYou can apply these changes with:\n git apply $patch\n"
+printf "(may need to be called from the root directory of your repository)\n"
+printf "Aborting commit. Apply changes and commit again or skip checking with"
+printf " --no-verify (not recommended).\n"
+printf "\nYou can also manually update format by running\n"
+printf " emacs -batch <file> -l ${SCRIPTPATH}/f90-format.el -f emacs-format-f90-sources\n"
+
+exit 1

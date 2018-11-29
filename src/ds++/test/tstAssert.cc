@@ -34,7 +34,7 @@ using namespace std;
 // rtt_dsxx::assertion.
 //---------------------------------------------------------------------------//
 
-static void t1(rtt_dsxx::UnitTest &ut) {
+void t1(rtt_dsxx::UnitTest &ut) {
   std::cout << "t1 test: ";
   try {
     throw std::runtime_error("hello1");
@@ -50,7 +50,7 @@ static void t1(rtt_dsxx::UnitTest &ut) {
 // Make sure we can catch a rtt_dsxx::assertion and extract the error message.
 // ---------------------------------------------------------------------------//
 
-static void t2(rtt_dsxx::UnitTest &ut) {
+void t2(rtt_dsxx::UnitTest &ut) {
   std::cout << "t2 test: ";
   std::string error_message;
   try {
@@ -82,7 +82,7 @@ static void t2(rtt_dsxx::UnitTest &ut) {
 // Test throwing and catching of a literal
 //---------------------------------------------------------------------------//
 
-static void t3(rtt_dsxx::UnitTest &ut) {
+void t3(rtt_dsxx::UnitTest &ut) {
   std::cout << "t3 test: ";
   try {
     throw "hello";
@@ -100,7 +100,7 @@ static void t3(rtt_dsxx::UnitTest &ut) {
 // Check the toss_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
+void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "ttoss_cookies test: ";
     try {
@@ -136,7 +136,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the check_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
+void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "tcheck_cookies test: ";
     try {
@@ -168,7 +168,7 @@ static void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the show_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void tshow_cookies(rtt_dsxx::UnitTest &ut) {
+void tshow_cookies(rtt_dsxx::UnitTest &ut) {
   using namespace std;
   {
     cout << "tshow_cookies test: \n";
@@ -193,7 +193,7 @@ static void tshow_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Require() macro.
 //---------------------------------------------------------------------------//
 
-static void trequire(rtt_dsxx::UnitTest &ut) {
+void trequire(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Require test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -231,7 +231,7 @@ static void trequire(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Check() macro.
 //---------------------------------------------------------------------------//
 
-static void tcheck(rtt_dsxx::UnitTest &ut) {
+void tcheck(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Check test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -269,7 +269,7 @@ static void tcheck(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Ensure() macro.
 //---------------------------------------------------------------------------//
 
-static void tensure(rtt_dsxx::UnitTest &ut) {
+void tensure(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Ensure test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -305,7 +305,7 @@ static void tensure(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 // Check the operatio of the Remeber() macro.
 //---------------------------------------------------------------------------//
-static void tremember(rtt_dsxx::UnitTest &ut) {
+void tremember(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Remember test: ";
   int x = 0;
   Remember(x = 5);
@@ -323,7 +323,7 @@ static void tremember(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Assert() macro, which works like Check().
 //---------------------------------------------------------------------------//
 
-static void tassert(rtt_dsxx::UnitTest &ut) {
+void tassert(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Assert test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -359,7 +359,7 @@ static void tassert(rtt_dsxx::UnitTest &ut) {
 // Basic test of the Insist() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist(rtt_dsxx::UnitTest &ut) {
+void tinsist(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "t-Insist test: ";
     std::string insist_message("You must be kidding!");
@@ -420,7 +420,7 @@ static void tinsist(rtt_dsxx::UnitTest &ut) {
 // Basic test of the Insist_ptr() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist_ptr(rtt_dsxx::UnitTest &ut) {
+void tinsist_ptr(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Insist test: ";
   try {
     Insist(0, "You must be kidding!");

@@ -4,10 +4,8 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  File_Streams implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "File_Streams.hh"
@@ -15,8 +13,8 @@
 
 namespace {
 
-// Define a string to indicate that a file was written in binary mode.
-// This string should be one that is unlikely to be used by a client.
+// Define a string to indicate that a file was written in binary mode. This
+// string should be one that is unlikely to be used by a client.
 static const std::string BINARY_FILE_HEADER =
     "bInArYfIlE_rtt_dsxx_File_Streams";
 } // namespace

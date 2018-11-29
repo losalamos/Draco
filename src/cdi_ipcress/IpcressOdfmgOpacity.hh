@@ -14,7 +14,6 @@
 #include "IpcressDataTable.hh"
 #include "cdi/OdfmgOpacity.hh"
 #include <cmath>
-#include <memory>
 
 namespace rtt_cdi_ipcress {
 // -------------------- //
@@ -60,10 +59,8 @@ class IpcressDataTable;
  * IpcressOdfmgOpcity object calls the appropriate IPCRESS library routine,
  * which in turn, interpolates on the data cached in the IpcressDataTable
  * object.
- */
-
-/*!
- * \example cdi_ipcress/test/tIpcressOpacity.cc
+ *
+ * \sa cdi_ipcress/test/tIpcressOpacity.cc
  *
  * Example of IpcressOdfmgOpacity usage independent of CDI.  In this example we
  * construct a IpcressOdfmgOpacity object for the material Aluminum (matID=10001
@@ -73,7 +70,7 @@ class IpcressDataTable;
  * accessors that return information about the data set and the cached data
  * table.
  *
- * \example cdi_ipcress/test/tIpcressWithCDI.cc
+ * \sa cdi_ipcress/test/tIpcressWithCDI.cc
  * This example tests and demonstrates how to use the cdi_ipcress package as a
  * plug-in for the CDI class.
  */
@@ -182,20 +179,22 @@ public:
    * material.  If we add the Model, Reaction and EnergyPolicy the opacity table
    * is uniquely defined.
    *
-   * \param[in] spIpcressFile This smart pointer links an IPCRESS file (via the
+   * \param[in] in_spIpcressFile This smart pointer links an IPCRESS file (via the
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one IpcressFile
    *     object for each IpcressOpacity object.
-   * \param materialID An identifier that links the IpcressOpacity object to a
+   * \param in_materialID An identifier that links the IpcressOpacity object to a
    *     single material found in the specified IPCRESS file.
-   * \param opacityModel The physics model that the current data set is based
+   * \param in_opacityModel The physics model that the current data set is based
    *     on.
-   * \param opacityReaction The type of reaction rate that the current data set
+   * \param in_opacityReaction The type of reaction rate that the current data set
    *     represents.
+   * \param numBands number of frequency-bands.
    */
-  IpcressOdfmgOpacity(std::shared_ptr<const IpcressFile> const &spIpcressFile,
-                      size_t materialID, rtt_cdi::Model opacityModel,
-                      rtt_cdi::Reaction opacityReaction, size_t numBands);
+  IpcressOdfmgOpacity(
+      std::shared_ptr<const IpcressFile> const &in_spIpcressFile,
+      size_t in_materialID, rtt_cdi::Model in_opacityModel,
+      rtt_cdi::Reaction in_opacityReaction, size_t numBands);
 
   /*!
    * \brief Unpacking constructor.

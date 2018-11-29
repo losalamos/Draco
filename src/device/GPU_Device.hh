@@ -4,10 +4,7 @@
  * \author Kelly (KT) Thompson
  * \brief  Define class GPU_Device
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef device_GPU_Device_hh
@@ -48,13 +45,11 @@ namespace rtt_device {
  *   // Print the message to stdout
  *   cout << out.str();
  * \endcode
- */
-/*! 
- * \example device/test/tst_hello_rt_api
+ *
+ * \example device/test/gpu_hello_rt_api.cc
  * Test of GPU_Device for CUDA runtime environment.
- */
-/*! 
- * \example device/test/tst_hello_driver_api
+ *
+ * \example device/test/gpu_hello_driver_api.cc
  * Test of GPU_Device for CUDA driver environment.
  */
 //===========================================================================//
@@ -148,7 +143,7 @@ public:
   //! Check cuda return code and throw an Insist on error.
   static std::string getErrorMessage(cudaError_enum const err);
   //! Check the value of the return code for CUDA calls.
-  static void checkForCudaError(cudaError_enum const err);
+  static void checkForCudaError(cudaError_enum const errorCode);
   //! Wrap the cuMemAlloc call to include error checking
   static CUdeviceptr MemAlloc(unsigned const nbytes);
   //! Wrap cuMemcpyHtoD() to include error checking.

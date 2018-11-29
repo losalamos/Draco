@@ -69,12 +69,13 @@ private:
  * for selecting each child class and a function that does the actual parsing
  * of the class specification. This assumes an input grammar of the form
  *
- * <code>
+ * \code
  * abstract class keyword
  *   child class keyword
  *     (child class specification)
  *   end
  * end
+ * \endcode
  *
  * Note that Abstract_Class_Parser does not actually do any parsing itself. It
  * is simply a repository for keyword-parser combinations that is typically used

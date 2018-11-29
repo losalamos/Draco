@@ -1,13 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F1.hh
+ * \file   special_functions/F1.hh
  * \author Kent Budge
  * \brief  Fermi-Dirac integral of index 1.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef sf_F1_hh

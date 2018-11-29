@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Definition of class File_Token_Stream.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_File_Token_Stream_HH
-#define CCS4_File_Token_Stream_HH
+#ifndef rtt_File_Token_Stream_HH
+#define rtt_File_Token_Stream_HH
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
@@ -29,7 +26,6 @@ using std::string;
  * stream from a file in the file system.  It reports errors to the standard
  * console error stream \c cerr.
  */
-
 class DLL_PUBLIC_parser File_Token_Stream : public Text_Token_Stream {
 public:
   // CREATORS
@@ -66,7 +62,7 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
-  virtual void push_include(std::string &include_file_name);
+  virtual void push_include(std::string &file_name);
   virtual void pop_include();
 
 private:
@@ -74,7 +70,7 @@ private:
     // IMPLEMENTATION
 
     //! Constructor
-    letter(string const &file_name);
+    explicit letter(string const &file_name);
 
     bool check_class_invariants() const {
       return true; // none at present
@@ -101,7 +97,7 @@ private:
 
 } // namespace rtt_parser
 
-#endif // CCS4_File_Token_Stream_HH
+#endif // rtt_File_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of File_Token_Stream.hh

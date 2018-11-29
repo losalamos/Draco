@@ -274,7 +274,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       ;;
 
     # Badger | Fire | Grizzly | Ice | Snow
-    ba* | fi* | gr* | ic* | sn* )
+    ba* | cy* | fi* | gr* | ic* | sn* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
       ;;
 

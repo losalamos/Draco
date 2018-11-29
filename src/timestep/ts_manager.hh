@@ -22,7 +22,7 @@ namespace rtt_timestep {
  * \brief Manages a list of time-step advisors.
  *
  * \sa The ts_advisor class provides the advisors to be registerd the the
- *      ts_manager class. Also, the \ref timestep_overview page provides useful
+ *      ts_manager class. Also, the \ref overview_timestep page provides useful
  *      info.
  *
  * Calculates a new timestep based on the recommended time-steps of its

@@ -19,7 +19,8 @@ namespace rtt_cdi_ipcress {
 
 //===========================================================================//
 /*!
- * \class IpcressDataTable encapsulates all of the data associated with a
+ * \class IpcressDataTable 
+ * \brief Encapsulates all of the data associated with a
  *        specific opacity type (e.g.: total, plank, multigroup) for a single 
  *        single material.
  *
@@ -92,37 +93,12 @@ class IpcressDataTable {
 public:
   // CREATORS
 
-  /*!
-   * \brief Standard IpcressDataTable constructor.
-   *
-   * The constructor requires that the data state to be completely defined.
-   * With this information the DataTypeKey is set, then the data table sizes are
-   * loaded and finally the table data is loaded.
-   *
-   * \param opacityEnergyDescriptor This string variable specifies the energy
-   *     model { "gray" or "mg" } for the opacity data contained in this
-   *     IpcressDataTable object.
-   * \param opacityModel This enumerated value specifies the physics model {
-   *     Rosseland or Plank } for the opacity data contained in this object.
-   *     The enumeration is defined in IpcressOpacity.hh
-   * \param opacityReaction This enumerated value specifies the interaction
-   *     model { total, scattering, absorption " for the opacity data contained
-   *     in this object.  The enumeration is defined in IpcressOpacity.hh
-   * \param fieldNames This vector of strings is a list of data keys that the
-   *     IPCRESS file knows about.  This list is read from the IPCRESS file when
-   *     a IpcressOpacity object is instantiated but before the associated
-   *     IpcressDataTable object is created.
-   * \param matID The material identifier that specifies a particular material
-   *     in the IPCRESS file to associate with the IpcressDataTable container.
-   * \param spIpcressFile A DS++ SmartPointer to a IpcressFile object.  One
-   *     GanolfFile object should exist for each IPCRESS file.  Many
-   *     IpcressOpacity (and thus IpcressDataTable) objects may point to the
-   *     same IpcressFile object.
-   */
-  IpcressDataTable(std::string const &opacityEnergyDescriptor,
-                   rtt_cdi::Model opacityModel,
-                   rtt_cdi::Reaction opacityReaction,
-                   std::vector<std::string> const &fieldNames, size_t matID,
+  //! Standard IpcressDataTable constructor.
+  IpcressDataTable(std::string const &in_opacityEnergyDescriptor,
+                   rtt_cdi::Model in_opacityModel,
+                   rtt_cdi::Reaction in_opacityReaction,
+                   std::vector<std::string> const &in_fieldNames,
+                   size_t in_matID,
                    std::shared_ptr<const IpcressFile> const &spIpcressFile);
 
   // ACCESSORS

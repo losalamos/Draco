@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   linear/tqli.cc
+ * \file   linear/tqli_pt.cc
  * \author Kent Budge
  * \date   Thu Sep  2 15:00:32 2004
  * \brief  Specializations of tqli

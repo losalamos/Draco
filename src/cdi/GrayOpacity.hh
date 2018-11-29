@@ -5,17 +5,13 @@
  * \date   Mon Jan 8 15:02:21 2001
  * \brief  GrayOpacity class header file (an abstract class)
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_GrayOpacity_hh__
 #define __cdi_GrayOpacity_hh__
 
-#include "OpacityCommon.hh" // Stuff that is common between Gray and
-                            // Multigroup.
+#include "OpacityCommon.hh"
 #include "ds++/config.h"
 #include <string>
 #include <vector>
@@ -32,18 +28,17 @@ namespace rtt_cdi {
  * Any derived GrayOpacity object must provide as a minumum the functionality
  * outlined in this routine.  This functionality includes access to the data
  * grid and the ability to return interpolated opacity values.
- */
-/*!
+ *
  * \example cdi/test/tDummyOpacity.cc
- * \example cdi/test/tCDI.cc
+ * \sa cdi/test/tCDI.cc
  */
 //========================================================================
 
-class DLL_PUBLIC_cdi GrayOpacity {
+class GrayOpacity {
   // DATA
 
-  // There is no data for a pure virtual object.  This class
-  // provides an interface and does not preserve state.
+  // There is no data for a pure virtual object.  This class provides an
+  // interface and does not preserve state.
 
 public:
   // ---------- //
@@ -51,11 +46,11 @@ public:
   // ---------- //
 
   /*!
-     * \brief Default GrayOpacity() destructor.
-     *
-     * This is required to correctly release memory when any
-     * object derived from GrayOpacity is destroyed.
-     */
+   * \brief Default GrayOpacity() destructor.
+   *
+   * This is required to correctly release memory when any
+   * object derived from GrayOpacity is destroyed.
+   */
   virtual ~GrayOpacity(){/*empty*/};
 
   // --------- //

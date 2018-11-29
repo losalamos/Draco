@@ -11,14 +11,11 @@
 #ifndef rtt_dsxx_DracoMath_hh
 #define rtt_dsxx_DracoMath_hh
 
-#include "Assert.hh"
 #include "Soft_Equivalence.hh"
 #include <algorithm>
-#include <cmath>
 #include <complex>
 #include <cstdlib>
 #include <functional>
-#include <iterator>
 
 namespace rtt_dsxx {
 
@@ -55,19 +52,17 @@ template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 /*!
  * \brief abs
  *
- * \param Ordered_Group A type for which operator< and unary operator- are
+ * \tparam Ordered_Group A type for which operator< and unary operator- are
  *             defined.
- * \param Argument whose absolute value is to be calculated.
+ * \param arg Argument whose absolute value is to be calculated.
  * \return \f$|a|\f$
  *
  * Absolute values are a mess in the STL, in part because they are a mess in the
  * standard C library. We do our best to give a templatized version here.
  */
-template <typename Ordered_Group> inline Ordered_Group abs(Ordered_Group a) {
-  if (a < 0)
-    return -a;
-  else
-    return a;
+template <typename Ordered_Group>
+inline Ordered_Group abs(Ordered_Group const arg) {
+  return arg < 0 ? -arg : arg;
 }
 
 // Specialization for standard types - There is no standard abs function for
@@ -84,13 +79,14 @@ template <> inline long abs(long a) { return std::labs(a); }
  * as \c double.  An example of a field type that is \em not self-conjugate is
  * \c complex.
  *
- * \param[in] Field type
+ * \tparam Field type
+ * \param arg Field type
  */
-template <typename Field> inline Field conj(const Field &x) { return x; }
+template <typename Field> inline Field conj(const Field &arg) { return arg; }
 
 // Specializations for non-self-conjugate types
-template <> inline std::complex<double> conj(const std::complex<double> &x) {
-  return std::conj(x);
+template <> inline std::complex<double> conj(const std::complex<double> &arg) {
+  return std::conj(arg);
 }
 
 //---------------------------------------------------------------------------//

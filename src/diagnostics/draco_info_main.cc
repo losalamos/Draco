@@ -10,6 +10,7 @@
 
 #include "draco_info.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
 #include <iostream>
 
@@ -19,15 +20,21 @@ int main(int argc, char *argv[]) {
   try {
     bool version(false);
     bool brief(false);
+    bool author(false);
+    bool use_doxygen_formatting(false);
     rtt_diagnostics::DracoInfo di;
 
     // Preparing to parse command line arguments.
     rtt_dsxx::XGetopt::csmap long_options;
+    long_options['a'] = "author";
     long_options['b'] = "brief";
+    long_options['d'] = "use_doxygen_formatting";
     long_options['h'] = "help";
     long_options['v'] = "version";
     std::map<char, std::string> help_strings;
+    help_strings['a'] = "print the author list.";
     help_strings['b'] = "print a brief message.";
+    help_strings['d'] = "Add extra formatting (doxygen) to output strings.";
     help_strings['v'] = "print version information and exit.";
     help_strings['h'] = "print this message.";
     rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
@@ -35,6 +42,14 @@ int main(int argc, char *argv[]) {
     int c(0);
     while ((c = program_options()) != -1) {
       switch (c) {
+      case 'a': // --author
+        author = true;
+        break;
+
+      case 'd': // --use_doxygen_formatting
+        use_doxygen_formatting = true;
+        break;
+
       case 'v': // --version
         version = true;
         break;
@@ -57,6 +72,8 @@ int main(int argc, char *argv[]) {
       cout << di.versionReport();
     else if (brief)
       cout << di.briefReport();
+    else if (author)
+      cout << rtt_dsxx::author_list(use_doxygen_formatting);
     else
       cout << di.fullReport();
   } catch (rtt_dsxx::assertion &err) {

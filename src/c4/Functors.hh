@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   rtt_c4/Functors.hh
+ * \file   c4/Functors.hh
  * \author Thomas M. Evans
  * \date   Fri Sep 30 12:54:09 2005
  * \brief  Functors used in rtt_c4.

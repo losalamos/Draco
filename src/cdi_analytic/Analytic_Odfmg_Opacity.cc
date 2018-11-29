@@ -30,13 +30,12 @@ namespace rtt_cdi_analytic {
  * be equal to the number of groups.
  *
  * \param groups vector containing the group boundaries in keV from lowest to
- * highest
- *
- * \param models vector containing shared_ptrs to Analytic_Model derived types
- * for each group, the size should be groups.size() - 1
- *
+ *           highest
+ * \param bands vector containing the band boundaries in keV from lowest to
+ *           highest
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
+ * \param model_in vector containing shared_ptrs to Analytic_Model derived types
+ *           for each group, the size should be groups.size() - 1
  */
 Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(const sf_double &groups,
                                                const sf_double &bands,

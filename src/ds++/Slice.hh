@@ -5,10 +5,7 @@
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definition of Slice template
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef container_Slice_hh
@@ -184,28 +181,28 @@ public:
 
   //-----------------------------------------------------------------------//
   /*!
-     * \brief Construct from a sequence.
-     *
-     * The constructed Slice has reference semantics to the sequence.  That
-     * is, modifications to elements of the Slice are actually modifications
-     * to the elements of the underlying sequence, and the Slice becomes
-     * invalid if the underlying sequence becomes invalid.  For example, a
-     * sequence based on a vector becomes invalid if the vector is resized,
-     * and so will a Slice based on that sequence.
-     *
-     * A stride is applied to all indexing, so that an index \c i applied to
-     * the Slice references the element whose index is \c stride*i in the
-     * underlying sequence.  No offset is necessary, since the same result is
-     * easily obtained by modifying the starting iterator of the underlying
-     * sequence. Iterators behave in a comparable manner, so
-     * that \c begin() of the Slice points to \c begin()+offset of the
-     * underlying container, and the increment operator actually increments
-     * by \c stride.
-     *
-     * \param first Iterator to the beginning of a sequence.
-     * \param length Length of the constructed Slice.
-     * \param stride Stride to apply to the sequence.
-     */
+   * \brief Construct from a sequence.
+   *
+   * The constructed Slice has reference semantics to the sequence.  That
+   * is, modifications to elements of the Slice are actually modifications
+   * to the elements of the underlying sequence, and the Slice becomes
+   * invalid if the underlying sequence becomes invalid.  For example, a
+   * sequence based on a vector becomes invalid if the vector is resized,
+   * and so will a Slice based on that sequence.
+   *
+   * A stride is applied to all indexing, so that an index \c i applied to
+   * the Slice references the element whose index is \c stride*i in the
+   * underlying sequence.  No offset is necessary, since the same result is
+   * easily obtained by modifying the starting iterator of the underlying
+   * sequence. Iterators behave in a comparable manner, so
+   * that \c begin() of the Slice points to \c begin()+offset of the
+   * underlying container, and the increment operator actually increments
+   * by \c stride.
+   *
+   * \param first Iterator to the beginning of a sequence.
+   * \param length Length of the constructed Slice.
+   * \param stride Stride to apply to the sequence.
+   */
   Slice(Ran const first, unsigned const length, unsigned const stride = 1)
       : first(first), length(length), stride(stride) {
     Require(stride > 0);
@@ -267,15 +264,14 @@ private:
  * This is a convenient interface that avoids the necessity for writing a lot
  * of type expressions in user code.
  *
- * \arg \a Rab A random access iterator.
+ * \tparam Ran A random access iterator.
  *
  * \param first Start of a sequence
- * \param last Length of the Slice.
+ * \param length Length of the Slice.
  * \param stride Stride into the container
  *
  * \return The desired Slice.
  */
-
 template <typename Ran>
 inline Slice<Ran> slice(Ran const first, unsigned const length,
                         unsigned const stride = 1) {

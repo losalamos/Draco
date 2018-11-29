@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F_eta_inv.cc
+ * \file   special_functions/F_eta_inv.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta_inv.

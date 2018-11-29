@@ -217,7 +217,8 @@ void send_is(C4_Req &request, T const *buffer, int size, int destination) {
 /*!
  * \brief Get the size of a message with custom types
  *
- * \param[in] request C4_Req object that will hold MPI request
+ * \param[in] status C4_Status object that will hold MPI request status
+ * \param[in] mpi_type The signature of the special type.
  * \return number of type T objects in the completed message
  */
 template <typename T>
@@ -274,13 +275,13 @@ void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
 //---------------------------------------------------------------------------//
 
 /*---------------------------------------------------------------------------*/
-/*!
+/*
  * \brief Send data from processor 0 to all other processors.
  *
  * These are declared and defined in C4_MPI.hh and in C4_Serial.hh.  KT is
  * having trouble with getting the DLL_PUBLIC_c4 to be correct, so delay
  * declaration until the C4_MPI.hh or C4_Serial.hh files are included.
-
+ 
 template <typename T>
 DLL_PUBLIC_c4 int broadcast(T *buffer, int size, int root);
 

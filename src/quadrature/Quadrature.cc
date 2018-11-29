@@ -26,10 +26,10 @@ typedef Ordinate_Set::Ordering Ordering;
  * \param mu_axis Which spatial axis maps to the mu direction cosine?
  * \param eta_axis Which spatial axis maps to the eta direction cosine?
  * \param include_starting_directions Should starting directions be included
- * in the ordinate set for each level? This argument is ignored for Cartesian
- * geometries.
- * \param include_extra_starting_directions Should extra starting directions
- * be included in the ordinate set for each level?
+ *          in the ordinate set for each level? This argument is ignored for 
+ *          Cartesian geometries.
+ * \param include_extra_directions Should extra starting directions
+ *          be included in the ordinate set for each level?
  */
 vector<Ordinate>
 Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
@@ -59,10 +59,10 @@ Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
  * \param geometry Geometry of the problem.
  * \param norm Norm for the ordinate weights.
  * \param include_starting_directions Should starting directions be included
- * in the ordinate set for each level? This argument is ignored for Cartesian
- * geometries.
- * \param include_extra_starting_directions Should extra starting directions
- * be included in the ordinate set for each level?
+ *          in the ordinate set for each level? This argument is ignored for 
+ *          Cartesian geometries.
+ * \param include_extra_directions Should extra starting directions
+ *          be included in the ordinate set for each level?
  */
 vector<Ordinate>
 Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
@@ -90,7 +90,7 @@ Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
  * \param include_starting_directions Should starting directions be included
  * in the ordinate set for each level? This argument is ignored for Cartesian
  * geometries.
- * \param include_extra_starting_directions Should extra starting directions
+ * \param include_extra_directions Should extra starting directions
  * be included in the ordinate set for each level?
  * \param ordering What ordering should be imposed on the ordinates?
  */
@@ -224,8 +224,8 @@ void Quadrature::map_axes_(unsigned const mu_axis, unsigned const eta_axis,
  * \param moment_expansion_order Expansion order in moment space
  * \param mu_axis Which spatial axis maps to the mu direction cosine?
  * \param eta_axis Which spatial axis maps to the eta direction cosine?
- * \param include_extra_starting_directions Should extra starting directions
- * be included in the ordinate set for each level?
+ * \param include_extra_directions Should extra starting directions
+ *          be included in the ordinate set for each level?
  * \param ordering What ordering should be imposed on the ordinates?
  * \param qim What interpolation model should be used to generate the moment
  * space?
@@ -282,12 +282,12 @@ std::shared_ptr<Ordinate_Space> Quadrature::create_ordinate_space(
  * \param dimension Dimension of the problem.
  * \param geometry Geometry of the problem.
  * \param moment_expansion_order Expansion order in moment space. If negative,
- * the moment space is not needed.
- * \param include_extra_starting_directions Should extra starting directions
- * be included in the ordinate set for each level?
+ *          the moment space is not needed.
+ * \param include_extra_directions Should extra starting directions
+ *          be included in the ordinate set for each level?
  * \param ordering What ordering should be imposed on the ordinates?
  * \param qim What interpolation model should be used to generate the moment
- * space?
+ *          space?
  */
 std::shared_ptr<Ordinate_Space> Quadrature::create_ordinate_space(
     unsigned const dimension, Geometry const geometry,

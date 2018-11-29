@@ -4,18 +4,14 @@
  * \author Kent G. Budge, Kelly G. Thompson
  * \brief  memory test.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-//! \version $Id: tstProcmon.cc 5830 2011-05-05 19:43:43Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "memory/memory.hh"
-#include <sstream>
-//#include <new> // std::set_new_handler
 #include <limits>
+#include <sstream>
 
 using namespace std;
 using namespace rtt_memory;
@@ -79,6 +75,47 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
     FAILMSG("NOT correct total allocation");
   }
   if (peak_allocation() >= 50 * sizeof(double)) {
+    PASSMSG("correct peak allocation");
+  } else {
+    FAILMSG("NOT correct peak allocation");
+  }
+  if (largest_allocation() >= 30 * sizeof(double)) {
+    PASSMSG("correct largest allocation");
+  } else {
+    FAILMSG("NOT correct largest allocation");
+  }
+#endif
+
+  // Just to try to exercise the sized delete version.
+  int *scalar = new int;
+
+#if DRACO_DIAGNOSTICS & 2
+  if (total_allocation() == sizeof(int)) {
+    PASSMSG("correct total allocation");
+  } else {
+    FAILMSG("NOT correct total allocation");
+  }
+  if (peak_allocation() >= 50 * sizeof(double) + sizeof(int)) {
+    PASSMSG("correct peak allocation");
+  } else {
+    FAILMSG("NOT correct peak allocation");
+  }
+  if (largest_allocation() >= 30 * sizeof(double)) {
+    PASSMSG("correct largest allocation");
+  } else {
+    FAILMSG("NOT correct largest allocation");
+  }
+#endif
+
+  delete scalar;
+
+#if DRACO_DIAGNOSTICS & 2
+  if (total_allocation() == 0) {
+    PASSMSG("correct total allocation");
+  } else {
+    FAILMSG("NOT correct total allocation");
+  }
+  if (peak_allocation() >= 50 * sizeof(double) + sizeof(int)) {
     PASSMSG("correct peak allocation");
   } else {
     FAILMSG("NOT correct peak allocation");

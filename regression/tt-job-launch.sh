@@ -103,8 +103,10 @@ fi
 # Note that we build on the haswell back-end (even when building code for knl):
 build_partition_options="-N 1 -t 1:00:00"
 test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0"
+#test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 --reservation kt_hw"
 case $extra_params_sort_safe in
   *knl*) test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 -p knl" ;;
+#  *knl*) test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 -p knl --reservation kt_knl" ;;
 esac
 
 # When on DST use

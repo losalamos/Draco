@@ -22,7 +22,7 @@ namespace rtt_dsxx {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for UnitTest object.
- * \param argc The number of command line arguments provided to main.
+ * 
  * \param argv A list of command line arguments.
  * \param release_ A function pointer to the local package's release() function.
  * \param out_ A user selectable output stream.  By default this is std::cout.

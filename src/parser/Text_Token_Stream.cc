@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Text_Token_Stream.cc
+ * \file   parser/Text_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Contains definitions of all Text_Token_Stream member functions.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
@@ -8,7 +8,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Text_Token_Stream.hh"
-
 #include "ds++/path.hh"
 #include <cstring>
 #include <ctype.h>
@@ -555,18 +554,6 @@ void Text_Token_Stream::eat_whitespace_() {
 
 //---------------------------------------------------------------------------//
 /*!
- * \func Text_Token_Stream::location
- *
- * This function returns a location string whose exact format is
- * stream-specific.  For example, for a token stream that scans tokens from a
- * text file, this could be a string of the form "filename, line #".
- *
- * \return A string describing the location from which the Text_Token_Stream is
- * currently scanning tokens.
- */
-
-//---------------------------------------------------------------------------//
-/*!
  * \param c Character to be pushed onto the back of the character queue.
  */
 void Text_Token_Stream::character_push_back_(char const c) {
@@ -582,7 +569,7 @@ void Text_Token_Stream::character_push_back_(char const c) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param include_file_name Name of file to be included at this point. On
+ * \param file_name Name of file to be included at this point. On
  * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
  * relative path did not exist.
  *
@@ -590,14 +577,16 @@ void Text_Token_Stream::character_push_back_(char const c) {
  * File_Token_Stream can be expected to read the included file in serial; a
  * Parallel_File_Token_Stream can be expected to read the included file in
  * parallel; and a Console_Token_Stream or String_Token_Stream presently do
- * not provide this capability and will treat a #include directive as an
+ * not provide this capability and will treat a include directive as an
  * error.
  *
  * This function is pure virtual with an implementation. This means that every
  * child class must implement this function, but part of its implementation
  * must be to include
  *
- * \code Text_Token_Stream::push_include(include_file_name);
+ * \code 
+ *    Text_Token_Stream::push_include(include_file_name);
+ * \endcode
  *
  * as the first line in its implementation of this function. This call stashes
  * the line and character buffer of the underlying Text_Token_Stream and also
@@ -638,7 +627,9 @@ void Text_Token_Stream::push_include(std::string &file_name) {
  * must be to reset the line number by directly calling the base version. That
  * is, every child class must include
  *
- * \code Text_Token_Stream::pop_include(include_file_name);
+ * \code 
+ *    Text_Token_Stream::pop_include(include_file_name);
+ * \endcode
  *
  * as the first line in its implementation of this function.
  */

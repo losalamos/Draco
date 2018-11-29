@@ -55,8 +55,8 @@ using std::vector;
  * goodness of fit.)
  *
  * \param funcs Functor to calculate the basis functions for a given argument.
+ * \param[in] TOL reset denormalized w-values below TOL*max(w) to a hard-zero.
  */
-
 template <typename RandomContainer, typename Functor>
 void svdfit(RandomContainer const &x, RandomContainer const &y,
             RandomContainer const &sig, RandomContainer &a, RandomContainer &u,

@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/FM12.cc
+ * \file   special_functions/FM12.cc
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Implementation of FM12
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "FM12.t.hh"

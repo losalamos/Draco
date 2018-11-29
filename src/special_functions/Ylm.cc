@@ -5,34 +5,36 @@
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of Ylm
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Ylm.hh"
 #include "Factorial.hh"
-#include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
-#include <cmath>
 #include <cstdlib>
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <iostream>
 
 namespace rtt_sf {
+
 using rtt_units::PI;
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Compute the spherical harmonic coefficient multiplied by the
- * Associated Legendre Polynomial \f$ {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta )}. \f$  
+ *        Associated Legendre Polynomial 
+ * 
+ * \f[
+ * {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} 
+ * P_l^m (\cos \theta )}. 
+ * \f]
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param k Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
  * \param mu The cosine of the azimuthal angle, \f$ \mu = \cos \theta \f$.
  * \return The spherical harmonic coefficient multiplied by the Associated
- * Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
+ *         Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
  *
  * For details on what is being computed by this routine see the Draco
  * documentation on \ref sf_sph.
@@ -64,11 +66,14 @@ double cPlk(unsigned const l, unsigned const k, double const mu) {
 }
 //---------------------------------------------------------------------------//
 /*!
- * \brief Compute the spherical harmonic coefficient multiplied by the Associated Legendre Polynomial as specified by Morel's Galerkin Quadrature paper.
+ * \brief Compute the spherical harmonic coefficient multiplied by the 
+ *        Associated Legendre Polynomial as specified by Morel's Galerkin 
+ *        Quadrature paper.
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param k Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
  * \param mu The cosine of the azimuthal angle, \f$ \mu = \cos \theta \f$.
+ * \param sumwt normalizing constant
  * \return Morel's spherical harmonic coefficient multiplied by the Associated
  * Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
  *
@@ -115,7 +120,7 @@ double cPlkGalerkin(unsigned const l, unsigned const k, double const mu,
  * \param l Used to specify the degree \f$ \ell \f$ of \f$
  * Y_{\ell,k}(\theta,\phi) \f$.
  *
- * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi)
+ * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi)
  * \f$.
  *
  * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
@@ -171,7 +176,7 @@ double normalizedYlk(unsigned const l, int const k, double const theta,
  * \brief Compute the real portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
  * \return The real portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
@@ -222,7 +227,7 @@ double realYlk(unsigned const l, int const k, double const theta,
  * \brief Compute the complex portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
  * \return The complex portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
@@ -265,9 +270,10 @@ double complexYlk(unsigned const l, int const k, double const theta,
  * \brief Compute the spherical harmonic as used by Morel's Galerkin Quadrature paper.
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param mu The cosine of the polar (colatitudinal) coordinate in (-1,1).
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ * \param sumwt normalizing coefficient
  * \return The spherical harmonic value as specified in the detailed documentation.
  *
  We use a special form of spherical harmonics for creating the

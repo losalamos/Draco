@@ -142,7 +142,7 @@ void Console_Token_Stream::rewind() {
 
 //---------------------------------------------------------------------------//
 /*!
- * Console_Token_Stream does not presently support the #include directive.
+ * Console_Token_Stream does not presently support the include directive.
  */
 void Console_Token_Stream::push_include(std::string &) {
   report_syntax_error("#include not supported for Console_Token_Stream");
@@ -153,7 +153,7 @@ void Console_Token_Stream::push_include(std::string &) {
 #endif
 //---------------------------------------------------------------------------//
 /*!
- * Console_Token_Stream does not presently support the #include directive.
+ * Console_Token_Stream does not presently support the include directive.
  */
 void Console_Token_Stream::pop_include() {
   /* this function should be unreachable. Please note this in code coverage. */

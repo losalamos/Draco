@@ -20,7 +20,7 @@ using rtt_parser::Expression;
 /*!
  * \class Pseudo_Line_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a random line
- * spectrum for the opacity.
+ *        spectrum for the opacity.
  *
  * The opacity function is a continuum on which is superimposed a number of
  * lines of the specified peak and width. The line locations are chosen at
@@ -35,11 +35,11 @@ class Pseudo_Line_Analytic_MultigroupOpacity
       public Pseudo_Line_Base {
 private:
   Averaging averaging_;
+  //! value of 0 indicates to use adaptive Romberg integration
   unsigned qpoints_;
-  // value of 0 indicates to use adaptive Romberg integration
 
-  friend class PLR_Functor; // used in calculation of Rosseland averages
-  friend class PLP_Functor; // used in calculation of Planck averages
+  friend class PLR_Functor; //!< used in calculation of Rosseland averages
+  friend class PLP_Functor; //!< used in calculation of Planck averages
 
 public:
   Pseudo_Line_Analytic_MultigroupOpacity(
@@ -52,16 +52,16 @@ public:
   //! Constructor for packed state.
   explicit Pseudo_Line_Analytic_MultigroupOpacity(const sf_char &packed);
 
-  // Get the group opacities.
+  //! Get the group opacities.
   virtual sf_double getOpacity(double, double) const;
 
-  // Get the group opacity fields given a field of temperatures.
+  //! Get the group opacity fields given a field of temperatures.
   virtual vf_double getOpacity(const sf_double &, double) const;
 
-  // Get the group opacity fields given a field of densities.
+  //! Get the group opacity fields given a field of densities.
   virtual vf_double getOpacity(double, const sf_double &) const;
 
-  // Get the data description of the opacity.
+  //! Get the data description of the opacity.
   virtual std_string getDataDescriptor() const;
 
   //! Pack up the class for persistence.

@@ -17,6 +17,7 @@
 #include <memory>
 
 namespace rtt_cdi_ipcress {
+
 // -------------------- //
 // Forward declarations //
 // -------------------- //
@@ -61,10 +62,8 @@ class IpcressDataTable;
  * When the client requests an opacity value at a specified temperature and
  * density the IpcressMultigroupOpacity object interpolates on the data cached
  * in the IpcressDataTable object.
- */
-
-/*!
- * \example cdi_ipcress/test/tIpcressOpacity.cc
+ *
+ * \sa cdi_ipcress/test/tIpcressOpacity.cc
  *
  * Example of IpcressMultigroupOpacity usage independent of CDI. In this example
  * we construct a IpcressMultigroupOpacity object for the material Aluminum
@@ -74,7 +73,7 @@ class IpcressDataTable;
  * getOpacity() accessor are tested along with accessors that return information
  * about the data set and the cached data table.
  *
- * \example cdi_ipcress/test/tIpcressWithCDI.cc
+ * \sa cdi_ipcress/test/tIpcressWithCDI.cc
  *
  * This example tests and demonstrates how to use the cdi_ipcress package as a
  * plug-in for the CDI class.
@@ -163,17 +162,17 @@ public:
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one IpcressFile
    *     object for each IpcressOpacity object.
-   * \param materialID An identifier that links the IpcressOpacity object to a
+   * \param in_materialID An identifier that links the IpcressOpacity object to a
    *     single material found in the specified IPCRESS file.
-   * \param opacityModel The physics model that the current data set is based
+   * \param in_opacityModel The physics model that the current data set is based
    *     on.
-   * \param opacityReaction The type of reaction rate that the current data set
+   * \param in_opacityReaction The type of reaction rate that the current data set
    *     represents.
    */
   IpcressMultigroupOpacity(
       std::shared_ptr<IpcressFile const> const &spIpcressFile,
-      size_t materialID, rtt_cdi::Model opacityModel,
-      rtt_cdi::Reaction opacityReaction);
+      size_t in_materialID, rtt_cdi::Model in_opacityModel,
+      rtt_cdi::Reaction in_opacityReaction);
 
   /*!
    * \brief Unpacking constructor.

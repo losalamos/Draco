@@ -87,14 +87,16 @@ const std::string release() {
 //---------------------------------------------------------------------------//
 /*! \brief Return a list of Draco contributing authors
  *
+ * \param[in] use_doxygen_formatting If true, use extra decoration in the
+ *              output.
+ *
  * Data is collected from git (see regression/alist.sh) based on LOC
  * added/removed. Because the git repository only includes code provided
  * starting at draco-6_0_0, all LOC were attributed to KT at draco-6_0_0 since
  * he converted the svn repo to git. The remaining numbers are computed by
  * couting LOC added/removed since draco-6_0_0.
  */
-
-const std::string author_list() {
+const std::string author_list(bool const use_doxygen_formatting) {
   std::stringstream alist;
 
   mmdevs current_developers;
@@ -110,7 +112,6 @@ const std::string author_list() {
   current_developers.insert(fomdev(244, "Matt A. Cleveland"));
   current_developers.insert(fomdev(120, "Andrew T. Till"));
   current_developers.insert(fomdev(108, "Tim Kelley"));
-  current_developers.insert(fomdev(1, "Kris C. Garrett"));
 
   mmdevs prior_developers;
 
@@ -121,30 +122,48 @@ const std::string author_list() {
   prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
   prior_developers.insert(fomdev(313, "Paul W. Talbot"));
   prior_developers.insert(fomdev(262, "Katherine J. Wang"));
-  // < 100 lines
-  // prior_developers.insert(fomdev(78, "Peter Ahrens"));
-  // prior_developers.insert(fomdev(25, "Daniel Holladay"));
-  // prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
-  // prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
-  // prior_developers.insert(fomdev(1, "Nick Myers"));
+  prior_developers.insert(fomdev(78, "Peter Ahrens"));
+  prior_developers.insert(fomdev(25, "Daniel Holladay"));
+  prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
+  prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
 
-  // Previous authors with no current LOC attribution: Tom Evans, Todd Adams,
-  // John McGhee, Mike Buksas, Randy Roberts, Seth Johnson, Jeff Furnish, Paul
-  // Henning
+  // Previous authors with no current LOC attribution:
+  prior_developers.insert(fomdev(1, "Gabe Rockefeller"));
+  prior_developers.insert(fomdev(1, "Jeff Furnish"));
+  prior_developers.insert(fomdev(1, "John McGhee"));
+  prior_developers.insert(fomdev(1, "Kris C. Garrett"));
+  prior_developers.insert(fomdev(1, "Mike Buksas"));
+  prior_developers.insert(fomdev(1, "Nick Myers"));
+  prior_developers.insert(fomdev(1, "Paul Henning"));
+  prior_developers.insert(fomdev(1, "Randy Roberts"));
+  prior_developers.insert(fomdev(1, "Seth Johnson"));
+  prior_developers.insert(fomdev(1, "Todd Adams"));
+  prior_developers.insert(fomdev(1, "Tom Evans"));
 
-  size_t const maxlinelen(80);
+  size_t maxlinelen(80);
   std::string line_name("CCS-2 Draco Team: ");
-  alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
 
-  line_name = "Prior Contributers: ";
+  if (use_doxygen_formatting) {
+    maxlinelen = 400;
+    alist << "\n\\par " << line_name << "\n\n";
+    line_name = "";
+  }
+
+  alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
+  alist << "\n";
+
+  line_name = std::string("Prior Contributers: ");
+  if (use_doxygen_formatting) {
+    alist << "\\par " << line_name << "\n\n";
+    line_name = "";
+  }
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, prior_developers);
 
   return alist.str();
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Print a Copyright note with an author list:
- */
+//! Print a Copyright note with an author list:
 const std::string copyright() {
   std::ostringstream msg;
 

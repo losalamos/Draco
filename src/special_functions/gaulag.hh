@@ -33,7 +33,7 @@ namespace rtt_special_functions {
  * \param x On return, contains abscissae \f$x_j\f$ for quadrature.
  * \param w On return, contains weights \f$w_j\f$ for quadrature.
  * \param alf Lagrange power parameter.
- * \param N Number of points in quadrature.
+ * \param n Number of points in quadrature.
  * 
  */
 template <class FieldVector>

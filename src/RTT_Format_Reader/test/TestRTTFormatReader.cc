@@ -9,12 +9,10 @@
 //---------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
-#include "RTT_Format_Reader/CellDefs.hh"
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/path.hh"
 #include <sstream>
 
 using namespace std;
@@ -86,8 +84,7 @@ void runTest(UnitTest &ut) {
 
     if (!all_passed) {
       ostringstream m;
-      m << "Errors occured testing mesh "
-        << "number " << mesh_type << std::endl;
+      m << "Errors occured testing mesh number " << mesh_type << std::endl;
       FAILMSG(m.str());
     }
   }

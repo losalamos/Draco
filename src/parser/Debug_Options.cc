@@ -8,11 +8,11 @@
 /*---------------------------------------------------------------------------*/
 
 #include "Debug_Options.hh"
-
 #include <map>
 
 namespace // anonymous
 {
+
 unsigned available = rtt_parser::DEBUG_END;
 
 std::map<std::string, unsigned> extended_debug_option;
@@ -209,9 +209,8 @@ unsigned add_debug_option(string const &option_name) {
  *      exception if has already been requested elsewhere. This version will
  *      typically be called at the initial setup of an application.
  *
- * \param[in] Debug option keyword
- *
- * \param[in] Bitflag value to be assigned to the new debug option.
+ * \param[in] option_name option keyword
+ * \param[in] bit value to be assigned to the new debug option.
  */
 void add_debug_option(string const &option_name, unsigned const bit) {
   Require(bit != 0);         // corner case will fail

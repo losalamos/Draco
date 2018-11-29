@@ -23,7 +23,7 @@
 #      suppressions: LSAN_OPTIONS=suppressions=MyLSan.supp
 #      human readable: ASAN_SYMBOLIZER_PATH=/usr/local/bin/llvm-symbolizer ./a.out
 
-if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0 )
+if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0 AND NOT MSVC )
   message( FATAL_ERROR "Draco requires LLVM clang version >= 6.0." )
 endif()
 

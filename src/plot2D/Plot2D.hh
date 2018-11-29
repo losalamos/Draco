@@ -8,8 +8,8 @@
           All rights reserved.*/
 //---------------------------------------------------------------------------//
 
-#ifndef INCLUDED_plot2D_Plot2D_hh
-#define INCLUDED_plot2D_Plot2D_hh
+#ifndef rtt_plot2D_Plot2D_hh
+#define rtt_plot2D_Plot2D_hh
 
 #include "SetProps.hh"
 #include <vector>
@@ -229,7 +229,7 @@ private:
 
 } // namespace rtt_plot2D
 
-#endif // INCLUDED_plot2D_Plot2D_hh
+#endif // rtt_plot2D_Plot2D_hh
 
 //---------------------------------------------------------------------------//
 // end of plot2D/Plot2D.hh

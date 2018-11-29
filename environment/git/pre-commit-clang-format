@@ -27,10 +27,10 @@ if ! test -x "$CLANG_FORMAT"; then
   exit 0
 fi
 
-cf_min_ver=3.8
+cf_min_ver=6.0
 cf_ver=`"$CLANG_FORMAT" --version`
 if version_gt $cf_ver_min $cf_min; then
-  echo "ERROR: Your version of clang-format is too old. Expecting v 3.8+."
+  echo "ERROR: Your version of clang-format is too old. Expecting v 6.0+."
   echo "       pre-commit-hook disabled."
   exit 0
 fi

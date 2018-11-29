@@ -12,11 +12,6 @@
 #define __RTT_Format_Reader_NodeDataIDs_hh__
 
 #include "Dims.hh"
-#include "ds++/Assert.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!

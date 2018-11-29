@@ -5,10 +5,7 @@
  *          light, etc) are defined.
  *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __units_PhysicalConstants_hh__
@@ -23,8 +20,8 @@ namespace rtt_units {
 /*!
  * \class PhysicalConstants
  *
- * \brief A class to define and encapsulate physical and mathematical
- * constants in the current UnitSystem.
+ * \brief A class to define and encapsulate physical and mathematical constants
+ *        in the current UnitSystem.
  *
  * \sa rtt_units::UnitSystem
  * \sa rtt_units::UnitSystemType
@@ -42,14 +39,13 @@ namespace rtt_units {
  *                                          // AstroPhysics units.
  * \endverbatim
  *
- * Example
  * \example test/tstPhysicalConstants.cc
  * This is the unit regression test for the PhysicalConstants class.  It
  * demonstrates typical usage.
  */
 //==============================================================================
 
-class DLL_PUBLIC_units PhysicalConstants {
+class PhysicalConstants {
 public:
   // Constructors.
   PhysicalConstants();

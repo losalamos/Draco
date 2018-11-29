@@ -149,8 +149,7 @@ void Ensight_Translator::close() {
 /*!
  * \brief Creates some of the file prefixes and filenames for ensight dump.
  *
- * \param prefix std_string giving the name of the problem
- * \param gd_wpath directory where dumps are stored
+ * \param[in] prefix std_string giving the name of the problem
  */
 void Ensight_Translator::create_filenames(const std_string &prefix) {
   if (d_dump_dir[d_dump_dir.size() - 1] == rtt_dsxx::UnixDirSep ||

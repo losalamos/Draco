@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   quadrature/quadrature_test.cc
+ * \file   quadrature/test/quadrature_test.cc
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.

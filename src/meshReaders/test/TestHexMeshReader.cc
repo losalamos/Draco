@@ -10,15 +10,9 @@
 
 #include "TestHexMeshReader.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/path.hh"
 #include "meshReaders/Hex_Mesh_Reader.hh"
-#include "mesh_element/Element_Definition.hh"
 #include <cmath>
 #include <sstream>
-
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
 
 using namespace std;
 using namespace rtt_dsxx;

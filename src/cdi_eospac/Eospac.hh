@@ -11,13 +11,8 @@
 #ifndef __cdi_eospac_Eospac_hh__
 #define __cdi_eospac_Eospac_hh__
 
-// cdi_eospac dependencies
 #include "SesameTables.hh"
-
-// Draco dependencies
 #include "cdi/EoS.hh"
-
-// C++ standard library dependencies
 #include <iostream>
 
 namespace rtt_cdi_eospac {
@@ -171,10 +166,10 @@ public:
    *
    * \sa The definition of rtt_cdi_eospac::SesameTables.
    *
-   * \param SesTabs A rtt_cdi_eospac::SesameTables object that defines what
-   * data tables will be available for queries from the Eospac object.
+   * \param in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what
+   *           data tables will be available for queries from the Eospac object.
    */
-  Eospac(SesameTables const &SesTabs);
+  explicit Eospac(SesameTables const &in_SesTabs);
 
   //! Create an Eospack by unpacking a vector<char> stream.
   explicit Eospac(std::vector<char> const &packed);
@@ -220,8 +215,8 @@ public:
    *        correspond to a tuple list of temperatures and densities for this
    *        material.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return The specific electron internal energy in kJ/g.
    */
   std::vector<double>
@@ -243,8 +238,8 @@ public:
    *        that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return The electron based heat capacity in kJ/g/keV.
    */
   std::vector<double>
@@ -266,8 +261,8 @@ public:
    *        that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return A vector of specific ion internal energies in kJ/g.
    */
   std::vector<double>
@@ -288,8 +283,8 @@ public:
    * \brief Retrieve a set of ion based heat capacities for this material that
    *        correspond to the tuple list of provided densities and temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return A vector of ion based heat capacities in kJ/g/keV.
    */
   std::vector<double>
@@ -311,8 +306,8 @@ public:
    *        that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return A vector of the number of free electrons per ion.
    */
   std::vector<double>
@@ -335,8 +330,8 @@ public:
    *        material that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param density Density of the material in g/cm^3
-   * \param temperature Temperature of the material in keV.
+   * \param vdensity Density of the material in g/cm^3
+   * \param vtemperature Temperature of the material in keV.
    * \return A vector of electron based thermal conductivities in 1/s/cm.
    */
   std::vector<double>
@@ -393,10 +388,13 @@ private:
    * Each of the public access functions calls either getF() or getdFdT() after
    * assigning the correct value to "returnType".
    *
-   * \param vx     A vector of independent values (e.g. temperature or density).
-   * \param vy     A vector of independent values (e.g. temperature or density).
+   * \param vdensity A vector of independent values (e.g. temperature or 
+   *          density).
+   * \param vtemperature A vector of independent values (e.g. temperature or
+   *          density).
    * \param returnType The integer index that corresponds to the type of
    *        data being retrieved from the EoS tables.
+   * \param etdd Eos Table Derivative
    */
   std::vector<double> getF(std::vector<double> const &vdensity,
                            std::vector<double> const &vtemperature,

@@ -73,7 +73,24 @@ public:
   ScalarUnitTest &operator=(const ScalarUnitTest &rhs);
 };
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Run a scalar unit test.
+ *
+ * \param[in] argc Number of command line arguments
+ * \param[in] argv Command line arguments
+ * \param[in] release Release string
+ * \param[in] lambda Lambda function defining the test.
+ * \return EXIT_SUCCESS or EXIT_FAILURE as appropriate.
+ */
+
+template <typename... Lambda, typename Release>
+int do_scalar_unit_test(int argc, char *argv[], Release release,
+                        Lambda const &... lambda);
+
 } // end namespace rtt_dsxx
+
+#include "ScalarUnitTest.i.hh"
 
 #endif // dsxx_ScalarUnitTest_hh
 

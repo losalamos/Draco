@@ -12,12 +12,8 @@
 #define __RTT_Format_Reader_CellDefs_hh__
 
 #include "Dims.hh"
-#include <fstream>
-#include <iostream>
 #include <memory>
 #include <set>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 

@@ -1,22 +1,18 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // ds++.dcc
 // ds++ Overview page
 // Thomas M. Evans
 // Mon Apr 19 09:27:15 2004
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_dsxx Overview of the ds++ package
 \version Draco-@Draco_VERSION@
 \author Kelly G. Thompson, Thomas M. Evans, Rob Lowrie, Mike Buksas,
 Geoffrey Furnish, Paul Henning, Randy Roberts, and Todd Urbatsch
 
-\section abstract Abstract
+\section dsxx_abstract Abstract
 
 This package provides data structures and other miscellaneous support
 for the Draco system. Classes for matrices, design-by-contract,
@@ -25,11 +21,11 @@ smart-pointers, and a variety of other utilities are included.
 The significant services provided in ds++ are:
 - \b SP (rtt_dsxx::SP) a smart pointer class
 - \b Packer \b Unpacker (rtt_dsxx::Packer, rtt_dsxx::Unpacker) utilities that
-pack data types into a char *
+     pack data types into a char *
 - \b soft_equiv (rtt_dsxx::soft_equiv()) a soft equivalence function for
-floating point comparisons
+     floating point comparisons
 - \b ScalarUnitTest (rtt_dsxx::ScalarUnitTest) provides a unit test
-framework for scalar code.
+     framework for scalar code.
 .
 
 Additionally, a usefull Design-by-Contract implementation can be found in
@@ -38,7 +34,8 @@ Assert.hh.
 <!--------------------------------------------------------------------------->
 \section sp Smart Pointer
 
-The smart pointer is used exhaustively by Draco and codes build on top of the DBS.
+The smart pointer is used exhaustively by Draco and codes build on top of the
+DBS.
 
 <!--------------------------------------------------------------------------->
 \section assert Design-by-Contract Assertions
@@ -49,20 +46,16 @@ See the \ref Draco_DBC section.
 
 \section brief_scalarunittest Scalar Unit Test Template
 
-The \ref rtt_dsxx::ScalarUnitTest "ScalarUnitTest" class provides some
-basic functionality for the creation of scalar unit tests within the
-Draco Build System.  This type of unit test corresponds directly to
-the \c configure.ac command \c AC_RUN_TESTS( \c testname, \c scalar).
-Example usage is demonstrated in the unit test file <a
-href="ds++_2test_2tst_array_8cc-example.html#_a1">ds++/test/tstScalarUnitTest.cc</a>.
-The ScalarUnitTest should always be instantiated inside of a try-catch
-block.
-
-
-<!---------------------------------------------------------------------------->
+The \ref rtt_dsxx::ScalarUnitTest "ScalarUnitTest" class provides some basic
+functionality for the creation of scalar unit tests within the Draco Build
+System.  This type of unit test corresponds directly to the \c configure.ac
+command \c AC_RUN_TESTS( \c testname, \c scalar).  Example usage is demonstrated
+in the unit test file <a href="ds++_2test_2tst_array_8cc-example.html#_a1">
+ds++/test/tstScalarUnitTest.cc </a>.  The ScalarUnitTest should always be
+instantiated inside of a try-catch block.
 
 */
 
 //---------------------------------------------------------------------------//
-//                              end of ds++.dcc
+// end of ds++.dcc
 //---------------------------------------------------------------------------//

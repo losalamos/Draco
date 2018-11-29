@@ -5,18 +5,14 @@
  * \date   Thu Jul 28 09:20:34 2011
  * \brief  Tests the ExpInt for correct solutions in each routine
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "special_functions/ExpInt.hh"
+#include <sstream>
 
 using rtt_dsxx::soft_equiv;
 using namespace rtt_sf;

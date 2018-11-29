@@ -175,6 +175,9 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == core; then
+    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%core/scripts%'`
+    script_name=Core_Linux64.cmake
 fi
 
 if test "${regress_mode}" = "off"; then

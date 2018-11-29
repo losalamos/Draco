@@ -248,9 +248,10 @@ public:
   // Write ensight data for a single part.
   template <typename ISF, typename IVF, typename FVF>
   void write_part(uint32_t part_num, const std_string &part_name,
-                  const IVF &ipar, const ISF &iel_type, const FVF &pt_coor,
-                  const FVF &vrtx_data, const FVF &cell_data,
-                  const ISF &g_vrtx_indices, const ISF &g_cell_indices);
+                  const IVF &ipar_in, const ISF &iel_type,
+                  const FVF &pt_coor_in, const FVF &vrtx_data_in,
+                  const FVF &cell_data_in, const ISF &g_vrtx_indices,
+                  const ISF &g_cell_indices);
 
   // >>> ACCESSORS
 

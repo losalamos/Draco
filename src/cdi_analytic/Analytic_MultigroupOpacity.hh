@@ -39,8 +39,7 @@ namespace rtt_cdi_analytic {
  * The default rtt_cdi::Model for an Analytic_MultigroupOpacity is
  * rtt_cdi::ANALYTIC.  However, this can be overridden in the constructor.
  *
- * \example cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
- *
+ * \sa cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  * Example usage of Analytic_MultigroupOpacity.
  */
 //===========================================================================//
@@ -65,8 +64,9 @@ private:
 
 protected:
   // Constructor.
-  Analytic_MultigroupOpacity(const sf_double &, rtt_cdi::Reaction,
-                             rtt_cdi::Model = rtt_cdi::ANALYTIC);
+  Analytic_MultigroupOpacity(const sf_double &groups,
+                             rtt_cdi::Reaction reaction_in,
+                             rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
 
   // Constructor for packed Analytic_Multigroup_Opacities
   explicit Analytic_MultigroupOpacity(const sf_char &packed);

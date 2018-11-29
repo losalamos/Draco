@@ -1,21 +1,17 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   units/test/tstUnitSystemTypes.cc
+ * \file   units/test/tstUnitSystemType.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/UnitSystemType.hh"
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -746,7 +742,6 @@ void test_sust_ctor(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

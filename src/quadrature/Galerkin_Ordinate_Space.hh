@@ -52,12 +52,12 @@ public:
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
-  Galerkin_Ordinate_Space(unsigned dimension, Geometry geometry,
+  Galerkin_Ordinate_Space(unsigned const dimension, Geometry const geometry,
                           vector<Ordinate> const &ordinates,
                           Quadrature_Class quadrature_class, unsigned sn_order,
-                          unsigned expansion_order, QIM const method,
-                          bool extra_starting_directions = false,
-                          Ordering ordering = LEVEL_ORDERED);
+                          unsigned const expansion_order, QIM const method,
+                          bool const extra_starting_directions = false,
+                          Ordering const ordering = LEVEL_ORDERED);
 
   // MANIPULATORS
 

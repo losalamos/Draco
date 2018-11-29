@@ -4,14 +4,11 @@
  * \author Kent G. Budge
  * \brief  Definition of the Text_Token_Stream class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Text_Token_Stream_HH
-#define CCS4_Text_Token_Stream_HH
+#ifndef rtt_Text_Token_Stream_HH
+#define rtt_Text_Token_Stream_HH
 
 #include "Token_Stream.hh"
 #include <set>
@@ -30,7 +27,6 @@ namespace rtt_parser {
  * Null characters are not permitted in the character stream.  They are used
  * internally to indicate the end of file or an error condition.
  */
-
 class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream {
 public:
   // ACCESSORS
@@ -97,10 +93,10 @@ protected:
   //! Skip any whitespace at the cursor position.
   void eat_whitespace_(void);
 
-  //! Enter a nested file in a #include directive.
+  //! Enter a nested file in a include directive.
   virtual void push_include(std::string &include_file_name) = 0;
 
-  //! Exit a nested file from a #include directive.
+  //! Exit a nested file from a include directive.
   virtual void pop_include() = 0;
 
   // The following scan_ functions are for numeric scanning.  The names
@@ -146,7 +142,7 @@ private:
 
 } // namespace rtt_parser
 
-#endif // CCS4_Text_Token_Stream_HH
+#endif // rtt_Text_Token_Stream_HH
 //--------------------------------------------------------------------//
 // end of Text_Token_Stream.hh
 //--------------------------------------------------------------------//

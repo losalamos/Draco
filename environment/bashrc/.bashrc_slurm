@@ -55,6 +55,7 @@ case ${-} in
      echo "usercpuhrs [moniker] [start date (mm/dd/yy)] [end date (mm/dd/yy)] - Print total cpu-hr usage by account."
      if [[ -f /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias ]]; then
      echo -e "\nMore slurm related aliases can be found at /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias."
+     fi
    }
 
    alias hluser="egrep --color -E '.*${USER}.*|$'"
@@ -180,9 +181,12 @@ case ${-} in
      sreport -t Hours cluster AccountUtilizationByUser user=$user start=$fday end=$lday
    }
 
-   export host=`uname -n | sed -e 's/[.].*//g'`
-   case $host in
-   tt*|tr*) alias salloc='salloc --gres=craynetwork:0' ;;
+   target="`uname -n | sed -e s/[.].*//`"
+   case $target in
+     darwin-fe*)
+       alias salloc='module purge; salloc' ;;
+     tt*|tr*)
+       alias salloc='salloc --gres=craynetwork:0' ;;
    esac
    ;; # end case 'interactive'
 

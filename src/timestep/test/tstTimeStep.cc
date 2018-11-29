@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! \file   tstTimeStep.c
+/*! \file   timestep/test/tstTimeStep.cc
  *  \brief  A driver for the time-step manager test facility.
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *          All rights reserved.  */
@@ -121,8 +121,12 @@ void run_tests(rtt_dsxx::UnitTest &ut) {
 
     sp_dt->set_fixed_value(dt);
     if (override_flag) {
-      sp_ovr->activate();
-      sp_ovr->set_fixed_value(override_dt);
+      // This branch is never used.  The next functions are commented out.
+      // If you get here, please add a unit test and re-enable these
+      // functions.
+      ITFAILS;
+      // sp_ovr->activate();
+      // sp_ovr->set_fixed_value(override_dt);
     } else {
       sp_ovr->deactivate();
     }

@@ -11,8 +11,8 @@
 
 //---------------------------------------------------------------------------//
 
-#ifndef INCLUDED_plot2D_SetProps_hh
-#define INCLUDED_plot2D_SetProps_hh
+#ifndef rtt_plot2D_SetProps_hh
+#define rtt_plot2D_SetProps_hh
 
 #include "LineProps.hh"
 #include "SymbolProps.hh"
@@ -45,7 +45,7 @@ public:
 
 } // namespace rtt_plot2D
 
-#endif // INCLUDED_plot2D_SetProps_hh
+#endif // rtt_plot2D_SetProps_hh
 
 //---------------------------------------------------------------------------//
 // end of plot2D/SetProps.hh

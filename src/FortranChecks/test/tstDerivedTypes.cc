@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   FortranCheck/test/tstDerivedTypes.cc
+ * \file   FortranChecks/test/tstDerivedTypes.cc
  * \author Kelly Thompson
  * \date   Tuesday, Jun 12, 2012, 16:03 pm
  * \brief  Test C++ main linking a Fortran library.

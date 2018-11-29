@@ -5,9 +5,7 @@
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Defines the field time-step advisor.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.  
- *         All rights reserved.
- * \version $Id$
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "field_ts_advisor.hh"

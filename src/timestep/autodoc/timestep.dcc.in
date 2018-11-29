@@ -1,34 +1,29 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // timestep.dcc
 // timestep Overview page
 // Thomas M. Evans
 // Mon Apr 19 21:25:59 2004
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_timestep Overview of the timestep package
 \version Draco-@Draco_VERSION@
 \author John McGhee
 
-\section Introduction
+\section timestep_intro Introduction
 
-The classes contained in the rtt_timestep name space are designed to
-provide automatic control of the time step size in a time dependent
-numerical simulation. In a typical simulation, several physics
-packages may be repeatedly called from a host code to advance the
-overall system state. A time step manager class
-(rtt_timestep::ts_manager) is provided to contain any number of time
-step advisors (rtt_timestep::ts_advisor) from any package in the
-simulation. Each advisor provides a recommended time step based on
-some physical parameter specific to the package. After collecting
-information from each advisor, the time step manager considers all the
-inputs and provides an overall recommendation for the size of the time
-step for the next time cycle.  Capabilities are provided to:
+The classes contained in the rtt_timestep name space are designed to provide
+automatic control of the time step size in a time dependent numerical
+simulation. In a typical simulation, several physics packages may be repeatedly
+called from a host code to advance the overall system state. A time step manager
+class (rtt_timestep::ts_manager) is provided to contain any number of time step
+advisors (rtt_timestep::ts_advisor) from any package in the simulation. Each
+advisor provides a recommended time step based on some physical parameter
+specific to the package. After collecting information from each advisor, the
+time step manager considers all the inputs and provides an overall
+recommendation for the size of the time step for the next time cycle.
+Capabilities are provided to:
+
 <ul>
  <li> limit the min and max timestep,
  <li> force the time step to a user input value,
@@ -40,7 +35,7 @@ step for the next time cycle.  Capabilities are provided to:
  <li> attempt to hit a "target" time.
 </ul>
 
-\section Intended Usage
+\section timestep_intended_use Intended Usage
 
 The intended usage is as follows:
 
@@ -68,16 +63,13 @@ The intended usage is as follows:
 -# Host-code removes global advisors from the manager list.
 -# Host-code destructs manager.
 .
-
-\section Other Draco Packages
+\section timestep_other Other Draco Packages
 
 The time step manager utility uses the Draco ds++ (rtt_dsxx) services
 library, and the Draco c4 (rtt_c4) communication library.
 
-<!---------------------------------------------------------------------------->
-
 */
 
 //---------------------------------------------------------------------------//
-//                              end of timestep.dcc
+// end of timestep.dcc
 //---------------------------------------------------------------------------//

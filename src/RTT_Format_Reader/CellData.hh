@@ -12,12 +12,6 @@
 #define __RTT_Format_Reader_CellData_hh__
 
 #include "Cells.hh"
-#include "Dims.hh"
-#include "ds++/Assert.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!

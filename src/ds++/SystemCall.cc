@@ -36,16 +36,16 @@ namespace rtt_dsxx {
 /*! \brief Wrapper for system dependent hostname call.
  *
  * Windows:
- *     HOST_NAME_MAX set to MAX_COMPUTERNAME_LENGTH in config.h
+ *     \c HOST_NAME_MAX set to \c MAX_COMPUTERNAME_LENGTH in config.h
  *
  * Catamount systems:
- *     HOST_NAME_MAX hard coded by CMake in config.h
+ *     \c HOST_NAME_MAX hard coded by CMake in config.h
  *
  * Unix/Linux:
- *     HOST_NAME_MAX loaded from <climit>
+ *     \c HOST_NAME_MAX loaded from \<climit\>
  *
  * Mac OSX:
- *     HOST_NAME_MAX set to _POSIX_HOST_NAME_MAX in config.h
+ *     \c HOST_NAME_MAX set to \c _POSIX_HOST_NAME_MAX in config.h
  */
 std::string draco_gethostname(void) {
 // Windows: gethostname from <winsock2.h>

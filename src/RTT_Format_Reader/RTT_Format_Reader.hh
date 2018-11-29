@@ -13,27 +13,24 @@
 
 #include "CellData.hh"
 #include "CellDataIDs.hh"
-#include "Cells.hh"
-#include "Dims.hh"
-#include "Flags.hh"
 #include "Header.hh"
 #include "NodeData.hh"
 #include "NodeDataIDs.hh"
 #include "SideData.hh"
 #include "SideDataIDs.hh"
-#include "Sides.hh"
 
 namespace rtt_RTT_Format_Reader {
+
 //===========================================================================//
-// class RTT_Format_Reader -
-//
 /*!
+ * class RTT_Format_Reader
+ *
  * \brief  A generalized input routine to parse an RTT Format mesh file.
  *
  *\sa The RTT_Format_Reader class constructor automatically instantiates and
  *    executes the readMesh member function used to parse the mesh data.
  *    Accessor functions are provided for all of the remaining member classes
- *    to allow data retrieval. The \ref rtt_mesh_reader_overview page presents
+ *    to allow data retrieval. The \ref overview_rtt_format_reader page presents
  *    a summary of the capabilities provided by the class.
  */
 //===========================================================================//
@@ -359,6 +356,7 @@ public:
   /*!
    * \brief Returns the side flag number associated with the specified side
    *        flag type and side flag index.
+   * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag number.
    */
@@ -378,6 +376,7 @@ public:
   /*!
    * \brief Returns the side flag name associated with the specified side flag
    *        index and side flag type.
+   * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag name.
    */

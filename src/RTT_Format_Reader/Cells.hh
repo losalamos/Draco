@@ -12,12 +12,7 @@
 
 #include "CellDefs.hh"
 #include "CellFlags.hh"
-#include "Dims.hh"
 #include "Nodes.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!

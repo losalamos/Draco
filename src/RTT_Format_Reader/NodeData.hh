@@ -11,13 +11,7 @@
 #ifndef __RTT_Format_Reader_NodeData_hh__
 #define __RTT_Format_Reader_NodeData_hh__
 
-#include "Dims.hh"
 #include "Nodes.hh"
-#include "ds++/Assert.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!

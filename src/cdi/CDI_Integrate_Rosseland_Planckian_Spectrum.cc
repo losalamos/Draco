@@ -18,14 +18,14 @@ namespace rtt_cdi {
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Integrate the Planckian and Rosseland spectrum over a frequency
+ *        range.
+ *
  * The arguments to this function must all be in consistent units. For example,
  * if low and high are expressed in keV, then the temperature must also be
  * expressed in keV. If low and high are in Hz and temperature is in K, then low
  * and high must first be multiplied by Planck's constant and temperature by
  * Boltzmann's constant before they are passed to this function.
- *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency
- *        range.
  *
  * \param low Lower limit of frequency range.
  * \param high Higher limit of frequency range.

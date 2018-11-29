@@ -46,6 +46,7 @@ if [[ ${STYLE} ]]; then
   # extract the TPL list from the Dockerfile
   export CLANG_FORMAT_VER="`grep \"ENV CLANG_FORMAT_VER\" regression/Dockerfile | sed -e 's/.*=//' | sed -e 's/\"//g'`"
   regression/check_style.sh -t
+
 else
   echo "checking build and test..."
 
@@ -102,10 +103,15 @@ else
   echo "========"
   run "cmake -DDRACO_C4=${DRACO_C4} ${SOURCE_DIR}"
   echo "========"
-  run "make -j 2"
-  echo "========"
-  # tstOMP_2 needs too many ppr (threads * cores) for Travis.
-  run "ctest -j 2 -E \(c4_tstOMP_2\|c4_tstTermination_Detector_2\) --output-on-failure"
+  if [[ "${AUTODOC}" == "ON" ]]; then
+    run "make autodoc"
+    echo "========"
+  else
+    run "make -j 2"
+    echo "========"
+    # tstOMP_2 needs too many ppr (threads * cores) for Travis.
+    run "ctest -j 2 -E \(c4_tstOMP_2\|c4_tstTermination_Detector_2\) --output-on-failure"
+  fi
   cd -
   if [[ ${COVERAGE} == "ON" ]]; then
     echo "========"

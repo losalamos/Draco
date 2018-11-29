@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/F12.cc
+ * \file   special_functions/F12.cc
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Implementation of F12
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "F12.hh"
@@ -27,7 +24,7 @@ namespace rtt_sf {
  * Astrophysical Flash Center.  This uses a rational function expansion to get
  * the fermi-dirac integral. Reference: antia apjs 84,101 1993
  * 
- * \param eta Dimensionless chemical potential \f$\eta\f$
+ * \param x Dimensionless chemical potential \f$\eta\f$
  *
  * \return Value of \f$F_{1/2}(\eta)\f$
  *

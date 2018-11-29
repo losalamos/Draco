@@ -5,10 +5,7 @@
  * \date   Fri Apr  6 13:59:06 2001
  * \brief  Header file for the cdi_eospac exception handler class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_eospac_EospacException_hh__
@@ -31,7 +28,7 @@ namespace rtt_cdi_eospac {
  * package an EospacException object is created and may be trapped 
  * by the calling routine by using a try/catch block.
  *
- * \example cdi_eospac/test/tEospac.cc
+ * \sa cdi_eospac/test/tEospac.cc
  *
  * This example demonstrates how the try/catch blocks may be used
  * to trap errors thrown by the cdi_eospac package.  They also
@@ -48,11 +45,6 @@ namespace rtt_cdi_eospac {
 //    http://www.cuj.com, March 2001.
 //    http://www.octopull.demon.co.uk/c++/dragons/
 // 3. Review Sutter, "Exceptional C++"
-
-// revision history:
-// -----------------
-// 0) original
-//
 //=======================================================================
 
 class EospacException : public std::logic_error {

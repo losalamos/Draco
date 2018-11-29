@@ -124,6 +124,7 @@ run "module list"
 run "module load friendly-testing"
 run "module load user_contrib"
 run "module load intel/18.0.2 openmpi/2.1.2"
+run "unset MPI_ROOT"
 run "module load trilinos/12.10.1 superlu-dist metis parmetis"
 run "module load cmake/3.12.1 ndi numdiff git"
 run "module load mkl random123 eospac/6.3.0"
@@ -157,6 +158,7 @@ for ep in $extra_params; do
       run "module list"
       run "module load user_contrib friendly-testing"
       run "module load gcc/6.1.0 openmpi/1.10.5"
+      run "unset MPI_ROOT"
       run "module load trilinos/12.8.1 superlu-dist metis parmetis"
       run "module load cmake/3.12.1 ndi numdiff git"
       run "module load random123 eospac/6.3.0 lapack/3.6.1"
@@ -172,6 +174,7 @@ for ep in $extra_params; do
       run "module list"
       run "module load user_contrib friendly-testing"
       run "module load gcc/6.4.0 openmpi/2.1.2 mkl"
+      run "unset MPI_ROOT"
       run "module load trilinos/12.10.1 superlu-dist metis parmetis"
       run "module load cmake/3.12.1 ndi numdiff git"
       run "module load random123 eospac/6.3.0"
@@ -187,6 +190,7 @@ for ep in $extra_params; do
       run "module list"
       run "module load user_contrib friendly-testing"
       run "module load intel/18.0.2 openmpi/2.1.2 mkl"
+      run "unset MPI_ROOT"
       run "module load superlu-dist metis parmetis"
       run "module load trilinos/12.10.1"
       run "module load cmake/3.12.1 ndi numdiff git"
@@ -286,6 +290,9 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == core; then
+    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%core/scripts%'`
+    script_name=Core_Linux64.cmake
 fi
 
 if ! [[ "${regress_mode}" == "on" ]]; then
