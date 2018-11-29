@@ -85,10 +85,10 @@ public:
    *      thermal_data/microphysics_parser.cc ->
    *      cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.cc -> Pseudo_Line_Base
    */
-  Pseudo_Line_Base(string const &cont_file, int number_of_lines,
-                   double line_peak, double line_width, int number_of_edges,
-                   double edge_ratio, double Tref, double Tpow, double emin,
-                   double emax, unsigned seed);
+  // Pseudo_Line_Base(string const &cont_file, int number_of_lines,
+  //                  double line_peak, double line_width, int number_of_edges,
+  //                  double edge_ratio, double Tref, double Tpow, double emin,
+  //                  double emax, unsigned seed);
 
   /*!
    * \brief Third constructor for Pseudo_Line_Base.
@@ -96,10 +96,10 @@ public:
    *      thermal_data/microphysics_parser.cc ->
    *      cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.cc -> Pseudo_Line_Base
    */
-  Pseudo_Line_Base(double nu0, double C, double Bn, double Bd, double R,
-                   int number_of_lines, double line_peak, double line_width,
-                   int number_of_edges, double edge_ratio, double Tref,
-                   double Tpow, double emin, double emax, unsigned seed);
+  // Pseudo_Line_Base(double nu0, double C, double Bn, double Bd, double R,
+  //                  int number_of_lines, double line_peak, double line_width,
+  //                  int number_of_edges, double edge_ratio, double Tref,
+  //                  double Tpow, double emin, double emax, unsigned seed);
 
   //! Constructor for packed state.
   explicit Pseudo_Line_Base(vector<char> const &packed);

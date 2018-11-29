@@ -310,71 +310,71 @@ public:
    * \param g_ reference density
    * \param h_ reference frequency
    *
-   * \bug no unit test exists.
+   * \bug Commented out because no unit test exists.
    */
-  Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
-                                             double d_, double e_ = 0,
-                                             double f_ = 1, double g_ = 1,
-                                             double h_ = 1)
-      : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_), g(g_), h(h_) {
-    /*...*/
-  }
+  // Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
+  //                                            double d_, double e_ = 0,
+  //                                            double f_ = 1, double g_ = 1,
+  //                                            double h_ = 1)
+  //   : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_), g(g_), h(h_) {
+  //   /*...*/
+  // }
 
   //! Constructor for packed state.
-  //! \bug no unit test exists.
-  explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed);
+  //! \bug Commented out because no unit test exists.
+  // explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed);
 
   //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double T, double rho, double nu0, double nu1) const {
-    using std::pow;
-    Require(T > 0.0);
-    Require(rho >= 0.0);
-    Require(nu1 > nu0);
-    Require(f > 0.0);
-    Require(g > 0.0);
-    Require(h > 0.0);
+  // double calculate_opacity(double T, double rho, double nu0, double nu1) const {
+  //   using std::pow;
+  //   Require(T > 0.0);
+  //   Require(rho >= 0.0);
+  //   Require(nu1 > nu0);
+  //   Require(f > 0.0);
+  //   Require(g > 0.0);
+  //   Require(h > 0.0);
 
-    //double nu = 0.5*(nu0+nu1);
-    double nu = sqrt(nu0 * nu1);
-    double opacity = (a + b * pow(T / f, c) * pow(nu / h, e) *
-                              (1 - exp(-(nu / h) / (T / f)))) *
-                     pow(rho / g, d);
+  //   //double nu = 0.5*(nu0+nu1);
+  //   double nu = sqrt(nu0 * nu1);
+  //   double opacity = (a + b * pow(T / f, c) * pow(nu / h, e) *
+  //                     (1 - exp(-(nu / h) / (T / f)))) *
+  //                    pow(rho / g, d);
 
-    Ensure(opacity >= 0.0);
-    return opacity;
-  }
-
-  //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double T, double rho, double nu) const {
-    using std::pow;
-    Require(T > 0.0);
-    Require(rho >= 0.0);
-    Require(nu >= 0.0);
-    Require(f > 0.0);
-    Require(g > 0.0);
-    Require(h > 0.0);
-
-    double opacity = (a + b * pow(T / f, c) * pow(nu / h, e) *
-                              (1 - exp(-(nu / h) / (T / f)))) *
-                     pow(rho / g, d);
-
-    Ensure(opacity >= 0.0);
-    return opacity;
-  }
+  //   Ensure(opacity >= 0.0);
+  //   return opacity;
+  // }
 
   //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double, double) const {
-    Insist(false, "Stimatulated emission opacity model needs a frequency.");
-    return -1.0;
-  }
+  // double calculate_opacity(double T, double rho, double nu) const {
+  //   using std::pow;
+  //   Require(T > 0.0);
+  //   Require(rho >= 0.0);
+  //   Require(nu >= 0.0);
+  //   Require(f > 0.0);
+  //   Require(g > 0.0);
+  //   Require(h > 0.0);
+
+  //   double opacity = (a + b * pow(T / f, c) * pow(nu / h, e) *
+  //                     (1 - exp(-(nu / h) / (T / f)))) *
+  //                    pow(rho / g, d);
+
+  //   Ensure(opacity >= 0.0);
+  //   return opacity;
+  // }
+
+  //! Calculate the opacity in units of cm^2/g
+  // double calculate_opacity(double, double) const {
+  //   Insist(false, "Stimatulated emission opacity model needs a frequency.");
+  //   return -1.0;
+  // }
 
   //! Return the model parameters.
-  //! \bug no unit test exists.
-  sf_double get_parameters() const;
+  //! \bug Commented out because no unit test exists.
+  // sf_double get_parameters() const;
 
   //! Pack up the class for persistence.
-  //! \bug no unit test exists.
-  sf_char pack() const;
+  //! \bug Commented out because no unit test exists.
+  // sf_char pack() const;
 };
 
 //===========================================================================//

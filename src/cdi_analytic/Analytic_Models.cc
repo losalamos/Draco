@@ -271,8 +271,9 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const {
 /*!
  * \brief Unpacking constructor for Stimulated_Emission_Analytic_Opacity_Model
  *        objects.
- * \bug   There are no unit tests for this function.
+ * \bug   There are no unit tests for this function, so commenting it out.
  */
+/*
 Stimulated_Emission_Analytic_Opacity_Model::
     Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed)
     : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0) {
@@ -299,6 +300,7 @@ Stimulated_Emission_Analytic_Opacity_Model::
 
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
+*/
 
 //---------------------------------------------------------------------------//
 /*!
@@ -306,6 +308,7 @@ Stimulated_Emission_Analytic_Opacity_Model::
  *        objects.
  * \bug   There are no unit tests for this function, so commenting it out.
  */
+/*
 Analytic_Opacity_Model::sf_char
 Stimulated_Emission_Analytic_Opacity_Model::pack() const {
   // get the registered indicator
@@ -341,6 +344,7 @@ Stimulated_Emission_Analytic_Opacity_Model::pack() const {
 
   return pdata;
 }
+*/
 
 //---------------------------------------------------------------------------//
 /*!
@@ -348,6 +352,7 @@ Stimulated_Emission_Analytic_Opacity_Model::pack() const {
  *        Stimulated_Emission_Analytic_Opacity_Model
  * \bug   There are no unit tests for this, so commenting it out.
  */
+/*
 Analytic_Opacity_Model::sf_double
 Stimulated_Emission_Analytic_Opacity_Model::get_parameters() const {
   sf_double p(8);
@@ -361,6 +366,7 @@ Stimulated_Emission_Analytic_Opacity_Model::get_parameters() const {
   p[7] = h;
   return p;
 }
+*/
 
 //===========================================================================//
 // POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL DEFINITIONS
@@ -395,8 +401,7 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+//! Packing function
 Analytic_Opacity_Model::sf_char
 Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   // get the registered indicator
@@ -432,7 +437,7 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
 }
 
 //---------------------------------------------------------------------------//
-// Return the model parameters
+//! Return the model parameters
 Analytic_EoS_Model::sf_double
 Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   sf_double p(6);
@@ -442,7 +447,6 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   p[3] = d;
   p[4] = e;
   p[5] = f;
-
   return p;
 }
 
