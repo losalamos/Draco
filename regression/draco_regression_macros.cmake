@@ -382,9 +382,6 @@ Parsing arguments
       # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot
       # parse output).
     endif()
-    if( $ENV{extra_params_sort_safe} MATCHES "nr" )
-      set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
-    endif()
     if( $ENV{extra_params_sort_safe} MATCHES "scalar" )
       set( DRACO_C4 "DRACO_C4:STRING=SCALAR" )
     elseif( $ENV{extra_params_sort_safe} MATCHES "static" )
