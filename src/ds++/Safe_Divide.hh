@@ -5,10 +5,7 @@
  * \date   Tue Jun 21 15:35:05 2005
  * \brief  Provide protected division functions.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef dsxx_Save_Divide_hh

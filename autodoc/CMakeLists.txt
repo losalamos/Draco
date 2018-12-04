@@ -68,8 +68,12 @@ add_custom_command(
           -DDOXYGEN_IMAGE_PATH=${DOXYGEN_IMAGE_PATH}
           -DDOXYGEN_HTML_DYNAMIC_MENUS="${DOXYGEN_HTML_DYNAMIC_MENUS}"
           -DDOXYGEN_WARN_AS_ERROR="${DOXYGEN_WARN_AS_ERROR}"
+          -DDOXYGEN_ENABLED_SECTIONS="${DOXYGEN_ENABLED_SECTIONS}"
+          -DDOXYGEN_INCLUDE_PATH="${DOXYGEN_INCLUDE_PATH}"
           -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
   DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
+          "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
+          "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/autodoc)
 
 # Create header.html, footer.html and doxygen.css.

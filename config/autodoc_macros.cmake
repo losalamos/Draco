@@ -78,6 +78,13 @@ function( set_doxygen_input )
   set( DOXYGEN_EXAMPLE_PATH "${temp}" PARENT_SCOPE)
   unset( temp )
 
+  if( ${DRACO_DBC_LEVEL} GREATER 0 )
+    set(DOXYGEN_ENABLED_SECTIONS "REMEMBER_ON" PARENT_SCOPE)
+  endif()
+
+  # Tell doxygen where Draco's include files are:
+  set( DOXYGEN_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/include" PARENT_SCOPE)
+
 endfunction()
 
 #------------------------------------------------------------------------------
@@ -115,7 +122,7 @@ function( set_doxygen_dot_num_threads )
   endif()
   # hack in a couple of other settings based on the version of doxygen
   # discovered.
-  if( ${DOXYGEN_VERSION} VERSION_GREATER_EQUAL 1.8.14 )
+  if( ${DOXYGEN_VERSION} VERSION_GREATER 1.8.14 )
     set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES"
       PARENT_SCOPE)
   endif()
@@ -139,14 +146,21 @@ endfunction()
 # - DOXYGEN_HTML_OUTPUT - The project name in all lowercase.
 #------------------------------------------------------------------------------
 macro( doxygen_provide_support_files )
-  configure_file(
-    "${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in"
-    "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
-    @ONLY )
-  configure_file(
-    "${PROJECT_SOURCE_DIR}/autodoc/html/header.html.in"
-    "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
-    @ONLY )
+
+  add_custom_command(
+    OUTPUT  "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
+    COMMAND "${CMAKE_COMMAND}"
+            -DINFILE="${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in"
+            -DOUTFILE="${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
+            -P "${draco_config_dir}/configureFileOnMake.cmake"
+    DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in" )
+  add_custom_command(
+    OUTPUT  "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
+    COMMAND "${CMAKE_COMMAND}"
+            -DINFILE="${PROJECT_SOURCE_DIR}/autodoc/html/header.html.in"
+            -DOUTFILE="${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
+            -P "${draco_config_dir}/configureFileOnMake.cmake"
+    DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/html/header.html.in" )
 
   if( EXISTS "${draco_config_dir}/doxygen.css" )
     # use Draco's version of the style sheet
@@ -176,7 +190,9 @@ function( set_doxygen_tagfiles )
   # Create links to Draco autodoc installation.
   unset( DRACO_TAG_FILE CACHE )
   find_file( DRACO_TAG_FILE Draco.tag
-    HINTS ${DOXYGEN_OUTPUT_DIR} )
+    HINTS
+      ${DOXYGEN_OUTPUT_DIR}
+      ${DOXYGEN_OUTPUT_DIR}/.. )
   get_filename_component( DRACO_AUTODOC_DIR ${DRACO_TAG_FILE} PATH )
   file( RELATIVE_PATH DRACO_AUTODOC_HTML_DIR
     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}
