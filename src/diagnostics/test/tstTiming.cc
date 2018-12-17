@@ -13,6 +13,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <iomanip>
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
