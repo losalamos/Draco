@@ -36,11 +36,11 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // open a small mg opacity file:
   const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a Compton object...\n" << std::endl;
-  std::shared_ptr<rtt_compton::Compton> compton_test;
+  std::unique_ptr<rtt_compton::Compton> compton_test;
 
   try {
     compton_test.reset(new rtt_compton::Compton(filename));
-  } catch (int asrt) {
+  } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
@@ -140,11 +140,11 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a const Compton object...\n"
             << std::endl;
-  std::shared_ptr<const rtt_compton::Compton> compton_test;
+  std::unique_ptr<const rtt_compton::Compton> compton_test;
 
   try {
     compton_test.reset(new const rtt_compton::Compton(filename));
-  } catch (int asrt) {
+  } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
@@ -268,7 +268,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     compton_test.reset(new rtt_compton::Compton(
         filename, test_groups, opac_type, wt_func, induced, det_bal, nxi));
     std::cout << "\n\n";
-  } catch (rtt_dsxx::assertion &asrt) {
+  } catch (rtt_dsxx::assertion & /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
@@ -358,7 +358,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
   // open a small mg opacity file:
   std::string filename = ut.getTestSourcePath() + "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
-  std::shared_ptr<rtt_compton::Compton> compton_test;
+  std::unique_ptr<rtt_compton::Compton> compton_test;
 
   bool caught = false;
   try {
@@ -367,7 +367,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
     caught = true;
-  } catch (const int &asrt) {
+  } catch (const int & /*asrt*/) {
     std::cout << "CSK exception thrown. " << std::endl;
     // We successfully caught the bad file!
     caught = true;
@@ -382,6 +382,84 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Did not successfully catch a CSK_generator exception.");
   }
 }
+
+//----------------------------------------------------------------------------//
+//!  Tests Comptohn interface to LLNL-style Compton data.
+void llnl_compton_test(rtt_dsxx::UnitTest &ut) {
+  // Start the test.s
+  std::cout << "\n---------------------------------------------------------\n"
+            << " Test Draco calling CSK_generator LLNL-style routines \n"
+            << "---------------------------------------------------------\n";
+
+  const std::string filename = ut.getTestSourcePath() + "llnl_ascii.compton";
+  const bool llnl_style = true;
+  std::cout << "Attempting to construct a Compton object...\n" << std::endl;
+  std::unique_ptr<rtt_compton::Compton> compton_test;
+  try {
+    compton_test.reset(new rtt_compton::Compton(filename, llnl_style));
+  } catch (int /*asrt*/) {
+    FAILMSG("Failed to construct an LLNL-style Compton object!");
+    // if construction fails, there is no reason to continue testing...
+    return;
+  }
+  std::cout << "\n(...Success!)" << std::endl;
+
+  // Test the two sets of interpolators, and make sure they match.
+
+  // Use temperatures that are very close to the library eval points:
+  const std::vector<double> cell_temps = {1.50001, 2.49999};
+  // Ensure densities are unit; these are only folded into the evaluations when
+  // the data is pre-interpolated (not in the on-the-fly case)
+  const std::vector<double> cell_dens = {1.0, 1.0};
+
+  compton_test->interpolate_precycle(cell_temps, cell_dens);
+
+  const std::vector<double> test_freq = {12.4233, 183.43};
+
+  // reference sol'n for erec:
+  const std::vector<double> ref_sigc = {1.91083e-01, 1.25551e-01, 1.91042e-01,
+                                        1.25395e-01};
+  const std::vector<double> ref_erec = {-1.22843e-02, -2.00713e-01,
+                                        -5.00821e-03, -1.974413e-01};
+
+  double otf_sigcval;
+  double otf_erecval;
+  double pre_sigcval;
+  double pre_erecval;
+
+  size_t i = 0;
+  for (size_t k = 0; k < cell_temps.size(); k++) {
+    for (size_t j = 0; j < test_freq.size(); j++) {
+      // sigma_compton value:
+      otf_sigcval = compton_test->interpolate_sigc(cell_temps[k], test_freq[j]);
+      pre_sigcval = compton_test->interpolate_cell_sigc(static_cast<int64_t>(k),
+                                                        test_freq[j]);
+
+      // expected relative energy change value:
+      otf_erecval = compton_test->interpolate_erec(cell_temps[k], test_freq[j]);
+      pre_erecval = compton_test->interpolate_cell_erec(static_cast<int64_t>(k),
+                                                        test_freq[j]);
+
+      // compare the values to each other for consistency:
+      FAIL_IF_NOT(soft_equiv(otf_sigcval, pre_sigcval));
+      FAIL_IF_NOT(soft_equiv(otf_erecval, pre_erecval));
+
+      // compare the values to the expected answer for accuracy:
+      // (use a loose tolerance, because our points are close -- but not
+      // equal to -- the evaluation points in the library)
+      FAIL_IF_NOT(soft_equiv(otf_erecval, ref_erec[i], 1.0e-4));
+      FAIL_IF_NOT(soft_equiv(otf_sigcval, ref_sigc[i], 1.0e-4));
+
+      i++;
+    }
+  }
+
+  if (ut.numFails == 0) {
+    PASSMSG("Successfully read an LLNL-style CSK library.");
+  } else {
+    FAILMSG("Did not successfully read an LLNL-style CSK library.");
+  }
+}
 } // namespace rtt_compton_test
 
 //----------------------------------------------------------------------------//
@@ -393,6 +471,7 @@ int main(int argc, char *argv[]) {
     rtt_compton_test::const_compton_file_test(ut);
     rtt_compton_test::compton_build_test(ut);
     rtt_compton_test::compton_fail_test(ut);
+    rtt_compton_test::llnl_compton_test(ut);
   }
   UT_EPILOG(ut);
 }

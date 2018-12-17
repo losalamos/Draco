@@ -58,17 +58,24 @@ class Compton {
 
 private:
   //! Shared pointer to an electron interpolation object:
-  std::shared_ptr<etemp_interp> ei;
+  std::unique_ptr<etemp_interp> ei;
+
+  //! Shared pointer to an llnl interpolation object:
+  std::unique_ptr<llnl_interp> llnli;
 
 public:
   //! Constructor for an existing multigroup library
-  explicit Compton(const std::string &filehandle);
+  explicit Compton(const std::string &filehandle,
+                   const bool llnl_style = false);
 
   //! Constructor to build a multigroup library from an existing pointwise file
   Compton(const std::string &file, const std::vector<double> &group_bounds,
           const std::string &opac_type, const std::string &wt_func,
           const bool induced, const bool det_bal = false,
           const size_t n_xi = 0);
+
+  //! Dtor - defined in .cc file to prevent incomplete_type issues
+  ~Compton();
 
   //! Interpolation of all csk opacity data to a certain electron temperature:
   std::vector<std::vector<std::vector<std::vector<double>>>>
@@ -78,9 +85,25 @@ public:
   std::vector<std::vector<double>>
   interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
 
+  //! Versions for use with on-the-fly temperature interpolation:
+  //! Interpolate (E)xpected (R)elative (E)nergy (C)hange:
+  double interpolate_erec(const double Tm, const double freq) const;
+  //! Interpolation total sigma_s for a given temperature and freq:
+  double interpolate_sigc(const double Tm, const double freq) const;
+
+  //! Versions for use with already-interped-in-etemp data:
+  //! Interpolate (E)xpected (R)elative (E)nergy (C)hange:
+  double interpolate_cell_erec(const int64_t cell, const double freq) const;
+  //! Interpolate total sigma_s for a given cell index and freq:
+  double interpolate_cell_sigc(const int64_t cell, const double freq) const;
+
+  //! Interpolate all CSK data in temperature (stored in CSK for each cell):
+  void interpolate_precycle(const std::vector<double> &Tms,
+                            const std::vector<double> &dens) const;
+
   //! Retrieve group structure for the given library (in kev):
   std::vector<double> get_group_bounds() const {
-    return ei->get_Cdata()->get_group_bds_kev();
+    return ei->get_group_bds_kev();
   }
 
   //! Retrieve min electron temperature for the given library:
@@ -90,10 +113,10 @@ public:
   double get_max_etemp() const { return ei->get_max_etemp(); }
 
   //! Retrieve number of groups in the given multigroup structure:
-  size_t get_num_groups() const { return ei->get_Cdata()->get_n_grps(); }
+  size_t get_num_groups() const { return ei->get_n_grps(); }
 
   //! Retrieve number of angular moments/evaluation points in the lib data:
-  size_t get_num_xi() const { return ei->get_Cdata()->get_n_xi_pts(); }
+  size_t get_num_xi() const { return ei->get_n_xi_pts(); }
 
   //! Retrieve electron temperature eval points (diagnostic use)
   std::vector<double> get_etemp_pts() const { return ei->get_etemp_pts(); }

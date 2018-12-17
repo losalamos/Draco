@@ -681,6 +681,7 @@ macro( SetupVendorLibrariesWindows )
   setupGSL()
   setupParMETIS()
   setupRandom123()
+  setupCOMPTON()
   setupPython()
   setupQt()
 

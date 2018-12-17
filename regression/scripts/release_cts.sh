@@ -5,10 +5,10 @@
 ##---------------------------------------------------------------------------##
 ## 1. Directory layout:
 ##    /usr/projects/draco/draco-NN_NN_NN/
-##                  scripts/release_darwin.sh # this script
-##                  logs/                     # build/test logs
-##                  source/                   # svn checkout of release branch
-##                  flavor/opt|debug          # released libraries/headers
+##                  scripts/release_toss.sh # this script
+##                  logs/                    # build/test logs
+##                  source/draco-NN_NN_NN    # svn checkout of release branch
+##                  flavor/opt|debug         # released libraries/headers
 ## 2. Assumes that this script lives at the location above when
 ##    executed.
 
@@ -18,8 +18,7 @@
 ## 1. Set modulefiles to be loaded in named environment functions.
 ## 2. Update variables that control the build:
 ##    - $ddir
-##    - $CONFIG_BASE
-## 3. Run this script: ./release_darwin.sh &> ../logs/release_darwin.log
+## 3. Run this script: ./release_toss.sh &> ../logs/relase_snow.log
 
 #----------------------------------------------------------------------#
 # Per release settings go here (edits go here)
@@ -27,35 +26,12 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_18_0
+ddir=draco-7_0_0
 pdir=$ddir
 
-# CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDraco_VERSION_PATCH=0 -DUSE_CUDA=OFF"
-
-# environment (use draco modules)
-# release for each module set
-environments="intel15env"
-function intel14env()
-{
-  run "module purge"
-  run "module use --append /usr/projects/draco/vendors/Modules"
-  run "module load cmake/3.3.2 numdiff/5.2.1 python/2.7.3"
-  run "module load compilers/intel/14.0.2 mpi/openmpi-1.6.5-intel_14.0.2"
-  run "module load random123 eospac/6.2.4"
-  run "module list"
-  export MPIEXEC_EXECUTABLE=${MPIRUN}
-}
-function intel15env()
-{
-  run "module purge"
-  run "module use --append /usr/projects/draco/vendors/Modules"
-  run "module load cmake/3.4.0 numdiff/5.8.1"
-  run "module load intel/15.0.3 openmpi/1.6.5-intel_15.0.3"
-  run "module load random123 eospac/6.2.4"
-  run "module list"
-  export MPIEXEC_EXECUTABLE=${MPIRUN}
-}
+# release for each environment listed
+# These are defined in cts-env.sh
+environments="intel1802env"
 
 # ============================================================================
 # ====== Normally, you do not edit anything below this line ==================
@@ -64,39 +40,69 @@ function intel15env()
 ##---------------------------------------------------------------------------##
 ## Generic setup (do not edit)
 ##---------------------------------------------------------------------------##
-initial_working_dir=`pwd`
-cd `dirname $0`
-export script_dir=`pwd`
-export draco_script_dir=$script_dir
-cd $initial_working_dir
+
+export script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export draco_script_dir=`readlink -f $script_dir`
 source $draco_script_dir/common.sh
+
+# CMake options that will be included in the configuration step
+CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
+export CONFIG_BASE
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
 establish_permissions
 
 export source_prefix="/usr/projects/$package/$pdir"
+(cd /usr/projects/$package; rm latest; ln -s $pdir latest)
 scratchdir=`selectscratchdir`
+
+# ppn=`showstats -n | tail -n 1 | awk '{print $3}'`
+#build_pe=`npes_build`
+#test_pe=`npes_test`
+
+# SLURM
+avail_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\|.*access.*\)|.*/\1/' | sed -e 's/|.*//'`
+
+case $avail_queues in
+  *access*) access_queue="-A access --qos=access" ;;
+  *dev*) access_queue="--qos=dev" ;;
+esac
+
+# Make sure there is enough tmp space for the compiler's temporary files.
+export TMPDIR=/$scratchdir/$USER/tmp
+if ! test -d $TMPDIR; then
+  mkdir -p $TMPDIR
+fi
+if ! test -d $TMPDIR; then
+  echo "Could not create TMPDIR=$TMPDIR."
+  exit 1
+fi
 
 # =============================================================================
 # Build types:
-# - These must be copied into release_darwin.msub because bash arrays cannot
+# - These must be copied into release_toss.msub because bash arrays cannot
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  "
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_DBC_LEVEL=15"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
     "$OPTIMIZE_OFF $LOGGING_OFF" \
     "$OPTIMIZE_ON $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
+#VERSIONS=( "debug")
+#OPTIONS=( "$OPTIMIZE_OFF $LOGGING_OFF" )
 
 ##---------------------------------------------------------------------------##
 ## Environment review
@@ -110,6 +116,7 @@ if test $verbose == 1; then
   echo "script_dir     = $script_dir"
   echo "source_prefix  = $source_prefix"
   echo "log_dir        = $source_prefix/logs"
+  echo "scratchdir     = $scratchdir/$USER"
   echo
   echo "package     = $package"
   echo "versions:"
@@ -123,6 +130,8 @@ fi
 ## Execute the build, test and install
 ##---------------------------------------------------------------------------##
 
+source $draco_script_dir/cts-env.sh
+
 jobids=""
 for env in $environments; do
 
@@ -133,7 +142,7 @@ for env in $environments; do
   $env
 
   buildflavor=`flavor`
-  # e.g.: buildflavor=darwin-openmpi-1.6.5-intel-15.0.3
+  # e.g.: buildflavor=snow-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
@@ -147,12 +156,10 @@ for env in $environments; do
     export CONFIG_EXTRA="$CONFIG_BASE"
 
     # export dry_run=1
-    # https://darwin.lanl.gov/darwin_hw/report.html
     export steps="config build test"
-    cmd="/usr/bin/sbatch -v -N 1 -p sl230s -t 360 \
+    cmd="sbatch -J release_draco $access_queue -t 1:00:00 -N 1 \
 -o $source_prefix/logs/release-$buildflavor-$version.log \
--e $source_prefix/logs/release-$buildflavor-$version.log \
-$script_dir/release_darwin.msub"
+$script_dir/release.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
     jobid=`eval ${cmd} &`
@@ -160,8 +167,6 @@ $script_dir/release_darwin.msub"
     # trim extra whitespace from number
     jobid=`echo ${jobid//[^0-9]/}`
     export jobids="$jobid $jobids"
-
-    # export dry_run=0
 
   done
 done

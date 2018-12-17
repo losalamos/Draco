@@ -156,8 +156,8 @@ private:
   std::vector<std::vector<double>>
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
-  //! Calculate the cell-to-cell linkage (layout)
   // \todo: add layout class and complete temporary version of this function.
+  //! Calculate the cell-to-cell linkage (layout)
   void compute_cell_to_cell_linkage(
       const std::vector<unsigned> &cell_type,
       const std::vector<unsigned> &cell_to_node_linkage,

@@ -16,15 +16,17 @@ set(draco_config_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 function( set_autodocdir )
   # if AUTODOCDIR is set in environment (or make command line), create a CMake
   # variable with this value.
-  if( ENV{AUTODOCDIR} )
+  if( DEFINED ENV{AUTODOCDIR} )
     set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
   endif()
   # if AUTODOCDIR is set, use it, otherwise, default to CMAKE_INSTALL_PREFIX.
-  if( AUTODOCDIR )
+  if( DEFINED AUTODOCDIR )
     set( DOXYGEN_OUTPUT_DIR "${AUTODOCDIR}" PARENT_SCOPE)
   else()
     set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc PARENT_SCOPE)
   endif()
+
+  message(STATUS "Using autodoc directory ${AUTODOCDIR}")
 
 endfunction()
 

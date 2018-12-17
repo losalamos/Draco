@@ -221,6 +221,7 @@ for ep in $extra_params; do
   esac
 done
 run "module list"
+unset MPI_ROOT
 
 # Use a unique regression folder for each github branch
 if [[ $extra_params_sort_safe ]]; then

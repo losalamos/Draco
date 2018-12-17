@@ -19,7 +19,7 @@ namespace rtt_mesh {
  * \brief Generate a map from a block in an x3d file
  *
  * \param[in] block_name name of parsed x3d block
- * \param[in] dist help me
+ * \param[in] dist number of string-pairs to skip when looking for an x3d block
  *
  * \return map of mesh data with key of type KT and value of type VT
  */

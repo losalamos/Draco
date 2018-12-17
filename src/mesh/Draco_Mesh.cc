@@ -144,8 +144,8 @@ std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
  * \param[in] cell_to_node_linkage serial map of cell index to node indices.
  * \param[in] side_node_count number of verices per side.
  * \param[in] side_to_node_linkage serial map of side index to node indices.
- * \param[in] ghost_cell_type help me
- * \param[in] ghost_cell_to_node_linkage help me
+ * \param[in] ghost_cell_type  number of common vertices per ghost cell.
+ * \param[in] ghost_cell_to_node_linkage vertices in common per ghost cell.
  */
 void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_type,
@@ -193,27 +193,22 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
     // create a vector of all possible node pairs
     unsigned nper_cell = cell_type[cell];
-    unsigned num_pairs = nper_cell * (nper_cell - 1) / 2;
-    std::vector<std::vector<unsigned>> vec_node_vec(num_pairs,
+    std::vector<std::vector<unsigned>> vec_node_vec(nper_cell,
                                                     std::vector<unsigned>(2));
     // \todo: change type of vec_node_vec?
-    unsigned k = 0;
+    // this assumes counter-clockwise cell-node linkage
     for (unsigned i = 0; i < nper_cell; ++i) {
-      for (unsigned j = i + 1; j < nper_cell; ++j) {
 
-        // set kth pair entry to the size 2 vector of nodes
-        vec_node_vec[k] = {cell_to_node_linkage[node_offset + i],
-                           cell_to_node_linkage[node_offset + j]};
+      // next cell-local node
+      const unsigned j = (i + 1) % nper_cell;
 
-        // increment k
-        k++;
-      }
+      // set ith pair entry to the size 2 vector of nodes
+      vec_node_vec[i] = {cell_to_node_linkage[node_offset + i],
+                         cell_to_node_linkage[node_offset + j]};
     }
 
-    Check(k == num_pairs);
-
     // check if each pair constitutes a face
-    for (unsigned l = 0; l < num_pairs; ++l) {
+    for (unsigned l = 0; l < nper_cell; ++l) {
 
       // get adjacent cells from node-to-cell map
       // \todo: add DbC to ensure these are sorted
