@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:06 2000
  * \brief  CDI class header file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -590,6 +590,14 @@ public:
                                     std::vector<double> const &planckSpectrum,
                                     std::vector<double> &emission_group_cdf);
 
+  //! Collapse Multigroup data to single-interval data with Planck weighting
+  // (without setting the emission CDF)
+  static double
+  collapseMultigroupOpacitiesPlanck(std::vector<double> const &groupBounds,
+                                    // double              const & T,
+                                    std::vector<double> const &opacity,
+                                    std::vector<double> const &planckSpectrum);
+
   /*!
    * \brief Collapse Multigroup data to single-interval reciprocal data with
    *        Planck weighting.
@@ -696,6 +704,11 @@ public:
                                            double const T,
                                            std::vector<double> &planck);
 
+  //! Integrate the Planckian over all frequency groups and return vector
+  static std::vector<double>
+  integrate_Planckian_Spectrum(std::vector<double> const &bounds,
+                               double const T);
+
   //! Integrate the Rosseland over all frequency groups
   static void integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
                                            double const T,
@@ -731,7 +744,7 @@ double CDI::integrate_planck(double const scaled_freq) {
  *        (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq upper integration limit, scaled by the temperature.
- * \param exp_scaled_freq upper integration limit, scaled by an exponential 
+ * \param exp_scaled_freq upper integration limit, scaled by an exponential
  *           function.
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
@@ -772,7 +785,7 @@ double CDI::integrate_planck(double const scaled_freq,
  *         \f$ x (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq frequency upper integration limit scaled by temperature
- * \param exp_scaled_freq upper integration limit, scaled by an exponential 
+ * \param exp_scaled_freq upper integration limit, scaled by an exponential
  *           function.
  * \param planck Variable to return the Planck integral
  * \param rosseland Variable to return the Rosseland integral

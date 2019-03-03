@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Nov 2
 # brief  Install the config directory in the target directory
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)

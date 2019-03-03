@@ -125,7 +125,7 @@ echo " "
 patchfile_c=$(mktemp /tmp/gcf.patch.XXXXXXXX)
 
 # don't actually modify the files (compare to branch 'develop')
-cmd="${gcf} --binary ${cf} -f --diff --extensions hh,cc develop"
+cmd="${gcf} --binary ${cf} -f --diff --extensions hh,cc,cu develop"
 run "${cmd}" &> $patchfile_c
 
 # if the patch file has the string "no modified files to format", the check

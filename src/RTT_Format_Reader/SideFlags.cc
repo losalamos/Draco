@@ -4,7 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideFlags class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

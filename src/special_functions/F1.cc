@@ -3,7 +3,7 @@
  * \file   special_functions/F1.cc
  * \author Kent Budge
  * \brief  Implementation of F1
- * \note   Copyright (C) 2016-2018 Los Alamos National Security,
+ * \note   Copyright (C) 2016-2019 Triad National Security,
 *          All rights reserved. */
 //---------------------------------------------------------------------------//
 

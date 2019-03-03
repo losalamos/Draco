@@ -3,7 +3,7 @@
  * \file   <pkg>/<class>.hh
  * \author <user>
  * \brief  Define class <class>
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 

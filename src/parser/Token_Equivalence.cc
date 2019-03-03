@@ -4,7 +4,7 @@
  * \author Kelly G. Thompson
  * \date Thu Jul 20 9:27:29 MST 2006
  * \brief Provide services for ApplicationUnitTest framework.
- * \note Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note Copyright (C) 2016-2019 Triad National Security, LLC
  */
 //---------------------------------------------------------------------------//
 

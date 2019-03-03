@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:01:37 2005
  * \brief  Implemention for Norms_Base class.
- * \note   Copyright (C) 2005-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

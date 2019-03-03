@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2000-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

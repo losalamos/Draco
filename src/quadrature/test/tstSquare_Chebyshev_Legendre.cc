@@ -3,7 +3,7 @@
  * \file   quadrature/test/tstTri_Chebyshev_Legendre.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -3,7 +3,7 @@
  * \file   ds++/test/tstSafe_Divide.cc
  * \author Mike Buksas
  * \date   Tue Jun 21 16:02:52 2005
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 

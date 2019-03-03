@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   CTestCustom.cmake
 # brief  Custom configuration for CTest/CDash.
-# note   Copyright (C) 2016-2018 Los Alamos National Laboratory, LLC.
+# note   Copyright (C) 2016-2019 Los Alamos National Laboratory, LLC.
 #        All rights reserved
 #------------------------------------------------------------------------------#
 

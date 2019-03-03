@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Monday, Aug 11, 2016, 17:05 pm
  * \brief  Main program for Gui version of draco info.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

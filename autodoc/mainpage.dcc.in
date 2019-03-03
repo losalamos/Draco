@@ -36,7 +36,7 @@ section of the documentation. Also see:
 
 \par Copyright
 
-\include @PROJECT_SOURCE_DIR@/Copyright
+\include @PROJECT_SOURCE_DIR@/LICENSE.md
 
 */
 

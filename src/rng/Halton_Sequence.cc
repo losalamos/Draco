@@ -3,7 +3,7 @@
  * \file   rng/Halton_Sequence.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
- * \note   Copyright (C) 2016-2018 Los Alamos National Laboratory,
+ * \note   Copyright (C) 2016-2019 Los Alamos National Laboratory,
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -997,7 +997,8 @@ Halton_Sequence::Halton_Sequence(unsigned const base_index,
     : base_(prime[base_index]), count_(initial_count - 1),
       value_(0.5), // to ensure good behavior on first, unused, call to shift().
       n_() {
-  Require(base_index < NUMBER_OF_KNOWN_PRIMES);
+  Insist(base_index < NUMBER_OF_KNOWN_PRIMES,
+         "base_index > NUMBER_OF_KNOWN_PRIMES");
   Require(initial_count > 0);
 
   // Decompose the count into the selected base.

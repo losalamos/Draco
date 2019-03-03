@@ -3,7 +3,7 @@
  * \file   c4/test/tstglobal_containers.cc
  * \author Kent Budge
  * \date   Mon Mar 24 09:41:04 2008
- * \note   Copyright (C) 2008-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2008-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

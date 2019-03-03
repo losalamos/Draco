@@ -4,12 +4,11 @@ Assumptions:
 
 1. Directory layout:
    /usr/projects/draco/draco-NN_NN_NN/
-                 scripts/release_toss2.sh # this script
+                 scripts/release_cts.sh   # the main release script
                  logs/                    # build/test logs
-                 source/draco-NN_NN_NN    # svn checkout of release branch
-                 flavor/opt|debug         # released libraries/headers
-2. Assumes that this script lives at the location above when
-   executed.
+                 source                   # git checkout of release branch
+                 flavor/opt|debug|rwdi    # released libraries/headers
+2. Assumes that this script lives at the location above when executed.
 
 Usage:
 
@@ -18,9 +17,11 @@ Usage:
    mkdir draco-NN_NN_NN
    cd draco-NN_NN_NN
    mkdir logs
-   svn co svn+ssh://ccscs7/ccs/codes/radtran/svn/draco/tags/draco-NN_NN_NN source
-   svn co svn+ssh://ccscs7/ccs/codes/radtran/svn/draco/tags/draco-NN_NN_NN/regression/scripts
-2. Select release configurations and special options
-   Update release_*.sh scripts to setup modulefiles and configure modes.
-3. Build and test the release
-   scripts/release_toss.sh &> logs/release_snow.log &
+   git clone git@github.com:lanl/Draco.git source
+   ln -s source/regression/scripts
+   cd source && git checkout -b draco-NN_NN_NN origin/draco-NN_NN_NN
+2. Select release version, directories, configuration and special options in scripts/release-*.sh
+3. Update scripts/*-env.sh scripts to setup modulefiles and configure modes.
+4. Build and test the release
+   scripts/release_cts.sh &> logs/release_snow.log &
+5. Monitor progress as log files are created in the logs directory.

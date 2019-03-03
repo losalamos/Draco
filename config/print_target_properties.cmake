@@ -4,7 +4,7 @@
 # brief  Use these tools for debugging cmake code.  Calling
 #        print_targets_properties( <target> ) will print all data associated
 #        with the named target.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved
 #
 # Ref: Original idea taken from  http://www.kitware.com/blog/home/post/390

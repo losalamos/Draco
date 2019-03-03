@@ -4,7 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Thursday, Jun 07, 2018, 15:38 pm
  * \brief  Draco_Mesh class header file.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -156,8 +156,8 @@ private:
   std::vector<std::vector<double>>
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
-  //! Calculate the cell-to-cell linkage (layout)
   // \todo: add layout class and complete temporary version of this function.
+  //! Calculate the cell-to-cell linkage (layout)
   void compute_cell_to_cell_linkage(
       const std::vector<unsigned> &cell_type,
       const std::vector<unsigned> &cell_to_node_linkage,

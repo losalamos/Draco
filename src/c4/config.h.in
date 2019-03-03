@@ -3,7 +3,7 @@
  * Thomas M. Evans
  * Fri Jan  8 14:54:44 1999
  * Defines necessary for the C4 package
- * Copyright (C) 2016-2018 Los Alamos National Security, all rights reserved. */
+ * Copyright (C) 2016-2019 Triad National Security, all rights reserved. */
 /*---------------------------------------------------------------------------*/
 
 #ifndef rtt_c4_config_h

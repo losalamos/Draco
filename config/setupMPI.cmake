@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -306,13 +306,13 @@ macro( setupMPILibrariesUnix )
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIRUN} )
         set( MPIEXEC_EXECUTABLE $ENV{MPIRUN} CACHE STRING
-          "Program to execute MPI prallel programs." )
+          "Program to execute MPI parallel programs." )
       elseif( DEFINED ENV{MPIEXEC_EXECUTABLE} )
         set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC_EXECUTABLE} CACHE STRING
-          "Program to execute MPI prallel programs." )
+          "Program to execute MPI parallel programs." )
       elseif( DEFINED ENV{MPIEXEC} )
         set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC} CACHE STRING
-          "Program to execute MPI prallel programs." )
+          "Program to execute MPI parallel programs." )
       endif()
 
       # If this is a Cray system and the Cray MPI compile wrappers are used,
@@ -468,13 +468,27 @@ macro( setupMPILibrariesWindows )
 
       message(STATUS "Looking for MPI...")
       find_package( MPI QUIET )
+      
+      # If this macro is called from a MinGW builds system (for a CAFS 
+      # subdirectory) and is trying to MS-MPI, the above check will fail (when 
+      # cmake > 3.12). However, MS-MPI is known to be good when linking with 
+      # Visual Studio so override the 'failed' report.
+      if(
+#       NOT "${MPI_C_FOUND}" AND "${Draco_MPI_C_WORKS}" AND
+          "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
+          "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
+        if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
+          set( MPI_C_FOUND TRUE )          
+          set( MPI_Fortran_FOUND TRUE )
+        endif()
+      endif()
 
-      # For MS-MPI, mpifptr.h is architecture dependent. Figure out
-      # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH
-      list( GET MPI_CXX_LIBRARIES 0 first_cxx_mpi_library )
-      if( first_cxx_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
+      # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch
+      # this is and save this path to MPI_Fortran_INCLUDE_PATH
+      list( GET MPI_C_LIBRARIES 0 first_c_mpi_library )
+      if( first_c_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
         get_filename_component( MPI_Fortran_INCLUDE_PATH
-          "${first_cxx_mpi_library}" DIRECTORY )
+          "${first_c_mpi_library}" DIRECTORY )
         string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH
           ${MPI_Fortran_INCLUDE_PATH} )
         set( MPI_Fortran_INCLUDE_PATH
@@ -638,7 +652,7 @@ macro( setupMPILibrariesWindows )
    endif()
 
    if( ${MPI_C_FOUND} )
-      message(STATUS "Looking for MPI...${MPIEXEC_EXECUTABLE}")
+      message(STATUS "Looking for MPI...found${MPIEXEC_EXECUTABLE}")
    else()
       message(STATUS "Looking for MPI...not found")
    endif()

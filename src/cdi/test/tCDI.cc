@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:52:01 2001
  * \brief  CDI test executable.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -707,6 +707,12 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
     double const T_eval = 1.0e-300;
     std::vector<double> planck;
     CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+
+    // make sure the alternate calling method returns the same values
+    auto planck_alt = CDI::integrate_Planckian_Spectrum(bounds, T_eval);
+
+    if (planck_alt != planck)
+      ITFAILS;
     if (!soft_equiv(planck[0], 0.0, tol))
       ITFAILS;
   }
@@ -717,6 +723,10 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
     double const T_eval = 1.0e-308;
     std::vector<double> planck;
     CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    // make sure the alternate calling method returns the same values
+    auto planck_alt = CDI::integrate_Planckian_Spectrum(bounds, T_eval);
+    if (planck_alt != planck)
+      ITFAILS;
     if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
       ITFAILS;
   }
@@ -727,6 +737,10 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
     double const T_eval = 1.0e-308;
     std::vector<double> planck;
     CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    // make sure the alternate calling method returns the same values
+    auto planck_alt = CDI::integrate_Planckian_Spectrum(bounds, T_eval);
+    if (planck_alt != planck)
+      ITFAILS;
     if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
       ITFAILS;
   }
@@ -808,6 +822,8 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
   std::vector<double> planck;
 
   CDI::integrate_Planckian_Spectrum(group_bounds, 1.0, planck);
+  // make sure the alternate calling method returns the same values
+  auto planck_alt = CDI::integrate_Planckian_Spectrum(group_bounds, 1.0);
 
   for (int group_index = 1; group_index <= 3; ++group_index) {
 
@@ -816,9 +832,13 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
     if (!soft_equiv(planck[group_index - 1], planck_g))
       ITFAILS;
   }
+  if (planck_alt != planck)
+    ITFAILS;
 
   // Test zero temperature special case
   CDI::integrate_Planckian_Spectrum(group_bounds, 0.0, planck);
+  // make sure the alternate calling method returns the same values
+  auto planck_alt_zero = CDI::integrate_Planckian_Spectrum(group_bounds, 0.0);
 
   for (int group_index = 1; group_index <= 3; ++group_index) {
 
@@ -827,6 +847,8 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
     if (!soft_equiv(planck[group_index - 1], planck_g))
       ITFAILS;
   }
+  if (planck_alt_zero == planck)
+    ITFAILS;
 
   if (ut.numFails == 0)
     PASSMSG("Group-wise and Full spectrum Planckian and Rosseland integrals "
@@ -1196,12 +1218,18 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
+    // Make sure you get the same answer with the version that doesn't
+    // calculate emission CDF
+    double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
+        bounds, mgOpacities, planck_spectrum);
     double const opacity_pl_recip =
         CDI::collapseMultigroupReciprocalOpacitiesPlanck(bounds, mgOpacities,
                                                          planck_spectrum);
     double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
         bounds, mgOpacities, rosseland_spectrum);
 
+    if (!soft_equiv(opacity_pl, opacity_pl_alt, 1.0e-12))
+      ITFAILS;
     if (!soft_equiv(opacity_pl, opacity_pl_ref))
       ITFAILS;
     if (!soft_equiv(opacity_pl_recip, opacity_pl_recip_ref))
@@ -1234,6 +1262,11 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
+    // Make sure you get the same answer with the version that doesn't
+    // calculate emission CDF
+    double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
+        bounds, mgOpacities, planck_spectrum);
+
     double const opacity_pl_recip =
         CDI::collapseMultigroupReciprocalOpacitiesPlanck(bounds, mgOpacities,
                                                          planck_spectrum);
@@ -1250,6 +1283,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     double const opacity_pl_recip_ref(8.80345577340399);
     double const opacity_ross_ref(0.0778314764921229);
 
+    if (!soft_equiv(opacity_pl, opacity_pl_alt, 1.0e-12))
+      ITFAILS;
     if (!soft_equiv(opacity_pl, opacity_pl_ref))
       ITFAILS;
     if (!soft_equiv(opacity_pl_recip, opacity_pl_recip_ref))
@@ -1288,12 +1323,19 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpac, planck_spectrum, emission_group_cdf);
+    // Make sure you get the same answer with the version that doesn't
+    // calculate emission CDF
+    double const opacity_pl_alt =
+        CDI::collapseMultigroupOpacitiesPlanck(bounds, mgOpac, planck_spectrum);
+
     double const opacity_pl_recip =
         CDI::collapseMultigroupReciprocalOpacitiesPlanck(bounds, mgOpac,
                                                          planck_spectrum);
     double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
         bounds, mgOpac, rosseland_spectrum);
 
+    if (!soft_equiv(opacity_pl, opacity_pl_alt, 1.0e-12))
+      ITFAILS;
     if (!soft_equiv(opacity_pl, opacity_pl_ref))
       ITFAILS;
     if (!soft_equiv(opacity_pl_recip, opacity_pl_recip_ref))
@@ -1330,9 +1372,16 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
+    // Make sure you get the same answer with the version that doesn't
+    // calculate emission CDF
+    double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
+        bounds, mgOpacities, planck_spectrum);
+
     double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
         bounds, mgOpacities, rosseland_spectrum);
 
+    if (!soft_equiv(opacity_pl, opacity_pl_alt, 1.0e-12))
+      ITFAILS;
     if (!soft_equiv(opacity_pl, opacity_pl_ref))
       ITFAILS;
     if (!soft_equiv(opacity_ross, opacity_ross_ref))

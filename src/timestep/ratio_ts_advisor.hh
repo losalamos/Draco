@@ -2,7 +2,7 @@
 /*!
  * \file   timestep/ratio_ts_advisor.hh
  * \brief  Header file for the ratio time-step advisor class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

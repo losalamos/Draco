@@ -5,9 +5,8 @@
  * \date   Thu Oct 25 15:28:48 2011
  * \brief  Wrap the cuda_runtime_api.h header while preventing comiler
  *         warnings about vendor code.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 // All this garbage suppresses warnings found in "cuda.h".

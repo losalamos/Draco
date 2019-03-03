@@ -3,7 +3,7 @@
  * \file   ds++/Assert.hh
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -249,7 +249,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  0      Require
  1      Check
  2      Ensure, Remember
- 3      (nothrow option)
+ 3      (nothrow versions of above macros) [8-15]
+ 4      (deferred exception throwing versions of above macros)
  \endverbatim
  *
  * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all off,
@@ -315,7 +316,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 // clang-format off
 
 //---------------------------------------------------------------------------//
-// No-throw versions of DBC
+// No-throw versions of DBC [8-15]
 //---------------------------------------------------------------------------//
 #if DBC & 8
 
@@ -489,7 +490,35 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #endif
 
 //----------------------------------------------------------------------------//
+/*! Ensure all possible Draco DbC macros are defined.  If not already defined,
+ * then define them as no-op. */
+//----------------------------------------------------------------------------//
+#ifndef Require
+#define Require(c)
+#endif
+#ifndef Check
+#define Check(c)
+#endif
+#ifndef Assert
+#define Assert(c)
+#endif
+#ifndef Ensure
+#define Ensure(c)
+#endif
+#ifndef Insist
+#define Insist(c,m)
+#endif
+#ifndef Insist_ptr
+#define Insist_ptr(c,m)
+#endif
+#ifndef Bad_Case
+#define Bad_Case(m)
+#endif
+#ifndef Remember
+#define Remember(c)
+#endif
 
+//----------------------------------------------------------------------------//
 #if defined(MSVC)
 #pragma warning(pop)
 #endif

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4/test.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( c4_test CXX )
@@ -100,7 +100,7 @@ add_parallel_tests(
 #------------------------------------------------------------------------------#
 # Python based test runners
 #------------------------------------------------------------------------------#
-if( NOT WIN32 AND NOT APPLE )
+if( NOT APPLE )
   include( ApplicationUnitTest )
   add_app_unit_test(
     DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py

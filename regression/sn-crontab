@@ -25,30 +25,30 @@
 # Intel/18.0.2 and OpenMPI/2.1.2
 #------------------------------------------------------------------------------#
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne capsaicin core\"
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne core trt npt\"
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin core\"
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne core trt npt\"
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \" jayenne capsaicin core\" -e vtest
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \" jayenne core trt npt\" -e vtest
 
 #------------------------------------------------------------------------------#
 # Special: NR, PerfBench and FullDiagnostics regressions.
 #------------------------------------------------------------------------------#
 
 # intel-18.0.2 + openmpi-2.1.2
-# 01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin core\" -e newtools
+# 01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne core trt npt\" -e newtools
 
 # gcc-6.4.0 + openmpi-2.1.2
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne capsaicin core\" -e gcc640
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p \"draco jayenne core trt npt\" -e gcc640
 
 # Floating point traps, etc.
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p \"draco jayenne capsaicin core\"
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p \"draco jayenne core trt npt\"
 
 # non-reproducible flavor (IMC)
 01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e nr -p \"jayenne\"
 
 # performance over time
-01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p \"jayenne capsaicin core\"
+01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p \"jayenne core trt npt\"
 
 #------------------------------------------------------------------------------#
 # Periodic usage reports

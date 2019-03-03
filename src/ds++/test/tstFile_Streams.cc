@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Sun Nov 21 19:36:12 2004
  * \brief  Tests File_Input and File_Output.
- * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

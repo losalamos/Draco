@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building src level Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -39,9 +39,7 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
-if( NOT WIN32 )
-  add_dir_if_exists( memory )     # needs ds++
-endif()
+add_dir_if_exists( memory )       # needs ds++
 
 # For now, do not try to build or test some packages (these two paths are
 # identical now, but are expected to diverge as more packages are added to the
@@ -78,6 +76,9 @@ if( NOT DEFINED ENV{APPVEYOR} )
   if( HAVE_Fortran )
     add_dir_if_exists( FortranChecks )
   endif()
+  if( NOT DEFINED ENV{TRAVIS} )
+    add_dir_if_exists( cdi_eospac ) # needs parser, ode, cdi
+  endif()
 endif()
 
 # Level 4
@@ -86,9 +87,6 @@ message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( special_functions ) # needs roots, units, GSL
 add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
-if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
-  add_dir_if_exists( cdi_eospac )      # needs parser, ode, cdi
-endif()
 
 # Level 5
 message(" ")

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide declaration of templatized KroneckerDelta function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

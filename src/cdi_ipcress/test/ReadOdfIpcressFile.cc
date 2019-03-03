@@ -3,7 +3,7 @@
  * \file   cdi_ipcress/test/ReadOdfIpcressFile.cc
  * \author Seth R. Johnson
  * \date   Thu July 10 2008
- * \note   Copyright (C) 2008-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2008-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

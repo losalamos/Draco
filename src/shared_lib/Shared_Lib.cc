@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Implementation of Shared_Lib.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 

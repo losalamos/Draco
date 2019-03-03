@@ -3,7 +3,7 @@
  * \file   parser/Console_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Console_Token_Stream.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

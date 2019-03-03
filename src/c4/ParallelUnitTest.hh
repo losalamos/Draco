@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
@@ -17,7 +17,7 @@
 #define c4_ParallelUnitTest_hh
 
 #include "C4_Functions.hh"
-#include "ds++/UnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 namespace rtt_c4 {
 
@@ -106,7 +106,6 @@ public:
  * \param[in] lambda Lambda function defining the test.
  * \return EXIT_SUCCESS or EXIT_FAILURE as appropriate.
  */
-
 template <typename... Lambda, typename Release>
 int do_parallel_unit_test(int argc, char *argv[], Release release,
                           Lambda const &... lambda);

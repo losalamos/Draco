@@ -3,7 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -128,6 +128,8 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
   }
   FAIL_IF(caught);
 
+#ifndef RELWITHDEBINFO
+
   caught = false;
   try {
     std::cout << dt[1];
@@ -135,6 +137,8 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
     caught = true;
   }
   FAIL_IF_NOT(caught);
+
+#endif
 
   if (ut.numFails == 0)
     PASSMSG("test_scalar");

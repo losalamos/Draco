@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Sep 20 21:54:18 2010
  * \brief  Encapsulate system headers for timing information.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

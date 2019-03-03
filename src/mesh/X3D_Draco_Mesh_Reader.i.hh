@@ -4,7 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Keady
  * \date   Thursday, Jul 12, 2018, 08:46 am
  * \brief  X3D_Draco_Mesh_Reader class implementation header file.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -19,7 +19,7 @@ namespace rtt_mesh {
  * \brief Generate a map from a block in an x3d file
  *
  * \param[in] block_name name of parsed x3d block
- * \param[in] dist help me
+ * \param[in] dist number of string-pairs to skip when looking for an x3d block
  *
  * \return map of mesh data with key of type KT and value of type VT
  */

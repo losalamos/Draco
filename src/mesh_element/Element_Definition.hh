@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -119,53 +119,53 @@ public:
    * </a> (Adobe PDF format) are are available at the CGNS www site.
    */
   enum Element_Type {
-    NODE,       //!< A dimensionless point in space.
-    BAR_2,      //!< The basic one-D, two-node "line" element.
-    BAR_3,      /*!< Same as "BAR_2" except that a node is added in the
+    NODE,    //!< A dimensionless point in space.
+    BAR_2,   //!< The basic one-D, two-node "line" element.
+    BAR_3,   /*!< Same as "BAR_2" except that a node is added in the
                  *   center. */
-    TRI_3,      //!< The basic two-D, three-node, "triangle" element.
-    TRI_6,      /*!< Same as "TRI_3" except that nodes are added in the * middle
+    TRI_3,   //!< The basic two-D, three-node, "triangle" element.
+    TRI_6,   /*!< Same as "TRI_3" except that nodes are added in the * middle
                  *   of each edge. This is the standard quadratic-serendipity
                  *   finite element triangle.*/
-    QUAD_4,     //!< The basic two-D, four-node "quadrilateral" element.
-    QUAD_5,     //!< A quad with a node in the center of one face.
-    QUAD_6,     /*!< A quad with nodes in the center of two ADJOINING
+    QUAD_4,  //!< The basic two-D, four-node "quadrilateral" element.
+    QUAD_5,  //!< A quad with a node in the center of one face.
+    QUAD_6,  /*!< A quad with nodes in the center of two ADJOINING
                  *   faces. This is the default QUAD_6. */
-    QUAD_6a,    //!< A quad with nodes in the center of two ADJOINING faces.
-    QUAD_6o,    //!< A quad with nodes in the center of two OPPOSITE faces.
-    QUAD_7,     //!< A quad with nodes in the center of three faces.
-    QUAD_8,     /*!< A quad with nodes in the center of all four faces. This is
+    QUAD_6a, //!< A quad with nodes in the center of two ADJOINING faces.
+    QUAD_6o, //!< A quad with nodes in the center of two OPPOSITE faces.
+    QUAD_7,  //!< A quad with nodes in the center of three faces.
+    QUAD_8,  /*!< A quad with nodes in the center of all four faces. This is
                  *   standard quadratic-serendipity finite element quad.*/
-    QUAD_9,     /*!< Same as "QUAD_8" except a node is added in the center of
+    QUAD_9,  /*!< Same as "QUAD_8" except a node is added in the center of
                  *   the quad. */
     PENTAGON_5, /*!< The basic two-D, five-node "pentagon" element.  Elements
                  *   with this topology are quite common in an AMR mesh. */
-    HEXAGON_6,  /*!< The basic two-D, six-node "hexagon" element.  Elements with
+    HEXAGON_6, /*!< The basic two-D, six-node "hexagon" element.  Elements with
                  *   this topology are quite common in an AMR mesh. */
     HEPTAGON_7, /*!< The basic two-D, seven-node "heptagon" element.  Elements
                  *   with this topology can occur in an AMR mesh. */
     OCTAGON_8,  /*!< The basic two-D, eight-node "octagon" element.  Elements
                  *   with this topology can occur in an AMR mesh. */
     TETRA_4,    //!< The basic three-D, four-node "tetrahedral" element.
-    TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the middle
+    TETRA_10, /*!< Same as "TETRA_4" except that a node is added in the middle
                  *   of each edge. This is the standard quadratic-serendipity
                  *   finite element tet.*/
-    PYRA_5,     /*!< The basic three-D, five-node, "pyramid" element.  This is a
+    PYRA_5,   /*!< The basic three-D, five-node, "pyramid" element.  This is a
                  *   hex with one face collapsed to a point.*/
-    PYRA_14,    /*!< Same as "PYRA_5" except that a node is added on each edge,
+    PYRA_14,  /*!< Same as "PYRA_5" except that a node is added on each edge,
                  *   and one at the center. */
-    PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also known as a
+    PENTA_6,  /*!< The basic three-D, six-node "pentahedron". Also known as a
                  *   "triangular-prism", or "wedge". */
-    PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in the center
+    PENTA_15, /*!< Same as "PENTA-6" except that nodes are added in the center
                  *   of each edge. This is the standard quadratic-serendipity
                  *   finite element wedge.*/
-    PENTA_18,   /*!< Same as "PENTA-15" except that nodes are added in the
+    PENTA_18, /*!< Same as "PENTA-15" except that nodes are added in the
                  *   center of each quadrilateral face. */
-    HEXA_8,     //!< The basic three-D, eight-node "hexahedron".
-    HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in the center
+    HEXA_8,   //!< The basic three-D, eight-node "hexahedron".
+    HEXA_20,  /*!< Same as "HEXA_8" except that a node is added in the center
                  *   of each edge. This is the standard quadratic-serendipity
                  *   finite element hex.*/
-    HEXA_27,    /*!< Same as "HEXA_20" except that a node is added in the center
+    HEXA_27,  /*!< Same as "HEXA_20" except that a node is added in the center
                  *   of each face, and at the center of the element. */
     POLYHEDRON, /*!< A hexahedron with, possibly, subdivided hexadedral
                  *   neighbors. */

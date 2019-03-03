@@ -4,7 +4,7 @@
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Thursday, Feb 09, 2017, 08:11 am
  * \brief  FMA features test.
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * Supporting functions:

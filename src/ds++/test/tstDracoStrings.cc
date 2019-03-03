@@ -4,7 +4,7 @@
  * \author Kelly G. Thompson <kgt@lanl.gov>
  * \date   Wednesday, Aug 23, 2017, 13:30 pm
  * \brief  Test functions defined in ds++/DracoStrings.hh
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

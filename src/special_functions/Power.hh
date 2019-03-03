@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu Jul 20 17:23:31 2006
  * \brief  A meta-programming implementation of the Russian Pesant algorithm.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC
  *
  * Use meta-programming to generate an efficient routine to compute integer
  * powers.

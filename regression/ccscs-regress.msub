@@ -3,7 +3,7 @@
 ## File  : regression/ccscs-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -235,21 +235,24 @@ if test "${subproj}" == draco; then
 elif test "${subproj}" == jayenne; then
   script_dir=`echo ${rscriptdir} | sed -e 's/draco/jayenne/'`
   script_name=Jayenne_Linux64.cmake
-elif test "${subproj}" == capsaicin; then
-  # For now force Capsaicin to only 1 OMP thread per MPI rank to avoid
-  # oversubscribing the system.
-  export OMP_NUM_THREADS=1
-  script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
-  script_name=Capsaicin_Linux64.cmake
 elif test "${subproj}" == core; then
   # For now force core to only 1 OMP thread per MPI rank to avoid
   # oversubscribing the system.
   export OMP_NUM_THREADS=1
   script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%core/scripts%'`
   script_name=Core_Linux64.cmake
-elif test "${subproj}" == asterisk; then
-  script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
-  script_name=Asterisk_Linux64.cmake
+elif test "${subproj}" == trt; then
+  # For now force core to only 1 OMP thread per MPI rank to avoid
+  # oversubscribing the system.
+  export OMP_NUM_THREADS=1
+  script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%trt/scripts%'`
+  script_name=Trt_Linux64.cmake
+elif test "${subproj}" == npt; then
+  # For now force core to only 1 OMP thread per MPI rank to avoid
+  # oversubscribing the system.
+  export OMP_NUM_THREADS=1
+  script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%npt/scripts%'`
+  script_name=Npt_Linux64.cmake
 fi
 
 # Append the username to the build name unless option '-r' is specified.
@@ -327,6 +330,7 @@ if [[ ${regress_mode} == "on" ]]; then
   echo " "
   run "chgrp -R draco ${work_dir}"
   run "chmod -R g+rwX,o-rwX ${work_dir}"
+#  run "find ${work_dir} -type d -exec chmod g+s {} \;"
 fi
 
 echo "All done."

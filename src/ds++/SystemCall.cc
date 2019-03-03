@@ -3,7 +3,7 @@
  * \file  ds++/SystemCall.cc
  * \brief Implementation for the Draco wrapper for system calls. This routine
  *        attempts to hide differences between Unix/Windows system calls.
- * \note  Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note  Copyright (C) 2016-2019 Triad National Security, LLC.
  *        All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -14,7 +14,7 @@
 #include <cstdio>  // remove()
 #include <cstdlib> // _fullpath
 #include <cstring> // strncpy()
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <sys/param.h> // MAXPATHLEN
 #include <unistd.h>    // gethostname
 #endif

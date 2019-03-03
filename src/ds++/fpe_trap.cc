@@ -5,7 +5,7 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  platform dependent implementation of fpe_trap functions.
  *
- * Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * Copyright (C) 2016-2019 Triad National Security, LLC.
  *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.

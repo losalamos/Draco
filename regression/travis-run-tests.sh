@@ -3,7 +3,7 @@
 ## File  : ./travis-run-tests.sh
 ## Date  : Tuesday, Jan 17, 2017, 15:55 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2017-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2017-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 

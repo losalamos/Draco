@@ -4,7 +4,7 @@
  * \author Tim Kelley
  * \date   Thursday, Oct 12, 2017, 10:50 am
  * \brief  Header file for Thread_Wrapper
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

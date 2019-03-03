@@ -4,7 +4,7 @@
 ## File  : environment/bashrc/.bashrc_slurm
 ## Date  : Wednesday, Oct 11, 2017, 15:15 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2017, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
 ##  Bash configuration file to aid slurm use.

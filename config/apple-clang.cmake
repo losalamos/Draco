@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/apple-clang.cmake
 # brief  Establish flags for Apple OSX
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: unix-g++.cmake 6798 2012-10-09 21:45:34Z kellyt $

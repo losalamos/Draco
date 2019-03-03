@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  OdfmgOpacity class header file (an abstract class)
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

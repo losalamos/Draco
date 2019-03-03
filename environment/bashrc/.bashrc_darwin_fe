@@ -52,6 +52,14 @@ if test -n "$MODULESHOME"; then
         compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_7.3.0"
         mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
         ec_mf="ndi"
+        if [[ ${SLURM_JOB_PARTITION} == "volta-x86" ]]; then
+          # If we have GPUs on this node, then load the cuda toolkit module by default
+          compflavor+=" cuda/9.2"
+        fi
+        # Add clang-format (version 6) to the default environment.
+        if [[ -x /projects/opt/centos7/clang/6.0.0/bin/clang-format ]]; then
+          export PATH=$PATH:/projects/opt/centos7/clang/6.0.0/bin
+        fi
       ;;
 
       knl)

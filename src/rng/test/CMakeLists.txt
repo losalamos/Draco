@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for rng/test.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( rng_test C CXX )
@@ -61,18 +61,18 @@ add_scalar_tests(
 target_include_directories( Ut_rng_ut_uniform_exe
   PRIVATE $<BUILD_INTERFACE:${rng_SOURCE_DIR}> )
 
-if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
-  cuda_add_executable( kat_cuda
-    ${PROJECT_SOURCE_DIR}/kat_cuda.cu )
+# if( WITH_CUDA )
+#   cuda_add_executable( kat_cuda
+#     ${PROJECT_SOURCE_DIR}/kat_cuda.cu )
 
-  add_test(
-    NAME    rng_kat_cuda
-    COMMAND $<TARGET_FILE:kat_cuda> )
+#   add_test(
+#     NAME    rng_kat_cuda
+#     COMMAND $<TARGET_FILE:kat_cuda> )
 
-  set_tests_properties( rng_kat_cuda PROPERTIES
-    PASS_REGULAR_EXPRESSION "PASSED"
-    FAIL_REGULAR_EXPRESSION "FAILED" )
-endif()
+#   set_tests_properties( rng_kat_cuda PROPERTIES
+#     PASS_REGULAR_EXPRESSION "PASSED"
+#     FAIL_REGULAR_EXPRESSION "FAILED" )
+# endif()
 
 add_component_executable(
   TARGET  Exe_time_serial

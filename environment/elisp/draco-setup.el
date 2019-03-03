@@ -5,7 +5,7 @@
 ;; Created: 30 Nov 2004
 ;; Version: 0.0.1
 ;;
-;; Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+;; Copyright (C) 2016-2019 Triad National Security, LLC.
 ;; All rights reserved.
 ;;
 ;;============================================================

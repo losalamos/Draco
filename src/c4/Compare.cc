@@ -3,7 +3,7 @@
  * \file   c4/Compare.cc
  * \author Mike Buksas
  * \date   Thu May  1 14:42:10 2008
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

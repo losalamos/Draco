@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 15:24210 2001
  * \brief  IpcressOdfmgOpacity templated class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -3,7 +3,7 @@ rem ---------------------------------------------------------------------------
 rem File  : regression/win32-regression-master.bat
 rem Date  : Tuesday, May 31, 2016, 14:48 pm
 rem Author: Kelly Thompson
-rem Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+rem Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 rem         All rights are reserved.
 rem ---------------------------------------------------------------------------
 

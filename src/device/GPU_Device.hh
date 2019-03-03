@@ -3,7 +3,7 @@
  * \file   device/GPU_Device.hh
  * \author Kelly (KT) Thompson
  * \brief  Define class GPU_Device
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -12,6 +12,7 @@
 
 #include "device_cuda.h"
 #include "ds++/Assert.hh"
+#include <array>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -21,11 +22,11 @@ namespace rtt_device {
 //===========================================================================//
 /*!
  * \class GPU_Device
- * \brief A wrapper for the CUDA environment.  
+ * \brief A wrapper for the CUDA environment.
  *
  * This class encapsulates many features provided by the CUDA programming
- * environment. It can query the hardware for available features, find and
- * load .cubin files for GPU kernel execution, etc.
+ * environment. It can query the hardware for available features, find and load
+ * .cubin files for GPU kernel execution, etc.
  *
  * \sa GPU_Device.cc for detailed descriptions.
  *
@@ -41,12 +42,12 @@ namespace rtt_device {
  *         << "\n" << endl;
  *     for( size_t device=0; device<numDev; ++device )
  *         gpu.printDeviceSummary( device, out );
- *   
+ *
  *   // Print the message to stdout
  *   cout << out.str();
  * \endcode
  *
- * \example device/test/gpu_hello_rt_api.cc
+ * \example device/test/gpu_hello_rt_api.cu
  * Test of GPU_Device for CUDA runtime environment.
  *
  * \example device/test/gpu_hello_driver_api.cc
@@ -62,18 +63,11 @@ public:
 
   //! Default constructors.
   GPU_Device(void);
-  // GPU_Device( int /*argc*/, char */*argv*/[] );
-
-  //! Copy constructor (the long doxygen description is in the .cc file).
-  // GPU_Device(const GPU_Device &rhs);
 
   //! Destructor.
   ~GPU_Device();
 
   // MANIPULATORS
-
-  //! Assignment operator for GPU_Device.
-  // GPU_Device& operator=(const GPU_Device &rhs);
 
   // ACCESSORS
 
@@ -81,44 +75,36 @@ public:
   size_t numDevicesAvailable() const { return deviceCount; }
   //! maximum number of threads per block
   int maxThreadsPerBlock(int devId = 0) const {
-    return deviceProperties[devId].maxThreadsPerBlock;
+    return m_maxthreadsperblock[devId];
   }
   //! maxThreadsDim[3] is the maximum sizes of each dimension of a block.
   int maxThreadsDim(int dim, int devId = 0) const {
-    return deviceProperties[devId].maxThreadsDim[dim];
+    return m_maxthreadsdim[devId][dim];
   }
   //! maxGridSize[3] is the maximum sizes of each dimension of a grid;
   int maxGridSize(int dim, int devId = 0) const {
-    return deviceProperties[devId].maxGridSize[dim];
+    return m_maxgridsize[devId][dim];
   }
   //! the total amount of shared memory available per block in bytes
   int sharedMemPerBlock(int devId = 0) const {
-    return deviceProperties[devId].sharedMemPerBlock;
+    return m_sharedmemperblock[devId];
   }
   //! the total amount of constant memory available on the device in bytes;
   int totalConstantMemory(int devId = 0) const {
-    return deviceProperties[devId].totalConstantMemory;
+    return m_totalconstantmemory[devId];
   }
   //! the warp size
-  int SIMDWidth(int devId = 0) const {
-    return deviceProperties[devId].SIMDWidth;
-  }
-  /*! the maximum pitch allowed by the memory copy functions that involve
-     *  memory regions allocated through cuMemAllocPitch() */
-  int memPitch(int devId = 0) const { return deviceProperties[devId].memPitch; }
+  int SIMDWidth(int devId = 0) const { return m_simdwidth[devId]; }
+  /*! the maximum pitch allowed by the memory copy functions that involve memory
+   *  regions allocated through cuMemAllocPitch() */
+  int memPitch(int devId = 0) const { return m_mempitch[devId]; }
   //! the total number of registers available per block
-  int regsPerBlock(int devId = 0) const {
-    return deviceProperties[devId].regsPerBlock;
-  }
+  int regsPerBlock(int devId = 0) const { return m_regsperblock[devId]; }
   //! the clock frequency in kilohertz
-  int clockRate(int devId = 0) const {
-    return deviceProperties[devId].clockRate;
-  }
+  int clockRate(int devId = 0) const { return m_clockrate[devId]; }
   /*! the alignment requirement; texture base addresses that are aligned to
-     *  textureAlign bytes do not need an offset applied to texture fetches */
-  int textureAlign(int devId = 0) const {
-    return deviceProperties[devId].textureAlign;
-  }
+   *  textureAlign bytes do not need an offset applied to texture fetches */
+  int textureAlign(int devId = 0) const { return m_texturealign[devId]; }
 
   //! Return the device handle
   CUdevice deviceHandle(int idevice) const {
@@ -165,15 +151,27 @@ private:
   int deviceCount;
   std::vector<std::vector<size_t>> computeCapability;
   std::vector<std::string> deviceName;
-  std::vector<CUdevprop_st> deviceProperties;
+
+  // Device Properties: 1st dim is the device number.
+  std::vector<int> m_maxthreadsperblock;
+  std::vector<std::array<int, 3>> m_maxthreadsdim;
+  std::vector<std::array<int, 3>> m_maxgridsize;
+  std::vector<int> m_sharedmemperblock;
+  std::vector<int> m_totalconstantmemory;
+  std::vector<int> m_simdwidth;
+  std::vector<int> m_mempitch;
+  std::vector<int> m_regsperblock;
+  std::vector<int> m_clockrate;
+  std::vector<int> m_texturealign;
+
   //! Device handles (one per device)
   std::vector<CUdevice> device_handle;
   /*! Device context (one per handle)
-     *
-     * Current implementation only allows 1 context per GPU.  However, the
-     * CUDA Driver API provides for the concept of pushing and poping various
-     * contexts on the GPU.
-     */
+   *
+   * Current implementation only allows 1 context per GPU.  However, the CUDA
+   * Driver API provides for the concept of pushing and poping various contexts
+   * on the GPU.
+   */
   std::vector<CUcontext> context;
 };
 

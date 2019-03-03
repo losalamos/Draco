@@ -3,7 +3,7 @@
  * \file   c4/global_containers.hh
  * \author Kent Budge
  * \brief  Define class global_containers
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -4,7 +4,7 @@
  * \author Mike Buksas, Rob Lowrie
  * \date   Mon Nov 19 10:09:10 2007
  * \brief  Implementation of Invert_Comm_Map
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

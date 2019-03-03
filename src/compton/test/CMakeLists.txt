@@ -3,7 +3,7 @@
 # author Kendra Keady
 # date   2017 February 28
 # brief  Generate build project files for compton/test.
-# note   Copyright (C) 2017-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2017-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

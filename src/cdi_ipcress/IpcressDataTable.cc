@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 16, 2011, 17:04 pm
  * \brief  Implementation file for IpcressDataTable objects.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

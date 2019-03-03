@@ -3,7 +3,7 @@
  * \file   c4/Termination_Detector.hh
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -27,8 +27,8 @@ namespace rtt_c4 {
  * in advance how much work must be done on each processor.  One example of an
  * indeterminate algorithm is traversal of a directed graph that may have
  * cycles. A processor performing such a sweep cannot know in advance whether
- * all of its nodes will be visited by the traversal, which makes the
- * traversal indeterminate.
+ * all of its nodes will be visited by the traversal, which makes the traversal
+ * indeterminate.
  *
  * The code is used as follows: Every time a processor is able to make
  * progress on the computation (as measured in arbitrary units of work) the

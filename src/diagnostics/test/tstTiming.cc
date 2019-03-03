@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 12 15:32:10 2005
  * \brief  Test the diagnostics/TIMER macros
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -13,6 +13,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <iomanip>
 
 using namespace std;
 using rtt_dsxx::soft_equiv;

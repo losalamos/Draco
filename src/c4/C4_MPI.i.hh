@@ -4,7 +4,7 @@
  * \author Alex R Long
  * \date   Mon Aug 21 07:47:01 2017
  * \brief  C4 MPI standard implementations.
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

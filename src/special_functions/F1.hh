@@ -3,7 +3,7 @@
  * \file   special_functions/F1.hh
  * \author Kent Budge
  * \brief  Fermi-Dirac integral of index 1.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

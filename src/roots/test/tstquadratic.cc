@@ -3,7 +3,7 @@
  * \file   roots/test/tstquadratic.cc
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
- * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -3,7 +3,7 @@
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Ensure version is set and use config date as ver. patch value.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

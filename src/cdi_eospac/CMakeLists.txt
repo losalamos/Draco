@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   cdi_eospac/CMakeLists.txt
 # brief  Instructions for building cdi_eospac Makefiles.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)

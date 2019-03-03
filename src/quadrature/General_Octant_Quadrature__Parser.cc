@@ -3,7 +3,7 @@
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

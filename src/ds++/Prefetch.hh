@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/SystemCall.hh
  * \brief  Wrapper for explicit prefetch commands. Hides system dependence.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

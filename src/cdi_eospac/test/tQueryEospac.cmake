@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Friday, Jul 10, 2015, 14:16 pm
 # brief  This is a CTest script that is used to test cdi_eospac/QueryEospac
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -28,7 +28,7 @@ aut_runTests()
 if( GOLDFILE )
   aut_numdiff()
 
-   ## Analyize the output directly.
+   ## Analyze the output directly.
    string( REGEX REPLACE "\n" ";" testout ${testout} )
    foreach( line ${testout} )
      if( ${line} MATCHES "Specific Ion Internal Energy" )
@@ -48,8 +48,9 @@ if( GOLDFILE )
 else()
 
   if( ${ARGVALUE} STREQUAL "--version" )
-    string(FIND "${testout}" "QueryEospac: version" POS)
-    if(  ${POS} GREATER 0 )
+    string(FIND "${testout}" "QueryEospac: version" POS1)
+    string(FIND "${testout}" "QueryEospac.exe: version" POS2)
+    if( ${POS1} GREATER 0 OR ${POS2} GREATER 0 )
       PASSMSG( "Version tag found in the output.")
     else()
       FAILMSG( "Version tag NOT found in the output.")

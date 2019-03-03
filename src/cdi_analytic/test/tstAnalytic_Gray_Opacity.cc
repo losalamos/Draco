@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -234,7 +234,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> params(amodel->get_parameters());
 
-    std::vector<double> expectedValue(8);
+    std::vector<double> expectedValue(11);
     expectedValue[0] = 0.0;
     expectedValue[1] = 100.0;
     expectedValue[2] = -3.0;
@@ -243,6 +243,9 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
     expectedValue[5] = 1.0;
     expectedValue[6] = 1.0;
     expectedValue[7] = 1.0;
+    expectedValue[8] = 0.0;
+    expectedValue[9] = 0.0;
+    expectedValue[10] = 0.0;
 
     double const tol(1.0e-12);
 

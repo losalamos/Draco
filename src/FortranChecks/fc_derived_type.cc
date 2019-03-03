@@ -4,7 +4,7 @@
  * \author Allan Wollaber
  * \date   Tue Jul 10 12:48:13 MDT 2012
  * \brief  Test Fortran main calling C with a derived type
- * \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

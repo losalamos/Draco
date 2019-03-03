@@ -26,9 +26,9 @@
 # gcc-8.1.0, openmpi-3.1.0
 #------------------------------------------------------------------------------#
 
-01 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p \"draco\"
+01 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \"draco\"
 
-15 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \"jayenne capsaicin core\" -e vtest
+15 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \"jayenne core trt npt\" -e vtest
 
 00 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne\" -e scalar
 
@@ -38,7 +38,7 @@
 # Clang-6.0.0, openmpi-3.1.0
 #------------------------------------------------------------------------------#
 
-00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin core\" -e clang
+00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne core trt npt\" -e clang
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

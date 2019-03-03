@@ -3,7 +3,7 @@
  * \file   ds++/test/tstRange_finder.cc
  * \author Mike Buksas
  * \date   Thu Feb  6 12:43:22 2003
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

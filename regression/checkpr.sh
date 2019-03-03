@@ -3,7 +3,7 @@
 ## File  : regression/checkpr.sh
 ## Date  : Wednesday, Mar 22, 2017, 16:01 pm
 ## Author: Kelly Thompson <kgt@lanl.gov>
-## Note  : Copyright (C) 2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2017, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -16,7 +16,8 @@
 #   -h            - help message
 #   -r            - special run mode that uses the regress account's
 #                   credentials.
-#   -t            - remove the last-draco tagfile (when was draco last built?).
+#   -t            - remove the last-draco and last-core tagfiles (when was
+#                   draco/core last built?).
 #
 # <number> must be an integer value that represents the pull request.
 
@@ -58,21 +59,21 @@ regress_mode="off"
 print_use()
 {
   echo " "
-  echo "Usage: ${0##*/} -h -p [draco|jayenne|capsaicin|core]"
+  echo "Usage: ${0##*/} -h -p [draco|jayenne|core|trt|npt]"
   echo "       -f <git branch name> -r"
   echo " "
   echo "All arguments are optional,  The first value listed is the default value."
   echo "   -h    help           prints this message and exits."
   echo "   -f    git feature branch, default=develop"
   echo "         common: 'develop', '42'"
-  echo "   -p    project name = { draco, jayenne, capsaicin, core }"
+  echo "   -p    project name = { draco, jayenne, core, trt, npt }"
   echo "   -r    special run mode that uses the regress account's credentials."
   echo "   -t    remove the last-draco tagfile."
   echo " "
   echo "Examples:"
   echo "  ${0##*/} -p jayenne -f 42"
   echo "  ${0##*/} -p draco -t"
-  echo "  ${0##*/} -p capsaicin -f develop"
+  echo "  ${0##*/} -p npt -f develop"
   echo " "
 }
 
@@ -86,7 +87,8 @@ f)  pr=$OPTARG ;;
 h)  print_use; exit 0 ;;
 p)  project=$OPTARG ;;
 r)  regress_mode="on" ;;
-t)  rmlastdracotag="on" ;;
+t)  rmlastdracotag="on"
+    rmlastcoretag="on" ;;
 \?) echo "" ;echo "invalid option: -$OPTARG"; print_use; exit 1 ;;
 :)  echo "" ;echo "option -$OPTARG requires an argument."; print_use; exit 1 ;;
 esac
@@ -97,7 +99,7 @@ done
 ##---------------------------------------------------------------------------##
 
 case $project in
-  draco | jayenne | capsaicin | core ) # known projects, continue
+  draco | jayenne | core | trt | npt ) # known projects, continue
     ;;
   *)  echo "" ;echo "FATAL ERROR: unknown project name (-p) = ${proj}"
     print_use; exit 1 ;;
@@ -157,6 +159,10 @@ function startCI()
   fi
   if [[ ${project} == "draco" ]] && [[ ${extra} == 'vtest' ]]; then
     # Capsaicin/Jayenne -e vtest uses Draco w/o 'vtest'
+    extra="na"
+  fi
+  if [[ ${project} == "core" ]] && [[ ${extra} == 'vtest' ]]; then
+    # TRT/NPT -e vtest uses core w/o 'vtest'
     extra="na"
   fi
   if [[ ${extra} == 'na' ]]; then
@@ -219,12 +225,19 @@ if [[ $rmlastdracotag == "on" ]]; then
     run "rm $draco_tag_file"
   fi
 fi
+# Ditto for core
+core_tag_file=$logdir/last-core-develop-${target}.log
+if [[ $rmlastcoretag == "on" ]]; then
+  if [[ -f $core_tag_file ]]; then
+    run "rm $core_tag_file"
+  fi
+fi
 
+# Do we need to build draco? Only build draco-develop once per day.
+eval "$(date +'today=%F now=%s')"
+midnight=$(date -d "$today 0" +%s)
 case $project in
-  jayenne|capsaicin|core)
-    # Do we need to build draco? Only build draco-develop once per day.
-    eval "$(date +'today=%F now=%s')"
-    midnight=$(date -d "$today 0" +%s)
+  jayenne|core)
     if [[ -f $draco_tag_file ]]; then
       draco_last_built=$(date +%s -r $draco_tag_file)
     else
@@ -232,7 +245,7 @@ case $project in
     fi
     if [[ $midnight -gt $draco_last_built ]]; then
       echo " "
-      echo "Found a Jayenne or Capsaicin  PR, but we need to build draco-develop first..."
+      echo "Found a Jayenne or Core PR, but we need to build draco-develop first..."
       echo " "
 
       # Call this script recursively to build the draco 'develop' branch.
@@ -246,6 +259,30 @@ case $project in
       # last built.
       echo "date &> $draco_tag_file"
       date &> $draco_tag_file
+    fi
+    ;;
+  trt|npt)
+    if [[ -f $core_tag_file ]]; then
+      core_last_built=$(date +%s -r $core_tag_file)
+    else
+      core_last_built=0
+    fi
+    if [[ $midnight -gt $core_last_built ]]; then
+      echo " "
+      echo "Found a NPT or TRT PR, but we need to build core-develop first..."
+      echo " "
+
+      # Call this script recursively to build the core 'develop' branch.
+      if [[ ${regress_mode} == "on" ]]; then
+        rflag="-r"
+      fi
+      run "$rscriptdir/checkpr.sh ${rflag} -p core"
+      echo " "
+
+      # Reset the modified date on the file used to determine when core was
+      # last built.
+      echo "date &> $core_tag_file"
+      date &> $core_tag_file
     fi
     ;;
 esac

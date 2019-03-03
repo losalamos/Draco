@@ -3,7 +3,7 @@
  * \file   parser/Token.hh
  * \author Kent G. Budge
  * \brief  Define class Token and enum Token_Type
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

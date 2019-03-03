@@ -3,7 +3,7 @@
  * \file   c4/opstream.hh
  * \author Kent G. Budge
  * \brief  Define class opstream
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

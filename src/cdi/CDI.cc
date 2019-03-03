@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -299,6 +299,55 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Integrate the Planckian Specrum over an entire a set of frequency
+ *        groups directly returning the vector of the integrals
+ *
+ * \param bounds The vector of group boundaries. Size n+1
+ * \param T The temperature
+ * \return vector containing the Planckian integrals. Size n_groups
+ */
+std::vector<double>
+CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
+                                  double const T) {
+  Require(T >= 0.0);
+  Require(bounds.size() > 0);
+
+  size_t const groups(bounds.size() - 1);
+  std::vector<double> planck(groups, 0.0);
+
+  // nu/T must be < numeric_limits<double>::max().  So, if T < nu*min(), then
+  // return early with planck == 0.0. This avoids a possible divide by zero.
+  if (T <= bounds[0] * std::numeric_limits<double>::min())
+    return planck;
+
+  // Initialize the loop:
+  double scaled_frequency = bounds[0] / T;
+  double planck_value = integrate_planck(scaled_frequency);
+
+  for (size_t group = 0; group < groups; ++group) {
+    // Shift the data down:
+    Remember(double const last_scaled_frequency = scaled_frequency;);
+    double const last_planck = planck_value;
+
+    // New values:
+    if (T <= bounds[group + 1] * std::numeric_limits<double>::min())
+      planck[group] = 0.0;
+    else {
+      scaled_frequency = bounds[group + 1] / T;
+      Ensure(scaled_frequency > last_scaled_frequency);
+      planck_value = integrate_planck(scaled_frequency);
+
+      // Record the definite integral between frequencies.
+      planck[group] = planck_value - last_planck;
+    }
+    Ensure(planck[group] >= 0.0);
+    Ensure(planck[group] <= 1.0);
+  }
+  return planck;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Integrate the Rosseland Spectrum over an entire a set of frequency
  *        groups, returning a vector of the integrals
  *
@@ -464,6 +513,67 @@ double CDI::collapseMultigroupOpacitiesPlanck(
     sig_planck_sum += planckSpectrum[g - 1] * opacity[g - 1];
     // Also collect some CDF data.
     emission_group_cdf[g - 1] = sig_planck_sum;
+  }
+
+  //                         int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+  // Planck opac:  sigma_P = --------------------------------------------------
+  //                         int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+  double planck_opacity(0.0);
+  if (planck_integral > 0.0)
+    planck_opacity = sig_planck_sum / planck_integral;
+  else {
+    // Weak check that the zero integrated Planck is due to a cold temperature
+    // whose Planckian peak is below the lowest (first) group boundary.
+    Check(rtt_dsxx::soft_equiv(sig_planck_sum, 0.0));
+    // Check( T >= 0.0 );
+    // Check( 3.0 * T <= groupBounds[0] );
+
+    // Set the ill-defined integrated Planck opacity to zero.
+    // planck_opacity = 0.0; // already initialized to zero.
+  }
+  Ensure(planck_opacity >= 0.0);
+  return planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup opacity set into a single representative value
+ *        weighted by the Planckian function without setting the emission CDF
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \return A single interval Planckian weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
+ */
+double CDI::collapseMultigroupOpacitiesPlanck(
+    std::vector<double> const &groupBounds, std::vector<double> const &opacity,
+    std::vector<double> const &planckSpectrum) {
+  Require(groupBounds.size() > 0);
+  Require(opacity.size() == groupBounds.size() - 1);
+  Require(planckSpectrum.size() == groupBounds.size() - 1);
+
+  // Integrate the unnormalized Planckian over the group spectrum
+  // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+  double const planck_integral =
+      std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+  Check(planck_integral >= 0.0);
+
+  // Perform integration of sigma * b_g over all groups:
+  // int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+
+  // Initialize sum:
+  double sig_planck_sum(0.0);
+  // Multiply by the absorption opacity and accumulate.
+  for (size_t g = 1; g < groupBounds.size(); ++g) {
+    Check(planckSpectrum[g - 1] >= 0.0);
+    Check(opacity[g - 1] >= 0.0);
+    sig_planck_sum += planckSpectrum[g - 1] * opacity[g - 1];
   }
 
   //                         int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}

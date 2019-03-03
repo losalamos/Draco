@@ -3,7 +3,7 @@
  * \file   ds++/SystemCall.hh
  * \brief  Wrapper for system calls. Hide differences between Unix/Windows
  *         system calls.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

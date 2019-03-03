@@ -3,7 +3,7 @@
  * \file   parser/Abstract_Class_Parser.cc
  * \author Kent Budge
  * \brief  Define destructor for Abstract_Class_Parser_Base
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

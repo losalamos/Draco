@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

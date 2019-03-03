@@ -3,7 +3,7 @@
 ## File  : regression/update_regression_scripts.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -21,6 +21,7 @@ timestamp=`date +%Y%m%d-%H%M`
 target="`uname -n | sed -e s/[.].*//`"
 logdir="$( cd $scriptdir/../../logs && pwd )"
 logfile=$logdir/update_regression_scripts-$target-$timestamp.log
+echo "==> Redirecting output to $logfile"
 exec > $logfile
 exec 2>&1
 
@@ -101,22 +102,42 @@ fi
 source ${scriptdir}/repository_list.sh
 
 for project in ${github_projects[@]}; do
-  namespace=`echo $p | sed -e 's%/.*%%'`
-  repo=`echo $p | sed -e 's%.*/%%'`
-  echo -e "\nUpdating $REGDIR/$repo..."
-  if test -d ${REGDIR}/$repo; then
-    run "cd ${REGDIR}/$repo; git pull"
+  namespace=`echo $project | sed -e 's%/.*%%'`
+  repo=`echo $project | sed -e 's%.*/%%'`
+  case ${repo} in
+    Draco) ldir="draco" ;;
+    *)     ldir=${repo} ;;
+  esac
+  echo -e "\nUpdating $REGDIR/$ldir..."
+  if [[ -d ${REGDIR}/$ldir ]]; then
+    run "cd ${REGDIR}/$ldir; git pull"
   else
-    case $repo in
-      draco|branson)
-        run "cd ${REGDIR}; git clone git@github.com:$project $repo"
-        ;;
-      *)
-        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${project}.git"
-        ;;
-    esac
+    echo "No local directory $REGDIR/${ldir}"
+    echo "  ==> To enable regressions for project ${project}, create this directory"
+    echo "      by running 'cd $REGDIR && git clone git@github.com:$project $ldir"
+#    run "cd ${REGDIR}; git clone git@github.com:$project $ldir"
   fi
 done
+
+# Gitlab repositories...
+for project in ${gitlab_projects[@]}; do
+  namespace=`echo $project | sed -e 's%/.*%%'`
+  repo=`echo $project | sed -e 's%.*/%%'`
+  case ${repo} in
+    Draco) ldir="draco" ;;
+    *)     ldir=${repo} ;;
+  esac
+  echo -e "\nUpdating $REGDIR/$ldir..."
+  if [[ -d ${REGDIR}/$ldir ]]; then
+    run "cd ${REGDIR}/$ldir; git pull"
+  else
+    echo "No local directory $REGDIR/${ldir}"
+    echo "  ==> To enable regressions for project ${project}, create this directory"
+    echo "      by running 'cd $REGDIR && git clone git@github.com:$project $ldir"
+#    run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${project}.git"
+  fi
+done
+
 
 #------------------------------------------------------------------------------#
 # Cleanup old files and directories

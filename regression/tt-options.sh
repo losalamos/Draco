@@ -4,7 +4,7 @@
 ## File  : regression/sripts/tt-options.sh
 ## Date  : Tuesday, May 16, 2017, 21:42 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2017, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##

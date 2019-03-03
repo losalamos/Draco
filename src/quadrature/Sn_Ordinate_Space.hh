@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of class Sn_Ordinate_Space
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Sn_Ordinate_Space.hh 6718 2012-08-30 20:03:01Z warsa $

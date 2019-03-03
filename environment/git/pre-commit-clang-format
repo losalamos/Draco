@@ -57,7 +57,7 @@ PARSE_EXTS=true
 
 # file types to parse. Only effective when PARSE_EXTS is true.
 # FILE_EXTS=".c .h .cpp .hpp"
-FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx"
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .cu"
 
 # file endings for files to exclude from parsing when PARSE_EXTS is true.
 FILE_ENDINGS="_f.h _f77.h _f90.h"

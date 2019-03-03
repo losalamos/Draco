@@ -3,7 +3,7 @@
 ## File  : regression/regression-master.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -165,7 +165,7 @@ esac
 
 for proj in ${projects}; do
    case $proj in
-   draco | jayenne | capsaicin | core ) # known projects, continue
+   draco | jayenne | core | trt | npt ) # known projects, continue
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown project name (-p) = ${proj}"
        print_use; exit 1 ;;
@@ -323,27 +323,6 @@ if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
   ((ifb++))
 fi
 
-export subproj=capsaicin
-if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
-  export featurebranch=${fb[$ifb]}
-  cmd="${rscriptdir}/${machine_class}-job-launch.sh"
-  # Wait for draco regressions to finish
-  case $extra_params_sort_safe in
-  *coverage*)
-     # We can only run one instance of bullseye at a time - so wait
-     # for jayenne to finish before starting capsaicin.
-     cmd+=" ${draco_jobid} ${jayenne_jobid}" ;;
-  *)
-     cmd+=" ${draco_jobid}" ;;
-  esac
-  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params_sort_safe}${prdash}${featurebranch}-joblaunch.log"
-  echo "${subproj}: $cmd"
-  eval "${cmd} &"
-  sleep 1s
-  capsaicin_jobid=`jobs -p | sort -gr | head -n 1`
-  ((ifb++))
-fi
-
 export subproj=core
 if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
   export featurebranch=${fb[$ifb]}
@@ -356,6 +335,48 @@ if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
      cmd+=" ${draco_jobid} ${capsaicin_jobid}" ;;
   *)
      cmd+=" ${draco_jobid}" ;;
+  esac
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params_sort_safe}${prdash}${featurebranch}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1s
+  core_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
+fi
+
+export subproj=trt
+if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
+  export featurebranch=${fb[$ifb]}
+  cmd="${rscriptdir}/${machine_class}-job-launch.sh"
+  # Wait for draco regressions to finish
+  case $extra_params_sort_safe in
+  *coverage*)
+     # We can only run one instance of bullseye at a time - so wait
+     # for capsaicin to finish before starting core.
+     cmd+=" ${draco_jobid} ${core_jobid}" ;;
+  *)
+     cmd+=" ${draco_jobid} ${core_jobid}" ;;  ## trt --> core --> draco
+  esac
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params_sort_safe}${prdash}${featurebranch}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1s
+  core_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
+fi
+
+export subproj=npt
+if [[ `echo $projects | grep -c $subproj` -gt 0 ]]; then
+  export featurebranch=${fb[$ifb]}
+  cmd="${rscriptdir}/${machine_class}-job-launch.sh"
+  # Wait for draco regressions to finish
+  case $extra_params_sort_safe in
+  *coverage*)
+     # We can only run one instance of bullseye at a time - so wait
+     # for capsaicin to finish before starting core.
+     cmd+=" ${draco_jobid} ${core_jobid} ${trt_jobid}" ;;
+  *)
+     cmd+=" ${draco_jobid} ${core_jobid}" ;;  ## npt --> core --> draco
   esac
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params_sort_safe}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"

@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Mon Aug 24 07:48:00 1998
  * \brief  Contains the template methods for the field ts_advisor class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

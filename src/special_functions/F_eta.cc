@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * These routines are based on C routines from Numerical Recipes.

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::determinate_swap and c4::indeterminate_swap functions
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

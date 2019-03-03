@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/test/tstPrefetch.cc
  * \brief  Demonstrate/Test the prefetch function.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 

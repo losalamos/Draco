@@ -4,7 +4,7 @@
  * \author Paul Talbot
  * \date   Tue July 26 13:39:00 2011
  * \brief  Iterative methods to calculate Ei(x), E_n(x)
- * \note   Copyright (C) 2016-2018 Los Alamos Natinal Security, LLC.
+ * \note   Copyright (C) 2016-2019 Los Alamos Natinal Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

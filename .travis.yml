@@ -4,7 +4,7 @@
 # Date:   Friday, Jul 13, 2018, 07:41 am
 # Purpose: Instructions for Travis continuous integration testing on GitHub.
 #         This script wil be run to test pull requests
-# Note:   Copyright (C) 2018 Los Alamos National Security, LLC.
+# Note:   Copyright (C) 2018-2019 Triad National Security, LLC.
 #         All rights reserved.
 #------------------------------------------------------------------------------#
 

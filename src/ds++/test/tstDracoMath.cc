@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/draco_math.hh.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -3,7 +3,7 @@
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
  * \brief  Define template function parse_class
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * utilities.hh declares a function template for parsers for class objects,
@@ -209,6 +209,137 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
 
   return Result;
 }
+
+//----------------------------------------------------------------------------------------//
+/*! Template for base class for class parser
+ *
+ * This is to simplify writing a class parser. A specializaton of Class_Parse_Table for a
+ * class Class uses this as a base class, as follows:
+ *
+ * Class__parser.hh:
+ *
+ * template<>
+ * class Class_Parse_Table<Class> : public Class_Parse_Table_Base<Class>
+ * {
+ *    public:
+ *      explicit Class_Parse_Table(Context_Type debug_context);
+ *
+ *      void check_completeness(Token_Stream &tokens);
+ *
+ *      shared_ptr<Sweeper_Creator> create_object();
+ *
+ *    protected:
+ *      // Data to be parsed which will be used to construct the class, for example:
+ *
+ *      Context_Type debug_context;
+ *      bool flag;
+ *      double constant;
+ *
+ *    private:
+ *      // Parse functions
+ *
+ *      static void parse_flag(Token_Stream &, int);
+ *      static void parse_constant(Token_Stream &, double);
+ * };
+ *
+ * Class__parser.cc:
+ *
+ * include "Class__parser.hh"
+ *
+ * void Class_Parse_Table<Class>::parse_flag(Token_Stream &tokens, int)
+ * {
+ *    ...
+ * }
+ *
+ * void Class_Parse_Table<Class>::parse_constant(Token_Stream &tokens, int)
+ * {
+ *    ...
+ * }
+ *
+ * Class_Parse_Table<Class>::Class_Parse_Table(Context_Type debug_word)
+ * : debug_context(debug_word), flag(false), constant(0.0)
+ * {
+ *   const Keyword keywords[] = {
+ *     {"block", parse_block, 0, ""},
+ *     {"solver", parse_solver, 0, ""},
+ *   };
+ *   initialize(keywords, sizeof(keywords));
+ * }
+ *
+ * void Class_Parse_Table<Class>::check_completeness(Token_Stream &tokens)
+ * {
+ *   ... check the parsed data ...
+ * }
+ *
+ * shared_ptr<Sweeper_Creator> Class_Parse_Table<Class>::create_object()
+ * {
+ *   return make_shared<Class>(debug_context, flag, constant);
+ * }
+ *
+ * template <>
+ * shared_ptr<Class>
+ * parse_class<Class>(Token_Stream &tokens,
+ *                    Debug_Context debug_context)
+ * {
+ *    return parse_class_from_table<Class_Parse_Table<Class>>(
+ *        tokens, debug_context);
+ * }
+ *
+ * This introduces all the "boilerplate" and lets the developer focus on the data required
+ * for the constructor for Class, the parse functions needed to parse this data, and the
+ * check and construct functions.
+ */
+
+template <class Class, bool allow_an_exit = false>
+class Class_Parse_Table_Base {
+public:
+  // TYPEDEFS
+
+  typedef Class Return_Class;
+  typedef unsigned Context_Type;
+
+  // MANAGEMENT
+
+  // SERVICES
+
+  bool allow_exit() const { return allow_an_exit; }
+
+  // STATIC
+
+  static Parse_Table &parse_table() { return parse_table_; }
+
+protected:
+  // DATA
+
+  // STATIC
+
+private:
+  // IMPLEMENTATION
+
+  // STATIC
+
+  friend class Class_Parse_Table<Class>;
+
+  void initialize(Keyword const keywords[], unsigned count) {
+    static bool first_time = true;
+    if (first_time) {
+      count /= sizeof(Keyword);
+      parse_table_.add(keywords, count);
+      first_time = false;
+    }
+    current_ = (Class_Parse_Table<Class> *)this;
+  }
+
+  static Class_Parse_Table<Class> *current_;
+  static Parse_Table parse_table_;
+};
+
+template <class Class, bool allow_exit>
+/*static*/ Class_Parse_Table<Class>
+    *Class_Parse_Table_Base<Class, allow_exit>::current_;
+
+template <class Class, bool allow_exit>
+/*static*/ Parse_Table Class_Parse_Table_Base<Class, allow_exit>::parse_table_;
 
 } // end namespace rtt_parser
 

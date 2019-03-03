@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 09:47 am
  * \brief  Contains function to generate a stack trace on Linux
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

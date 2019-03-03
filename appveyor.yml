@@ -11,7 +11,7 @@ environment:
   VENDOR_DIR: c:\projects\vendors
   PATH: c:\projects\vendors\bin;$(PATH)
   CMAKE_PREFIX_PATH: c:\projects\vendors\gsl-2.5;c:\projects\vendors\lapack-3.8.0;c:\projects\vendors\metis-5.1.0
-  
+
 build_script:
 # we start at $(APPVEYOR_BUILD_FOLDER) = c:\projects\draco-2th1a
 # can't put vendors in the source directory.

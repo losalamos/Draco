@@ -3,7 +3,7 @@
  * \file   c4/Processor_Group.cc
  * \author Kent Budge
  * \brief  Define non-template methods of class Processor_Group.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

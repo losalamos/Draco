@@ -3,7 +3,7 @@
 ## File  : regression/darwin-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -238,6 +238,7 @@ ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctes
 
 run "chgrp -R draco ${work_dir}"
 run "chmod -R g+rwX,o-rwX ${work_dir}"
+#  run "find ${work_dir} -type d -exec chmod g+s {} \;"
 
 echo "All done."
 

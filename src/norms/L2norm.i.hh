@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 18 08:22:09 2007
  * \brief  Member definitions of class L2norm
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This class is deprecated. New code should use Norm_Index instead.

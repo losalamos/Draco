@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -51,8 +51,8 @@ add_component_library(
 target_include_directories( Lib_c4
   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
-# xthi binary
-if( NOT WIN32 AND NOT APPLE )
+# xthi, ythi binaries
+if( NOT APPLE )
   add_subdirectory( bin )
 endif()
 
@@ -72,7 +72,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#

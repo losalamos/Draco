@@ -2,7 +2,7 @@
 # file   config/FindEOSPAC.cmake
 # date   2017 February 28
 # brief  Instructions for discovering the EOSPAC vendor libraries.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -84,15 +84,7 @@ find_path( EOSPAC_INCLUDE_DIR
 #     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
 # endif()
 
-if( WIN32 )
-  if( EOSPAC_STATIC )
-    set( EOSPAC_LIBRARY_NAME eospac.lib)
-  else()
-    set( EOSPAC_LIBRARY_NAME libeospac_dll.lib)
-  endif()
-else()
-  set( EOSPAC_LIBRARY_NAME eospac6)
-endif()
+set( EOSPAC_LIBRARY_NAME eospac6)
 
 find_library(EOSPAC_LIBRARY
   NAMES ${EOSPAC_LIBRARY_NAME}
@@ -103,7 +95,7 @@ find_library(EOSPAC_LIBRARY
 # Do we also have debug versions?
 find_library( EOSPAC_LIBRARY_DEBUG
   NAMES ${EOSPAC_LIBRARY_NAME}
-  HINTS ${EOSPAC_ROOT_DIR}/lib ${EOSPAC_LIBDIR}
+  HINTS ${EOSPAC_ROOT_DIR}/lib 
   PATH_SUFFIXES Debug
 )
 set( EOSPAC_INCLUDE_DIRS ${EOSPAC_INCLUDE_DIR} )
@@ -168,28 +160,50 @@ if(WIN32)
 endif()
 
 if( EOSPAC_FOUND AND NOT TARGET EOSPAC::eospac )
-  if( EXISTS "${EOSPAC_LIBRARY_DLL}" )
+  if( WIN32 )
+    if( EXISTS "${EOSPAC_LIBRARY_DLL}" )
 
-    # Windows systems with dll libraries.
-    add_library( EOSPAC::eospac SHARED IMPORTED )
+      # Windows systems with dll libraries.
+      add_library( EOSPAC::eospac SHARED IMPORTED )
 
-    # Windows with dlls, but only Release libraries.
-    set_target_properties( EOSPAC::eospac PROPERTIES
-      IMPORTED_LOCATION_RELEASE         "${EOSPAC_LIBRARY_DLL}"
-      IMPORTED_IMPLIB                   "${EOSPAC_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES     "${EOSPAC_INCLUDE_DIRS}"
-      IMPORTED_CONFIGURATIONS           Release
-      IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-
-    # If we have both Debug and Release libraries
-    if( EXISTS "${EOSPAC_LIBRARY_DEBUG_DLL}" )
-      set_property( TARGET EOSPAC::eospac APPEND PROPERTY
-        IMPORTED_CONFIGURATIONS Debug )
+      # Windows with dlls, but only Release libraries.
       set_target_properties( EOSPAC::eospac PROPERTIES
-        IMPORTED_LOCATION_DEBUG           "${EOSPAC_LIBRARY_DEBUG_DLL}"
-        IMPORTED_IMPLIB_DEBUG             "${EOSPAC_LIBRARY_DEBUG}" )
-    endif()
+        IMPORTED_LOCATION_RELEASE         "${EOSPAC_LIBRARY_DLL}"
+        IMPORTED_IMPLIB                   "${EOSPAC_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${EOSPAC_INCLUDE_DIRS}"
+        IMPORTED_CONFIGURATIONS           Release
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
 
+      # If we have both Debug and Release libraries
+      if( EXISTS "${EOSPAC_LIBRARY_DEBUG_DLL}" )
+        set_property( TARGET EOSPAC::eospac APPEND PROPERTY
+          IMPORTED_CONFIGURATIONS Debug )
+        set_target_properties( EOSPAC::eospac PROPERTIES
+          IMPORTED_LOCATION_DEBUG           "${EOSPAC_LIBRARY_DEBUG_DLL}"
+          IMPORTED_IMPLIB_DEBUG             "${EOSPAC_LIBRARY_DEBUG}" )
+      endif()
+
+    else()
+      # Windows systems with static lib libraries.
+      add_library( EOSPAC::eospac STATIC IMPORTED )
+
+      # Windows with dlls, but only Release libraries.
+      set_target_properties( EOSPAC::eospac PROPERTIES
+        IMPORTED_LOCATION_RELEASE         "${EOSPAC_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${EOSPAC_INCLUDE_DIRS}"
+        IMPORTED_CONFIGURATIONS           Release
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+
+      # If we have both Debug and Release libraries
+      if( EXISTS "${EOSPAC_LIBRARY_DEBUG}" )
+        set_property( TARGET EOSPAC::eospac APPEND PROPERTY
+          IMPORTED_CONFIGURATIONS Debug )
+        set_target_properties( EOSPAC::eospac PROPERTIES
+          IMPORTED_LOCATION_DEBUG           "${EOSPAC_LIBRARY_DEBUG}" )
+      endif()
+
+    endif()
+    
   else()
 
     # For all other environments (ones without dll libraries), create the

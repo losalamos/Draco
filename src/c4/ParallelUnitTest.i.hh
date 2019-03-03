@@ -10,10 +10,6 @@
 #ifndef dsxx_parallel_unit_test_i_hh
 #define dsxx_parallel_unit_test_i_hh
 
-#include "c4/ParallelUnitTest.hh"
-
-#include "ds++/ScalarUnitTest.i.hh"
-
 namespace rtt_c4 {
 
 template <typename... Lambda, typename Release>

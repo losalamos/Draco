@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Generate mainpage.dcc during 'make autodoc'
-# note   Copyright (C) 2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2018-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

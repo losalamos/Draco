@@ -4,7 +4,7 @@
 ! \author Allan Wollaber, Kelly Thompson
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions for the F90 Draco tests
-! \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+! \note   Copyright (c) 2016-2019 Triad National Security, LLC.
 !         All rights reserved.
 !
 ! This is a modified version of jayenne/src/wedgehog/ftest/Wedgehog_Test.F90.

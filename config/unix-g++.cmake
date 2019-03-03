@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-g++.cmake
 # brief  Establish flags for Unix/Linux - Gnu C++
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -21,9 +21,14 @@
 #
 # Declare CMake options related to GCC
 #
-option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." OFF )
+if( NOT DEFINED GCC_ENABLE_ALL_WARNINGS )
+  option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." 
+    OFF )
+endif()
+if( NOT DEFINED GCC_ENABLE_GLIBCXX_DEBUG )
 option( GCC_ENABLE_GLIBCXX_DEBUG
   "Use special version of libc.so that includes STL bounds checking." OFF )
+endif()
 
 #
 # Compiler flag checks
@@ -34,9 +39,11 @@ check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
 if( DEFINED CMAKE_CXX_COMPILER_ID )
   check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
   check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
-  check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
-  #check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
-  check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
+  check_cxx_compiler_flag( "-Wunused-local-typedefs"   
+    HAS_WUNUSED_LOCAL_TYPEDEFS )
+  #check_cxx_compiler_flag( "-Wunused-macros" HAS_WUNUSED_MACROS )
+  #check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
+  #  HAS_WZERO_AS_NULL_POINTER_CONSTANT )
 endif()
 
 # is this bullseye?

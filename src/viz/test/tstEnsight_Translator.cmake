@@ -4,7 +4,7 @@
 # date   Friday, Aug 28, 2015, 14:27 pm
 # brief  This is a CTest script that is used to check the output from
 #        viz/test/tstEnsight_Translator
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $

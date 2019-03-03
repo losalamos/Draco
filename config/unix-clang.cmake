@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-clang.cmake
 # brief  Establish flags for Unix clang
-# note   Copyright (C) 2010-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

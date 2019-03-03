@@ -4,7 +4,7 @@
  * \author Robert B. Lowrie
  * \date   Friday May 19 6:54:21 2017
  * \brief  C4_Status class definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

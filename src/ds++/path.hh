@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/path.hh
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
@@ -15,7 +15,7 @@
 #include "Assert.hh"
 #include "SystemCall.hh"
 #include <iostream>
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <dirent.h>   // struct DIR
 #include <sys/stat.h> // struct stat; S_ISDIR
 #endif

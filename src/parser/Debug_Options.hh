@@ -3,7 +3,7 @@
  * \file   parser/Debug_Options.hh
  * \author Kent Grimmett Budge
  * \brief  Define the Debug_Options enumeration and declare parse functions.
- * \note   Copyright (C) 2014-2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2014-2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 

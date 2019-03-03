@@ -2,7 +2,7 @@
 /*!
  * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
@@ -24,7 +24,7 @@
 
 /* Version Inforation */
 #define Draco_BUILD_DATE "@Draco_BUILD_DATE@"
-#define Draco_BUILD_TYPE "@Draco_BUILD_TYPE@"
+#define Draco_BUILD_TYPE @Draco_BUILD_TYPE@
 #cmakedefine Draco_VERSION @Draco_VERSION@
 #cmakedefine Draco_VERSION_FULL @Draco_VERSION_FULL@
 #define Draco_VERSION_MAJOR "@Draco_VERSION_MAJOR@"
@@ -50,6 +50,9 @@
 #cmakedefine MSVC @MSVC@
 #cmakedefine MSVC_IDE @MSVC_IDE@
 #cmakedefine MSVC_VERSION @MSVC_VERSION@
+#cmakedefine MINGW @MINGW@
+#cmakedefine XCODE @XCODE@
+#cmakedefine XCODE_VERSION @XCODE_VERSION@
 #cmakedefine CMAKE_SYSTEM_NAME @CMAKE_SYSTEM_NAME@
 #ifdef CMAKE_SYSTEM_NAME
 #define CMAKE_SYSTEM_NAME_STRING "@CMAKE_SYSTEM_NAME@"
@@ -64,7 +67,7 @@
 #cmakedefine draco_isPGI
 #cmakedefine draco_isKNL
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
-#cmakedefine HAVE_CUDA @HAVE_CUDA@
+#cmakedefine WITH_CUDA @WITH_CUDA@
 #cmakedefine APPLE @APPLE@
 #cmakedefine SITENAME "@SITENAME@"
 

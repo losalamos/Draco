@@ -3,7 +3,7 @@
 ; File:   f90-format.el
 ; Date:   Wednesday, Nov 07, 2018, 11:11 am
 ; Author: Kelly Thompson
-; Note:   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+; Note:   Copyright (C) 2016-2019, Triad National Security, LLC.
 ;         All rights are reserved.
 ; ------------------------------------------------------------------------------
 ; If emacs is available, enforce f90 formatting (indentation, etc) rules.

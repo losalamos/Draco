@@ -6,7 +6,7 @@
  * \brief  For a fermionic species, calculate the dimensionless number
  *         density from the dimensionless chemical potential and dimensionless
  *         temperature.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * These routines are based on C routines from \em Numerical \em Recipes.

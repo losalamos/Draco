@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the base class time-step advisor.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -5,7 +5,7 @@
 # date   Friday, October 28, 2016, 5:44 pm
 # brief  A script that uses the ipcress_reader.py functions to get gray opacity
 #        data for a range of temperatures.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
  * \brief
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -112,7 +112,7 @@ void Eospac::printTableInformation(EOS_INTEGER const tableType,
       << "-------------------------\n";
 
   // There are 11 descriptions available for all tables.
-  unsigned numItems(infoItems.size());
+  size_t numItems(infoItems.size());
   // There are extra descriptions available for non inverted tables
   // (infoItems.size()).
   if (tableType == EOS_T_DUe || tableType == EOS_T_DUic)
@@ -367,7 +367,8 @@ std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
 
   // There is one piece of returned information for each (density, temperature)
   // tuple.
-  int returnSize = vtemperature.size();
+  Check(vtemperature.size() < INT32_MAX);
+  int returnSize = static_cast<int>(vtemperature.size());
 
   std::vector<double> returnVals(returnSize);
   std::vector<double> dFx(returnSize);
@@ -488,7 +489,8 @@ void Eospac::expandEosTable() const {
   // Initialize eosTable and find it's required length
 
   EOS_INTEGER errorCode(0);
-  int nTables(returnTypes.size());
+  Check(returnTypes.size() < INT32_MAX);
+  int nTables(static_cast<int>(returnTypes.size()));
   eos_CreateTables(&nTables, &returnTypes[0], &matIDs[0], &tableHandles[0],
                    &errorCode);
 
@@ -591,7 +593,7 @@ unsigned Eospac::tableIndex(EOS_INTEGER returnType) const {
     throw EospacUnknownDataType(outputString.str());
   }
 
-  for (size_t i = 0; i < returnTypes.size(); ++i)
+  for (unsigned i = 0; i < returnTypes.size(); ++i)
     if (returnType == returnTypes[i])
       return i;
 

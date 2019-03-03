@@ -5,7 +5,7 @@
  * \date   Wed Nov  7 15:58:08 2001
  * \brief  Test the routines used for serializing and de-serializing C++
  *         objects.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 

@@ -3,11 +3,8 @@
  * \file   c4/test/tstTermination_Detector.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:45:44 2004
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"

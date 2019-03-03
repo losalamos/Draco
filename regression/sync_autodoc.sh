@@ -4,7 +4,7 @@
 ## File  : sync_autodoc.sh
 ## Date  : Wednesday, Oct 17, 2018, 12:06 pm
 ## Author: Kelly Thompson <kgt@lanl.gov>
-## Note  : Copyright (C) 2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2018, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
 ## Look for files at /ccs/codes/radtran/autodoc and rsync (publish) them to the

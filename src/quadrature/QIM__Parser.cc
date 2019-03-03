@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \brief  Define a parse routine for quadrature interpolation model
  *         specifications.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 

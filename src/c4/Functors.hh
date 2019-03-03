@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Sep 30 12:54:09 2005
  * \brief  Functors used in rtt_c4.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * Functors for use with TiggsTrace (scatter).

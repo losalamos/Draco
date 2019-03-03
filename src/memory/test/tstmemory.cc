@@ -3,7 +3,7 @@
  * \file   memory/test/tstmemory.cc
  * \author Kent G. Budge, Kelly G. Thompson
  * \brief  memory test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -188,5 +188,5 @@ int main(int argc, char *argv[]) {
 }
 
 //---------------------------------------------------------------------------//
-// end of tstProcmon.cc
+// end of tstmemory.cc
 //---------------------------------------------------------------------------//

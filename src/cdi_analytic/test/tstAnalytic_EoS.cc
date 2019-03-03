@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Oct  4 11:45:19 2001
  * \brief  Analytic_EoS test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

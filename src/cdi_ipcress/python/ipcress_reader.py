@@ -7,7 +7,7 @@
 #        dictionary that contains data for each property and each material
 #        present in the file. This script also contains interpolation functions
 #        for opacity data.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:37:01 2002
  * \brief  Hex Mesh Reader test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

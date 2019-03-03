@@ -4,7 +4,7 @@
  * \author Kelly (KT) Thompson
  * \brief  Wrap the cuda.h header while preventing comiler warnings about
  *         vendor code.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

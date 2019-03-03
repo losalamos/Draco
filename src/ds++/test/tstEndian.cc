@@ -3,7 +3,7 @@
  * \file   ds++/test/tstEndian.cc
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

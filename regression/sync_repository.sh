@@ -3,7 +3,7 @@
 ## File  : regression/sync_repository.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -57,7 +57,7 @@ echo -e "umask: `umask`\n"
 #
 # 1. It mirrors git@github.com/lanl/Draco.git,
 #    git@gitlab.lanl.gov/jayenne/jayenne.git and
-#    git@gitlab.lanl.gov/capsaicin/capsaicin to these locations:
+#    git@gitlab.lanl.gov/capsaicin/core to these locations:
 #    - ccscs7:/ccs/codes/radtran/git
 #    - darwin-fe:/usr/projects/draco/regress/git
 #    On ccscs7, this is done to allow Redmine to parse the current repository
@@ -207,6 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
+  run "find draco -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:
@@ -237,6 +238,7 @@ for project in ${gitlab_projects[@]}; do
   fi
   run "chgrp -R ccsrad $gitroot/${namespace}"
   run "chmod -R g+rwX,o-rwX $gitroot/${namespace}"
+  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
 
 done
 
@@ -248,7 +250,7 @@ if [[ ${target} == "ccscs7" ]]; then
 
   # Keep a copy of the bare repo for Redmine.  This version doesn't have the
   # PRs since this seems to confuse Redmine.
-  redmine_projects="jayenne capsaicin"
+  redmine_projects="jayenne core trt npt"
   for p in $redmine_projects; do
     echo -e "\n(Redmine) Copy ${p} git repository to the local file system..."
     if [[ -d $gitroot/${p}-redmine.git ]]; then
@@ -257,6 +259,8 @@ if [[ ${target} == "ccscs7" ]]; then
       run "git reset --soft"
       run "cd $gitroot"
       run "chmod -R g+rwX,o-rwX $gitroot/${p}-redmine.git"
+      run "find $gitroot/${p}-redmine.git -type d -exec chmod g+s {} \;"
+
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
@@ -266,7 +270,7 @@ if [[ ${target} == "ccscs7" ]]; then
         run "git clone --bare git@gitlab.lanl.gov:${p}/${p}.git ${p}-redmine.git"
       fi
       run "chmod -R g+rwX,o-rwX ${p}-redmine.git"
-      run "chmod g+s ${p}-redmine.git"
+      run "find ${p}-redmine.git -type d -exec chmod g+s {} \;"
     fi
   done
 
@@ -324,14 +328,14 @@ for project in ${git_projects[@]}; do
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       ;;
 
-    jayenne | capsaicin)
+    jayenne | core | trt | npt)
       # Extract PR number (if any)
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       ;;
   esac
 
   case $repo in
-    Draco | jayenne | capsaicin )
+    Draco | jayenne | core | trt | npt)
       repo_lc=`echo $repo | tr '[:upper:]' '[:lower:]'`
       # remove any duplicates
       prs=`echo $prs | xargs -n1 | sort -u | xargs`

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Nov 09, 2012, 13:02 pm
  * \brief  An interactive program for querying data from EOSPAC.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

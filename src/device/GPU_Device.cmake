@@ -1,16 +1,20 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/GPU_Device.cmake
 # brief  Instructions for building device Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+# Ref: https://devblogs.nvidia.com/building-cuda-applications-cmake/
+#      https://github.com/robertmaynard/code-samples/blob/master/posts/cmake
+# Ref: "Acceleware CUDA Course Lectures.pdf"
 
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
 set( TEST_KERNEL_BINDIR ${PROJECT_BINARY_DIR}/test CACHE PATH
-   "GPU kernel binary install location" )
+  "GPU kernel binary install location" )
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 # ---------------------------------------------------------------------------- #
@@ -35,13 +39,10 @@ add_component_library(
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME device
    SOURCES      "${sources}"
-   HEADERS      "${headers}"
-   VENDOR_LIST  "CUDA"
-   VENDOR_LIBS  "${CUDA_CUDA_LIBRARY}"
-   VENDOR_INCLUDE_DIRS "${CUDA_TOOLKIT_INCLUDE}"
-   )
+   HEADERS      "${headers}" )
 target_include_directories( Lib_device
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}> )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

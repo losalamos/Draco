@@ -4,7 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Keady
  * \date   Wednesday, Jul 11, 2018, 14:24 pm
  * \brief  X3D_Draco_Mesh_Reader header file.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

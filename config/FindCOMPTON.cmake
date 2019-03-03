@@ -3,7 +3,7 @@
 # author Kendra Keady <keadyk@lanl.gov>
 # date   2017 February 28
 # brief  Instructions for discovering the Compton vendor libraries.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -87,7 +87,7 @@ find_path( COMPTON_INCLUDE_DIR
   PATH_SUFFIXES Release Debug
 )
 
-set( COMPTON_LIBRARY_NAME Lib_compton_omp;Lib_compton)
+set( COMPTON_LIBRARY_NAME Lib_compton_omp;Lib_compton;compton_omp;compton)
 find_library( COMPTON_LIBRARY
   NAMES ${COMPTON_LIBRARY_NAME}
   HINTS ${COMPTON_ROOT_DIR}/lib ${COMPTON_LIBDIR}

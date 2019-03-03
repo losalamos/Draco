@@ -4,7 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

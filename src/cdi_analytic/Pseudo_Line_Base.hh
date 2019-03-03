@@ -3,7 +3,7 @@
  * \file   cdi_analytic/Pseudo_Line_Base.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
- * \note   Copyright (C) 2016, Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016, Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

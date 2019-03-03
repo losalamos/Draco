@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Feb 13
 # brief  Generate dll_declspec.h used to define DLL_PUBLIC_<pkg> definitions.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -17,7 +17,7 @@ set( dll_declspec_content
  * file   dll_declspec.h
  * brief  Defined macros that are used as declarators to control dllexport
  *        or dllimport linkage for dll files.
- * note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *        All rights reserved.
  *
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC

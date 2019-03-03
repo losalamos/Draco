@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 12 15:36:36 2001
  * \brief  cdi_ipcress test function headers.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

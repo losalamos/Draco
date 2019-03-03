@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Jul 26 08:15:18 2006
  * \brief  Test the Expression class and expression parsing.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

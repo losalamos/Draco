@@ -3,7 +3,7 @@
 ## File  : regression/cts1-regress.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -221,6 +221,7 @@ for ep in $extra_params; do
   esac
 done
 run "module list"
+unset MPI_ROOT
 
 # Use a unique regression folder for each github branch
 if [[ $extra_params_sort_safe ]]; then
@@ -287,12 +288,15 @@ if test "${subproj}" == draco; then
 elif test "${subproj}" == jayenne; then
     script_dir=`echo ${rscriptdir} | sed -e 's/draco/jayenne/'`
     script_name=Jayenne_Linux64.cmake
-elif test "${subproj}" == capsaicin; then
-    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
-    script_name=Capsaicin_Linux64.cmake
 elif test "${subproj}" == core; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%core/scripts%'`
     script_name=Core_Linux64.cmake
+elif test "${subproj}" == trt; then
+    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%trt/scripts%'`
+    script_name=Trt_Linux64.cmake
+elif test "${subproj}" == npt; then
+    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%npt/scripts%'`
+    script_name=Npt_Linux64.cmake
 fi
 
 if ! [[ "${regress_mode}" == "on" ]]; then
@@ -364,6 +368,7 @@ if [[ ${regress_mode} == "on" ]]; then
   echo " "
   run "chgrp -R ccsrad ${work_dir}"
   run "chmod -R g+rX,o-rwX ${work_dir}"
+#  run "find ${work_dir} -type d -exec chmod g+s {} \;"
 fi
 
 echo "All done."

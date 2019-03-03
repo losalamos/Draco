@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  C4 Communication Functions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file contains the declarations for communication functions provided by

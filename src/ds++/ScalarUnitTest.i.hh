@@ -10,8 +10,6 @@
 #ifndef dsxx_ScalarUnitTest_i_hh
 #define dsxx_ScalarUnitTest_i_hh
 
-#include "ds++/ScalarUnitTest.hh"
-
 namespace rtt_dsxx {
 
 template <typename Lambda>

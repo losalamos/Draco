@@ -4,7 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -102,33 +102,32 @@ const std::string author_list(bool const use_doxygen_formatting) {
   mmdevs current_developers;
   // not totally fair... KT got credit for LOC when svn repository was converted
   // to git.
-  current_developers.insert(fomdev(227428, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(12535, "Kent G. Budge"));
-  current_developers.insert(fomdev(3464, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(3070, "James S. Warsa"));
-  current_developers.insert(fomdev(2627, "Alex R. Long"));
-  current_developers.insert(fomdev(1000, "Kendra P. Keady"));
+  current_developers.insert(fomdev(206531, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(13729, "Kent G. Budge"));
+  current_developers.insert(fomdev(3445, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(2851, "James S. Warsa"));
+  current_developers.insert(fomdev(2788, "Alex R. Long"));
+  current_developers.insert(fomdev(1260, "Kendra P. Keady"));
   current_developers.insert(fomdev(398, "Jae H. Chang"));
-  current_developers.insert(fomdev(244, "Matt A. Cleveland"));
-  current_developers.insert(fomdev(120, "Andrew T. Till"));
-  current_developers.insert(fomdev(108, "Tim Kelley"));
+  current_developers.insert(fomdev(243, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(179, "Andrew T. Till"));
+  current_developers.insert(fomdev(60, "Tim Kelley"));
 
   mmdevs prior_developers;
 
-  prior_developers.insert(fomdev(4868, "Jeff D. Densmore"));
-  prior_developers.insert(fomdev(4058, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(2289, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(1450, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(4037, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(2237, "Allan B. Wollaber"));
   prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
-  prior_developers.insert(fomdev(313, "Paul W. Talbot"));
+  prior_developers.insert(fomdev(528, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(307, "Paul W. Talbot"));
   prior_developers.insert(fomdev(262, "Katherine J. Wang"));
   prior_developers.insert(fomdev(78, "Peter Ahrens"));
   prior_developers.insert(fomdev(25, "Daniel Holladay"));
+  prior_developers.insert(fomdev(19, "Jeff D. Densmore"));
   prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
   prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
 
   // Previous authors with no current LOC attribution:
-  prior_developers.insert(fomdev(1, "Gabe Rockefeller"));
   prior_developers.insert(fomdev(1, "Jeff Furnish"));
   prior_developers.insert(fomdev(1, "John McGhee"));
   prior_developers.insert(fomdev(1, "Kris C. Garrett"));
@@ -168,8 +167,8 @@ const std::string copyright() {
   std::ostringstream msg;
 
   msg << author_list() << "\n"
-      << "Copyright (C) 2016-2018 Los Alamos National Security, LLC. "
-         "(LA-CC-16-016)"
+      << "Copyright (C) 2016-2019 Triad National Security, LLC. "
+         "(C19028, LA-CC-16-016), Released under a 3-Clause BSD License."
       << std::endl;
 
   return msg.str();

@@ -3,7 +3,7 @@
 ## File  : regression/repository_list.sh
 ## Date  : Thursday, May 03, 2018, 08:47 am
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2018, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 

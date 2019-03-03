@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

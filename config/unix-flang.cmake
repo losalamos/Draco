@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # date   Sunday, Apr 29, 2018, 19:56 pm
 # brief  Establish flags for Unix/Linux - Gnu Fortran
-# note   Copyright (C) 2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2018-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -185,9 +185,10 @@ Constant_Analytic_Opacity_Model::get_parameters() const {
 
 Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
     const sf_char &packed)
-    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0) {
+    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0), i(0.0),
+      j(0.0), k(0.0) {
   // size of stream
-  size_t size = sizeof(int) + 8 * sizeof(double);
+  size_t size = sizeof(int) + 11 * sizeof(double);
 
   Require(packed.size() == size);
 
@@ -204,7 +205,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
          "Tried to unpack the wrong type in Polynomial_Analytic_Opacity_Model");
 
   // unpack the data
-  unpacker >> a >> b >> c >> d >> e >> f >> g >> h;
+  unpacker >> a >> b >> c >> d >> e >> f >> g >> h >> i >> j >> k;
 
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
@@ -217,8 +218,8 @@ Polynomial_Analytic_Opacity_Model::pack() const {
   // get the registered indicator
   int indicator = POLYNOMIAL_ANALYTIC_OPACITY_MODEL;
 
-  // caculate the size in bytes: indicator + 8 * double
-  int size = sizeof(int) + 8 * sizeof(double);
+  // caculate the size in bytes: indicator + 11 * double
+  int size = sizeof(int) + 11 * sizeof(double);
 
   // make a vector of the appropriate size
   sf_char pdata(size);
@@ -241,6 +242,9 @@ Polynomial_Analytic_Opacity_Model::pack() const {
   packer << f;
   packer << g;
   packer << h;
+  packer << i;
+  packer << j;
+  packer << k;
 
   // Check the size
   Ensure(packer.get_ptr() == &pdata[0] + size);
@@ -253,7 +257,7 @@ Polynomial_Analytic_Opacity_Model::pack() const {
 
 Analytic_Opacity_Model::sf_double
 Polynomial_Analytic_Opacity_Model::get_parameters() const {
-  sf_double p(8);
+  sf_double p(11);
   p[0] = a;
   p[1] = b;
   p[2] = c;
@@ -262,111 +266,12 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const {
   p[5] = f;
   p[6] = g;
   p[7] = h;
+  p[8] = i;
+  p[9] = j;
+  p[10] = k;
 
   return p;
 }
-//===========================================================================//
-// STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL DEFINITIONS
-//===========================================================================//
-/*!
- * \brief Unpacking constructor for Stimulated_Emission_Analytic_Opacity_Model
- *        objects.
- * \bug   There are no unit tests for this function, so commenting it out.
- */
-/*
-Stimulated_Emission_Analytic_Opacity_Model::
-    Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed)
-    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0) {
-  // size of stream
-  size_t size = sizeof(int) + 8 * sizeof(double);
-
-  Require(packed.size() == size);
-
-  // make an unpacker
-  rtt_dsxx::Unpacker unpacker;
-
-  // set the unpacker
-  unpacker.set_buffer(size, &packed[0]);
-
-  // unpack the indicator
-  int indicator;
-  unpacker >> indicator;
-  Insist(indicator == STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL,
-         "Tried to unpack the wrong type in "
-         "Stimulated_Emission_Analytic_Opacity_Model");
-
-  // unpack the data
-  unpacker >> a >> b >> c >> d >> e >> f >> g >> h;
-
-  Ensure(unpacker.get_ptr() == unpacker.end());
-}
-*/
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Packing functionfor Stimulated_Emission_Analytic_Opacity_Model
- *        objects.
- * \bug   There are no unit tests for this function, so commenting it out.
- */
-/*
-Analytic_Opacity_Model::sf_char
-Stimulated_Emission_Analytic_Opacity_Model::pack() const {
-  // get the registered indicator
-  int indicator = STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL;
-
-  // caculate the size in bytes: indicator + 8 * double
-  int size = sizeof(int) + 8 * sizeof(double);
-
-  // make a vector of the appropriate size
-  sf_char pdata(size);
-
-  // make a packer
-  rtt_dsxx::Packer packer;
-
-  // set the packer buffer
-  packer.set_buffer(size, &pdata[0]);
-
-  // pack the indicator
-  packer << indicator;
-
-  // pack the data
-  packer << a;
-  packer << b;
-  packer << c;
-  packer << d;
-  packer << e;
-  packer << f;
-  packer << g;
-  packer << h;
-
-  // Check the size
-  Ensure(packer.get_ptr() == &pdata[0] + size);
-
-  return pdata;
-}
-*/
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return the model parameters for a
- *        Stimulated_Emission_Analytic_Opacity_Model
- * \bug   There are no unit tests for this, so commenting it out.
- */
-/*
-Analytic_Opacity_Model::sf_double
-Stimulated_Emission_Analytic_Opacity_Model::get_parameters() const {
-  sf_double p(8);
-  p[0] = a;
-  p[1] = b;
-  p[2] = c;
-  p[3] = d;
-  p[4] = e;
-  p[5] = f;
-  p[6] = g;
-  p[7] = h;
-  return p;
-}
-*/
 
 //===========================================================================//
 // POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL DEFINITIONS

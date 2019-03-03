@@ -3,7 +3,7 @@
  * \file   parser/test/tstClass_Parser.cc
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -30,21 +30,17 @@ private:
 
 namespace rtt_parser {
 //---------------------------------------------------------------------------//
-template <> class Class_Parse_Table<DummyClass> {
+template <>
+class Class_Parse_Table<DummyClass>
+    : public Class_Parse_Table_Base<DummyClass, false> {
 public:
   // TYPEDEFS
 
-  typedef DummyClass Return_Class;
-
   // MANAGEMENT
 
-  Class_Parse_Table(bool is_indolent = false);
+  Class_Parse_Table(bool context = false);
 
   // SERVICES
-
-  Parse_Table const &parse_table() const { return parse_table_; }
-
-  bool allow_exit() const { return false; }
 
   void check_completeness(Token_Stream &tokens);
 
@@ -54,8 +50,7 @@ protected:
   // DATA
 
   double parsed_insouciance;
-
-  bool is_indolent;
+  bool context;
 
 private:
   // IMPLEMENTATION
@@ -63,29 +58,19 @@ private:
   static void parse_insouciance_(Token_Stream &tokens, int);
 
   // STATIC
-
-  static Class_Parse_Table *current_;
-  static Parse_Table parse_table_;
-  static bool parse_table_is_initialized_;
 };
-
-//---------------------------------------------------------------------------//
-Class_Parse_Table<DummyClass> *Class_Parse_Table<DummyClass>::current_;
-Parse_Table Class_Parse_Table<DummyClass>::parse_table_;
-bool Class_Parse_Table<DummyClass>::parse_table_is_initialized_ = false;
-
-//---------------------------------------------------------------------------//
-template <>
-std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
-  return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens);
-}
 
 //---------------------------------------------------------------------------//
 template <>
 std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
-                                                    bool const &is_indolent) {
-  return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens,
-                                                               is_indolent);
+                                                    bool const &context) {
+  return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens, context);
+}
+
+//---------------------------------------------------------------------------//
+template <>
+std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
+  return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens, false);
 }
 
 //---------------------------------------------------------------------------//
@@ -100,34 +85,24 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
     current_->parsed_insouciance = 1;
   }
 
-  if (current_->is_indolent) {
+  if (current_->context) {
     current_->parsed_insouciance = -current_->parsed_insouciance;
   }
 }
 
 //---------------------------------------------------------------------------//
-Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const is_indolent)
-    : parsed_insouciance(-1.0) // sentinel value
+Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const context)
+    : parsed_insouciance(-1.0), context(context) // sentinel value
 {
-  if (!parse_table_is_initialized_) {
-    Keyword const keywords[] = {
-        {"insouciance", parse_insouciance_, 0, ""},
-    };
-    unsigned const number_of_keywords = sizeof(keywords) / sizeof(Keyword);
-
-    parse_table_.add(keywords, number_of_keywords);
-
-    parse_table_is_initialized_ = true;
-  }
-
-  this->is_indolent = is_indolent;
-
-  current_ = this;
+  Keyword const keywords[] = {
+      {"insouciance", parse_insouciance_, 0, ""},
+  };
+  initialize(keywords, sizeof(keywords));
 }
 
 //---------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
-  tokens.check_semantics(is_indolent || parsed_insouciance >= 0,
+  tokens.check_semantics(context || parsed_insouciance >= 0,
                          "insouciance was not specified");
 }
 

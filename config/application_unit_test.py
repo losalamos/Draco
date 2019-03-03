@@ -5,7 +5,7 @@
 # brief  Provide a python class that aids in creating unit tests that run
 #        interactive user codes (i.e.: run a binary that reads an
 #        input file and diff the resulting output file).
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

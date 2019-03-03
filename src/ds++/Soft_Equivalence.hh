@@ -4,7 +4,7 @@
  * \author Thomas M. Evans and Todd Urbatsch
  * \date   Wed Nov  7 14:10:55 2001
  * \brief  Soft_Equivalence functions for floating point comparisons.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

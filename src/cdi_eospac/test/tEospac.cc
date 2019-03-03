@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr 2 14:20:14 2001
  * \brief  Implementation file for tEospac
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -82,15 +82,15 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
 
   // Cvi (returnType=EOS_Uic_DT (=ES4enion)) should point to matID 3717.
   // The user should never need to access this function.  However Eospac.cc
-  // does and we need to test this funcitonality.
+  // does and we need to test this functionality.
 
   if (AlSt.matID(EOS_Uic_DT) != 3717)
     FAILMSG("AlSt.matID(EOS_Uic_DT) points to the wrong matID.");
 
-  // The temperature-based electorn thermal conductivity
+  // The temperature-based electron thermal conductivity
   // (returnType=27=EOS_Ktc_DT) should point to matID 23714.  The user should
   // never need to access this function.  However Eospac.cc does and we need
-  // to test this funcitonality.
+  // to test this functionality.
 
   if (AlSt.matID(EOS_Ktc_DT) != 23714)
     FAILMSG("AlSt.matID(27) points to the wrong matID.");
@@ -142,9 +142,11 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   //             ).Uic_DT( Al3717 ).Ktc_DT( Al23714 ) );
 
   //     if ( spEospacAlt )
-  //         PASSMSG("shared_ptr to new Eospac object created (Alternate ctor).");
+  //         PASSMSG("shared_ptr to new Eospac object created (Alternate "
+  //                "ctor).");
   //     else
-  //         FAILMSG("Unable to create shared_ptr to new Eospac object (Alternate ctor).");
+  //         FAILMSG("Unable to create shared_ptr to new Eospac object " +
+  //                 "(Alternate ctor).");
   // }
 
   // --------------------------- //
@@ -189,7 +191,7 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG("getElectronHeatCapacity() test failed.");
 
-  // Retrive an Ion Internal Energy
+  // Retrieve an Ion Internal Energy
 
   refValue = 5.23391652028; // kJ/g
 
