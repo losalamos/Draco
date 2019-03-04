@@ -234,6 +234,33 @@ public:
     Ensure(opacity >= 0.0);
     return opacity;
   }
+
+  //! Calculate the opacity in units of cm^2/g
+  double calculate_opacity(double T, double rho, double nu0, double nu1) const {
+    Require(nu1 > nu0);
+
+    //double nu = 0.5*(nu0+nu1);
+    double nu = sqrt(nu0 * nu1);
+    return calculate_opacity(T, rho, nu);
+  }
+
+  //! Calculate the opacity in units of cm^2/g
+  double calculate_opacity(double T, double rho) const {
+    using std::pow;
+    Require(c < 0.0 ? T > 0.0 : T >= 0.0);
+    Require(rho >= 0.0);
+
+    const double opacity = a + b * pow(T / f, c) * pow(rho / g, d);
+
+    Ensure(opacity >= 0.0);
+    return opacity;
+  }
+
+  //! Return the model parameters.
+  sf_double get_parameters() const;
+
+  //! Pack up the class for persistence.
+  sf_char pack() const;
 };
 
 //===========================================================================//

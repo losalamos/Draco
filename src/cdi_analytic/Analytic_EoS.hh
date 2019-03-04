@@ -38,13 +38,9 @@ namespace rtt_cdi_analytic {
  * Example usage of Analytic_EoS, Analytic_EoS_Model, and their incorporation
  * into rtt_cdi::CDI.
  */
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_EoS : public rtt_cdi::EoS {
+class Analytic_EoS : public rtt_cdi::EoS {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_EoS_Model> SP_Analytic_Model;
