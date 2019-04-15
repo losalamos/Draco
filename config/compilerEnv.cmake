@@ -144,16 +144,17 @@ macro(dbsSetupCxx)
   # set_target_properties( <tgt> PROPERTIES C_STANDARD 11 ... )
 
   # C11 support:
-  set( CMAKE_C_STANDARD 11 )
+  if( CMAKE_C_STANDARD LESS 11)
+	  message(FATAL_ERROR "Draco Requires C standard >= 11")
+  endif()
 
   # C++14 support:
-  set( CMAKE_CXX_STANDARD 14 )
-  set( CMAKE_CXX_STANDARD_REQUIRED ON )
+  if( CMAKE_CXX_STANDARD LESS 14 )
+	  message(FATAL_ERROR "Draco Requires C++ standard >= 14")
+  endif()
 
   # Do not enable extensions (e.g.: --std=gnu++11)
   # https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
-  set( CMAKE_CXX_EXTENSIONS OFF )
-  set( CMAKE_C_EXTENSIONS   OFF )
 
   # -fPIC by default
   set( CMAKE_POSITION_INDEPENDENT_CODE ON )
