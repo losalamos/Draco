@@ -158,6 +158,7 @@ public:
    * \param cond The expression that failed a DbC test.
    * \param file The source code file name that contains the DbC test.
    * \param line The source code line number that contains the DbC test.
+   * \param print_stack Print a strack trace.
    *
    * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, AlwaysRequire,
    * AlwaysEnsure, AlwaysCheck, Insist
