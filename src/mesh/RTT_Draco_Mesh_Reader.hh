@@ -34,14 +34,15 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh explicit RTT_Draco_Mesh_Reader(const std::string filename_);
+  explicit RTT_Draco_Mesh_Reader(const std::string filename_);
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh void read_mesh();
+  void read_mesh();
 
   // >>> ACCESSORS
 
+  bool get_use_face_types() const { return false; }
   unsigned get_numdim() const { return rtt_reader->get_dims_ndim(); }
   size_t get_numcells() const { return rtt_reader->get_dims_ncells(); }
   size_t get_numnodes() const { return rtt_reader->get_dims_nnodes(); }
@@ -51,7 +52,12 @@ public:
   std::vector<unsigned> get_cellnodes(size_t cell) const {
     return rtt_reader->get_cells_nodes(cell);
   }
-  size_t get_numsides() const { return rtt_reader->get_dims_nsides(); }
+  [[noreturn]] std::vector<unsigned> get_cellfacenodes(size_t /*cell*/,
+                                                       size_t /*face*/) const {
+    Insist(false, "cell-face nodes not implemented with RTT reader.");
+  } size_t get_numsides() const {
+    return rtt_reader->get_dims_nsides();
+  }
   unsigned get_sideflag(size_t side) const {
     return rtt_reader->get_sides_flags(side, 0);
   }

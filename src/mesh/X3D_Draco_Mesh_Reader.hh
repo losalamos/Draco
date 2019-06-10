@@ -60,6 +60,9 @@ private:
   //! Boundary conditions per boundary file (optional data)
   const std::vector<unsigned> bdy_flags;
 
+  //! Switch for providing dimension-agnostic data to mesh builder
+  const bool use_face_types;
+
   //! Vector of all parsed key-value data pairs (includes valueless delimiters)
   Parsed_Elements parsed_pairs;
 
@@ -86,16 +89,19 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh
   X3D_Draco_Mesh_Reader(const std::string &filename_,
                         const std::vector<std::string> &bdy_filenames_ = {},
-                        const std::vector<unsigned> &bdy_flags_ = {});
+                        const std::vector<unsigned> &bdy_flags_ = {},
+                        const bool use_face_types = false);
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh void read_mesh();
+  void read_mesh();
 
   // >>> ACCESSORS
+
+  // reader type
+  bool get_use_face_types() const { return use_face_types; }
 
   // header data
   unsigned get_process() const {
@@ -118,6 +124,7 @@ public:
   // accessors with deferred implementations
   unsigned get_celltype(size_t cell) const;
   std::vector<unsigned> get_cellnodes(size_t cell) const;
+  std::vector<unsigned> get_cellfacenodes(size_t cell, size_t face) const;
 
   // data needed from x3d boundary file
   size_t get_numsides() const { return x3d_sidenode_map.size(); }

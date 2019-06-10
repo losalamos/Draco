@@ -39,8 +39,13 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   std::shared_ptr<X3D_Draco_Mesh_Reader> x3d_reader(
       new X3D_Draco_Mesh_Reader(filename, bdy_filenames, bdy_flags));
 
-  // read mesh
+  // construct alternate reader using face types
+  std::shared_ptr<X3D_Draco_Mesh_Reader> x3d_reader_alt(
+      new X3D_Draco_Mesh_Reader(filename, bdy_filenames, bdy_flags, true));
+
+  // read meshes
   x3d_reader->read_mesh();
+  x3d_reader_alt->read_mesh();
 
   // >>> CHECK HEADER DATA
 
@@ -52,9 +57,13 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   // >>> CHECK CELL-NODE DATA
 
   FAIL_IF_NOT(x3d_reader->get_celltype(0) == 4);
+  FAIL_IF_NOT(x3d_reader_alt->get_celltype(0) == 4);
 
   std::vector<unsigned> test_cellnodes = {0, 1, 3, 2};
   FAIL_IF_NOT(x3d_reader->get_cellnodes(0) == test_cellnodes);
+
+  std::vector<unsigned> test_cellnodes_alt = {0, 1, 1, 3, 3, 2, 2, 0};
+  FAIL_IF_NOT(x3d_reader_alt->get_cellnodes(0) == test_cellnodes_alt);
 
   // >>> CHECK NODE-COORD DATA
 
@@ -66,6 +75,7 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   // >>> CHECK SIDE DATA
 
   FAIL_IF_NOT(x3d_reader->get_numsides() == 4);
+  FAIL_IF_NOT(x3d_reader_alt->get_numsides() == 4);
 
   std::vector<std::vector<unsigned>> test_sidenodes = {
       {0, 1}, {1, 3}, {2, 3}, {0, 2}};
@@ -75,13 +85,16 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
     // sides must always give 2 nodes per face in X3D
     FAIL_IF_NOT(x3d_reader->get_sidetype(side) == 2);
+    FAIL_IF_NOT(x3d_reader_alt->get_sidetype(side) == 2);
 
     // boundary conditions are not supplied in X3D
     // (note this check is specialized for the 1-cell mesh)
     FAIL_IF_NOT(x3d_reader->get_sideflag(side) == bdy_flags[side]);
+    FAIL_IF_NOT(x3d_reader_alt->get_sideflag(side) == bdy_flags[side]);
 
     // check node indices
     FAIL_IF_NOT(x3d_reader->get_sidenodes(side) == test_sidenodes[side]);
+    FAIL_IF_NOT(x3d_reader_alt->get_sidenodes(side) == test_sidenodes[side]);
   }
 
   // >>> CHECK BC-NODE MAP
@@ -118,7 +131,8 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   const size_t num_ydir = 1;
 
   // generate a constainer for data needed in mesh construction
-  rtt_mesh_test::Test_Mesh_Interface mesh_iface(num_xdir, num_ydir);
+  rtt_mesh_test::Test_Mesh_Interface mesh_iface(num_xdir, num_ydir, {}, 0.0,
+                                                0.0, true);
 
   // short-cut to some arrays
   const std::vector<unsigned> &cell_type = mesh_iface.cell_type;
@@ -132,7 +146,8 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   std::shared_ptr<Draco_Mesh> ref_mesh(new Draco_Mesh(
       mesh_iface.dim, geometry, cell_type, cell_to_node_linkage,
       mesh_iface.side_set_flag, side_node_count, side_to_node_linkage,
-      mesh_iface.coordinates, mesh_iface.global_node_number));
+      mesh_iface.coordinates, mesh_iface.global_node_number, {}, {}, {}, {},
+      mesh_iface.face_type));
 
   // >>> PARSE AND BUILD MESH
 
@@ -144,7 +159,7 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // construct reader
   std::shared_ptr<X3D_Draco_Mesh_Reader> x3d_reader(
-      new X3D_Draco_Mesh_Reader(filename, bdy_filenames));
+      new X3D_Draco_Mesh_Reader(filename, bdy_filenames, {}, true));
 
   // read mesh
   x3d_reader->read_mesh();
@@ -154,37 +169,26 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   std::shared_ptr<Draco_Mesh> mesh = mesh_builder.build_mesh(geometry);
 
   // check that the scalar data is correct
-  if (mesh->get_dimension() != ref_mesh->get_dimension())
-    ITFAILS;
-  if (mesh->get_geometry() != ref_mesh->get_geometry())
-    ITFAILS;
-  if (mesh->get_num_cells() != ref_mesh->get_num_cells())
-    ITFAILS;
-  if (mesh->get_num_nodes() != ref_mesh->get_num_nodes())
-    ITFAILS;
+  FAIL_IF(mesh->get_dimension() != ref_mesh->get_dimension());
+  FAIL_IF(mesh->get_geometry() != ref_mesh->get_geometry());
+  FAIL_IF(mesh->get_num_cells() != ref_mesh->get_num_cells());
+  FAIL_IF(mesh->get_num_nodes() != ref_mesh->get_num_nodes());
 
   // check that layout is correct (empty for one cell, no side or ghost data)
-  if ((mesh->get_cc_linkage()).size() > 0)
-    ITFAILS;
-  if ((mesh->get_cs_linkage()).size() != 1)
-    ITFAILS;
-  if ((mesh->get_cg_linkage()).size() > 0)
-    ITFAILS;
+  FAIL_IF((mesh->get_cc_linkage()).size() > 0);
+  FAIL_IF((mesh->get_cs_linkage()).size() != 1);
+  FAIL_IF((mesh->get_cg_linkage()).size() > 0);
 
   // check side flag indices (should be different)
-  if (mesh->get_side_set_flag() == ref_mesh->get_side_set_flag())
-    ITFAILS;
+  FAIL_IF(mesh->get_side_set_flag() == ref_mesh->get_side_set_flag());
 
   // check ghost cell data (should be empty defaults)
-  if (mesh->get_ghost_cell_numbers() != ref_mesh->get_ghost_cell_numbers())
-    ITFAILS;
-  if (mesh->get_ghost_cell_ranks() != ref_mesh->get_ghost_cell_ranks())
-    ITFAILS;
+  FAIL_IF(mesh->get_ghost_cell_numbers() != ref_mesh->get_ghost_cell_numbers());
+  FAIL_IF(mesh->get_ghost_cell_ranks() != ref_mesh->get_ghost_cell_ranks());
 
   // check that the vector of coordinates match the reference mesh
-  if (!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(),
-                            ref_mesh->get_node_coord_vec()))
-    ITFAILS;
+  FAIL_IF(!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(),
+                                ref_mesh->get_node_coord_vec()));
 
   // check that each cell has the correct sides
   {
@@ -196,14 +200,14 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
         side_to_node_linkage.begin();
     std::vector<unsigned>::const_iterator test_sn_first =
         test_sn_linkage.begin();
+
     for (unsigned side = 0; side < mesh_iface.num_sides; ++side) {
 
       // check that sn_linkage is a permutation of the original side-node
       // linkage
-      if (!std::is_permutation(test_sn_first,
-                               test_sn_first + side_node_count[side], sn_first,
-                               sn_first + side_node_count[side]))
-        ITFAILS;
+      FAIL_IF(!std::is_permutation(test_sn_first,
+                                   test_sn_first + side_node_count[side],
+                                   sn_first, sn_first + side_node_count[side]));
 
       // update the iterators
       sn_first += side_node_count[side];

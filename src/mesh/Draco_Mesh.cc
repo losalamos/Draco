@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//-----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mesh/Draco_Mesh.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
@@ -6,12 +6,11 @@
  * \brief  Draco_Mesh class implementation file.
  * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Draco_Mesh.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
-#include <iostream>
 #include <numeric>
 
 namespace rtt_mesh {
@@ -23,17 +22,24 @@ unsigned safe_convert_from_size_t(size_t const in_) {
   return static_cast<unsigned>(in_);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CONSTRUCTOR
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Draco_Mesh constructor.
  *
  * \param[in] dimension_ dimension of mesh
  * \param[in] geometry_ enumerator of possible coordinate system geometries
- * \param[in] cell_type_ number of vertices for each cell
+ * \param[in] cell_type_ number of vertices for each cell if face_type_ is
+ *               size 0 (empty), otherwise number of faces for each cell.
  * \param[in] cell_to_node_linkage_ serialized map of cell indices to node
- *               indices.
+ *               indices. if face_type_ is supplied then nodes are listed per
+ *               cell face. so there are duplicate node entries in 2D or 3D
+ *               since adjacent cell faces will share one or more nodes. when
+ *               face_type_ is supplied, in 2D node ordering will be assumed to
+ *               still be counterclockwise around the cell, in 3D the node
+ *               ordering per face is assumed to be counterclockwise from inside
+ *               the cell looking at the face.
  * \param[in] side_set_flag_ map of side indices (per cell) to side flag (global
  *               index for a side).
  * \param[in] side_node_count_ number of nodes per each cell on a side of
@@ -50,6 +56,7 @@ unsigned safe_convert_from_size_t(size_t const in_) {
  *               ghost cells to local index of ghost nodes.
  * \param[in] ghost_cell_number_ cell index local to other processor.
  * \param[in] ghost_cell_rank_ rank of each ghost cell.
+ * \param[in] face_type_ number of vertices per face per cell.
  */
 Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &cell_type_,
@@ -62,7 +69,8 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &ghost_cell_type_,
                        const std::vector<unsigned> &ghost_cell_to_node_linkage_,
                        const std::vector<int> &ghost_cell_number_,
-                       const std::vector<int> &ghost_cell_rank_)
+                       const std::vector<int> &ghost_cell_rank_,
+                       const std::vector<unsigned> &face_type_)
     : dimension(dimension_), geometry(geometry_),
       num_cells(safe_convert_from_size_t(cell_type_.size())),
       num_nodes(safe_convert_from_size_t(global_node_number_.size())),
@@ -73,13 +81,7 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
       m_side_node_count(side_node_count_),
       m_side_to_node_linkage(side_to_node_linkage_) {
 
-  // Require(dimension_ <= 3);
-  // \todo: generalize mesh generation to 1D,3D (and uncomment requirment above)
-  Insist(dimension_ == 2, "dimension_ != 2");
-
-  // require some constraints on vector sizes
-  Require(cell_to_node_linkage_.size() ==
-          std::accumulate(cell_type_.begin(), cell_type_.end(), 0u));
+  Require(dimension_ <= 3);
   Require(
       side_to_node_linkage_.size() ==
       std::accumulate(side_node_count_.begin(), side_node_count_.end(), 0u));
@@ -92,15 +94,31 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
       ghost_cell_to_node_linkage_.size() ==
       std::accumulate(ghost_cell_type_.begin(), ghost_cell_type_.end(), 0u));
 
-  // build the layout (or linkage) of the mesh
-  compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_,
-                               side_node_count_, side_to_node_linkage_,
-                               ghost_cell_type_, ghost_cell_to_node_linkage_);
+  if (face_type_.size() == 0) {
+
+    // continue to support the original linkage generation for 2D
+    Insist(dimension_ == 2, "dimension_ != 2");
+
+    // require some constraints on vector sizes
+    Check(cell_to_node_linkage_.size() ==
+          std::accumulate(cell_type_.begin(), cell_type_.end(), 0u));
+
+    // build the layout (or linkage) of the mesh
+    compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_,
+                                 side_node_count_, side_to_node_linkage_,
+                                 ghost_cell_type_, ghost_cell_to_node_linkage_);
+  } else {
+
+    // build the layout using face types (number of nodes per face per cell)
+    compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_, face_type_,
+                                 side_node_count_, side_to_node_linkage_,
+                                 ghost_cell_type_, ghost_cell_to_node_linkage_);
+  }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Build the cell-face index map to the corresponding coordinates.
  *
@@ -136,7 +154,7 @@ std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
   return ret_node_coord_vec;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Build the cell-face index map to the corresponding coordinates.
  *
@@ -183,7 +201,6 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   // STEP 4: identify faces and create cell to cell map
 
   // \todo: global face index?
-  // \todo: extend to 1D, 3D
   // \todo: add all cells as keys to each layout, even without values
 
   // identify faces per cell and create cell-to-cell linkage
@@ -316,14 +333,175 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   Check(node_offset == cell_to_node_linkage.size());
 
-  // STEP 5: instantiate the full layout
-  // \todo: finish Draco_Layout class
-
   Ensure(cell_to_cell_linkage.size() <= num_cells);
   Ensure(cell_to_side_linkage.size() <= num_cells);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Build the cell-face index map to the corresponding coordinates.
+ *
+ * \param[in] cell_type number of faces per cell.
+ * \param[in] cell_to_node_linkage serial map of cell to face to node indices.
+ * \param[in] face_type number of nodes per face per cell
+ * \param[in] side_node_count number of vertices per side.
+ * \param[in] side_to_node_linkage serial map of side index to node indices.
+ * \param[in] ghost_cell_type  number of common vertices per ghost cell.
+ * \param[in] ghost_cell_to_node_linkage vertices in common per ghost cell.
+ */
+void Draco_Mesh::compute_cell_to_cell_linkage(
+    const std::vector<unsigned> &cell_type,
+    const std::vector<unsigned> &cell_to_node_linkage,
+    const std::vector<unsigned> &face_type,
+    const std::vector<unsigned> &side_node_count,
+    const std::vector<unsigned> &side_to_node_linkage,
+    const std::vector<unsigned> &ghost_cell_type,
+    const std::vector<unsigned> &ghost_cell_to_node_linkage) {
+
+  Require(face_type.size() > 0);
+  Require(face_type.size() ==
+          std::accumulate(cell_type.begin(), cell_type.end(), 0u));
+
+  // (1) create map of cell face to node set
+
+  std::map<unsigned, std::set<unsigned>> cface_to_nodes;
+
+  // initialize cell face counter and cell-node iterator
+  unsigned cf_counter = 0;
+  std::vector<unsigned>::const_iterator cn_first = cell_to_node_linkage.begin();
+
+  // convert cell-node linkage to map of cell face to
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    for (unsigned face = 0; face < cell_type[cell]; ++face) {
+
+      // convert iterator to node indices to set of node indices
+      cface_to_nodes[cf_counter] =
+          std::set<unsigned>(cn_first, cn_first + face_type[cf_counter]);
+
+      // increment iterator and counter
+      cn_first += face_type[cf_counter];
+      cf_counter++;
+    }
+  }
+
+  Check(cn_first == cell_to_node_linkage.end());
+
+  // (2) create a map of node-sets to cells
+
+  std::map<std::set<unsigned>, std::vector<unsigned>> nodes_to_cells;
+
+  // reset cf_counter
+  cf_counter = 0;
+
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    for (unsigned face = 0; face < cell_type[cell]; ++face) {
+
+      // invert the map
+      nodes_to_cells[cface_to_nodes[cf_counter]].push_back(cell);
+
+      // increment counter
+      cf_counter++;
+    }
+  }
+
+  // (3) create maps of nodes to boundary faces (sides) and parallel faces
+
+  std::map<std::set<unsigned>, unsigned> nodes_to_side =
+      compute_node_vec_indx_map(side_node_count, side_to_node_linkage);
+
+  std::map<std::set<unsigned>, unsigned> nodes_to_ghost =
+      compute_node_vec_indx_map(ghost_cell_type, ghost_cell_to_node_linkage);
+
+  // (4) create cell-to-cell, cell-to-side, cell-to-ghost-cell linkage
+
+  // reset cf_counter and cell-node iterator
+  cf_counter = 0;
+  cn_first = cell_to_node_linkage.begin();
+
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    for (unsigned face = 0; face < cell_type[cell]; ++face) {
+
+      // initialize this face to not having a condition
+      bool has_face_cond = false;
+
+      // get the node set for this cell and face
+      const std::set<unsigned> &node_set = cface_to_nodes[cf_counter];
+
+      // get the cells associated with this cell face from the nodes
+      const std::vector<unsigned> &cells = nodes_to_cells[node_set];
+
+      Check(cells.size() >= 1);
+      Check(cells.size() <= 2);
+
+      // get ordered node vector from cell_to_node_linkage
+      const std::vector<unsigned> node_vec(cn_first,
+                                           cn_first + face_type[cf_counter]);
+
+      // check how many cells are associated with the face
+      if (cells.size() == 2) {
+
+        // get neighbor cell index
+        const unsigned oth_cell = cell == cells[0] ? cells[1] : cells[0];
+
+        Check(oth_cell != cell);
+
+        // add to cell-cell linkage
+        cell_to_cell_linkage[cell].push_back(
+            std::make_pair(oth_cell, node_vec));
+
+        // a neighbor cell was found
+        has_face_cond = true;
+      }
+
+      // check if a boundary/side exists for this node set
+      if (nodes_to_side.find(node_set) != nodes_to_side.end()) {
+
+        // populate cell-boundary face layout
+        cell_to_side_linkage[cell].push_back(
+            std::make_pair(nodes_to_side[node_set], node_vec));
+
+        has_face_cond = true;
+      }
+
+      // check if a parallel face exists for this node set
+      if (nodes_to_ghost.find(node_set) != nodes_to_ghost.end()) {
+
+        // populate cell-parallel face layout
+        cell_to_ghost_cell_linkage[cell].push_back(
+            std::make_pair(nodes_to_ghost[node_set], node_vec));
+
+        has_face_cond = true;
+      }
+
+      // make face a boundary if no face conditions have been found
+      if (!has_face_cond) {
+
+        // augment side flags with vacuum b.c.
+        side_set_flag.push_back(0);
+
+        // augment side-node count
+        m_side_node_count.push_back(face_type[cf_counter]);
+        Check(m_side_node_count.size() == side_set_flag.size());
+
+        // augment side-node linkage
+        m_side_to_node_linkage.insert(m_side_to_node_linkage.begin(),
+                                      node_vec.begin(), node_vec.end());
+
+        // augment cell-side linkage
+        cell_to_side_linkage[cell].push_back(std::make_pair(
+            static_cast<unsigned>(m_side_node_count.size() - 1), node_vec));
+      }
+
+      // increment iterator and counter
+      cn_first += face_type[cf_counter];
+      cf_counter++;
+    }
+  }
+
+  Ensure(cn_first == cell_to_node_linkage.end());
+}
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Build an intermediate node-index map to support layout generation.
  *
@@ -360,8 +538,47 @@ std::map<unsigned, std::vector<unsigned>> Draco_Mesh::compute_node_indx_map(
   return node_to_indx_map;
 }
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Build a map of node vectors to indices map for boundary layouts.
+ *
+ * Note: the ordering of the nodes in the mesh ctor must match the node ordering
+ * of the corresponding (local) cell face.
+ *
+ * \param[in] indx_type vector of number of nodes, subscripted by index.
+ * \param[in] indx_to_node_linkage serial map of index to node indices.
+ * \return a map of node index to vector of indexes adjacent to the node.
+ */
+std::map<std::set<unsigned>, unsigned> Draco_Mesh::compute_node_vec_indx_map(
+    const std::vector<unsigned> &indx_type,
+    const std::vector<unsigned> &indx_to_node_linkage) const {
+
+  // map to return
+  std::map<std::set<unsigned>, unsigned> nodes_to_indx_map;
+
+  // generate map
+  const size_t num_indxs = indx_type.size();
+  std::vector<unsigned>::const_iterator i2n_first =
+      indx_to_node_linkage.begin();
+  for (unsigned indx = 0; indx < num_indxs; ++indx) {
+
+    // extract the node vector
+    const std::set<unsigned> node_vec(i2n_first, i2n_first + indx_type[indx]);
+
+    // set the node vector as the key and index as the value
+    nodes_to_indx_map[node_vec] = indx;
+
+    // increment iterator
+    i2n_first += indx_type[indx];
+  }
+
+  Ensure(i2n_first == indx_to_node_linkage.end());
+
+  return nodes_to_indx_map;
+}
+
 } // end namespace rtt_mesh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

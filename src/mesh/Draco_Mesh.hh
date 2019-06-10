@@ -14,6 +14,7 @@
 #include "ds++/config.h"
 #include "mesh_element/Geometry.hh"
 #include <map>
+#include <set>
 #include <vector>
 
 namespace rtt_mesh {
@@ -48,7 +49,6 @@ class Draco_Mesh {
 public:
   // >>> TYPEDEFS
   typedef rtt_mesh_element::Geometry Geometry;
-  // \todo: update this to a full layout class?
   typedef std::map<unsigned,
                    std::vector<std::pair<unsigned, std::vector<unsigned>>>>
       Layout;
@@ -101,7 +101,6 @@ private:
 
 public:
   //! Constructor.
-  DLL_PUBLIC_mesh
   Draco_Mesh(unsigned dimension_, Geometry geometry_,
              const std::vector<unsigned> &cell_type_,
              const std::vector<unsigned> &cell_to_node_linkage_,
@@ -113,7 +112,8 @@ public:
              const std::vector<unsigned> &ghost_cell_type_ = {},
              const std::vector<unsigned> &ghost_cell_to_node_linkage_ = {},
              const std::vector<int> &ghost_cell_number_ = {},
-             const std::vector<int> &ghost_cell_rank_ = {});
+             const std::vector<int> &ghost_cell_rank_ = {},
+             const std::vector<unsigned> &face_type_ = {});
 
   // >>> ACCESSORS
 
@@ -156,7 +156,6 @@ private:
   std::vector<std::vector<double>>
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
-  // \todo: add layout class and complete temporary version of this function.
   //! Calculate the cell-to-cell linkage (layout)
   void compute_cell_to_cell_linkage(
       const std::vector<unsigned> &cell_type,
@@ -166,8 +165,23 @@ private:
       const std::vector<unsigned> &ghost_cell_type,
       const std::vector<unsigned> &ghost_cell_to_node_linkage);
 
+  //! Calculate the cell-to-cell linkage with face type vector (overload)
+  void compute_cell_to_cell_linkage(
+      const std::vector<unsigned> &cell_type,
+      const std::vector<unsigned> &cell_to_node_linkage,
+      const std::vector<unsigned> &face_type,
+      const std::vector<unsigned> &side_node_count,
+      const std::vector<unsigned> &side_to_node_linkage,
+      const std::vector<unsigned> &ghost_cell_type,
+      const std::vector<unsigned> &ghost_cell_to_node_linkage);
+
   //! Calculate a map of node to vectors of indices (cells, sides, ghost cells)
   std::map<unsigned, std::vector<unsigned>> compute_node_indx_map(
+      const std::vector<unsigned> &indx_type,
+      const std::vector<unsigned> &indx_to_node_linkage) const;
+
+  //! Calculate a map of node vectors to indices (sides, ghost cells)
+  std::map<std::set<unsigned>, unsigned> compute_node_vec_indx_map(
       const std::vector<unsigned> &indx_type,
       const std::vector<unsigned> &indx_to_node_linkage) const;
 };

@@ -33,6 +33,7 @@ public:
 
   // >>> ACCESSORS
 
+  virtual bool get_use_face_types() const = 0;
   virtual unsigned get_numdim() const = 0;
   virtual size_t get_numcells() const = 0;
   virtual size_t get_numnodes() const = 0;

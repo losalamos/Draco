@@ -39,6 +39,7 @@ public:
   const size_t num_nodes;
   const size_t num_sides;
   const unsigned num_nodes_per_cell;
+  const unsigned num_faces_per_cell;
   std::vector<unsigned> cell_type;
   std::vector<unsigned> cell_to_node_linkage;
   std::vector<unsigned> side_set_flag;
@@ -46,13 +47,15 @@ public:
   std::vector<unsigned> side_to_node_linkage;
   std::vector<double> coordinates;
   std::vector<unsigned> global_node_number;
+  std::vector<unsigned> face_type;
 
 public:
   //! Constructor.
   Test_Mesh_Interface(const size_t num_xdir_, const size_t num_ydir_,
                       const std::vector<unsigned> &global_node_number_ = {},
                       const double xdir_offset_ = 0.0,
-                      const double ydir_offset_ = 0.0);
+                      const double ydir_offset_ = 0.0,
+                      const bool use_face_types = false);
 
   // >>> SERVICES
 
@@ -70,11 +73,11 @@ public:
 Test_Mesh_Interface::Test_Mesh_Interface(
     const size_t num_xdir_, const size_t num_ydir_,
     const std::vector<unsigned> &global_node_number_, const double xdir_offset_,
-    const double ydir_offset_)
+    const double ydir_offset_, const bool use_face_types)
     : dim(2), num_cells(num_xdir_ * num_ydir_),
       num_nodes((num_xdir_ + 1) * (num_ydir_ + 1)),
       num_sides(2 * (num_xdir_ + num_ydir_)), num_nodes_per_cell(4),
-      global_node_number(global_node_number_) {
+      num_faces_per_cell(4), global_node_number(global_node_number_) {
 
   // set the number of cells and nodes
   const size_t num_xdir = num_xdir_;
@@ -84,10 +87,23 @@ Test_Mesh_Interface::Test_Mesh_Interface(
   const size_t poff = num_xdir + num_ydir; // parallel side offset
 
   // use two dimensions and Cartesian geometry
-  cell_type.resize(num_cells, num_nodes_per_cell);
+  if (use_face_types) {
+    cell_type.resize(num_cells, num_faces_per_cell);
+  } else {
+    cell_type.resize(num_cells, num_nodes_per_cell);
+  }
+
+  // size cell-node linkage based on whether or not face types are being used
+  if (use_face_types) {
+
+    face_type.resize(num_cells * 4, 2);
+    cell_to_node_linkage.resize(num_cells * 2 * num_faces_per_cell);
+
+  } else {
+    cell_to_node_linkage.resize(num_cells * num_nodes_per_cell);
+  }
 
   // set the cell-to-node linkage counterclockwise about each cell
-  cell_to_node_linkage.resize(num_cells * num_nodes_per_cell);
   for (size_t j = 0; j < num_ydir; ++j) {
     for (size_t i = 0; i < num_xdir; ++i) {
 
@@ -96,12 +112,40 @@ Test_Mesh_Interface::Test_Mesh_Interface(
 
       // set each node entry per cell
       Check(cell + num_xdir + 1 + j + 1 < UINT_MAX);
-      cell_to_node_linkage[4 * cell] = static_cast<unsigned>(cell + j);
-      cell_to_node_linkage[4 * cell + 1] = static_cast<unsigned>(cell + j + 1);
-      cell_to_node_linkage[4 * cell + 2] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
-      cell_to_node_linkage[4 * cell + 3] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j);
+      if (use_face_types) {
+
+        // 1st face
+        cell_to_node_linkage[8 * cell] = static_cast<unsigned>(cell + j);
+        cell_to_node_linkage[8 * cell + 1] =
+            static_cast<unsigned>(cell + j + 1);
+
+        // 2nd face
+        cell_to_node_linkage[8 * cell + 2] =
+            static_cast<unsigned>(cell + j + 1);
+        cell_to_node_linkage[8 * cell + 3] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
+
+        // 3rd face
+        cell_to_node_linkage[8 * cell + 4] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
+        cell_to_node_linkage[8 * cell + 5] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j);
+
+        // 4th face
+        cell_to_node_linkage[8 * cell + 6] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j);
+        cell_to_node_linkage[8 * cell + 7] = static_cast<unsigned>(cell + j);
+
+      } else {
+
+        cell_to_node_linkage[4 * cell] = static_cast<unsigned>(cell + j);
+        cell_to_node_linkage[4 * cell + 1] =
+            static_cast<unsigned>(cell + j + 1);
+        cell_to_node_linkage[4 * cell + 2] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
+        cell_to_node_linkage[4 * cell + 3] =
+            static_cast<unsigned>(cell + num_xdir + 1 + j);
+      }
     }
   }
 
