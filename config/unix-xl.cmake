@@ -41,7 +41,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
    # Email from Roy Musselman <roymuss@us.ibm.com, 2019-03-21:
    # For C++14, add -qxflag=disable__cplusplusOverride
-   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -qxflag=disable__cplusplusOverride")
+   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -qxflag=disable__cplusplusOverride -Wno-undefined-var-template")
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")

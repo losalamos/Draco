@@ -1,7 +1,15 @@
-FROM kinetictheory/draco-ci-2019may
+#FROM kinetictheory/draco-ci-2019june
 
 # Use ubuntu if building from scratch
-#FROM ubuntu:latest
+FROM ubuntu:latest
+
+# This image:
+# 1. cd /D f:\work\docker (copy Dockerfile and packages.yaml to this location).
+# 2. docker login -u kinetictheory (and password) # ref https://docs.docker.com/get-started/part2/
+# 3. docker build --rm --pull --tag draco-ci-2019june:latest . 
+# 4. docker image ls -a ==> find container name (or docker ps)
+# 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <container-name> kinetictheory/draco-ci-2019june:latest # queues for upload
+# 6. docker push kinetictheory/draco-ci-2019june:latest
 
 MAINTAINER KineticTheory "https://github.com/KineticTheory"
 
@@ -15,7 +23,7 @@ MAINTAINER KineticTheory "https://github.com/KineticTheory"
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 ENV SPACK_ROOT=/vendors/spack
-ENV DRACO_TPL="cmake@3.14.4 gsl@2.5 numdiff@5.9.0 random123@1.09 openmpi@3.1.4 netlib-lapack@3.8.0 metis@5.1.0 parmetis@4.0.3 superlu-dist trilinos"
+ENV DRACO_TPL="cmake@3.14.4 gsl@2.5 numdiff@5.9.0 random123@1.09 openmpi@3.1.4 netlib-lapack@3.8.0 metis@5.1.0 parmetis@4.0.3 superlu-dist trilinos mscgen"
 ENV FORCE_UNSAFE_CONFIGURE=1
 ENV DISTRO=bionic
 ENV CLANG_FORMAT_VER=6.0
@@ -39,7 +47,7 @@ RUN echo "tzdata tzdata/Areas select US" > /tmp/preseed.txt; \
 RUN apt-get install -y --no-install-recommends apt-utils automake autoconf autotools-dev python3 software-properties-common flex bison ssh
 
 ## Basic developer tools
-RUN apt-get install -y --no-install-recommends build-essential ca-certificates coreutils curl doxygen environment-modules gcc-8 g++-8 gfortran-8 git grace graphviz python3-pip tar tcl tk unzip wget
+RUN apt-get install -y --no-install-recommends build-essential ca-certificates coreutils curl doxygen environment-modules gcc-8 g++-8 gfortran-8 git grace graphviz python3-pip python3-sphinx python3-sphinx-rtd-theme tar tcl tk unzip wget
 # RUN apg-get upgrade
 RUN if ! test -f /etc/profile.d/modules.sh; then \
       echo "source /usr/share/modules/init/bash" > /etc/profile.d/modules.sh; \
@@ -65,16 +73,27 @@ RUN python3 -m pip install codecov
 
 # install/setup spack
 RUN mkdir -p $SPACK_ROOT/etc/spack/linux
-RUN curl -s -L https://api.github.com/repos/spack/spack/tarball | tar xzC $SPACK_ROOT --strip 1
+# Only download spack if it doesn't already exist.
+RUN if ! test -d $SPACK_ROOT/opt/spack ; then \
+      curl -s -L https://api.github.com/repos/spack/spack/tarball | tar xzC $SPACK_ROOT --strip 1; \
+    fi
 # note: if you wish to change default settings, add files alongside
 #       the Dockerfile with your desired settings. Then uncomment this line
 COPY packages.yaml $SPACK_ROOT/etc/spack/linux
+
+# metis/parmetis downloads are broken right now, use a mirror.
+COPY mirrors.yaml $SPACK_ROOT/etc/spack
+RUN mkdir -p $SPACK_ROOT/spack.mirror/metis
+RUN mkdir -p $SPACK_ROOT/spack.mirror/parmetis
+COPY metis-5.1.0.tar.gz $SPACK_ROOT/spack.mirror/metis
+COPY parmetis-4.0.3.tar.gz $SPACK_ROOT/spack.mirror/parmetis
+
 RUN if ! test -f /etc/profile.d/spack.sh; then \
       echo "source $SPACK_ROOT/share/spack/setup-env.sh" > /etc/profile.d/spack.sh; \
     fi
 
 ## Provide some TPLs
-RUN export PATH=$SPACK_ROOT/bin:$PATH && spack install ${DRACO_TPL} && spack clean -a
+RUN export PATH=$SPACK_ROOT/bin:$PATH && spack install -n ${DRACO_TPL} && spack clean -a
 
 # image run hook: the -l will make sure /etc/profile.d/*.sh environments are loaded
 CMD /bin/bash -l

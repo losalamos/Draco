@@ -11,7 +11,15 @@ include_guard(GLOBAL)
 # Identify machine and save name in ds++/config.h
 # ----------------------------------------------------------------------------
 
-macro(dbs_set_sitename)
+function(dbs_set_sitename)
+
+  if( DEFINED SITENAME )
+    if( DEFINED SITENAME_FAMILY)
+      return()
+    else()
+      unset(SITENAME)
+    endif()
+  endif()
 
   site_name( SITENAME )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
@@ -49,7 +57,7 @@ macro(dbs_set_sitename)
   set( SITENAME_FAMILY ${SITENAME_FAMILY} CACHE "STRING"
     "Name of the current machine family (ATS-1, CTS-1, etc.)" FORCE)
 
-endmacro()
+endfunction()
 
 if( NOT DEFINED CRAY_PE )
   message("

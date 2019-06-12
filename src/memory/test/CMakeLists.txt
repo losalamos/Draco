@@ -13,7 +13,8 @@ if( NOT "${DRACO_DIAGNOSTICS}" STREQUAL "7" )
   #
   add_scalar_tests(
     SOURCES "tstmemory.cc"
-    DEPS Lib_memory  )
+    DEPS Lib_memory
+    LABEL "nomemcheck" )
 endif()
 
 #------------------------------------------------------------------------------#

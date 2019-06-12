@@ -71,6 +71,9 @@ macro( set_ccs2_software_version PROJNAME )
     # ")
   endif()
 
+  # Query git branch name?
+  # git rev-parse --abbrev-ref HEAD
+
   set( ${PROJNAME}_BUILD_DATE
     "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
   if( "${${PROJNAME}_VERSION_PATCH}notset" STREQUAL "notset" ) # "[1-9]?[1-9]$")
