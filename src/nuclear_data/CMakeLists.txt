@@ -1,13 +1,13 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   RTT_Format_Reader/CMakeLists.txt
-# author Ben Ryan <brryan@lanl.gov>
+# file   nuclear_data/CMakeLists.txt
+# author B. R. Ryan <brryan@lanl.gov>
 # date   2019 Jun 19
-# brief  Generate build project files for RTT_Format_Reader.
+# brief  Generate build project files for nuclear_data.
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( ACE_Format_Reader CXX )
+project( nuclear_data CXX )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -21,9 +21,9 @@ file( GLOB headers *.hh )
 # ---------------------------------------------------------------------------- #
 
 add_component_library(
-   TARGET       Lib_ACE_Format_Reader
+   TARGET       Lib_nuclear_data
    TARGET_DEPS
-   LIBRARY_NAME ACE_Format_Reader
+   LIBRARY_NAME nuclear_data
    SOURCES      "${sources}"
    HEADERS      "${headers}"
    LIBRARY_NAME_PREFIX "rtt_" )
@@ -32,9 +32,9 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_ACE_Format_Reader EXPORT draco-targets DESTINATION
+install( TARGETS Lib_nuclear_data EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
-install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/ACE_Format_Reader )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/nuclear_data )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -51,5 +51,5 @@ endif()
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#
-# End ACE_Format_Reader/CMakeLists.txt
+# End nuclear_data/CMakeLists.txt
 #------------------------------------------------------------------------------#
