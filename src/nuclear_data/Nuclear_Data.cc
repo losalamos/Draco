@@ -76,14 +76,44 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     }
   }
 
-  // Interpret file depending on reaction type
-  if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON) {
-  } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
+  string NXS_s, JXS_s;
+  for (int n = 0; n < 2; n++) {
     std::getline(ACEfile, line);
-    data_length = stoi(line.substr(0,9));
-    ZA = stoi(line.substr(9,9));
-    num_energies = stoi(line.substr(18,9));
+    NXS_s.append(line);
+  }
+  for (int n = 0; n < 4; n++) {
+    std::getline(ACEfile, line);
+    JXS_s.append(line);
+  }
+  for (int n = 0; n < 16; n++) {
+    NXS.push_back(stoi(NXS_s.substr(0+9*n,9)));
+  }
+  std::cout << NXS_s << std::endl;
+  std::cout << JXS_s << std::endl;
+  for (int n = 0; n < 16; n++) {
+    std::cout << NXS[n] << std::endl;
+  }
 
+  // Interpret file depending on reaction type
+  if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON || 
+      reaction == Reaction::DISCRETE_REACTION_NEUTRON) {
+    // NXS
+    data_length = NXS[0];
+    ZA = NXS[1];
+  } else if (reaction == Reaction::DOSIMETRY) {
+    return;
+  } else if (reaction == Reaction::THERMAL_S) {
+    return;
+  } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
+    data_length = NXS[0];
+  } else if (reaction == Reaction::NEUTRON_MULTIGROUP) {
+    return;
+  } else if (reaction == Reaction::PHOTOATOMIC_MULTIGROUP) {
+    return;
+  } else if (reaction == Reaction::CONTINUOUS_ENERGY_ELECTRON) {
+    return;
+  } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTONUCLEAR) {
+    return;
   }
 }
 
@@ -98,10 +128,12 @@ void Nuclear_Data::report_contents() {
   std::cout << "Atomic Number:         " << atomic_number << std::endl;
   std::cout << "Mass Number:           " << mass_number << std::endl;
   std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
-  std::cout << "Reaction:              " << reaction << std::endl;
+  std::cout << "Reaction:              " << Reaction_Names[reaction] << std::endl;
   std::cout << "IZ, AW pairs:          " << std::endl;
   for (int n = 0; n < 16; n++) {
     std::cout << "  " << IZ[n] << " " << AW[n] << std::endl;
   }
+  std::cout << "NXS" << std::endl;
+  std::cout << "data_length: " << data_length << std::endl;
 }
 } // end namespace rtt_nuclear_data

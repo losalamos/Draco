@@ -23,6 +23,11 @@ enum Reaction { CONTINUOUS_ENERGY_NEUTRON, DISCRETE_REACTION_NEUTRON,
                 DOSIMETRY, THERMAL_S, CONTINUOUS_ENERGY_PHOTOATOMIC,
                 NEUTRON_MULTIGROUP, PHOTOATOMIC_MULTIGROUP,
                 CONTINUOUS_ENERGY_ELECTRON, CONTINUOUS_ENERGY_PHOTONUCLEAR };
+const char* Reaction_Names[] = { "CONTINUOUS_ENERGY_NEUTRON", 
+  "DISCRETE_REACTION_NEUTRON", "DOSIMETRY", "THERMAL_S", 
+  "Continuous-energy photoatomic", "NEUTRON_MULTIGROUP", 
+  "PHOTOATOMIC_MULTIGROUP", "CONTINUOUS_ENERGY_ELECTRON", 
+                      "CONTINUOUS_ENERGY_PHOTONUCLEAR" };
 
 //===========================================================================//
 /*!
@@ -67,12 +72,13 @@ private:
   std::vector<int> IZ;
   std::vector<double> AW;
 
-  // NXS Array
+  // NXS array
   // Not all values are used for each reaction type; see Table F.1 of MCNP User 
   // Manual.
+  std::vector<int> NXS;
   int data_length;       // Length of primary data block
   int ZA;                // 1000*Z + A
-  int IDPNI;             // Inelastic scatteirng mode
+  int IDPNI;             // Inelastic scattering mode
   int Z;                 // Z
   int NES;               // Number of energies
   int NIL;               // Inelastic dimensioning parameter
@@ -91,7 +97,57 @@ private:
   int photon_production; //  0 = normal photon production
                          // -1 = do not produce photons
 
-  int data_length;
+  // JXS array
+  // Not all values are used for each reaction type; see Table F.2 of MCNP User
+  // Manual.
+  std::vector<int> JXS;
+  int ESZ;   // Location of energy table
+  int LONE;  // Location of first word of table
+  int ITIE;  // Location of inelastic energy table
+  int ESZG;  // Location of energy table
+  int NU;    // Location of fission nu data
+  int ITIX;  // Location of inelastic cross sections
+  int JINC;  // Location of incoherent form factors
+  int MTR;   // Location of MT array
+  int ITXE;  // Location of inelastic energy/angle distributions
+  int JCOH;  // Location of coherent form factors
+  int LQR;   // Location of Q-value array
+  int ITCE;  // Location of elastic energy table
+  int JFLO;  // Location of fluorescence data
+  int TYR;   // Location of reaction type array
+  int ITCX;  // Location of elastic cross sections
+  int LHNM;  // Location of heating numbers
+  int LSIG;  // Location of cross-section locators
+  int ITCA;  // Location of elastic angular distributions
+  int LNEPS; // Location of the number of electrons per shell
+  int SIG;   // Location of cross sections
+  int SIGD;  // Location of cross sections
+  int LBEPS; // Location of binding energy per shell
+  int LAND;  // Location of table of angular distribution locators
+  int LPIPS; // Location of probability of interaction per shell
+  int AND;   // Location of angular distributions
+  int LSWD;  // Location of array of offsets to shellwise data
+  int LDLW;  // Location of table of energy distribution locators
+  int SWD;   // Location of shellwise data in PDF and CDF form
+  int DLW;   // Location of energy distributions
+  int GPD;   // Location of photon production data
+  int MTRP;  // Location of photon production MT array
+  int LSIGP; // Location of table of photon production cross-section locators
+  int SIGP;  // Location of photon production cross sections
+  int LANDP; // Location of table of photon production angular distribution
+             // locators
+  int ANDP;  // Location of photon production angular distributions
+  int LDLWP; // Location of table of photon production energy distribution
+             // locators
+  int DLWP;  // Location of photon production energy distributions
+  int YP;    // Location of table of yield multipliers
+  int FIS;   // Location of total fission cross section
+  int END;   // Location of last word of this table
+  int LUNR;  // Location of probability tables
+  int DNU;   // Location of delayed nubar data
+  int BDD;   // Location of basic delayed data (lambdas, probabilities)
+  int DNEDL; // Location of table of energy distribution locators
+  int DNED;  // Location of energy distributions
 };
 } // end namespace rtt_nuclear_data
 
