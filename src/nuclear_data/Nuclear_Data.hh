@@ -75,12 +75,55 @@ public:
 
   void report_contents();
 
-  const std::vector<double>& get_ESZG() { return ESZG.data; };
+  const std::vector<double> &get_ESZ() { return ESZ.data; };
+  const std::vector<double> &get_LONE() { return LONE.data; };
+  const std::vector<double> &get_ITIE() { return ITIE.data; };
+  const std::vector<double> &get_ESZG() { return ESZG.data; };
+  const std::vector<double> &get_NU() { return NU.data; };
+  const std::vector<double> &get_ITIX() { return ITIX.data; };
+  const std::vector<double> &get_JINC() { return JINC.data; };
+  const std::vector<double> &get_MTR() { return MTR.data; };
+  const std::vector<double> &get_ITXE() { return ITXE.data; };
+  const std::vector<double> &get_JCOH() { return JCOH.data; };
+  const std::vector<double> &get_LQR() { return LQR.data; };
+  const std::vector<double> &get_ITCE() { return ITCE.data; };
+  const std::vector<double> &get_JFLO() { return JFLO.data; };
+  const std::vector<double> &get_TYR() { return TYR.data; };
+  const std::vector<double> &get_ITCX() { return ITCX.data; };
+  const std::vector<double> &get_LHNM() { return LHNM.data; };
+  const std::vector<double> &get_LSIG() { return LSIG.data; };
+  const std::vector<double> &get_ITCA() { return ITCA.data; };
+  const std::vector<double> &get_LNEPS() { return LNEPS.data; };
+  const std::vector<double> &get_SIG() { return SIG.data; };
+  const std::vector<double> &get_SIGD() { return SIGD.data; };
+  const std::vector<double> &get_LBEPS() { return LBEPS.data; };
+  const std::vector<double> &get_LAND() { return LAND.data; };
+  const std::vector<double> &get_LPIPS() { return LPIPS.data; };
+  const std::vector<double> &get_AND() { return AND.data; };
+  const std::vector<double> &get_LSWD() { return LSWD.data; };
+  const std::vector<double> &get_LDLW() { return LDLW.data; };
+  const std::vector<double> &get_SWD() { return SWD.data; };
+  const std::vector<double> &get_DLW() { return DLW.data; };
+  const std::vector<double> &get_GPD() { return GPD.data; };
+  const std::vector<double> &get_MTRP() { return MTRP.data; };
+  const std::vector<double> &get_LSIGP() { return LSIGP.data; };
+  const std::vector<double> &get_SIGP() { return SIGP.data; };
+  const std::vector<double> &get_LANDP() { return LANDP.data; };
+  const std::vector<double> &get_ANDP() { return ANDP.data; };
+  const std::vector<double> &get_LDLWP() { return LDLWP.data; };
+  const std::vector<double> &get_DLWP() { return DLWP.data; };
+  const std::vector<double> &get_YP() { return YP.data; };
+  const std::vector<double> &get_FIS() { return FIS.data; };
+  const std::vector<double> &get_END() { return END.data; };
+  const std::vector<double> &get_LUNR() { return LUNR.data; };
+  const std::vector<double> &get_DNU() { return DNU.data; };
+  const std::vector<double> &get_BDD() { return BDD.data; };
+  const std::vector<double> &get_DNEDL() { return DNEDL.data; };
+  const std::vector<double> &get_DNED() { return DNED.data; };
 
 private:
-  
   void load_datatable(Datatable &dataTable, const std::string data_s);
-  
+
   string filepath;
   string zaid;
   double atomic_weight;

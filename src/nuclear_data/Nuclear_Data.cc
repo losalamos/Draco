@@ -35,9 +35,9 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   string line;
   std::getline(ACEfile, line);
   zaid = line.substr(0, 10);
-  atomic_weight = stof(line.substr(10, 12));
-  temperature = stof(line.substr(22, 12));
-  date = line.substr(35, 10); // Starting index may be wrong, manual is 
+  atomic_weight = stod(line.substr(10, 12));
+  temperature = stod(line.substr(22, 12));
+  date = line.substr(35, 10); // Starting index may be wrong, manual is
                               // ambiguous.
 
   std::getline(ACEfile, line);
@@ -65,15 +65,15 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     reaction = Reaction::CONTINUOUS_ENERGY_PHOTONUCLEAR;
   }
 
-  atomic_number = stoi(zaid.substr(0,3));
-  mass_number = stoi(zaid.substr(3,3)); // 000 for P, M, G, E
+  atomic_number = stoi(zaid.substr(0, 3));
+  mass_number = stoi(zaid.substr(3, 3)); // 000 for P, M, G, E
   evaluation_identifier = stoi(zaid.substr(7, 2));
 
   for (int n = 0; n < 4; n++) {
     std::getline(ACEfile, line);
     for (int m = 0; m < 4; m++) {
-      IZ.push_back(stoi(line.substr(0+18*m,7)));
-      AW.push_back(stof(line.substr(7+18*m,11)));
+      IZ.push_back(stoi(line.substr(0 + 18 * m, 7)));
+      AW.push_back(stod(line.substr(7 + 18 * m, 11)));
     }
   }
 
@@ -87,10 +87,10 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     JXS_s.append(line);
   }
   for (int n = 0; n < 16; n++) {
-    NXS.push_back(stoi(NXS_s.substr(0+9*n,9)));
+    NXS.push_back(stoi(NXS_s.substr(0 + 9 * n, 9)));
   }
   for (int n = 0; n < 32; n++) {
-    JXS.push_back(stoi(JXS_s.substr(0+9*n,9)));
+    JXS.push_back(stoi(JXS_s.substr(0 + 9 * n, 9)));
   }
   std::cout << NXS_s << std::endl;
   std::cout << JXS_s << std::endl;
@@ -102,22 +102,26 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   while (true) {
     std::getline(ACEfile, line);
     data_s.append(line);
-    if (ACEfile.eof()) 
+    if (ACEfile.eof())
       break;
   }
   ACEfile.close();
-  data_n = data_s.length()/20;
+  data_n = data_s.length() / 20;
 
   // Interpret file depending on reaction type
-  if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON || 
+  if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON ||
       reaction == Reaction::DISCRETE_REACTION_NEUTRON) {
-    // NXS
-    data_length = NXS[0];
-    ZA = NXS[1];
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::DOSIMETRY) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::THERMAL_S) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
     data_length = NXS[0];
     Z = NXS[1];
@@ -136,27 +140,28 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     LBEPS.set_indices(JXS[6], JXS[7] - JXS[6]);
     LPIPS.set_indices(JXS[7], JXS[8] - JXS[7]);
     LSWD.set_indices(JXS[8], JXS[9] - JXS[8]);
-    SWD.set_indices(JXS[9], data_length - 1 - JXS[9]);
-    /*JINC = JXS[1];
-    JCOH = JXS[2];
-    JFLO = JXS[3];
-    LHNM = JXS[4];
-    LNEPS = JXS[5];
-    LBEPS = JXS[6];
-    LPIPS = JXS[7];
-    LSWD = JXS[8];
-    SWD = JXS[9];*/
+    SWD.set_indices(JXS[9], data_length - JXS[9]);
   } else if (reaction == Reaction::NEUTRON_MULTIGROUP) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::PHOTOATOMIC_MULTIGROUP) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_ELECTRON) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTONUCLEAR) {
-    return;
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
+  } else {
+    std::ostringstream buffer;
+    buffer << "Reaction " << Reaction_Name[reaction] << " not supported\n";
+    throw std::invalid_argument(buffer.str());
   }
-
-  std::cout << "data_s.length(): " << data_s.length() << std::endl;
 
   // Give every datatable the chance to be read from file.
   load_datatable(ESZ, data_s);
@@ -206,23 +211,17 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   load_datatable(DNED, data_s);
 }
 
-void Nuclear_Data::load_datatable(Datatable &dataTable, 
-  const std::string data_s) {
+void Nuclear_Data::load_datatable(Datatable &dataTable,
+                                  const std::string data_s) {
   // Only load data requested for this reaction type
   if (dataTable.start_index >= 0) {
-    std::cout << "start_index: " << dataTable.start_index << " length: " << dataTable.length << std::endl;
-    string subdata_s = data_s.substr(20*dataTable.start_index, 20*dataTable.length);
-    int nentries = subdata_s.length()/20;
-    std::cout << nentries << std::endl;
-    std::cout << subdata_s.length() << std::endl;
+    std::cout << dataTable.start_index << " " << dataTable.length << std::endl;
+    string subdata_s =
+        data_s.substr(20 * dataTable.start_index, 20 * dataTable.length);
+    int nentries = subdata_s.length() / 20;
     for (int n = 0; n < nentries; n++) {
-      std::cout << n << std::endl;
-      std::cout << n << " " << 20*n << " " << subdata_s.substr(20*n,20) << std::endl;
-      std::cout << dataTable.data.size() << std::endl;
-      std::cout << subdata_s.substr(20*n,20) << std::endl;
-      double tmp = stof(subdata_s.substr(20*n,20));
-      std::cout << tmp << std::endl;
-      dataTable.data.push_back(stof(subdata_s.substr(20*n,20)));
+      dataTable.data.push_back(stod(subdata_s.substr(20 * n, 20)));
+      std::cout << stod(subdata_s.substr(20 * n, 20)) << std::endl;
     }
   }
 }
@@ -238,7 +237,8 @@ void Nuclear_Data::report_contents() {
   std::cout << "Atomic Number:         " << atomic_number << std::endl;
   std::cout << "Mass Number:           " << mass_number << std::endl;
   std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
-  std::cout << "Reaction:              " << Reaction_Names[reaction] << std::endl;
+  std::cout << "Reaction:              " << Reaction_Names[reaction]
+            << std::endl;
   std::cout << "IZ, AW pairs:          " << std::endl;
   for (int n = 0; n < 16; n++) {
     std::cout << "  " << IZ[n] << " " << AW[n] << std::endl;
