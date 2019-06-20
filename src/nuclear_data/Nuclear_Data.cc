@@ -15,8 +15,9 @@ namespace rtt_nuclear_data {
 //----------------------------------------------------------------------------//
 /*!
  * \brief Parses the cell_data block data from the mesh file via calls to
- *        private member functions.
- * \param meshfile Mesh file name.
+ *        private member functions. See Appendix F of the MCNP User Manual for
+ *        details on the ACE file format.
+ * \param _filepath Path to ACE file.
  */
 Nuclear_Data::Nuclear_Data(const string &_filepath) {
   filepath = _filepath;
@@ -67,10 +68,22 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   mass_number = stoi(zaid.substr(3,3)); // 000 for P, M, G, E
   evaluation_identifier = stoi(zaid.substr(7, 2));
 
+  for (int n = 0; n < 4; n++) {
+    std::getline(ACEfile, line);
+    for (int m = 0; m < 4; m++) {
+      IZ.push_back(stoi(line.substr(0+18*m,7)));
+      AW.push_back(stof(line.substr(7+18*m,11)));
+    }
+  }
+
   // Interpret file depending on reaction type
   if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON) {
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
-    data_length = 0;
+    std::getline(ACEfile, line);
+    data_length = stoi(line.substr(0,9));
+    ZA = stoi(line.substr(9,9));
+    num_energies = stoi(line.substr(18,9));
+
   }
 }
 
@@ -86,5 +99,9 @@ void Nuclear_Data::report_contents() {
   std::cout << "Mass Number:           " << mass_number << std::endl;
   std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
   std::cout << "Reaction:              " << reaction << std::endl;
+  std::cout << "IZ, AW pairs:          " << std::endl;
+  for (int n = 0; n < 16; n++) {
+    std::cout << "  " << IZ[n] << " " << AW[n] << std::endl;
+  }
 }
 } // end namespace rtt_nuclear_data

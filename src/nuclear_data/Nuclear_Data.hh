@@ -62,6 +62,35 @@ private:
   int evaluation_identifier;
   int reaction;
 
+  // Z/AW pairs, now only used for thermal tables to indicate applicable 
+  // isotopes.
+  std::vector<int> IZ;
+  std::vector<double> AW;
+
+  // NXS Array
+  // Not all values are used for each reaction type; see Table F.1 of MCNP User 
+  // Manual.
+  int data_length;       // Length of primary data block
+  int ZA;                // 1000*Z + A
+  int IDPNI;             // Inelastic scatteirng mode
+  int Z;                 // Z
+  int NES;               // Number of energies
+  int NIL;               // Inelastic dimensioning parameter
+  int NTR;               // Number of reactions excluding elastic
+  int NIEB;              // Number of inelastic exiting energies
+  int NFLO;              // Length of the fluorescence data divided by 4
+  int NR;                // Number of reactions having secondary neutrons 
+                         // excluding elastic
+  int IDPNC;             // Elastic scattering mode
+  int NSH;               // Number of electron shells
+  int NTRP;              // Number of photon production reactions
+  int NCL;               // Elastic dimensioning parameter
+  int IFENG;             // Secondary energy mode
+  int NPCR;              // Number of delayed neutron precursor families
+  int NT;                // Number of PIKMT reactions
+  int photon_production; //  0 = normal photon production
+                         // -1 = do not produce photons
+
   int data_length;
 };
 } // end namespace rtt_nuclear_data
