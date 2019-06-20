@@ -50,6 +50,12 @@ public:
 private:
   string filepath;
   string zaid;
+  double atomic_weight;
+  double temperature;
+  string date;
+  string comment;
+  string mat_identifier;
+
   int atomic_number;
   int mass_number;
   string thermal_abbreviation;

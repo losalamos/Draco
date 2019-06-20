@@ -33,9 +33,14 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
 
   string line;
   std::getline(ACEfile, line);
-
-  //zaid = string(10 - filename.length(), '0').append(filename);
   zaid = line.substr(0, 10);
+  atomic_weight = stof(line.substr(10, 12));
+  temperature = stof(line.substr(22, 12));
+  date = line.substr(24, 10);
+
+  std::getline(ACEfile, line);
+  comment = line.substr(0, 70);
+  mat_identifier = line.substr(70, 10);
 
   string reaction_name = zaid.substr(9, 1);
   if (!reaction_name.compare("c") || !reaction_name.compare("C")) {
@@ -67,16 +72,16 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
     data_length = 0;
   }
-
-  string x;
-  std::getline(ACEfile, x);
-  std::cout << x << std::endl;
-
 }
 
 void Nuclear_Data::report_contents() {
   std::cout << "File:                  " << filepath << std::endl;
   std::cout << "ZAID:                  " << zaid << std::endl;
+  std::cout << "Atomic Weight:         " << atomic_weight << std::endl;
+  std::cout << "Temperature:           " << temperature << std::endl;
+  std::cout << "Date:                  " << date << std::endl;
+  std::cout << "Comment:               " << comment << std::endl;
+  std::cout << "MAT Identifier:        " << mat_identifier << std::endl;
   std::cout << "Atomic Number:         " << atomic_number << std::endl;
   std::cout << "Mass Number:           " << mass_number << std::endl;
   std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
