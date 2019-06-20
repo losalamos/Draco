@@ -12,22 +12,33 @@
 #define __nuclear_data_Nuclear_Data_hh__
 
 #include "ds++/Assert.hh"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace rtt_nuclear_data {
-enum Reaction { CONTINUOUS_ENERGY_NEUTRON, DISCRETE_REACTION_NEUTRON,
-                DOSIMETRY, THERMAL_S, CONTINUOUS_ENERGY_PHOTOATOMIC,
-                NEUTRON_MULTIGROUP, PHOTOATOMIC_MULTIGROUP,
-                CONTINUOUS_ENERGY_ELECTRON, CONTINUOUS_ENERGY_PHOTONUCLEAR };
-const char* Reaction_Names[] = { "CONTINUOUS_ENERGY_NEUTRON", 
-  "DISCRETE_REACTION_NEUTRON", "DOSIMETRY", "THERMAL_S", 
-  "Continuous-energy photoatomic", "NEUTRON_MULTIGROUP", 
-  "PHOTOATOMIC_MULTIGROUP", "CONTINUOUS_ENERGY_ELECTRON", 
-                      "CONTINUOUS_ENERGY_PHOTONUCLEAR" };
+enum Reaction {
+  CONTINUOUS_ENERGY_NEUTRON,
+  DISCRETE_REACTION_NEUTRON,
+  DOSIMETRY,
+  THERMAL_S,
+  CONTINUOUS_ENERGY_PHOTOATOMIC,
+  NEUTRON_MULTIGROUP,
+  PHOTOATOMIC_MULTIGROUP,
+  CONTINUOUS_ENERGY_ELECTRON,
+  CONTINUOUS_ENERGY_PHOTONUCLEAR
+};
+const char *Reaction_Names[] = {"Continuous-energy neutron",
+                                "Discrete-reaction neutron",
+                                "Dosimetry",
+                                "Thermal S(alpha, beta)",
+                                "Continuous-energy photoatomic",
+                                "Neutron multigroup",
+                                "Photoatomic multigroup",
+                                "Continuous-energy electron",
+                                "Continuous-energy photonuclear"};
 
 //===========================================================================//
 /*!
@@ -53,6 +64,14 @@ public:
   void report_contents();
 
 private:
+  struct Datatable {
+    int start_index = -1;
+    int length;
+    std::vector<double> data;
+  };
+  
+  void load_datatable(Datatable &ESZG, const std::string data_s);
+  
   string filepath;
   string zaid;
   double atomic_weight;
@@ -67,13 +86,13 @@ private:
   int evaluation_identifier;
   int reaction;
 
-  // Z/AW pairs, now only used for thermal tables to indicate applicable 
+  // Z/AW pairs, now only used for thermal tables to indicate applicable
   // isotopes.
   std::vector<int> IZ;
   std::vector<double> AW;
 
   // NXS array
-  // Not all values are used for each reaction type; see Table F.1 of MCNP User 
+  // Not all values are used for each reaction type; see Table F.1 of MCNP User
   // Manual.
   std::vector<int> NXS;
   int data_length;       // Length of primary data block
@@ -85,7 +104,7 @@ private:
   int NTR;               // Number of reactions excluding elastic
   int NIEB;              // Number of inelastic exiting energies
   int NFLO;              // Length of the fluorescence data divided by 4
-  int NR;                // Number of reactions having secondary neutrons 
+  int NR;                // Number of reactions having secondary neutrons
                          // excluding elastic
   int IDPNC;             // Elastic scattering mode
   int NSH;               // Number of electron shells
@@ -104,7 +123,8 @@ private:
   int ESZ;   // Location of energy table
   int LONE;  // Location of first word of table
   int ITIE;  // Location of inelastic energy table
-  int ESZG;  // Location of energy table
+  Datatable ESZG; // Energy table
+  //int ESZG;  // Location of energy table
   int NU;    // Location of fission nu data
   int ITIX;  // Location of inelastic cross sections
   int JINC;  // Location of incoherent form factors
@@ -148,6 +168,8 @@ private:
   int BDD;   // Location of basic delayed data (lambdas, probabilities)
   int DNEDL; // Location of table of energy distribution locators
   int DNED;  // Location of energy distributions
+
+  std::vector<double> dESZG;
 };
 } // end namespace rtt_nuclear_data
 

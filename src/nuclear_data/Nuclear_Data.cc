@@ -37,7 +37,8 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   zaid = line.substr(0, 10);
   atomic_weight = stof(line.substr(10, 12));
   temperature = stof(line.substr(22, 12));
-  date = line.substr(24, 10);
+  date = line.substr(35, 10); // Starting index may be wrong, manual is 
+                              // ambiguous.
 
   std::getline(ACEfile, line);
   comment = line.substr(0, 70);
@@ -76,7 +77,7 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     }
   }
 
-  string NXS_s, JXS_s;
+  string NXS_s, JXS_s, data_s;
   for (int n = 0; n < 2; n++) {
     std::getline(ACEfile, line);
     NXS_s.append(line);
@@ -88,11 +89,23 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   for (int n = 0; n < 16; n++) {
     NXS.push_back(stoi(NXS_s.substr(0+9*n,9)));
   }
+  for (int n = 0; n < 32; n++) {
+    JXS.push_back(stoi(JXS_s.substr(0+9*n,9)));
+  }
   std::cout << NXS_s << std::endl;
   std::cout << JXS_s << std::endl;
   for (int n = 0; n < 16; n++) {
     std::cout << NXS[n] << std::endl;
   }
+
+  int data_n;
+  while (true) {
+    std::getline(ACEfile, line);
+    data_s.append(line);
+    if (ACEfile.eof()) 
+      break;
+  }
+  data_n = data_s.length()/20;
 
   // Interpret file depending on reaction type
   if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON || 
@@ -106,6 +119,23 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     return;
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
     data_length = NXS[0];
+    Z = NXS[1];
+    NES = NXS[2];
+    NFLO = NXS[3];
+    NSH = NXS[4];
+    NT = NXS[14];
+    photon_production = NXS[15];
+
+    ESZG.start_index = JXS[0];
+    JINC = JXS[1];
+    JCOH = JXS[2];
+    JFLO = JXS[3];
+    LHNM = JXS[4];
+    LNEPS = JXS[5];
+    LBEPS = JXS[6];
+    LPIPS = JXS[7];
+    LSWD = JXS[8];
+    SWD = JXS[9];
   } else if (reaction == Reaction::NEUTRON_MULTIGROUP) {
     return;
   } else if (reaction == Reaction::PHOTOATOMIC_MULTIGROUP) {
@@ -116,6 +146,11 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     return;
   }
 }
+
+void Nuclear_Data::load_datatable(Datatable &ESZG, const std::string data_s) {
+}
+
+void Nuclear_Data::write_datatables
 
 void Nuclear_Data::report_contents() {
   std::cout << "File:                  " << filepath << std::endl;
