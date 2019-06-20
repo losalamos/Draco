@@ -18,10 +18,12 @@ namespace rtt_nuclear_data {
  *        private member functions.
  * \param meshfile Mesh file name.
  */
-Nuclear_Data::Nuclear_Data(const string &filename) {
+Nuclear_Data::Nuclear_Data(const string &_filepath) {
+  filepath = _filepath;
+  string filename = filepath.substr(filepath.find_last_of("/") + 1);
   Insist(filename.length() <= 10, "Filename has nonstandard length");
 
-  const char *test = filename.c_str();
+  const char *test = filepath.c_str();
   ifstream ACEfile(test, std::ios::in);
   if (!ACEfile) {
     std::ostringstream buffer;
@@ -29,7 +31,13 @@ Nuclear_Data::Nuclear_Data(const string &filename) {
     throw std::invalid_argument(buffer.str());
   }
 
-  string reaction_name = filename.substr(filename.find(".") + 1).substr(2);
+  string line;
+  std::getline(ACEfile, line);
+
+  //zaid = string(10 - filename.length(), '0').append(filename);
+  zaid = line.substr(0, 10);
+
+  string reaction_name = zaid.substr(9, 1);
   if (!reaction_name.compare("c") || !reaction_name.compare("C")) {
     reaction = Reaction::CONTINUOUS_ENERGY_NEUTRON;
   } else if (!reaction_name.compare("d") || !reaction_name.compare("D")) {
@@ -49,6 +57,29 @@ Nuclear_Data::Nuclear_Data(const string &filename) {
   } else if (!reaction_name.compare("u") || !reaction_name.compare("U")) {
     reaction = Reaction::CONTINUOUS_ENERGY_PHOTONUCLEAR;
   }
-  std::cout << reaction << std::endl;
+
+  atomic_number = stoi(zaid.substr(0,3));
+  mass_number = stoi(zaid.substr(3,3)); // 000 for P, M, G, E
+  evaluation_identifier = stoi(zaid.substr(7, 2));
+
+  // Interpret file depending on reaction type
+  if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON) {
+  } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTOATOMIC) {
+    data_length = 0;
+  }
+
+  string x;
+  std::getline(ACEfile, x);
+  std::cout << x << std::endl;
+
+}
+
+void Nuclear_Data::report_contents() {
+  std::cout << "File:                  " << filepath << std::endl;
+  std::cout << "ZAID:                  " << zaid << std::endl;
+  std::cout << "Atomic Number:         " << atomic_number << std::endl;
+  std::cout << "Mass Number:           " << mass_number << std::endl;
+  std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
+  std::cout << "Reaction:              " << reaction << std::endl;
 }
 } // end namespace rtt_nuclear_data

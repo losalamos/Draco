@@ -37,7 +37,6 @@ enum Reaction { CONTINUOUS_ENERGY_NEUTRON, DISCRETE_REACTION_NEUTRON,
  */
 //===========================================================================//
 class Nuclear_Data {
-//class Nuclear_Data {
   // typedefs
   typedef std::ifstream ifstream;
   typedef std::string string;
@@ -46,12 +45,18 @@ public:
   Nuclear_Data(const string &filename);
   ~Nuclear_Data() {}
 
+  void report_contents();
+
 private:
+  string filepath;
+  string zaid;
   int atomic_number;
   int mass_number;
   string thermal_abbreviation;
   int evaluation_identifier;
   int reaction;
+
+  int data_length;
 };
 } // end namespace rtt_nuclear_data
 
