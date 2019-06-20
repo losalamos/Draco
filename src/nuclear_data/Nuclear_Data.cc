@@ -105,6 +105,7 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     if (ACEfile.eof()) 
       break;
   }
+  ACEfile.close();
   data_n = data_s.length()/20;
 
   // Interpret file depending on reaction type
@@ -126,8 +127,17 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     NT = NXS[14];
     photon_production = NXS[15];
 
-    ESZG.start_index = JXS[0];
-    JINC = JXS[1];
+    ESZG.set_indices(JXS[0], JXS[1] - JXS[0]);
+    JINC.set_indices(JXS[1], JXS[2] - JXS[1]);
+    JCOH.set_indices(JXS[2], JXS[3] - JXS[2]);
+    JFLO.set_indices(JXS[3], JXS[4] - JXS[3]);
+    LHNM.set_indices(JXS[4], JXS[5] - JXS[4]);
+    LNEPS.set_indices(JXS[5], JXS[6] - JXS[5]);
+    LBEPS.set_indices(JXS[6], JXS[7] - JXS[6]);
+    LPIPS.set_indices(JXS[7], JXS[8] - JXS[7]);
+    LSWD.set_indices(JXS[8], JXS[9] - JXS[8]);
+    SWD.set_indices(JXS[9], data_length - 1 - JXS[9]);
+    /*JINC = JXS[1];
     JCOH = JXS[2];
     JFLO = JXS[3];
     LHNM = JXS[4];
@@ -135,7 +145,7 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
     LBEPS = JXS[6];
     LPIPS = JXS[7];
     LSWD = JXS[8];
-    SWD = JXS[9];
+    SWD = JXS[9];*/
   } else if (reaction == Reaction::NEUTRON_MULTIGROUP) {
     return;
   } else if (reaction == Reaction::PHOTOATOMIC_MULTIGROUP) {
@@ -145,12 +155,77 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   } else if (reaction == Reaction::CONTINUOUS_ENERGY_PHOTONUCLEAR) {
     return;
   }
+
+  std::cout << "data_s.length(): " << data_s.length() << std::endl;
+
+  // Give every datatable the chance to be read from file.
+  load_datatable(ESZ, data_s);
+  load_datatable(LONE, data_s);
+  load_datatable(ITIE, data_s);
+  load_datatable(ESZG, data_s);
+  load_datatable(NU, data_s);
+  load_datatable(ITIX, data_s);
+  load_datatable(JINC, data_s);
+  load_datatable(MTR, data_s);
+  load_datatable(ITXE, data_s);
+  load_datatable(JCOH, data_s);
+  load_datatable(LQR, data_s);
+  load_datatable(ITCE, data_s);
+  load_datatable(JFLO, data_s);
+  load_datatable(TYR, data_s);
+  load_datatable(ITCX, data_s);
+  load_datatable(LHNM, data_s);
+  load_datatable(LSIG, data_s);
+  load_datatable(ITCA, data_s);
+  load_datatable(LNEPS, data_s);
+  load_datatable(SIG, data_s);
+  load_datatable(SIGD, data_s);
+  load_datatable(LBEPS, data_s);
+  load_datatable(LAND, data_s);
+  load_datatable(LPIPS, data_s);
+  load_datatable(AND, data_s);
+  load_datatable(LSWD, data_s);
+  load_datatable(LDLW, data_s);
+  load_datatable(SWD, data_s);
+  load_datatable(DLW, data_s);
+  load_datatable(GPD, data_s);
+  load_datatable(MTRP, data_s);
+  load_datatable(LSIGP, data_s);
+  load_datatable(SIGP, data_s);
+  load_datatable(LANDP, data_s);
+  load_datatable(ANDP, data_s);
+  load_datatable(LDLWP, data_s);
+  load_datatable(DLWP, data_s);
+  load_datatable(YP, data_s);
+  load_datatable(FIS, data_s);
+  load_datatable(END, data_s);
+  load_datatable(LUNR, data_s);
+  load_datatable(DNU, data_s);
+  load_datatable(BDD, data_s);
+  load_datatable(DNEDL, data_s);
+  load_datatable(DNED, data_s);
 }
 
-void Nuclear_Data::load_datatable(Datatable &ESZG, const std::string data_s) {
+void Nuclear_Data::load_datatable(Datatable &dataTable, 
+  const std::string data_s) {
+  // Only load data requested for this reaction type
+  if (dataTable.start_index >= 0) {
+    std::cout << "start_index: " << dataTable.start_index << " length: " << dataTable.length << std::endl;
+    string subdata_s = data_s.substr(20*dataTable.start_index, 20*dataTable.length);
+    int nentries = subdata_s.length()/20;
+    std::cout << nentries << std::endl;
+    std::cout << subdata_s.length() << std::endl;
+    for (int n = 0; n < nentries; n++) {
+      std::cout << n << std::endl;
+      std::cout << n << " " << 20*n << " " << subdata_s.substr(20*n,20) << std::endl;
+      std::cout << dataTable.data.size() << std::endl;
+      std::cout << subdata_s.substr(20*n,20) << std::endl;
+      double tmp = stof(subdata_s.substr(20*n,20));
+      std::cout << tmp << std::endl;
+      dataTable.data.push_back(stof(subdata_s.substr(20*n,20)));
+    }
+  }
 }
-
-void Nuclear_Data::write_datatables
 
 void Nuclear_Data::report_contents() {
   std::cout << "File:                  " << filepath << std::endl;

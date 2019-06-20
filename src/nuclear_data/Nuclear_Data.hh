@@ -57,20 +57,29 @@ class Nuclear_Data {
   typedef std::ifstream ifstream;
   typedef std::string string;
 
+private:
+  struct Datatable {
+    int start_index = -1;
+    int length;
+    std::vector<double> data;
+
+    void set_indices(int _start_index, int _length) {
+      start_index = _start_index;
+      length = _length;
+    }
+  };
+
 public:
   Nuclear_Data(const string &filename);
   ~Nuclear_Data() {}
 
   void report_contents();
 
+  const std::vector<double>& get_ESZG() { return ESZG.data; };
+
 private:
-  struct Datatable {
-    int start_index = -1;
-    int length;
-    std::vector<double> data;
-  };
   
-  void load_datatable(Datatable &ESZG, const std::string data_s);
+  void load_datatable(Datatable &dataTable, const std::string data_s);
   
   string filepath;
   string zaid;
@@ -116,60 +125,57 @@ private:
   int photon_production; //  0 = normal photon production
                          // -1 = do not produce photons
 
-  // JXS array
+  // JXS array, with associated data
   // Not all values are used for each reaction type; see Table F.2 of MCNP User
   // Manual.
   std::vector<int> JXS;
-  int ESZ;   // Location of energy table
-  int LONE;  // Location of first word of table
-  int ITIE;  // Location of inelastic energy table
-  Datatable ESZG; // Energy table
-  //int ESZG;  // Location of energy table
-  int NU;    // Location of fission nu data
-  int ITIX;  // Location of inelastic cross sections
-  int JINC;  // Location of incoherent form factors
-  int MTR;   // Location of MT array
-  int ITXE;  // Location of inelastic energy/angle distributions
-  int JCOH;  // Location of coherent form factors
-  int LQR;   // Location of Q-value array
-  int ITCE;  // Location of elastic energy table
-  int JFLO;  // Location of fluorescence data
-  int TYR;   // Location of reaction type array
-  int ITCX;  // Location of elastic cross sections
-  int LHNM;  // Location of heating numbers
-  int LSIG;  // Location of cross-section locators
-  int ITCA;  // Location of elastic angular distributions
-  int LNEPS; // Location of the number of electrons per shell
-  int SIG;   // Location of cross sections
-  int SIGD;  // Location of cross sections
-  int LBEPS; // Location of binding energy per shell
-  int LAND;  // Location of table of angular distribution locators
-  int LPIPS; // Location of probability of interaction per shell
-  int AND;   // Location of angular distributions
-  int LSWD;  // Location of array of offsets to shellwise data
-  int LDLW;  // Location of table of energy distribution locators
-  int SWD;   // Location of shellwise data in PDF and CDF form
-  int DLW;   // Location of energy distributions
-  int GPD;   // Location of photon production data
-  int MTRP;  // Location of photon production MT array
-  int LSIGP; // Location of table of photon production cross-section locators
-  int SIGP;  // Location of photon production cross sections
-  int LANDP; // Location of table of photon production angular distribution
-             // locators
-  int ANDP;  // Location of photon production angular distributions
-  int LDLWP; // Location of table of photon production energy distribution
-             // locators
-  int DLWP;  // Location of photon production energy distributions
-  int YP;    // Location of table of yield multipliers
-  int FIS;   // Location of total fission cross section
-  int END;   // Location of last word of this table
-  int LUNR;  // Location of probability tables
-  int DNU;   // Location of delayed nubar data
-  int BDD;   // Location of basic delayed data (lambdas, probabilities)
-  int DNEDL; // Location of table of energy distribution locators
-  int DNED;  // Location of energy distributions
-
-  std::vector<double> dESZG;
+  Datatable ESZ;   // energy table
+  Datatable LONE;  // first word of table
+  Datatable ITIE;  // inelastic energy table
+  Datatable ESZG;  // energy table
+  Datatable NU;    // fission nu data
+  Datatable ITIX;  // inelastic cross sections
+  Datatable JINC;  // incoherent form factors
+  Datatable MTR;   // MT array
+  Datatable ITXE;  // inelastic energy/angle distributions
+  Datatable JCOH;  // coherent form factors
+  Datatable LQR;   // Q-value array
+  Datatable ITCE;  // elastic energy table
+  Datatable JFLO;  // fluorescence data
+  Datatable TYR;   // reaction type array
+  Datatable ITCX;  // elastic cross sections
+  Datatable LHNM;  // heating numbers
+  Datatable LSIG;  // cross-section locators
+  Datatable ITCA;  // elastic angular distributions
+  Datatable LNEPS; // the number of electrons per shell
+  Datatable SIG;   // cross sections
+  Datatable SIGD;  // cross sections
+  Datatable LBEPS; // binding energy per shell
+  Datatable LAND;  // table of angular distribution locators
+  Datatable LPIPS; // probability of interaction per shell
+  Datatable AND;   // angular distributions
+  Datatable LSWD;  // array of offsets to shellwise data
+  Datatable LDLW;  // table of energy distribution locators
+  Datatable SWD;   // shellwise data in PDF and CDF form
+  Datatable DLW;   // energy distributions
+  Datatable GPD;   // photon production data
+  Datatable MTRP;  // photon production MT array
+  Datatable LSIGP; // table of photon production cross-section locators
+  Datatable SIGP;  // photon production cross sections
+  Datatable LANDP; // table of photon production angular distribution
+                   // locators
+  Datatable ANDP;  // photon production angular distributions
+  Datatable LDLWP; // table of photon production energy distribution
+                   // locators
+  Datatable DLWP;  // photon production energy distributions
+  Datatable YP;    // table of yield multipliers
+  Datatable FIS;   // total fission cross section
+  Datatable END;   // last word of this table
+  Datatable LUNR;  // probability tables
+  Datatable DNU;   // delayed nubar data
+  Datatable BDD;   // basic delayed data (lambdas, probabilities)
+  Datatable DNEDL; // table of energy distribution locators
+  Datatable DNED;  // energy distributions
 };
 } // end namespace rtt_nuclear_data
 
