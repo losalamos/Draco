@@ -22,7 +22,7 @@ file( GLOB headers *.hh )
 
 add_component_library(
    TARGET       Lib_nuclear_data
-   TARGET_DEPS
+   TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME nuclear_data
    SOURCES      "${sources}"
    HEADERS      "${headers}"

@@ -11,7 +11,19 @@
 #ifndef __nuclear_data_Nuclear_Data_hh__
 #define __nuclear_data_Nuclear_Data_hh__
 
+#include "ds++/Assert.hh"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+
 namespace rtt_nuclear_data {
+enum Reaction { CONTINUOUS_ENERGY_NEUTRON, DISCRETE_REACTION_NEUTRON,
+                DOSIMETRY, THERMAL_S, CONTINUOUS_ENERGY_PHOTOATOMIC,
+                NEUTRON_MULTIGROUP, PHOTOATOMIC_MULTIGROUP,
+                CONTINUOUS_ENERGY_ELECTRON, CONTINUOUS_ENERGY_PHOTONUCLEAR };
+
 //===========================================================================//
 /*!
  * \class Nuclear_Data
@@ -24,9 +36,27 @@ namespace rtt_nuclear_data {
  *    members. Public functions are provided for accessing this data.
  */
 //===========================================================================//
-class DLL_PUBLIC_Nuclear_Data Nuclear_Data {
+class Nuclear_Data {
+//class Nuclear_Data {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+
 public:
-  Nuclear_Data(string const &filename);
-  ~NuclearData() {}
+  Nuclear_Data(const string &filename);
+  ~Nuclear_Data() {}
+
+private:
+  int atomic_number;
+  int mass_number;
+  string thermal_abbreviation;
+  int evaluation_identifier;
+  int reaction;
 };
 } // end namespace rtt_nuclear_data
+
+#endif // __nuclear_data_Nuclear_Data_hh__
+
+//---------------------------------------------------------------------------//
+// end of nuclear_data/Nuclear_Data.hh
+//---------------------------------------------------------------------------//
