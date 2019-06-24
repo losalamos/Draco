@@ -21,14 +21,12 @@ namespace rtt_nuclear_data {
  */
 Nuclear_Data::Nuclear_Data(const string &_filepath) {
   filepath = _filepath;
-  string filename = filepath.substr(filepath.find_last_of("/") + 1);
-  Insist(filename.length() <= 10, "Filename has nonstandard length");
 
   const char *test = filepath.c_str();
   ifstream ACEfile(test, std::ios::in);
   if (!ACEfile) {
     std::ostringstream buffer;
-    buffer << "File " << filename << " could not be opened\n";
+    buffer << "File " << filepath << " could not be opened\n";
     throw std::invalid_argument(buffer.str());
   }
 
@@ -44,6 +42,7 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   comment = line.substr(0, 70);
   mat_identifier = line.substr(70, 10);
 
+  // Reaction type given by char in ZAID
   string reaction_name = zaid.substr(9, 1);
   if (!reaction_name.compare("c") || !reaction_name.compare("C")) {
     reaction = Reaction::CONTINUOUS_ENERGY_NEUTRON;
@@ -92,13 +91,7 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   for (int n = 0; n < 32; n++) {
     JXS.push_back(stoi(JXS_s.substr(0 + 9 * n, 9)));
   }
-  std::cout << NXS_s << std::endl;
-  std::cout << JXS_s << std::endl;
-  for (int n = 0; n < 16; n++) {
-    std::cout << NXS[n] << std::endl;
-  }
 
-  int data_n;
   while (true) {
     std::getline(ACEfile, line);
     data_s.append(line);
@@ -106,7 +99,6 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
       break;
   }
   ACEfile.close();
-  data_n = data_s.length() / 20;
 
   // Interpret file depending on reaction type
   if (reaction == Reaction::CONTINUOUS_ENERGY_NEUTRON ||
@@ -215,13 +207,11 @@ void Nuclear_Data::load_datatable(Datatable &dataTable,
                                   const std::string data_s) {
   // Only load data requested for this reaction type
   if (dataTable.start_index >= 0) {
-    std::cout << dataTable.start_index << " " << dataTable.length << std::endl;
     string subdata_s =
         data_s.substr(20 * dataTable.start_index, 20 * dataTable.length);
     int nentries = subdata_s.length() / 20;
     for (int n = 0; n < nentries; n++) {
       dataTable.data.push_back(stod(subdata_s.substr(20 * n, 20)));
-      std::cout << stod(subdata_s.substr(20 * n, 20)) << std::endl;
     }
   }
 }
@@ -237,7 +227,7 @@ void Nuclear_Data::report_contents() {
   std::cout << "Atomic Number:         " << atomic_number << std::endl;
   std::cout << "Mass Number:           " << mass_number << std::endl;
   std::cout << "Evaluation Identifier: " << evaluation_identifier << std::endl;
-  std::cout << "Reaction:              " << Reaction_Names[reaction]
+  std::cout << "Reaction:              " << Reaction_Name[reaction]
             << std::endl;
   std::cout << "IZ, AW pairs:          " << std::endl;
   for (int n = 0; n < 16; n++) {

@@ -30,15 +30,15 @@ enum Reaction {
   CONTINUOUS_ENERGY_ELECTRON,
   CONTINUOUS_ENERGY_PHOTONUCLEAR
 };
-const char *Reaction_Names[] = {"Continuous-energy neutron",
-                                "Discrete-reaction neutron",
-                                "Dosimetry",
-                                "Thermal S(alpha, beta)",
-                                "Continuous-energy photoatomic",
-                                "Neutron multigroup",
-                                "Photoatomic multigroup",
-                                "Continuous-energy electron",
-                                "Continuous-energy photonuclear"};
+const char *Reaction_Name[] = {"Continuous-energy neutron",
+                               "Discrete-reaction neutron",
+                               "Dosimetry",
+                               "Thermal S(alpha, beta)",
+                               "Continuous-energy photoatomic",
+                               "Neutron multigroup",
+                               "Photoatomic multigroup",
+                               "Continuous-energy electron",
+                               "Continuous-energy photonuclear"};
 
 //===========================================================================//
 /*!
@@ -70,7 +70,7 @@ private:
   };
 
 public:
-  Nuclear_Data(const string &filename);
+  Nuclear_Data(const string &_filepath);
   ~Nuclear_Data() {}
 
   void report_contents();

@@ -12,13 +12,19 @@ project( nuclear_data_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB test_sources *.cc )
-#file( GLOB mesh_input_files *.mesh.in )
+set( test_sources
+  ${PROJECT_SOURCE_DIR}/tNuclear_Data.cc )
+set( input_files
+  ${PROJECT_SOURCE_DIR}/1000.14p )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+add_scalar_tests(
+  SOURCES "${test_sources}"
+  DEPS "Lib_nuclear_data"
+  LABEL "acecheck")
 #add_scalar_tests(
 #   SOURCES "${test_sources}"
 #   DEPS    "Lib_nuclear_data" )
@@ -27,10 +33,8 @@ file( GLOB test_sources *.cc )
 # Copy input files to test directory (binary_dir)
 # ---------------------------------------------------------------------------- #
 
-#provide_aux_files(
-#   FILES    "${mesh_input_files}"
-#   SRC_EXT  ".mesh.in"
-#   DEST_EXT ".mesh" )
+provide_aux_files(
+   FILES    "${input_files}" )
 
 #------------------------------------------------------------------------------#
 # End nuclear_data/test/CMakeLists.txt
