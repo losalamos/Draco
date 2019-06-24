@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Nuclear_Data.hh"
+#include "ds++/Assert.hh"
 
 namespace rtt_nuclear_data {
 
@@ -23,12 +24,8 @@ Nuclear_Data::Nuclear_Data(const string &_filepath) {
   filepath = _filepath;
 
   const char *test = filepath.c_str();
+  Require(std::ifstream(filepath).good());
   ifstream ACEfile(test, std::ios::in);
-  if (!ACEfile) {
-    std::ostringstream buffer;
-    buffer << "File " << filepath << " could not be opened\n";
-    throw std::invalid_argument(buffer.str());
-  }
 
   string line;
   std::getline(ACEfile, line);
