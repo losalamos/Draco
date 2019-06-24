@@ -74,9 +74,12 @@ macro( set_ccs2_software_version PROJNAME )
   # Query git branch name?
   # git rev-parse --abbrev-ref HEAD
 
+  string(TOUPPER ${PROJNAME} PROJNAME_UPPER)
   set( ${PROJNAME}_BUILD_DATE
     "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
-  if( "${${PROJNAME}_VERSION_PATCH}notset" STREQUAL "notset" ) # "[1-9]?[1-9]$")
+  if( DEFINED ${PROJNAME_UPPER}_VERSION_PATCH ) # "[1-9]?[1-9]$")
+    set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME_UPPER}_VERSION_PATCH} )
+  else()
     set( ${PROJNAME}_VERSION_PATCH
       "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
       )

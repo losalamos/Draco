@@ -99,7 +99,7 @@ function establish_permissions
       if [[ `groups | grep -c dacodes` = 1 ]]; then
         install_group="dacodes"
         install_permissions="g+rwX,o-rwX"
-        elif [[ `groups | grep -c draco` = 1 ]]; then
+      elif [[ `groups | grep -c draco` = 1 ]]; then
         install_group="draco"
         install_permissions="g-rwX,o-rwX"
       fi
@@ -239,7 +239,14 @@ function flavor
       ;;
 
     ppc64le)
-      mpiflavor=`echo $OPAL_PREFIX | sed -e 's%.*/%%'`
+      if [[ -n $OPAL_PREFIX ]]; then
+        mpiflavor=`echo $OPAL_PREFIX | sed -e 's%.*/%%'`
+      elif [[ -n $LMOD_MPI_NAME ]]; then
+        mpiver=`echo $LMOD_MPI_VERSION | sed -e 's%-.*%%'`
+        mpiflavor=$LMOD_MPI_NAME-$mpiver
+      else
+        mpiflavor=unknown
+      fi
       case $CC in
       *gcc*)
           LCOMPILER=gnu
@@ -248,7 +255,7 @@ function flavor
           ;;
       *xlc*)
           LCOMPILER=ibm
-          LCOMPILERVER=`$CC -qversion | head -n 1 | sed -e 's/.*V\([0-9][0-9][.][0-9][.][0-9]\) .*/\1/'`
+          LCOMPILERVER=`$CC --version | head -n 1 | sed -e 's/.*V\([0-9][0-9][.][0-9][.][0-9]\) .*/\1/'`
           compilerflavor=$LCOMPILER-$LCOMPILERVER
           ;;
       *) compiler_flavor=unknown-unknown ;;
@@ -368,10 +375,10 @@ function npes_build
 
 function npes_test
 {
-  # assume no parallel testing capability
+  # assume no parallel testing capability.
   local np=1
 
-  # allow specializations per machien (if needed)
+  # allow specialization per machine (if needed)
   local target="`uname -n | sed -e s/[.].*//`"
   case ${target} in
 

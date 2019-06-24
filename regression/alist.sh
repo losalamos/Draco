@@ -86,7 +86,7 @@ for entry in "${entries[@]}"; do
     hkpark) current_author="HyeongKae Park" ;;
     jdd) current_author="Jeff D. Densmore" ;;
     jhchang | Jae* ) current_author="Jae H. Chang" ;;
-    keadyk | Kendra* ) current_author="Kendra P. Keady" ;;
+    keadyk | Kendra* ) current_author="Kendra P. Long" ;;
     kellyt | kgt | 107638 | Kelly*) current_author="Kelly G. Thompson" ;;
     kgbudge) current_author="Kent G. Budge" ;;
     kwang) current_author="Katherine J. Wang" ;;

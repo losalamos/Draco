@@ -98,7 +98,7 @@ with the gfortran option." )
     else()
       # GNU gfortran with Ninja generator or clang CXX compiler.
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(_cafs_fortran_target_arch "Target: x86_64*")
+        set(_cafs_fortran_target_arch "Target: x86_64*|ppc64")
       else()
         set(_cafs_fortran_target_arch "Target:.*86*")
       endif()

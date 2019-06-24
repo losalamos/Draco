@@ -26,12 +26,12 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-7_1_0
+ddir=draco-7_2_0
 pdir=$ddir
 
 # release for each environment listed
 # These are defined in cts-env.sh
-environments="intel1802env intel1704env gcc640env"
+environments="intel1802env intel1704env gcc740env"
 
 # ============================================================================
 # ====== Normally, you do not edit anything below this line ==================

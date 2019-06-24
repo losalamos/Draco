@@ -9,32 +9,11 @@
 //---------------------------------------------------------------------------//
 
 #include "PhysicalConstants.hh"
-#include "PhysicalConstantsSI.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <iomanip>
 #include <iostream>
 
 namespace rtt_units {
-
-//----------------------------------------------------------------------------//
-/*!
- * \brief Default constructor provides physical constants with SI units (kg,
- *        m, seconds, degree K, amp, radian, mole).
- * \return A PhysicalConstants object.
- */
-PhysicalConstants::PhysicalConstants()
-    : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),
-      d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI),
-      d_cLight(cLightSI), d_stefanBoltzmann(stefanBoltzmannSI),
-      d_gravitationalConstant(gravitationalConstantSI),
-      d_accelerationFromGravity(accelerationFromGravitySI),
-      d_faradayConstant(faradayConstantSI),
-      d_permeabilityOfVacuum(permeabilityOfVacuumSI),
-      d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),
-      d_classicalElectronRadius(classicalElectronRadiusSI),
-      d_electronMass(electronMassSI), d_protonMass(protonMassSI) {
-  // empty
-}
 
 //----------------------------------------------------------------------------//
 /*!

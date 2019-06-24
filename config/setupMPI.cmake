@@ -61,7 +61,7 @@ function( setMPIflavorVer )
 
       # extract the version...
       if( ${line} MATCHES "Version" OR ${line} MATCHES "OpenRTE" OR
-          ${line} MATCHES "Open MPI" )
+          ${line} MATCHES "Open MPI" OR ${line} MATCHES "Spectrum MPI")
         set(DBS_MPI_VER "${line}")
         if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
           string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
