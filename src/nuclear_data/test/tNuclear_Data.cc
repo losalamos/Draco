@@ -8,10 +8,10 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "nuclear_data/Nuclear_Data.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "nuclear_data/Nuclear_Data.hh"
 //#include <sstream>
 #include <stdexcept>
 
@@ -24,14 +24,14 @@ using rtt_dsxx::soft_equiv;
 //----------------------------------------------------------------------------//
 
 void nuclear_data_file_test(rtt_dsxx::UnitTest &ut) {
-  
-  std::cout << "\n---------------------------------------------------------\n"   
-            << "   Test Draco code calling Nuclear_Data routines\n"             
+
+  std::cout << "\n---------------------------------------------------------\n"
+            << "   Test Draco code calling Nuclear_Data routines\n"
             << "---------------------------------------------------------\n";
 
   // Open a sample photoatomic ACE datafile lifted from ACEtk
   const std::string filename = ut.getTestSourcePath() + "1000.14p";
-  std::cout << "Attempting to construct a Nuclear_Data object...\n" 
+  std::cout << "Attempting to construct a Nuclear_Data object...\n"
             << std::endl;
   std::unique_ptr<rtt_nuclear_data::Nuclear_Data> nuclear_data;
 
@@ -73,8 +73,8 @@ void nuclear_data_file_test(rtt_dsxx::UnitTest &ut) {
 }
 
 void nuclear_data_bad_file_test(rtt_dsxx::UnitTest &ut) {
-  std::cout << "\n---------------------------------------------------------\n"   
-            << "    Test Nuclear_Data bad file handling    \n"                        
+  std::cout << "\n---------------------------------------------------------\n"
+            << "    Test Nuclear_Data bad file handling    \n"
             << "---------------------------------------------------------\n";
 
   std::string filename = ut.getTestSourcePath() + "nonexistent_ace_file";
@@ -116,24 +116,24 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 
   return 0;
-  
+
   try {
     rtt_nuclear_data_test::nuclear_data_file_test(ut);
   } catch (rtt_dsxx::assertion &err) {
     std::string msg = err.what();
     if (msg != std::string("Success")) {
-      std::cout << "ERROR: While testing " << argv[0] << ", " << err.what() 
+      std::cout << "ERROR: While testing " << argv[0] << ", " << err.what()
                 << std::endl;
       return 1;
     }
     return 0;
-  /*} catch (rtt_dsxx::exception &err) {
+    /*} catch (rtt_dsxx::exception &err) {
     std::cout << "ERROR: While testing " << argv[0] << ", " << err.what() 
               << std::endl;
     return 1;*/
   } catch (...) {
     std::cout << "ERROR: While testing " << argv[0] << ", "
-         << "An unknown exception was thrown" << std::endl;
+              << "An unknown exception was thrown" << std::endl;
     return 1;
   }
   return 0;

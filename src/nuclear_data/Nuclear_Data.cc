@@ -15,9 +15,9 @@ namespace rtt_nuclear_data {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief Parses the cell_data block data from the mesh file via calls to
- *        private member functions. See Appendix F of the MCNP User Manual for
- *        details on the ACE file format.
+ * \brief Parses nuclear data from an ACE file and stores in internal vectors. 
+ *        See Appendix F of the MCNP User Manual for details on the ACE file 
+ *        format.
  * \param _filepath Path to ACE file.
  */
 Nuclear_Data::Nuclear_Data(const string &_filepath) {
