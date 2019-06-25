@@ -25,9 +25,6 @@ add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS "Lib_nuclear_data"
   LABEL "acecheck")
-#add_scalar_tests(
-#   SOURCES "${test_sources}"
-#   DEPS    "Lib_nuclear_data" )
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)
