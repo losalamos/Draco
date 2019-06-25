@@ -1,12 +1,12 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   nuclear_data/test/CMakeLists.txt
+# file   cdi_ace/test/CMakeLists.txt
 # author B. R. Ryan <brryan@lanl.gov>
 # date   2019 Jun 19
-# brief  Generate build project files for nuclear_data/test.
+# brief  Generate build project files for cdi_ace/test.
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-project( nuclear_data_test CXX )
+project( cdi_ace_test CXX )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -23,7 +23,7 @@ set( input_files
 
 add_scalar_tests(
   SOURCES "${test_sources}"
-  DEPS "Lib_nuclear_data"
+  DEPS "Lib_cdi_ace"
   LABEL "acecheck")
 
 # ---------------------------------------------------------------------------- #
@@ -34,5 +34,5 @@ provide_aux_files(
    FILES    "${input_files}" )
 
 #------------------------------------------------------------------------------#
-# End nuclear_data/test/CMakeLists.txt
+# End cdi_ace/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

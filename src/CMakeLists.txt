@@ -58,7 +58,7 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
 add_dir_if_exists( memory )       # needs ds++
-add_dir_if_exists( nuclear_data ) # needs ds++
+add_dir_if_exists( cdi_ace )      # needs ds++
 
 # For now, do not try to build or test some packages (these two paths are
 # identical now, but are expected to diverge as more packages are added to the

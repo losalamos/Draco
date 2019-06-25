@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*--------------------------------//
 /*!
- * \file   nuclear_data/Nuclear_Data.cc
+ * \file   cdi_ace/Nuclear_Data.cc
  * \author B. R. Ryan
  * \date   Wed Jun 7 10:33:26 2000
- * \brief  Implementation file for nuclear_data/Nuclear_Data class.
+ * \brief  Implementation file for cdi_ace/Nuclear_Data class.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
@@ -11,7 +11,7 @@
 #include "Nuclear_Data.hh"
 #include "ds++/Assert.hh"
 
-namespace rtt_nuclear_data {
+namespace rtt_cdi_ace {
 
 //----------------------------------------------------------------------------//
 /*!
@@ -230,7 +230,5 @@ void Nuclear_Data::report_contents() {
   for (int n = 0; n < 16; n++) {
     std::cout << "  " << IZ[n] << " " << AW[n] << std::endl;
   }
-  std::cout << "NXS" << std::endl;
-  std::cout << "data_length: " << data_length << std::endl;
 }
-} // end namespace rtt_nuclear_data
+} // end namespace rtt_cdi_ace

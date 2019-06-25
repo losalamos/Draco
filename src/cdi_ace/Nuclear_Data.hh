@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   nuclear_data/Nuclear_Data.hh
+ * \file   cdi_ace/Nuclear_Data.hh
  * \author B. R. Ryan
  * \date   Wed Jun 19 2019
  * \brief  Header file for Nuclear_Data class.
@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __nuclear_data_Nuclear_Data_hh__
-#define __nuclear_data_Nuclear_Data_hh__
+#ifndef __cdi_ace_Nuclear_Data_hh__
+#define __cdi_ace_Nuclear_Data_hh__
 
 #include "ds++/Assert.hh"
 #include <fstream>
@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace rtt_nuclear_data {
+namespace rtt_cdi_ace {
 enum Reaction {
   CONTINUOUS_ENERGY_NEUTRON,
   DISCRETE_REACTION_NEUTRON,
@@ -220,10 +220,10 @@ private:
   Datatable DNEDL; // table of energy distribution locators
   Datatable DNED;  // energy distributions
 };
-} // end namespace rtt_nuclear_data
+} // end namespace rtt_cdi_ace
 
-#endif // __nuclear_data_Nuclear_Data_hh__
+#endif // __cdi_ace_Nuclear_Data_hh__
 
 //---------------------------------------------------------------------------//
-// end of nuclear_data/Nuclear_Data.hh
+// end of cdi_ace/Nuclear_Data.hh
 //---------------------------------------------------------------------------//
