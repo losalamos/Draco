@@ -1,6 +1,6 @@
 //-----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_ace/test/tNuclear_Data.cc
+ * \file   cdi_ace/test/test_Nuclear_Data.cc
  * \author B. R. Ryan
  * \date   2019 Jun 24
  * \brief  Implementation file for tNuclear_Data

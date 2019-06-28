@@ -13,7 +13,7 @@ project( cdi_ace_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_sources
-  ${PROJECT_SOURCE_DIR}/tNuclear_Data.cc )
+  ${PROJECT_SOURCE_DIR}/test_Nuclear_Data.cc )
 set( input_files
   ${PROJECT_SOURCE_DIR}/1000.14p )
 
