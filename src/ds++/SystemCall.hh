@@ -114,6 +114,17 @@ DLL_PUBLIC_dsxx void draco_remove(std::string const &path);
 
 } // namespace rtt_dsxx
 
+/*!
+ * \brief set and unset environment variables.
+ */
+#ifdef MSVC
+#define draco_unsetenv(k) _putenv_s(k, "")
+#define draco_setenv(k, v) _putenv_s(k, v)
+#else
+#define draco_unsetenv(k) unsetenv(k)
+#define draco_setenv(k, v) setenv(k, v, 1)
+#endif
+
 #endif // rtt_dsxx_SystemCall_hh
 
 //---------------------------------------------------------------------------//

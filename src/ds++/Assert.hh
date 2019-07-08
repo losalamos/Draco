@@ -121,11 +121,6 @@ namespace rtt_dsxx {
  * to promote "standard C++".
  *
  * \sa http://akrzemi1.wordpress.com/2013/01/04/preconditions-part-i/
- *
- * \subsection date6June2019 6 June 2019
- *
- * Deprecation of Insist in favor of AlwaysRequire, AlwaysCheck, and AlwaysEnsure. These
- * better document the nature of the condition that is always checked.
  */
 //===========================================================================//
 
@@ -149,24 +144,21 @@ public:
   /*!
    * \brief Specialized constructor for rtt_dsxx::assertion class.
    *
-   * This constructor creates a ds++ exception object.  This object is derived form
-   * std::runtime_error and has identical functionality.  This constructor is specialized
-   * for use by Draco DbC commands (Require, Ensure, Check, and their
-   * Always... equivalents).  It forms the error message from the test condition and the
-   * file and line number of the DbC command.
+   * This constructor creates a ds++ exception object.  This object is derived
+   * form std::runtime_error and has identical functionality.  This constructor
+   * is specialized for use by Draco DbC commands (Require, Ensure, Check, and
+   * Insist).  It forms the error message from the test condition and the file
+   * and line number of the DbC command.
    *
    * \param cond The expression that failed a DbC test.
    * \param file The source code file name that contains the DbC test.
    * \param line The source code line number that contains the DbC test.
    * \param print_stack Print a strack trace.
    *
-   * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, AlwaysRequire,
-   * AlwaysEnsure, AlwaysCheck, Insist
+   * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, Insist
    */
-  assertion(std::string const &cond, std::string const &file, int const line,
-            bool const print_stack)
-      : std::logic_error(
-            build_message(cond, file, line, print_stack)) { /* empty */
+  assertion(std::string const &cond, std::string const &file, int const line)
+      : std::logic_error(build_message(cond, file, line)) { /* empty */
   }
 
   /*! \brief Destructor for ds++/assertion class.
@@ -176,8 +168,7 @@ public:
   /*! Helper function to build error message that includes source file name and
    *  line number. */
   static std::string build_message(std::string const &cond,
-                                   std::string const &file, int const line,
-                                   bool const print_stack);
+                                   std::string const &file, int const line);
 };
 
 //---------------------------------------------------------------------------//
@@ -185,15 +176,12 @@ public:
 //---------------------------------------------------------------------------//
 
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-[[noreturn]] DLL_PUBLIC_dsxx void toss_cookies(std::string const &cond,
-                                               std::string const &file,
-                                               int const line,
-                                               bool const print_stack);
+[[noreturn]] DLL_PUBLIC_dsxx void
+toss_cookies(std::string const &cond, std::string const &file, int const line);
 
 [[noreturn]] DLL_PUBLIC_dsxx void toss_cookies_ptr(char const *const cond,
                                                    char const *const file,
-                                                   int const line,
-                                                   bool const print_stack);
+                                                   int const line);
 
 //! Throw a rtt_dsxx::assertion if condition fails
 DLL_PUBLIC_dsxx void check_cookies(bool cond, char const *cond_text,
@@ -272,16 +260,20 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  * disable the C++ thrown exception while keeping all of the DBC checks and
  * messages active.
  *
- * The \c AlwaysRequire, \c AlwaysCheck, and \c AlwaysEnsure macros are akin to the \c
- * Require, \c Check, and \c Ensure macros, but are always active. These are suitable for
- * conditions that are inexpensive to check and are checked in portions of the code that are
- * not time critical, such as interfaces to functions containing long loops. The rule of
- * thumb is that they should never be used in functions that could otherwise be labeled
- * NOEXCEPT, but should usually be used in functions that could throw exceptions unless the
- * functions are known to be performance critical.
+ * The \c Insist macro is akin to the \c Assert macro, but it provides the
+ * opportunity to specify an instructive message.  The idea here is that you
+ * should use Insist for checking things which are more or less under user
+ * control.  If the user makes a poor choice, we "insist" that it be corrected,
+ * providing a corrective hint.
  *
- * \note The Insist macro is deprecated. It is an easy but otherwise unsuitable way to
- * report user input errors, and should not be mixed with the Design by Contract paradigm.
+ * \note We provide a way to eliminate assertions, but not insists.  The idea
+ * is that \c Assert is used to perform sanity checks during program
+ * development, which you might want to eliminate during production runs for
+ * performance sake.  Insist is used for things which really must be
+ * true, such as "the file must've been opened", etc.  So, use \c Assert for
+ * things which you want taken out of production codes (like, the check might
+ * inhibit inlining or something like that), but use Insist for those things you
+ * want checked even in a production code.
  */
 /*!
  * \def Require(condition)
@@ -313,22 +305,12 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  * \def Insist(condition, message)
  *
  * Inviolate check macro.  Insist is always on.
- *
- * \deprecated This is an easy but otherwise unsuitable way to detect user input errors, and
- * should not be mixed with the Design by Contract paradigm. Use \c AlwaysRequire, \c
- * AlwaysCheck, and \c AlwaysEnsure for contract checks that can be left on in productin
- * code.
  */
 /*!
  * \def Insist_ptr(condition, message)
  *
  * Same as Insist, except that it uses char pointers, rather than strings.  This
  * is more efficient when inlined.
- *
- * \deprecated This is an easy but otherwise unsuitable way to detect user input errors, and
- * should not be mixed with the Design by Contract paradigm. Use \c AlwaysRequire, \c
- * AlwaysCheck, and \c AlwaysEnsure for contract checks that can be left on in productin
- * code.
  */
 //---------------------------------------------------------------------------//
 
@@ -365,10 +347,6 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define AlwaysRequire(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysCheck(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysEnsure(c) if (!(c)) rtt_dsxx::toss_cookies( #c,__FILE__, __LINE__, true )
-
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
@@ -414,10 +392,6 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define AlwaysRequire(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysCheck(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysEnsure(c) if (!(c)) rtt_dsxx::toss_cookies( #c,__FILE__, __LINE__, true )
-
 #define Insist(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr( !!(c), #c, m, __FILE__, __LINE__ )
 
@@ -428,16 +402,16 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, false )
+#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c)
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, false )
-#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, false )
-#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__, false )
+#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__ )
 #else
 #define Check(c)
 #define Assert(c)
@@ -446,7 +420,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
 #if DBC & 4
 #define ENSURE_ON
-#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, false )
+#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Ensure(c)
 #endif
@@ -454,10 +428,6 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define AlwaysRequire(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysCheck(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__, true )
-#define AlwaysEnsure(c) if (!(c)) rtt_dsxx::toss_cookies( #c,__FILE__, __LINE__, true )
-
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
@@ -535,15 +505,6 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #endif
 #ifndef Ensure
 #define Ensure(c)
-#endif
-#ifndef AlwaysRequire
-#define AlwaysRequire(c)
-#endif
-#ifndef AlwaysCheck
-#define AlwaysCheck(c)
-#endif
-#ifndef AlwaysEnsure
-#define AlwaysEnsure(c)
 #endif
 #ifndef Insist
 #define Insist(c,m)

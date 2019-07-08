@@ -15,6 +15,12 @@
 #include <iostream>
 #include <numeric>
 
+//! \bug this can be fixed when [1] is fixed via C++17 'constexpr if'
+#if defined(MSVC)
+#pragma warning(push)
+#pragma warning(disable : 4702)
+#endif
+
 namespace rtt_mesh {
 
 //---------------------------------------------------------------------------//
@@ -143,6 +149,9 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
   }
 
   std::vector<unsigned> face_type;
+
+  /*! \bug [1] this should be a 'constexpr if' to avoid build warnings from 
+   *           MSVC. Remove MSVC pragma from top of file when fixed. */
   if (reader->get_use_face_types()) {
 
     // reserve some space for face_type
@@ -151,9 +160,9 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
     // generate face_type vector
     unsigned cf_counter = 0;
     for (size_t cell = 0; cell < num_cells; ++cell) {
-      for (size_t face = 0; face < cell_type[cell]; ++face) {
+      for (unsigned face = 0; face < cell_type[cell]; ++face) {
 
-        // stor number of nodes for this face
+        // store number of nodes for this face
         face_type.push_back(static_cast<unsigned>(
             reader->get_cellfacenodes(cell, face).size()));
 
@@ -191,6 +200,10 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
 }
 
 } // end namespace rtt_mesh
+
+#if defined(MSVC)
+#pragma warning(pop)
+#endif
 
 //---------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh_Builder.t.hh

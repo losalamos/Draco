@@ -10,6 +10,7 @@
 #include "c4/QueryEnv.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/SystemCall.hh"
 #include <cstdlib>
 #include <functional> // std::function
 #include <map>
@@ -19,14 +20,6 @@ using rtt_dsxx::UnitTest;
 
 using env_store_value = std::pair<bool, std::string>;
 using env_store_t = std::map<std::string, env_store_value>;
-
-#ifdef MSVC
-#define draco_unsetenv(k) _putenv_s(k, "")
-#define draco_setenv(k, v) _putenv_s(k, v)
-#else
-#define draco_unsetenv(k) unsetenv(k)
-#define draco_setenv(k, v) setenv(k, v, 1)
-#endif
 
 //----------------------------------------------------------------------------//
 /* Helper function: Record SLURM keys and values, if any, then remove them from

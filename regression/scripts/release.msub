@@ -7,6 +7,7 @@
 ##---------------------------------------------------------------------------##
 ## Generic setup
 ##---------------------------------------------------------------------------##
+
 source $draco_script_dir/common.sh
 export buildflavor=`flavor`
 export build_pe=`npes_build`
@@ -28,7 +29,6 @@ if test $verbose == 1; then
   echo "test command = ctest -j $test_pe"
   echo "steps        = ${steps}"
   echo "queue        = $access_queue"
-  echo
   echo
 fi
 

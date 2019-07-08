@@ -118,10 +118,11 @@ echo -e "\nLoading modules for architecture type $DRACO_ARCH. \n"
 case $DRACO_ARCH in
   arm)
     cflavor="gcc-8.2.0"
-    mflavor="$cflavor-openmpi-3.1.2"
-    noflavor="git cmake gcc/8.2.0"
-    compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_8.2.0"
-    mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-lapack-3.8.0 trilinos/12.14.1-$mflavor-lapack-3.8.0"
+    mflavor="$cflavor-openmpi-3.1.3"
+    lflavor="lapack-3.8.0"
+    noflavor="git gcc/8.2.0"
+    compflavor="cmake/3.14.2-$cflavor gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.3-gcc_8.2.0"
+    mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lflavor trilinos/12.14.1-$mflavor-$lflavor"
     # ec_mf="ndi"
     # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
     # eliminates warnings: "there are more than one active ports on host"

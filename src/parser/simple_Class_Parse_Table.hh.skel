@@ -1,0 +1,74 @@
+//----------------------------------*-C++-*-----------------------------------//
+/*!
+ * \file   MyPackage/MyClass__parser.hh
+ * \author Kent Budge
+ * \brief  Define class Class_Parse_Table<MyClass>.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved.
+ *
+ * This is skeleton code for the use of developers who are writing a
+ * specialization of Class_Parse_Table that will work with the
+ * parse_class_from_table function template. The skeleton uses MyClass
+ * wherever the new class name should appear, and MyPackage where the new class
+ * package directory name should appear.
+ */
+//----------------------------------------------------------------------------//
+
+#ifndef MyPackage_MyClass__parser_hh
+#define MyPackage_MyClass__parser_hh
+
+#include "parser/Class_Parse_Table.hh"
+
+#include "MyClass.hh"
+
+namespace rtt_parser {
+using namespace MyNamespace;
+
+//----------------------------------------------------------------------------//
+//! Specialization of Class_Parse_Table for MyClass.
+
+template <>
+class Class_Parse_Table<MyClass> : public Class_Parse_Table_Base<MyClass>,
+                                   protected Class_Parse_Table<MyBaseClass>
+// Add additional base classes, or delete Class_Parse_Table<MyBaseClass> if
+// there is no base class.
+{
+public:
+  // NESTED CLASSES AND TYPEDEF
+
+  //! Type of the object returned by this Parser.
+  typedef MyClass Return_Class;
+  typedef unsigned Context_Type;
+
+  // CREATORS
+
+  //! Constructor
+  explicit Class_Parse_Table(Context_Type debug_context);
+
+  //! Check completeness and consistency of parsed specification.
+  void check_completeness(Token_Stream &tokens);
+
+  //! Create an object from the parsed specification.
+  shared_ptr<Sweeper_Creator> create_object();
+
+protected:
+  // Data to be parsed which will be used to construct the object, for example:
+
+  Context_Type debug_context;
+  bool flag;
+  double constant;
+
+private:
+  // Parse functions
+
+  static void parse_flag(Token_Stream &, int);
+  static void parse_constant(Token_Stream &, double);
+};
+
+} // end namespace rtt_parser
+
+#endif // MyPackage_MyClass__parser_hh
+
+//----------------------------------------------------------------------------//
+// end of MyPackage/MyClass.hh
+//----------------------------------------------------------------------------//

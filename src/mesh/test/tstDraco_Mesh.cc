@@ -86,7 +86,7 @@ void spherical_mesh_1d(rtt_c4::ParallelUnitTest &ut) {
   FAIL_IF_NOT(layout.at(num_cells - 1)[0].second[0] == 2);
 
   // check internal connectivity
-  for (size_t cell = 1; cell < num_cells - 1; ++cell) {
+  for (unsigned cell = 1; cell < num_cells - 1; ++cell) {
 
     // check neighbor cells
     FAIL_IF_NOT(layout.at(cell).size() == 2);
@@ -107,7 +107,7 @@ void spherical_mesh_1d(rtt_c4::ParallelUnitTest &ut) {
 
   // successful test output
   if (ut.numFails == 0)
-    PASSMSG("1D Draco_Mesh tests ok.");
+    PASSMSG("1D Draco_Mesh tests okay.");
   return;
 }
 
@@ -123,10 +123,10 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   const size_t num_xdir = 2;
   const size_t num_ydir = 1;
 
-  // generate a constainer for data needed in mesh construction
+  // generate a container for data needed in mesh construction
   rtt_mesh_test::Test_Mesh_Interface mesh_iface(num_xdir, num_ydir);
 
-  // generate an interface for the alternate form of the mesh ctor
+  // generate an interface for the alternate form of the mesh constructor
   rtt_mesh_test::Test_Mesh_Interface mesh_iface_alt(num_xdir, num_ydir, {}, 0.0,
                                                     0.0, true);
 
@@ -162,7 +162,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   FAIL_IF_NOT(mesh->get_cell_type() == cell_type);
   FAIL_IF_NOT(mesh->get_cell_to_node_linkage() == cell_to_node_linkage);
 
-  // check that alterate cell type and cell-node linkage data is correct
+  // check that alternate cell type and cell-node linkage data is correct
   FAIL_IF_NOT(mesh_alt->get_cell_type() == mesh_iface_alt.cell_type);
   FAIL_IF_NOT(mesh_alt->get_cell_to_node_linkage() ==
               mesh_iface_alt.cell_to_node_linkage);
@@ -265,7 +265,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
       test_cn_first += cell_type[cell];
     }
 
-    // check that flattend linkage from alternate mesh matches original
+    // check that flattened linkage from alternate mesh matches original
     std::vector<unsigned> test_cn_linkage_alt =
         mesh_iface.flatten_cn_linkage(layout_alt, bd_layout_alt, go_layout_alt);
     FAIL_IF_NOT(test_cn_linkage_alt == test_cn_linkage);
@@ -316,7 +316,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // successful test output
   if (ut.numFails == 0)
-    PASSMSG("2D Draco_Mesh tests ok.");
+    PASSMSG("2D Draco_Mesh tests okay.");
   return;
 }
 

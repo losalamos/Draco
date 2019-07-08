@@ -54,7 +54,7 @@ void t2(rtt_dsxx::UnitTest &ut) {
   std::cout << "t2 test: ";
   std::string error_message;
   try {
-    throw rtt_dsxx::assertion("hello1", "myfile", 42, false);
+    throw rtt_dsxx::assertion("hello1", "myfile", 42);
   } catch (rtt_dsxx::assertion const &a) {
     PASSMSG("caught rtt_dsxx::assertion");
     error_message = std::string(a.what());
@@ -107,7 +107,7 @@ void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       std::string const msg("testing toss_cookies()");
       std::string const file("DummyFile.ext");
       int const line(55);
-      rtt_dsxx::toss_cookies(msg, file, line, false);
+      rtt_dsxx::toss_cookies(msg, file, line);
       // throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies.");
@@ -121,7 +121,7 @@ void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       char const *const msg("testing toss_cookies_ptr()");
       char const *const file("DummyFile.ext");
       int const line(56);
-      rtt_dsxx::toss_cookies_ptr(msg, file, line, false);
+      rtt_dsxx::toss_cookies_ptr(msg, file, line);
       //throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies_ptr.");
@@ -298,72 +298,6 @@ void tensure(rtt_dsxx::UnitTest &ut) {
   } catch (...) {
     if (ut.dbcEnsure())
       ITFAILS;
-  }
-  return;
-}
-
-//---------------------------------------------------------------------------//
-// Check the operation of the AlwaysRequire() macro.
-//---------------------------------------------------------------------------//
-
-void talwaysrequire(rtt_dsxx::UnitTest &ut) {
-  std::cout << "t-AlwaysRequire test: \n";
-  try {
-    AlwaysRequire(0);
-  } catch (rtt_dsxx::assertion const &a) {
-    PASSMSG("talwaysrequire: caught rtt_dsxx::assertion");
-    std::cout << "t-AlwaysRequire message value test: ";
-    std::string msg(a.what());
-    std::string expected_value("Assertion: 0, failed in");
-    string::size_type idx = msg.find(expected_value);
-    if (idx == string::npos)
-      ITFAILS;
-  } catch (...) {
-    ITFAILS;
-  }
-  return;
-}
-
-//---------------------------------------------------------------------------//
-// Check the operation of the AlwaysCheck() macro.
-//---------------------------------------------------------------------------//
-
-void talwayscheck(rtt_dsxx::UnitTest &ut) {
-  std::cout << "t-AlwaysCheck test: \n";
-  try {
-    AlwaysCheck(0);
-  } catch (rtt_dsxx::assertion const &a) {
-    PASSMSG("talwayscheck: caught rtt_dsxx::assertion");
-    std::cout << "t-AlwaysCheck message value test: ";
-    std::string msg(a.what());
-    std::string expected_value("Assertion: 0, failed in");
-    string::size_type idx = msg.find(expected_value);
-    if (idx == string::npos)
-      ITFAILS;
-  } catch (...) {
-    ITFAILS;
-  }
-  return;
-}
-
-//---------------------------------------------------------------------------//
-// Check the operation of the AlwaysEnsure() macro.
-//---------------------------------------------------------------------------//
-
-void talwaysensure(rtt_dsxx::UnitTest &ut) {
-  std::cout << "t-AlwaysEnsure test: \n";
-  try {
-    AlwaysEnsure(0);
-  } catch (rtt_dsxx::assertion const &a) {
-    PASSMSG("talwaysensure: caught rtt_dsxx::assertion");
-    std::cout << "t-AlwaysEnsure message value test: ";
-    std::string msg(a.what());
-    std::string expected_value("Assertion: 0, failed in");
-    string::size_type idx = msg.find(expected_value);
-    if (idx == string::npos)
-      ITFAILS;
-  } catch (...) {
-    ITFAILS;
   }
   return;
 }
@@ -591,9 +525,6 @@ int main(int argc, char *argv[]) {
     trequire(ut);
     tcheck(ut);
     tensure(ut);
-    talwaysrequire(ut);
-    talwayscheck(ut);
-    talwaysensure(ut);
     tremember(ut);
     tassert(ut);
     tinsist(ut);
