@@ -12,12 +12,15 @@
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
+#include "ds++/terminal.hh"
 #include <iostream>
 
 int main(int argc, char *argv[]) {
   using std::cout;
   using std::endl;
   try {
+    Term::Terminal term;
+
     bool version(false);
     bool brief(false);
     bool author(false);

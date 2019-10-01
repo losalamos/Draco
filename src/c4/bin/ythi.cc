@@ -21,6 +21,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/C4_Functions.hh"
+#include "c4/QueryEnv.hh"
 #include "c4/bin/xthi.hh"
 #include <atomic>
 #include <iomanip>
@@ -44,7 +45,11 @@ void run_thread(std::atomic<bool> &signal, std::string const &hostname,
 
 //----------------------------------------------------------------------------//
 int main(int argc, char **argv) {
-  size_t const YTHI_NUM_WORKERS = (argc > 1) ? std::stoi(argv[1]) : 1;
+  rtt_c4::SLURM_Task_Info sti;
+  size_t const numthreads =
+      sti.is_cpus_per_task_set() ? sti.get_cpus_per_task() : 1;
+  size_t const YTHI_NUM_WORKERS =
+      (argc > 1) ? std::stoi(argv[1]) : numthreads - 1;
   unsigned const num_cpus = std::thread::hardware_concurrency();
 
   rtt_c4::initialize(argc, argv);

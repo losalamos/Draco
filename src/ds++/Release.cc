@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
+#include "terminal.hh"
 #include "ds++/config.h"
 #include <cstring> // memcpy
 #include <sstream>
@@ -61,8 +62,9 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
-              << "_" << Draco_VERSION_PATCH;
+  pkg_release << Term::color(Term::style::bold) << "Draco-"
+              << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR << "_"
+              << Draco_VERSION_PATCH << Term::color(Term::style::reset);
 
   // build date and type
   std::string const build_date(Draco_BUILD_DATE);
@@ -170,9 +172,10 @@ const std::string copyright() {
   std::ostringstream msg;
 
   msg << author_list() << "\n"
+      << Term::color(Term::fg::green)
       << "Copyright (C) 2016-2019 Triad National Security, LLC. "
          "(C19028, LA-CC-16-016),\n     Released under a 3-Clause BSD License."
-      << std::endl;
+      << Term::color(Term::fg::reset) << std::endl;
 
   return msg.str();
 }
