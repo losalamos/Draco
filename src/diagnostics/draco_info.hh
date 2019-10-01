@@ -70,7 +70,7 @@ Build information:
  * \endverbatim
  */
 //===========================================================================//
-class DLL_PUBLIC_diagnostics DracoInfo {
+class DracoInfo {
 public:
   // IMPLELEMENTATION
   // ================

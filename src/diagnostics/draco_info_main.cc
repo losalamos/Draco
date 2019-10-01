@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
   using std::cout;
   using std::endl;
   try {
+    // Required to ensure terminal is restored to a functioning state after an
+    // exception is thrown.
     Term::Terminal term;
 
     bool version(false);

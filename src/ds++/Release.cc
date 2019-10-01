@@ -62,9 +62,10 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << Term::color(Term::style::bold) << "Draco-"
-              << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR << "_"
-              << Draco_VERSION_PATCH << Term::color(Term::style::reset);
+  pkg_release << Term::color(Term::style::bold) << Term::color(Term::fg::yellow)
+              << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
+              << "_" << Draco_VERSION_PATCH << Term::color(Term::fg::reset)
+              << Term::color(Term::style::reset);
 
   // build date and type
   std::string const build_date(Draco_BUILD_DATE);
@@ -151,6 +152,10 @@ const std::string author_list(bool const use_doxygen_formatting) {
     maxlinelen = 400;
     alist << "\n\\par " << line_name << "\n\n";
     line_name = "";
+  } else {
+    line_name = Term::color(Term::style::bold) + Term::color(Term::fg::yellow) +
+                line_name + Term::color(Term::fg::reset) +
+                Term::color(Term::style::reset);
   }
 
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
@@ -160,6 +165,10 @@ const std::string author_list(bool const use_doxygen_formatting) {
   if (use_doxygen_formatting) {
     alist << "\\par " << line_name << "\n\n";
     line_name = "";
+  } else {
+    line_name = Term::color(Term::style::bold) + Term::color(Term::fg::yellow) +
+                line_name + Term::color(Term::fg::reset) +
+                Term::color(Term::style::reset);
   }
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, prior_developers);
 
