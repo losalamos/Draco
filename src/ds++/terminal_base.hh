@@ -1,6 +1,11 @@
-/*
- * https://github.com/certik/terminal/blob/master/terminal_base.h
- */
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   ds++/terminal.hh
+ * \author Ondrej Certik
+ * \date   Sat Oct 05 2019
+ * \brief  Terminal class that provides colored output.
+ * \note   https://github.com/certik/terminal/blob/master/terminal_base.h */
+//---------------------------------------------------------------------------//
 
 #ifndef TERMINAL_BASE_H
 #define TERMINAL_BASE_H
@@ -50,8 +55,10 @@ private:
   bool keyboard_enabled;
 
 public:
-  BaseTerminal(bool enable_keyboard = false, bool disable_ctrl_c = true)
+  BaseTerminal(bool enable_keyboard = false, bool /*disable_ctrl_c*/ = true)
       : keyboard_enabled{enable_keyboard} {
+    // Uncomment this to silently disable raw mode for non-tty
+    //if (keyboard_enabled) keyboard_enabled = is_stdin_a_tty();
 #ifdef _WIN32
     out_console = is_stdout_a_tty();
     if (out_console) {
@@ -146,7 +153,7 @@ public:
 #ifdef _WIN32
     char buf[1];
     DWORD nread;
-    if (kbhit()) {
+    if (_kbhit()) {
       if (!ReadFile(hin, buf, 1, &nread, nullptr)) {
         throw std::runtime_error("ReadFile() failed");
       }
@@ -186,6 +193,15 @@ public:
 #endif
   }
 
+  // Returns true if the standard input is attached to a terminal
+  bool is_stdin_a_tty() const {
+#ifdef _WIN32
+    return _isatty(_fileno(stdin));
+#else
+    return isatty(STDIN_FILENO);
+#endif
+  }
+
   // Returns true if the standard output is attached to a terminal
   bool is_stdout_a_tty() const {
 #ifdef _WIN32
@@ -199,3 +215,7 @@ public:
 } // namespace Term
 
 #endif // TERMINAL_BASE_H
+
+//---------------------------------------------------------------------------//
+// end of ds++/terminal_base.hh
+//---------------------------------------------------------------------------//

@@ -1,12 +1,17 @@
-/*
- * https://github.com/certik/terminal/blob/master/terminal.h
- */
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   ds++/terminal.hh
+ * \author Ondrej Certik
+ * \date   Sat Oct 05 2019
+ * \brief  Terminal class that provides colored output.
+ * \note    https://github.com/certik/terminal/blob/master/terminal.h */
+//---------------------------------------------------------------------------//
 
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
-/* This file is all platform independent, it contains the logic to build
- * the features that users need in a terminal application.
+/* This file is all platform independent, it contains the logic to build the
+ * features that users need in a terminal application.
  *
  * The ANSI escape sequences used here are supported by all terminals (Linux,
  * macOS, Windows). All the functionality here must work on all platforms. The
@@ -23,6 +28,7 @@
 #include <vector>
 
 #define CTRL_KEY(k) ((k)&0x1f)
+#define ALT_KEY(k) (k + 128)
 
 namespace Term {
 
@@ -95,7 +101,7 @@ std::string cursor_on() { return "\x1b[?25h"; }
 
 // If an attempt is made to move the cursor out of the window, the result is
 // undefined.
-std::string move_cursor(int row, int col) {
+std::string move_cursor(size_t row, size_t col) {
   return "\x1b[" + std::to_string(row) + ";" + std::to_string(col) + "H";
 }
 
@@ -118,11 +124,16 @@ std::string erase_to_eol() { return "\x1b[K"; }
 enum Key {
   BACKSPACE = 1000,
   ENTER,
+  ALT_ENTER,
   TAB,
   ARROW_LEFT,
   ARROW_RIGHT,
   ARROW_UP,
   ARROW_DOWN,
+  CTRL_UP,
+  CTRL_DOWN,
+  CTRL_RIGHT,
+  CTRL_LEFT,
   NUMERIC_5,
   DEL,
   HOME,
@@ -157,14 +168,16 @@ public:
   void restore_screen() {
     if (restore_screen_) {
       write("\033[?1049l"); // restore screen
-      write("\0338");       // restore current cursor position
+      write("\033"
+            "8"); // restore current cursor position
       restore_screen_ = false;
     }
   }
 
   void save_screen() {
     restore_screen_ = true;
-    write("\0337");       // save current cursor position
+    write("\033"
+          "7");           // save current cursor position
     write("\033[?1049h"); // save screen
   }
 
@@ -192,6 +205,14 @@ public:
       if (!read_raw(&seq[0]))
         return Key::ESC;
       if (!read_raw(&seq[1])) {
+        if (seq[0] >= 'a' && seq[0] <= 'z') {
+          // gnome-term, Windows Console
+          return ALT_KEY(seq[0]);
+        }
+        if (seq[0] == 13) {
+          // gnome-term
+          return Key::ALT_ENTER;
+        }
         return -1;
       }
 
@@ -218,6 +239,28 @@ public:
               return Key::HOME;
             case '8':
               return Key::END;
+            }
+          } else if (seq[2] == ';') {
+            if (seq[1] == '1') {
+              if (!read_raw(&seq[2])) {
+                return -10;
+              }
+              if (!read_raw(&seq[3])) {
+                return -11;
+              }
+              if (seq[2] == '5') {
+                switch (seq[3]) {
+                case 'A':
+                  return Key::CTRL_UP;
+                case 'B':
+                  return Key::CTRL_DOWN;
+                case 'C':
+                  return Key::CTRL_RIGHT;
+                case 'D':
+                  return Key::CTRL_LEFT;
+                }
+              }
+              return -12;
             }
           } else {
             if (seq[2] >= '0' && seq[2] <= '9') {
@@ -297,6 +340,27 @@ public:
         return Key::ENTER;
       case 127:
         return Key::BACKSPACE;
+      }
+      if (c == -61) {
+        if (!read_raw(&c)) {
+          return -8;
+        } else {
+          if (c >= -95 && c <= -70) {
+            // xterm
+            return ALT_KEY(c + 'a' - (-95));
+          }
+          return -9;
+        }
+      } else if (c == -62) {
+        if (!read_raw(&c)) {
+          return -10;
+        } else {
+          if (c == -115) {
+            // xterm
+            return Key::ALT_ENTER;
+          }
+          return -11;
+        }
       }
       return c;
     }
@@ -415,7 +479,7 @@ void codepoint_to_utf8(std::string &s, char32_t c) {
   } else {
     throw std::runtime_error("Invalid UTF32 codepoint.");
   }
-  char u1, u2, u3, u4;
+  char32_t u1('x'), u2('x'), u3('x'), u4('x');
   static const unsigned char mask[4] = {0x00, 0xC0, 0xE0, 0xF0};
   switch (nbytes) {
   case 4:
@@ -432,22 +496,22 @@ void codepoint_to_utf8(std::string &s, char32_t c) {
   }
   switch (nbytes) {
   case 1:
-    s.push_back(u1);
+    s.push_back(static_cast<char>(u1));
     break;
   case 2:
-    s.push_back(u1);
-    s.push_back(u2);
+    s.push_back(static_cast<char>(u1));
+    s.push_back(static_cast<char>(u2));
     break;
   case 3:
-    s.push_back(u1);
-    s.push_back(u2);
-    s.push_back(u3);
+    s.push_back(static_cast<char>(u1));
+    s.push_back(static_cast<char>(u2));
+    s.push_back(static_cast<char>(u3));
     break;
   case 4:
-    s.push_back(u1);
-    s.push_back(u2);
-    s.push_back(u3);
-    s.push_back(u4);
+    s.push_back(static_cast<char>(u1));
+    s.push_back(static_cast<char>(u2));
+    s.push_back(static_cast<char>(u3));
+    s.push_back(static_cast<char>(u4));
     break;
   }
 }
@@ -456,7 +520,8 @@ void codepoint_to_utf8(std::string &s, char32_t c) {
 
 // Converts an UTF8 string to UTF32.
 std::u32string utf8_to_utf32(const std::string &s) {
-  uint32_t codepoint, state = UTF8_ACCEPT;
+  uint32_t codepoint;
+  uint8_t state = UTF8_ACCEPT;
   std::u32string r;
   for (size_t i = 0; i < s.size(); i++) {
     state = utf8_decode_step(state, s[i], &codepoint);
@@ -505,21 +570,25 @@ public:
       : x0{x0}, y0{y0}, w{w}, h{h}, chars(w * h, ' '), m_fg(w * h, fg::reset),
         m_bg(w * h, bg::reset), m_style(w * h, style::reset) {}
 
-  char32_t get_char(int x, int y) { return chars[(y - 1) * w + (x - 1)]; }
+  char32_t get_char(size_t x, size_t y) { return chars[(y - 1) * w + (x - 1)]; }
 
-  void set_char(int x, int y, char32_t c) { chars[(y - 1) * w + (x - 1)] = c; }
+  void set_char(size_t x, size_t y, char32_t c) {
+    chars[(y - 1) * w + (x - 1)] = c;
+  }
 
-  fg get_fg(int x, int y) { return m_fg[(y - 1) * w + (x - 1)]; }
+  fg get_fg(size_t x, size_t y) { return m_fg[(y - 1) * w + (x - 1)]; }
 
-  void set_fg(int x, int y, fg c) { m_fg[(y - 1) * w + (x - 1)] = c; }
+  void set_fg(size_t x, size_t y, fg c) { m_fg[(y - 1) * w + (x - 1)] = c; }
 
-  bg get_bg(int x, int y) { return m_bg[(y - 1) * w + (x - 1)]; }
+  bg get_bg(size_t x, size_t y) { return m_bg[(y - 1) * w + (x - 1)]; }
 
-  void set_bg(int x, int y, bg c) { m_bg[(y - 1) * w + (x - 1)] = c; }
+  void set_bg(size_t x, size_t y, bg c) { m_bg[(y - 1) * w + (x - 1)] = c; }
 
-  style get_style(int x, int y) { return m_style[(y - 1) * w + (x - 1)]; }
+  style get_style(size_t x, size_t y) { return m_style[(y - 1) * w + (x - 1)]; }
 
-  void set_style(int x, int y, style c) { m_style[(y - 1) * w + (x - 1)] = c; }
+  void set_style(size_t x, size_t y, style c) {
+    m_style[(y - 1) * w + (x - 1)] = c;
+  }
 
   void print_str(int x, int y, const std::string &s) {
     std::u32string s2 = utf8_to_utf32(s);
@@ -560,14 +629,15 @@ public:
 
   void print_border(bool unicode = true) { print_rect(1, 1, w, h, unicode); }
 
-  void print_rect(int x1, int y1, int x2, int y2, bool unicode = true) {
+  void print_rect(size_t x1, size_t y1, size_t x2, size_t y2,
+                  bool unicode = true) {
     std::u32string border = utf8_to_utf32("│─┌┐└┘");
     if (unicode) {
-      for (int j = y1 + 1; j <= y2 - 1; j++) {
+      for (size_t j = y1 + 1; j <= y2 - 1; j++) {
         set_char(x1, j, border[0]);
         set_char(x2, j, border[0]);
       }
-      for (int i = x1 + 1; i <= x2 - 1; i++) {
+      for (size_t i = x1 + 1; i <= x2 - 1; i++) {
         set_char(i, y1, border[1]);
         set_char(i, y2, border[1]);
       }
@@ -576,11 +646,11 @@ public:
       set_char(x1, y2, border[4]);
       set_char(x2, y2, border[5]);
     } else {
-      for (int j = y1 + 1; j <= y2 - 1; j++) {
+      for (size_t j = y1 + 1; j <= y2 - 1; j++) {
         set_char(x1, j, '|');
         set_char(x2, j, '|');
       }
-      for (int i = x1 + 1; i <= x2 - 1; i++) {
+      for (size_t i = x1 + 1; i <= x2 - 1; i++) {
         set_char(i, y1, '-');
         set_char(i, y2, '-');
       }
@@ -658,3 +728,7 @@ public:
 } // namespace Term
 
 #endif // TERMINAL_H
+
+//---------------------------------------------------------------------------//
+// end of ds++/terminal.hh
+//---------------------------------------------------------------------------//
