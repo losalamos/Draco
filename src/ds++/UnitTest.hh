@@ -25,7 +25,7 @@ namespace rtt_dsxx {
  * \brief Object to encapsulate unit testing of Draco classes and functions.
  *
  * This is a virtual class.  You should use one of the following UnitTest
- * classes in your test appliation:
+ * classes in your test application:
  *
  * \li ScalarUnitTest      - Used for testing code that does not use parallel
  *                       communication (rtt_c4).
@@ -67,9 +67,8 @@ public:
   // CREATORS
 
   //! Default constructors.
-  DLL_PUBLIC_dsxx UnitTest(int & /* argc */, char **&argv,
-                           string_fp_void release_, std::ostream &out_,
-                           bool const verbose_ = true);
+  UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
+           std::ostream &out_, bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
@@ -80,7 +79,7 @@ public:
   // MANIPULATORS
 
   //! The assignment operator is disabled.
-  UnitTest &operator=(UnitTest const &rhs);
+  UnitTest &operator=(UnitTest const &rhs) = delete;
 
   /*!
    * \brief Only special cases should use these (like the unit test
@@ -99,18 +98,14 @@ public:
     return;
   }
 
-  //! Change the target for output
-  // void setostream( std::ostream out_ ) { out = out_; return; };
-
   // ACCESSORS
-  DLL_PUBLIC_dsxx bool failure(int line);
-  DLL_PUBLIC_dsxx bool failure(int line, char const *file);
-  DLL_PUBLIC_dsxx bool failure(std::string const &failmsg);
-  DLL_PUBLIC_dsxx bool passes(std::string const &passmsg);
-  DLL_PUBLIC_dsxx bool check(bool, std::string const &checkmsg,
-                             bool fatal = false);
-  DLL_PUBLIC_dsxx virtual bool check_all(bool good, std::string const &checkmsg,
-                                         bool fatal = false) {
+  bool failure(int line);
+  bool failure(int line, char const *file);
+  bool failure(std::string const &failmsg);
+  bool passes(std::string const &passmsg);
+  bool check(bool, std::string const &checkmsg, bool fatal = false);
+  virtual bool check_all(bool good, std::string const &checkmsg,
+                         bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
 
@@ -162,7 +157,7 @@ public:
 #else
     // We should never get here. However, when compiling ScalarUnitTest.cc, this
     // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defnied.
+    // PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
@@ -190,7 +185,7 @@ public:
 #else
     // We should never get here. However, when compiling ScalarUnitTest.cc, this
     // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defnied.
+    // PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
@@ -206,7 +201,7 @@ public:
 
 protected:
   // IMPLEMENTATION
-  DLL_PUBLIC_dsxx std::string resultMessage(void) const;
+  std::string resultMessage(void) const;
 
   // DATA
 
@@ -221,8 +216,8 @@ protected:
   //! Where should output be sent (default is std::cout)
   std::ostream &out;
 
-  /*! Save the state of DBC so that it is easily accessible from within a
-   * unit test.
+  /*! Save the state of DBC so that it is easily accessible from within a unit
+   * test.
    */
   bool m_dbcRequire;
   bool m_dbcCheck;

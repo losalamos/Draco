@@ -40,10 +40,8 @@ void maintest(UnitTest &ut) {
     std::map<std::string, unsigned> wc =
         rtt_dsxx::get_word_count(releaseString, verbose);
 
-    if (wc[string("DRACO_DIAGNOSTICS")] != 1)
-      ITFAILS;
-    if (wc[string("build")] != 2)
-      ITFAILS;
+    FAIL_IF_NOT(wc[string("DRACO_DIAGNOSTICS")] == 1);
+    FAIL_IF_NOT(wc[string("build")] == 2);
   }
 
   {
@@ -61,14 +59,10 @@ void maintest(UnitTest &ut) {
     std::map<std::string, unsigned> wc =
         rtt_dsxx::get_word_count(copyrightString, verbose);
 
-    if (wc[string("CCS-2")] != 1)
-      ITFAILS;
-    if (wc[string("Copyright")] != 1)
-      ITFAILS;
-    if (wc[string("Contributers")] != 1)
-      ITFAILS;
-    if (wc[string("Team")] != 1)
-      ITFAILS;
+    FAIL_IF_NOT(wc[string("CCS-2")] == 1);
+    FAIL_IF_NOT(wc[string("Copyright")] == 1);
+    FAIL_IF_NOT(wc[string("Contributors")] == 1);
+    FAIL_IF_NOT(wc[string("Team")] == 1);
   }
 
   return;

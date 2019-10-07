@@ -23,8 +23,7 @@ namespace rtt_dsxx {
  * This class inherits from UnitTest.  Much of the documentation for the
  * services of this class is provided in UnitTest.hh
  *
- * \sa rtt_dsxx::UnitTest for detailed description of all the UnitTest
- * classes.
+ * \sa rtt_dsxx::UnitTest for detailed description of all the UnitTest classes.
  *
  * \par Code Sample:
  *
@@ -53,13 +52,11 @@ public:
   // CREATORS
 
   //! Default constructors.
-  DLL_PUBLIC_dsxx ScalarUnitTest(int &argc, char **&argv,
-                                 string_fp_void release_,
-                                 std::ostream &out_ = std::cout,
-                                 bool verbose_ = true);
+  ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
+                 std::ostream &out_ = std::cout, bool verbose_ = true);
 
   //! The copy constructor is disabled.
-  ScalarUnitTest(const ScalarUnitTest &rhs);
+  ScalarUnitTest(const ScalarUnitTest &rhs) = delete;
 
   //! Destructor.
   ~ScalarUnitTest(void) {
@@ -70,7 +67,7 @@ public:
   // MANIPULATORS
 
   //! The assignment operator for ScalarUnitTest is disabled.
-  ScalarUnitTest &operator=(const ScalarUnitTest &rhs);
+  ScalarUnitTest &operator=(const ScalarUnitTest &rhs) = delete;
 };
 
 //----------------------------------------------------------------------------//

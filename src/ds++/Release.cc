@@ -97,7 +97,7 @@ const std::string release() {
  * added/removed. Because the git repository only includes code provided
  * starting at draco-6_0_0, all LOC were attributed to KT at draco-6_0_0 since
  * he converted the svn repo to git. The remaining numbers are computed by
- * couting LOC added/removed since draco-6_0_0.
+ * counting LOC added/removed since draco-6_0_0.
  */
 const std::string author_list(bool const use_doxygen_formatting) {
   std::stringstream alist;
@@ -161,7 +161,7 @@ const std::string author_list(bool const use_doxygen_formatting) {
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
   alist << "\n";
 
-  line_name = std::string("Prior Contributers: ");
+  line_name = std::string("Prior Contributors: ");
   if (use_doxygen_formatting) {
     alist << "\\par " << line_name << "\n\n";
     line_name = "";
