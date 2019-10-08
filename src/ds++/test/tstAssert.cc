@@ -64,7 +64,7 @@ void t2(rtt_dsxx::UnitTest &ut) {
 
   // Make sure we can extract the error message.
   std::string const compare_value(
-      "Assertion: hello1, failed in myfile, line 42.\n");
+      "Assertion: hello1, failed in myfile, line 42.");
   std::regex rgx(std::string(".*") + compare_value + ".*");
   std::smatch match;
 

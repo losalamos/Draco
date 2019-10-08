@@ -75,13 +75,18 @@ UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
 //! Build the final message that will be desplayed when UnitTest is destroyed.
 std::string UnitTest::resultMessage() const {
   std::ostringstream msg;
-  msg << "\n*********************************************\n";
-  if (UnitTest::numPasses > 0 && UnitTest::numFails == 0)
-    msg << "**** " << testName << " Test: PASSED.\n";
-  else
-    msg << "**** " << testName << " Test: FAILED.\n";
-  msg << "*********************************************\n";
-
+  std::string const div("*********************************************");
+  if (UnitTest::numPasses > 0 && UnitTest::numFails == 0) {
+    msg << "\n"
+        << Term::color(Term::fg::green) << div << "\n"
+        << "**** " << testName << " Test: PASSED.\n"
+        << div << Term::color(Term::fg::reset) << "\n";
+  } else {
+    msg << "\n"
+        << Term::color(Term::fg::red) << div << "\n"
+        << "**** " << testName << " Test: FAILED.\n"
+        << div << Term::color(Term::fg::reset) << "\n";
+  }
   return msg.str();
 }
 
@@ -92,7 +97,8 @@ std::string UnitTest::resultMessage() const {
  *        ecnountered.
  */
 bool UnitTest::failure(int line) {
-  out << "Test: failed on line " << line << std::endl;
+  out << Term::color(Term::fg::red) << "Test: failed on line " << line
+      << Term::color(Term::fg::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -105,7 +111,8 @@ bool UnitTest::failure(int line) {
  * \param file The name of the file where the failure occured.
  */
 bool UnitTest::failure(int line, char const *file) {
-  out << "Test: failed on line " << line << " in " << file << std::endl;
+  out << Term::color(Term::fg::red) << "Test: failed on line " << line << " in "
+      << file << Term::color(Term::fg::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -181,8 +188,8 @@ bool UnitTest::check(bool const good, std::string const &passmsg,
  * \param failmsg The message to be printed to the iostream \c UnitTest::out.
  */
 bool UnitTest::failure(const std::string &failmsg) {
-  out << "Test: failed" << std::endl;
-  out << "     " << failmsg << std::endl;
+  out << Term::color(Term::fg::red) << "Test: failed\n"
+      << "     " << failmsg << Term::color(Term::fg::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }

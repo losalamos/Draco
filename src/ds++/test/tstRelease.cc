@@ -56,6 +56,7 @@ void maintest(UnitTest &ut) {
       FAILMSG("copyrightString len == 0");
 
     bool verbose(false);
+    copyrightString = Term::remove_color(copyrightString);
     std::map<std::string, unsigned> wc =
         rtt_dsxx::get_word_count(copyrightString, verbose);
 
