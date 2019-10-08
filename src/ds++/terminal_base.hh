@@ -4,25 +4,26 @@
  * \author Ondrej Certik
  * \date   Sat Oct 05 2019
  * \brief  Terminal class that provides colored output.
- * \note   https://github.com/certik/terminal/blob/master/terminal_base.h */
-//---------------------------------------------------------------------------//
-
-#ifndef TERMINAL_BASE_H
-#define TERMINAL_BASE_H
-
-/*
+ * \note   https://github.com/certik/terminal/blob/master/terminal_base.h 
+ *
  * This file contains all the platform specific code regarding terminal input
  * and output. The rest of the code does not have any platform specific
  * details. This file is designed in a way to contain the least number of
  * building blocks, that the rest of the code can use to build all the
  * features.
  */
+//---------------------------------------------------------------------------//
 
+#ifndef TERMINAL_BASE_H
+#define TERMINAL_BASE_H
+
+#include "ds++/config.h"
 #include <stdexcept>
 
 #ifdef _WIN32
 #include <conio.h>
 #include <io.h>
+#define _WINSOCKAPI_
 #include <windows.h>
 #else
 #include <errno.h>
@@ -34,9 +35,9 @@
 namespace Term {
 
 /* Note: the code that uses Terminal must be inside try/catch block, otherwise
- * the destructors will not be called when an exception happens and the
- * terminal will not be left in a good state. Terminal uses exceptions when
- * something goes wrong.
+ * the destructors will not be called when an exception happens and the terminal
+ * will not be left in a good state. Terminal uses exceptions when something
+ * goes wrong.
  */
 class BaseTerminal {
 private:

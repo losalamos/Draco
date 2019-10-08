@@ -30,9 +30,13 @@ namespace rtt_dsxx {
  */
 std::string assertion::build_message(std::string const &cond,
                                      std::string const &file, int const line) {
+  // Required to ensure terminal is restored to a functioning state after an
+  // exception is thrown.
+  // Term::Terminal term;
   std::ostringstream myMessage;
-  myMessage << "Assertion: " << cond << ", failed in " << file << ", line "
-            << line << "." << std::endl;
+  myMessage << Term::color(Term::fg::red) << "Assertion: " << cond
+            << ", failed in " << file << ", line " << line << "."
+            << Term::color(Term::fg::reset) << std::endl;
 #ifdef DRACO_DIAGNOSTICS_LEVEL_2
   return print_stacktrace(myMessage.str());
 #else
@@ -42,10 +46,8 @@ std::string assertion::build_message(std::string const &cond,
 
 //----------------------------------------------------------------------------//
 /*
- * Leave this definition in the .cc file!  This is a work-around for building
- * on Cielo.  Without this defintion in the .cc file, clubimc will not build
- * because it cannot resolve this symbol: undefined reference to
- * `__T_Q2_8rtt_dsxx9assertion'
+ * Leave this definition in the .cc file!  It needs to be saved to the dsxx 
+ * library.
  */
 assertion::~assertion() throw() { /* empty */
 }

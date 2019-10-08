@@ -18,7 +18,7 @@ namespace rtt_dsxx {
  * \param fqName A fully qualified filename (/path/to/the/unit/test)
  * \return filename only, or path to file only.
  *
- * This function expects a fully qualfied name of a unit test (e.g.: argv[0]).
+ * This function expects a fully qualified name of a unit test (e.g.: argv[0]).
  * It strips off the path and returns the name of the unit test.
  *
  * Options:

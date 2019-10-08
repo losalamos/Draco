@@ -12,7 +12,6 @@
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
-#include "ds++/terminal.hh"
 #include <iostream>
 
 int main(int argc, char *argv[]) {
