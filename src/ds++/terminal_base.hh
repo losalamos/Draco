@@ -4,7 +4,7 @@
  * \author Ondrej Certik
  * \date   Sat Oct 05 2019
  * \brief  Terminal class that provides colored output.
- * \note   https://github.com/certik/terminal/blob/master/terminal_base.h 
+ * \note   https://github.com/certik/terminal/blob/master/terminal_base.h
  *
  * This file contains all the platform specific code regarding terminal input
  * and output. The rest of the code does not have any platform specific
@@ -56,11 +56,11 @@ private:
   bool keyboard_enabled;
 
 public:
+#ifdef _WIN32
   BaseTerminal(bool enable_keyboard = false, bool /*disable_ctrl_c*/ = true)
       : keyboard_enabled{enable_keyboard} {
     // Uncomment this to silently disable raw mode for non-tty
     //if (keyboard_enabled) keyboard_enabled = is_stdin_a_tty();
-#ifdef _WIN32
     out_console = is_stdout_a_tty();
     if (out_console) {
       hout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -98,6 +98,10 @@ public:
       }
     }
 #else
+  BaseTerminal(bool enable_keyboard = false, bool disable_ctrl_c = true)
+      : keyboard_enabled{enable_keyboard} {
+    // Uncomment this to silently disable raw mode for non-tty
+    //if (keyboard_enabled) keyboard_enabled = is_stdin_a_tty();
     if (keyboard_enabled) {
       if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
         throw std::runtime_error("tcgetattr() failed");

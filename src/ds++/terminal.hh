@@ -4,7 +4,7 @@
  * \author Ondrej Certik
  * \date   Sat Oct 05 2019
  * \brief  Terminal class that provides colored output.
- * \note   https://github.com/certik/terminal/blob/master/terminal.h 
+ * \note   https://github.com/certik/terminal/blob/master/terminal.h
  *
  * This file is all platform independent, it contains the logic to build the
  * features that users need in a terminal application.
@@ -15,6 +15,10 @@
  * capabilities that it supports, as documented at:
  *
  * https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+ *
+ * \todo Consider an enum class for colors that derives from $LS_COLORS on
+ *       Linux.  This would allow color selection based on users's terminal
+ *       colors (e.g.: light vs dark scheme).
  */
 //---------------------------------------------------------------------------//
 
@@ -91,25 +95,6 @@ enum class bgB {
   cyan = 106,
   gray = 107
 };
-
-template <typename T> std::string color(T const value) {
-  if (Term::Terminal::term_initialized > 0)
-    return "\033[" + std::to_string(static_cast<int>(value)) + "m";
-  else
-    return std::string();
-}
-#if defined(MSVC)
-#pragma warning(push)
-// 'character' : unrecognized character escape sequence
-#pragma warning(disable : 4129)
-#endif
-inline std::string remove_color(std::string const &colored_string) {
-  std::regex color_regex("\033\[[[:digit:]]+[m]");
-  return std::regex_replace(colored_string, color_regex, "");
-}
-#if defined(MSVC)
-#pragma warning(pop)
-#endif
 
 inline std::string cursor_off() { return "\x1b[?25l"; }
 inline std::string cursor_on() { return "\x1b[?25h"; }
@@ -199,6 +184,20 @@ public:
   // This function takes about 23ms, so it should only be used as a fallback
   void get_term_size_slow(int &rows, int &cols) const;
 };
+
+/*----------------------------------------------------------------------------*/
+
+template <typename T> std::string color(T const value) {
+  if (Term::Terminal::term_initialized > 0)
+    return "\033[" + std::to_string(static_cast<int>(value)) + "m";
+  else
+    return std::string();
+}
+
+inline std::string remove_color(std::string const &colored_string) {
+  std::regex color_regex("\033[" "[[:digit:]]+[m]");
+  return std::regex_replace(colored_string, color_regex, "");
+}
 
 /*----------------------------------------------------------------------------*/
 
