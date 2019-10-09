@@ -24,6 +24,7 @@
 #include "terminal_base.hh"
 #include "utf8_decode.hh"
 #include <iostream>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -97,15 +98,18 @@ template <typename T> std::string color(T const value) {
   else
     return std::string();
 }
-
+#if defined(MSVC)
+#pragma warning(push)
+// 'character' : unrecognized character escape sequence
+#pragma warning(disable : 4129)
+#endif
 inline std::string remove_color(std::string const &colored_string) {
-  std::vector<int> const known_color_codes = {
-      0,  1,  2,  3,  4,  5,  6,   7,   8,   9,   30,  31,  32,  33, 34,
-      35, 36, 37, 39, 40, 41, 42,  43,  44,  45,  46,  47,  49,  90, 91,
-      92, 93, 94, 95, 96, 96, 100, 101, 102, 103, 104, 105, 106, 107};
   std::regex color_regex("\033\[[[:digit:]]+[m]");
-  return std::regex_replace(colored_string, color_regex, "")
+  return std::regex_replace(colored_string, color_regex, "");
 }
+#if defined(MSVC)
+#pragma warning(pop)
+#endif
 
 inline std::string cursor_off() { return "\x1b[?25l"; }
 inline std::string cursor_on() { return "\x1b[?25h"; }

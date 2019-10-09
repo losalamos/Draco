@@ -47,7 +47,7 @@ void maintest(UnitTest &ut) {
   {
     // ----------------------------------------
     // Print the copyright statement and author list
-    ostringstream const copyrightString(copyright());
+    ostringstream const copyrightString(Term::remove_color(copyright()));
     cout << "\ncopyright() = \n" << copyrightString.str() << endl;
 
     if (copyrightString.str().length() > 0)
@@ -56,7 +56,6 @@ void maintest(UnitTest &ut) {
       FAILMSG("copyrightString len == 0");
 
     bool verbose(false);
-    copyrightString = Term::remove_color(copyrightString);
     std::map<std::string, unsigned> wc =
         rtt_dsxx::get_word_count(copyrightString, verbose);
 

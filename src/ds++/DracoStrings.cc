@@ -139,10 +139,7 @@ std::vector<std::string> tokenize(std::string const &str,
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Parse msg to provide a list of words and the number of occurrences of
- *        each.
- */
+//! Parse msg to provide a list of words and the number of occurrences of each.
 std::map<std::string, unsigned> get_word_count(std::ostringstream const &msg,
                                                bool verbose) {
   using std::cout;
