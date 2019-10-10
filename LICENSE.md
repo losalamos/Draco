@@ -131,3 +131,11 @@ associated software packages may are listed below:
 
    A general purpose library for the direct solution of large, sparse,
    nonsymmetric systems of linear equations on high performance machines.
+   
+10. ds++/terminal.h and ds++/terminal_base.h developed by Ondřej Čertík
+    https://github.com/certik/terminal
+    MIT License
+    
+    
+    
+

@@ -31,8 +31,9 @@ namespace rtt_dsxx {
 std::string assertion::build_message(std::string const &cond,
                                      std::string const &file, int const line) {
   std::ostringstream myMessage;
-  myMessage << "Assertion: " << cond << ", failed in " << file << ", line "
-            << line << "." << std::endl;
+  myMessage << Term::ccolor(Term::fg::red) << "Assertion: " << cond
+            << ", failed in " << file << ", line " << line << "."
+            << Term::ccolor(Term::fg::reset) << std::endl;
 #ifdef DRACO_DIAGNOSTICS_LEVEL_2
   return print_stacktrace(myMessage.str());
 #else

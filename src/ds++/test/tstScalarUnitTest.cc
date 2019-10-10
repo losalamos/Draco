@@ -74,7 +74,9 @@ void tstTwo(UnitTest &unitTest) {
 //---------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
-  map<string, unsigned> word_list(rtt_dsxx::get_word_count(msg, verbose));
+  std::ostringstream const msg_nocolor(rtt_dsxx::remove_color(msg.str()));
+  map<string, unsigned> word_list(
+      rtt_dsxx::get_word_count(msg_nocolor, verbose));
 
   // Check the list of occurrences against the expected values
   if (word_list[string("Test")] == 9)

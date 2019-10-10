@@ -47,7 +47,7 @@ void maintest(UnitTest &ut) {
   {
     // ----------------------------------------
     // Print the copyright statement and author list
-    ostringstream const copyrightString(copyright());
+    ostringstream const copyrightString(rtt_dsxx::remove_color(copyright()));
     cout << "\ncopyright() = \n" << copyrightString.str() << endl;
 
     if (copyrightString.str().length() > 0)
