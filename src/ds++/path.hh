@@ -37,7 +37,7 @@ enum FilenameComponent {
 /*!
  * \brief Get a specific component of a full filename.
  * \param fqName a fully qualified pathname
- * \param fc Enum type FilenameComponent that specificies the action.
+ * \param fc Enum type FilenameComponent that specifies the action.
  */
 std::string getFilenameComponent(std::string const &fqName,
                                  FilenameComponent fc);
@@ -75,8 +75,8 @@ public:
  *      the directory. Recommend using wdtOpPrint or wdtOpRemove
  * \return void
  *
- * \sa draco_remove_dir Helper function to recurively delete a directory and all
- *     its contents.
+ * \sa draco_remove_dir Helper function to recursively delete a directory and
+ *     all its contents.
  * \sa draco_dir_print Helper function that will print a directory and all its
  *     contents.
  *

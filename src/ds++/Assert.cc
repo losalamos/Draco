@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Assert.cc
  * \brief  Helper functions for the Assert facility.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Assert.hh"
 #include "StackTrace.hh"
@@ -14,9 +14,9 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 // ASSERTION CLASS MEMBERS
-//===========================================================================//
+//============================================================================//
 
 //----------------------------------------------------------------------------//
 /*!
@@ -43,17 +43,15 @@ std::string assertion::build_message(std::string const &cond,
 
 //----------------------------------------------------------------------------//
 /*
- * Leave this definition in the .cc file!  This is a work-around for building
- * on Cielo.  Without this defintion in the .cc file, clubimc will not build
- * because it cannot resolve this symbol: undefined reference to
- * `__T_Q2_8rtt_dsxx9assertion'
+ * Leave this definition in the .cc file!  It needs to be saved to the dsxx 
+ * library.
  */
 assertion::~assertion() throw() { /* empty */
 }
 
-//===========================================================================//
+//============================================================================//
 // FREE FUNCTIONS
-//===========================================================================//
+//============================================================================//
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
  * \return Throws an assertion.
@@ -98,7 +96,7 @@ void show_cookies(std::string const &cond, std::string const &file,
   std::cerr << assertion::build_message(cond, file, line) << std::endl;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //!  Throw a rtt_dsxx::assertion for Insist macros.
 void insist(std::string const &cond, std::string const &msg,
             std::string const &file, int const line) {
@@ -110,7 +108,7 @@ void insist(std::string const &cond, std::string const &msg,
   throw assertion(myMessage.str());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Throw a rtt_dsxx::assertion for Insist_ptr macros.
  *
@@ -128,7 +126,7 @@ void insist_ptr(char const *const cond, char const *const msg,
 
 #if DBC & 16
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //!  Conditionally throw a rtt_dsxx::assertion for Insist macros.
 void check_insist(bool const cond, char const *const condstr,
                   std::string const &msg, char const *const file,
@@ -143,7 +141,7 @@ void check_insist(bool const cond, char const *const condstr,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Conditionally throw a rtt_dsxx::assertion for Insist_ptr macros.
  *
@@ -163,7 +161,7 @@ void check_insist_ptr(bool const cond, char const *const condstr,
 
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! \brief Add hostname and pid to error messages.
  *
  * Several of the errors that might be reported by DACS_Device could be specific
@@ -184,6 +182,6 @@ std::string verbose_error(std::string const &message) {
 
 } // namespace rtt_dsxx
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Assert.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

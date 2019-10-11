@@ -21,7 +21,7 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 // The way this test article works is that each of the DBC macros are tested
-// in a seperate function.  A falst condition is asserted using each macro,
+// in a separate function.  A false condition is asserted using each macro,
 // and after this follows a throw.  Two catch clauses are available, one to
 // catch an assertion object, and one to catch anything else.  By comparing
 // the exception that is actually caught with the one that should be caught
@@ -30,7 +30,7 @@ using namespace std;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-// Make sure we can differentiate betweeen a std::runtime_error and a
+// Make sure we can differentiate between a std::runtime_error and a
 // rtt_dsxx::assertion.
 //---------------------------------------------------------------------------//
 
@@ -59,12 +59,12 @@ void t2(rtt_dsxx::UnitTest &ut) {
     PASSMSG("caught rtt_dsxx::assertion");
     error_message = std::string(a.what());
   } catch (...) {
-    FAILMSG("falied to catch rtt_dsxx:assertion");
+    FAILMSG("failed to catch rtt_dsxx:assertion");
   }
 
   // Make sure we can extract the error message.
   std::string const compare_value(
-      "Assertion: hello1, failed in myfile, line 42.\n");
+      "Assertion: hello1, failed in myfile, line 42.");
   std::regex rgx(std::string(".*") + compare_value + ".*");
   std::smatch match;
 
@@ -176,7 +176,7 @@ void tshow_cookies(rtt_dsxx::UnitTest &ut) {
       string const msg("testing show_cookies()");
       string const file("DummyFile.ext");
       int const line(55);
-      cout << "The following line should be an an error "
+      cout << "The following line should be an error "
            << "message...\n\t";
       rtt_dsxx::show_cookies(msg, file, line);
       throw "Bogus!";
@@ -303,7 +303,7 @@ void tensure(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-// Check the operatio of the Remeber() macro.
+// Check the operation of the Remember() macro.
 //---------------------------------------------------------------------------//
 void tremember(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Remember test: ";
@@ -516,12 +516,12 @@ int main(int argc, char *argv[]) {
     t2(ut);
     t3(ut);
 
-    // Test mechanics of Assert funtions.
+    // Test mechanics of Assert functions.
     ttoss_cookies(ut);
     tshow_cookies(ut);
     tcheck_cookies(ut);
 
-    // Test Design-by-Constract macros.
+    // Test Design-by-Contract macros.
     trequire(ut);
     tcheck(ut);
     tensure(ut);
@@ -530,7 +530,7 @@ int main(int argc, char *argv[]) {
     tinsist(ut);
     tinsist_ptr(ut);
 
-    // fancy ouput
+    // fancy output
     tverbose_error(ut);
 
     // noexcept

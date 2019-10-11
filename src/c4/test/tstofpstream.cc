@@ -11,6 +11,7 @@
 #include "c4/ParallelUnitTest.hh"
 #include "c4/ofpstream.hh"
 #include "ds++/Release.hh"
+#include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -36,7 +37,7 @@ void tstofpstream(UnitTest &ut) {
   PASSMSG("completed serialized write without hanging or segfaulting");
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void tstofpstream_bin(UnitTest &ut) {
 
   int pid = rtt_c4::node();
@@ -51,12 +52,15 @@ void tstofpstream_bin(UnitTest &ut) {
 
   // Read file on head rank, check for correct conversion and ordering
   if (pid == 0) {
-    ifstream in("tstofpstream.bin", std::ofstream::binary);
-    int this_pid;
+    ifstream in("tstofpstream.bin", std::ifstream::binary);
+    int this_pid(-42);
     for (int a = 0; a < rtt_c4::nodes(); a++) {
       in.read(reinterpret_cast<char *>(&this_pid), sizeof(int));
       if (this_pid != a) {
-        ITFAILS;
+        std::ostringstream msg;
+        msg << "Unexpected value for this_pid = " << this_pid
+            << ". Expected value a = " << a;
+        FAILMSG(msg.str());
       }
     }
   }
