@@ -642,6 +642,8 @@ auto-mode-alist and set up some customizations for DRACO."
 		     (set-face-foreground 'modeline
 					  "black"   (current-buffer)))))
     (add-hook 'shell-mode-hook 'turn-on-draco-mode)
+    (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+    (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
     (add-hook 'shell-mode-hook 'turn-on-font-lock)))
 
 ;; ========================================
@@ -791,6 +793,7 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
     (autoload 'text-mode "text-mode" "Text Editing Mode" t)
+    (require 'ansi-color)
     (if draco-colorize-modeline
 	(add-hook 'text-mode-hook
 		  '(lambda ()
@@ -805,9 +808,21 @@ auto-mode-alist and set up some customizations for DRACO."
 	     ("\\.log$"  . text-mode)
 	     ("^README*" . text-mode)
 	     ) auto-mode-alist))
+    (defun ansi-color-apply-on-region-int (beg end)
+      "interactive version of func"
+      (interactive "r")
+      (ansi-color-apply-on-region beg end))
+
+    (defun draco-text-mode-hook ()
+      "Hooks added to text-mode."
+      (ansi-color-apply-on-region (point-min) (point-max))
+      )
+    (add-hook 'text-mode-hook 'draco-text-mode-hook)
+;    (add-hook 'text-mode-hook 'ansi-color-for-comint-mode-on)
     (add-hook 'text-mode-hook 'turn-on-draco-mode)
     (add-hook 'text-mode-hook 'turn-on-font-lock)
-    (add-hook 'text-mode-hook 'turn-on-auto-fill)))
+    (add-hook 'text-mode-hook 'turn-on-auto-fill)
+))
 
 ;; ========================================
 ;; Dired mode
