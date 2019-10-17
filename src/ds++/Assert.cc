@@ -30,9 +30,6 @@ namespace rtt_dsxx {
  */
 std::string assertion::build_message(std::string const &cond,
                                      std::string const &file, int const line) {
-  // Required to ensure terminal is restored to a functioning state after an
-  // exception is thrown.
-  // Term::Terminal term;
   std::ostringstream myMessage;
   myMessage << Term::color(Term::fg::red) << "Assertion: " << cond
             << ", failed in " << file << ", line " << line << "."

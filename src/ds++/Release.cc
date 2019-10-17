@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
-#include "terminal.hh"
+#include "DracoTerminal.hh"
 #include "ds++/config.h"
 #include <cstring> // memcpy
 #include <sstream>
@@ -62,10 +62,11 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << Term::color(Term::style::bold) << Term::color(Term::fg::yellow)
-              << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
-              << "_" << Draco_VERSION_PATCH << Term::color(Term::fg::reset)
-              << Term::color(Term::style::reset);
+  pkg_release << Term::ccolor(Term::style::bold)
+              << Term::ccolor(Term::fg::yellow) << "Draco-"
+              << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR << "_"
+              << Draco_VERSION_PATCH << Term::ccolor(Term::fg::reset)
+              << Term::ccolor(Term::style::reset);
 
   // build date and type
   std::string const build_date(Draco_BUILD_DATE);
@@ -153,9 +154,10 @@ const std::string author_list(bool const use_doxygen_formatting) {
     alist << "\n\\par " << line_name << "\n\n";
     line_name = "";
   } else {
-    line_name = Term::color(Term::style::bold) + Term::color(Term::fg::yellow) +
-                line_name + Term::color(Term::fg::reset) +
-                Term::color(Term::style::reset);
+    line_name = Term::ccolor(Term::style::bold) +
+                Term::ccolor(Term::fg::yellow) + line_name +
+                Term::ccolor(Term::fg::reset) +
+                Term::ccolor(Term::style::reset);
   }
 
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
@@ -166,9 +168,10 @@ const std::string author_list(bool const use_doxygen_formatting) {
     alist << "\\par " << line_name << "\n\n";
     line_name = "";
   } else {
-    line_name = Term::color(Term::style::bold) + Term::color(Term::fg::yellow) +
-                line_name + Term::color(Term::fg::reset) +
-                Term::color(Term::style::reset);
+    line_name = Term::ccolor(Term::style::bold) +
+                Term::ccolor(Term::fg::yellow) + line_name +
+                Term::ccolor(Term::fg::reset) +
+                Term::ccolor(Term::style::reset);
   }
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, prior_developers);
 
@@ -181,10 +184,10 @@ const std::string copyright() {
   std::ostringstream msg;
 
   msg << author_list() << "\n"
-      << Term::color(Term::fg::green)
+      << Term::ccolor(Term::fg::green)
       << "Copyright (C) 2016-2019 Triad National Security, LLC. "
          "(C19028, LA-CC-16-016),\n     Released under a 3-Clause BSD License."
-      << Term::color(Term::fg::reset) << std::endl;
+      << Term::ccolor(Term::fg::reset) << std::endl;
 
   return msg.str();
 }

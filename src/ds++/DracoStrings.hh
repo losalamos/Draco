@@ -14,6 +14,7 @@
 #include "ds++/config.h"
 #include <locale>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -235,6 +236,29 @@ std::map<std::string, unsigned> get_word_count(std::ostringstream const &data,
  */
 std::map<std::string, unsigned> get_word_count(std::string const &filename,
                                                bool verbose = false);
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Remove control characters from string that might produce color, etc.
+ *
+ * \param[in] colored_string A string with ANSI escape sequences that enable 
+ *            color output (see DracoTerminal.hh)
+ * \return A string w/o ANSI escape sequences.
+ *
+ * As mentioned at 
+ * https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream, 
+ * another way to strip color is to pipe output through sed to remove the color 
+ * codes...
+ * - sed 's/\x1b\[[0-9;]*m//g'           # Remove color sequences only
+ * - sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'    # Remove all escape sequences
+ * - sed 's/\x1b\[[0-9;]*[mGKH]//g'      # Remove color and move sequences
+ * - sed 's/\x1b\[[0-9;]*[mGKF]//g'      # Remove color and move sequences
+ */
+inline std::string remove_color(std::string const &colored_string) {
+  std::regex color_regex("\033["
+                         "[[:digit:]]+[m]");
+  return std::regex_replace(colored_string, color_regex, "");
+}
 
 } // namespace rtt_dsxx
 

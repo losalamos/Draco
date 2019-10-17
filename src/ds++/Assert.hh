@@ -10,7 +10,7 @@
 #ifndef RTT_dsxx_Assert_HH
 #define RTT_dsxx_Assert_HH
 
-#include "terminal.hh"
+#include "DracoTerminal.hh"
 #include "ds++/config.h"
 #include <stdexcept>
 #include <string>

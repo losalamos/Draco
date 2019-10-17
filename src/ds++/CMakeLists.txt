@@ -94,7 +94,9 @@ file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
 list( APPEND headers
    ${PROJECT_BINARY_DIR}/ds++/config.h
-   ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
+   ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h 
+   ${PROJECT_SOURCE_DIR}/terminal/terminal.h 
+   ${PROJECT_SOURCE_DIR}/terminal/terminal_base.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
 if( ${CMAKE_GENERATOR} MATCHES "Xcode" )

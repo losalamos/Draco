@@ -74,7 +74,7 @@ void tstTwo(UnitTest &unitTest) {
 //---------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
-  std::ostringstream const msg_nocolor(Term::remove_color(msg.str()));
+  std::ostringstream const msg_nocolor(rtt_dsxx::remove_color(msg.str()));
   map<string, unsigned> word_list(
       rtt_dsxx::get_word_count(msg_nocolor, verbose));
 
