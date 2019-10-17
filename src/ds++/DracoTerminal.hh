@@ -22,49 +22,74 @@ namespace Term {
 //===========================================================================//
 /*!
  * \class DracoTerminal
- * \brief Global scope singleton object to ensure terminal setup/teardown is 
+ * \brief Global scope singleton object to ensure terminal setup/teardown is
  *        done correctly.
  *
  * This will self construct on first call to Term::ccolor and it will remain
  * in scope until the program exits.
  */
 class DracoTerminal {
+
+  // >> DATA <<
+
   //! Private pointer to this object (this defines the singleton)
   DLL_PUBLIC_dsxx static DracoTerminal *instance;
 
-  //! Private constructor so that no objects can be created.
-  DracoTerminal() { /*empty*/
-  }
-
-  /*! \brief Construct a terminal object on creation.  This is will do some 
-   *         terminal initialization that is required for some older software 
+  /*! \brief Construct a terminal object on creation.  This is will do some
+   *         terminal initialization that is required for some older software
    *         (like Windows cmd.exe). */
   Term::Terminal term;
 
+  //! Private constructor so that no objects can be created.
+  DracoTerminal(bool useColor_in = true) { useColor = useColor_in; };
+
 public:
+  // >> DATA <<
+
+  //! Set to false to disable all color.
+  DLL_PUBLIC_dsxx static bool useColor;
+
+  //! Colors based on condition (error, warn, etc).
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> error;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> warning;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> note;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> quote;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> pass;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> fail;
+  DLL_PUBLIC_dsxx static const std::vector<uint32_t> reset;
+
+  // >> MANIPULATORS <<
+
   /*! \brief Calling this public function should always return true.
+   *
+   * \arg useColor If false, then avoid inserting color control strings when
+   *       Term::ccolor is called.
    *
    * If this singleton has not be created, then it will be created. Otherwise,
    * just check that the pointer to instance is valid and return true.
    */
-  DLL_PUBLIC_dsxx static bool is_initialized() {
+  static bool is_initialized(bool useColor = true) {
     if (instance == nullptr)
-      instance = new DracoTerminal;
+      instance = new DracoTerminal(useColor);
     return instance != nullptr;
   }
 };
 
 /*----------------------------------------------------------------------------*/
 
-/*! \brief Replacement for terminal/terminal.h's color function that will 
- *         ensure the global singleton terminal object has been constructed 
+/*! \brief Replacement for terminal/terminal.h's color function that will
+ *         ensure the global singleton terminal object has been constructed
  *         prior to the use of color strings. */
 template <typename T> std::string ccolor(T const value) {
-  if (Term::DracoTerminal::is_initialized())
-    return "\033[" + std::to_string(static_cast<int>(value)) + "m";
-  else
-    return std::string();
+  std::string retVal;
+  if (Term::DracoTerminal::is_initialized() and Term::DracoTerminal::useColor)
+    retVal += "\033[" + std::to_string(static_cast<int>(value)) + "m";
+  return retVal;
 }
+/*! \brief specialization for vector<uint32_t> to be used with
+ *          Term::DracoTerminal::error, etc.
+ */
+std::string ccolor(std::vector<uint32_t> const &value);
 
 } // namespace Term
 

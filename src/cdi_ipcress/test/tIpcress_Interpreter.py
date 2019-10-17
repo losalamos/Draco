@@ -54,13 +54,13 @@ try:
   if tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_v":
 
     check_for_expected_string(tIpcress_Interpreter, "Ipcress_Interpreter")
-    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, ": version ")
 
   ##---------------------------------------------------------------------------##
   elif tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_h":
 
     check_for_expected_string(tIpcress_Interpreter, "Usage: IpcressInterpreter")
-    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, ": version ")
     check_for_expected_string(tIpcress_Interpreter, "Follow the prompts")
 
   ##---------------------------------------------------------------------------##
