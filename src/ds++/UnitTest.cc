@@ -22,7 +22,7 @@ namespace rtt_dsxx {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for UnitTest object.
- * 
+ *
  * \param argv A list of command line arguments.
  * \param release_ A function pointer to the local package's release() function.
  * \param out_ A user selectable output stream.  By default this is std::cout.
@@ -74,18 +74,19 @@ UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
 //---------------------------------------------------------------------------//
 //! Build the final message that will be desplayed when UnitTest is destroyed.
 std::string UnitTest::resultMessage() const {
+  using DT = Term::DracoTerminal;
   std::ostringstream msg;
   std::string const div("*********************************************");
   if (UnitTest::numPasses > 0 && UnitTest::numFails == 0) {
     msg << "\n"
-        << Term::ccolor(Term::fg::green) << div << "\n"
+        << Term::ccolor(DT::pass) << div << "\n"
         << "**** " << testName << " Test: PASSED.\n"
-        << div << Term::ccolor(Term::fg::reset) << "\n";
+        << div << Term::ccolor(DT::reset) << "\n";
   } else {
     msg << "\n"
-        << Term::ccolor(Term::fg::red) << div << "\n"
+        << Term::ccolor(DT::fail) << div << "\n"
         << "**** " << testName << " Test: FAILED.\n"
-        << div << Term::ccolor(Term::fg::reset) << "\n";
+        << div << Term::ccolor(DT::reset) << "\n";
   }
   return msg.str();
 }
@@ -97,8 +98,9 @@ std::string UnitTest::resultMessage() const {
  *        ecnountered.
  */
 bool UnitTest::failure(int line) {
-  out << Term::ccolor(Term::fg::red) << "Test: failed on line " << line
-      << Term::ccolor(Term::fg::reset) << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line
+      << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -111,8 +113,9 @@ bool UnitTest::failure(int line) {
  * \param file The name of the file where the failure occured.
  */
 bool UnitTest::failure(int line, char const *file) {
-  out << Term::ccolor(Term::fg::red) << "Test: failed on line " << line
-      << " in " << file << Term::ccolor(Term::fg::reset) << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line << " in "
+      << file << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -188,8 +191,9 @@ bool UnitTest::check(bool const good, std::string const &passmsg,
  * \param failmsg The message to be printed to the iostream \c UnitTest::out.
  */
 bool UnitTest::failure(const std::string &failmsg) {
-  out << Term::ccolor(Term::fg::red) << "Test: failed\n"
-      << "     " << failmsg << Term::ccolor(Term::fg::reset) << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed\n"
+      << "     " << failmsg << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }

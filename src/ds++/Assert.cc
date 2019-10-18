@@ -30,10 +30,11 @@ namespace rtt_dsxx {
  */
 std::string assertion::build_message(std::string const &cond,
                                      std::string const &file, int const line) {
+  using DT = Term::DracoTerminal;
   std::ostringstream myMessage;
-  myMessage << Term::ccolor(Term::fg::red) << "Assertion: " << cond
+  myMessage << Term::ccolor(DT::error) << "Assertion: " << cond
             << ", failed in " << file << ", line " << line << "."
-            << Term::ccolor(Term::fg::reset) << std::endl;
+            << Term::ccolor(DT::reset) << std::endl;
 #ifdef DRACO_DIAGNOSTICS_LEVEL_2
   return print_stacktrace(myMessage.str());
 #else
@@ -43,7 +44,7 @@ std::string assertion::build_message(std::string const &cond,
 
 //----------------------------------------------------------------------------//
 /*
- * Leave this definition in the .cc file!  It needs to be saved to the dsxx 
+ * Leave this definition in the .cc file!  It needs to be saved to the dsxx
  * library.
  */
 assertion::~assertion() throw() { /* empty */

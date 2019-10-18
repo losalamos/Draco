@@ -226,6 +226,9 @@ protected:
 
   /* Report successful tests? */
   bool verbose;
+
+  // Color output for all UnitTest programs
+  Term::Terminal term;
 };
 
 } // end namespace rtt_dsxx

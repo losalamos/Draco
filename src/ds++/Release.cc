@@ -62,10 +62,9 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << Term::ccolor(Term::style::bold)
-              << Term::ccolor(Term::fg::yellow) << "Draco-"
-              << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR << "_"
-              << Draco_VERSION_PATCH << Term::ccolor(Term::fg::reset)
+  pkg_release << Term::ccolor(Term::style::bold) << Term::ccolor(Term::fg::cyan)
+              << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
+              << "_" << Draco_VERSION_PATCH << Term::ccolor(Term::fg::reset)
               << Term::ccolor(Term::style::reset);
 
   // build date and type
