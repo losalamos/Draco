@@ -68,9 +68,9 @@ public:
    * If this singleton has not be created, then it will be created. Otherwise,
    * just check that the pointer to instance is valid and return true.
    */
-  static bool is_initialized(bool useColor = true) {
+  static bool is_initialized(bool useColor_in = true) {
     if (instance == nullptr)
-      instance = new DracoTerminal(useColor);
+      instance = new DracoTerminal(useColor_in);
     return instance != nullptr;
   }
 };
@@ -82,7 +82,7 @@ public:
  *         prior to the use of color strings. */
 template <typename T> std::string ccolor(T const value) {
   std::string retVal;
-  if (Term::DracoTerminal::is_initialized() and Term::DracoTerminal::useColor)
+  if (Term::DracoTerminal::is_initialized() && Term::DracoTerminal::useColor)
     retVal += "\033[" + std::to_string(static_cast<int>(value)) + "m";
   return retVal;
 }

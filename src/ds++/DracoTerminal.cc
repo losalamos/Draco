@@ -45,7 +45,7 @@ const std::vector<uint32_t> Term::DracoTerminal::reset = {00, 39};
 //! specialization for std::vector<std::string>
 std::string Term::ccolor(std::vector<uint32_t> const &value) {
   std::string retVal;
-  if (Term::DracoTerminal::is_initialized() and Term::DracoTerminal::useColor)
+  if (Term::DracoTerminal::is_initialized() && Term::DracoTerminal::useColor)
     for (uint32_t const &it : value)
       retVal += "\033[" + std::to_string(static_cast<int>(it)) + "m";
   return retVal;
