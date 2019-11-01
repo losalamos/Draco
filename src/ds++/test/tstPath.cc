@@ -191,20 +191,30 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   }
 #endif
 
+  // test the FC_ABSOLUTE
+  // ------------------------------------------------------------
+  string const cp = draco_getcwd();
+
+  // Test behavior of option when the file exists.
+  string const fileExists(cp + "/Makefile");
+  string const absolute(getFilenameComponent(fileExists, FC_ABSOLUTE));
+  ut.check(absolute != "", "Makefile path found with FC_ABSOLUTE");
+
+  // try mangling the name and see if it is cleaned up.
+  string const mangled(cp + "//a/.././Makefile");
+  ut.check(getFilenameComponent(fileExists, FC_ABSOLUTE) == absolute,
+           "mangled Makefile path found with FC_ABSOLUTE");
+
+  // Test behavior of option when file does not exist.
+  string const fileDoesNotExist("/bounty/hunter/boba_fett");
+
+  ut.check(getFilenameComponent(fileDoesNotExist, FC_ABSOLUTE) == "",
+           "nonexistent file returns \"\" for FC_ABSOLUTE");
+
   // These are not implemented yet
   // ------------------------------------------------------------
 
   bool caught = false;
-  try {
-    string absolutepath = getFilenameComponent(fqp, rtt_dsxx::FC_ABSOLUTE);
-  } catch (...) {
-    caught = true;
-    PASSMSG("FC_ABSOLUTE throws.");
-  }
-  if (!caught)
-    FAILMSG("FC_ABSOLUTE failed to throw.");
-
-  caught = false;
   try {
     string extension = getFilenameComponent(fqp, rtt_dsxx::FC_EXT);
   } catch (...) {

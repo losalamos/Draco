@@ -93,9 +93,19 @@ std::string getFilenameComponent(std::string const &fqName,
     }
     break;
   }
-  case FC_ABSOLUTE:
-    Insist(false, "case for FC_ABSOLUTE not implemented.");
+
+  case FC_ABSOLUTE: {
+    std::string path(getFilenameComponent(fqName, FC_PATH));
+    if (!draco_getstat(path).valid()) {
+      // On error, return empty string.
+      retVal = std::string();
+      // retVal = draco_getcwd();
+    } else {
+      retVal = draco_getrealpath(path);
+    }
     break;
+  }
+
   case FC_EXT:
     Insist(false, "case for FC_EXT not implemented.");
     break;
