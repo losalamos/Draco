@@ -109,9 +109,17 @@ std::string getFilenameComponent(std::string const &fqName,
   case FC_EXT:
     Insist(false, "case for FC_EXT not implemented.");
     break;
-  case FC_NAME_WE:
-    Insist(false, "case for FC_NAME_WE not implemented.");
+
+  case FC_NAME_WE: {
+    std::string name = getFilenameComponent(fqName, FC_NAME);
+    auto idx = name.find_last_of('.');
+    if (idx != string::npos)
+      retVal = name.substr(0, idx);
+    else
+      retVal = name;
     break;
+  }
+
   case FC_NATIVE:
     // This is always done before returning (see implementation found after the
     // case statement)

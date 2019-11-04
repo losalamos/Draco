@@ -211,6 +211,26 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   ut.check(getFilenameComponent(fileDoesNotExist, FC_ABSOLUTE) == "",
            "nonexistent file returns \"\" for FC_ABSOLUTE");
 
+  // test the FC_NAME_WE
+  // ------------------------------------------------------------
+  {
+    string const cp = draco_getcwd();
+
+    // Test behavior of option when the file has no extension.
+    string const fileExists(cp + "/Makefile");
+    string const filename_we(getFilenameComponent(fileExists, FC_NAME_WE));
+    ut.check(filename_we == "Makefile",
+             "Correct found no extension on Makefile");
+  }
+
+  {
+    // Test behavior of option when the file has an extenstion.
+    string const fileExists(cp + "/Makefile.txt");
+    string const filename_we(getFilenameComponent(fileExists, FC_NAME_WE));
+    ut.check(filename_we == "Makefile",
+             "Correct found no extension on Makefile");
+  }
+
   // These are not implemented yet
   // ------------------------------------------------------------
 
@@ -223,16 +243,6 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   }
   if (!caught)
     FAILMSG("FC_EXT failed to throw.");
-
-  caught = false;
-  try {
-    string extension = getFilenameComponent(fqp, rtt_dsxx::FC_NAME_WE);
-  } catch (...) {
-    caught = true;
-    PASSMSG("FC_NAME_WE throws.");
-  }
-  if (!caught)
-    FAILMSG("FC_NAME_WE failed to throw.");
 
   // FC_LASTVALUE should always throw.
   caught = false;
