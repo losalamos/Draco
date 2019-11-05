@@ -1,5 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   cdi_CPEloss/CMakeLists.txt
+# author Ben. R. Ryan <brryan@lanl.gov>
+# date   2019 Nov 4
 # brief  Instructions for building cdi_eospac Makefiles.
 # note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
