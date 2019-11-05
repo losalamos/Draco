@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
+#include "ds++/DracoArray.hh"
 
 namespace rtt_cdi_cpeloss {
 
@@ -54,9 +55,9 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   read_line(); // Z, A, mass
   
   line_entries = read_line(); // Number of bins for energy, density, temperature
-  nbin_energy = stoi(line_entries[0]);
-  nbin_density = stoi(line_entries[1]);
-  nbin_temperature = stoi(line_entries[2]);
+  n_energy = stoi(line_entries[0]);
+  n_density = stoi(line_entries[1]);
+  n_temperature = stoi(line_entries[2]);
   
   line_entries = read_line(); // Bin spacing for energy, density, temperature (log)
   d_log_energy = 1./stod(line_entries[0]);
@@ -64,7 +65,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   d_log_temperature = 1./stod(line_entries[2]);
   
   // Get first energy support point
-  nlines = std::ceil((double)nbin_energy/max_entries);
+  nlines = std::ceil((double)n_energy/max_entries);
   line_entries = read_line();
   min_log_energy = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
@@ -72,7 +73,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
 
   // Get first density support point
-  nlines = std::ceil((double)nbin_density/max_entries);
+  nlines = std::ceil((double)n_density/max_entries);
   line_entries = read_line();
   min_log_density = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
@@ -80,12 +81,14 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
   
   // Get first temperature support point
-  nlines = std::ceil((double)nbin_temperature/max_entries);
+  nlines = std::ceil((double)n_temperature/max_entries);
   line_entries = read_line();
   min_log_temperature = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
     read_line();
   }
+
+  rtt_dsxx::DracoArray<double> stopping_data(n_energy, n_density, n_temperature);
 }
 
 /*!

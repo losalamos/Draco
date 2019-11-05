@@ -32,8 +32,8 @@ namespace rtt_cdi_cpeloss {
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
   public:
     // Useful typedefs
-    typedef std::stod stod;
-    typedef std::stoi stoi;
+    using std::stod;
+    using std::stoi;
 
   private:
   std::string filename;
@@ -56,7 +56,7 @@ class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
   double min_log_temperature; // Log of minimum target temperature
 
   // Utility for reading a line of an eloss file and as a vector of strings
-  std::vector<std::string> Tabular_CP_Eloss::read_line();
+  std::vector<std::string> read_line();
 
   public:
   // Constructor

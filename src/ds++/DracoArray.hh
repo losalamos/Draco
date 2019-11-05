@@ -11,6 +11,7 @@
 #ifndef rtt_dsxx_DracoArray_hh
 #define rtt_dsxx_DracoArray_hh
 
+#include "Assert.hh"
 #include <vector>
 
 namespace rtt_dsxx {
@@ -25,13 +26,11 @@ namespace rtt_dsxx {
  */
 //========================================================================
 
-} // namespace rtt_dsxx
-
 template <typename T> class DracoArray {
   public:
-  MultiArray<T>(int n1_in);
-  MultiArray<T>(int n1_in, int n2_in);
-  MultiArray<T>(int n1_in, int n2_in, int n3_in);
+  //DracoArray<T>(int n1_in);
+  //DracoArray<T>(int n1_in, int n2_in);
+  //DracoArray<T>(int n1_in, int n2_in, int n3_in);
 
   // Overload () operator for data access
   T &operator()(int i) { return data[i]; }
@@ -43,9 +42,9 @@ template <typename T> class DracoArray {
 
   // Accessor functions
   int get_dim() const { return dim; }
-  int get_n1() const { return n1; }
-  int get_n2() const { return n2; }
-  int get_n3() const { return n3; }
+  int get_n1() const { Require (dim > 0); return n1; }
+  int get_n2() const { Require (dim > 1); return n2; }
+  int get_n3() const { Require (dim > 2); return n3; }
   std::vector<int> get_size() {
     std::vector<int> size_all{n1, n2, n3};
     std::vector<int> size;
@@ -57,44 +56,45 @@ template <typename T> class DracoArray {
   void zero() {
     std::fill(data.begin(), data.end(), 0);
   }
-  bool is_allocated() const { return is_allocated; }
+  bool is_allocated() const { return allocated; }
 
   private:
   int dim;
   int n1, n2, n3;
   std::vector<T> data;
-  bool is_allocated = false;
+  bool allocated = false;
 
-  template <typename T> DracoArray<T>::DracoArray(int n1_in)
+  // Constructors
+  public:
+  /*template <typename T> DracoArray<T>::*/DracoArray(int n1_in)
   {
     dim = 1;
     n1 = n1_in;
-    n2 = 1;
-    n3 = 1;
     data.resize(n1);
-    is_allocated = true;
+    allocated = true;
   }
 
-  template <typename T> DracoArray<T>::DracoArray(int n1_in, int n2_in)
+  /*template <typename T> DracoArray<T>::*/DracoArray(int n1_in, int n2_in)
   {
     dim = 2;
     n1 = n1_in;
     n2 = n2_in;
-    n3 = 1;
     data.resize(n1*n2);
-    is_allocated = true;
+    allocated = true;
   }
 
-  template <typename T> DracoArray<T>::DracoArray(int n1_in, int n2_in, int n3_in)
+  /*template <typename T> DracoArray<T>::*/DracoArray(int n1_in, int n2_in, int n3_in)
   {
     dim = 3;
     n1 = n1_in;
     n2 = n2_in;
     n3 = n3_in;
     data.resize(n1*n2*n3);
-    is_allocated = true;
+    allocated = true;
   }
 };
+
+} // namespace rtt_dsxx
 
 #endif // rtt_dsxx_DracoArray_hh
 
