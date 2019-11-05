@@ -7,7 +7,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( FortranChecks_f90sub Fortran )
+project( FortranChecks_f90sub Fortran CXX C )
 
 # ---------------------------------------------------------------------------- #
 # Setup - For Generators other than "Unix Makefiles", this folder is parsed

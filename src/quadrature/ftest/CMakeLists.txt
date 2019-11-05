@@ -7,7 +7,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( quadrature_ftest Fortran )
+project( quadrature_ftest Fortran CXX C )
 
 # ---------------------------------------------------------------------------- #
 # Setup - For Generators other than "Unix Makefiles", this folder is
