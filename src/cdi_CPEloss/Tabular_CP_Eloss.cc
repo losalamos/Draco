@@ -50,25 +50,26 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   int nlines;
   int max_entries =
       6; // This is a statement about the file format, maximum of six entries for row.
-  
+
   read_line(); // ZAID
   int32_t projectile_zaid_file = stoi(line_entries[0]);
   Require(projectile_zaid == projectile_zaid_file);
 
   read_line(); // Z, A, mass
-  
+
   line_entries = read_line(); // Number of bins for energy, density, temperature
   n_energy = stoi(line_entries[0]);
   n_density = stoi(line_entries[1]);
   n_temperature = stoi(line_entries[2]);
-  
-  line_entries = read_line(); // Bin spacing for energy, density, temperature (log)
-  d_log_energy = 1./stod(line_entries[0]);
-  d_log_density = 1./stod(line_entries[1]);
-  d_log_temperature = 1./stod(line_entries[2]);
-  
+
+  line_entries =
+      read_line(); // Bin spacing for energy, density, temperature (log)
+  d_log_energy = 1. / stod(line_entries[0]);
+  d_log_density = 1. / stod(line_entries[1]);
+  d_log_temperature = 1. / stod(line_entries[2]);
+
   // Get first energy support point
-  nlines = std::ceil((double)n_energy/max_entries);
+  nlines = std::ceil((double)n_energy / max_entries);
   line_entries = read_line();
   min_log_energy = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
@@ -76,22 +77,88 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
 
   // Get first density support point
-  nlines = std::ceil((double)n_density/max_entries);
+  nlines = std::ceil((double)n_density / max_entries);
   line_entries = read_line();
   min_log_density = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
     read_line();
   }
-  
+
   // Get first temperature support point
-  nlines = std::ceil((double)n_temperature/max_entries);
+  nlines = std::ceil((double)n_temperature / max_entries);
   line_entries = read_line();
   min_log_temperature = stod(line_entries[0]);
   for (int n = 0; n < nlines - 1; n++) {
     read_line();
   }
 
-  rtt_dsxx::DracoArray<double> stopping_data(n_energy, n_density, n_temperature);
+  std::vector<double> stopping_data_1d(n_energy * n_density * n_temperature);
+
+  bool target_found = false;
+  int nlines = std::ceil(
+      ((double)n_energy * n_density * n_temperature) /
+      max_entries); // The number of lines taken up by stopping power data for one target
+  if (zaid_target == -1) {
+    // Target is free electrons
+    target_found = true;
+    //nlines = std::ceil(((double)n_energy*n_density*n_temperature)/max_entries);
+    int nentry = 0;
+    for (int n = 0; n < nlines; n++) {
+      line_entries = read_line();
+      for (std::string entry : line_entries) {
+        stopping_data_1d(nentry) = stod(entry);
+        nentry++;
+      }
+    }
+  } else {
+    // Skip electrons
+    //nlines = std::ceil(((double)n_energy*n_density*n_temperature)/max_entries);
+    for (int n = 0; n < nlines; n++) {
+      line_entries = read_line();
+    }
+
+    // Find ion target, if it exists
+    int n_target_ions = stoi(read_line()[0]); // Number of target ions in file
+    for (int n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
+      int zaid_target_ion = stoi(read_line()[0]); // ZAID
+      read_line();                                // Z, A, mass
+      if (zaid_target_ion = target_zaid) {
+        // This is the requested target ion
+        target_found = true;
+        int nentry = 0;
+        for (int n = 0; n < nlines; n++) {
+          line_entries = read_line();
+          for (std::string entry : line_entries) {
+            stopping_data_1d(nentry) = stod(entry);
+            nentry++;
+          }
+        }
+        break;
+      } else {
+        // This is not the requested target ion
+        for (int n = 0; n < nlines; n++) {
+          read_line();
+        }
+      }
+    }
+  }
+
+  if (!target_found) {
+    std::cout << "Target ZAID " << target_zaid << " not found in DEDX fle "
+              << filename << "!" << std::endl;
+    exit(-1);
+  }
+
+  rtt_dsxx::DracoArray<double> stopping_data(n_energy, n_density,
+                                             n_temperature);
+  for (int ne = 0; ne < n_energy; ne++) {
+    for (int nd = 0; nd < n_density; nd++) {
+      for (int nt = 0; nt < n_temperature; nt++) {
+        stopping_data(nt, nd, ne) =
+            stopping_data_1d(ne + n_energy * (nd + n_density * nt));
+      }
+    }
+  }
 }
 
 /*!
