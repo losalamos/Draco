@@ -89,25 +89,6 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
 }
 
 /*!
- * \brief Split a line from an eloss datafile into a vector of strings.
- *
- * Convenience function, especially when reading header data which is not
- * uniform in the number of entries per line, or the types of those entries.
- *
- * \param line the line read directly from the eloss datafile.
- * \return entries the resulting vector of entries in the datafile line.
- *
- */
-std::vector<std::string> Tabular_CP_Eloss::split_eloss_line(std::string line) {
-  std::vector<std::string> entries;
-  std::istringstream iss(line);
-  for (std::string s; iss >> s;) {
-    entries.push_back(s);
-  }
-  return entries;
-}
-
-/*!
  * \brief Read a line from an eloss datafile and return as a vector of strings.
  *
  * Convenience function, especially when reading header data which is not
