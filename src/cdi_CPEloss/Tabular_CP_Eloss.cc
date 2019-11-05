@@ -11,6 +11,9 @@
 #include "Tabular_CP_Eloss.hh"
 #include "ds++/DracoArray.hh"
 
+using std::stod;
+using std::stoi;
+
 namespace rtt_cdi_cpeloss {
 
 //---------------------------------------------------------------------------//

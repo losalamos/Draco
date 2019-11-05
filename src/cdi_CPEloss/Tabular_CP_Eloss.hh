@@ -14,6 +14,8 @@
 #include "cdi/CPEloss.hh"
 #include "ds++/DracoMath.hh"
 #include <cmath>
+#include <fstream>
+#include <string>
 #include <vector>
 
 namespace rtt_cdi_cpeloss {
@@ -30,11 +32,6 @@ namespace rtt_cdi_cpeloss {
 //===========================================================================//
 
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
-  public:
-    // Useful typedefs
-    using std::stod;
-    using std::stoi;
-
   private:
   std::string filename;
   std::ifstream file;
@@ -45,9 +42,9 @@ class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
   // Target species
   int32_t target_zaid;
 
-  int32_t nbin_energy; // Number of bins in projectile energy
-  int32_t nbin_density; // Number of bins in target density
-  int32_t nbin_temperature; // Number of bins in target temperature
+  int32_t n_energy; // Number of bins in projectile energy
+  int32_t n_density; // Number of bins in target density
+  int32_t n_temperature; // Number of bins in target temperature
   double d_log_energy; // Width of projectile energy bin in log space
   double d_log_density; // Width of target density bin in log space
   double d_log_temperature; // Width of target temperature bin in log space
@@ -67,7 +64,7 @@ class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
   int32_t getTargetZAID() const { return target_zaid; }
 
   int32_t getProjectileZAID() const { return projectile_zaid; }
-}
+};
 
 } // namespace rtt_cdi_cpeloss
 
