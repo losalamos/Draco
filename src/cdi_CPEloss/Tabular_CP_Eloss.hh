@@ -60,8 +60,8 @@ private:
 
 public:
   // Constructor
-  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle target_in,
-                   rtt_cdi::CParticle projectile_in);
+  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle &target_in,
+                   rtt_cdi::CParticle &projectile_in);// : rtt_cdi::CPEloss(target_in, projectile_in);
 
   double getEloss(const double temperature, const double density,
                   const double v0) const;

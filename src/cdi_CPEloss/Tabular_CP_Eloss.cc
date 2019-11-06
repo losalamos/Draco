@@ -33,10 +33,12 @@ namespace rtt_cdi_cpeloss {
  * \param projectile_zaid_in transporting particle zaid
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
-                                   rtt_cdi::CParticle target_in,
-                                   rtt_cdi::CParticle projectile_in)
-    : filename(filename_in), target(target_in),
-      projectile(projectile_in) {
+                                   rtt_cdi::CParticle &target_in,
+                                   rtt_cdi::CParticle &projectile_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in) {
+    //: filename(filename_in) rtt_cdi::CPEloss(target_in, projectile_in) {
+  filename = filename_in;
+        
   model_type = rtt_cdi::CPModelType::TABULAR_ETYPE;
 
   file.open(filename);
@@ -96,7 +98,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   std::vector<double> stopping_data_1d(n_energy * n_density * n_temperature);
 
   bool target_found = false;
-  int nlines = std::ceil(
+  nlines = std::ceil(
       ((double)n_energy * n_density * n_temperature) /
       max_entries); // The number of lines taken up by stopping power data for one target
   if (target.get_zaid() == -1) {
@@ -107,7 +109,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     for (int n = 0; n < nlines; n++) {
       line_entries = read_line();
       for (std::string entry : line_entries) {
-        stopping_data_1d(nentry) = stod(entry);
+        stopping_data_1d[nentry] = stod(entry);
         nentry++;
       }
     }
@@ -123,14 +125,14 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     for (int n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
-      if (zaid_target_ion = target.get_zaid()) {
+      if (zaid_target_ion == target.get_zaid()) {
         // This is the requested target ion
         target_found = true;
         int nentry = 0;
         for (int n = 0; n < nlines; n++) {
           line_entries = read_line();
           for (std::string entry : line_entries) {
-            stopping_data_1d(nentry) = stod(entry);
+            stopping_data_1d[nentry] = stod(entry);
             nentry++;
           }
         }
@@ -157,7 +159,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     for (int nd = 0; nd < n_density; nd++) {
       for (int nt = 0; nt < n_temperature; nt++) {
         stopping_data(nt, nd, ne) =
-            stopping_data_1d(ne + n_energy * (nd + n_density * nt));
+            stopping_data_1d[ne + n_energy * (nd + n_density * nt)];
       }
     }
   }
@@ -216,7 +218,5 @@ double Tabular_CP_Eloss::getEloss(const double temperature, const double density
   return 0.;
   //return rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010, f110, f011, f111, x, y, z);
 }
-
-/*
 
 } // namespace rtt_cdi_cpeloss

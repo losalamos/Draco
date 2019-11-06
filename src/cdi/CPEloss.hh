@@ -34,6 +34,7 @@ namespace rtt_cdi {
 
 class CPEloss {
 public:
+  CPEloss(CParticle &target_in, CParticle &projectile_in) : projectile(projectile_in), target(target_in) {}
   // ---------- //
   // Destructor //
   // ---------- //
@@ -130,7 +131,7 @@ public:
 	 * \brief Returns the general Eloss model type (Analytic),
 	 * defined in the enum at the top of this file.
 	 */
-  virtual rtt_cdi::CPModelType getModelType() const = 0;
+  //virtual rtt_cdi::CPModelType getModelType() const = 0;
   
   /*!
    * \brief Query to determine the transporting particle type.
@@ -145,9 +146,14 @@ public:
   /*!
    * \brief Query to determine the CP Model type.
    */
-  CPModel getModelType() const { return model_type; }
+  CPModelType getModelType() const { return model_type; }
 
-  private:
+  /*!
+   * \brief Query to determine the angle cutoff used by the CP model.
+   */
+  CPModelAngleCutoff getModelAngleCutoff() const { return model_angle_cutoff; }
+
+  protected:
   // Particle being transported i.e. subject to energy loss
   CParticle projectile;
   
@@ -156,6 +162,9 @@ public:
 
   // CP Model type
   CPModelType model_type;
+
+  // CP Model angle cutoff
+  CPModelAngleCutoff model_angle_cutoff;
 };
 
 } // namespace rtt_cdi

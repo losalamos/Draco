@@ -25,6 +25,11 @@ enum class CPModel {
   LA_SCATTERING = 1 /*!< large-angle scattering model */
 };
 
+enum class CPModelAngleCutoff {
+  NONE = 0,  /*! no angle cutoff */
+  TNBURN = 1 /*! cutoff angle formula from "TN Burn Project: Minimum Impact parameter Scattering Angle Cutoff/Nuclear Interactions */
+};
+
 enum class CPModelType {
   UNASSIGNED_ETYPE =
       0, /*!< unassigned type; used as a placeholder before deciding type */
