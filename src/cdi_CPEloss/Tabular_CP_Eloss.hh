@@ -47,21 +47,27 @@ private:
   double min_log_energy;      // Log of minimum projectile energy
   double min_log_density;     // Log of minimum target density
   double min_log_temperature; // Log of minimum target temperature
-  double min_energy; // Minimum target energy;
-  double max_energy; // Maximum target energy;
-  double min_density; // Minimum target density;
-  double max_density; // Maximum target density;
-  double min_temperature; // Minimum target temperature;
-  double max_temperature; // Maximum target temperature;
+  double min_energy;          // Minimum target energy;
+  double max_energy;          // Maximum target energy;
+  double min_density;         // Minimum target density;
+  double max_density;         // Maximum target density;
+  double min_temperature;     // Minimum target temperature;
+  double max_temperature;     // Maximum target temperature;
   // Note that after unit conversions, *_energy is really *_speed
+  
+  // Storage for tabulated data
+  rtt_dsxx::DracoArray<double> stopping_data;
 
   // Utility for reading a line of an eloss file and as a vector of strings
   std::vector<std::string> read_line();
 
+
 public:
   // Constructor
-  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle &target_in,
-                   rtt_cdi::CParticle &projectile_in);// : rtt_cdi::CPEloss(target_in, projectile_in);
+  Tabular_CP_Eloss(
+      std::string filename_in, rtt_cdi::CParticle &target_in,
+      rtt_cdi::CParticle
+          &projectile_in); // : rtt_cdi::CPEloss(target_in, projectile_in);
 
   double getEloss(const double temperature, const double density,
                   const double v0) const;
