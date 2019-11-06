@@ -21,8 +21,9 @@ unsigned int const num_CPModels(3);
 } // namespace constants
 
 enum class CPModelAngleCutoff {
-  NONE = 0,  /*! no angle cutoff */
-  TNBURN = 1 /*! cutoff angle formula from "TN Burn Project: Minimum Impact parameter Scattering Angle Cutoff/Nuclear Interactions */
+  NONE = 0, /*! no angle cutoff */
+  TNBURN =
+      1 /*! cutoff angle formula from "TN Burn Project: Minimum Impact parameter Scattering Angle Cutoff/Nuclear Interactions */
 };
 
 enum class CPModelType {

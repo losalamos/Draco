@@ -886,7 +886,8 @@ void CDI::setCPEloss(const SP_CPEloss &spCPp) {
 
   // Store the particle / target pair
   CPEloss_map.emplace(std::make_pair<pt_zaid_pair, size_t>(
-      std::make_pair(spCPp->getProjectile().get_zaid(), spCPp->getTarget().get_zaid()),
+      std::make_pair(spCPp->getProjectile().get_zaid(),
+                     spCPp->getTarget().get_zaid()),
       CPElosses.size()));
 
   // assign the smart pointer
@@ -1150,7 +1151,8 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  * \param pz int32_t specifying the desired particle type.
  * \param tz int32_t specifying the desired target type.
  */
-CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz, int32_t tz) const {
+CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
+                           int32_t tz) const {
   map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
   Insist(entry != CPEloss_map.end(), "Undefined CPEloss!");
   // Be sure model type is what the user expected.
@@ -1279,7 +1281,8 @@ bool CDI::isOdfmgOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 /*!
  * \brief Query to see if an odf multigroup opacity is set.
  */
-bool CDI::isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz, int32_t tz) const {
+bool CDI::isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
+                       int32_t tz) const {
   // Look up this particle / target zaid pair in the stored map:
   map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
 

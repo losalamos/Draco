@@ -239,8 +239,8 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
   double f011 = stopping_data(bin0_energy, bin1_density, bin1_temperature);
   double f111 = stopping_data(bin1_energy, bin1_density, bin1_temperature);
   return exp(rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100,
-                                        f001, f101, f010, f110, f011, f111, partSpeed,
-                                        density, temperature));
+                                            f001, f101, f010, f110, f011, f111,
+                                            partSpeed, density, temperature));
 }
 
 } // namespace rtt_cdi_cpeloss

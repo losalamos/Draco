@@ -34,7 +34,8 @@ namespace rtt_cdi {
 
 class CPEloss {
 public:
-  CPEloss(CParticle &target_in, CParticle &projectile_in) : projectile(projectile_in), target(target_in) {}
+  CPEloss(CParticle &target_in, CParticle &projectile_in)
+      : projectile(projectile_in), target(target_in) {}
   // ---------- //
   // Destructor //
   // ---------- //
@@ -88,7 +89,7 @@ public:
    * \brief Query to determine the CP Model type.
    */
   //virtual rtt_cdi::CPModel getModel() const = 0;
-  
+
   /*!
    * \brief Returns the name of the associated data file (if any).
    */
@@ -132,7 +133,7 @@ public:
 	 * defined in the enum at the top of this file.
 	 */
   //virtual rtt_cdi::CPModelType getModelType() const = 0;
-  
+
   /*!
    * \brief Query to determine the transporting particle type.
    */
@@ -153,10 +154,10 @@ public:
    */
   CPModelAngleCutoff getModelAngleCutoff() const { return model_angle_cutoff; }
 
-  protected:
+protected:
   // Particle being transported i.e. subject to energy loss
   CParticle projectile;
-  
+
   // Target particle
   CParticle target;
 

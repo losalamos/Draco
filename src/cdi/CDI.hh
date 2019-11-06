@@ -675,7 +675,8 @@ public:
   bool isGrayOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isOdfmgOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
-  bool isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz, int32_t tz) const;
+  bool isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
+                    int32_t tz) const;
   bool isEoSSet() const;
   bool isEICouplingSet() const;
 

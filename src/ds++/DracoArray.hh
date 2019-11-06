@@ -112,7 +112,7 @@ public:
     dim = 2;
     n1 = n1_in;
     n2 = n2_in;
-    data.resize(n1*n2);
+    data.resize(n1 * n2);
     allocated = true;
   }
   void resize(int n1_in, int n2_in, int n3_in) {
@@ -120,7 +120,7 @@ public:
     n1 = n1_in;
     n2 = n2_in;
     n3 = n3_in;
-    data.resize(n1*n2*n3);
+    data.resize(n1 * n2 * n3);
     allocated = true;
   }
   void zero() { std::fill(data.begin(), data.end(), 0); }

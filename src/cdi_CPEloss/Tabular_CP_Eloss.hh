@@ -54,13 +54,12 @@ private:
   double min_temperature;     // Minimum target temperature;
   double max_temperature;     // Maximum target temperature;
   // Note that after unit conversions, *_energy is really *_speed
-  
+
   // Storage for tabulated data
   rtt_dsxx::DracoArray<double> stopping_data;
 
   // Utility for reading a line of an eloss file and as a vector of strings
   std::vector<std::string> read_line();
-
 
 public:
   // Constructor
