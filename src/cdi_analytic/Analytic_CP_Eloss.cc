@@ -32,7 +32,7 @@ namespace rtt_cdi_analytic {
 Analytic_CP_Eloss::Analytic_CP_Eloss(SP_Analytic_Model model_in,
                                      rtt_cdi::CParticle &target_in,
                                      rtt_cdi::CParticle &projectile_in)
-    : analytic_model(model_in), rtt_cdi::CPEloss(target_in, projectile_in) {
+    : rtt_cdi::CPEloss(target_in, projectile_in), analytic_model(model_in) {
   Ensure(analytic_model);
   model_type = rtt_cdi::CPModelType::ANALYTIC_ETYPE;
 }

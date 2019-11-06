@@ -35,7 +35,7 @@ namespace rtt_cdi_cpeloss {
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
                                    rtt_cdi::CParticle &target_in,
                                    rtt_cdi::CParticle &projectile_in)
-    : filename(filename_in), rtt_cdi::CPEloss(target_in, projectile_in) {
+    : rtt_cdi::CPEloss(target_in, projectile_in), filename(filename_in) {
 
   model_type = rtt_cdi::CPModelType::TABULAR_ETYPE;
 
