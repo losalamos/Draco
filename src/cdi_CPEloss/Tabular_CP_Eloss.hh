@@ -11,7 +11,9 @@
 #ifndef __cdi_CPEloss_Tabular_CP_Eloss_hh__
 #define __cdi_CPEloss_Tabular_CP_Eloss_hh__
 
+#include "cdi/CPCommon.hh"
 #include "cdi/CPEloss.hh"
+#include "ds++/DracoArray.hh"
 #include "ds++/DracoMath.hh"
 #include <cmath>
 #include <fstream>
@@ -36,12 +38,6 @@ private:
   std::string filename;
   std::ifstream file;
 
-  // Particle type being transported
-  int32_t projectile_zaid;
-
-  // Target species
-  int32_t target_zaid;
-
   int32_t n_energy;           // Number of bins in projectile energy
   int32_t n_density;          // Number of bins in target density
   int32_t n_temperature;      // Number of bins in target temperature
@@ -51,21 +47,24 @@ private:
   double min_log_energy;      // Log of minimum projectile energy
   double min_log_density;     // Log of minimum target density
   double min_log_temperature; // Log of minimum target temperature
+  double min_energy; // Minimum target energy;
+  double max_energy; // Maximum target energy;
+  double min_density; // Minimum target density;
+  double max_density; // Maximum target density;
+  double min_temperature; // Minimum target temperature;
+  double max_temperature; // Maximum target temperature;
+  // Note that after unit conversions, *_energy is really *_speed
 
   // Utility for reading a line of an eloss file and as a vector of strings
   std::vector<std::string> read_line();
 
 public:
   // Constructor
-  Tabular_CP_Eloss(std::string filename_in, int32_t target_zaid_in,
-                   int32_t projectile_zaid_in);
+  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle target_in,
+                   rtt_cdi::CParticle projectile_in);
 
   double getEloss(const double temperature, const double density,
                   const double v0) const;
-
-  int32_t getTargetZAID() const { return target_zaid; }
-
-  int32_t getProjectileZAID() const { return projectile_zaid; }
 };
 
 } // namespace rtt_cdi_cpeloss

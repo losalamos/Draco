@@ -35,10 +35,11 @@ Analytic_CP_Eloss::Analytic_CP_Eloss(SP_Analytic_Model model_in,
     : analytic_model(model_in), projectile_zaid(projectile_zaid_in),
       target_zaid(target_zaid_in) {
   Ensure(analytic_model);
+  model_type = rtt_cdi::CPModelType::ANALYTIC_ETYPE;
 }
 
 //---------------------------------------------------------------------------//
-// OPACITY INTERFACE FUNCTIONS
+// ELOSS INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return a scalar eloss given a scalar temperature, density, and 

@@ -9,7 +9,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
-#include "ds++/DracoArray.hh"
 
 using std::stod;
 using std::stoi;
@@ -34,10 +33,12 @@ namespace rtt_cdi_cpeloss {
  * \param projectile_zaid_in transporting particle zaid
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
-                                   int32_t target_zaid_in,
-                                   int32_t projectile_zaid_in)
-    : filename(filename_in), target_zaid(target_zaid_in),
-      projectile_zaid(projectile_zaid_in) {
+                                   rtt_cdi::CParticle target_in,
+                                   rtt_cdi::CParticle projectile_in)
+    : filename(filename_in), target(target_in),
+      projectile(projectile_in) {
+  model_type = rtt_cdi::CPModelType::TABULAR_ETYPE;
+
   file.open(filename);
   if (!file.is_open()) {
     std::cout << "Eloss file " << filename << " could not be opened!"
@@ -53,7 +54,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
 
   read_line(); // ZAID
   int32_t projectile_zaid_file = stoi(line_entries[0]);
-  Require(projectile_zaid == projectile_zaid_file);
+  Require(projectile.get_zaid() == projectile_zaid_file);
 
   read_line(); // Z, A, mass
 
@@ -98,7 +99,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   int nlines = std::ceil(
       ((double)n_energy * n_density * n_temperature) /
       max_entries); // The number of lines taken up by stopping power data for one target
-  if (zaid_target == -1) {
+  if (target.get_zaid() == -1) {
     // Target is free electrons
     target_found = true;
     //nlines = std::ceil(((double)n_energy*n_density*n_temperature)/max_entries);
@@ -122,7 +123,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     for (int n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
-      if (zaid_target_ion = target_zaid) {
+      if (zaid_target_ion = target.get_zaid()) {
         // This is the requested target ion
         target_found = true;
         int nentry = 0;
@@ -142,9 +143,10 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
       }
     }
   }
+  file.close();
 
   if (!target_found) {
-    std::cout << "Target ZAID " << target_zaid << " not found in DEDX fle "
+    std::cout << "Target ZAID " << target.get_zaid() << " not found in DEDX fle "
               << filename << "!" << std::endl;
     exit(-1);
   }
@@ -159,6 +161,24 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
       }
     }
   }
+
+  // Convert units on table to match those of getEloss:
+  //   energy:      MeV -> cm/shk (using target particle mass)
+  double energy = exp(min_log_energy)*(1.e6*1.6021772e-12);
+  min_log_energy = log(sqrt(2.*energy/target.get_mass())*1.e-8);
+  d_log_energy = d_log_energy / 2.;
+  //   density:     cm^-3 -> g cm^-3
+  min_log_density = log(exp(min_log_density)*target.get_mass());
+  //   temperature: keV -> keV
+  // Note that d log x = dx / x is not affected by linear unit conversions
+
+  // Initialize table bounds
+  min_energy = exp(min_log_energy);
+  max_energy = exp(min_log_energy + d_log_energy*n_energy);
+  min_density = exp(min_log_density);
+  max_density = exp(min_log_density + d_log_density*n_density);
+  min_temperature = exp(min_log_temperature);
+  max_temperature = exp(min_log_temperature + d_log_temperature*n_temperature);
 }
 
 /*!
@@ -172,7 +192,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
  */
 std::vector<std::string> Tabular_CP_Eloss::read_line() {
   std::string line;
-  getline(file, line);
+  std::getline(file, line);
   std::vector<std::string> entries;
   std::istringstream iss(line);
   for (std::string s; iss >> s;) {
@@ -180,5 +200,23 @@ std::vector<std::string> Tabular_CP_Eloss::read_line() {
   }
   return entries;
 }
+
+double Tabular_CP_Eloss::getEloss(const double temperature, const double density, const double partSpeed) const {
+  Require(temperature >= 0.);
+  Require(density >= 0.);
+  Require(partSpeed >= 0.);
+
+  if (temperature < min_temperature || temperature > max_temperature ||
+      density < min_density || density > max_density ||
+      partSpeed < min_energy || partSpeed > max_energy) {
+    // Outside of the table
+    return 0.;
+  }
+
+  return 0.;
+  //return rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010, f110, f011, f111, x, y, z);
+}
+
+/*
 
 } // namespace rtt_cdi_cpeloss

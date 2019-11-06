@@ -76,17 +76,18 @@ public:
   /*!
    * \brief Query to determine the target species type.
    */
-  virtual int32_t getTargetZAID() const = 0;
+  //virtual int32_t getTargetZAID() const = 0;
 
   /*!
    * \brief Query to determine the transporting particle type.
    */
-  virtual int32_t getProjectileZAID() const = 0;
+  //virtual int32_t getProjectileZAID() const = 0;
 
   /*!
    * \brief Query to determine the CP Model type.
    */
-  virtual rtt_cdi::CPModel getModel() const = 0;
+  //virtual rtt_cdi::CPModel getModel() const = 0;
+  
   /*!
    * \brief Returns the name of the associated data file (if any).
    */
@@ -130,6 +131,31 @@ public:
 	 * defined in the enum at the top of this file.
 	 */
   virtual rtt_cdi::CPModelType getModelType() const = 0;
+  
+  /*!
+   * \brief Query to determine the transporting particle type.
+   */
+  CParticle getProjectile() const { return projectile; }
+
+  /*!
+   * \brief Query to determine the target species type.
+   */
+  CParticle getTarget() const { return target; }
+
+  /*!
+   * \brief Query to determine the CP Model type.
+   */
+  CPModel getModelType() const { return model_type; }
+
+  private:
+  // Particle being transported i.e. subject to energy loss
+  CParticle projectile;
+  
+  // Target particle
+  CParticle target;
+
+  // CP Model type
+  CPModelType model_type;
 };
 
 } // namespace rtt_cdi
