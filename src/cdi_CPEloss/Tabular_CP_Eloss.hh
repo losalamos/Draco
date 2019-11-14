@@ -13,6 +13,7 @@
 
 #include "cdi/CPCommon.hh"
 #include "cdi/CPEloss.hh"
+#include "ds++/Assert.hh"
 #include "ds++/DracoArray.hh"
 #include "ds++/DracoMath.hh"
 #include <cmath>

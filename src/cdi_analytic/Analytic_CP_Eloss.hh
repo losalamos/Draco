@@ -49,8 +49,8 @@ public:
   // Constructor.
   //Analytic_CP_Eloss(SP_Analytic_Model model_in, int32_t target_zaid_in,
   //                  int32_t projectile_zaid_in);
-  Analytic_CP_Eloss(SP_Analytic_Model model_in, CParticle &target_in,
-                    CParticle &projectile_in);
+  Analytic_CP_Eloss(SP_Analytic_Model model_in, CParticle target_in,
+                    CParticle projectile_in);
 
   // >>> ACCESSORS
   const_SP_Model get_Analytic_Model() const { return analytic_model; }

@@ -60,8 +60,8 @@ public:
     std::vector<int> size;
     for (int n = 0; n < dim; n++) {
       size.push_back(size_all[n]);
-      return size;
     }
+    return size;
   }
   bool is_allocated() const { return allocated; }
 

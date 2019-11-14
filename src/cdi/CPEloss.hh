@@ -34,7 +34,7 @@ namespace rtt_cdi {
 
 class CPEloss {
 public:
-  CPEloss(CParticle &target_in, CParticle &projectile_in)
+  CPEloss(CParticle target_in, CParticle projectile_in)
       : projectile(projectile_in), target(target_in) {}
   // ---------- //
   // Destructor //

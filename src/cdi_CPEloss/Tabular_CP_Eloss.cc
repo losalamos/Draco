@@ -10,9 +10,6 @@
 
 #include "Tabular_CP_Eloss.hh"
 
-using std::stod;
-using std::stoi;
-
 namespace rtt_cdi_cpeloss {
 
 //---------------------------------------------------------------------------//
@@ -28,31 +25,30 @@ namespace rtt_cdi_cpeloss {
  * which opens and parses the file. The file format is the usual
  * LANL format for stopping powers. 
  *
- * \param filename_in path to eloss file
- * \param target_zaid_in target particle zaid
- * \param projectile_zaid_in transporting particle zaid
+ * \param[in] filename_in path to eloss file
+ * \param[in] target_zaid_in target particle zaid
+ * \param[in] projectile_zaid_in transporting particle zaid
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
                                    rtt_cdi::CParticle &target_in,
                                    rtt_cdi::CParticle &projectile_in)
     : rtt_cdi::CPEloss(target_in, projectile_in), filename(filename_in) {
+  using std::stod;
+  using std::stoi;
 
   model_type = rtt_cdi::CPModelType::TABULAR_ETYPE;
 
   file.open(filename);
-  if (!file.is_open()) {
-    std::cout << "Eloss file " << filename << " could not be opened!"
-              << std::endl;
-    exit(-1);
-  }
+  std::ostringstream file_error;
+  file_error << "Error opening DEDX file \"" << filename << "\"";
+  Insist(file.is_open(), file_error.str());
 
-  std::string line;
   std::vector<std::string> line_entries;
   int nlines;
-  int max_entries =
-      6; // This is a statement about the file format, maximum of six entries for row.
+  constexpr int max_entries =
+      6; // This is a statement about the file format, maximum of six entries per row.
 
-  read_line(); // ZAID
+  line_entries = read_line(); // ZAID
   int32_t projectile_zaid_file = stoi(line_entries[0]);
   Require(projectile.get_zaid() == projectile_zaid_file);
 
@@ -70,26 +66,26 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   d_log_temperature = 1. / stod(line_entries[2]);
 
   // Get first energy support point
-  nlines = std::ceil((double)n_energy / max_entries);
+  nlines = std::ceil(static_cast<double>(n_energy) / max_entries);
   line_entries = read_line();
   min_log_energy = stod(line_entries[0]);
-  for (int n = 0; n < nlines - 1; n++) {
+  for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
   }
 
   // Get first density support point
-  nlines = std::ceil((double)n_density / max_entries);
+  nlines = std::ceil(static_cast<double>(n_density) / max_entries);
   line_entries = read_line();
   min_log_density = stod(line_entries[0]);
-  for (int n = 0; n < nlines - 1; n++) {
+  for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
   }
 
   // Get first temperature support point
-  nlines = std::ceil((double)n_temperature / max_entries);
+  nlines = std::ceil(static_cast<double>(n_temperature) / max_entries);
   line_entries = read_line();
   min_log_temperature = stod(line_entries[0]);
-  for (int n = 0; n < nlines - 1; n++) {
+  for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
   }
 
@@ -112,20 +108,20 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     }
   } else {
     // Skip electrons
-    for (int n = 0; n < nlines; n++) {
+    for (uint32_t n = 0; n < nlines; n++) {
       line_entries = read_line();
     }
 
     // Find ion target, if it exists
-    int n_target_ions = stoi(read_line()[0]); // Number of target ions in file
-    for (int n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
+    const int n_target_ions = stoi(read_line()[0]); // Number of target ions in file
+    for (uint32_t n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
       if (zaid_target_ion == target.get_zaid()) {
         // This is the requested target ion
         target_found = true;
         int nentry = 0;
-        for (int n = 0; n < nlines; n++) {
+        for (uint32_t n = 0; n < nlines; n++) {
           line_entries = read_line();
           for (std::string entry : line_entries) {
             stopping_data_1d[nentry] = stod(entry);
@@ -135,7 +131,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
         break;
       } else {
         // This is not the requested target ion
-        for (int n = 0; n < nlines; n++) {
+        for (uint32_t n = 0; n < nlines; n++) {
           read_line();
         }
       }
@@ -143,16 +139,14 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
   file.close();
 
-  if (!target_found) {
-    std::cout << "Target ZAID " << target.get_zaid()
-              << " not found in DEDX fle " << filename << "!" << std::endl;
-    exit(-1);
-  }
+  std::ostringstream dedx_error;
+  dedx_error << "Error finding target ZAID \"" << target.get_zaid() << "\" in DEDX file \"" << filename << "\"";
+  Insist(target_found, dedx_error.str());
 
   stopping_data.resize(n_energy, n_density, n_temperature);
-  for (int ne = 0; ne < n_energy; ne++) {
-    for (int nd = 0; nd < n_density; nd++) {
-      for (int nt = 0; nt < n_temperature; nt++) {
+  for (uint32_t ne = 0; ne < n_energy; ne++) {
+    for (uint32_t nd = 0; nd < n_density; nd++) {
+      for (uint32_t nt = 0; nt < n_temperature; nt++) {
         stopping_data(nt, nd, ne) =
             stopping_data_1d[ne + n_energy * (nd + n_density * nt)];
       }
