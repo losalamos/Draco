@@ -1147,7 +1147,7 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  *
  * The appropriate charged particle eloss is returned for the given model/ trio.
  *
- * \param m rtt_cdi::CPModelAngleCutoff specifying the desired angle cutoff.
+ * \param mAC rtt_cdi::CPModelAngleCutoff specifying the desired angle cutoff.
  * \param pz int32_t specifying the desired particle type.
  * \param tz int32_t specifying the desired target type.
  */
