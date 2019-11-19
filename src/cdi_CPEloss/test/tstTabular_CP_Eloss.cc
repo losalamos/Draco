@@ -65,7 +65,6 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double energy = 0.10604641456815705;
     double density = 0.01314446475045816;
     double temperature = 1.9783097972766984e-05;
-    std::cout << eloss_mod.getEloss(temperature, density, energy) << std::endl;
     FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy), 131.2710473, 1.e-8));
   }
 
@@ -75,9 +74,7 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double density = 335853.3534222285;
     double temperature = 505.47663380532043;
     FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy), 40747641.884, 1.e-8));
-    std::cout << eloss_mod.getEloss(temperature, density, energy) << std::endl;
   }
-  //FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(
 
   // Get eloss value for a point between grid points (45.5,13.5,13.5, i.e. requiring linear interpolation)
   {
@@ -85,7 +82,6 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double density = 66.4425508644999;
     double temperature = 0.09999946884616503;
     FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature,density,energy),155837.597258,1.e-8));
-    std::cout << eloss_mod.getEloss(temperature, density, energy) << std::endl;
   }
 
   if (ut.numFails == 0) {

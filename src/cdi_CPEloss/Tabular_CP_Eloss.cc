@@ -9,9 +9,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
-  
-  #include <iostream>
-  #include <iomanip>
 
 namespace rtt_cdi_cpeloss {
 
@@ -133,13 +130,11 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
       if (zaid_target_ion == target.get_zaid()) {
-      std::cout << "target found! " << zaid_target_ion << std::endl;
         // This is the requested target ion
         target_found = true;
         uint32_t nentry = 0;
         for (uint32_t n = 0; n < nlines; n++) {
           line_entries = read_line();
-          if (n == 0) { std::cout << line_entries[0] << std::endl; }
           for (std::string entry : line_entries) {
             stopping_data_1d[nentry] = stod(entry);
             nentry++;
@@ -194,10 +189,6 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   min_temperature = exp(min_log_temperature);
   max_temperature =
       exp(min_log_temperature + d_log_temperature * (n_temperature - 1));
-
-  std::cout << std::setprecision(12) << min_log_energy << " " << max_energy << " " << d_log_energy << " " << n_energy << std::endl;
-  std::cout << std::setprecision(12) << min_log_density << " " << max_density << " " << d_log_density << " " << n_density << std::endl;
-  std::cout << std::setprecision(12) << min_log_temperature << " " << max_temperature << " " << d_log_temperature << " " << n_temperature << std::endl;
 }
 
 /*!
@@ -247,13 +238,6 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
       std::floor((log(temperature) - min_log_temperature) / d_log_temperature));
   int pt1_temperature = pt0_temperature + 1;
 
-  std::cout << pt0_energy << " " << pt1_energy << std::endl;
-  std::cout << pt0_density << " " << pt1_density << std::endl;
-  std::cout << pt0_temperature << " " << pt1_temperature << std::endl;
-  std::cout << (log(partSpeed) - min_log_energy) / d_log_energy << std::endl;
-  std::cout << (log(max_energy) - min_log_energy) / d_log_energy << std::endl;
-  std::cout << exp(min_log_energy + 89*d_log_energy) << std::endl;
-
   double x0 = exp(min_log_energy + pt0_energy * d_log_energy);
   double x1 = exp(min_log_energy + pt1_energy * d_log_energy);
   double y0 = exp(min_log_density + pt0_density * d_log_density);
@@ -272,11 +256,7 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
   double dedx = exp(rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100,
                                             f001, f101, f010, f110, f011, f111,
                                             partSpeed, density, temperature));
-  //dedx=exp(stopping_data(1,1,1));
-  std::cout << stopping_data(1,1,1) << std::endl;
-  std::cout << dedx << std::endl;
   double number_density = density / target.get_mass();
-  std::cout << "DEDX: " << dedx*1000.*number_density*partSpeed << std::endl;
   return dedx*1000.*number_density*partSpeed; // MeV cm^2 -> keV shk^-1
 }
 
