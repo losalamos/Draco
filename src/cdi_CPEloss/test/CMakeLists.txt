@@ -13,7 +13,7 @@ project( cdi_CPEloss_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_sources
-  tst_Tabular_CP_Eloss.cc )
+  tstTabular_CP_Eloss.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

@@ -9,6 +9,9 @@
 //---------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
+  
+  #include <iostream>
+  #include <iomanip>
 
 namespace rtt_cdi_cpeloss {
 
@@ -44,8 +47,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   Insist(file.is_open(), file_error.str());
 
   std::vector<std::string> line_entries;
-  int nlines;
-  constexpr int max_entries =
+  uint32_t nlines;
+  constexpr uint32_t max_entries =
       6; // This is a statement about the file format, maximum of six entries per row.
 
   line_entries = read_line(); // ZAID
@@ -72,6 +75,10 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
   }
+  energies.resize(n_energy);
+  for (uint32_t n = 0; n < n_energy; n++) {
+    energies[n] = exp(min_log_energy + n*d_log_energy);
+  }
 
   // Get first density support point
   nlines = std::ceil(static_cast<double>(n_density) / max_entries);
@@ -80,6 +87,10 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
   }
+  densities.resize(n_density);
+  for (uint32_t n = 0; n < n_density; n++) {
+    densities[n] = exp(min_log_density + n*d_log_density);
+  }
 
   // Get first temperature support point
   nlines = std::ceil(static_cast<double>(n_temperature) / max_entries);
@@ -87,6 +98,10 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   min_log_temperature = stod(line_entries[0]);
   for (uint32_t n = 0; n < nlines - 1; n++) {
     read_line();
+  }
+  temperatures.resize(n_temperature);
+  for (uint32_t n = 0; n < n_temperature; n++) {
+    temperatures[n] = exp(min_log_temperature + n*d_log_temperature);
   }
 
   std::vector<double> stopping_data_1d(n_energy * n_density * n_temperature);
@@ -98,8 +113,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   if (target.get_zaid() == -1) {
     // Target is free electrons
     target_found = true;
-    int nentry = 0;
-    for (int n = 0; n < nlines; n++) {
+    uint32_t nentry = 0;
+    for (uint32_t n = 0; n < nlines; n++) {
       line_entries = read_line();
       for (std::string entry : line_entries) {
         stopping_data_1d[nentry] = stod(entry);
@@ -113,16 +128,18 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
     }
 
     // Find ion target, if it exists
-    const int n_target_ions = stoi(read_line()[0]); // Number of target ions in file
+    const uint32_t n_target_ions = stoi(read_line()[0]); // Number of target ions in file
     for (uint32_t n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
       if (zaid_target_ion == target.get_zaid()) {
+      std::cout << "target found! " << zaid_target_ion << std::endl;
         // This is the requested target ion
         target_found = true;
-        int nentry = 0;
+        uint32_t nentry = 0;
         for (uint32_t n = 0; n < nlines; n++) {
           line_entries = read_line();
+          if (n == 0) { std::cout << line_entries[0] << std::endl; }
           for (std::string entry : line_entries) {
             stopping_data_1d[nentry] = stod(entry);
             nentry++;
@@ -147,7 +164,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   for (uint32_t ne = 0; ne < n_energy; ne++) {
     for (uint32_t nd = 0; nd < n_density; nd++) {
       for (uint32_t nt = 0; nt < n_temperature; nt++) {
-        stopping_data(nt, nd, ne) =
+        stopping_data(ne, nd, nt) =
             stopping_data_1d[ne + n_energy * (nd + n_density * nt)];
       }
     }
@@ -162,15 +179,25 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   min_log_density = log(exp(min_log_density) * target.get_mass());
   //   temperature: keV -> keV
   // Note that d log x = dx / x is not affected by unit conversion factors
+  for (auto &energy : energies) {
+    energy = sqrt(2.*(energy*1.e6*1.6021772e-12)/target.get_mass())*1.e-8;
+  }
+  for (auto &density : densities) {
+    density *= target.get_mass();
+  }
 
   // Initialize table bounds
   min_energy = exp(min_log_energy);
-  max_energy = exp(min_log_energy + d_log_energy * n_energy);
+  max_energy = exp(min_log_energy + d_log_energy * (n_energy - 1));
   min_density = exp(min_log_density);
-  max_density = exp(min_log_density + d_log_density * n_density);
+  max_density = exp(min_log_density + d_log_density * (n_density - 1));
   min_temperature = exp(min_log_temperature);
   max_temperature =
-      exp(min_log_temperature + d_log_temperature * n_temperature);
+      exp(min_log_temperature + d_log_temperature * (n_temperature - 1));
+
+  std::cout << std::setprecision(12) << min_log_energy << " " << max_energy << " " << d_log_energy << " " << n_energy << std::endl;
+  std::cout << std::setprecision(12) << min_log_density << " " << max_density << " " << d_log_density << " " << n_density << std::endl;
+  std::cout << std::setprecision(12) << min_log_temperature << " " << max_temperature << " " << d_log_temperature << " " << n_temperature << std::endl;
 }
 
 /*!
@@ -196,9 +223,12 @@ std::vector<std::string> Tabular_CP_Eloss::read_line() {
 double Tabular_CP_Eloss::getEloss(const double temperature,
                                   const double density,
                                   const double partSpeed) const {
-  Require(temperature >= 0.);
-  Require(density >= 0.);
-  Require(partSpeed >= 0.);
+  Require(temperature >= min_temperature);
+  Require(density >= min_density);
+  Require(partSpeed >= min_energy);
+  Require(temperature < max_temperature);
+  Require(density < max_density);
+  Require(partSpeed < max_energy);
 
   if (temperature < min_temperature || temperature > max_temperature ||
       density < min_density || density > max_density ||
@@ -207,34 +237,47 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
     return 0.;
   }
 
-  int bin0_energy = static_cast<int>(
+  int pt0_energy = static_cast<int>(
       std::floor((log(partSpeed) - min_log_energy) / d_log_energy));
-  int bin1_energy = bin0_energy + 1;
-  int bin0_density = static_cast<int>(
+  int pt1_energy = pt0_energy + 1;
+  int pt0_density = static_cast<int>(
       std::floor((log(density) - min_log_density) / d_log_density));
-  int bin1_density = bin0_density + 1;
-  int bin0_temperature = static_cast<int>(
+  int pt1_density = pt0_density + 1;
+  int pt0_temperature = static_cast<int>(
       std::floor((log(temperature) - min_log_temperature) / d_log_temperature));
-  int bin1_temperature = bin0_temperature + 1;
+  int pt1_temperature = pt0_temperature + 1;
 
-  double x0 = exp(min_log_energy + bin0_energy * d_log_energy);
-  double x1 = exp(min_log_energy + bin1_energy * d_log_energy);
-  double y0 = exp(min_log_density + bin0_density * d_log_density);
-  double y1 = exp(min_log_density + bin1_density * d_log_density);
-  double z0 = exp(min_log_temperature + bin0_temperature * d_log_temperature);
-  double z1 = exp(min_log_temperature + bin1_temperature * d_log_temperature);
+  std::cout << pt0_energy << " " << pt1_energy << std::endl;
+  std::cout << pt0_density << " " << pt1_density << std::endl;
+  std::cout << pt0_temperature << " " << pt1_temperature << std::endl;
+  std::cout << (log(partSpeed) - min_log_energy) / d_log_energy << std::endl;
+  std::cout << (log(max_energy) - min_log_energy) / d_log_energy << std::endl;
+  std::cout << exp(min_log_energy + 89*d_log_energy) << std::endl;
 
-  double f000 = stopping_data(bin0_energy, bin0_density, bin0_temperature);
-  double f100 = stopping_data(bin1_energy, bin0_density, bin0_temperature);
-  double f001 = stopping_data(bin0_energy, bin0_density, bin1_temperature);
-  double f101 = stopping_data(bin1_energy, bin0_density, bin1_temperature);
-  double f010 = stopping_data(bin0_energy, bin1_density, bin0_temperature);
-  double f110 = stopping_data(bin1_energy, bin1_density, bin0_temperature);
-  double f011 = stopping_data(bin0_energy, bin1_density, bin1_temperature);
-  double f111 = stopping_data(bin1_energy, bin1_density, bin1_temperature);
-  return exp(rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100,
+  double x0 = exp(min_log_energy + pt0_energy * d_log_energy);
+  double x1 = exp(min_log_energy + pt1_energy * d_log_energy);
+  double y0 = exp(min_log_density + pt0_density * d_log_density);
+  double y1 = exp(min_log_density + pt1_density * d_log_density);
+  double z0 = exp(min_log_temperature + pt0_temperature * d_log_temperature);
+  double z1 = exp(min_log_temperature + pt1_temperature * d_log_temperature);
+
+  double f000 = stopping_data(pt0_energy, pt0_density, pt0_temperature);
+  double f100 = stopping_data(pt1_energy, pt0_density, pt0_temperature);
+  double f001 = stopping_data(pt0_energy, pt0_density, pt1_temperature);
+  double f101 = stopping_data(pt1_energy, pt0_density, pt1_temperature);
+  double f010 = stopping_data(pt0_energy, pt1_density, pt0_temperature);
+  double f110 = stopping_data(pt1_energy, pt1_density, pt0_temperature);
+  double f011 = stopping_data(pt0_energy, pt1_density, pt1_temperature);
+  double f111 = stopping_data(pt1_energy, pt1_density, pt1_temperature);
+  double dedx = exp(rtt_dsxx::linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100,
                                             f001, f101, f010, f110, f011, f111,
                                             partSpeed, density, temperature));
+  //dedx=exp(stopping_data(1,1,1));
+  std::cout << stopping_data(1,1,1) << std::endl;
+  std::cout << dedx << std::endl;
+  double number_density = density / target.get_mass();
+  std::cout << "DEDX: " << dedx*1000.*number_density*partSpeed << std::endl;
+  return dedx*1000.*number_density*partSpeed; // MeV cm^2 -> keV shk^-1
 }
 
 } // namespace rtt_cdi_cpeloss

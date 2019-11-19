@@ -29,10 +29,8 @@ using rtt_cdi_analytic::Analytic_Eloss_Model;
 void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
 
   // Deuterium:
-  //int32_t target_in = 1002;
   rtt_cdi::CParticle target_in(1002, 3.34358e-24);
   // Alpha particle:
-  //int32_t projectile_in = 2004;
   rtt_cdi::CParticle projectile_in(2004, 6.64424e-24);
 
   std::shared_ptr<Analytic_Eloss_Model> model_in(
@@ -43,7 +41,6 @@ void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
   // Check that basic accessors return correct result:
   // Model type better be analytic:
   FAIL_IF_NOT(eloss_mod.getModelType() == rtt_cdi::CPModelType::ANALYTIC_ETYPE);
-  //FAIL_IF_NOT(eloss_mod.getModel() == rtt_cdi::CPModel::ELOSS);
 
   // NOT tabular data
   FAIL_IF(eloss_mod.data_in_tabular_form());

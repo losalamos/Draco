@@ -35,25 +35,31 @@ namespace rtt_cdi_cpeloss {
 //===========================================================================//
 
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
+public:
+typedef std::vector<double> sf_double;
+
 private:
   std::string filename;
   std::ifstream file;
 
-  int32_t n_energy;           // Number of bins in projectile energy
-  int32_t n_density;          // Number of bins in target density
-  int32_t n_temperature;      // Number of bins in target temperature
-  double d_log_energy;        // Width of projectile energy bin in log space
-  double d_log_density;       // Width of target density bin in log space
-  double d_log_temperature;   // Width of target temperature bin in log space
+  uint32_t n_energy;           // Number of gridpoints in projectile energy
+  uint32_t n_density;          // Number of gridpoints in target density
+  uint32_t n_temperature;      // Number of gridpoints in target temperature
+  double d_log_energy;        // Log spacing of projectile energy gridpoints
+  double d_log_density;       // Log spacing of target density gridpoints
+  double d_log_temperature;   // Log spacing of target temperature gridpoints
   double min_log_energy;      // Log of minimum projectile energy
   double min_log_density;     // Log of minimum target density
   double min_log_temperature; // Log of minimum target temperature
-  double min_energy;          // Minimum target energy;
-  double max_energy;          // Maximum target energy;
-  double min_density;         // Minimum target density;
-  double max_density;         // Maximum target density;
-  double min_temperature;     // Minimum target temperature;
-  double max_temperature;     // Maximum target temperature;
+  double min_energy;          // Minimum target energy
+  double max_energy;          // Maximum target energy
+  double min_density;         // Minimum target density
+  double max_density;         // Maximum target density
+  double min_temperature;     // Minimum target temperature
+  double max_temperature;     // Maximum target temperature
+  sf_double energies;         // Vector of energy gridpoints
+  sf_double densities;        // Vector of density gridpoints
+  sf_double temperatures;     // Vector of temperature gridpoints
   // Note that after unit conversions, *_energy is really *_speed
 
   // Storage for tabulated data
@@ -69,8 +75,26 @@ public:
       rtt_cdi::CParticle
           &projectile_in); // : rtt_cdi::CPEloss(target_in, projectile_in);
 
+  // >>> ACCESSORS
+
   double getEloss(const double temperature, const double density,
                   const double v0) const;
+
+  bool data_in_tabular_form() const { return true; }
+
+  inline std::string getDataFilename() const { return filename; }
+
+  sf_double getTemperatureGrid() const { return temperatures; }
+
+  sf_double getDensityGrid() const { return densities; }
+
+  sf_double getEnergyGrid() const { return energies; }
+
+  size_t getNumTemperatures() const { return n_temperature; }
+
+  size_t getNumDensities() const { return n_density; }
+
+  size_t getNumEnergies() const { return n_energy; }
 };
 
 } // namespace rtt_cdi_cpeloss
