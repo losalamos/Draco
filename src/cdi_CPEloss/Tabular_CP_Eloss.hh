@@ -71,9 +71,9 @@ private:
 public:
   // Constructor
   Tabular_CP_Eloss(
-      std::string filename_in, rtt_cdi::CParticle &target_in,
+      std::string filename_in, rtt_cdi::CParticle target_in,
       rtt_cdi::CParticle
-          &projectile_in); // : rtt_cdi::CPEloss(target_in, projectile_in);
+          projectile_in);
 
   // >>> ACCESSORS
 

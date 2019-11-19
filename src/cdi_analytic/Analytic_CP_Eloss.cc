@@ -24,10 +24,10 @@ namespace rtt_cdi_analytic {
  * The reaction type for this instance of the class is determined by the
  * rtt_cdi::Reaction argument.
  *
- * \param model_in shared_ptr to a derived
+ * \param[in] model_in shared_ptr to a derived
  *                 rtt_cdi_analytic::Analytic_Eloss_Model object
- * \param target_zaid_in int32_t target particle zaid
- * \param projectile_zaid_in int32_t transporting particle zaid
+ * \param[in] target_in int32_t target particle
+ * \param[in] projectile_in int32_t particle being transported
  */
 Analytic_CP_Eloss::Analytic_CP_Eloss(SP_Analytic_Model model_in,
                                      rtt_cdi::CParticle target_in,

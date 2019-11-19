@@ -26,12 +26,12 @@ namespace rtt_cdi_cpeloss {
  * LANL format for stopping powers. 
  *
  * \param[in] filename_in path to eloss file
- * \param[in] target_zaid_in target particle zaid
- * \param[in] projectile_zaid_in transporting particle zaid
+ * \param[in] target_in target particle zaid
+ * \param[in] projectile_in transporting particle zaid
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
-                                   rtt_cdi::CParticle &target_in,
-                                   rtt_cdi::CParticle &projectile_in)
+                                   rtt_cdi::CParticle target_in,
+                                   rtt_cdi::CParticle projectile_in)
     : rtt_cdi::CPEloss(target_in, projectile_in), filename(filename_in) {
   using std::stod;
   using std::stoi;
