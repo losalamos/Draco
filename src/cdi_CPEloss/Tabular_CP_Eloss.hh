@@ -36,15 +36,15 @@ namespace rtt_cdi_cpeloss {
 
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
 public:
-typedef std::vector<double> sf_double;
+  typedef std::vector<double> sf_double;
 
 private:
   std::string filename;
   std::ifstream file;
 
-  uint32_t n_energy;           // Number of gridpoints in projectile energy
-  uint32_t n_density;          // Number of gridpoints in target density
-  uint32_t n_temperature;      // Number of gridpoints in target temperature
+  uint32_t n_energy;          // Number of gridpoints in projectile energy
+  uint32_t n_density;         // Number of gridpoints in target density
+  uint32_t n_temperature;     // Number of gridpoints in target temperature
   double d_log_energy;        // Log spacing of projectile energy gridpoints
   double d_log_density;       // Log spacing of target density gridpoints
   double d_log_temperature;   // Log spacing of target temperature gridpoints
@@ -70,10 +70,8 @@ private:
 
 public:
   // Constructor
-  Tabular_CP_Eloss(
-      std::string filename_in, rtt_cdi::CParticle target_in,
-      rtt_cdi::CParticle
-          projectile_in);
+  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle target_in,
+                   rtt_cdi::CParticle projectile_in);
 
   // >>> ACCESSORS
 
