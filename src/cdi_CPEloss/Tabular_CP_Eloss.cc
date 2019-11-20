@@ -66,7 +66,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   d_log_temperature = 1. / stod(line_entries[2]);
 
   // Get first energy support point
-  nlines = static_cast<int>(std::ceil(static_cast<double>(n_energy) / max_entries));
+  nlines =
+      static_cast<int>(std::ceil(static_cast<double>(n_energy) / max_entries));
   line_entries = read_line();
   min_log_energy = stod(line_entries[0]);
   for (uint32_t n = 0; n < nlines - 1; n++) {
@@ -78,7 +79,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
 
   // Get first density support point
-  nlines = static_cast<int>(std::ceil(static_cast<double>(n_density) / max_entries));
+  nlines =
+      static_cast<int>(std::ceil(static_cast<double>(n_density) / max_entries));
   line_entries = read_line();
   min_log_density = stod(line_entries[0]);
   for (uint32_t n = 0; n < nlines - 1; n++) {
@@ -90,7 +92,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
 
   // Get first temperature support point
-  nlines = static_cast<int>(std::ceil(static_cast<double>(n_temperature) / max_entries));
+  nlines = static_cast<int>(
+      std::ceil(static_cast<double>(n_temperature) / max_entries));
   line_entries = read_line();
   min_log_temperature = stod(line_entries[0]);
   for (uint32_t n = 0; n < nlines - 1; n++) {
