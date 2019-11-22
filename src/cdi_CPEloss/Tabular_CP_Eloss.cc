@@ -33,9 +33,8 @@ namespace rtt_cdi_cpeloss {
 Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
                                    rtt_cdi::CParticle target_in,
                                    rtt_cdi::CParticle projectile_in)
-    : rtt_cdi::CPEloss(target_in, projectile_in), filename(filename_in), 
-    us(rtt_units::UnitSystemType().X4()), 
-    pc_cgs(us) {
+    : rtt_cdi::CPEloss(target_in, projectile_in), filename(filename_in),
+      us(rtt_units::UnitSystemType().X4()), pc_cgs(us) {
   using std::stod;
   using std::stoi;
 
@@ -143,7 +142,9 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
   }
   file.close();
 
-  Insist(target_found, "Error finding target ZAID \"" + std::to_string(target.get_zaid()) + "\" in DEDX file \"" + filename + "\"");
+  Insist(target_found, "Error finding target ZAID \"" +
+                           std::to_string(target.get_zaid()) +
+                           "\" in DEDX file \"" + filename + "\"");
 
   stopping_data.resize(n_energy, n_density, n_temperature);
   for (uint32_t ne = 0; ne < n_energy; ne++) {
@@ -234,8 +235,10 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
   const double x1 = exp(min_log_energy + pt1_energy * d_log_energy);
   const double y0 = exp(min_log_density + pt0_density * d_log_density);
   const double y1 = exp(min_log_density + pt1_density * d_log_density);
-  const double z0 = exp(min_log_temperature + pt0_temperature * d_log_temperature);
-  const double z1 = exp(min_log_temperature + pt1_temperature * d_log_temperature);
+  const double z0 =
+      exp(min_log_temperature + pt0_temperature * d_log_temperature);
+  const double z1 =
+      exp(min_log_temperature + pt1_temperature * d_log_temperature);
 
   const double f000 = stopping_data(pt0_energy, pt0_density, pt0_temperature);
   const double f100 = stopping_data(pt1_energy, pt0_density, pt0_temperature);
