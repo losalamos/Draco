@@ -22,7 +22,7 @@ file( GLOB headers *.hh )
 
 add_component_library(
    TARGET       Lib_cdi_CPEloss
-   TARGET_DEPS  "Lib_cdi"
+   TARGET_DEPS  "Lib_cdi;Lib_units"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"
    HEADERS      "${headers}" )

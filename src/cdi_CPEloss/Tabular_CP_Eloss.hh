@@ -16,10 +16,11 @@
 #include "ds++/Assert.hh"
 #include "ds++/DracoArray.hh"
 #include "ds++/DracoMath.hh"
+#include "units/PhysicalConstants.hh"
+#include "units/UnitSystemType.hh"
 #include <cmath>
 #include <fstream>
 #include <string>
-#include <vector>
 
 namespace rtt_cdi_cpeloss {
 //===========================================================================//
@@ -39,34 +40,40 @@ public:
   typedef std::vector<double> sf_double;
 
 private:
-  std::string filename;
+  const std::string filename;
   std::ifstream file;
 
-  uint32_t n_energy;          // Number of gridpoints in projectile energy
-  uint32_t n_density;         // Number of gridpoints in target density
-  uint32_t n_temperature;     // Number of gridpoints in target temperature
-  double d_log_energy;        // Log spacing of projectile energy gridpoints
-  double d_log_density;       // Log spacing of target density gridpoints
-  double d_log_temperature;   // Log spacing of target temperature gridpoints
-  double min_log_energy;      // Log of minimum projectile energy
-  double min_log_density;     // Log of minimum target density
-  double min_log_temperature; // Log of minimum target temperature
-  double min_energy;          // Minimum target energy
-  double max_energy;          // Maximum target energy
-  double min_density;         // Minimum target density
-  double max_density;         // Maximum target density
-  double min_temperature;     // Minimum target temperature
-  double max_temperature;     // Maximum target temperature
-  sf_double energies;         // Vector of energy gridpoints
-  sf_double densities;        // Vector of density gridpoints
-  sf_double temperatures;     // Vector of temperature gridpoints
+  rtt_units::UnitSystem us;
+  rtt_units::PhysicalConstants pc_cgs;
+
+  uint32_t n_energy;          //!< Number of gridpoints in projectile energy
+  uint32_t n_density;         //!< Number of gridpoints in target density
+  uint32_t n_temperature;     //!< Number of gridpoints in target temperature
+  double d_log_energy;        //!< Log spacing of projectile energy gridpoints
+  double d_log_density;       //!< Log spacing of target density gridpoints
+  double d_log_temperature;   //!< Log spacing of target temperature gridpoints
+  double min_log_energy;      //!< Log of minimum projectile energy
+  double min_log_density;     //!< Log of minimum target density
+  double min_log_temperature; //!< Log of minimum target temperature
+  double min_energy;          //!< Minimum target energy
+  double max_energy;          //!< Maximum target energy
+  double min_density;         //!< Minimum target density
+  double max_density;         //!< Maximum target density
+  double min_temperature;     //!< Minimum target temperature
+  double max_temperature;     //!< Maximum target temperature
+  sf_double energies;         //!< Vector of energy gridpoints
+  sf_double densities;        //!< Vector of density gridpoints
+  sf_double temperatures;     //!< Vector of temperature gridpoints
   // Note that after unit conversions, *_energy is really *_speed
 
   // Storage for tabulated data
   rtt_dsxx::DracoArray<double> stopping_data;
 
+  // Utility for skipping lines
+  void skip_lines(uint32_t nlines);
+
   // Utility for reading a line of an eloss file and as a vector of strings
-  std::vector<std::string> read_line();
+  std::vector<std::string> const read_line();
 
 public:
   // Constructor
