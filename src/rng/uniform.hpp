@@ -157,7 +157,8 @@ template <typename T> R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue() {
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
   typedef typename make_unsigned<Itype>::type Utype;
-  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Utype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype factor =
+      Ftype(1.) / (static_cast<Ftype>(maxTvalue<Utype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Utype(in) * factor;
@@ -184,7 +185,8 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
   typedef typename make_signed<Itype>::type Stype;
-  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Stype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype factor =
+      Ftype(1.) / (Ftype(maxTvalue<Stype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Stype(in) * factor;

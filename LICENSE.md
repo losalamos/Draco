@@ -38,8 +38,9 @@ be found in the LICENSE file in the main development branch of the repository.
 ### 3-Clause BSD License
 ------------------------------
 
-Additionally, redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+This program is open source under the BSD-3 License.  Redistribution
+and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
 
 - Redistributions of source code must retain the above copyright notice, this
   list of conditions and the following disclaimer.
@@ -131,8 +132,7 @@ associated software packages may are listed below:
 
    A general purpose library for the direct solution of large, sparse,
    nonsymmetric systems of linear equations on high performance machines.
-   
+
 10. ds++/terminal.h and ds++/terminal_base.h developed by Ondřej Čertík
     https://github.com/certik/terminal
     MIT License
-

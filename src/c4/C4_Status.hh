@@ -31,7 +31,7 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 C4_Status {
+class C4_Status {
 
 #ifdef C4_MPI
   typedef MPI_Status status_type;
@@ -42,8 +42,6 @@ class DLL_PUBLIC_c4 C4_Status {
   status_type d_status;
 
 public:
-  // Use default ctor, dtor, assignment
-
   //! Returns the message size (in bytes) of the last communication.
   int get_message_size() const;
 

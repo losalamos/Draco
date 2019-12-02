@@ -4,10 +4,7 @@
  * \author Mike Buksas
  * \brief  Define class Compare
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_Compare_hh
@@ -25,12 +22,12 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-DLL_PUBLIC_c4 bool check_global_equiv(int local_value);
-DLL_PUBLIC_c4 bool check_global_equiv(unsigned long long local_value);
-DLL_PUBLIC_c4 bool check_global_equiv(unsigned long local_value);
-DLL_PUBLIC_c4 bool check_global_equiv(long long local_value);
-DLL_PUBLIC_c4 bool check_global_equiv(long local_value);
-DLL_PUBLIC_c4 bool check_global_equiv(double local_value, double eps = 1.0e-8);
+bool check_global_equiv(int local_value);
+bool check_global_equiv(unsigned long long local_value);
+bool check_global_equiv(unsigned long local_value);
+bool check_global_equiv(long long local_value);
+bool check_global_equiv(long local_value);
+bool check_global_equiv(double local_value, double eps = 1.0e-8);
 
 } // end namespace rtt_c4
 

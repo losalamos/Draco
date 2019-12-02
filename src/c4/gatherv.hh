@@ -34,9 +34,8 @@ namespace rtt_c4 {
  * size of the incoming message. On return, contains the gathered data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-determinate_gatherv(std::vector<T> &outgoing_data,
-                    std::vector<std::vector<T>> &incoming_data);
+void determinate_gatherv(std::vector<T> &outgoing_data,
+                         std::vector<std::vector<T>> &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -51,13 +50,11 @@ determinate_gatherv(std::vector<T> &outgoing_data,
  * the root processor, on return, contains the gathered data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-indeterminate_gatherv(std::vector<T> &outgoing_data,
-                      std::vector<std::vector<T>> &incoming_data);
+void indeterminate_gatherv(std::vector<T> &outgoing_data,
+                           std::vector<std::vector<T>> &incoming_data);
 
-DLL_PUBLIC_c4 void
-indeterminate_gatherv(std::string &outgoing_data,
-                      std::vector<std::string> &incoming_data);
+void indeterminate_gatherv(std::string &outgoing_data,
+                           std::vector<std::string> &incoming_data);
 
 } // end namespace rtt_c4
 

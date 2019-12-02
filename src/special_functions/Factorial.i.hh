@@ -58,10 +58,10 @@ template <typename T> double factorial_fraction(T const k, T const l) {
   double result(1.0);
   if (k > l)
     for (T i = l + 1; i <= k; ++i)
-      result *= i;
+      result *= static_cast<double>(i);
   if (k < l)
     for (T i = k + 1; i <= l; ++i)
-      result /= 1.0 * i;
+      result /= static_cast<double>(i);
   return result;
 }
 

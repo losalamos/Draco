@@ -37,19 +37,18 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Global_Timer : public Timer {
+class Global_Timer : public Timer {
 private:
   char const *name_; // name assigned by client to this timer, to
-                     // distinguish its output from that of any other
-                     // timers.
+                     // distinguish its output from that of any other timers.
 
   bool active_; // This timer is active. This does not mean it is
-                // currently accumulating timing statistics, but only
-                // that it is flagged to do so when start() is
-                // called. If not active, a call to start() is ignored.
+                // currently accumulating timing statistics, but only that it is
+                // flagged to do so when start() is called. If not active, a
+                // call to start() is ignored.
 
   //! All Global_Timers are active
-  static bool global_active_;
+  DLL_PUBLIC_c4 static bool global_active_;
 
   struct timer_entry {
     bool is_active; // permits activation of timers not yet constructed.
@@ -98,8 +97,7 @@ public:
 
   // static bool is_global_active() { return global_active_; }
 
-  /*! \bug no unit test, used in rocotillo, attempt to use in c4/test/tstTime.cc
-   *       breaks the test.  I don't understand how to use this function.
+  /*! 
    *  \bug no documentation!
    */
   static void set_global_activity(bool active);

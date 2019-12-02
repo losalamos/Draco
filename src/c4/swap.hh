@@ -12,8 +12,6 @@
  */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 #ifndef c4_swap_hh
 #define c4_swap_hh
 
@@ -26,107 +24,104 @@ namespace rtt_c4 {
 /*!
  * \brief Send and receive a known pattern of messages of known size.
  *
- * It is common for a program to reach a point where processes wish to
- * exchange data with other processes in a way which is hard to
- * synchronize. This function exchanges the data using asynchronous
- * communications in the case where each process knows which other processes
- * it is expecting data from, and how much data to expect.
+ * It is common for a program to reach a point where processes wish to exchange
+ * data with other processes in a way which is hard to synchronize. This
+ * function exchanges the data using asynchronous communications in the case
+ * where each process knows which other processes it is expecting data from, and
+ * how much data to expect.
  *
- * \param outgoing_pid Processor ids to which this processor wishes to
- * send data.
+ * \param outgoing_pid Processor ids to which this processor wishes to send 
+ *        data.
  *
  * \param outgoing_data Data to be send to other processors.
  *
  * \param incoming_pid Processors ids from which this processor expects to
- * receive data.
+ *        receive data.
  *
  * \param incoming_data On entry, the size of each subarray must be set to the
- * expected size of the incoming message. On return, contains the received
- * data.
+ *        expected size of the incoming message. On return, contains the 
+ *        received data.
  *
  * \param tag Tag for this exchange of data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<unsigned> const &outgoing_pid,
-                 std::vector<std::vector<T>> const &outgoing_data,
-                 std::vector<unsigned> const &incoming_pid,
-                 std::vector<std::vector<T>> &incoming_data,
-                 int tag = C4_Traits<T *>::tag);
+void determinate_swap(std::vector<unsigned> const &outgoing_pid,
+                      std::vector<std::vector<T>> const &outgoing_data,
+                      std::vector<unsigned> const &incoming_pid,
+                      std::vector<std::vector<T>> &incoming_data,
+                      int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Send and receive a known pattern of messages of known size.
  *
- * It is common for a program to reach a point where processes wish to
- * exchange data with other processes in a way which is hard to
- * synchronize. This function exchanges the data using asynchronous
- * communications in the case where each process knows which other processes
- * it is expecting data from, and how much data to expect.
+ * It is common for a program to reach a point where processes wish to exchange
+ * data with other processes in a way which is hard to synchronize. This
+ * function exchanges the data using asynchronous communications in the case
+ * where each process knows which other processes it is expecting data from, and
+ * how much data to expect.
  *
  * \param outgoing_data Data to be send to other processors. If
- * outgoing_data[p].size()==0, then no message is sent to processor p.
+ *        outgoing_data[p].size()==0, then no message is sent to processor p.
  *
  * \param incoming_data On entry, the size of each subarray must be set to the
- * expected size of the incoming message. On return, contains the received
- * data. If incoming_data[p].size()==0, then no message is looked for from
- * processor p.
+ *        expected size of the incoming message. On return, contains the
+ *        received data. If incoming_data[p].size()==0, then no message is
+ *        looked for from processor p.
  *
  * \param tag Tag for this exchange of data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
-                 std::vector<std::vector<T>> &incoming_data,
-                 int tag = C4_Traits<T *>::tag);
+void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
+                      std::vector<std::vector<T>> &incoming_data,
+                      int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Send and receive a known pattern of messages of unknown size.
  *
- * It is common for a program to reach a point where processes wish to
- * exchange data with other processes in a way which is hard to
- * synchronize. This function exchanges the data using asynchronous
- * communications in the case where each process knows which other processes
- * it is expecting data from, but not how much data to expect.
+ * It is common for a program to reach a point where processes wish to exchange
+ * data with other processes in a way which is hard to synchronize. This
+ * function exchanges the data using asynchronous communications in the case
+ * where each process knows which other processes it is expecting data from, but
+ * not how much data to expect.
  *
- * \param outgoing_pid Processor ids to which this processor wishes to
- * send data.
+ * \param outgoing_pid Processor ids to which this processor wishes to send
+ *        data.
  *
  * \param outgoing_data Data to be send to other processors.
  *
  * \param incoming_pid Processors ids from which this processor expects to
- * receive data.
+ *        receive data.
  *
  * \param incoming_data On return, contains the received data.
  *
  * \param tag Tag for this exchange of data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
-                     std::vector<std::vector<T>> const &outgoing_data,
-                     std::vector<unsigned> const &incoming_pid,
-                     std::vector<std::vector<T>> &incoming_data,
-                     int tag = C4_Traits<T *>::tag);
+void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
+                          std::vector<std::vector<T>> const &outgoing_data,
+                          std::vector<unsigned> const &incoming_pid,
+                          std::vector<std::vector<T>> &incoming_data,
+                          int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Send and receive an unknown pattern of messages of unknown size.
  *
- * It is common for a program to reach a point where processes wish to
- * exchange data with other processes in a way which is hard to
- * synchronize. This function exchanges the data using asynchronous
- * communications in the case where processes do not know in advance which
- * other processes will be sending them messages..
+ * It is common for a program to reach a point where processes wish to exchange
+ * data with other processes in a way which is hard to synchronize. This
+ * function exchanges the data using asynchronous communications in the case
+ * where processes do not know in advance which other processes will be sending
+ * them messages..
  *
- * \param outgoing_pid Processor ids to which this processor wishes to
- * send data.
+ * \param outgoing_pid Processor ids to which this processor wishes to send
+ *        data.
  *
  * \param outgoing_data Data to be send to other processors.
  *
  * \param incoming_pid On return, contains processors ids from which this
- * processor received data.
+ *        processor received data.
  *
  * \param incoming_data On return, contains the received data.
  *

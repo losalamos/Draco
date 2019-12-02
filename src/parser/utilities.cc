@@ -143,7 +143,8 @@ unsigned parse_unsigned_integer(Token_Stream &tokens) {
                          "integer value overflows");
 
   Check(endptr != NULL);
-  return Result;
+  // Check(Result<UINT32_MAX);
+  return static_cast<unsigned>(Result);
 }
 
 //---------------------------------------------------------------------------//
@@ -185,7 +186,8 @@ int parse_integer(Token_Stream &tokens) {
       tokens.report_semantic_error("integer value overflows");
     }
     Check(endptr != NULL && *endptr == '\0');
-    return Result;
+    // Check(std::abs(Result)<INT32_MAX);
+    return static_cast<int>(Result);
   } else {
     tokens.report_syntax_error(token, "expected an integer");
     return 0;

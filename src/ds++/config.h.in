@@ -6,8 +6,8 @@
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __dsxx_config_h__
-#define __dsxx_config_h__
+#ifndef rtt_dsxx_config_h
+#define rtt_dsxx_config_h
 
 /* hostname */
 #include <limits.h>        // HOST_NAME_MAX, hostname
@@ -22,7 +22,7 @@
 /* define DRACO_SHARED_LIBS */
 #cmakedefine DRACO_SHARED_LIBS @DRACO_SHARED_LIBS@
 
-/* Version Inforation */
+/* Version Information */
 #define Draco_BUILD_DATE "@Draco_BUILD_DATE@"
 #define Draco_BUILD_TYPE @Draco_BUILD_TYPE@
 #cmakedefine Draco_VERSION @Draco_VERSION@

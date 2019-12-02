@@ -55,11 +55,11 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   double result = a_d.load();
   double sum = 0.0;
   for (size_t i = 0; i < n_iterations; ++i) {
-    sum += i + 1;
+    sum += static_cast<double>(i + 1);
   }
   double tsum = 0.0;
   for (size_t t = 0; t < n_threads; ++t) {
-    tsum += t;
+    tsum += static_cast<double>(t);
   }
   double expected = sum * tsum;
 
@@ -131,11 +131,11 @@ void test_fetch_add_not_atomic(UnitTest & /*ut*/) {
   double result = a_d;
   double sum = 0.0;
   for (size_t i = 0; i < n_iterations; ++i) {
-    sum += i + 1;
+    sum += static_cast<double>(i + 1);
   }
   double tsum = 0.0;
   for (size_t t = 0; t < n_threads; ++t) {
-    tsum += t;
+    tsum += static_cast<double>(t);
   }
   double expected = sum * tsum;
   // check and report
@@ -192,11 +192,11 @@ void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads,
   double result = a_d.load();
   double sum = 0.0;
   for (size_t i = 0; i < n_iterations; ++i) {
-    sum += i + 1;
+    sum += static_cast<double>(i + 1);
   }
   double tsum = 0.0;
   for (size_t t = 0; t < n_threads; ++t) {
-    tsum += t;
+    tsum += static_cast<double>(t);
   }
   double expected = -1.0 * sum * tsum;
 

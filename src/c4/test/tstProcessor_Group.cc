@@ -37,12 +37,13 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
   PASSMSG(pm);
 
   // Test sum
-  unsigned const group_pids = comm.size();
+  size_t const group_pids = comm.size();
 
-  unsigned const base = pid % 2;
-  vector<double> sum(1, base + 1.);
+  size_t const base = pid % 2;
+  vector<double> sum(1, static_cast<double>(base + 1));
   comm.sum(sum);
-  if (rtt_dsxx::soft_equiv(sum[0], group_pids * (base + 1.)))
+  if (rtt_dsxx::soft_equiv(sum[0],
+                           static_cast<double>(group_pids * (base + 1))))
     PASSMSG("Correct processor group sum");
   else
     FAILMSG("NOT correct processor group sum");
@@ -52,7 +53,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     vector<double> myvec;
     size_t const vlen(5);
     for (size_t i = 0; i < vlen; ++i)
-      myvec.push_back(pid * 1000.0 + i);
+      myvec.push_back(static_cast<double>(pid * 1000 + i));
     vector<double> globalvec;
     comm.assemble_vector(myvec, globalvec);
 
@@ -63,7 +64,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     vector<double> goldglobalvec;
     for (size_t j = 0; j < group_pids; ++j)
       for (size_t i = 0; i < vlen; ++i)
-        goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
+        goldglobalvec.push_back(static_cast<double>((base + 2 * j) * 1000 + i));
 
     if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
                               globalvec.begin(), globalvec.end()))
@@ -75,7 +76,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     vector<double> myvec;
     size_t const vlen(5);
     for (size_t i = 0; i < vlen; ++i)
-      myvec.push_back(pid * 1000.0 + i);
+      myvec.push_back(static_cast<double>(pid * 1000 + i));
     vector<double> globalvec(group_pids * vlen);
     Check(myvec.size() < UINT32_MAX);
     comm.assemble_vector(&myvec[0], &globalvec[0],
@@ -87,7 +88,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     vector<double> goldglobalvec;
     for (size_t j = 0; j < group_pids; ++j)
       for (size_t i = 0; i < vlen; ++i)
-        goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
+        goldglobalvec.push_back(static_cast<double>((base + 2 * j) * 1000 + i));
 
     FAIL_IF_NOT(rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
                                      globalvec.begin(), globalvec.end()));

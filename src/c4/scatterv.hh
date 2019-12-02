@@ -16,7 +16,7 @@
 #define c4_scatterv_hh
 
 #include "C4_Traits.hh"
-#include "C4_sys_times.h" // defines the struct DRACE_TIME_TYPE (tms for Linux).
+#include "C4_sys_times.h" // defines the struct DRACO_TIME_TYPE (tms for Linux).
 #include <vector>
 
 namespace rtt_c4 {
@@ -34,9 +34,8 @@ namespace rtt_c4 {
  *          scattered data.
  */
 template <typename T>
-DLL_PUBLIC_c4 void
-determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
-                     std::vector<T> &incoming_data);
+void determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
+                          std::vector<T> &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -50,9 +49,8 @@ determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
  * \param incoming_data On return, contains the scattered data.
  */
 template <typename T>
-DLL_PUBLIC_c4 void
-indeterminate_scatterv(std::vector<std::vector<T>> &outgoing_data,
-                       std::vector<T> &incoming_data);
+void indeterminate_scatterv(std::vector<std::vector<T>> &outgoing_data,
+                            std::vector<T> &incoming_data);
 
 } // end namespace rtt_c4
 

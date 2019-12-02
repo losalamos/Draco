@@ -102,7 +102,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   std::vector<double> foo(len);
   double sum(0);
   for (size_t i = 0; i < len; ++i) {
-    double const d(i + 1.0);
+    double const d(static_cast<double>(i + 1));
     foo[i] = std::sqrt(std::log(d * 3.14) * std::fabs(std::cos(d / 3.14)));
     sum += foo[i];
   }
@@ -177,7 +177,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   t.start();
   for (size_t i = 0; i < len; ++i)
-    foo[i] = i * 4.0;
+    foo[i] = static_cast<double>(i * 4);
   t.stop();
 
   t.print(cout, 6);

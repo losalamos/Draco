@@ -47,7 +47,7 @@ template <> auto parse_number_impl<int64_t>(std::string const &str) -> int64_t {
 }
 template <>
 auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t {
-  return std::stoul(str);
+  return static_cast<uint32_t>(std::stoul(str));
 }
 template <>
 auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t {
@@ -79,7 +79,7 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief trim whitespace (or other characters) from before and after main 
+ * \brief trim whitespace (or other characters) from before and after main
  *        text.
  *
  * \param[in] str The string that will be processed

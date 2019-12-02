@@ -55,6 +55,7 @@ target_include_directories( Lib_c4
 if( NOT APPLE )
   add_subdirectory( bin )
 endif()
+list( APPEND headers ${PROJECT_SOURCE_DIR}/bin/xthi.hh )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

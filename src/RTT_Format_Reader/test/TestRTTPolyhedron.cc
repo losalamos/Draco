@@ -23,7 +23,7 @@ using namespace rtt_RTT_Format_Reader;
 class is_cell {
 public:
   //! Construct the predicate for a specified dimensionality.
-  is_cell(size_t const dimensionality) : dimensionality(dimensionality) {}
+  is_cell(size_t const dimensionality_in) : dimensionality(dimensionality_in) {}
 
   /*! \brief Returns \c true if the specified type index has the predicate
    *         dimensionality; \c false otherwise.

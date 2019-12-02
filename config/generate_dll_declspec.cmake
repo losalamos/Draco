@@ -58,8 +58,12 @@ set( dll_declspec_content
  */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __${safedir}_declspec_h__
-#define __${safedir}_declspec_h__")
+#ifndef rtt_dsxx_config_h
+#error \"Do not call this file directly. Call ds++/config.h instead.\"
+#endif
+
+#ifndef rtt_${safedir}_declspec_h
+#define rtt_${safedir}_declspec_h")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 set( dll_declspec_content "${dll_declspec_content}

@@ -84,10 +84,10 @@ double wall_clock_time() {
 /* Linux */
 double wall_clock_time() {
   DRACO_TIME_TYPE now;
-  return times(&now) / wall_clock_resolution();
+  return static_cast<double>(times(&now)) / wall_clock_resolution();
 }
 double wall_clock_time(DRACO_TIME_TYPE &now) {
-  return times(&now) / wall_clock_resolution();
+  return static_cast<double>(times(&now)) / wall_clock_resolution();
 }
 #endif
 

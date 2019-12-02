@@ -28,8 +28,8 @@ namespace rtt_min {
  */
 template <typename RandomContainer, typename Function> class f1dim {
 public:
-  f1dim(Function func, RandomContainer &p, RandomContainer &xi)
-      : func(func), p(p), xi(xi) {}
+  f1dim(Function func_in, RandomContainer &p_in, RandomContainer &xi_in)
+      : func(func_in), p(p_in), xi(xi_in) {}
 
   double operator()(double const x) const {
     Check(p.size() < UINT_MAX);
@@ -57,7 +57,7 @@ private:
  * \param[in,out] p  On entry, contains a starting guess of the minimum.  On
  *                   exit, contains an improved estimate of the minimum.
  * \param[in,out] xi On entry, contains the search direction.  On exit,
- *                   contains the actual displacement to the minimum in the 
+ *                   contains the actual displacement to the minimum in the
  *                   search direction.
  * \param[out] fret  Final minimum value of the function.
  * \param[in]  func  Function to be minimized

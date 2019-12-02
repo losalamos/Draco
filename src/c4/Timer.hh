@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_Timer_hh__
-#define __c4_Timer_hh__
+#ifndef rtt_c4_Timer_hh
+#define rtt_c4_Timer_hh
 
 #include "C4_Functions.hh"
 #include <cstring>
@@ -24,12 +24,12 @@ namespace rtt_c4 {
  *
  * \brief POSIX standard timer.
  *
- * The Timer class is used to calculate wall clock, user cpu, and system cpu
+ * The Timer class is used to calculate wall clock, user CPU, and system CPU
  * timings.  It uses the POSIX standard times function, so it should work well
  * on all (POSIX) systems.
  *
  * On systems where the PAPI performance tool is available, the Timer class also
- * records some basic cache perfomance statistics. This is much less portable,
+ * records some basic cache performance statistics. This is much less portable,
  * but is also not as important.  \sa
  * http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
@@ -105,7 +105,7 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Timer {
+class Timer {
 private:
   //! Beginning wall clock time.
   double begin;
@@ -327,7 +327,7 @@ double Timer::system_cpu() const {
 #if defined(WIN32)
   return 0.0; // difftime( tms_end, tms_begin );
 #else
-  return (tms_end.tms_stime - tms_begin.tms_stime) /
+  return static_cast<double>(tms_end.tms_stime - tms_begin.tms_stime) /
          static_cast<double>(posix_clock_ticks_per_second);
 #endif
 }
@@ -341,7 +341,7 @@ double Timer::user_cpu() const {
   duration<double> diff = tms_end - tms_begin;
   return duration_cast<nanoseconds>(diff).count() / 1.0e9;
 #else
-  return (tms_end.tms_utime - tms_begin.tms_utime) /
+  return static_cast<double>(tms_end.tms_utime - tms_begin.tms_utime) /
          static_cast<double>(posix_clock_ticks_per_second);
 #endif
 }
@@ -406,7 +406,7 @@ inline std::ostream &operator<<(std::ostream &out, const Timer &t) {
 
 } // end namespace rtt_c4
 
-#endif // __c4_Timer_hh__
+#endif // rtt_c4_Timer_hh
 
 //---------------------------------------------------------------------------//
 // end of c4/Timer.hh

@@ -66,6 +66,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
 #endif
 
 #ifdef __clang__
@@ -143,8 +146,8 @@ void chk(const std::string &fname, const std::string &rngname,
     for (int j = 0; j < ctr_type::static_size; ++j) {
       Ftype u = f(r[j]);
       //printf("%s %llx, %.17g\n", key.c_str(), (long long)r[j], (double)u);
-      R123_ASSERT(u >= -1.);
-      R123_ASSERT(u <= 1.);
+      R123_ASSERT(static_cast<double>(u) >= -1.);
+      R123_ASSERT(static_cast<double>(u) <= 1.);
       int idx = (int)((u + Ftype(1.)) * Ftype(NBINS / 2));
       hist[idx]++;
     }

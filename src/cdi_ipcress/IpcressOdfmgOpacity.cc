@@ -208,7 +208,7 @@ void IpcressOdfmgOpacity::loadGroupsAndBands(size_t const numBands) {
       // Also, loosen the tolerance for more groups.
       if (!soft_equiv(bandBoundaries.begin(), bandBoundaries.end(),
                       currentBandStructure.begin(), currentBandStructure.end(),
-                      numEffGroups * 1.e-12)) {
+                      static_cast<double>(numEffGroups) * 1.e-12)) {
         cerr << "Band boundaries do not match.\nFirst (reverse, tops-style) ba"
              << "nd structure, " << group << "th band structure: \n";
         for (size_t i = 0; i <= numBands; i++) {

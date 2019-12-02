@@ -131,8 +131,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 1-var is " << sqrt(copt / y.size()) << " for variable "
-       << iopt << endl;
+  cout << "Optimum 1-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variable " << iopt << endl;
 
   copt = 1e100;
   unsigned i1(0), i2(0);
@@ -162,8 +162,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 2-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << endl;
+  cout << "Optimum 2-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << endl;
 
   copt = 1e100;
   unsigned i3(0);
@@ -199,8 +199,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 3-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << i3 << endl;
+  cout << "Optimum 3-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << i3 << endl;
 
   copt = 1e100;
   unsigned i4(0);
@@ -242,8 +242,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 4-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << i3 << i4 << endl;
+  cout << "Optimum 4-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << i3 << i4 << endl;
 
   copt = 1e100;
   unsigned i5(0);
@@ -291,8 +291,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 5-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << i3 << i4 << i5 << endl;
+  cout << "Optimum 5-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << i3 << i4 << i5 << endl;
 
   copt = 1e100;
   unsigned i6(0);
@@ -346,8 +346,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 6-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << i3 << i4 << i5 << i6 << endl;
+  cout << "Optimum 6-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << endl;
 
   copt = 1e100;
   unsigned i7(0);
@@ -407,8 +407,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 7-var is " << sqrt(copt / y.size()) << " for variables "
-       << i1 << i2 << i3 << i4 << i5 << i6 << i7 << endl;
+  cout << "Optimum 7-var is " << sqrt(copt / static_cast<double>(y.size()))
+       << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << i7 << endl;
 
   ia.resize(0);
   ia.resize(9, false);
@@ -443,7 +443,8 @@ void tstmrqmin(UnitTest &ut) {
   cout << "G = " << a[6] << " +/- " << sqrt(covar[6 + 9 * 6]) << endl;
   cout << "H = " << a[7] << " +/- " << sqrt(covar[7 + 9 * 7]) << endl;
   cout << "J = " << a[8] << " +/- " << sqrt(covar[8 + 9 * 8]) << endl;
-  cout << "rms deviation = " << sqrt(chisq / y.size()) << endl;
+  cout << "rms deviation = " << sqrt(chisq / static_cast<double>(y.size()))
+       << endl;
 
   Check(y.size() < UINT_MAX);
   unsigned const N = static_cast<unsigned>(y.size());
@@ -465,7 +466,7 @@ void tstmrqmin(UnitTest &ut) {
   }
   cout << "Max relative deviation = " << maxerr << " at i = " << ierr << endl;
 
-  if (sqrt(chisq / y.size()) < 1) {
+  if (sqrt(chisq / static_cast<double>(y.size())) < 1) {
     ut.passes("fit is correct");
   } else {
     ut.failure("fit is NOT correct");

@@ -59,8 +59,7 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
  */
 
 // This signature must be exported since it is explicitly instantiated.
-template <typename T>
-DLL_PUBLIC_c4 int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
+template <typename T> int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
 
 // This signature is defined in the header so no export is required.
 template <typename ForwardIterator, typename OutputIterator>

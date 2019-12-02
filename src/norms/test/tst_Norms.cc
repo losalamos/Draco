@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:12:16 2005
  * \brief  Tests Norms.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC. 
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -42,7 +42,7 @@ void test_Norms(rtt_dsxx::UnitTest &ut) {
   // case, the processor number + 1.
 
   size_t x = rtt_c4::node();
-  double xp1 = x + 1.0;
+  double xp1 = static_cast<double>(x) + 1.0;
 
   norms.add(xp1, x);
 
@@ -65,13 +65,13 @@ void test_Norms(rtt_dsxx::UnitTest &ut) {
     double tL2 = 0.0;
 
     for (size_t i = 0; i < num_nodes; ++i) {
-      double xt = i + 1.0;
+      double xt = static_cast<double>(i) + 1.0;
       tL1 += xt;
       tL2 += xt * xt;
     }
 
-    tL1 /= num_nodes;
-    tL2 = std::sqrt(tL2 / num_nodes);
+    tL1 /= static_cast<double>(num_nodes);
+    tL2 = std::sqrt(tL2 / static_cast<double>(num_nodes));
 
     UNIT_TEST(soft_equiv(norms.L1(), tL1));
     UNIT_TEST(soft_equiv(norms.L2(), tL2));
@@ -106,7 +106,7 @@ void test_Norms_Labeled(rtt_dsxx::UnitTest &ut) {
   // case, the processor number + 1.
 
   size_t x = rtt_c4::node();
-  double xp1 = x + 1.0;
+  double xp1 = static_cast<double>(x) + 1.0;
 
   Norms_Labeled::Index indx(x);
   ostringstream o;
@@ -134,13 +134,13 @@ void test_Norms_Labeled(rtt_dsxx::UnitTest &ut) {
     double tL2 = 0.0;
 
     for (size_t i = 0; i < num_nodes; ++i) {
-      double xt = i + 1.0;
+      double xt = static_cast<double>(i) + 1.0;
       tL1 += xt;
       tL2 += xt * xt;
     }
 
-    tL1 /= num_nodes;
-    tL2 = std::sqrt(tL2 / num_nodes);
+    tL1 /= static_cast<double>(num_nodes);
+    tL2 = std::sqrt(tL2 / static_cast<double>(num_nodes));
 
     UNIT_TEST(soft_equiv(norms.L1(), tL1));
     UNIT_TEST(soft_equiv(norms.L2(), tL2));
@@ -175,7 +175,7 @@ void test_Norms_Proc(rtt_dsxx::UnitTest &ut) {
   // case, the processor number + 1.
 
   size_t x = rtt_c4::node();
-  double xp1 = x + 1.0;
+  double xp1 = static_cast<double>(x) + 1.0;
 
   Norms_Proc::Index indx(x);
 
@@ -200,13 +200,13 @@ void test_Norms_Proc(rtt_dsxx::UnitTest &ut) {
     double tL2 = 0.0;
 
     for (size_t i = 0; i < num_nodes; ++i) {
-      double xt = i + 1.0;
+      double xt = static_cast<double>(i) + 1.0;
       tL1 += xt;
       tL2 += xt * xt;
     }
 
-    tL1 /= num_nodes;
-    tL2 = std::sqrt(tL2 / num_nodes);
+    tL1 /= static_cast<double>(num_nodes);
+    tL2 = std::sqrt(tL2 / static_cast<double>(num_nodes));
 
     UNIT_TEST(soft_equiv(norms.L1(), tL1));
     UNIT_TEST(soft_equiv(norms.L2(), tL2));

@@ -52,7 +52,8 @@ Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   // Loop over the desired roots.
   for (size_t iroot = 0; iroot < numHrGaussPoints - 1; ++iroot) {
     // Approximate the i-th root.
-    double z(cos(PI * (iroot - 0.25) / ((N - 2) + 0.5)));
+    double z(cos(PI * (static_cast<double>(iroot) - 0.25) /
+                 (static_cast<double>(N - 2) + 0.5)));
     double z1;
 
     do // Use Newton's method to refine the value for the i-th root.

@@ -27,7 +27,7 @@ namespace rtt_c4 {
  * \class C4_ReqRefRep
  * \brief Handle for non-blocking message requests.
  *
- * This class provides an encapsulator for the message requests (MPI) which are
+ * This class provides an encapsulation for the message requests (MPI) which are
  * produced by non blocking calls.  This class automatically waits for the
  * message to complete when the containing object goes out of scope, thus
  * plugging one of the easiest types of programming errors with non blocking
@@ -57,14 +57,14 @@ private:
   C4_ReqRefRep(const C4_ReqRefRep &rep) = delete;
   C4_ReqRefRep &operator=(const C4_ReqRefRep &rep) = delete;
 
-  // Private default ctor and dtor for access from C4_Req only.
+  // Private default constructor and destructor for access from C4_Req only.
   C4_ReqRefRep();
   ~C4_ReqRefRep();
 
 public:
-  DLL_PUBLIC_c4 void wait(C4_Status *status = nullptr);
-  DLL_PUBLIC_c4 bool complete(C4_Status *status = nullptr);
-  DLL_PUBLIC_c4 void free();
+  void wait(C4_Status *status = nullptr);
+  bool complete(C4_Status *status = nullptr);
+  void free();
 
   bool inuse() const {
 #ifdef C4_MPI
@@ -85,15 +85,15 @@ private:
  * \class C4_Req
  * \brief Non-blocking communication request class.
  *
- * This class provides an encapsulator for the message requests (MPI) which
- * are produced by non blocking calls.  This class automatically waits for the
+ * This class provides an encapsulation for the message requests (MPI) which are
+ * produced by non blocking calls.  This class automatically waits for the
  * message to complete when the containing object goes out of scope, thus
  * plugging one of the easiest types of programming errors with non blocking
  * messaging.  Reference counting is used so that these may be passed by value
  * without accidentally triggering a program stall.
  *
- * This class provides an interface for non-blocking request handles that
- * should be used by users.
+ * This class provides an interface for non-blocking request handles that should
+ * be used by users.
  */
 //===========================================================================//
 
@@ -102,10 +102,10 @@ class C4_Req {
   C4_ReqRefRep *p;
 
 public:
-  DLL_PUBLIC_c4 C4_Req();
-  DLL_PUBLIC_c4 C4_Req(const C4_Req &req);
-  DLL_PUBLIC_c4 ~C4_Req();
-  DLL_PUBLIC_c4 C4_Req &operator=(const C4_Req &req);
+  C4_Req();
+  C4_Req(const C4_Req &req);
+  ~C4_Req();
+  C4_Req &operator=(const C4_Req &req);
 
   //! \brief Equivalence operator
   bool operator==(const C4_Req &right) { return (p == right.p); }
@@ -137,17 +137,13 @@ private:
    * \ref https://www.tutorialspoint.com/cplusplus/cpp_friend_functions.htm
    */
   template <typename T>
-  friend DLL_PUBLIC_c4 C4_Req send_async(const T *buf, int nels, int dest,
-                                         int tag);
+  friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
   template <typename T>
-  friend DLL_PUBLIC_c4 void send_async(C4_Req &r, const T *buf, int nels,
-                                       int dest, int tag);
+  friend void send_async(C4_Req &r, const T *buf, int nels, int dest, int tag);
   template <typename T>
-  friend DLL_PUBLIC_c4 C4_Req receive_async(T *buf, int nels, int source,
-                                            int tag);
+  friend C4_Req receive_async(T *buf, int nels, int source, int tag);
   template <typename T>
-  friend DLL_PUBLIC_c4 void receive_async(C4_Req &r, T *buf, int nels,
-                                          int source, int tag);
+  friend void receive_async(C4_Req &r, T *buf, int nels, int source, int tag);
 #ifdef C4_MPI
   template <typename T>
   friend void send_is_custom(C4_Req &request, T const *buffer, int size,
@@ -156,13 +152,11 @@ private:
   friend void receive_async_custom(C4_Req &request, T *buffer, int size,
                                    int source, int tag);
   template <typename T>
-  friend DLL_PUBLIC_c4 void send_is(C4_Req &r, const T *buf, int nels, int dest,
-                                    int tag);
-  friend DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
-  friend DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
+  friend void send_is(C4_Req &r, const T *buf, int nels, int dest, int tag);
+  friend void wait_all(unsigned count, C4_Req *requests);
+  friend unsigned wait_any(unsigned count, C4_Req *requests);
   template <typename T>
-  friend DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer,
-                                        C4_Req &request);
+  friend void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
 
 #endif
 };

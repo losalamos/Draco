@@ -75,9 +75,11 @@ void Square_Chebyshev_Legendre::create_octant_ordinates_(
     for (unsigned j = 0; j < levels / 2; ++j) {
       size_t ordinate = j + i * levels / 2;
 
-      mu[ordinate] = xsr * cos(rtt_units::PI * (2.0 * j + 1.0) / levels / 2.0);
-      eta[ordinate] = xsr * sin(rtt_units::PI * (2.0 * j + 1.0) / levels / 2.0);
-      wt[ordinate] = xwt / levels;
+      mu[ordinate] = xsr * cos(rtt_units::PI * static_cast<double>(2 * j + 1) /
+                               static_cast<double>(levels) / 2.0);
+      eta[ordinate] = xsr * sin(rtt_units::PI * static_cast<double>(2 * j + 1) /
+                                static_cast<double>(levels) / 2.0);
+      wt[ordinate] = xwt / static_cast<double>(levels);
     }
   }
 }

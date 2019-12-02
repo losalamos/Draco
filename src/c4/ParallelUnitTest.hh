@@ -8,8 +8,7 @@
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
- * class is to encapsulate the keywords and behavior of DBS parallel unit
- * tests.
+ * class is to encapsulate the keywords and behavior of DBS parallel unit tests.
  */
 //---------------------------------------------------------------------------//
 
@@ -71,16 +70,14 @@ public:
   // CREATORS
 
   //! Default constructor.
-  DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
-                                 string_fp_void release_,
-                                 std::ostream &out_ = std::cout,
-                                 bool verbose_ = true);
+  ParallelUnitTest(int &argc, char **&argv, string_fp_void release_,
+                   std::ostream &out_ = std::cout, bool verbose_ = true);
 
   //!  The copy constructor is disabled.
   ParallelUnitTest(ParallelUnitTest const &rhs);
 
   //! Destructor.
-  DLL_PUBLIC_c4 ~ParallelUnitTest();
+  ~ParallelUnitTest();
 
   // MANIPULATORS
 
@@ -90,10 +87,10 @@ public:
   // ACCESSORS
 
   //! Provide a report of the number of unit test passes and fails.
-  DLL_PUBLIC_c4 void status(void);
+  void status(void);
 
-  DLL_PUBLIC_c4 virtual bool check_all(bool good, std::string const &checkmsg,
-                                       bool fatal = false);
+  virtual bool check_all(bool good, std::string const &checkmsg,
+                         bool fatal = false);
 };
 
 //----------------------------------------------------------------------------//

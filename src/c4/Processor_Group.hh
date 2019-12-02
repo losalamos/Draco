@@ -37,10 +37,10 @@ public:
   // CREATORS
 
   //! Create a Process_Group based on a stride through the ranks.
-  DLL_PUBLIC_c4 explicit Processor_Group(unsigned const stride);
+  explicit Processor_Group(unsigned const stride);
 
   //! Destructor.
-  DLL_PUBLIC_c4 ~Processor_Group();
+  ~Processor_Group();
 
   // ACCESSORS
 

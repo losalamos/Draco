@@ -64,7 +64,7 @@ template <typename T> inline R123_ULONG_LONG ull(const T &t) {
 }
 
 template <typename T> inline uint32_t get32(const T &t, size_t n) {
-  return t >> (n * 32);
+  return static_cast<uint32_t>(t >> (n * 32));
 }
 
 #if R123_USE_SSE
@@ -185,12 +185,21 @@ template <typename AType> void doit(size_t N, size_t W) {
   AType z;
   z.fill(zero<vtype>());
 #endif
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
   for (unsigned i = 0; i < N; ++i) {
     assert(!z[i]);
     assert(!z.at(i));
     uninitialized[i] = z[i];
     uninitialized[i] += (i + 1);
   }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
   // Copy-assignment
   atype iota = uninitialized;

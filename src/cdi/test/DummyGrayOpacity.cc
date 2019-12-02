@@ -5,10 +5,7 @@
  * \date   Mon Jan 8 15:33:51 2001
  * \brief  DummyGrayOpacity class implementation file.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "DummyGrayOpacity.hh"
@@ -21,10 +18,10 @@ namespace rtt_cdi_test {
 
 /*!
  * \brief Constructor for DummyGrayOpacity object.
- * 
+ *
  *     The constructor assigns fixed values for all of the member
  *     data.  Every instance of this object has the same member
- *     data. 
+ *     data.
  *
  *     Temperatures = { 1.0, 2.0, 3.0 }
  *     Densities    = { 0.1, 0.2 }
@@ -39,9 +36,9 @@ DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
   temperatureGrid.resize(numTemperatures);
   densityGrid.resize(numDensities);
   for (size_t i = 0; i < numTemperatures; ++i)
-    temperatureGrid[i] = 1.0 * (i + 1);
+    temperatureGrid[i] = static_cast<double>(i + 1);
   for (size_t i = 0; i < numDensities; ++i)
-    densityGrid[i] = 0.1 * (i + 1);
+    densityGrid[i] = 0.1 * static_cast<double>(i + 1);
 }
 
 // --------- //
@@ -50,7 +47,7 @@ DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
 
 /*!
  * \brief Opacity accessor that returns a single opacity (or a
- *     vector of opacities for the multigroup EnergyPolicy) that 
+ *     vector of opacities for the multigroup EnergyPolicy) that
  *     corresponds to the provided temperature and density.
  *
  *     Opacity = temperature + density/1000
@@ -63,7 +60,7 @@ double DummyGrayOpacity::getOpacity(double targetTemperature,
 /*!
  * \brief Opacity accessor that returns a vector of opacities that
  *     correspond to the provided vector of temperatures and a
- *     single density value. 
+ *     single density value.
  *
  *     Opacity[i] = temperature[i] + density/1000
  */
@@ -79,7 +76,7 @@ DummyGrayOpacity::getOpacity(const std::vector<double> &targetTemperature,
 /*!
  * \brief Opacity accessor that returns a vector of opacities
  *     that correspond to the provided vector of densities and a
- *     single temperature value. 
+ *     single temperature value.
  *
  *     Opacity[i] = temperature[i] + density/1000
  */

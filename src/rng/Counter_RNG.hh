@@ -40,6 +40,7 @@
 #pragma GCC diagnostic push
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -384,7 +385,7 @@ inline void Counter_RNG::initialize(const uint32_t seed,
  */
 inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
   // Initialize this generator with the seed and stream number from the parent.
-  uint32_t seed = parent_data[1] >> 32;
+  uint32_t seed = static_cast<uint32_t>(parent_data[1] >> 32);
   uint64_t streamnum = parent_data[2];
   initialize(seed, streamnum);
 

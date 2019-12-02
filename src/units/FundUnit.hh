@@ -34,12 +34,6 @@ public:
         d_label(setUnitLabel(d_definingEnum, labels)) { /* empty */
   }
 
-  //! copy constructor
-  FundUnit(FundUnit<F> const &rhs)
-      : d_definingEnum(rhs.enumVal()), d_cf(rhs.cf()),
-        d_label(rhs.label()) { /* empty */
-  }
-
   // ACCESSORS
 
   //! return defining enumeration as specified in units/UnitSystemEnums.hh

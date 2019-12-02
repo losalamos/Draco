@@ -14,6 +14,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
+#include <cfloat>
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -63,7 +64,7 @@ void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
   for (unsigned j = 0; j < n; j++) {
     Field temp = xt[j];
     Field h = EPS * abs(temp);
-    if (std::abs(h) < std::numeric_limits<float>::min())
+    if (std::abs(h) < static_cast<Field>(FLT_MIN))
       h = EPS;
     xt[j] = temp + h;
     h = xt[j] - temp;

@@ -25,11 +25,10 @@ namespace rtt_c4 {
 #ifdef C4_MPI
 
 template <typename T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<unsigned> const &outgoing_pid,
-                 std::vector<std::vector<T>> const &outgoing_data,
-                 std::vector<unsigned> const &incoming_pid,
-                 std::vector<std::vector<T>> &incoming_data, int tag) {
+void determinate_swap(std::vector<unsigned> const &outgoing_pid,
+                      std::vector<std::vector<T>> const &outgoing_data,
+                      std::vector<unsigned> const &incoming_pid,
+                      std::vector<std::vector<T>> &incoming_data, int tag) {
   Require(outgoing_pid.size() == outgoing_data.size());
   Require(incoming_pid.size() == incoming_data.size());
   Require(&outgoing_data != &incoming_data);
@@ -41,8 +40,8 @@ determinate_swap(std::vector<unsigned> const &outgoing_pid,
   unsigned outgoing_processor_count =
       static_cast<unsigned>(outgoing_pid.size());
 
-  // This block is a no-op for with-c4=scalar.
-  // Dito when the vectors are of zero-length.
+  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of
+  // zero-length.
   {
 
     // Post the asynchronous sends.
@@ -80,9 +79,8 @@ determinate_swap(std::vector<unsigned> const &outgoing_pid,
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
-                 std::vector<std::vector<T>> &incoming_data, int tag) {
+void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
+                      std::vector<std::vector<T>> &incoming_data, int tag) {
   Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());
   Require(static_cast<int>(incoming_data.size()) == rtt_c4::nodes());
   Require(&outgoing_data != &incoming_data);
@@ -118,11 +116,9 @@ determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
     }
 
     // Wait for all the receives to complete.
-
     wait_all(N, &incoming_C4_Req[0]);
 
     // Wait until all the posted sends have completed.
-
     wait_all(N, &outgoing_C4_Req[0]);
   }
 
@@ -130,11 +126,10 @@ determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
 }
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void
-semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
-                     std::vector<std::vector<T>> const &outgoing_data,
-                     std::vector<unsigned> const &incoming_pid,
-                     std::vector<std::vector<T>> &incoming_data, int tag) {
+void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
+                          std::vector<std::vector<T>> const &outgoing_data,
+                          std::vector<unsigned> const &incoming_pid,
+                          std::vector<std::vector<T>> &incoming_data, int tag) {
   Require(outgoing_pid.size() == outgoing_data.size());
   Require(&outgoing_data != &incoming_data);
 
@@ -203,26 +198,25 @@ semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
 #else
 
 template <typename T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
-                 std::vector<std::vector<T>> const & /*outgoing_data*/,
-                 std::vector<unsigned> const & /*incoming_pid*/,
-                 std::vector<std::vector<T>> & /*incoming_data*/, int /*tag*/) {
+void determinate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
+                      std::vector<std::vector<T>> const & /*outgoing_data*/,
+                      std::vector<unsigned> const & /*incoming_pid*/,
+                      std::vector<std::vector<T>> & /*incoming_data*/,
+                      int /*tag*/) {
   return;
 }
 template <typename T>
-DLL_PUBLIC_c4 void
-determinate_swap(std::vector<std::vector<T>> const & /*outgoing_data*/,
-                 std::vector<std::vector<T>> & /*incoming_data*/, int /*tag*/) {
+void determinate_swap(std::vector<std::vector<T>> const & /*outgoing_data*/,
+                      std::vector<std::vector<T>> & /*incoming_data*/,
+                      int /*tag*/) {
   return;
 }
 template <typename T>
-DLL_PUBLIC_c4 void
-semideterminate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
-                     std::vector<std::vector<T>> const & /*outgoing_data*/,
-                     std::vector<unsigned> const & /*incoming_pid*/,
-                     std::vector<std::vector<T>> & /*incoming_data*/,
-                     int /*tag*/) {
+void semideterminate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
+                          std::vector<std::vector<T>> const & /*outgoing_data*/,
+                          std::vector<unsigned> const & /*incoming_pid*/,
+                          std::vector<std::vector<T>> & /*incoming_data*/,
+                          int /*tag*/) {
   return;
 }
 #endif // C4_MPI

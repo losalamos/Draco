@@ -42,9 +42,16 @@ int selected_cache = 2;
 Timer::Timer()
     : begin(0.0), end(0.0), tms_begin(DRACO_TIME_TYPE()),
       tms_end(DRACO_TIME_TYPE()),
-      posix_clock_ticks_per_second(DRACO_CLOCKS_PER_SEC), timer_on(false),
-      isMPIWtimeAvailable(setIsMPIWtimeAvailable()), sum_wall(0.0),
-      sum_system(0.0), sum_user(0.0), num_intervals(0) {
+      posix_clock_ticks_per_second(static_cast<int>(DRACO_CLOCKS_PER_SEC)),
+      timer_on(false), isMPIWtimeAvailable(setIsMPIWtimeAvailable()),
+      sum_wall(0.0), sum_system(0.0), sum_user(0.0), num_intervals(0) {
+#if defined(WIN32)
+  static_assert(DRACO_CLOCKS_PER_SEC < INT32_MAX,
+                "!(DRACO_CLOCKS_PER_SEC < INT32_MAX)");
+#else
+  Check(DRACO_CLOCKS_PER_SEC < INT32_MAX);
+#endif
+
 #ifdef HAVE_PAPI
 
   // Initialize the PAPI library on construction of first timer if it has not

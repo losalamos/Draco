@@ -5,10 +5,7 @@
  * \date   Wed Feb  5 17:29:59 2003
  * \brief  SP test.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -90,7 +87,7 @@ private:
 
 public:
   Foo() { nfoos++; }
-  explicit Foo(int i) : v(i) { nfoos++; }
+  explicit Foo(int i) noexcept : v(i) { nfoos++; }
   Foo(const Foo &f) : v(f.v) { nfoos++; }
   virtual ~Foo() { nfoos--; }
   virtual int vf() { return v; }
@@ -104,7 +101,7 @@ private:
   Bar(const Bar &) = delete;
 
 public:
-  explicit Bar(int i) : Foo(i) { nbars++; }
+  explicit Bar(int i) noexcept : Foo(i) { nbars++; }
   ~Bar() override { nbars--; }
   int vf() override { return Foo::f() + 1; }
   int f() { return Foo::f() + 2; }
@@ -117,7 +114,7 @@ private:
   Baz(const Baz &) = delete;
 
 public:
-  explicit Baz(int i) : Bar(i) { nbazs++; }
+  explicit Baz(int i) noexcept : Bar(i) { nbazs++; }
   ~Baz() override { nbazs--; }
   int vf() override { return Bar::f() + 1; }
   int f() { return Bar::f() + 2; }
@@ -130,7 +127,7 @@ private:
   Wombat(const Wombat &) = delete;
 
 public:
-  Wombat() { nbats++; }
+  Wombat() noexcept { nbats++; }
   virtual ~Wombat() { nbats--; }
 };
 
@@ -674,7 +671,7 @@ void type_X_test(rtt_dsxx::UnitTest &ut) {
       CHECK_N_OBJECTS(3, 3, 0, 0);
 
       // assign SPfoo2 to itself
-      spfoo2 = spfoo2;
+      // spfoo2 = spfoo2; // modern compilers flag this at compile time.
       CHECK_N_OBJECTS(3, 3, 0, 0);
     }
     // still have 2 object

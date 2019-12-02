@@ -52,7 +52,7 @@ template <typename T>
 constexpr inline
     typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
     soft_equiv(const T &value, const T &reference,
-               const T precision = 1.0e-12) {
+               const T precision = static_cast<T>(1.0e-12f)) {
   using std::fabs;
   bool passed = false;
 
@@ -62,7 +62,8 @@ constexpr inline
     passed = false;
 
   // second chance for passing if reference is within machine error of zero
-  if (!passed && (fabs(reference) < 1.0e-14))
+  T const ztol = static_cast<T>(1.0e-14);
+  if (!passed && (fabs(reference) < ztol))
     if (fabs(value) < precision)
       passed = true;
 

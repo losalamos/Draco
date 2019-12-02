@@ -79,8 +79,8 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
   vector<double> rho(10);
 
   for (size_t i = 0; i < T.size(); i++) {
-    T[i] = 0.1 + i / 100.0;
-    rho[i] = 1.0 + i / 10.0;
+    T[i] = 0.1 + static_cast<double>(i) / 100.0;
+    rho[i] = 1.0 + static_cast<double>(i) / 10.0;
 
     if (!rtt_dsxx::soft_equiv(grayp->getOpacity(T[i], rho[i]),
                               constant_opacity))

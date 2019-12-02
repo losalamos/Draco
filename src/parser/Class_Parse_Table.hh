@@ -323,7 +323,7 @@ private:
   void initialize(Keyword const keywords[], unsigned count) {
     static bool first_time = true;
     if (first_time) {
-      count /= sizeof(Keyword);
+      count /= static_cast<unsigned>(sizeof(Keyword));
       parse_table_.add(keywords, count);
       first_time = false;
     }

@@ -25,8 +25,8 @@ using std::vector;
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
-                                          vector<T> &incoming_data) {
+void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
+                            vector<T> &incoming_data) {
 #ifdef C4_MPI
   { // This block is a no-op for with-c4=scalar
 
@@ -83,8 +83,8 @@ DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void determinate_scatterv(vector<vector<T>> &outgoing_data,
-                                        vector<T> &incoming_data) {
+void determinate_scatterv(vector<vector<T>> &outgoing_data,
+                          vector<T> &incoming_data) {
   Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());
 
 #ifdef C4_MPI

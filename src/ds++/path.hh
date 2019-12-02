@@ -5,7 +5,7 @@
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
- * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
+ * \bug Consider replacing path.cc and path.hh with C++17 filesystem
  */
 //---------------------------------------------------------------------------//
 

@@ -79,7 +79,7 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
         total_count_64 += counts[p];
       }
       // Require that total_count_64 can be expressed as a 32-bit integer.
-      Insist(total_count_64 < std::numeric_limits<int>::max(),
+      Insist(total_count_64 < UINT32_MAX,
              "The size of the array (nranks*vector.size()) exceeds "
              "32-bit unsigned integer limit.");
       unsigned total_count = static_cast<unsigned>(total_count_64);
@@ -143,9 +143,9 @@ void determinate_gatherv(std::vector<T> &outgoing_data,
         total_count_64 += counts[p];
       }
       // Require that total_count_64 can be expressed as a 32-bit integer.
-      Insist(total_count_64 < std::numeric_limits<int>::max(),
-             "The size of the array (nranks*vector.size()) exceeds "
-             "32-bit unsigned integer limit.");
+      Insist(total_count_64 < UINT32_MAX,
+             "The size of the array (nranks*vector.size()) exceeds 32-bit uns"
+             "igned integer limit.");
       unsigned total_count = static_cast<unsigned>(total_count_64);
 
       std::vector<T> recbuf(total_count, 42);

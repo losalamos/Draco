@@ -132,12 +132,12 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
       // __cxa_demangle():
 
       int status(1); // assume failure
-      char *ret = nullptr;
+      char *ret01 = nullptr;
 #ifndef draco_isPGI
-      ret = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
+      ret01 = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
 #endif
       if (status == 0) {
-        funcname = ret; // use possibly realloc()-ed string
+        funcname = ret01; // use possibly realloc()-ed string
         msg << "  " << symbollist[i] << " : " << funcname << "()+"
             << begin_offset << location << "\n";
       } else {

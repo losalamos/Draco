@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
 #endif
 

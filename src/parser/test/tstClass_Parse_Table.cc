@@ -20,7 +20,7 @@ using namespace rtt_parser;
 //---------------------------------------------------------------------------//
 class DummyClass {
 public:
-  DummyClass(double const insouciance) : insouciance(insouciance) {}
+  DummyClass(double const insouciance_in) : insouciance(insouciance_in) {}
 
   double Get_Insouciance() const { return insouciance; }
 
@@ -91,8 +91,8 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
 }
 
 //---------------------------------------------------------------------------//
-Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const context)
-    : parsed_insouciance(-1.0), context(context) // sentinel value
+Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const context_in)
+    : parsed_insouciance(-1.0), context(context_in) // sentinel value
 {
   Keyword const keywords[] = {
       {"insouciance", parse_insouciance_, 0, ""},

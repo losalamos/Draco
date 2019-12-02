@@ -176,8 +176,8 @@ Test_Mesh_Interface::Test_Mesh_Interface(
       size_t node = i + (num_xdir + 1) * j;
 
       // TODO: generalize coordinate generation
-      coordinates[dim * node] = xdir_offset_ + i * dx;
-      coordinates[1 + dim * node] = ydir_offset_ + j * dy;
+      coordinates[dim * node] = xdir_offset_ + static_cast<double>(i) * dx;
+      coordinates[1 + dim * node] = ydir_offset_ + static_cast<double>(j) * dy;
     }
   }
 

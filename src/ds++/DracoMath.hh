@@ -51,29 +51,6 @@ template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief abs
- *
- * \tparam Ordered_Group A type for which operator< and unary operator- are
- *             defined.
- * \param arg Argument whose absolute value is to be calculated.
- * \return \f$|a|\f$
- *
- * Absolute values are a mess in the STL, in part because they are a mess in the
- * standard C library. We do our best to give a templatized version here.
- */
-template <typename Ordered_Group>
-inline Ordered_Group abs(Ordered_Group const arg) {
-  return arg < 0 ? -arg : arg;
-}
-
-// Specialization for standard types - There is no standard abs function for
-// float -- one reason why we define this template!
-template <> inline double abs(double a) { return std::fabs(a); }
-template <> inline int abs(int a) { return std::abs(a); }
-template <> inline long abs(long a) { return std::labs(a); }
-
-//---------------------------------------------------------------------------//
-/*!
  * \brief Return the conjugate of a quantity.
  *
  * The default implementation assumes a field type that is self-conjugate, such
@@ -155,6 +132,7 @@ template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
  * \return Hypotenuse, \f$\sqrt{a^2+b^2}\f$
  */
 template <typename Real> inline double pythag(Real a, Real b) {
+  using std::abs;
   Real absa = abs(a), absb = abs(b);
   // We must avoid (a/b)^2 > max.
   if (absa <= absb * std::sqrt(std::numeric_limits<Real>::min()))
@@ -186,7 +164,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
  */
 template <typename Ordered_Group>
 inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
-  using rtt_dsxx::abs; // just to be clear
+  using std::abs; // just to be clear
 
   if (b < 0)
     return -abs(a);

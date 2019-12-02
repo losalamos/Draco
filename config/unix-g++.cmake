@@ -92,10 +92,16 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined -Wnarrowing" )
   endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
-  # -Wfloat-equal
-  # -Werror
-  # -Wconversion
-  # -Winline
+  # Ref: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
+  # -Wfloat-equal       # Warn when if-statement compares floats directly
+  # -Werror             # Promote all warnings to 'error' status
+  # -Wconversion        # warn on type conversions that may lose data
+  # -Wdouble-promotion  # warn if float is implicit promoted to double
+  # -Wformat=2          # warn on security issues around functions that format
+  #                       output (ie printf)
+  # -Winline            # Warn if function marked 'inline' cannot be inlined
+  # -Wold-style-cast    # Warn if c-style casts are used, replace with
+  #                       c++-style cast.
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )

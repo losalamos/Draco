@@ -555,7 +555,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
       odfmgRefOpacity[group][band] =
           2.0 * (temp + dens / 1000.0) /
           (energyBoundaries[group] + energyBoundaries[group + 1]) *
-          pow(10.0, band - 2);
+          pow(10.0, static_cast<double>(band) - 2.0);
     }
   }
 
@@ -599,7 +599,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
         vRefOpacity[it][group][band] =
             2.0 * (vtemperature[it] + dens / 1000.0) /
             (energyBoundaries[group] + energyBoundaries[group + 1]) *
-            pow(10.0, band - 2);
+            pow(10.0, static_cast<double>(band) - 2.0);
       }
     }
   }

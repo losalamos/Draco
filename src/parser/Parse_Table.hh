@@ -100,11 +100,11 @@ struct Keyword {
       : moniker(nullptr), func(nullptr), index(0), module(nullptr),
         description(nullptr) {}
 
-  Keyword(char const *moniker, void (*func)(Token_Stream &, int),
-          int const index, char const *module,
-          char const *description = nullptr)
-      : moniker(moniker), func(func), index(index), module(module),
-        description(description) {}
+  Keyword(char const *moniker_in, void (*func_in)(Token_Stream &, int),
+          int const index_in, char const *module_in,
+          char const *description_in = nullptr)
+      : moniker(moniker_in), func(func_in), index(index_in), module(module_in),
+        description(description_in) {}
 };
 
 //-------------------------------------------------------------------------//
