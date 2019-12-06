@@ -40,7 +40,11 @@
 ## qrm               - quick remove (for lustre filesystems).
 ##---------------------------------------------------------------------------##
 
-if test -n "${verbose}"; then echo "in draco/environment/bashrc/bash_functions.sh"; fi
+case ${-} in
+  *i*)
+    if test -n "${verbose}"; then echo "in draco/environment/bashrc/bash_functions.sh"; fi
+    ;;
+esac
 
 ##---------------------------------------------------------------------------##
 ## Find all matches in PATH (not just the first one)
@@ -340,7 +344,12 @@ function qrm ()
 }
 export -f qrm
 
-if test -n "${verbose}"; then echo "done with draco/environment/bashrc/bash_functions.sh"; fi
+case ${-} in
+  *i*)
+    if test -n "${verbose}"; then echo "done with draco/environment/bashrc/bash_functions.sh"; fi
+    ;;
+esac
+
 
 #------------------------------------------------------------------------------#
 # End environment/bashrc/bash_functions

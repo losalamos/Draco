@@ -221,7 +221,11 @@ fi
 # sessions.
 source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
 
-if test -n "${verbose}"; then echo "done with draco/environment/bashrc/.bashrc"; fi
+case ${-} in
+  *i*)
+    if test -n "${verbose}"; then echo "done with draco/environment/bashrc/.bashrc"; fi
+    ;;
+esac
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
