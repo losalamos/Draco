@@ -4,7 +4,7 @@
 # date   2011 July 22
 # brief  Provide extra macros to simplify CMakeLists.txt for latex doc
 #        directories.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

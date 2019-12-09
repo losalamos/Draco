@@ -4,7 +4,7 @@
  * \author Mike Buksas, Rob Lowrie
  * \date   Mon Nov 19 10:09:10 2007
  * \brief  Implementation of Invert_Comm_Map
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -33,8 +33,8 @@ typedef std::map<int, size_t> Invert_Comm_Map_t;
  * example, it might be the number of bytes, or the number of elements in an
  * array.  The size must be positive (specifically, nonzero).
  */
-DLL_PUBLIC_c4 void invert_comm_map(Invert_Comm_Map_t const &to_map,
-                                   Invert_Comm_Map_t &from_map);
+void invert_comm_map(Invert_Comm_Map_t const &to_map,
+                     Invert_Comm_Map_t &from_map);
 
 //---------------------------------------------------------------------------//
 /**
@@ -54,8 +54,8 @@ DLL_PUBLIC_c4 void invert_comm_map(Invert_Comm_Map_t const &to_map,
  * numbers are stored in iterator->first.  But invert_comm_map doesn't need
  * that, and we decided not to add that complexity.
  */
-DLL_PUBLIC_c4 int get_num_recv(Invert_Comm_Map_t::const_iterator first,
-                               Invert_Comm_Map_t::const_iterator last);
+int get_num_recv(Invert_Comm_Map_t::const_iterator first,
+                 Invert_Comm_Map_t::const_iterator last);
 
 } // end namespace rtt_c4
 

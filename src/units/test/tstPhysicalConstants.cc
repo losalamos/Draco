@@ -1,37 +1,33 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   src/units/tstPhysicalConstants.cc
+ * \file   src/units/test/tstPhysicalConstants.cc
  * \author Kelly Thompson
  * \date   Mon Nov  3 22:35:14 2003
  * \brief  test the PhysicalConstants class
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <iomanip>
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 #include "units/PhysicalConstantsSI.hh"
+#include <iomanip>
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 void test_static_access(rtt_dsxx::UnitTest &ut) {
+  using rtt_dsxx::soft_equiv;
+  using rtt_units::EV2K;
+  using rtt_units::PI;
   using std::cout;
   using std::endl;
-  using std::string;
   using std::ostringstream;
-  using rtt_dsxx::soft_equiv;
-  using rtt_units::PI;
-  using rtt_units::EV2K;
+  using std::string;
 
   // PI
 
@@ -69,13 +65,13 @@ void test_static_access(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 
 void test_ctor(rtt_dsxx::UnitTest &ut) {
-  using std::ostringstream;
-  using std::endl;
   using rtt_dsxx::soft_equiv;
   using rtt_units::PhysicalConstants;
+  using rtt_units::PI;
   using rtt_units::UnitSystem;
   using rtt_units::UnitSystemType;
-  using rtt_units::PI;
+  using std::endl;
+  using std::ostringstream;
 
   UnitSystem us(UnitSystemType().SI());
   PhysicalConstants pc_def;
@@ -250,14 +246,14 @@ void test_ctor(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 
 void test_scaled_values(rtt_dsxx::UnitTest &ut) {
-  using std::ostringstream;
-  using std::endl;
-  using std::pow;
   using rtt_dsxx::soft_equiv;
   using rtt_units::PhysicalConstants;
+  using rtt_units::PI;
   using rtt_units::UnitSystem;
   using rtt_units::UnitSystemType;
-  using rtt_units::PI;
+  using std::endl;
+  using std::ostringstream;
+  using std::pow;
 
   // test scaled values against expected values
 
@@ -473,6 +469,18 @@ void test_scaled_values(rtt_dsxx::UnitTest &ut) {
         << "\tvalue =  " << std::setprecision(16)
         << pc.classicalElectronRadius() << " != " << std::setprecision(16)
         << dev << "." << endl;
+    FAILMSG(msg.str());
+  }
+  // test alias
+  if (soft_equiv(pc.re(), dev, 2e-9)) {
+    ostringstream msg;
+    msg << "Scaled classical electron radius looks correct." << endl;
+    PASSMSG(msg.str());
+  } else {
+    ostringstream msg;
+    msg << "Scaled classical electron radius is not correct." << endl
+        << "\tvalue =  " << std::setprecision(16) << pc.re()
+        << " != " << std::setprecision(16) << dev << "." << endl;
     FAILMSG(msg.str());
   }
 

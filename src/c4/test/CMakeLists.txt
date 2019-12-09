@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4/test.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( c4_test CXX )
@@ -78,7 +78,10 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
 endif()
 
 # Exclude tstTime from valgrind checks.
-set( nomemcheck_tests ${PROJECT_SOURCE_DIR}/tstTime.cc )
+set( nomemcheck_tests
+  ${PROJECT_SOURCE_DIR}/tstTime.cc
+  ${PROJECT_SOURCE_DIR}/tstGlobalTimer.cc
+  )
 list( REMOVE_ITEM test_sources ${nomemcheck_tests} )
 add_parallel_tests(
   SOURCES   "${nomemcheck_tests}"
@@ -97,13 +100,16 @@ add_parallel_tests(
 #------------------------------------------------------------------------------#
 # Python based test runners
 #------------------------------------------------------------------------------#
-if( NOT WIN32 AND NOT APPLE )
+if( NOT APPLE )
   include( ApplicationUnitTest )
   add_app_unit_test(
     DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
     APP       $<TARGET_FILE_DIR:Exe_xthi>/$<TARGET_FILE_NAME:Exe_xthi>
-    PE_LIST   "1;2"
-    )
+    PE_LIST   "1;2" )
+  add_app_unit_test(
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstYthi.py
+    APP       $<TARGET_FILE_DIR:Exe_ythi>/$<TARGET_FILE_NAME:Exe_ythi>
+    PE_LIST   "1;2" )
 endif()
 
 #------------------------------------------------------------------------------#

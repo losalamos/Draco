@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2018 Los Alamos National Security, LLC. All rights
+ * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
  *         reserved.  */
 //----------------------------------------------------------------------------//
 
@@ -49,8 +49,8 @@ unsigned Gauss_Legendre::number_of_levels() const { return sn_order_; }
 
 //----------------------------------------------------------------------------//
 /* virtual */ string Gauss_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = gauss legendre" + indent + "  order = " +
-                  to_string(sn_order_) + indent + "end";
+  string Result = indent + "type = gauss legendre" + indent +
+                  "  order = " + to_string(sn_order_) + indent + "end";
 
   return Result;
 }

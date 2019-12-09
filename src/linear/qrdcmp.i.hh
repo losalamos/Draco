@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the Q-R decomposition of a square matrix.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -48,8 +48,8 @@ bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
             RandomContainer &d) {
   Require(a.size() == n * n);
 
-  using std::sqrt;
   using rtt_dsxx::square;
+  using std::sqrt;
 
   c.resize(n);
   d.resize(n);

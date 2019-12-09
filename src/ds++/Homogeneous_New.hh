@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Nov 28 08:27:37 2006
  * \brief  Definition of class Homogeneous_New
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -128,10 +128,10 @@ private:
   // IMPLEMENTATION
 
   //! Copy constructor: not implemented
-  Homogeneous_New(const Homogeneous_New &rhs);
+  Homogeneous_New(const Homogeneous_New &rhs) = delete;
 
   //! Assignment operator for Homogeneous_New: not implemented.
-  Homogeneous_New &operator=(const Homogeneous_New &rhs);
+  Homogeneous_New &operator=(const Homogeneous_New &rhs) = delete;
 
   void allocate_block_(unsigned const block_size);
 

@@ -1,0 +1,45 @@
+ipfile two-mats.ipcress
+source analy
+
+mgid 10001
+tlin 5 0.01 1.0
+rlog 5 0.01 100.0
+
+sig0 1.0
+sig1 0.0
+ropow 1.0
+ropow1 1.0
+topow 1.0
+hnupow 1.0
+gsig0 0.0
+gsig1 0.0
+gav0 1.0
+gav1 1.0
+gwid0 1.0
+gwid1 1.0
+gpow0 1.0
+gpow1 1.0
+
+go
+
+mgid 10002
+tlin 5 0.001 0.005
+rlog 5 0.01 100.0
+
+sig0 10.0
+sig1 1.0
+ropow 2.0
+ropow1 2.0
+topow 3.0
+hnupow -1.0
+gsig0 0.0
+gsig1 0.0
+gav0 1.0
+gav1 1.0
+gwid0 1.0
+gwid1 1.0
+gpow0 1.0
+gpow1 1.0
+
+go
+end

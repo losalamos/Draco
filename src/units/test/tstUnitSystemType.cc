@@ -1,33 +1,29 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   units/test/tstUnitSystemTypes.cc
+ * \file   units/test/tstUnitSystemType.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/UnitSystemType.hh"
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 void test_default_ctor(rtt_dsxx::UnitTest &ut) {
-  using std::endl;
-  using std::ostringstream;
   using rtt_dsxx::soft_equiv;
-  using rtt_units::UnitSystemType;
   using rtt_units::FundUnit;
   using rtt_units::Ltype;
+  using rtt_units::UnitSystemType;
+  using std::endl;
+  using std::ostringstream;
 
   // Create a container with no data...
   UnitSystemType ust;
@@ -261,10 +257,10 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
 //------------------------------------------------------------------------//
 
 void test_qualified_ctor(rtt_dsxx::UnitTest &ut) {
-  using std::endl;
-  using std::ostringstream;
   using rtt_dsxx::soft_equiv;
   using rtt_units::UnitSystemType;
+  using std::endl;
+  using std::ostringstream;
 
   UnitSystemType ust(rtt_units::L_cm, rtt_units::M_g, rtt_units::t_us,
                      rtt_units::T_K, rtt_units::I_amp, rtt_units::A_rad,
@@ -395,10 +391,10 @@ void test_qualified_ctor(rtt_dsxx::UnitTest &ut) {
  * \brief Test special unit system types.
  */
 void test_sust_ctor(rtt_dsxx::UnitTest &ut) {
-  using std::endl;
-  using std::ostringstream;
   using rtt_dsxx::soft_equiv;
   using rtt_units::UnitSystemType;
+  using std::endl;
+  using std::ostringstream;
 
   // Create the two "speical" unit system types.
 
@@ -746,7 +742,6 @@ void test_sust_ctor(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

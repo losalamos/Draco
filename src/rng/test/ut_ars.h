@@ -4,7 +4,7 @@
  * \author Gabriel M. Rockefeller
  * \date   Tue Oct  9 19:03:17 2012
  * \brief  ut_ars header file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */

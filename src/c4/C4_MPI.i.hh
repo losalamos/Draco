@@ -4,12 +4,14 @@
  * \author Alex R Long
  * \date   Mon Aug 21 07:47:01 2017
  * \brief  C4 MPI standard implementations.
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_i_hh
 #define c4_C4_MPI_i_hh
+
+#include "C4_Req.hh"
 
 #ifdef C4_MPI
 
@@ -18,7 +20,7 @@ namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 template <typename T>
 void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
-                    int tag) {
+                    int tag /* = C4_Traits<T *>::tag */) {
   Require(!request.inuse());
   Require(buffer != nullptr);
 

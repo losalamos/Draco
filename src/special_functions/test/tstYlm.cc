@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
  * \brief  
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -45,7 +42,6 @@ void comparecPlk(unsigned const l, int const k, double const x,
 }
 
 //---------------------------------------------------------------------------//
-
 void tstcPlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -85,7 +81,7 @@ void tstcPlk(rtt_dsxx::UnitTest &ut) {
     bool caught(false);
     try {
       comparecPlk(2, 3, x, expVal, ut);
-    } catch (rtt_dsxx::assertion &err) {
+    } catch (rtt_dsxx::assertion & /*err*/) {
       ut.passes("Caught out of bounds.");
       caught = true;
     }
@@ -98,7 +94,7 @@ void tstcPlk(rtt_dsxx::UnitTest &ut) {
     x = -999999.999;
     try {
       comparecPlk(2, 0, x, expVal, ut);
-    } catch (rtt_dsxx::assertion &err) {
+    } catch (rtt_dsxx::assertion & /*err*/) {
       ut.passes("Caught mu out of range.");
       caught = true;
     }
@@ -110,7 +106,6 @@ void tstcPlk(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void compareNormYlk(unsigned const l, int const k, double const theta,
                     double const phi, double const expVal,
                     rtt_dsxx::UnitTest &ut) {
@@ -132,7 +127,6 @@ void compareNormYlk(unsigned const l, int const k, double const theta,
 }
 
 //---------------------------------------------------------------------------//
-
 void compareRealYlk(unsigned const l, int const k, double const theta,
                     double const phi, double const expVal,
                     rtt_dsxx::UnitTest &ut) {
@@ -154,7 +148,6 @@ void compareRealYlk(unsigned const l, int const k, double const theta,
 }
 
 //---------------------------------------------------------------------------//
-
 void compareGalerkinYlk(unsigned const l, int const k, double const theta,
                         double const phi, double const expVal,
                         rtt_dsxx::UnitTest &ut) {
@@ -176,7 +169,6 @@ void compareGalerkinYlk(unsigned const l, int const k, double const theta,
 }
 
 //---------------------------------------------------------------------------//
-
 void compareComplexYlk(unsigned const l, int const k, double const theta,
                        double const phi, double const expVal,
                        rtt_dsxx::UnitTest &ut) {
@@ -198,10 +190,9 @@ void compareComplexYlk(unsigned const l, int const k, double const theta,
 }
 
 //---------------------------------------------------------------------------//
-
 void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
-  using rtt_units::PI;
   using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
 
   cout << "\nTesting normalizedYlk function.\n" << endl;
 
@@ -256,10 +247,9 @@ void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 //---------------------------------------------------------------------------//
-
 void tstRealYlk(rtt_dsxx::UnitTest &ut) {
-  using rtt_units::PI;
   using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
 
   cout << "\nTesting realYlk function.\n" << endl;
 
@@ -283,10 +273,9 @@ void tstRealYlk(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
-  using rtt_units::PI;
   using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
 
   cout << "\nTesting complexYlk function.\n" << endl;
 
@@ -311,10 +300,9 @@ void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
-  using rtt_units::PI;
   using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
 
   cout << "\nTesting realYlk function.\n" << endl;
 
@@ -338,7 +326,6 @@ void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

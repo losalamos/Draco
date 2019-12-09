@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for FortranChecks.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -55,26 +55,27 @@ if( BUILD_TESTING )
     # into the list build_system_state, recode Draco_TPL_INCLUDE_DIRS by
     # replacing semicolons with triple underscores.  The list will be
     # reconstructed in the subdirectory's CMakeLists.txt.
-    string( REGEX REPLACE ";" "___" tmp "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
+    string( REGEX REPLACE ";" "___" tmp
+      "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
 
     # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
     # will need some of the current build system parameters:
     set( draco_DIR ${Draco_SOURCE_DIR}/config )
     set( build_system_state
-      "-Ddraco_DIR=${draco_DIR}"
+#      "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
+      "-DDRACO_C4=${DRACO_C4}"
       "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
       "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
-      "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
-      "-DDRACO_C4=${DRACO_C4}"
+      "-DPython_EXECUTABLE=${Python_EXECUTABLE}"
       "-DRANDOM123_INCLUDE_DIR=${RANDOM123_INCLUDE_DIR}"
-      "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
+      "-Ddraco_DIR=${draco_DIR}"
       )
     if( WIN32 )
       # For Win32 builds, DLL and applications are built in the directory
       # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
       set( build_system_state "${build_system_state};-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
     else()
-      set( build_system_state "${build_system_state};-DUSE_CUDA=${USE_CUDA}" )
+      set( build_system_state "${build_system_state};-DWITH_CUDA=${WITH_CUDA}" )
     endif()
 
     # CMake will put some run scripts in $build_dir/f90sub Another directory for

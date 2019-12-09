@@ -3,9 +3,11 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Feb 13
 # brief  Generate dll_declspec.h used to define DLL_PUBLIC_<pkg> definitions.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 function( generate_dll_declspec dir components )
 
@@ -17,7 +19,7 @@ set( dll_declspec_content
  * file   dll_declspec.h
  * brief  Defined macros that are used as declarators to control dllexport
  *        or dllimport linkage for dll files.
- * note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *        All rights reserved.
  *
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
@@ -56,8 +58,12 @@ set( dll_declspec_content
  */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __${safedir}_declspec_h__
-#define __${safedir}_declspec_h__")
+#ifndef rtt_dsxx_config_h
+#error \"Do not call this file directly. Call ds++/config.h instead.\"
+#endif
+
+#ifndef rtt_${safedir}_declspec_h
+#define rtt_${safedir}_declspec_h")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 set( dll_declspec_content "${dll_declspec_content}

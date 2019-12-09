@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/test/tstString_Token_Stream.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for String_Token_Stream class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -21,9 +18,9 @@ using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void tstString_Token_Stream(UnitTest &ut) {
   // Build path for the input file "scanner_test.inp"
@@ -33,7 +30,7 @@ void tstString_Token_Stream(UnitTest &ut) {
   ifstream infile(stInputFile.c_str());
   string contents;
   while (true) {
-    char const c = infile.get();
+    char const c = static_cast<char>(infile.get());
     if (infile.eof() || infile.fail())
       break;
     contents += c;
@@ -111,12 +108,15 @@ void tstString_Token_Stream(UnitTest &ut) {
     else
       PASSMSG("Shift after pushback has correct value");
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      FAILMSG("Syntax error NOT correctly thrown");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
+      caught = true;
       PASSMSG("Syntax error correctly thrown and caught");
     }
+    FAIL_IF_NOT(caught); // FAILMSG("Syntax error NOT correctly thrown");
+
     if (tokens.error_count() != 1) {
       FAILMSG("Syntax error NOT correctly counted");
     } else {
@@ -253,23 +253,21 @@ void tstString_Token_Stream(UnitTest &ut) {
       ITFAILS;
   }
 
-  //---------------------------------------------------------------------------//
-
+  //-------------------------------------------------------------------------//
   {
-
     // Build path for the input file "scanner_recovery.inp"
     string const srInputFile(ut.getTestSourcePath() +
                              std::string("scanner_recovery.inp"));
 
-    ifstream infile(srInputFile.c_str());
-    string contents;
+    ifstream linfile(srInputFile.c_str());
+    string lcontents;
     while (true) {
-      char const c = infile.get();
-      if (infile.eof() || infile.fail())
+      char const c = static_cast<char>(linfile.get());
+      if (linfile.eof() || linfile.fail())
         break;
-      contents += c;
+      lcontents += c;
     }
-    String_Token_Stream tokens(contents);
+    String_Token_Stream tokens(lcontents);
     try {
       tokens.shift();
       ostringstream msg;
@@ -283,11 +281,11 @@ void tstString_Token_Stream(UnitTest &ut) {
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
@@ -305,11 +303,11 @@ void tstString_Token_Stream(UnitTest &ut) {
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
@@ -376,11 +374,63 @@ void tstString_Token_Stream(UnitTest &ut) {
       ut.failure("Did NOT correctly scan 0XA");
   }
 
+  // Test that missing closing quote is a syntax error.
+  {
+    String_Token_Stream tokens("\"quote");
+    try {
+      tokens.shift();
+      ut.failure(
+          "Did NOT correctly report missing closing quote as syntax error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("missing closing quote correctly thrown and caught");
+    }
+  }
+
+  // Test that #include is treated as a syntax error (not supported)
+  {
+    String_Token_Stream tokens("#include \"dummy.inp\"");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      cout << "expected: " << tokens.messages() << endl;
+      PASSMSG("#include not supported error correctly thrown and caught");
+    }
+  }
+
+  // Test that # without a valid directive is treated as syntax error
+  {
+    String_Token_Stream tokens("# !");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #! as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #directive correctly thrown and caught");
+    }
+  }
+  {
+    String_Token_Stream tokens("#bad");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #bad as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #bad correctly thrown and caught");
+    }
+  }
+  {
+    String_Token_Stream tokens("#include, bad");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include, bad as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #insist, bad correctly thrown and caught");
+    }
+  }
+
   return;
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -389,6 +439,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstString_Token_Stream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

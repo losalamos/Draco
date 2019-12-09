@@ -3,7 +3,7 @@
  * \file   parser/Expression.hh
  * \author Kent Budge
  * \brief  Definition of class Expression
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,11 +18,11 @@
 #include <vector>
 
 namespace rtt_parser {
-using std::vector;
-using std::pair;
-using std::string;
 using std::map;
 using std::ostream;
+using std::pair;
+using std::string;
+using std::vector;
 
 //===========================================================================//
 /*!
@@ -57,7 +57,7 @@ using std::ostream;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_parser Expression {
+class Expression {
 public:
   enum Precedence {
     COMMA_PRECEDENCE,

@@ -5,7 +5,7 @@
 # brief  Provide a python class that aids in creating unit tests that run
 #        interactive user codes (i.e.: run a binary that reads an
 #        input file and diff the resulting output file).
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 #------------------------------------------------------------------------------#
 ## Example from draco/src/diagnostics/test/tDracoInfo.cmake
@@ -48,7 +49,7 @@ import sys
 #   ${BUILDENV}
 #   )
 
-################################################################################
+#------------------------------------------------------------------------------#
 # function that returns the path of the input string, if found
 def which(program):
   def is_exe(fpath):
@@ -66,18 +67,18 @@ def which(program):
         return exe_file
 
     return None
-################################################################################
+#------------------------------------------------------------------------------#
 
-##############################################################################
+#------------------------------------------------------------------------------#
 # print unit test footer fail message (this is what CMake looks for to
 # indicate failure, it does not look for a non-zero return code!)
 def print_final_fail_msg(testname):
   print("*****************************************************************")
   print("**** {0}: FAILED.".format(testname))
   print("*****************************************************************")
-##############################################################################
+#------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
 # search string with regular expression and return the first matching component
 def simple_search(regex, arg_string):
   return_str = ""
@@ -86,18 +87,18 @@ def simple_search(regex, arg_string):
   else:
     return_str = "not_found"
   return return_str
-################################################################################
+#------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
 # print contents of file
 def print_file(file_name):
   f_temp = open(file_name, 'r')
   for line in f_temp.readlines():
     print(line.strip())
   f_temp.close()
-################################################################################
+#------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
 # check to see if the varaible name was set with a value in string (copies CMake
 # for "if(<variable>)" logic
 def is_set(param_string):
@@ -105,9 +106,9 @@ def is_set(param_string):
   if ( (param_string != "") and (param_string != "not_found")):
     return_bool = True
   return return_bool
-################################################################################
+#------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
 # check to see if the variable name was found in the string (copies CMake logic
 # for DEFINED in CMake)
 def is_defined(param_string):
@@ -115,9 +116,9 @@ def is_defined(param_string):
   if (param_string != "not_found"):
     return_bool = True
   return return_bool
-################################################################################
+#------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
 # Class encapsulating all functions needed for unit testing
 class UnitTest:
   re_app = re.compile("APP=([^\s]*)")
@@ -132,7 +133,7 @@ class UnitTest:
   re_project_source_dir = re.compile("PROJECT_SOURCE_DIR=([^\s]*)")
   re_test_name = re.compile("TESTNAME=([^\s]*)")
   re_numPE = re.compile("numPE=([^\s]*)")
-  re_mpiexec = re.compile("MPIEXEC=([^\s]*)")
+  re_mpiexec = re.compile("MPIEXEC_EXECUTABLE=([^\s]*)")
   re_mpi_cores_per_cpu = re.compile("MPI_CORES_PER_CPU=([^\s]*)")
   re_draco_info = re.compile("DRACO_INFO=([^\s]*)")
   re_gdiff = re.compile("GDIFF=([^\s]*)")
@@ -203,19 +204,6 @@ class UnitTest:
       self.numpasses = 0
       self.numfails = 0
 
-      debug = False
-      if (debug):
-        print("Running with the following parameters")
-        print("   APP       = {0}".format(self.app))
-        print("   BINDIR  = {0}".format(self.bindir))
-        print("   PROJECT_BINARY_DIR = {0}".format(self.project_binary_dir))
-        print("   OUTFILE   = {0}".format(self.outfile))
-        print("   ERRFILE   = {0}".format(self.errfile))
-        if (self.input):
-          print("   STDINFILE = {0}".format(self.input))
-        if (self.gold):
-          print("   GOLDFILE = {0}".format(self.gold))
-
       # get the needed variables from the argument string using regex
       self.testname = simple_search(self.re_test_name, self.full_arg_string)
       self.numPE = simple_search(self.re_numPE, self.full_arg_string)
@@ -231,6 +219,20 @@ class UnitTest:
       self.gdiff = simple_search(self.re_gdiff, self.full_arg_string)
       self.pgdiff = simple_search(self.re_pgdiff, self.full_arg_string)
 
+      debug = False
+      if (debug):
+        print("Running with the following parameters")
+        print("   APP       = {0}".format(self.app))
+        print("   BINDIR    = {0}".format(self.bindir))
+        print("   ARGVALUE  = {0}".format(self.arg_value))
+        print("   PROJECT_BINARY_DIR = {0}".format(self.project_binary_dir))
+        print("   OUTFILE   = {0}".format(self.outfile))
+        print("   ERRFILE   = {0}".format(self.errfile))
+        if (self.input):
+          print("   STDINFILE = {0}".format(self.input))
+        if (self.gold):
+          print("   GOLDFILE = {0}".format(self.gold))
+
       # make dictionary of argument values for simple mapping between
       # cmake commands and python functions
       self.cmake_args = {"APP":self.app, "TESTNAME":self.testname, \
@@ -238,7 +240,7 @@ class UnitTest:
         "PROJECT_BINARY_DIR":self.project_binary_dir, \
         "PROJECT_SOURCE_DIR":self.project_source_dir, "TESTNAME":self.testname, \
         "numPE":self.numPE, "MPI_CORES_PER_CPU":self.mpi_cores_per_cpu, \
-        "MPIEXEC":self.mpiexec, "DRACO_INFO":self.draco_info, \
+        "MPIEXEC_EXECUTABLE":self.mpiexec, "DRACO_INFO":self.draco_info, \
         "RUN_CMD":self.run_cmd, "ARGVALUE":self.arg_value, \
         "WORKDIR":self.workdir, \
         "CMAKE_HOST_SYSTEM_PROCESSOR":self.host_system_processor}
@@ -266,16 +268,16 @@ class UnitTest:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Run the application and capture the output.
   def aut_runTests(self, continue_on_error=False ):
 
     try:
-      print("\n=============================================")
+      print("\n=======================================================")
       print("=== {0}".format(self.testname))
-      print("=============================================")
+      print("=======================================================")
 
       # run draco --version with correct run command
       draco_info_numPE = ""
@@ -385,9 +387,9 @@ class UnitTest:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # check to see if the error file contains a given string
   def error_contains(self, search_string):
     # search file for string
@@ -397,9 +399,9 @@ class UnitTest:
         if (search_string in line):
           return_bool = True
     return return_bool
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # check to see if the output file contains a given string
   def output_contains(self, search_string):
     # search file for string
@@ -409,9 +411,9 @@ class UnitTest:
         if (search_string in line):
           return_bool = True
     return return_bool
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # get a value with REGEX, see if it matches reference values
   def output_contains_value(self, search_regex, reference_value):
     # search file for string
@@ -422,15 +424,16 @@ class UnitTest:
           if (search_regex.findall(line)[0] == reference_value):
             return_bool = True
     return return_bool
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
-  # Check output for capsaicin pass/fail criteria
+  #------------------------------------------------------------------------------#
+  # Check output for client pass/fail criteria
   def capsaicin_output_check(self, driver="serrano", ignore_error_N=False):
+
+    print("Parsing {0} output".format(driver))
+
     error_found = False
-    done_found = False
-    error_str = "error"
-    ERROR_str = "ERROR"
+    done_found  = False
 
     if (driver == "serrano"):
       done_str = "serrano done"
@@ -440,52 +443,49 @@ class UnitTest:
       done_str = "guajillo completed on 0"
 
     # always ignore these errors
-    JFNK_error = "JFNK DONE error"
+    JFNK_error     = "JFNK DONE error"
     smoothed_error = "Smoothed Aggregation error :"
+    compiler_flag  = "-Werror"
+    re_error_N     = re.compile("error[(][0-9]*[)]")
 
     # parse output
-    if (not ignore_error_N):
-      print("Parsing {0} output".format(driver))
-      with open(self.outfile) as f:
-        for line in f:
-          if ((error_str in line) or (ERROR_str in line)):
-            if (not (JFNK_error in line) and not (smoothed_error in line)):
-              print("Found error in line: {0}".format(line.strip()))
-              self.failmsg("Anaheim output contains error")
-              error_found = True
-            else:
-              print("Error ignored in line: {0}".format(line.strip()))
-          if (done_str in line):
-            done_found = True
+    with open(self.outfile) as f:
+      for line in f:
 
-    # parse output while ignoring error(N)
-    elif (ignore_error_N):
-      print("Parsing {0} output and ignoring error(N)".format(driver))
-      re_error_N = re.compile("error[(][0-9]*[)]")
-      with open(self.outfile) as f:
-        for line in f:
-          if (error_str in line or ERROR_str in line):
-            if (not (JFNK_error in line) and (not (smoothed_error in line)
-                and not re_error_N.search(line))):
-              print("Found error in line: {0}".format(line.strip()))
-              self.failmsg("Anaheim output contains error")
-              error_found = True
-            else:
-              print("Error ignored in line: {0}".format(line.strip()))
-          if (done_str in line):
-            done_found = True
-    else:
-      self.failmsg("Input parameters not recognized, file not parsed")
+        # 1. found "error" in the line
+        if re.search( 'error', line, re.IGNORECASE):
 
+          # 1.a. Ignore false positives related to matching "error"
+          ignore_false_positive = False
+          ignore_false_positive |= (JFNK_error     in line)
+          ignore_false_positive |= (smoothed_error in line)
+          ignore_false_positive |= (compiler_flag  in line)
+
+          if (ignore_error_N and re_error_N.search(line)):
+            ignore_false_positive |= True
+
+          if not ignore_false_positive:
+            print("Found error in line: {0}".format(line.strip()))
+            self.failmsg("${0} output contains error".format(driver))
+            error_found = True
+          else:
+            print("Error ignored in line: {0}".format(line.strip()))
+
+        # 2. found "completed" string
+        if (done_str in line):
+          done_found = True
+
+    # Did the code print that it was finished?
     if (not done_found):
       self.failmsg("{0} output did not finish".format(driver))
+
     if (done_found and not error_found):
       self.passmsg("\"{0}\" message found in {1} output".format(done_str, \
         driver))
       self.passmsg("No errors in {0} output".format(driver))
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # print unit test footer and output pass/fail messages
   def aut_report(self):
     print("*****************************************************************")
@@ -494,15 +494,20 @@ class UnitTest:
     else:
       print("**** {0}: FAILED.".format(self.testname))
     print("*****************************************************************")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # call numdiff between the gold and output file, capture additional arguments
   # to numdiff in args
+  #
+  # - param numdiff_args  This optional argument can be used to tune how
+  #                       numdiff works.  See 'numdiff --help' or
+  #                       http://www.nongnu.org/numdiff/numdiff.html.
+  #
   def aut_numdiff(self, numdiff_args=""):
 
     try:
-      # set numdiff run command
+      # set numdiff run command (if we need to run under mpiexec, srun, etc.)
       numdiff_run_cmd = ""
       if is_defined(self.run_cmd):
         numdiff_run_cmd = self.run_cmd
@@ -523,16 +528,16 @@ class UnitTest:
       if self.gold.strip():
         clean_run_args.append(self.gold.strip())
       for arg in numdiff_args.split():
-        if arg: clean_run_args.append(arg)
+        if arg:
+          clean_run_args.insert(-2,arg)
 
       # run numdiff command, redirecting stdout and stderr, get a unique
       # filename for the numdiff output and error files
-      print("Comparing output to goldfile: ")
+      print("\n==> Comparing output to goldfile: ")
       print(" ".join(clean_run_args))
 
       numdiff_process = subprocess.Popen(clean_run_args, \
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
       numdiff_out, numdiff_err = numdiff_process.communicate()
 
       # check return code of numdiff, if nonzero test fails
@@ -541,15 +546,16 @@ class UnitTest:
       else:
         self.failmsg("gold does not match out.")
         print("numdiff output = ")
-        print(numdiff_out)
+        snumdiff_out = numdiff_out.decode('UTF-8')
+        print(snumdiff_out)
 
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # call arbitrary diff command between two files
   def diff_two_files(self, cmake_dir_1, sub_path_1, cmake_dir_2, sub_path_2, \
       diff_name="numdiff", diff_args=""):
@@ -624,9 +630,9 @@ class UnitTest:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # call giff or pgdiff command between two files
   def run_gdiff(self, gdiff_file):
 
@@ -658,8 +664,8 @@ class UnitTest:
       if gdiff_file.strip():
         clean_run_args.append(gdiff_file.strip())
 
-      # run diff command, redirecting stdout and stderr, get a unique
-      # filename for the diff output and error files
+      # run diff command, redirecting stdout and stderr, get a unique filename
+      # for the diff output and error files
 
       print("Running gdiff from {0} on {1}".format(gdiff_exe, gdiff_file))
       print("About to run: {0}".format(" ".join(clean_run_args)))
@@ -668,12 +674,19 @@ class UnitTest:
         stderr=subprocess.STDOUT)
 
       diff_out, diff_err = diff_process.communicate()
+      if (diff_process.returncode != 0):
+        sdiff_err=diff_err.decode('UTF-8')
+        print("Unable to run \'{0}\'".format(' '.join(clean_run_args)))
+        print(sdiff_err)
+      else:
+        sdiff_out=diff_out.decode('UTF-8')
+        print("stdout = {0}".format(sdiff_out))
 
       # check gdiff output for passes and fails
       found_fail = False
       found_pass = False
 
-      for line in diff_out.split():
+      for line in sdiff_out.split():
         if ("FAILED" in line):
           found_fail = True
         if ("passed" in line):
@@ -687,26 +700,26 @@ class UnitTest:
         print(diff_out)
 
     except Exception:
-      print("Caught exception in gdiff: {0}  {1}".format( sys.exc_info()[0], \
+      print("Caught exception in run_gdiff: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   #  print pass message and increment numpasses
   def passmsg(self, msg):
     print("Test Passes: {0}".format(msg))
     self.numpasses = self.numpasses+1
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   #  print fail message and increment numfails
   def failmsg(self, msg):
     print("Test Fails: {0}".format(msg))
     self.numfails = self.numfails+1
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ################################################################################
+  #------------------------------------------------------------------------------#
   # print string, print failing message (so ctest will interpret test as failure)
   # and exit with non-zero exit code
   def fatal_error(self, msg):
@@ -714,42 +727,44 @@ class UnitTest:
     print(msg)
     print_final_fail_msg(self.testname)
     sys.exit(self.numfails)
-  ################################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Checks the list of arguments for arg_name
   def check_arg_is_defined(self, arg_name):
     return ( self.full_arg_string.find(arg_name) != -1)
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Checks the list of arguments for arg_name and make sure it is not empty
   def check_arg_is_set(self, arg_name):
     arg_regex = re.compile("{0}=([^\s]*)".format(arg_name))
     value = simple_search(arg_regex, self.full_arg_string)
     return is_set(value)
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Checks the list of arguments for arg_name and then check arg_string's
   # value for check_string
   def check_arg_value(self, arg_name, check_string):
     arg_regex = re.compile("{0}=([^\s]*)".format(arg_name))
     arg_value = simple_search(arg_regex, self.full_arg_string)
     return ( arg_value.find(check_string) != -1)
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Get argument value from cmake_args dictionary or raise exception
   # value for check_string
   def get_arg_value(self, arg_name):
     return self.cmake_args[arg_name]
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-  ##############################################################################
+  #------------------------------------------------------------------------------#
   # Check to see if test is little endian
   def is_little_endian(self):
     return self.little_endian
-  ##############################################################################
+  #------------------------------------------------------------------------------#
 
-################################################################################
+#------------------------------------------------------------------------------#
+# End of application_unit_test.py
+#------------------------------------------------------------------------------#

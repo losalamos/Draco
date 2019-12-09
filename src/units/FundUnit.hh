@@ -3,11 +3,8 @@
  *  \author Kelly Thompson
  *  \brief  This file defines a fundamental unit type.
  *  \date   Mon Oct 27 16:24:31 2003
- *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __units_FundUnit_hh__
@@ -19,27 +16,22 @@ namespace rtt_units {
 
 //============================================================================//
 /*!
- * \class FundUnit Fundamental Unit Type
+ * \class FundUnit
+ * \brief Fundamental Unit Type
  *
  * \sa UnitSystem
  * \sa UnitSystemType
  */
 //============================================================================//
 
-template <typename F>           // T is one of { Ltype, Mtype, etc. }
-class DLL_PUBLIC_units FundUnit // Length, Mass, time, etc...
+template <typename F> // T is one of { Ltype, Mtype, etc. }
+class FundUnit        // Length, Mass, time, etc...
 {
 public:
   //! default constructor
   FundUnit(F const enumVal, double const *cf, std::string const &labels)
       : d_definingEnum(enumVal), d_cf(cf[d_definingEnum]),
         d_label(setUnitLabel(d_definingEnum, labels)) { /* empty */
-  }
-
-  //! copy constructor
-  FundUnit(FundUnit<F> const &rhs)
-      : d_definingEnum(rhs.enumVal()), d_cf(rhs.cf()),
-        d_label(rhs.label()) { /* empty */
   }
 
   // ACCESSORS

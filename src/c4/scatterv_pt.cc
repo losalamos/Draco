@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/C4_MPI_scatterv_pt.cc
+ * \file   c4/scatterv_pt.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate scatterv instantiations.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "C4_Functions.hh"
@@ -35,7 +32,7 @@ template DLL_PUBLIC_c4 void
 indeterminate_scatterv(vector<vector<double>> &outgoing_data,
                        vector<double> &incoming_data);
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template DLL_PUBLIC_c4 void
 determinate_scatterv(vector<vector<unsigned>> &outgoing_data,

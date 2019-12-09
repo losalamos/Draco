@@ -3,18 +3,15 @@
  * \file   c4/Timer.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:56:11 2002
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Timer.hh"
-#include "C4_sys_times.h"
 #include "ds++/XGetopt.hh"
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
-#include <iostream>
-#include <string>
 
 namespace rtt_c4 {
 
@@ -45,9 +42,16 @@ int selected_cache = 2;
 Timer::Timer()
     : begin(0.0), end(0.0), tms_begin(DRACO_TIME_TYPE()),
       tms_end(DRACO_TIME_TYPE()),
-      posix_clock_ticks_per_second(DRACO_CLOCKS_PER_SEC), timer_on(false),
-      isMPIWtimeAvailable(setIsMPIWtimeAvailable()), sum_wall(0.0),
-      sum_system(0.0), sum_user(0.0), num_intervals(0) {
+      posix_clock_ticks_per_second(static_cast<int>(DRACO_CLOCKS_PER_SEC)),
+      timer_on(false), isMPIWtimeAvailable(setIsMPIWtimeAvailable()),
+      sum_wall(0.0), sum_system(0.0), sum_user(0.0), num_intervals(0) {
+#if defined(WIN32)
+  static_assert(DRACO_CLOCKS_PER_SEC < INT32_MAX,
+                "!(DRACO_CLOCKS_PER_SEC < INT32_MAX)");
+#else
+  Check(DRACO_CLOCKS_PER_SEC < INT32_MAX);
+#endif
+
 #ifdef HAVE_PAPI
 
   // Initialize the PAPI library on construction of first timer if it has not
@@ -74,8 +78,8 @@ Timer::Timer()
 
 //! Print out a timing report.
 void Timer::print(std::ostream &out, int p) const {
-  using std::setw;
   using std::ios;
+  using std::setw;
 
   out.setf(ios::fixed, ios::floatfield);
   out.precision(p);
@@ -131,8 +135,8 @@ void Timer::print(std::ostream &out, int p) const {
 //! Print out a timing report as a single line summary.
 void Timer::printline(std::ostream &out, unsigned const p,
                       unsigned const w) const {
-  using std::setw;
   using std::ios;
+  using std::setw;
 
   out.setf(ios::fixed, ios::floatfield);
   out.precision(p);
@@ -333,8 +337,8 @@ void Timer::pause(double const pauseSeconds) {
  */
 void Timer::printline_mean(std::ostream &out, unsigned const p,
                            unsigned const w, unsigned const v) const {
-  using std::setw;
   using std::ios;
+  using std::setw;
 
   unsigned const ranks = rtt_c4::nodes();
 
@@ -371,13 +375,13 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
     // Width of first column (intervals) should be set by client before calling
     // this function.
     out << setw(w) << mni << " +/- " << setw(v)
-        << sqrt((ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
+        << sqrt(fabs(ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
         << mu << " +/- " << setw(v)
-        << sqrt((u2 - 2 * mu * u + ranks * mu * mu) / ranks) << setw(w) << mu
-        << " +/- " << setw(v)
-        << sqrt((s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w) << mu
-        << " +/- " << setw(v)
-        << sqrt((ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
+        << sqrt(fabs(u2 - 2 * mu * u + ranks * mu * mu) / ranks) << setw(w)
+        << ms << " +/- " << setw(v)
+        << sqrt(fabs(s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w)
+        << mww << " +/- " << setw(v)
+        << sqrt(fabs(ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
 
     // Omit PAPI for now.
 

@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Contextual_Parser template
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -61,7 +61,7 @@ public:
 
   // MANAGEMENT
 
-  Class_Parse_Table(int const &context) : context(context) {
+  Class_Parse_Table(int const &context_in) : context(context_in) {
     child_.reset();
     // Should contain a pointer to a child of Parent after parsing is complete.
     current_ = this;
@@ -171,8 +171,8 @@ public:
 
   // MANAGEMENT
 
-  explicit Class_Parse_Table(int const context)
-      : Class_Parse_Table<Parent>(context) {
+  explicit Class_Parse_Table(int const context_in)
+      : Class_Parse_Table<Parent>(context_in) {
     if (!parse_table_is_initialized_) {
       // The parser class must populate the parse_table_ with the keywords and
       // parse functions needed to parse a specification. This is done once the

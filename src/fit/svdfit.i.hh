@@ -4,9 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef fit_svdfit_i_hh
@@ -56,8 +55,8 @@ using std::vector;
  * goodness of fit.)
  *
  * \param funcs Functor to calculate the basis functions for a given argument.
+ * \param[in] TOL reset denormalized w-values below TOL*max(w) to a hard-zero.
  */
-
 template <typename RandomContainer, typename Functor>
 void svdfit(RandomContainer const &x, RandomContainer const &y,
             RandomContainer const &sig, RandomContainer &a, RandomContainer &u,
@@ -67,12 +66,14 @@ void svdfit(RandomContainer const &x, RandomContainer const &y,
   Require(x.size() == sig.size());
   Require(a.size() > 0);
 
-  using rtt_linear::svdcmp;
-  using rtt_linear::svbksb;
   using rtt_dsxx::square;
+  using rtt_linear::svbksb;
+  using rtt_linear::svdcmp;
 
-  unsigned const ndata = x.size();
-  unsigned const ma = a.size();
+  Check(x.size() < UINT_MAX);
+  Check(a.size() < UINT_MAX);
+  unsigned const ndata = static_cast<unsigned>(x.size());
+  unsigned const ma = static_cast<unsigned>(a.size());
 
   vector<double> b(ndata), afunc(ma);
 

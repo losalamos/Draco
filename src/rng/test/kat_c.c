@@ -29,6 +29,18 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#ifdef _MSC_FULL_VER
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+// - 4100: unreferenced formal parameter
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4204 4127 4100)
+#endif
+
 #include "kat_main.h"
 
 #define KAT_KERNEL
@@ -36,6 +48,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define KAT_UINT size_t
 #include "kat_dev_execute.h"
 
-void host_execute_tests(kat_instance *tests, size_t ntests){
-    dev_execute_tests(tests, ntests);
+void host_execute_tests(kat_instance *tests, size_t ntests) {
+  dev_execute_tests(tests, ntests);
 }
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif

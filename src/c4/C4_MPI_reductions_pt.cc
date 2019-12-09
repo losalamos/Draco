@@ -4,18 +4,17 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 11:12:35 2002
  * \brief  C4 MPI global reduction instantiations.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#include <c4/config.h>
+#include "c4/config.h"
 
 #ifdef C4_MPI
-
 #include "C4_MPI.t.hh"
+#else
+#include "C4_Serial.t.hh"
+#endif
 
 namespace rtt_c4 {
 
@@ -146,8 +145,6 @@ template DLL_PUBLIC_c4 void global_min<unsigned long long>(unsigned long long *,
                                                            int);
 
 } // end namespace rtt_c4
-
-#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
 // end of C4_MPI_reductions_pt.cc

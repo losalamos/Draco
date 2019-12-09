@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Jul 12 16:00:59 2011
  * \brief  Test functions found in ds++/path.hh and path.cc
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

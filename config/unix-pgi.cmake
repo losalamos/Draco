@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-pgi.cmake
 # brief  Establish flags for Linux64 - Portland Group C/C++
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -31,8 +31,6 @@ endif()
 #
 # Compiler Flags
 #
-include(platform_checks)
-query_openmp_availability()
 
 # [2015-03-09 KT] Random123 has a lot of code that produces the warning:
 #    "warning #111-D:  statement is unreachable."
@@ -46,18 +44,13 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
-  set( CMAKE_CXX_FLAGS              "${CMAKE_C_FLAGS} --c++11 --no_using_std --no_implicit_include --display_error_number --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 --diag_suppress 111 -DNO_PGI_OFFSET" )
+  set( CMAKE_CXX_FLAGS              "${CMAKE_C_FLAGS} --c++14 --no_using_std --no_implicit_include --display_error_number --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 --diag_suppress 111 -DNO_PGI_OFFSET" )
 
   # Extra flags for pgCC-11.2+
   # --nozc_eh    (default for 11.2+) Use low cost exception handling. This
   #              option appears to break our exception handling model resulting
   #              in SEGV.
   # This may be related to PGI bug 1858 (http://www.pgroup.com/support/release_tprs.htm).
-#  if( "${DBS_CXX_COMPILER_VER_MAJOR}.${DBS_CXX_COMPILER_VER_MINOR}" GREATER 10 )
-#    if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
-#      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
-#    endif()
-#  endif()
 
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")

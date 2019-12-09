@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Template implementation for dbc
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This header defines several function templates that perform common numerical
@@ -162,7 +162,7 @@ bool is_symmetric_matrix(Random_Access_Container const &A, unsigned const n,
   return true;
 }
 
-} // rtt_dsxx
+} // namespace rtt_dsxx
 
 #endif // rtt_dsxx_dbc_i_hh
 //---------------------------------------------------------------------------//

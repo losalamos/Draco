@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_ipcress/test.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( cdi_ipcress_test CXX )
@@ -16,20 +16,7 @@ set( test_sources
   tIpcressFile.cc
   tIpcressOpacity.cc
   tIpcressWithCDI.cc
-  #   ReadOdfIpcressFile.cc # needs argument '--unittest'
-  tIpcressOdfmgOpacity.cc
-  )
-file( GLOB ipcress_data *.ipcress )
-
-##---------------------------------------------------------------------------##
-## Copy data files
-##---------------------------------------------------------------------------##
-
-foreach( file ${ipcress_data} )
-  get_filename_component( shortname ${file} NAME )
-  configure_file( ${file}
-    ${PROJECT_BINARY_DIR}/${shortname} COPYONLY )
-endforeach()
+  tIpcressOdfmgOpacity.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -45,12 +32,21 @@ add_scalar_tests(
   TEST_ARGS "-u" )
 
 include( ApplicationUnitTest )
+# Test multi-group opacities found in an ipcressfile
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
-  TEST_ARGS "${CMAKE_CURRENT_SOURCE_DIR}/Al_BeCu.ipcress"
+  TEST_ARGS "-v;-h;${PROJECT_SOURCE_DIR}/two-mats.ipcress;missingfile.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
-  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
+  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-two-mats.ipcress.gold"
+  )
+# Test gray opacities found in an ipcressfile
+add_app_unit_test(
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
+  APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
+  TEST_ARGS "${PROJECT_SOURCE_DIR}/odfregression10.ipcress"
+  STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.odf.stdin"
+  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-odfregression10.ipcress.gold"
   )
 
 #------------------------------------------------------------------------------#

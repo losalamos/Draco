@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 14:51:51 2006
  * \brief  Decleration and Definition of Index_Converter
- * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -22,20 +22,19 @@ namespace rtt_dsxx {
  *        N-dimensional ones.
  *
  * \sa Index_Converter.cc for detailed descriptions.
- */
-/*!
- * \example ds++/test/tstIndex_Converter.cc
+ *
+ * \example ds++/test/tstIndex_Converter.cc 
+ * Example use of Index_Converter
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
 class Index_Converter : public Index_Set<D, OFFSET> {
 public:
   typedef Index_Set<D, OFFSET> Base;
-
   typedef Index_Counter<D, OFFSET> Counter;
 
-  //! Default constructor
-  Index_Converter() { /* ... */
+  //! default constructor
+  Index_Converter(void) { /*empty*/
   }
 
   //! Construct with just a pointer to the sizes
@@ -44,12 +43,9 @@ public:
   //! Construct a with all dimensions equal
   Index_Converter(const unsigned dimension) { set_size(dimension); }
 
-  //! Destructor.
-  virtual ~Index_Converter() { /* ... */
+  //! Destructor
+  ~Index_Converter() override { /*empty*/
   }
-
-  //! Assignment operator for Index_Converter.
-  // Index_Converter& operator=(const Index_Converter &rhs);
 
   //! Re-assignment operator
   void set_size(const unsigned *dimensions);
@@ -80,7 +76,9 @@ public:
   int get_next_index(int index, int direction) const;
 
   //! Get the next index from an Index_Counter and direction
-  int get_next_index(const Counter &counter, int direction) const;
+  int get_next_index(
+      const typename Index_Converter<D, OFFSET>::Counter &counter,
+      int direction) const;
 
   //! Create an iterator over the index set
   Counter counter() const { return Counter(*this); }
@@ -154,10 +152,12 @@ void Index_Converter<D, OFFSET>::get_indices(int index, IT iter) const {
   Check(Base::index_in_range(index));
   index -= OFFSET;
 
-  for (size_t d = 0; d <= D - 1; ++d) {
-    const int dim_size = Base::get_size(d);
+  for (unsigned d = 0; d <= D - 1; ++d) {
+    const unsigned dim_size = Base::get_size(d);
     *(iter++) = index % dim_size + OFFSET;
-    index /= dim_size;
+    // Ensure that conversion of dim_size from unsigned to int is safe.
+    Check(dim_size < static_cast<unsigned>(std::numeric_limits<int>::max()));
+    index /= static_cast<int>(dim_size);
   }
 
   Ensure(index == 0);

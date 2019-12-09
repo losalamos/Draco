@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Parser for various quadrature classes.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC. All rights
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC. All rights
  *         reserved. */
 //----------------------------------------------------------------------------//
 
@@ -61,7 +61,7 @@ private:
   static std::shared_ptr<Quadrature> child_;
 };
 
-} // end namespace rtt_quadrature
+} // namespace rtt_parser
 
 //----------------------------------------------------------------------------//
 // end of quadrature/Quadrature__parser.hh

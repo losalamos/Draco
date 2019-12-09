@@ -4,29 +4,25 @@
  * \author Kent Budge
  * \date   Mon Mar 24 10:17:40 2008
  * \brief  Explicit template instatiations for class global_containers.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/config.h"
+
 #ifdef C4_MPI
+
 #include "global_containers.i.hh"
 
 namespace rtt_c4 {
-using namespace std;
 
-template void global_merge(set<unsigned> &);
-
-template void global_merge(map<unsigned, double> &);
-
-template void global_merge(map<unsigned, unsigned> &);
-
-template void global_merge(map<unsigned, bool> &);
+template void global_merge(std::set<unsigned> &);
+template void global_merge(std::map<unsigned, double> &);
+template void global_merge(std::map<unsigned, unsigned> &);
+template void global_merge(std::map<unsigned, bool> &);
 
 } // end namespace rtt_c4
+
 #endif // C4_MPI
 
 //---------------------------------------------------------------------------//

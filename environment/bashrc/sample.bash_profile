@@ -10,7 +10,7 @@
 #   contain an "i":
 #------------------------------------------------------------------------------#
 case ${-} in
-  *i*) export INTERACTIVE=true ;;
+  *i*) export INTERACTIVE=true  ;;
   *)   export INTERACTIVE=false ;;
 esac
 
@@ -26,30 +26,40 @@ fi
 # User Customizations
 #------------------------------------------------------------------------------#
 # module unload cmake ('module' may not be available for remote ssh connections)
-if test "$INTERACTIVE" = true; then
+# if [[ $INTERACTIVE == true ]]; then
 
   # User Customization goes here
 
+  # export USERNAME=<moniker>
+  # export NAME="First Last"
   # export EDITOR="emacs -nw"
   # export LPDEST=gumibears
+  # export COVFILE=${HOME}/test.cov
+  # export NO_AT_BRIDGE=1          # Silence warnings from GTK/Gnome
+  # export LIBGL_ALWAYS_INDIRECT=1 # Fixes issues with FastX and OpenGL
 
-  # Set terminal title
-  # echo -ne "\033]0;${nodename}\007"
+  # aliases and functions
+  # source ~/.bash_aliases
+  # source ~/.bash_functions
 
-  # prompt - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
+  # Prompt ----------------------------------------------------------------------#
+  # - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
+
   # if test "$TERM" = emacs || \
-  #     test "$TERM" = dumb  || \
-  #     test -z "`declare -f npwd | grep npwd`"; then
+  #   test "$TERM" = dumb  || \
+  #   test -z "`declare -f npwd | grep npwd`"; then
   #   export PS1="\h:\w [\!] % "
   #   export LS_COLORS=''
   # else
   #   found=`declare -f npwd | wc -l`
-  #   if test ${found} != 0; then
-  #     export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
+  #   found2=`declare -f parse_git_branch | wc -l`
+  #   if test ${found} != 0 && test ${found2} != 0; then
+  #     export PS1="\[\033[34m\]\h:\[\033[32m\]\$(npwd)\[\033[35m\]\$(parse_git_branch)\[\033[00m\] [\!] % "
   #   fi
   # fi
 
-  # Custom Modules
+  # Modules ------------------------------------------------------------ #
+
   # target="`uname -n | sed -e s/[.].*//`"
   # case ${target} in
   #   tt-fey* | tt-login*)
@@ -66,7 +76,7 @@ if test "$INTERACTIVE" = true; then
   # export BSTINPUTS=$mydir:$BSTINPUTS
   # export BIBINPUTS=$mydir:$BIBINPUTS
 
-fi
+# fi
 
 #------------------------------------------------------------------------------#
 # end ~/.bash_profile

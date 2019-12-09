@@ -4,7 +4,7 @@
 !* \author Allan Wollaber, Tom Evans, Kelly Thompson
 !* \date   Fri Mar 15 11:25:00 2002
 !* \brief  Infinite medium Draco shunt.
-!* \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+!* \note   Copyright (C) 2016-2019 Triad National Security, LLC.
 !*         All rights reserved.
 !*
 !---------------------------------------------------------------------------//

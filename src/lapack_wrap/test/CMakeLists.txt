@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for lapack_wrap.
-# note   Copyright (C) 2016-2018, Los Alamos National Security
+# note   Copyright (C) 2016-2019, Triad National Security
 #        All rights reserved.
 # ---------------------------------------------------------------------------- #
 project( lapack_wrap_test CXX )
@@ -20,7 +20,7 @@ file( GLOB test_sources *.cc )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;lapack" )
+   DEPS    "Lib_dsxx;lapack;blas" )
 
 target_include_directories( Ut_lapack_wrap_tstBlas_Level_1_exe
   PRIVATE $<BUILD_INTERFACE:${lapack_wrap_BINARY_DIR}> )

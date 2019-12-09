@@ -14,7 +14,7 @@
 # as this script. Hooks should return 0 if successful and nonzero to cancel the
 # commit. They are executed in the order in which they are listed.
 #HOOKS="pre-commit-compile pre-commit-uncrustify"
-HOOKS="pre-commit-clang-format"
+HOOKS="pre-commit-clang-format pre-commit-f90-format"
 ###########################################################
 # There should be no need to change anything below this line.
 
@@ -29,22 +29,17 @@ SCRIPT="$(canonicalize_filename "$0")"
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH="$(dirname -- "$SCRIPT")"
 
+# Ensure only one directory is listed...
+SCRIPTPATH=`echo $SCRIPTPATH | sed -e 's/.* //g'`
 
-for hook in $HOOKS
-do
-    echo "Running hook: $hook"
-    # run hook if it exists
-    # if it returns with nonzero exit with 1 and thus abort the commit
-    if [ -f "$SCRIPTPATH/$hook" ]; then
-        "$SCRIPTPATH/$hook"
-        if [ $? != 0 ]; then
-            exit 1
-        fi
-    else
-        echo "Error: file $hook not found."
-        echo "Aborting commit. Make sure the hook is in $SCRIPTPATH and executable."
-        echo "You can disable it by removing it from the list in $SCRIPT."
-        echo "You can skip all pre-commit hooks with --no-verify (not recommended)."
-        exit 1
+for hook in $HOOKS; do
+  echo "Running hook: ${hook}"
+  # run hook if it exists
+  # if it returns with nonzero exit with 1 and thus abort the commit
+  if [ -f "${SCRIPTPATH}/${hook}" ]; then
+    "${SCRIPTPATH}/${hook}"
+    if [ $? != 0 ]; then
+      exit 1
     fi
+  fi
 done

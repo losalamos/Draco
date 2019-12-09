@@ -33,80 +33,100 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rng/config.h"
 
+#ifdef _MSC_FULL_VER
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+// - 4100: unreferenced formal parameter
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4127 4100)
+#endif
+
 #include "ut_aes.hh"
 
 #include <Random123/ReinterpretCtr.hpp>
 #if R123_USE_AES_OPENSSL
 #include <openssl/aes.h>
 #endif
-#include <string>
-#include <cstdio>
-#include <iostream>
-#include <cstring>
 #include <cassert>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <string>
 
 using namespace std;
 using namespace r123;
 
 #if !R123_USE_SSE
-int main(int, char **){
-    std::cout << "No SSE support.  This test is not compiled.  OK\n";
-    return 0;
+int main(int, char **) {
+  std::cout << "No SSE support.  This test is not compiled.  OK\n";
+  return 0;
 }
 #else
 
 #include "util_m128.h"
 
-int main(int, char **){
+int main(int, char **) {
 #if R123_USE_AES_NI || R123_USE_AES_OPENSSL
-    r123array1xm128i IN, K;
+  r123array1xm128i IN, K;
 
-    K.v[0].m =  m128i_from_charbuf("0001020304050607 08090a0b0c0d0e0f");
-    IN.v[0].m = m128i_from_charbuf("0011223344556677 8899aabbccddeeff");
+  K.v[0].m = m128i_from_charbuf("0001020304050607 08090a0b0c0d0e0f");
+  IN.v[0].m = m128i_from_charbuf("0011223344556677 8899aabbccddeeff");
 #endif
-    // From FIPS-197, this is the official "right answer"
-    r123array1xm128i right_answer;
-    right_answer[0] = m128i_from_charbuf("69c4 e0d8 6a7b 0430 d8cd b780 70b4 c55a");
-    (void)right_answer;  /* don't complain about an unused variable if neither NI nor OPENSSL are enabled. */
+  // From FIPS-197, this is the official "right answer"
+  r123array1xm128i right_answer;
+  right_answer[0] =
+      m128i_from_charbuf("69c4 e0d8 6a7b 0430 d8cd b780 70b4 c55a");
+  (void)
+      right_answer; /* don't complain about an unused variable if neither NI nor OPENSSL are enabled. */
 #if R123_USE_AES_NI
-    if( haveAESNI() ){
-        AESNI1xm128i::key_type xk(K);
-        AESNI1xm128i bx;
-        AESNI1xm128i::ctr_type x = bx(IN, xk);
+  if (haveAESNI()) {
+    AESNI1xm128i::key_type xk(K);
+    AESNI1xm128i bx;
+    AESNI1xm128i::ctr_type x = bx(IN, xk);
 
-        assert( x==right_answer );
-        cout << "IN: " << m128i_to_string(IN[0]) <<  "\n";
-        cout << "K : " << m128i_to_string(K[0])  << "\n";
-        cout << "AES:" << m128i_to_string(x[0])  << "\n";
-        cout << "Hooray!  AESNI1xm128i(IN, K) matches the published test vector!\n";
-    }else{
-        cout << "The AES-NI instructions are not available on this hardware.  Skipping AES-NI tests\n";
-    }
+    assert(x == right_answer);
+    cout << "IN: " << m128i_to_string(IN[0]) << "\n";
+    cout << "K : " << m128i_to_string(K[0]) << "\n";
+    cout << "AES:" << m128i_to_string(x[0]) << "\n";
+    cout << "Hooray!  AESNI1xm128i(IN, K) matches the published test vector!\n";
+  } else {
+    cout << "The AES-NI instructions are not available on this hardware.  "
+            "Skipping AES-NI tests\n";
+  }
 #else
-    cout << "The AES-NI Bijections are not compiled into this binary.  Skipping AES-NI tests\n";
+  cout << "The AES-NI Bijections are not compiled into this binary.  Skipping "
+          "AES-NI tests\n";
 #endif
-    
-    // And let's do it with AESOpenSSL.  But since AESOpenSSL has its own
-    // format for keys and counters we make a union for the key types and
-    // use ReinterpretCtr to wrap a union around the counter types.
+
+  // And let's do it with AESOpenSSL.  But since AESOpenSSL has its own
+  // format for keys and counters we make a union for the key types and
+  // use ReinterpretCtr to wrap a union around the counter types.
 #if R123_USE_AES_OPENSSL
 #if R123_USE_AES_NI
-    typedef AESNI1xm128i::ctr_type nictype;
+  typedef AESNI1xm128i::ctr_type nictype;
 #else
-    typedef r123array1xm128i nictype;
+  typedef r123array1xm128i nictype;
 #endif
-    AESOpenSSL16x8::ukey_type ouk;
-    _mm_storeu_si128((__m128i*)&ouk.v[0], K.v[0].m);
-    AESOpenSSL16x8::key_type okey(ouk);
-    ReinterpretCtr<nictype, AESOpenSSL16x8> osslb;
-    assert( osslb(IN, okey) == right_answer );
-    cout << "Hooray!  AESOpenSSL16x8(IN, K) matches the published test vector!\n";
+  AESOpenSSL16x8::ukey_type ouk;
+  _mm_storeu_si128((__m128i *)&ouk.v[0], K.v[0].m);
+  AESOpenSSL16x8::key_type okey(ouk);
+  ReinterpretCtr<nictype, AESOpenSSL16x8> osslb;
+  assert(osslb(IN, okey) == right_answer);
+  cout << "Hooray!  AESOpenSSL16x8(IN, K) matches the published test vector!\n";
 #else
-    cout << "The OpenSSL AES implementation is not linked with this binary.  Skipping the AESOpenSSL16x8\n";
+  cout << "The OpenSSL AES implementation is not linked with this binary.  "
+          "Skipping the AESOpenSSL16x8\n";
 #endif // R123_USE_AES_OPENSSL
 
-    cout << "ut_aes: all OK" << endl;
-    return 0;
+  cout << "ut_aes: all OK" << endl;
+  return 0;
 }
 
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif

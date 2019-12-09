@@ -4,9 +4,8 @@
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
  * \brief  Implementation file for Sobol Sequence.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Sobol_Sequence.hh"

@@ -4,7 +4,7 @@
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/XGetopt.cc
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -334,7 +334,7 @@ void tst_shortopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
   try {
     rtt_dsxx::XGetopt program_options(my_argc, my_argv, "hvc:");
     FAILMSG("Insist failed to fire with missing required argument.");
-  } catch (rtt_dsxx::assertion &err) {
+  } catch (rtt_dsxx::assertion & /*error*/) {
     PASSMSG("As expected, Insist fired with missing required argument.");
   }
   return;
@@ -868,7 +868,7 @@ void tst_lopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
     rtt_dsxx::XGetopt program_options(my_argc, my_argv, long_options);
 
     FAILMSG("Insist failed to fire with missing required argument.");
-  } catch (rtt_dsxx::assertion &err) {
+  } catch (rtt_dsxx::assertion & /*error*/) {
     PASSMSG("As expected, Insist fired with missing required argument.");
   }
   return;

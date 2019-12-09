@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Tue Oct 23 14:15:55 2007
  * \brief  Function declarations for endian conversions
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -13,10 +13,10 @@
 
 #include "ds++/config.h"
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <stdint.h>
 
 //---------------------------------------------------------------------------//
 /*!
@@ -122,7 +122,7 @@ template <typename T> T byte_swap_copy(T value) {
  * \brief Does this platform use big or little endianness
  * \return true if platform uses big endian format
  */
-DLL_PUBLIC_dsxx bool is_big_endian(void);
+bool is_big_endian();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -133,7 +133,7 @@ DLL_PUBLIC_dsxx bool is_big_endian(void);
  *
  * \return true if we support IEEE float representation.
  */
-DLL_PUBLIC_dsxx bool has_ieee_float_representation(void);
+bool has_ieee_float_representation();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -240,10 +240,10 @@ template <> inline double byte_swap_copy<double>(double const input) {
 
 //! These versions can be called by Fortran.  They wrap the C++ implementation.
 extern "C" {
-DLL_PUBLIC_dsxx int dsxx_is_big_endian();
-DLL_PUBLIC_dsxx void dsxx_byte_swap_int(int &value);
-DLL_PUBLIC_dsxx void dsxx_byte_swap_int64_t(int64_t &value);
-DLL_PUBLIC_dsxx void dsxx_byte_swap_double(double &value);
+int dsxx_is_big_endian();
+void dsxx_byte_swap_int(int &value);
+void dsxx_byte_swap_int64_t(int64_t &value);
+void dsxx_byte_swap_double(double &value);
 }
 
 #endif // dsxx_Endian_hh

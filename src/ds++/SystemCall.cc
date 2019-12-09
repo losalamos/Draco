@@ -3,7 +3,7 @@
  * \file  ds++/SystemCall.cc
  * \brief Implementation for the Draco wrapper for system calls. This routine
  *        attempts to hide differences between Unix/Windows system calls.
- * \note  Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note  Copyright (C) 2016-2019 Triad National Security, LLC.
  *        All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -14,7 +14,7 @@
 #include <cstdio>  // remove()
 #include <cstdlib> // _fullpath
 #include <cstring> // strncpy()
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <sys/param.h> // MAXPATHLEN
 #include <unistd.h>    // gethostname
 #endif
@@ -36,18 +36,18 @@ namespace rtt_dsxx {
 /*! \brief Wrapper for system dependent hostname call.
  *
  * Windows:
- *     HOST_NAME_MAX set to MAX_COMPUTERNAME_LENGTH in config.h
+ *     \c HOST_NAME_MAX set to \c MAX_COMPUTERNAME_LENGTH in config.h
  *
  * Catamount systems:
- *     HOST_NAME_MAX hard coded by CMake in config.h
+ *     \c HOST_NAME_MAX hard coded by CMake in config.h
  *
  * Unix/Linux:
- *     HOST_NAME_MAX loaded from <climit>
+ *     \c HOST_NAME_MAX loaded from \<climit\>
  *
  * Mac OSX:
- *     HOST_NAME_MAX set to _POSIX_HOST_NAME_MAX in config.h
+ *     \c HOST_NAME_MAX set to \c _POSIX_HOST_NAME_MAX in config.h
  */
-std::string draco_gethostname(void) {
+std::string draco_gethostname() {
 // Windows: gethostname from <winsock2.h>
 #ifdef WIN32
   char hostname[HOST_NAME_MAX];
@@ -55,7 +55,8 @@ std::string draco_gethostname(void) {
   if (err)
     strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
   return std::string(hostname);
-#endif
+
+#else
 
 // Linux: gethostname from <unistd.h>
 #ifdef HAVE_GETHOSTNAME
@@ -69,15 +70,15 @@ std::string draco_gethostname(void) {
 #else
   return std::string("Host (unknown)");
 #endif
-
-} // draco_hostname
+#endif
+} // draco_gethostname
 
 //---------------------------------------------------------------------------//
 /*! \brief Wrapper for system dependent pid call..
  *
  * Catamount systems do not have getpid().  This function will return -1.
  */
-int draco_getpid(void) {
+int draco_getpid() {
 #ifdef WIN32
   int i = _getpid();
   return i;
@@ -97,18 +98,18 @@ int draco_getpid(void) {
  *
  *  This should always return a trailing directory separator.
  */
-std::string draco_getcwd(void) {
+std::string draco_getcwd() {
 // Identify the current working directory.
 #ifdef WIN32
   char *buffer;
-  Insist((buffer = _getcwd(NULL, 0)) != NULL,
+  Insist((buffer = _getcwd(nullptr, 0)) != nullptr,
          std::string("getcwd failed: " + std::string(strerror(errno))));
   std::string cwd(buffer, buffer + strnlen(buffer, MAXPATHLEN));
   free(buffer);
 #else
   char curr_path[MAXPATHLEN];
   curr_path[0] = '\0';
-  Insist(getcwd(curr_path, MAXPATHLEN) != NULL,
+  Insist(getcwd(curr_path, MAXPATHLEN) != nullptr,
          std::string("getcwd failed: " + std::string(strerror(errno))));
   std::string cwd(curr_path);
 #endif
@@ -197,17 +198,20 @@ bool draco_getstat::isdir() {
 
 //---------------------------------------------------------------------------//
 //! Is a Unix permission bit set?
-bool draco_getstat::has_permission_bit(int mask) {
-  Insist(isreg(), "Can only check permission bit for regular files.");
 #ifdef WIN32
+bool draco_getstat::has_permission_bit(int /*mask*/) {
+  Insist(isreg(), "Can only check permission bit for regular files.");
   Insist(false,
          "draco_getstat::hsa_permission_bit() not implemented for WIN32");
   return false;
+}
 #else
+bool draco_getstat::has_permission_bit(int mask) {
+  Insist(isreg(), "Can only check permission bit for regular files.");
   // check execute bit (buf.st_mode & 0111)
   return (buf.st_mode & mask);
-#endif
 }
+#endif
 
 //---------------------------------------------------------------------------//
 /*!
@@ -217,10 +221,11 @@ std::string draco_getrealpath(std::string const &path) {
   char buffer[MAXPATHLEN]; // _MAX_PATH
 #ifdef WIN32
   // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
-  Insist(_fullpath(buffer, path.c_str(), MAXPATHLEN) != NULL, "Invalid path.");
+  Insist(_fullpath(buffer, path.c_str(), MAXPATHLEN) != nullptr,
+         "Invalid path.");
   std::string retVal(buffer);
 #else
-  Insist((realpath(path.c_str(), buffer)) != NULL, "Invalid path.");
+  Insist((realpath(path.c_str(), buffer)) != nullptr, "Invalid path.");
   // realpath trims the trailing slash, append now.
   std::string retVal(buffer);
   retVal += std::string(&dirSep, 1);

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:50:53 2001
  * \brief  GrayOpacity and Multigroup opacity test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -339,7 +339,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   vdensity[1] = 2.0;     // g/cc
 
   // The dummy opacity object should have 3 groups.  Check it.
-  int ng = spDmgO->getNumGroupBoundaries() - 1;
+  size_t ng = spDmgO->getNumGroupBoundaries() - 1;
   if (ng == 3) {
     ostringstream message;
     message << "Correct number of groups found for "
@@ -358,7 +358,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   // specified temperature and density.  Fill this container with
   // the values that DummyMultigroupOpacity should contain.
   std::vector<double> tabulatedMGOpacity(ng);
-  for (int ig = 0; ig < ng; ++ig)
+  for (size_t ig = 0; ig < ng; ++ig)
     tabulatedMGOpacity[ig] = 2 * (temperature + density / 1000) /
                              (energyBoundaries[ig] + energyBoundaries[ig + 1]);
 
@@ -398,7 +398,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   std::vector<std::vector<double>> vRefMgOpacity(2);
   for (size_t it = 0; it < vtemperature.size(); ++it) {
     vRefMgOpacity[it].resize(ng);
-    for (int ig = 0; ig < ng; ++ig)
+    for (size_t ig = 0; ig < ng; ++ig)
       vRefMgOpacity[it][ig] = 2.0 * (vtemperature[it] + density / 1000.0) /
                               (energyBoundaries[ig] + energyBoundaries[ig + 1]);
   }
@@ -452,7 +452,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
 
   // Reference Values
   for (size_t it = 0; it < vtemperature.size(); ++it)
-    for (int ig = 0; ig < ng; ++ig)
+    for (size_t ig = 0; ig < ng; ++ig)
       vRefOpacity[it * ng + ig] =
           2.0 * (vtemperature[it] + vdensity[it] / 1000.0) /
           (energyBoundaries[ig] + energyBoundaries[ig + 1]);
@@ -512,7 +512,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   vdensity[1] = 2.0;     // g/cc
 
   // The dummy opacity object should have 3 groups.  Check it.
-  int numGroups = spDumOdfmgOpacity->getNumGroupBoundaries() - 1;
+  size_t numGroups = spDumOdfmgOpacity->getNumGroupBoundaries() - 1;
   if (numGroups == 3) {
     ostringstream message;
     message << "Correct number of groups found for "
@@ -526,7 +526,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   }
 
   // The dummy opacity object should have 4 bands.  Check it.
-  int numBands = spDumOdfmgOpacity->getNumBands();
+  size_t numBands = spDumOdfmgOpacity->getNumBands();
   if (numBands == 4) {
     ostringstream message;
     message << "Correct number of groups found for "
@@ -549,13 +549,13 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   // specified temperature and density.  Fill this container with
   // the values that DummyOdfmgOpacity should contain.
   std::vector<std::vector<double>> odfmgRefOpacity(numGroups);
-  for (int group = 0; group < numGroups; ++group) {
+  for (size_t group = 0; group < numGroups; ++group) {
     odfmgRefOpacity[group].resize(numBands);
-    for (int band = 0; band < numBands; ++band) {
+    for (size_t band = 0; band < numBands; ++band) {
       odfmgRefOpacity[group][band] =
           2.0 * (temp + dens / 1000.0) /
           (energyBoundaries[group] + energyBoundaries[group + 1]) *
-          pow(10.0, band - 2);
+          pow(10.0, static_cast<double>(band) - 2.0);
     }
   }
 
@@ -581,27 +581,25 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
 
   // Reference values.
 
-  // The opacity container is a vector<vector<double>>.  Each nested
-  // vector contains all of the group opacity values for a single
-  // temperature.
+  // The opacity container is a vector<vector<double>>.  Each nested vector
+  // contains all of the group opacity values for a single temperature.
 
-  // a MG opacity set for a single temperature, density combination
-  // can be extracted from this container by using the following
-  // type of assignment.
+  // a MG opacity set for a single temperature, density combination can be
+  // extracted from this container by using the following type of assignment.
   // std::vector< double > vec1 = vRefMgOpacity[0];
 
-  // the size of this vector is the number of temperatures,
-  // ***not*** the number of groups!
+  // the size of this vector is the number of temperatures, ***not*** the number
+  // of groups!
   std::vector<std::vector<std::vector<double>>> vRefOpacity(2);
   for (size_t it = 0; it < vtemperature.size(); ++it) {
     vRefOpacity[it].resize(numGroups);
-    for (int group = 0; group < numGroups; ++group) {
+    for (size_t group = 0; group < numGroups; ++group) {
       vRefOpacity[it][group].resize(numBands);
-      for (int band = 0; band < numBands; ++band) {
+      for (size_t band = 0; band < numBands; ++band) {
         vRefOpacity[it][group][band] =
             2.0 * (vtemperature[it] + dens / 1000.0) /
             (energyBoundaries[group] + energyBoundaries[group + 1]) *
-            pow(10.0, band - 2);
+            pow(10.0, static_cast<double>(band) - 2.0);
       }
     }
   }
@@ -653,7 +651,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
 
   // Reference Values
   for (size_t it = 0; it < vtemperature.size(); ++it)
-    for (int ig = 0; ig < numGroups; ++ig)
+    for (size_t ig = 0; ig < numGroups; ++ig)
       vRefOpacityIter[it * numGroups + ig] =
           2.0 * (vtemperature[it] + vdensity[it] / 1000.0) /
           (energyBoundaries[ig] + energyBoundaries[ig + 1]);

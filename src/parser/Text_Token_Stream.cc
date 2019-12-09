@@ -1,24 +1,26 @@
-//----------------------------------*-C++-*-----------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Text_Token_Stream.cc
+ * \file   parser/Text_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Contains definitions of all Text_Token_Stream member functions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Text_Token_Stream.hh"
+#include "ds++/path.hh"
 #include <cstring>
 #include <ctype.h>
 #include <string>
 
+#if defined(MSVC)
+#undef ERROR
+#endif
+
 namespace rtt_parser {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // Helper function to allow a string && argument to take over storage of a
 // string.
 static string give(string &source) {
@@ -27,13 +29,13 @@ static string give(string &source) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 char const default_ws_string[] = "=:;,";
 
 set<char> const Text_Token_Stream::default_whitespace(
     default_ws_string, default_ws_string + sizeof(default_ws_string));
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the specified set of breaking
  * whitespace characters.
@@ -65,7 +67,6 @@ set<char> const Text_Token_Stream::default_whitespace(
  * nonbreaking whitespace separating each identifier within a keyword is
  * replaced by a single space character.
  */
-
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
                                      bool const no_nonbreaking_ws)
     : buffer_(), whitespace_(ws), line_(1),
@@ -76,7 +77,7 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
   Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the default set of breaking
  * whitespace characters. See the previous constructor documentation for a
@@ -85,7 +86,6 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
  * The default whitespace characters are contained in the set
  * \c Text_Token_Stream::default_whitespace.
  */
-
 Text_Token_Stream::Text_Token_Stream(void)
     : buffer_(), whitespace_(default_whitespace), line_(1),
       no_nonbreaking_ws_(false) {
@@ -95,13 +95,12 @@ Text_Token_Stream::Text_Token_Stream(void)
   Ensure(!no_nonbreaking_ws());
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * \brief Scan the next token from the character stream. The character stream is
- * accessed via the fill_character_buffer, error, and end functions, which are
- * pure virtual functions.
+ * \brief Scan the next token from the character stream. The character stream
+ * is accessed via the fill_character_buffer, error, and end functions, which
+ * are pure virtual functions.
  */
-
 Token Text_Token_Stream::fill_() {
   eat_whitespace_();
 
@@ -112,9 +111,17 @@ Token Text_Token_Stream::fill_() {
   if (c == '\0') {
     // Sentinel value for error or end of file.
     if (end_()) {
-      Ensure(check_class_invariants());
-      return {EXIT, token_location};
+      if (lines_.size() > 0) {
+        // We're at the end of an included file. Pop up.
+        pop_include();
+        return fill_();
+      } else {
+        // We're at the end of the top file.
+        Ensure(check_class_invariants());
+        return {EXIT, token_location};
+      }
     } else {
+      // Code only reachable if hardware failure occurs. Code coverage not expected.
       Ensure(check_class_invariants());
       return {rtt_parser::ERROR, token_location};
     }
@@ -122,61 +129,9 @@ Token Text_Token_Stream::fill_() {
     if (isalpha(c) || c == '_')
     // Beginning of a keyword or END token
     {
-      unsigned cc = 1;
-      unsigned ci = 1;
-      c = peek_(ci);
-      do {
-        // Scan a C identifier.
-        while (isalnum(c) || c == '_') {
-          cc++;
-          ci++;
-          c = peek_(ci);
-        }
-        if (!no_nonbreaking_ws_) {
-          // Replace any nonbreaking whitespace after the identifier
-          // with a single space, but ONLY if the identifier is
-          // followed by another identifer.
-          while (is_nb_whitespace(c)) {
-            ci++;
-            c = peek_(ci);
-          }
-          if (isalpha(c) || c == '_')
-            cc++;
-        }
-      } while (isalpha(c) || c == '_');
-
-      string text;
-      text.reserve(cc);
-      text += peek_(0);
-      pop_char_();
-      c = peek_();
-      do {
-        // Scan a C identifier.
-        while (isalnum(c) || c == '_') {
-          text += c;
-          pop_char_();
-          c = peek_();
-        }
-        if (!no_nonbreaking_ws_) {
-          // Replace any nonbreaking whitespace after the identifier
-          // with a single space, but ONLY if the identifier is
-          // followed by another identifer.
-          while (is_nb_whitespace(c)) {
-            pop_char_();
-            c = peek_();
-          }
-          if (isalpha(c) || c == '_')
-            text += ' ';
-        }
-      } while (isalpha(c) || c == '_');
-
-      if (text == "end") {
-        Ensure(check_class_invariants());
-        return {END, give(token_location)};
-      } else {
-        Ensure(check_class_invariants());
-        return {KEYWORD, give(text), give(token_location)};
-      }
+      Token Result = scan_keyword();
+      Ensure(check_class_invariants());
+      return Result;
     } else if (isdigit(c) || c == '.') {
       // A number of some kind.  Note that an initial sign ('+' or '-')
       // is tokenized independently, because it could be interpreted as
@@ -196,8 +151,8 @@ Token Text_Token_Stream::fill_() {
       } else if (int_length > 0) {
         text.reserve(int_length);
         for (unsigned i = 0; i < int_length; i++) {
-          char c = pop_char_();
-          text += c;
+          char cc = pop_char_();
+          text += cc;
         }
         Ensure(check_class_invariants());
         return {INTEGER, give(text), give(token_location)};
@@ -210,70 +165,35 @@ Token Text_Token_Stream::fill_() {
     } else if (c == '"')
     // Manifest string
     {
-      unsigned ci = 1;
-      c = peek_(ci);
-      for (;;) {
-        while (c != '"' && c != '\\' && c != '\n' && !end_() && !error_()) {
-          ci++;
-          c = peek_(ci);
-        }
-        if (c == '"')
-          break;
-        if (c == '\\') {
-          ci += 2;
-          c = peek_(ci);
-        } else {
-          if (end_() || error_()) {
-            report_syntax_error(Token(EXIT, give(token_location)),
-                                "unexpected end of file; "
-                                "did you forget a closing quote?");
-          } else {
-            Check(c == '\n');
-            report_syntax_error(Token(EXIT, give(token_location)),
-                                "unexpected end of line; "
-                                "did you forget a closing quote?");
-          }
-        }
-      }
-      ci++;
-
-      string text;
-      text.reserve(ci);
-      text += peek_();
-      pop_char_();
-      c = peek_();
-      for (;;) {
-        while (c != '"' && c != '\\' && c != '\n' && !end_() && !error_()) {
-          text += c;
-          pop_char_();
-          c = peek_();
-        }
-        if (c == '"')
-          break;
-        if (c == '\\') {
-          text += c;
-          pop_char_();
-          c = pop_char_();
-          text += c;
-          c = peek_();
-        } else {
-          if (end_() || error_()) {
-            report_syntax_error(Token(EXIT, give(token_location)),
-                                "unexpected end of file; "
-                                "did you forget a closing quote?");
-          } else {
-            Check(c == '\n');
-            report_syntax_error(Token(EXIT, give(token_location)),
-                                "unexpected end of line; "
-                                "did you forget a closing quote?");
-          }
-        }
-      }
-      text += '"';
-      pop_char_();
-
+      Token Result = scan_manifest_string();
       Ensure(check_class_invariants());
-      return {STRING, give(text), give(token_location)};
+      return Result;
+    } else if (c == '#')
+    // #directive
+    {
+      pop_char_();
+      eat_whitespace_();
+      c = peek_();
+      if (!isalpha(c) && c != '_') {
+        report_syntax_error("ill-formed #directive");
+      } else {
+        Token directive = scan_keyword();
+        if (directive.text() == "include") {
+          eat_whitespace_();
+          if (peek_() == '"') {
+            Token file = scan_manifest_string();
+            string name = file.text();
+            // strip end quotes. May allow internal quotes someday ...
+            name = name.substr(1, name.size() - 2);
+            push_include(name);
+            return fill_();
+          } else {
+            report_syntax_error("#include requires file name in quotes");
+          }
+        } else {
+          report_syntax_error("unrecognized #directive: #" + directive.text());
+        }
+      }
     } else if (c == '<')
     // Multicharacter OTHER
     {
@@ -331,23 +251,21 @@ Token Text_Token_Stream::fill_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * \brief This function searches for the argument character in its internal list
- * of whitespace characters.
+ * \brief This function searches for the argument character in its internal
+ *        list of whitespace characters.
  *
- * \param c
- * Character to be checked against the whitespace list.
+ * \param c Character to be checked against the whitespace list.
  *
  * \return \c true if and only if the character is found in the internal
- * whitespace list.
+ *         whitespace list.
  */
-
 bool Text_Token_Stream::is_whitespace(char const c) const {
   return isspace(c) || whitespace_.count(c);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief This function searches for the argument character in the
  * Token_Stream's internal list of nonbreaking whitespace characters.
@@ -358,12 +276,11 @@ bool Text_Token_Stream::is_whitespace(char const c) const {
  * nonbreaking whitespace list, and is \e not found in the breaking whitespace
  * list..
  */
-
 bool Text_Token_Stream::is_nb_whitespace(char const c) const {
   return !whitespace_.count(c) && (c == ' ' || c == '\t');
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -374,27 +291,26 @@ bool Text_Token_Stream::is_nb_whitespace(char const c) const {
  *
  * \return The next character in the buffer.
  */
-
 char Text_Token_Stream::pop_char_() {
   Remember(unsigned const old_line = line_);
 
   char const Result = peek_();
   buffer_.pop_front();
-  if (Result == '\n')
+  if (Result == '\n') {
     line_++;
+  }
 
   Ensure(check_class_invariants());
   Ensure((Result == '\n' && line_ == old_line + 1) || line_ == old_line);
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a floating literal.
  *
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_floating_literal_() {
   unsigned pos = 0;
   if (scan_fractional_constant_(pos) > 0) {
@@ -409,13 +325,12 @@ unsigned Text_Token_Stream::scan_floating_literal_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a digit sequence.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos) {
   unsigned const old_pos = pos;
   while (isdigit(peek_(pos)))
@@ -423,13 +338,12 @@ unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an exponent part.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos) {
   unsigned const old_pos = pos;
   char c = peek_(pos);
@@ -445,13 +359,12 @@ unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a fractional constant.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos) {
   unsigned const old_pos = pos;
   if (scan_digit_sequence_(pos) > 0) {
@@ -470,13 +383,12 @@ unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an integer literal.
  *
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_integer_literal_() {
   unsigned pos = 0;
   if (scan_decimal_literal_(pos) > 0) {
@@ -488,13 +400,12 @@ unsigned Text_Token_Stream::scan_integer_literal_() {
   return pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan decimal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos) {
   unsigned const old_pos = pos;
   char c = peek_(pos);
@@ -507,13 +418,12 @@ unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan hexadecimal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos) {
   unsigned old_pos = pos;
   if (peek_(pos) == '0') {
@@ -537,13 +447,12 @@ unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan octal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
   unsigned old_pos = pos;
   char c = peek_(pos);
@@ -556,7 +465,7 @@ unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -564,12 +473,10 @@ unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
  * fill_character_buffer() if necessary to ensure that there is a sufficient
  * number of characters in the buffer.
  *
- * \param pos
- * Position at which to peek.
+ * \param pos Position at which to peek.
  *
  * \return The character at \c buffer[pos].
  */
-
 char Text_Token_Stream::peek_(unsigned const pos) {
   while (buffer_.size() <= pos) {
     fill_character_buffer_();
@@ -579,15 +486,18 @@ char Text_Token_Stream::peek_(unsigned const pos) {
   return buffer_[pos];
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * This function flushes the Text_Token_Stream's internal buffers, so that
  * scanning resumes at the beginning of the file stream.  It is normally called
  * by its overriding version in children of Text_Token_Stream.
  */
-
 void Text_Token_Stream::rewind() {
+  while (!buffers_.empty())
+    buffers_.pop();
   buffer_.clear();
+  while (!lines_.empty())
+    lines_.pop();
   line_ = 1;
 
   Token_Stream::rewind();
@@ -596,15 +506,16 @@ void Text_Token_Stream::rewind() {
   Ensure(error_count() == 0);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Text_Token_Stream::check_class_invariants() const { return line_ > 0; }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * This function skips past any whitespace present at the cursor position,
  * leaving the cursor at the first non-whitespace character following the
  * initial cursor position.
  */
+
 /* private */
 void Text_Token_Stream::eat_whitespace_() {
   for (;;) {
@@ -641,25 +552,13 @@ void Text_Token_Stream::eat_whitespace_() {
   // private member function -- no invariant check
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \func Text_Token_Stream::location
- *
- * This function returns a location string whose exact format is
- * stream-specific.  For example, for a token stream that scans tokens from a
- * text file, this could be a string of the form "filename, line #".
- *
- * \return A string describing the location from which the Text_Token_Stream is
- * currently scanning tokens.
- */
-
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \param c Character to be pushed onto the back of the character queue.
  */
-
 void Text_Token_Stream::character_push_back_(char const c) {
-  Remember(unsigned const old_buffer__size = buffer_.size());
+  Remember(unsigned const old_buffer__size =
+               static_cast<unsigned>(buffer_.size()));
 
   buffer_.push_back(c);
 
@@ -668,8 +567,222 @@ void Text_Token_Stream::character_push_back_(char const c) {
   Ensure(buffer_.back() == c);
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \param file_name Name of file to be included at this point. On
+ * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
+ * relative path did not exist.
+ *
+ * Child classes must set a policy on how to include a file. For example, a
+ * File_Token_Stream can be expected to read the included file in serial; a
+ * Parallel_File_Token_Stream can be expected to read the included file in
+ * parallel; and a Console_Token_Stream or String_Token_Stream presently do
+ * not provide this capability and will treat a include directive as an
+ * error.
+ *
+ * This function is pure virtual with an implementation. This means that every
+ * child class must implement this function, but part of its implementation
+ * must be to include
+ *
+ * \code
+ *    Text_Token_Stream::push_include(include_file_name);
+ * \endcode
+ *
+ * as the first line in its implementation of this function. This call stashes
+ * the line and character buffer of the underlying Text_Token_Stream and also
+ * finds the absolute path of the file name.
+ */
+void Text_Token_Stream::push_include(std::string &file_name) {
+  lines_.push(line_);
+  line_ = 1;
+  buffers_.push(buffer_);
+  buffer_.clear();
+
+  // Now find the absolute path of the file name.
+
+  if (!rtt_dsxx::fileExists(file_name)) {
+    // File name as given does not resolve to an existing file. Assume this
+    // is a relative path and look for the file in DRACO_INCLUDE_PATH.
+
+    // At present, DRACO_INCLUDE_PATH can contain only a single path.
+    // Multiple search options may be implemented in the future.
+    auto path = getenv("DRACO_INCLUDE_PATH");
+    if (path != nullptr) {
+      // For now, the only other possibility:
+      file_name = path + ('/' + file_name);
+      // If this doesn't exist, the stream will report the error later on.
+    }
+    // else return and let the stream report the error
+  }
+  // else the file name as given resolves to an existing file
+
+  Require(check_class_invariants());
+  Require(line() == 1);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * This function is pure virtual with an implementation. This means that every
+ * child class must implement this function, but part of its implementation
+ * must be to reset the line number by directly calling the base version. That
+ * is, every child class must include
+ *
+ * \code
+ *    Text_Token_Stream::pop_include(include_file_name);
+ * \endcode
+ *
+ * as the first line in its implementation of this function.
+ */
+void Text_Token_Stream::pop_include() {
+  Check(lines_.size() > 0);
+
+  line_ = lines_.top();
+  lines_.pop();
+  buffer_ = buffers_.top();
+  buffers_.pop();
+
+  Require(check_class_invariants());
+}
+
+//---------------------------------------------------------------------------//
+Token Text_Token_Stream::scan_keyword() {
+  Require(isalpha(peek_()) || peek_() == '_');
+
+  string token_location = location_();
+  char c = peek_();
+  unsigned cc = 1;
+  unsigned ci = 1;
+  c = peek_(ci);
+  do {
+    // Scan a C identifier.
+    while (isalnum(c) || c == '_') {
+      cc++;
+      ci++;
+      c = peek_(ci);
+    }
+    if (!no_nonbreaking_ws_) {
+      // Replace any nonbreaking whitespace after the identifier with a
+      // single space, but ONLY if the identifier is followed by another
+      // identifer.
+      while (is_nb_whitespace(c)) {
+        ci++;
+        c = peek_(ci);
+      }
+      if (isalpha(c) || c == '_')
+        cc++;
+    }
+  } while (isalpha(c) || c == '_');
+
+  string text;
+  text.reserve(cc);
+  text += peek_(0);
+  pop_char_();
+  c = peek_();
+  do {
+    // Scan a C identifier.
+    while (isalnum(c) || c == '_') {
+      text += c;
+      pop_char_();
+      c = peek_();
+    }
+    if (!no_nonbreaking_ws_) {
+      // Replace any nonbreaking whitespace after the identifier with a
+      // single space, but ONLY if the identifier is followed by another
+      // identifer.
+      while (is_nb_whitespace(c)) {
+        pop_char_();
+        c = peek_();
+      }
+      if (isalpha(c) || c == '_')
+        text += ' ';
+    }
+  } while (isalpha(c) || c == '_');
+
+  if (text == "end") {
+    Ensure(check_class_invariants());
+    return {END, give(token_location)};
+  } else {
+    Ensure(check_class_invariants());
+    return {KEYWORD, give(text), give(token_location)};
+  }
+}
+
+//---------------------------------------------------------------------------//
+Token Text_Token_Stream::scan_manifest_string() {
+  Require(peek_() == '"');
+
+  string token_location = location_();
+  unsigned ci = 1;
+  char c = peek_(ci);
+  for (;;) {
+    while (c != '"' && c != '\\' && c != '\n' && c != '\0') {
+      ci++;
+      c = peek_(ci);
+    }
+    if (c == '"')
+      break;
+    if (c == '\\') {
+      ci += 2;
+      c = peek_(ci);
+    } else {
+      if (c == '\0') {
+        report_syntax_error(Token(EXIT, give(token_location)),
+                            "unexpected end of file; "
+                            "did you forget a closing quote?");
+      } else {
+        Check(c == '\n');
+        report_syntax_error(Token(EXIT, give(token_location)),
+                            "unexpected end of line; "
+                            "did you forget a closing quote?");
+      }
+    }
+  }
+  ci++;
+
+  string text;
+  text.reserve(ci);
+  text += peek_();
+  pop_char_();
+  c = peek_();
+  for (;;) {
+    while (c != '"' && c != '\\' && c != '\n' && c != '\0') {
+      text += c;
+      pop_char_();
+      c = peek_();
+    }
+    if (c == '"')
+      break;
+    if (c == '\\') {
+      text += c;
+      pop_char_();
+      c = pop_char_();
+      text += c;
+      c = peek_();
+    } else {
+      if (end_() || error_()) {
+        report_syntax_error(Token(EXIT, give(token_location)),
+                            "unexpected end of file; "
+                            "did you forget a closing quote?");
+      } else {
+        Check(c == '\n');
+        report_syntax_error(Token(EXIT, give(token_location)),
+                            "unexpected end of line; "
+                            "did you forget a closing quote?");
+      }
+    }
+  }
+  text += '"';
+  pop_char_();
+
+  //! \cond doxygen_ignore_block
+  Ensure(check_class_invariants());
+  //! \endcond
+
+  return {STRING, give(text), give(token_location)};
+}
+
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of Text_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

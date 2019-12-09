@@ -4,11 +4,8 @@
  * \author Shawn Pautz/B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/SideDataIDs class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_SideDataIDs_hh__
@@ -51,21 +48,22 @@ private:
 
 public:
   /*!
- * \brief Returns the specified side_data_id name.
- * \param id_numb side_data_id index number.
- * \return The side_data_id name.
- */
-  string get_data_id_name(int id_numb) const {
+   * \brief Returns the specified side_data_id name.
+   * \param id_numb side_data_id index number.
+   * \return The side_data_id name.
+   */
+  string get_data_id_name(size_t id_numb) const {
     Insist(id_numb <= dims.get_nside_data() - 1,
            "Invalid side data id number!");
     return names[id_numb];
   }
+
   /*!
- * \brief Returns the units associated with the specified side_data_id.
- * \param id_numb side_data_id index number.
- * \return The side_data_id units.
- */
-  string get_data_id_units(int id_numb) const {
+   * \brief Returns the units associated with the specified side_data_id.
+   * \param id_numb side_data_id index number.
+   * \return The side_data_id units.
+   */
+  string get_data_id_units(size_t id_numb) const {
     Insist(id_numb <= dims.get_nside_data() - 1,
            "Invalid side data id number!");
     return units[id_numb];

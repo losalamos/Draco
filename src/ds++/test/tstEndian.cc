@@ -3,7 +3,7 @@
  * \file   ds++/test/tstEndian.cc
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -95,17 +95,16 @@ void test_int64(ScalarUnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+/* This test demonstrates that two applications of byte-swap in succession
+ * return the original value.
+ *
+ * To do this, we sweep over a lot of double values. We use a non-integral
+ * multiplier for successive values to avoid small subsets of the available
+ * patterns of bits. E.g. multiples of 2.
+ */
 void test_idempotence(ScalarUnitTest &ut) {
 
-  /* This test demonstrates that two applications of byte-swap in succession
-   * return the original value.
-   *
-   * To do this, we sweep over a lot of double values. We use a non-integral
-   * multiplier for successive values to avoid small subsets of the available
-   * patterns of bits. E.g. multiples of 2.
-   */
-
-  for (double value = 1.0;
+  for (double value = 1.0;                               // NOLINT
        value < std::numeric_limits<double>::max() / 4.0; // divide by 4 to
        value *= 3.4)                                     // prevent overflow
   {

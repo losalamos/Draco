@@ -4,15 +4,11 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:41:12 2002
  * \brief  RTT_Mesh_Reader test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#include "../RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/path.hh"
@@ -24,10 +20,10 @@
 
 using namespace std;
 using namespace rtt_dsxx;
-using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 using rtt_mesh_element::Element_Definition;
+using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 
-enum Meshes { DEFINED };
+enum Meshes { DEFINED, MESHES_LASTENTRY };
 
 bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
                    Meshes const &meshtype);
@@ -47,7 +43,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   // Meshes in the header file.
   const int MAX_MESHES = 1;
   string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
-  Meshes mesh_type;
+  Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
     // Construct an RTT_Mesh_Reader class object from the data in the
@@ -93,7 +89,6 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
                    Meshes const &meshtype) {
   // Save and reset at end of function
@@ -103,16 +98,16 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
   // Exercise the virtual accessor functions for this mesh.
   vector<vector<double>> node_coords;
   string node_coord_units;
-  vector<vector<int>> element_nodes;
+  vector<vector<unsigned>> element_nodes;
   vector<Element_Definition::Element_Type> element_types;
   vector<Element_Definition::Element_Type> unique_element_types;
-  map<string, set<int>> node_sets;
-  map<string, set<int>> element_sets;
+  map<string, set<unsigned>> node_sets;
+  map<string, set<unsigned>> element_sets;
   string title;
   vector<double> coords(3, 0.0);
-  vector<int> side_nodes;
-  set<int> flag_nodes;
-  set<int> flag_elements;
+  vector<unsigned> side_nodes;
+  set<unsigned> flag_nodes;
+  set<unsigned> flag_elements;
 
   switch (meshtype) {
   case DEFINED:
@@ -289,7 +284,6 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
 //---------------------------------------------------------------------------//
 // Main
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   try {
     ScalarUnitTest ut(argc, argv, release);

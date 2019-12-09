@@ -3,7 +3,7 @@
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -93,8 +93,8 @@ string General_Octant_Quadrature::as_text(string const &indent) const {
   Result += indent + "  number of ordinates = " + to_string(mu_.size());
   Result += indent + "  number of levels = " + to_string(number_of_levels_);
 
-  unsigned const N = mu_.size();
-  for (unsigned i = 0; i < N; ++i) {
+  size_t const N = mu_.size();
+  for (size_t i = 0; i < N; ++i) {
     Result += indent + "  " + to_string(mu_[i]);
     Result += "  " + to_string(eta_[i]);
     Result += "  " + to_string(xi_[i]);

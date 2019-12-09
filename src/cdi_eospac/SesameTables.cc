@@ -5,7 +5,7 @@
  * \date   Fri Apr  6 08:57:48 2001
  * \brief  Implementation file for SesameTables (mapping material IDs
  *         to Sesame table indexes).
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -253,7 +253,7 @@ SesameTables& SesameTables::Gs_D( unsigned matID )
 // Return the enumerated data type associated with the provided integer index
 std::vector<EOS_INTEGER>
 SesameTables::returnTypes(unsigned const tableIndex) const {
-  unsigned found = rtMap.count(tableIndex);
+  size_t const found = rtMap.count(tableIndex);
   std::vector<EOS_INTEGER> result;
   // note: map::operator[] is non-const only.
   if (found > 0)
@@ -287,8 +287,8 @@ unsigned SesameTables::matID(EOS_INTEGER returnType) const {
  * map<unsigned,vector<int>> rtMap
  */
 std::vector<char> SesameTables::pack(void) const {
-  using std::vector;
   using std::string;
+  using std::vector;
 
   // Size of packed SesameTables
   size_t packed_SesameTable_size(0);

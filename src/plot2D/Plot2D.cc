@@ -4,7 +4,7 @@
  * \author lowrie
  * \date   2002-04-12
  * \brief  Implementation for Plot2D.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -21,10 +21,7 @@
 namespace rtt_plot2D {
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Constructor that calls open(); see open() for arguments.
- */
-//---------------------------------------------------------------------------//
+//! Constructor that calls open(); see open() for arguments.
 Plot2D::Plot2D(const int numGraphs, const std::string &paramFile,
                const bool batch)
     : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0),
@@ -547,7 +544,6 @@ int Plot2D::numColumnsInFile(const std::string filename) const {
  *  \brief Sets the current autoscaling mode for a graph.
  *
  *  \param iG Graph number.
- *  \param a The autoscale mode.
 */
 //---------------------------------------------------------------------------//
 void Plot2D::setAutoscale(const int iG) {

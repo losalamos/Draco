@@ -5,7 +5,7 @@
  * \date   Monday, Apr 22, 2013, 10:10 am
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -84,9 +84,9 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
     proc_pid_string = buf.str();
   }
 
-// ----------------------------------------
-// Examine /proc/meminfo for total memory and free memory.
-// ----------------------------------------
+  // ----------------------------------------
+  // Examine /proc/meminfo for total memory and free memory.
+  // ----------------------------------------
 
 #ifdef MSVC
   // struct MEMORYSTATUSEX (all values in bytes)

@@ -1,4 +1,11 @@
-# File: dracoTesting.cmake
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/compilerEnv.cmake
+# brief  Default CMake build parameters
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 include( FeatureSummary )
 option( BUILD_TESTING "Should we compile the tests?" ON )
@@ -18,7 +25,7 @@ if( UNIX )
        endif()
     endforeach()
     list( LENGTH proc_ids DRACO_NUM_CORES )
-    set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+    set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING
        "Number of cores on the local machine." )
   endif()
 endif()
@@ -28,11 +35,10 @@ if( BUILD_TESTING )
   include(CTest)
   enable_testing()
   # by default do not use parallel build flags (e.g.: -j16)
+  cmake_host_system_information( RESULT logical_cores QUERY NUMBER_OF_LOGICAL_CORES )
   set( pbuildtestflags "" )
-  if( WIN32 OR "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
-     # stick with scalar builds for now.
-  else()
-     set( pbuildtestflags "-j${MPIEXEC_MAX_NUMPROCS}" )
+  if( NOT WIN32 ) # stick with scalar builds for now.
+     set( pbuildtestflags "-j${logical_cores}" )
   endif()
   if( ${CMAKE_GENERATOR} MATCHES Ninja )
     add_custom_target( check
@@ -42,5 +48,9 @@ if( BUILD_TESTING )
     add_custom_target( check
       COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
       COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
-  endif() 
-endif() 
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# End dracoTesting.cmake
+#------------------------------------------------------------------------------#

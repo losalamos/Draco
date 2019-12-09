@@ -4,97 +4,83 @@
 ## File  : environment/bashrc/.bashrc
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
-##  Bash configuration file upon bash shell startup
+## Bash configuration file upon bash shell startup
+##
+## Instructions (customization):
+##
+## 1. Setup
+##    - Copy logic from draco/environment/bashrc/sample.bashrc and
+##      draco/environment/bashrc/sample.bash_profile.
+## 2. Override settings using the code found in the sample.bashrc.
 ##---------------------------------------------------------------------------##
 
 #uncomment to debug this script.
 #export verbose=true
 
-## Instructions (customization)
-##
-## Before sourcing this file, you may wish to set the following
-## variables to customize your environment (ie: set in ~/.bashrc
-## before sourcing this file).
-##
-## $prefered_term - a space delimited list of terminal names.  The
-##           default list is "gnome-terminal knosole xterm".  You can
-##           modify the order of this list or remove items.  If you
-##           add a new terminal you will need to modify this file to
-##           set the optional parameters.
-
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS for interactive sessions
 ##---------------------------------------------------------------------------##
 
-# If this is an interactive shell then the environment variable $-
-# should contain an "i":
+# If this is an interactive shell then the environment variable $- should
+# contain an "i":
 case ${-} in
-*i*)
-   export INTERACTIVE=true
-   if test -n "${verbose}"; then
-      echo "in draco/environment/bashrc/.bashrc"
-   fi
+  *i*)
+    export INTERACTIVE=true
+    if test -n "${verbose}"; then echo "in draco/environment/bashrc/.bashrc"; fi
 
-   # Turn on checkwinsize
-   shopt -s checkwinsize # autocorrect window size
-   shopt -s cdspell # autocorrect spelling errors on cd command line.
+    # Shell options
+    shopt -s checkwinsize # autocorrect window size
+    shopt -s cdspell      # autocorrect spelling errors on cd command line.
+    shopt -s histappend   # append to the history file, don't overwrite it
+    shopt -s cdspell
 
-   # Prevent creation of core files (ulimit -a to see all limits).
-   # ulimit -c 0
+    # More environment setup --------------------------------------------------#
 
-   ##------------------------------------------------------------------------##
-   ## Common aliases
-   ##------------------------------------------------------------------------##
+    # don't put duplicate lines or lines starting with space in the history. See
+    # bash(1) for more options
+    HISTCONTROL=ignoreboth
 
-   # Generic Settings
+    # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+    HISTSIZE=1000
+    HISTFILESIZE=2000
 
-   alias ll='\ls -Flh'
-   alias lt='\ls -Flth'
-   alias ls='\ls -F'
-   alias l.='\ls -h -d .*'
+    # Prevent creation of core files (ulimit -a to see all limits).
+    # ulimit -c 0
 
-   # alias a2ps='a2ps --sides=duplex --medium=letter'
-   alias btar='tar --use-compress-program /usr/bin/bzip2'
-   alias cpuinfo='cat /proc/cpuinfo'
-   alias df='df -h'
-   alias dirs='dirs -v'
-   alias du='du -h --max-depth=1 --exclude=.snapshot'
-   alias less='/usr/bin/less -r'
-   alias mdstat='cat /proc/mdstat'
-   alias meminfo='cat /proc/meminfo'
-   alias mroe='more'
-   nodename=`uname -n | sed -e 's/[.].*//g'`
-   alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
-   alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
+    # colored GCC warnings and errors
+    export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+    export TERM=xterm-256color
 
-   # Module related:
-   alias ma='module avail'
-   alias mls='module list'
-   alias mld='module load'
+    # Attempt to find DRACO
+    if ! [[ $DRACO_SRC_DIR ]]; then
+      _BINDIR=`dirname "$BASH_ARGV"`
+      export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
+      export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+    fi
 
-   # Provide special ls commands if this is a color-xterm or compatible terminal.
-   if test "${TERM}" != emacs &&
-       test "${TERM}" != dumb; then
-     # replace list aliases with ones that include colorized output.
-     alias ll='\ls --color -Flh'
-     alias l.='\ls --color -hd .*'
-     alias lt='\ls --color -Flth'
-     alias lt.='\ls --color -Flth .*'
-     alias ls='\ls --color -F'
-   fi
+    ##------------------------------------------------------------------------##
+    ## Common aliases
+    ##------------------------------------------------------------------------##
 
-   ;; # end case 'interactive'
+    source ${DRACO_ENV_DIR}/bashrc/bash_aliases.sh
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS for non interactive sessions
-##---------------------------------------------------------------------------##
+    # If this is an xterm set the title to user@host:dir
+    case "$TERM" in
+      xterm*|rxvt*) echo -ne "\033]0;${nodename}\007" ;;
+      *) ;;
+    esac
+    ;; # end case 'interactive'
 
-*) # Not an interactive shell (e.g. A PBS shell?)
-   export INTERACTIVE=false
-   ;;
+  ##---------------------------------------------------------------------------##
+  ## ENVIRONMENTS for non interactive sessions
+  ##---------------------------------------------------------------------------##
+
+  *) # Not an interactive shell (e.g. A PBS shell?)
+    export INTERACTIVE=false
+    ;;
 esac
 
 ##---------------------------------------------------------------------------##
@@ -104,41 +90,28 @@ esac
 # Bash functions are not inherited by subshells.
 if [[ ${INTERACTIVE} ]]; then
 
-  # Attempt to find DRACO
-  if ! [[ $DRACO_SRC_DIR ]]; then
-    _BINDIR=`dirname "$BASH_ARGV"`
-    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
-    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
-  fi
-
   # Common bash functions and alias definitions
-  source ${DRACO_ENV_DIR}/bin/bash_functions.sh
-  source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
+  source ${DRACO_ENV_DIR}/bashrc/bash_functions.sh
+  source ${DRACO_ENV_DIR}/../tools/common.sh
+
+  # aliases and bash functions for working with slurm
+  if !  [[ `which squeue 2>&1 | grep -c "no squeue"` == 1 ]] &&
+    [[ `which squeue | grep -c squeue` -gt 0 ]]; then
+    source ${DRACO_ENV_DIR}/bashrc/bashrc_slurm
+  fi
 fi
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
 
+# Darwin salloc inherits the user environment, so we need to bypass the
+# "already-done" logic
+if [[ ${SLURM_CLUSTER_NAME} == "darwin" ]]; then
+  export DRACO_BASHRC_DONE=no
+fi
+
 if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
-
-  # Clean up the default path to remove duplicates
-  tmpifs=$IFS
-  oldpath=$PATH
-  export PATH=/bin
-  IFS=:
-  for dir in $oldpath; do
-    if test -z "`echo $PATH | grep $dir`" && test -d $dir; then
-      export PATH=$PATH:$dir
-    fi
-  done
-  IFS=$tmpifs
-  unset tmpifs
-  unset oldpath
-
-  # Avoid double colon in PATH
-  export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
-  export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
 
   # Append PATHS (not linux specific, not ccs2 specific).
   add_to_path ${DRACO_ENV_DIR}/bin
@@ -148,7 +121,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
   # export http_proxy=http://wpad.lanl.gov/wpad.dat
   current_domain=`awk '/^domain/ {print $2}' /etc/resolv.conf`
-#  found=`nslookup proxyout.lanl.gov | grep -c Name`
+  #  found=`nslookup proxyout.lanl.gov | grep -c Name`
   #  if test ${found} == 1; then
   if [[ ${current_domain} == "lanl.gov" ]]; then
     export http_proxy=http://proxyout.lanl.gov:8080
@@ -166,6 +139,15 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
   # Possible values: ON, TRUE, OFF, FALSE, DIFF (the default value is ON).
   export DRACO_AUTO_CLANG_FORMAT=ON
 
+  # Parse the setup scripts, but don't actually load any modules.  This allows
+  # the developer to run 'dracoenv' or 'rdde' later to load modules.
+  if [[ -z $DRACO_ENV_LOAD ]]; then
+    export DRACO_ENV_LOAD=ON
+  fi
+
+  # Silence warnings from GTK/Gnome
+  export NO_AT_BRIDGE=1
+
   ##---------------------------------------------------------------------------##
   ## ENVIRONMENTS - machine specific settings
   ##---------------------------------------------------------------------------##
@@ -174,36 +156,37 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
 
   case ${target} in
 
-    # machine with GPUs
-    # backend nodes with GPUs are cn[1-4].
+    # Darwin Heterogeneous Cluster (GPU, ARM, P9, etc.)
+    # wiki: https://darwin.lanl.gov
     darwin-fe* | cn[0-9]*)
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
-      ;;
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe ;;
 
-    # Pinto | Wolf
-    pi* | wf* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
-      ;;
-
-    # Snow | Badger | Fire | Ice
-    sn* | ba* | fi* | ic* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
-      ;;
+    # Badger | Cyclone | Fire | Grizzly | Ice | Snow
+    ba* | cy* | fi* | gr* | ic* | sn* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_cts1 ;;
 
     # wtrw and rfta
     red-wtrw* | rfta* | redcap* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
-      ;;
-    # trinitite (tt-fey) | trinity (tr-fe)
-    tt-fey* | tt-login* | tr-fe* | tr-login* | nid0* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
-      ;;
-    # rzuseq
-    rzuseq*)
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_bgq
-      ;;
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta ;;
 
-    # Assume CCS machine (ccscs[0-9] or personal workstation)
+    # capulin, thunder, trinitite (tt-fey) | trinity (tr-fe)
+    cp-login* | th-login* |tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_cray ;;
+
+    # LLNL ATS-2
+    rzmanta* | rzansel* | sierra* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_ats2 ;;
+
+    # CCS-NET machines (insufficient space on ccscs5 for vendor+data).
+    ccscs5*)
+      echo "Draco developer environment not provided on this machine"
+      echo "(${target}) due to insufficient /scratch storage."
+      export NoModules=1
+      ;;
+    ccscs[1-4]* | ccscs[6-9]*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64 ;;
+
+    # Assume personal workstation
     *)
       if [[ -d /ccs/codes/radtran ]]; then
         # assume this is a CCS LAN machine (64-bit)
@@ -225,18 +208,20 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
   esac
 
   source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
-  dracoenv
+  if [[ "${DRACO_ENV_LOAD:-OFF}" == "ON" ]]; then
+    dracoenv
+  fi
 
   # Mark that we have already done this setup
   export DRACO_BASHRC_DONE=yes
 
 fi
 
-if ! [[ ${INTERACTIVE} ]]; then
-  # provide some bash functions (dracoenv, rmdracoenv) for non-interactive
-  # sessions.
-  source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
-fi
+# provide some bash functions (dracoenv, rmdracoenv) for non-interactive
+# sessions.
+source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
+
+if test -n "${verbose}"; then echo "done with draco/environment/bashrc/.bashrc"; fi
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc

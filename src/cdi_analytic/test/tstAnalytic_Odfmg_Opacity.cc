@@ -4,15 +4,15 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  Analytic_Odfmg_Opacity test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "cdi/CDI.hh"
+#include "cdi_analytic/Compound_Analytic_Odfmg_Opacity.hh"
 #include "cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.hh"
-#include "cdi_analytic/nGray_Analytic_Odfmg_Opacity.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "parser/Constant_Expression.hh"
@@ -20,12 +20,11 @@
 
 using namespace std;
 using namespace rtt_cdi_analytic;
-
 using namespace rtt_dsxx;
 using rtt_cdi::CDI;
 using rtt_cdi::OdfmgOpacity;
-using rtt_parser::Expression;
 using rtt_parser::Constant_Expression;
+using rtt_parser::Expression;
 
 //---------------------------------------------------------------------------//
 
@@ -57,17 +56,10 @@ bool checkOpacityEquivalence(vector<vector<double>> sigma, vector<double> ref) {
 
 void odfmg_test(UnitTest &ut) {
   // group structure
-  vector<double> groups(4, 0.0);
-  groups[0] = 0.05;
-  groups[1] = 0.5;
-  groups[2] = 5.0;
-  groups[3] = 50.0;
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
 
   // band strucutre
-  vector<double> bands(3, 0.0);
-  bands[0] = 0.0;
-  bands[1] = 0.75;
-  bands[2] = 1.0;
+  vector<double> bands = {0.0, 0.75, 1.0};
 
   vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
@@ -82,8 +74,8 @@ void odfmg_test(UnitTest &ut) {
   models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
   // make an analytic multigroup opacity object for absorption
-  nGray_Analytic_Odfmg_Opacity opacity(groups, bands, models,
-                                       rtt_cdi::ABSORPTION);
+  Compound_Analytic_Odfmg_Opacity opacity(groups, bands, models,
+                                          rtt_cdi::ABSORPTION);
 
   // check the interface to multigroup opacity
   {
@@ -130,19 +122,19 @@ void odfmg_test(UnitTest &ut) {
 
   {
     // make an analytic multigroup opacity object for scattering
-    nGray_Analytic_Odfmg_Opacity opacity(groups, bands, models,
+    Compound_Analytic_Odfmg_Opacity opac(groups, bands, models,
                                          rtt_cdi::SCATTERING);
     string desc = "Analytic Odfmg Scattering";
 
-    if (opacity.getDataDescriptor() != desc)
+    if (opac.getDataDescriptor() != desc)
       ITFAILS;
   }
   {
     // make an analytic multigroup opacity object for scattering
-    nGray_Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::TOTAL);
+    Compound_Analytic_Odfmg_Opacity opac(groups, bands, models, rtt_cdi::TOTAL);
     string desc = "Analytic Odfmg Total";
 
-    if (opacity.getDataDescriptor() != desc)
+    if (opac.getDataDescriptor() != desc)
       ITFAILS;
   }
 
@@ -169,10 +161,7 @@ void odfmg_test(UnitTest &ut) {
   // >>> get opacities
 
   // scalar density and temperature
-  vector<double> ref(3, 0.0);
-  ref[0] = 100.0 / 8.0;
-  ref[1] = 1.5;
-  ref[2] = 3.0;
+  vector<double> ref = {100.0 / 8.0, 1.5, 3.0};
 
   // load groups * bands opacities; all bands inside each group should be
   // the same
@@ -248,20 +237,12 @@ void odfmg_test(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void test_CDI(UnitTest &ut) {
   // group structure
-  vector<double> groups(4, 0.0);
-  groups[0] = 0.05;
-  groups[1] = 0.5;
-  groups[2] = 5.0;
-  groups[3] = 50.0;
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
 
   // band strucutre
-  vector<double> bands(3, 0.0);
-  bands[0] = 0.0;
-  bands[1] = 0.75;
-  bands[2] = 1.0;
+  vector<double> bands = {0.0, 0.75, 1.0};
 
   vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
@@ -276,7 +257,7 @@ void test_CDI(UnitTest &ut) {
   models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
   // make an analytic multigroup opacity object for absorption
-  std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
+  std::shared_ptr<const OdfmgOpacity> odfmg(new Compound_Analytic_Odfmg_Opacity(
       groups, bands, models, rtt_cdi::ABSORPTION));
 
   // make a CDI object
@@ -311,10 +292,7 @@ void test_CDI(UnitTest &ut) {
   vector<vector<double>> sigma =
       cdi.odfmg(rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION)->getOpacity(2.0, 3.0);
 
-  vector<double> ref(3, 0.0);
-  ref[0] = 100.0 / 8.0;
-  ref[1] = 1.5;
-  ref[2] = 3.0;
+  vector<double> ref = {100.0 / 8.0, 1.5, 3.0};
 
   if (checkOpacityEquivalence(sigma, ref)) {
     ostringstream message;
@@ -330,22 +308,14 @@ void test_CDI(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void packing_test(UnitTest &ut) {
   vector<char> packed;
 
   // group structure
-  vector<double> groups(4, 0.0);
-  groups[0] = 0.05;
-  groups[1] = 0.5;
-  groups[2] = 5.0;
-  groups[3] = 50.0;
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
 
   // band strucutre
-  vector<double> bands(3, 0.0);
-  bands[0] = 0.0;
-  bands[1] = 0.75;
-  bands[2] = 1.0;
+  vector<double> bands = {0.0, 0.75, 1.0};
 
   {
     vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
@@ -362,15 +332,16 @@ void packing_test(UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
-        groups, bands, models, rtt_cdi::ABSORPTION));
+    std::shared_ptr<const OdfmgOpacity> odfmg(
+        new Compound_Analytic_Odfmg_Opacity(groups, bands, models,
+                                            rtt_cdi::ABSORPTION));
 
     // pack it
     packed = odfmg->pack();
   }
 
   // now unpack it
-  nGray_Analytic_Odfmg_Opacity opacity(packed);
+  Compound_Analytic_Odfmg_Opacity opacity(packed);
 
   // now check it
 
@@ -432,10 +403,7 @@ void packing_test(UnitTest &ut) {
 
   // scalar density and temperature
   vector<vector<double>> sigma = opacity.getOpacity(2.0, 3.0);
-  vector<double> ref(3, 0.0);
-  ref[0] = 100.0 / 8.0;
-  ref[1] = 1.5;
-  ref[2] = 3.0;
+  vector<double> ref = {100.0 / 8.0, 1.5, 3.0};
 
   if (checkOpacityEquivalence(sigma, ref)) {
     ostringstream message;
@@ -467,8 +435,9 @@ void packing_test(UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
-        groups, bands, models, rtt_cdi::ABSORPTION));
+    std::shared_ptr<const OdfmgOpacity> odfmg(
+        new Compound_Analytic_Odfmg_Opacity(groups, bands, models,
+                                            rtt_cdi::ABSORPTION));
 
     packed = odfmg->pack();
   }
@@ -477,7 +446,7 @@ void packing_test(UnitTest &ut) {
   // Marshak_Model is not registered in rtt_cdi::Opacity_Models
   bool caught = false;
   try {
-    nGray_Analytic_Odfmg_Opacity nmg(packed);
+    Compound_Analytic_Odfmg_Opacity nmg(packed);
   } catch (const rtt_dsxx::assertion &err) {
     caught = true;
     ostringstream message;
@@ -490,23 +459,15 @@ void packing_test(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void pseudo_line_opacity_test(UnitTest &ut) {
   // group structure
-  vector<double> groups(4, 0.0);
-  groups[0] = 0.05;
-  groups[1] = 0.5;
-  groups[2] = 5.0;
-  groups[3] = 10.0;
+  vector<double> groups = {0.05, 0.5, 5.0, 10.0};
 
   // band strucutre
-  vector<double> bands(3, 0.0);
-  bands[0] = 0.0;
-  bands[1] = 0.75;
-  bands[2] = 1.0;
+  vector<double> bands = {0.0, 0.75, 1.0};
 
-  unsigned const number_of_energy_groups = groups.size() - 1;
-  unsigned const bands_per_group = bands.size() - 1;
+  size_t const number_of_energy_groups = groups.size() - 1;
+  size_t const bands_per_group = bands.size() - 1;
 
   // continuum
   std::shared_ptr<Expression const> const continuum(
@@ -561,13 +522,13 @@ void pseudo_line_opacity_test(UnitTest &ut) {
 
   // Try pack
 
-  //    vector<char> data = model.pack();
   // kgbudge: Doesn't work yet, because we haven't implemented packing for
   // expression trees yet.
+
+  // vector<char> data = model.pack();
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {

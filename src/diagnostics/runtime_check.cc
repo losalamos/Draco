@@ -4,7 +4,7 @@
  * \author Kent Grimmett Budge
  * \date   Wed Mar 28 07:58:48 2018
  * \brief  Member definitions of class runtime_check
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -24,8 +24,8 @@ void runtime_check(bool condition, char const *message) noexcept(false) {
   if (sum != 0) // some processors failed the condition
   {
     throw std::runtime_error("runtime error detected on " +
-                             rtt_dsxx::to_string(sum) + " processor(s): " +
-                             message);
+                             rtt_dsxx::to_string(sum) +
+                             " processor(s): " + message);
   }
 }
 

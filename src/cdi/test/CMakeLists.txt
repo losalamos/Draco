@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi/test
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( cdi_test CXX )
@@ -14,6 +14,7 @@ project( cdi_test CXX )
 
 set( test_lib_sources
    ${PROJECT_SOURCE_DIR}/DummyEoS.cc
+   ${PROJECT_SOURCE_DIR}/DummyEICoupling.cc
    ${PROJECT_SOURCE_DIR}/DummyGrayOpacity.cc
    ${PROJECT_SOURCE_DIR}/DummyMultigroupOpacity.cc
    ${PROJECT_SOURCE_DIR}/DummyOdfmgOpacity.cc

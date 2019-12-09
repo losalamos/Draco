@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Bracket minimum of a function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -57,9 +57,8 @@ void mnbrak(double &ax, double &bx, double &cx, double &fa, double &fb,
   while (fb > fc) {
     double const r = (bx - ax) * (fb - fc);
     double const q = (bx - cx) * (fb - fa);
-    double u = bx -
-               ((bx - cx) * q - (bx - ax) * r) /
-                   (2 * sign(max(fabs(q - r), TINY), q - r));
+    double u = bx - ((bx - cx) * q - (bx - ax) * r) /
+                        (2 * sign(max(fabs(q - r), TINY), q - r));
     double const ulim = bx + GLIMIT * (cx - bx);
     double fu;
     if ((bx - u) * (u - cx) > 0.0) {

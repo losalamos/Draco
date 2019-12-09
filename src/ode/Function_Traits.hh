@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Aug 18 10:31:24 2004
  * \brief  Definition of class template Function_Traits
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

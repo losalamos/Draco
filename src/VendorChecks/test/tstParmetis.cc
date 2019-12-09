@@ -3,9 +3,8 @@
  * \file   VendorChecks/test/tstParmetis.cc
  * \date   Monday, May 16, 2016, 16:30 pm
  * \brief  Attempt to link to libparmetis and run a simple problem.
- * \note   Copyright (C) 2016, Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019, Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -55,11 +54,11 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   // balance constraint. If all of the sub-domains are to be of the same size
   // for every vertex weight, then each of the ncon × nparts elements should
   // be set to a value of 1/nparts.
-  std::vector<real_t> tpwgts(ncon * nparts, 1.0 / static_cast<double>(nparts));
+  std::vector<real_t> tpwgts(ncon * nparts, static_cast<real_t>(1.0 / nparts));
   // An array of size ncon that is used to specify the imbalance tolerance for
   // each vertex weight, with 1 being perfect balance and nparts being perfect
   // imbalance. A value of 1.05 for each of the ncon weights is recommended.
-  real_t ubvec(1.05);
+  real_t ubvec(static_cast<real_t>(1.05));
   // This is an array of integers that is used to pass additional parameters
   // for the routine.
   std::vector<idx_t> options(4, 0);
@@ -72,15 +71,12 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   // This is an array of size equal to the number of locally-stored
   // vertices. Upon successful completion the partition vector of the
   // locally-stored vertices is written to this array.
-  std::vector<idx_t> part(5, MPI_PROC_ID);
+  Check(MPI_PROC_ID < INT_MAX);
+  std::vector<idx_t> part(5, static_cast<idx_t>(MPI_PROC_ID));
 
   // This array describes how the vertices of the graph are distributed among
   // the processors. Its contents are identical for every processor.
-  std::vector<idx_t> vtxdist(4);
-  vtxdist[0] = 0;
-  vtxdist[1] = 5;
-  vtxdist[2] = 10;
-  vtxdist[3] = 15;
+  std::vector<idx_t> vtxdist = {0, 5, 10, 15};
 
   // Dependent on each processor
   if (MPI_PROC_ID == 0) {

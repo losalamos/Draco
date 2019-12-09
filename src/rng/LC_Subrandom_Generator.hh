@@ -3,9 +3,8 @@
  * \file   rng/LC_Subrandom_Generator.hh
  * \author Kent Budge
  * \brief  Definition of class LC_Subrandom_Generator
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rng_LC_Subrandom_Generator_hh
@@ -30,7 +29,7 @@ namespace rtt_rng {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng LC_Subrandom_Generator : public Subrandom_Generator {
+class LC_Subrandom_Generator : public Subrandom_Generator {
 public:
   // NESTED CLASSES AND TYPEDEFS
 

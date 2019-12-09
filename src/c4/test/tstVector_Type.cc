@@ -4,12 +4,12 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2002-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "c4/C4_Functions.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "c4/global.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 

@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! \file   UnitSystemType.cc
  *  \author Kelly Thompson
- *  \brief  Aggregates a collection of FundUnits to create a complete 
+ *  \brief  Aggregates a collection of FundUnits to create a complete
  *          UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "UnitSystemType.hh"

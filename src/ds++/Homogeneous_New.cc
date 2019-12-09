@@ -3,7 +3,7 @@
  * \file   ds++/Homogeneous_New.cc
  * \author Kent Budge
  * \brief  Implement methods of class Homogeneous_New
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,7 +18,8 @@ namespace rtt_dsxx {
 Homogeneous_New::Homogeneous_New(unsigned const object_size,
                                  unsigned const default_block_size)
     : object_size_(object_size), default_block_size_(default_block_size),
-      total_number_of_segments_(0), first_block_(NULL), first_segment_(NULL) {
+      total_number_of_segments_(0), first_block_(nullptr),
+      first_segment_(nullptr) {
 
   Require(object_size >= sizeof(void *));
   Require(default_block_size > sizeof(void *));
@@ -44,7 +45,7 @@ bool Homogeneous_New::check_class_invariants() const {
 //---------------------------------------------------------------------------//
 Homogeneous_New::~Homogeneous_New() {
   void *next = first_block_;
-  while (next != NULL) {
+  while (next != nullptr) {
     void *next_next = *reinterpret_cast<void **>(next);
     delete[] reinterpret_cast<char *>(next);
     next = next_next;
@@ -53,7 +54,7 @@ Homogeneous_New::~Homogeneous_New() {
 
 //---------------------------------------------------------------------------//
 void *Homogeneous_New::allocate() {
-  if (first_segment_ != NULL) {
+  if (first_segment_ != nullptr) {
     void *Result = first_segment_;
     first_segment_ = *reinterpret_cast<void **>(Result);
 
@@ -70,7 +71,7 @@ void *Homogeneous_New::allocate() {
 
 //---------------------------------------------------------------------------//
 void Homogeneous_New::allocate_block_(unsigned const /*block_size*/) {
-  char *const new_first_block = new char[default_block_size_];
+  auto *const new_first_block = new char[default_block_size_];
   *reinterpret_cast<void **>(new_first_block) = first_block_;
   first_block_ = new_first_block;
   char *segptr = new_first_block + object_size_;

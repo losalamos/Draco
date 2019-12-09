@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/path_getFilenameComponent.cc
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,7 +18,7 @@ namespace rtt_dsxx {
  * \param fqName A fully qualified filename (/path/to/the/unit/test)
  * \return filename only, or path to file only.
  *
- * This function expects a fully qualfied name of a unit test (e.g.: argv[0]).
+ * This function expects a fully qualified name of a unit test (e.g.: argv[0]).
  * It strips off the path and returns the name of the unit test.
  *
  * Options:
@@ -61,8 +61,7 @@ std::string getFilenameComponent(std::string const &fqName,
     break;
 
   case FC_NAME:
-    // if fqName is a directory and ends with "/", trim the trailing
-    // dirSep.
+    // if fqName is a directory and ends with "/", trim the trailing dirSep.
     if (fqName.rfind(rtt_dsxx::UnixDirSep) == fqName.length() - 1)
       fullName = fqName.substr(0, fqName.length() - 1);
     if (fqName.rfind(rtt_dsxx::WinDirSep) == fqName.length() - 1)
@@ -116,10 +115,11 @@ std::string getFilenameComponent(std::string const &fqName,
   }
 
   // Always convert paths to use native format.
-  if (dirSep == WinDirSep) // Windows style.
-    std::replace(retVal.begin(), retVal.end(), UnixDirSep, dirSep);
-  else
-    std::replace(retVal.begin(), retVal.end(), WinDirSep, dirSep);
+#ifdef WIN32
+  std::replace(retVal.begin(), retVal.end(), UnixDirSep, dirSep);
+#else
+  std::replace(retVal.begin(), retVal.end(), WinDirSep, dirSep);
+#endif
   return retVal;
 }
 

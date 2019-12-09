@@ -4,7 +4,7 @@
  * \author Thomas M. Evans and Todd Urbatsch
  * \date   Wed Nov  7 14:10:55 2001
  * \brief  Soft_Equivalence functions for floating point comparisons.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -49,8 +49,10 @@ namespace rtt_dsxx {
  * \sa http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
  */
 template <typename T>
-inline typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
-soft_equiv(const T &value, const T &reference, const T precision = 1.0e-12) {
+constexpr inline
+    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+    soft_equiv(const T &value, const T &reference,
+               const T precision = static_cast<T>(1.0e-12f)) {
   using std::fabs;
   bool passed = false;
 
@@ -60,7 +62,8 @@ soft_equiv(const T &value, const T &reference, const T precision = 1.0e-12) {
     passed = false;
 
   // second chance for passing if reference is within machine error of zero
-  if (!passed && (fabs(reference) < 1.0e-14))
+  T const ztol = static_cast<T>(1.0e-14);
+  if (!passed && (fabs(reference) < ztol))
     if (fabs(value) < precision)
       passed = true;
 
@@ -102,7 +105,7 @@ soft_equiv(const T &value, const T &reference, const T precision = 1.0e-12) {
 template <unsigned Depth, typename FPT = double> class soft_equiv_deep {
 public:
   // Constructor
-  soft_equiv_deep(void) { /* empty */
+  soft_equiv_deep() { /* empty */
   }
 
   /*!
@@ -111,8 +114,8 @@ public:
    *
    * \param[in] value floating point field of values
    * \param[in] value_end one past the end of the floating point field of values
-   * \param[in] reference floating point field to which values are compared
-   * \param[in] reference_end one past the end of the floating point field to
+   * \param[in] ref floating point field to which values are compared
+   * \param[in] ref_end one past the end of the floating point field to
    *      which values are compared
    * \param[in] precision tolerance of relative error (default 1.0e-12)
    * \return true if values are the same within relative error specified by
@@ -143,7 +146,7 @@ public:
 template <typename FPT> class soft_equiv_deep<1, FPT> {
 public:
   // Constructor
-  soft_equiv_deep<1, FPT>(void) { /* empty */
+  soft_equiv_deep<1, FPT>() { /* empty */
   }
   template <typename Value_Iterator, typename Ref_Iterator>
   bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
@@ -170,8 +173,10 @@ public:
  * \brief Compare two floating point fields for equivalence to a specified
  *        tolerance.
  *
- * \param[in] value  floating point field of values
- * \param[in] reference floating point field to which values are compared
+ * \param[in] value floating point field of values
+ * \param[in] value_end end iterator for values
+ * \param[in] ref floating point field to which values are compared
+ * \param[in] ref_end end iterator for reference values
  * \param[in] precision tolerance of relative error (default 1.0e-12)
  *
  * \return true if values are the same within relative error specified by
@@ -188,7 +193,7 @@ inline bool soft_equiv(
     Ref_Iterator ref_end,
     typename std::iterator_traits<Value_Iterator>::value_type const precision =
         1.0e-12) {
-  typedef typename std::iterator_traits<Value_Iterator>::value_type FPT;
+  using FPT = typename std::iterator_traits<Value_Iterator>::value_type;
   return soft_equiv_deep<1, FPT>().equiv(value, value_end, ref, ref_end,
                                          precision);
 }

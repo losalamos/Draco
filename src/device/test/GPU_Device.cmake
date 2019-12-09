@@ -1,124 +1,78 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/test/CPU_Device.cmake
 # brief  Instructions for building device/test Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
-if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
-   find_package(CUDA)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
 set( test_sources
-   # gpu_hello_rt_api.cc
-   gpu_hello_driver_api.cc
-   )
-set( cuda_sources
-   gpu_kernel.cu
-   vector_add.cu
-   )
+  gpu_hello_rt_api.cu
+  gpu_device_info.cu
+  gpu_dual_call_test.cu
+)
 
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
+set(cuda_headers
+  basic_kernels.hh
+  Dual_Call.hh
+)
 
-include_directories(
-   ${PROJECT_SOURCE_DIR}        # headers for tests
-   ${PROJECT_SOURCE_DIR}/..     # headers for package
-   ${PROJECT_BINARY_DIR}/..     # config.h
-   ${CUDA_TOOLKIT_INCLUDE}
-   )
-
-# ---------------------------------------------------------------------------- #
-# Compile .cu files into .ptx files.
-# ---------------------------------------------------------------------------- #
-
-set( CUDA_BUILD_CUBIN ON )
-cuda_compile( generated_files ${cuda_sources} )
-
-# move and rename the cubin.txt output file from the CMakeLists
-# directory to the CWD.
-# CMakeFiles/cuda_compile.dir/cuda_compile_generated_gpu_kernel.cu.o.cubin.txt
-#    -> gpu_kernel.cubin
-unset( cubinfiles_list )
-foreach( cubinfile ${generated_files} )
-   get_filename_component( sh_cubinfile ${cubinfile} NAME_WE )
-   string( REPLACE "cuda_compile_generated_" "" sh_cubinfile
-      ${sh_cubinfile} )
-   set( short_cubinfile "${sh_cubinfile}.cubin" )
-   add_custom_command( OUTPUT ${short_cubinfile}
-      COMMAND ${CMAKE_COMMAND} -E rename ${cubinfile}.cubin.txt ${short_cubinfile}
-      DEPENDS ${cubinfile} )
-   list(  APPEND cubinfiles_list ${short_cubinfile} )
-endforeach()
-add_custom_target( device_test_build_cubin_files ALL
-   DEPENDS ${cubinfiles_list} )
+set(cuda_sources
+  basic_kernels.cu
+  Dual_Call.cu
+)
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-# Binary using Runtime API (no link to libraries other than libcuda)
-cuda_add_executable( gpu_hello_rt_api_exe
-   ${PROJECT_SOURCE_DIR}/gpu_hello_rt_api.cc )
-target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
-target_include_directories( gpu_hello_rt_api_exe
-  # source directory or install location
-  PUBLIC ${CUDA_TOOLKIT_INCLUDE}
-  # generated include directive files (config.h)
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+# Stuff cuda code into a test library.
+add_component_library(
+   TARGET       Lib_device_test
+   TARGET_DEPS  Lib_dsxx Lib_device
+   LIBRARY_NAME device_test
+   LIBRARY_TYPE STATIC
+   SOURCES      "${cuda_sources}"
+   HEADERS      "${cuda_headers}" )
+set_property(TARGET Lib_device_test PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 
-# Binary using Device API and links to libcudahello.
-#   add_executable( gpu_hello_driver_api_exe
-#      ${PROJECT_SOURCE_DIR}/gpu_hello_driver_api.cc
-#      )
-#   target_link_libraries( gpu_hello_driver_api_exe
-#      Lib_device
-#      Lib_dsxx
-#      ${CUDA_CUDA_LIBRARY} )
-target_include_directories( gpu_hello_driver_api_exe
-  # source directory or install location
-  PUBLIC ${CUDA_TOOLKIT_INCLUDE}
-  # generated include directive files (config.h)
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+# We need to explicitly state that we need all CUDA files in the particle
+# library to be built with -dc as the member functions could be called by
+# other libraries and executables
+set_target_properties( Lib_device_test PROPERTIES
+ CUDA_SEPARABLE_COMPILATION ON )
+
+#target_include_directories( Ut_gpu_hello_rt_api_exe
+# PRIVATE $<BUILD_INTERFACE:${draco_src_dir_SOURCE_DIR}> )
+
+#          $<BUILD_INTERFACE:${dsxx_BINARY_DIR}> )
+#  PUBLIC $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}> )
+
+
+#   ${CUDA_CUDA_LIBRARY} )
+#   ${CUDA_TOOLKIT_INCLUDE}
 
 # ---------------------------------------------------------------------------- #
 # Register Unit tests
 # ---------------------------------------------------------------------------- #
 
-set( test_deps
-   Lib_device
-   ${CUDA_CUDA_LIBRARY} )
-add_scalar_tests(
-   SOURCES  "${test_sources}"
-   DEPS     "${test_deps}"
-   )
+ set( test_deps
+    Lib_device
+    Lib_device_test)
 
-add_test(
-   NAME    device_gpu_hello_rt_api_exe
-   COMMAND $<TARGET_FILE:gpu_hello_rt_api_exe>
-   )
-set_tests_properties( device_gpu_hello_rt_api_exe
-   PROPERTIES
+ add_scalar_tests(
+    SOURCES  "${test_sources}"
+    DEPS     "${test_deps}"
+    )
+
+#add_test( NAME device_gpu_hello_rt_api
+#  COMMAND $<TARGET_FILE:Ut_gpu_hello_rt_api_exe> )
+set_tests_properties( device_gpu_hello_rt_api PROPERTIES
    PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED"
-   FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED"
-   )
-
-set( extra_clean_files
-   cuda_compile_generated_gpu_kernel.ptx
-   cuda_compile_generated_vector_add.ptx
-   gpu_kernel.cubin
-   gpu_kernel.ptx
-   vector_add.cubin
-   vector_add.ptx
-   )
-set_directory_properties(
-   PROPERTIES
-   ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
+   FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" )
 
 # ---------------------------------------------------------------------------- #
 # End device/test/GPU_Device.cmake

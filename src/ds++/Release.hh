@@ -4,7 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -20,15 +20,15 @@
 namespace rtt_dsxx {
 
 // Typedefs
-typedef std::multimap<size_t, std::string, std::greater<int>> mmdevs;
-typedef std::pair<size_t, std::string> fomdev;
+using mmdevs = std::multimap<int, std::string, std::greater<>>;
+using fomdev = std::pair<int, std::string>;
 
 //! Query package for the release number.
-DLL_PUBLIC_dsxx const std::string release();
+const std::string release();
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx const std::string author_list();
+const std::string author_list(bool const use_doxygen_formatting = false);
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx const std::string copyright();
+const std::string copyright();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -40,14 +40,13 @@ DLL_PUBLIC_dsxx const std::string copyright();
  * \arg[in] list of developers
  * \return A formatted message.
  */
-DLL_PUBLIC_dsxx std::string print_devs(size_t const maxlinelen,
-                                       std::string const &line_name,
-                                       mmdevs const &devs);
+std::string print_devs(size_t const maxlinelen, std::string const &line_name,
+                       mmdevs const &devs);
 
-} // end of rtt_ds++
+} // namespace rtt_dsxx
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" DLL_PUBLIC_dsxx void ec_release(char *release_string, size_t maxlen);
+extern "C" void ec_release(char *release_string, size_t maxlen);
 
 #endif // rtt_ds_Release_hh
 

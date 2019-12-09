@@ -1,9 +1,11 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-g++.cmake
 # brief  Establish flags for Unix/Linux - Gnu C++
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 # Note: In config/compilerEnv.cmake, the build system sets flags for
 # 1) the language standard (C++14, C99, etc)
@@ -21,23 +23,31 @@
 #
 # Declare CMake options related to GCC
 #
-option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." OFF )
+if( NOT DEFINED GCC_ENABLE_ALL_WARNINGS )
+  option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options."
+    OFF )
+endif()
+if( NOT DEFINED GCC_ENABLE_GLIBCXX_DEBUG )
 option( GCC_ENABLE_GLIBCXX_DEBUG
   "Use special version of libc.so that includes STL bounds checking." OFF )
+endif()
 
 #
 # Compiler flag checks
 #
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
+# arm --> -mcpu=thunderx2t99 ??? Darwin volta nodes?
 check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
-check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
-check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
-check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
-#check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
-check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
-include(platform_checks)
-query_openmp_availability()
+if( DEFINED CMAKE_CXX_COMPILER_ID )
+  check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
+  check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
+  check_cxx_compiler_flag( "-Wunused-local-typedefs"
+    HAS_WUNUSED_LOCAL_TYPEDEFS )
+  #check_cxx_compiler_flag( "-Wunused-macros" HAS_WUNUSED_MACROS )
+  #check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
+  #  HAS_WZERO_AS_NULL_POINTER_CONSTANT )
+endif()
 
 # is this bullseye?
 execute_process(
@@ -52,6 +62,9 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
     CACHE BOOL "Are we running Bullseye" )
   mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
+
+# LTO (option '-flto') is controlled via the cmake variable
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION, see config/compilerEnv.cmake.
 
 #
 # Compiler Flags
@@ -76,27 +89,26 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
-    string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined" )
+    string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined -Wnarrowing" )
   endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
-  # -Wfloat-equal
-  # -Werror
-  # -Wconversion
+  # Ref: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
+  # -Wfloat-equal       # Warn when if-statement compares floats directly
+  # -Werror             # Promote all warnings to 'error' status
+  # -Wconversion        # warn on type conversions that may lose data
+  # -Wdouble-promotion  # warn if float is implicit promoted to double
+  # -Wformat=2          # warn on security issues around functions that format
+  #                       output (ie printf)
+  # -Winline            # Warn if function marked 'inline' cannot be inlined
+  # -Wold-style-cast    # Warn if c-style casts are used, replace with
+  #                       c++-style cast.
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
-    # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
-    # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
-
     # See https://gcc.gnu.org/gcc-5/changes.html
     # UndefinedBehaviorSanitizer gained a few new sanitization options:
-    #  -fsanitize=float-divide-by-zero: detect floating-point division by 0
-    #  -fsanitize=float-cast-overflow: check that the result of floating-point
-    #             type to integer conversions do not overflow;
-    #  -fsanitize=bounds: enable instrumentation of array bounds and detect
-    #             out-of-bounds accesses;
     #  -fsanitize=alignment: enable alignment checking, detect various
     #             misaligned objects;
     #  -fsanitize=object-size: enable object size checking, detect various
@@ -105,14 +117,20 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #             accesses and some conversions between pointers to base and
     #             derived classes, detect if the referenced object does not have
     #             the correct dynamic type.
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
+    if( NOT DEFINED ENV{TRAVIS} )
+      # Some options (including these) seem to confuse Travis.
+      # See https://stackoverflow.com/questions/50024731/ld-unrecognized-option-push-state-no-as-needed
+      string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
+      string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
+    endif()
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=auto")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=vptr")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=object-size")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=alignment")
-#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=bounds")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=address")
+    # - The '-fsanitize=leak' option sounds great but it finds too many issues in
+    #   OpenMPI.
+    # string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=leak")
     # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
   endif()
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
@@ -128,8 +146,17 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #            defined. On by default when -fsanitize=address.
     # -fsanitize=signed-integer-overflow
     # -Wduplicated-branches warns when an if-else has identical branches.
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
-
+    if( NOT DEFINED ENV{TRAVIS} )
+      string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
+    endif()
+  endif()
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 )
+    # See https://gcc.gnu.org/gcc-8/changes.html
+    # -fsanitize=pointer-compare warn about subtraction (or comparison) of
+    #                  pointers that point to a different memory object.
+    # -fsanitize=pointer-subtract
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast")
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
   endif()
 
   # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox
@@ -141,9 +168,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
       NOT CRAY_PE AND
       NOT "${sitename}" MATCHES "toolbox")
     string( APPEND CMAKE_C_FLAGS " -march=native" )
+  elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+    string( APPEND CMAKE_C_FLAGS " -mcpu=powerpc64le -mtune=powerpc64le" )
   endif()
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -165,17 +194,27 @@ endif()
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##
-set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE
+     STRING "compiler flags" FORCE )
 
-set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE
+     STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
+     STRING "compiler flags" FORCE )
 
 #
 # Toggle compiler flags for optional features
@@ -183,7 +222,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
 toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG
   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
 # Issues with tstFMA[12].cc:
 # toggle_compiler_flag( HAS_WUNUSED_MACROS "-Wunused-macros" "C;CXX" "" )

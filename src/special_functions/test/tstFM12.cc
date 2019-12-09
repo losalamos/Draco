@@ -1,13 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/tstFM12.cc
+ * \file   special_functions/test/tstFM12.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -37,9 +34,9 @@ void tstFM12(UnitTest &ut) {
     ut.failure("NOT correct FM12 for -10.0");
   }
   f1 = FM12(1000.0);
-  if (soft_equiv(f1, pow(1000.0, 0.5) / 0.5 -
-                         PI * PI * 0.5 * pow(1000.0, -1.5) / 6.0,
-                 1.0e-10)) {
+  if (soft_equiv(
+          f1, pow(1000.0, 0.5) / 0.5 - PI * PI * 0.5 * pow(1000.0, -1.5) / 6.0,
+          1.0e-10)) {
     ut.passes("correct FM12 for 1000.0");
   } else {
     ut.failure("NOT correct FM12 for 1000.0");

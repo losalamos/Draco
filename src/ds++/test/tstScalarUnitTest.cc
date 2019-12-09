@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -35,7 +35,7 @@ using namespace rtt_dsxx;
 // Helper
 //---------------------------------------------------------------------------//
 char *convert_string_to_char_ptr(std::string const &s) {
-  char *pc = new char[s.size() + 1];
+  auto *pc = new char[s.size() + 1];
   std::strcpy(pc, s.c_str());
   return pc;
 }
@@ -74,7 +74,9 @@ void tstTwo(UnitTest &unitTest) {
 //---------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
-  map<string, unsigned> word_list(rtt_dsxx::get_word_count(msg, verbose));
+  std::ostringstream const msg_nocolor(rtt_dsxx::remove_color(msg.str()));
+  map<string, unsigned> word_list(
+      rtt_dsxx::get_word_count(msg_nocolor, verbose));
 
   // Check the list of occurrences against the expected values
   if (word_list[string("Test")] == 9)
@@ -126,9 +128,8 @@ void tstGetWordCountFile(UnitTest &unitTest) {
   // Some output
   cout << "The world_list has the following statistics (word, count):\n"
        << endl;
-  for (map<string, unsigned>::iterator it = word_list.begin();
-       it != word_list.end(); ++it)
-    cout << it->first << "\t::\t" << it->second << endl;
+  for (auto &it : word_list)
+    cout << it.first << "\t::\t" << it.second << endl;
 
   // Spot checks on file contents:
   if (word_list[string("This")] != 1)
@@ -226,15 +227,9 @@ void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char *argv[]) {
 void tstVersion(UnitTest &unitTest, char *test) {
   // Check version construction
 
-  // 3 arguments in argv: {'tstScalarUnittest','a','--version'}
-  int argc(3);
-  // char *pptr[3];
-  std::vector<string> vs_arguments(argc);
-
   // Initialize the argument list
-  vs_arguments[0] = std::string(test);
-  vs_arguments[1] = std::string("a");
-  vs_arguments[2] = std::string("--version");
+  std::vector<std::string> vs_arguments = {test, "a", "--version"};
+  auto argc = static_cast<int>(vs_arguments.size());
 
   // Convert to 'char *'
   // We can then use &vc[0] as type char**
@@ -256,26 +251,29 @@ void tstVersion(UnitTest &unitTest, char *test) {
   }
 
   // clean-up memory
-  for (size_t i = 0; i < vc.size(); i++)
-    delete[] vc[i];
+  for (auto &i : vc)
+    delete[] i;
   return;
 }
 
 //---------------------------------------------------------------------------//
 void tstPaths(UnitTest &unitTest, char *test) {
+
+  using std::string;
+
   // Checkpoint
   size_t const nf = unitTest.numFails;
 
   // There are 4 member functions of UnitTest that return paths:
-  std::string const testBinaryDir(unitTest.getTestPath());
-  std::string const testName(unitTest.getTestName());
-  std::string const testBinaryInputDir(unitTest.getTestInputPath());
-  std::string const testSourceDir(unitTest.getTestSourcePath());
+  string const testBinaryDir(unitTest.getTestPath());
+  string const testName(unitTest.getTestName());
+  string const testBinaryInputDir(unitTest.getTestInputPath());
+  string const testSourceDir(unitTest.getTestSourcePath());
 
   // helper data
-  std::string const thisFile(__FILE__);
-  std::string testName_wo_suffix(testName);
-  if (testName.substr(testName.length() - 4, 4) == std::string(".exe"))
+  string const thisFile(__FILE__);
+  string testName_wo_suffix(testName);
+  if (testName.substr(testName.length() - 4, 4) == string(".exe"))
     testName_wo_suffix = testName.substr(0, testName.length() - 4);
 
   // Report current state
@@ -287,46 +285,37 @@ void tstPaths(UnitTest &unitTest, char *test) {
             << std::endl;
 
   // Checks
-  std::string const stest = rtt_dsxx::getFilenameComponent(
-      rtt_dsxx::getFilenameComponent(std::string(test), rtt_dsxx::FC_NATIVE),
+  string const stest = rtt_dsxx::getFilenameComponent(
+      rtt_dsxx::getFilenameComponent(string(test), rtt_dsxx::FC_NATIVE),
       rtt_dsxx::FC_REALPATH);
-  if (stest != testBinaryDir + testName)
-    ITFAILS;
-  if (testName != std::string("tstScalarUnitTest") + rtt_dsxx::exeExtension)
-    ITFAILS;
-  if (thisFile != testSourceDir + testName_wo_suffix + std::string(".cc")) {
+  FAIL_IF_NOT(stest == testBinaryDir + testName);
+  FAIL_IF_NOT(testName == string("tstScalarUnitTest") + rtt_dsxx::exeExtension);
+  if (thisFile != testSourceDir + testName_wo_suffix + ".cc") {
     // 2nd chance for case-insensitive file systems
-    std::string lc_thisFile = thisFile;
-    std::transform(lc_thisFile.begin(), lc_thisFile.end(), lc_thisFile.begin(),
-                   ::tolower);
-    std::string lc_gold =
-        testSourceDir + testName_wo_suffix + std::string(".cc");
-    std::transform(lc_gold.begin(), lc_gold.end(), lc_gold.begin(), ::tolower);
-    if (lc_thisFile != lc_gold)
-      ITFAILS;
+    string const lc_thisFile = string_tolower(thisFile);
+    string const lc_gold =
+        string_tolower(testSourceDir + testName_wo_suffix + ".cc");
+    FAIL_IF_NOT(lc_thisFile == lc_gold);
   }
 
   // CMake should provide cmake_install.cmake at testBinaryInputDir.
-  if (!rtt_dsxx::fileExists(testBinaryInputDir +
-                            std::string("cmake_install.cmake")))
-    ITFAILS;
+  FAIL_IF_NOT(rtt_dsxx::fileExists(testBinaryInputDir + "cmake_install.cmake"));
 
   // If this is a multi-config build tool, examine the value of buildType.
-  std::string buildType =
+  string buildType =
       rtt_dsxx::getFilenameComponent(testBinaryDir, rtt_dsxx::FC_NAME);
-  if (buildType != std::string("test")) {
+  if (buildType != string("test")) {
     // trim trailing Windows or Unix slash, if any
-    if (buildType.substr(buildType.length() - 1, 1) == std::string("\\") ||
-        buildType.substr(buildType.length() - 1, 1) == std::string("/"))
+    if (buildType.substr(buildType.length() - 1, 1) == string("\\") ||
+        buildType.substr(buildType.length() - 1, 1) == string("/"))
       buildType = buildType.substr(0, buildType.length() - 1);
     std::cout << "This appears to be a multi-config build tool like Xcode or "
               << "Visual Studio where build type = " << buildType << "."
               << std::endl;
-    if (buildType != std::string("Release") &&
-        buildType != std::string("Debug") &&
-        buildType != std::string("DebWithRelInfo") &&
-        buildType != std::string("MinSizeRel"))
-      FAILMSG(std::string("Unexpected build type = ") + buildType);
+    if (buildType != string("Release") && buildType != string("Debug") &&
+        buildType != string("DebWithRelInfo") &&
+        buildType != string("MinSizeRel"))
+      FAILMSG(string("Unexpected build type = ") + buildType);
   }
 
   if (unitTest.numFails == nf) // no new failures
@@ -366,6 +355,9 @@ int main(int argc, char *argv[]) {
     messages.str("");
     ssut.check(true, "this test must pass");
     ut.check(messages.str().size() == 0, "verbose==false is silent");
+
+    // Check the status member function
+    ut.status();
   }
 
   catch (rtt_dsxx::assertion &err) {

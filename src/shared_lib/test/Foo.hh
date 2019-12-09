@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Wed Dec 29 11:24:17 2004
  * \brief  Header for Foo.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 

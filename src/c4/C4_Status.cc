@@ -4,13 +4,11 @@
  * \author Robert B. Lowrie
  * \date   Friday May 19 9:31:33 2017
  * \brief  C4_Status member definitions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "C4_Status.hh"
-#include "ds++/Assert.hh"
 
 namespace rtt_c4 {
 

@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:03:25 MDT 2004
  * \brief  Declare the Ylm function template.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef special_functions_Ylm_hh
@@ -18,11 +15,17 @@
 
 namespace rtt_sf {
 
-//! Compute the spherical harmonic coefficient multiplied by the appropriate Associated Legendre Polynomial \f$ c_{l,k}P_{l,k}(\mu) \f$.
+/*! 
+ * \brief Compute the spherical harmonic coefficient multiplied by the 
+ *        appropriate Associated Legendre Polynomial \f$ c_{l,k}P_{l,k}(\mu) \f$.
+ */
 DLL_PUBLIC_special_functions double cPlk(unsigned const l, unsigned const m,
                                          double const mu);
 
-//! Compute Morel's Galerkin-quadrature spherical harmonic coefficient multiplied by the appropriate Associated Legendre Polynomial.
+/*! 
+ * \brief Compute Morel's Galerkin-quadrature spherical harmonic coefficient 
+ *        multiplied by the appropriate Associated Legendre Polynomial.
+ */
 double cPlkGalerkin(unsigned const l, unsigned const m, double const mu,
                     double const sumwt);
 

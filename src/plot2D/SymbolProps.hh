@@ -4,15 +4,15 @@
   \author lowrie
   \date   2002-04-12
   \brief  Header for SymbolProps.
-  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
           All rights reserved.
 */
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 
-#ifndef INCLUDED_plot2D_SymbolProps_hh
-#define INCLUDED_plot2D_SymbolProps_hh
+#ifndef rtt_plot2D_SymbolProps_hh
+#define rtt_plot2D_SymbolProps_hh
 
 #include "Colormap.hh"
 
@@ -70,7 +70,7 @@ struct SymbolProps {
 
 } // namespace rtt_plot2D
 
-#endif // INCLUDED_plot2D_SymbolProps_hh
+#endif // rtt_plot2D_SymbolProps_hh
 
 //---------------------------------------------------------------------------//
 // end of plot2D/SymbolProps.hh

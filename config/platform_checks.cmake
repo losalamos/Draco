@@ -1,9 +1,128 @@
 ##---------------------------------------------------------------------------##
 # file   : platform_checks.cmake
 # brief  : Platform Checks for Draco Build System
-# note   : Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   : Copyright (C) 2016-2019 Triad National Security, LLC.
 #          All rights reserved
 ##---------------------------------------------------------------------------##
+
+include_guard(GLOBAL)
+
+# ----------------------------------------------------------------------------
+# Identify machine and save name in ds++/config.h
+# ----------------------------------------------------------------------------
+
+function(dbs_set_sitename)
+
+  if( DEFINED SITENAME )
+    if( DEFINED SITENAME_FAMILY)
+      return()
+    else()
+      unset(SITENAME)
+    endif()
+  endif()
+
+  site_name( SITENAME )
+  string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
+  set( SITENAME_FAMILY "unknown" )
+  if( ${SITENAME} MATCHES "ba")
+    set( SITENAME "Badger" )
+    set( SITENAME_FAMILY "CTS-1" )
+  elseif( ${SITENAME} MATCHES "ccscs[0-9]+" )
+    set( SITENAME_FAMILY "CCS-NET" )
+  elseif( ${SITENAME} MATCHES "fi")
+    set( SITENAME "Fire" )
+    set( SITENAME_FAMILY "CTS-1" )
+  elseif( ${SITENAME} MATCHES "ic")
+    set( SITENAME "Ice" )
+    set( SITENAME_FAMILY "CTS-1" )
+  elseif( ${SITENAME} MATCHES "nid")
+    if( "$ENV{SLURM_CLUSTER_NAME}" MATCHES "trinity" )
+      set( SITENAME "Trinity" )
+      set( SITENAME_FAMILY "ATS-1" )
+    else()
+      set( SITENAME "Trinitite" )
+      set( SITENAME_FAMILY "ATS-1" )
+    endif()
+  elseif( ${SITENAME} MATCHES "sn")
+    set( SITENAME "Snow" )
+    set( SITENAME_FAMILY "CTS-1" )
+  elseif( ${SITENAME} MATCHES "tr")
+    set( SITENAME "Trinity" )
+      set( SITENAME_FAMILY "ATS-1" )
+  elseif( ${SITENAME} MATCHES "tt")
+    set( SITENAME "Trinitite" )
+      set( SITENAME_FAMILY "ATS-1" )
+  endif()
+  set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
+  set( SITENAME_FAMILY ${SITENAME_FAMILY} CACHE "STRING"
+    "Name of the current machine family (ATS-1, CTS-1, etc.)" FORCE)
+
+endfunction()
+
+if( NOT DEFINED CRAY_PE )
+  message("
+Platform Checks...
+")
+  dbs_set_sitename()
+endif()
+
+#------------------------------------------------------------------------------#
+# Sanity checks for Cray Programming Environments
+#
+# If this is a Cray PE,
+# - Set CRAY_PE = TRUE
+# - Ensure CMAKE_EXE_LINKER_FLAGS contains "-dynamic"
+# - Ensure that the compilers given to cmake are actually Cray compiler
+#   wrappers.
+#------------------------------------------------------------------------------#
+macro( query_craype )
+
+  if( NOT DEFINED CRAY_PE )
+
+    # Is this a Cray machine?
+    message( STATUS "Looking to see if we are building in a Cray Environment...")
+    if( DEFINED ENV{CRAYPE_VERSION} )
+      set( CRAY_PE ON CACHE BOOL
+        "Are we building in a Cray Programming Environment?")
+
+      # We expect developers to use the Cray compiler wrappers (especially in
+      # setupMPI.cmake). See also
+      # https://cmake.org/cmake/help/latest/module/FindMPI.html
+      if( NOT "$ENV{CXX}" MATCHES "CC$" OR
+          NOT "$ENV{CC}" MATCHES "cc$" OR
+          NOT "$ENV{FC}" MATCHES "ftn$" OR
+          NOT "$ENV{CRAYPE_LINK_TYPE}" MATCHES "dynamic$" )
+        message( FATAL_ERROR
+"The build system requires that the Cray compiler wrappers (CC, cc, ftn) be "
+" used when configuring this product on a Cray system (CRAY_PE=${CRAY_PE}). The"
+" development environment must also support dynamic linking.  The build system "
+" thinks you are trying to use:\n"
+"  CMAKE_CXX_COMPILER     = ${CMAKE_CXX_COMPILER}\n"
+"  CMAKE_C_COMPILER       = ${CMAKE_C_COMPILER}\n"
+"  CMAKE_Fortran_COMPILER = ${CMAKE_Fortran_COMPILER}\n"
+"  CRAYPE_LINK_TYPE       = $ENV{CRAYPE_LINK_TYPE}\n"
+"If you are working on a system that runs the Cray Programming Environment, try"
+" setting the following variables and rerunning cmake from a clean build"
+" directory:\n"
+"   export CXX=`which CC`\n"
+"   export CC=`which cc`\n"
+"   export FC=`which ftn`\n"
+"   export CRAYPE_LINK_TYPE=dynamic\n"
+"Otherwise please email this error message and other related information to"
+" draco@lanl.gov.\n" )
+      endif()
+      message( STATUS
+        "Looking to see if we are building in a Cray Environment..."
+        "found version $ENV{CRAYPE_VERSION}.")
+    else()
+      set( CRAY_PE OFF CACHE BOOL
+        "Are we building in a Cray Programming Environment?")
+      message( STATUS
+        "Looking to see if we are building in a Cray Environment...no.")
+    endif()
+
+  endif()
+endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Determine System Type and System Names
@@ -179,31 +298,8 @@ macro( query_have_restrict_keyword )
 
 endmacro()
 
-##---------------------------------------------------------------------------##
-## Query OpenMP availability
-##
-## This feature is usually compiler specific and a compile flag must be
-## added.  For this to work the <platform>-<compiler>.cmake files (eg.
-## unix-g++.cmake) call this macro.
-##---------------------------------------------------------------------------##
-macro( query_openmp_availability )
-  if( NOT PLATFORM_CHECK_OPENMP_DONE )
-    set( PLATFORM_CHECK_OPENMP_DONE TRUE CACHE BOOL "Is check for OpenMP done?")
-    mark_as_advanced( PLATFORM_CHECK_OPENMP_DONE )
-    message( STATUS "Looking for OpenMP...")
-    find_package(OpenMP QUIET)
-    if( OPENMP_FOUND )
-      message( STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS}")
-      set( OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "Is OpenMP availalable?"
-        FORCE )
-    else()
-      message(STATUS "Looking for OpenMP... not found")
-    endif()
-  endif()
-endmacro()
-
 #------------------------------------------------------------------------------#
-# Query if hardware has FMA
+# Query if hardware has FMA, AVX2
 #
 # This code is adopted from
 # https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
@@ -217,9 +313,10 @@ macro( query_fma_on_hardware )
     mark_as_advanced( PLATFORM_CHECK_FMA_DONE )
     message( STATUS "Looking for hardware FMA support...")
 
-    if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
-      # power8/9 have FMA and the check below fails for power architectures, so
-      # we hard code the result here.
+    if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" OR
+        "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64" )
+      # recent arm and power8/9 chips have FMA and the check below fails for
+      # these architectures, so we hard code the result here.
       set(HAVE_HARDWARE_FMA TRUE)
 
     else()
@@ -229,6 +326,7 @@ macro( query_fma_on_hardware )
         HAVE_HARDWARE_FMA_COMPILE
         ${CMAKE_CURRENT_BINARY_DIR}/config
         ${CMAKE_CURRENT_SOURCE_DIR}/config/query_fma.cc
+        ARGS "-f"
         )
       if( NOT HAVE_HARDWARE_FMA_COMPILE )
         message( FATAL_ERROR "Unable to compile config/query_fma.cc.")
@@ -268,6 +366,36 @@ macro( query_fma_on_hardware )
     #     set(HAS_HARDWARE_FMA ON)
     #   endif()
     # endif()
+
+    message( STATUS "Looking for hardware AVX2 support...")
+
+    if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
+      # see comments above for FMA
+      set(HAVE_HARDWARE_AVX2 TRUE)
+
+    elseif( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
+      # see comments above for FMA
+      set(HAVE_HARDWARE_AVX2 FALSE)
+
+    else()
+      unset(HAVE_HARDWARE_AVX2)
+      try_run(
+        HAVE_HARDWARE_AVX2
+        HAVE_HARDWARE_AVX2_COMPILE
+        ${CMAKE_CURRENT_BINARY_DIR}/config
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/query_fma.cc
+        ARGS "-f"
+        )
+      if( NOT HAVE_HARDWARE_AVX2_COMPILE )
+        message( FATAL_ERROR "Unable to compile config/query_fma.cc.")
+      endif()
+    endif()
+
+    if( HAVE_HARDWARE_AVX2 )
+      message( STATUS "Looking for hardware AVX2 support...found AVX2.")
+    else()
+      message( STATUS "Looking for hardware AVX2 support...AVX2 not found.")
+    endif()
 
   endif()
 

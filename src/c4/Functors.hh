@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   rtt_c4/Functors.hh
+ * \file   c4/Functors.hh
  * \author Thomas M. Evans
  * \date   Fri Sep 30 12:54:09 2005
  * \brief  Functors used in rtt_c4.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * Functors for use with TiggsTrace (scatter).
@@ -23,7 +23,7 @@ namespace rtt_c4 {
  * \param y, the second operand
  * \return the greater value of x or y
  */
-template <class T> struct max {
+template <typename T> struct max {
   T operator()(const T &x, const T &y) const { return (x > y) ? x : y; }
 };
 
@@ -34,7 +34,7 @@ template <class T> struct max {
  * \param y, the second operand
  * \return the lesser value of x or y
  */
-template <class T> struct min {
+template <typename T> struct min {
   T operator()(const T &x, const T &y) const { return (x < y) ? x : y; }
 };
 

@@ -4,7 +4,7 @@
 # date   Monday, Nov 28, 2016, 16:40 pm
 # brief  This is a Python script that is used to test the fpe_trap features in
 #        ds++.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys

@@ -3,7 +3,7 @@
  * \file   quadrature/Level_Symmetric.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -35,8 +35,8 @@ unsigned Level_Symmetric::number_of_levels() const { return sn_order_; }
 
 //----------------------------------------------------------------------------//
 string Level_Symmetric::as_text(string const &indent) const {
-  string Result = indent + "type = level symmetric" + indent + "  order = " +
-                  to_string(sn_order_) + indent + "end";
+  string Result = indent + "type = level symmetric" + indent +
+                  "  order = " + to_string(sn_order_) + indent + "end";
 
   return Result;
 }

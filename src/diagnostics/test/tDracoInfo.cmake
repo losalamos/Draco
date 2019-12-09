@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Monday, Nov 19, 2012, 17:02 pm
 # brief  This is a CTest script that is used to test bin/draco_info.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $

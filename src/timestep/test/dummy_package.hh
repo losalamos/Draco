@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Aug 27 07:48:41 1998
  * \brief  A dummy package to exercize the field time-step advisors.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -20,12 +20,14 @@
 namespace rtt_timestep {
 class ts_manager;
 class field_ts_advisor;
-}
+} // namespace rtt_timestep
 
 namespace rtt_timestep_test {
 
 //===========================================================================//
-/*! \class dummy_package - Exercizes the field time-step advisors.
+/*! 
+ * \class dummy_package 
+ * \brief Exercizes the field time-step advisors.
  *
  * This class serves as an example of how any particular package can make use
  * of the time-step manaager/advisor utility. It also exercizes the field

@@ -5,14 +5,14 @@
 # date   Monday, December 15, 2014, 5:44 pm
 # brief  This script uses the functions in ipcress_reader.py to generate an
 #        interactive plot for multigroup opacity data.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
 # import block
 ################################################################################
 import ipcress_reader as ip_reader
-
+import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 
@@ -94,6 +94,8 @@ name = selected_ID.get()
 print( \
   "-------------------- BEGIN DATA PRINT FOR {0} ---------------------"\
   .format(name))
+print("Group structure for {0} groups:".format(len(hnu_grid)-1))
+print(hnu_grid)
 # if valid, interpolate data at target rho and target T
 if (mgr_valid):
   mgr_interp = ip_reader.interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, mgr_grid, \

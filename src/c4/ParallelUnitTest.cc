@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -20,7 +20,7 @@ namespace rtt_c4 {
 /*!
  * \brief Constructor for ParallelUnitTest
  * \arg argc The number of command line arguments
- * \arg argv A list of strings containg the command line arguments
+ * \arg argv A list of strings containing the command line arguments
  * \arg release_ A function pointer to this package's release function.
  * \arg out_ A user specified iostream that defaults to std::cout.
  * \arg verbose_ flags whether to print messages for successful tests. Defaults
@@ -28,7 +28,7 @@ namespace rtt_c4 {
  * \exception rtt_dsxx::assertion An exception with the message "Success" will
  * be thrown if \c --version is found in the argument list.
  *
- * The constructor initializes the prallel communicator (MPI) and then
+ * The constructor initializes the parallel communicator (MPI) and then
  * initializes the base class UnitTest by setting numPasses and numFails to
  * zero.  It also prints a message that declares this to be a scalar unit test
  * and provides the unit test name.

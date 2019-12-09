@@ -31,9 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TIME_INITKEYCTR_H__ 1
 
 #ifdef __GNUC__
-#if (RNG_GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
 #endif
 
@@ -150,7 +151,7 @@ static aesni4x32_ctr_t good_aesni4x32_10 = {
 #endif
 
 #ifdef __GNUC__
-#if (RNG_GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif

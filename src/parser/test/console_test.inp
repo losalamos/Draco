@@ -23,3 +23,5 @@ end
 @
 1e
 0x
+
+#include "parallel_include.inp"

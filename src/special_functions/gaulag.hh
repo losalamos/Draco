@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 14 13:16:09 2004
  * \brief  Gauss-Laguerre quadrature
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id: gaulag.hh 5905 2011-06-08 17:11:34Z kellyt $
@@ -33,7 +33,7 @@ namespace rtt_special_functions {
  * \param x On return, contains abscissae \f$x_j\f$ for quadrature.
  * \param w On return, contains weights \f$w_j\f$ for quadrature.
  * \param alf Lagrange power parameter.
- * \param N Number of points in quadrature.
+ * \param n Number of points in quadrature.
  * 
  */
 template <class FieldVector>

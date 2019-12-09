@@ -23,14 +23,14 @@ function version_gt()
 }
 
 CLANG_FORMAT=`which clang-format`
-if ! test -x $CLANG_FORMAT; then
+if ! test -x "$CLANG_FORMAT"; then
   exit 0
 fi
 
-cf_min_ver=3.8
-cf_ver=`$CLANG_FORMAT --version`
+cf_min_ver=6.0
+cf_ver=`"$CLANG_FORMAT" --version`
 if version_gt $cf_ver_min $cf_min; then
-  echo "ERROR: Your version of clang-format is too old. Expecting v 3.8+."
+  echo "ERROR: Your version of clang-format is too old. Expecting v 6.0+."
   echo "       pre-commit-hook disabled."
   exit 0
 fi
@@ -57,7 +57,7 @@ PARSE_EXTS=true
 
 # file types to parse. Only effective when PARSE_EXTS is true.
 # FILE_EXTS=".c .h .cpp .hpp"
-FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx"
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .cu"
 
 # file endings for files to exclude from parsing when PARSE_EXTS is true.
 FILE_ENDINGS="_f.h _f77.h _f90.h"

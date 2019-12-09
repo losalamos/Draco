@@ -3,7 +3,7 @@
  * \file   linear/gaussj.i.hh
  * \author Kent Budge
  * \brief  Solve a linear system by Gaussian elimination.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -27,7 +27,8 @@ using std::sqrt;
 //! Is a double-subscript random container square?
 template <class DoubleRandomContainer>
 bool is_square(DoubleRandomContainer const &A) {
-  unsigned const n = A.size();
+  Check(A.size() < UINT_MAX);
+  unsigned const n = static_cast<unsigned>(A.size());
   for (unsigned i = 0; i < n; ++i) {
     if (A[i].size() != n)
       return false;
@@ -144,7 +145,8 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   // minimum representable value
   double const mrv =
       std::numeric_limits<typename RandomContainer::value_type>::min();
-  unsigned const n = A.size();
+  Check(A.size() < UINT_MAX);
+  unsigned const n = static_cast<unsigned>(A.size());
 
   vector<int> indxc(n);
   vector<int> indxr(n);

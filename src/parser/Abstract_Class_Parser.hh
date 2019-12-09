@@ -3,7 +3,7 @@
  * \file   parser/Abstract_Class_Parser.hh
  * \author Kent Budge
  * \brief  Define class Abstract_Class_Parser
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -15,9 +15,9 @@
 #include <iostream>
 
 namespace rtt_parser {
+using std::pointer_to_unary_function;
 using std::string;
 using std::vector;
-using std::pointer_to_unary_function;
 
 //===========================================================================//
 /*!
@@ -69,12 +69,13 @@ private:
  * for selecting each child class and a function that does the actual parsing
  * of the class specification. This assumes an input grammar of the form
  *
- * <code>
+ * \code
  * abstract class keyword
  *   child class keyword
  *     (child class specification)
  *   end
  * end
+ * \endcode
  *
  * Note that Abstract_Class_Parser does not actually do any parsing itself. It
  * is simply a repository for keyword-parser combinations that is typically used

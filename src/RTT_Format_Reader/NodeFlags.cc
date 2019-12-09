@@ -1,21 +1,20 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/NodeFlags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/NodeFlags class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "NodeFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//----------------------------------------------------------------------------//
 /*!
- * \brief Parses the node_flags data block from the mesh file via calls to 
+ * \brief Parses the node_flags data block from the mesh file via calls to
  *        private member functions.
  * \param meshfile Mesh file name.
  */
@@ -24,6 +23,8 @@ void NodeFlags::readNodeFlags(ifstream &meshfile) {
   readFlagTypes(meshfile);
   readEndKeyword(meshfile);
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_flags block keyword.
  * \param meshfile Mesh file name.
@@ -36,6 +37,8 @@ void NodeFlags::readKeyword(ifstream &meshfile) {
          "Invalid mesh file: node_flags block missing");
   std::getline(meshfile, dummyString);
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_flags block data.
  * \param meshfile Mesh file name.
@@ -55,6 +58,8 @@ void NodeFlags::readFlagTypes(ifstream &meshfile) {
     flagTypes[i]->readFlags(meshfile);
   }
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_node_flags block keyword.
  * \param meshfile Mesh file name.
@@ -67,6 +72,8 @@ void NodeFlags::readEndKeyword(ifstream &meshfile) {
          "Invalid mesh file: node_flags block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Returns the index to the node flag type that contains the specified
  *        string.
@@ -75,10 +82,12 @@ void NodeFlags::readEndKeyword(ifstream &meshfile) {
  */
 int NodeFlags::get_flag_type_index(string &desired_flag_type) const {
   int flag_type_index = -1;
-  for (int f = 0; f < dims.get_nnode_flag_types(); f++) {
+  for (size_t f = 0; f < dims.get_nnode_flag_types(); f++) {
     string flag_type = flagTypes[f]->getFlagType();
-    if (flag_type == desired_flag_type)
-      flag_type_index = f;
+    if (flag_type == desired_flag_type) {
+      Check(f < INT_MAX);
+      flag_type_index = static_cast<int>(f);
+    }
   }
   return flag_type_index;
 }

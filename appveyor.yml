@@ -1,0 +1,103 @@
+version: 1.0.{build}
+# Don't build when repository is tagged.
+skip_tags: true
+max_jobs: 1
+image: Visual Studio 2017
+clone_depth: 3
+
+environment:
+  OMP_NUM_THREADS: 4
+  RANDOM123_INC_DIR: c:\projects\vendors\Random123-1.08\include
+  VENDOR_DIR: c:\projects\vendors
+  PATH: c:\projects\vendors\bin;$(PATH)
+  CMAKE_PREFIX_PATH: c:\projects\vendors\gsl-2.5;c:\projects\vendors\lapack-3.8.0;c:\projects\vendors\metis-5.1.0
+
+build_script:
+# we start at $(APPVEYOR_BUILD_FOLDER) = c:\projects\draco-2th1a
+# can't put vendors in the source directory.
+  - cd ..
+  - curl -L -o win32-vendors.zip https://github.com/KineticTheory/ci-demo/releases/download/vendors-201809/win32-vendors.zip
+  - 7z.exe -y x win32-vendors.zip
+  - curl -L -o cmake.zip https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5-win64-x64.zip
+  - 7z.exe -y x cmake.zip
+  - set PATH=c:\projects\cmake-3.14.5-win64-x64\bin;%PATH%
+  - mkdir build
+  - cd build
+# no MPI installed so force scalar builds.
+  - cmake -G "Visual Studio 15 2017" -DDRACO_C4=SCALAR %APPVEYOR_BUILD_FOLDER%
+  - cmake --build . --config Debug
+  - ctest -C Debug -j 2 --output-on-failure
+
+#build:
+#  verbosity: minimal
+
+# Applications
+# C:\Program Files\dotnet\dotnet.exe
+# C:\Program Files (x86)\dotnet\dotnet.exe
+# C:\Tools\NuGet\nuget.exe
+
+# Environment
+
+# 7zip="C:\Program Files\7-Zip\7z.exe"
+# ALLUSERSPROFILE=C:\ProgramData
+# APPDATA=C:\Users\appveyor\AppData\Roaming
+# APPVEYOR=True
+# APPVEYOR_ACCOUNT_NAME=KineticTheory
+# APPVEYOR_API_URL=http://localhost:49714/
+# APPVEYOR_BUILD_FOLDER=C:\projects\draco-2th1a
+# APPVEYOR_BUILD_ID=16839214
+# APPVEYOR_BUILD_NUMBER=3
+# APPVEYOR_BUILD_VERSION=1.0.3
+# APPVEYOR_BUILD_WORKER_IMAGE=Visual Studio 2017 Preview
+# APPVEYOR_JOB_ID=pkav9i05a0xr908m
+# APPVEYOR_JOB_NUMBER=1
+# APPVEYOR_PROJECT_ID=464008
+# APPVEYOR_PROJECT_NAME=Draco
+# APPVEYOR_PROJECT_SLUG=draco-2th1a
+# APPVEYOR_PULL_REQUEST_HEAD_COMMIT=220c5c1857495bffe29255cfad0732f5b1606581
+# APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH=appveyor
+# APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME=KineticTheory/Draco
+# APPVEYOR_PULL_REQUEST_NUMBER=422
+# APPVEYOR_PULL_REQUEST_TITLE=WIP: Add an Appveyor (win32) build to the CI.
+# APPVEYOR_REPO_BRANCH=develop
+# APPVEYOR_REPO_COMMIT=7abced22ab379b996a6afc10cc22bd4ca79dc98c
+# APPVEYOR_REPO_COMMIT_AUTHOR=Kelly (KT) Thompson
+# APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL=kgt@lanl.gov
+# APPVEYOR_REPO_COMMIT_MESSAGE=Add an Appveyor (win32) build to the CI.
+# APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED=+ For now, only build and test ds++ and cdi.\n+ Add a badge for the VS2017-build to the README.md.
+# APPVEYOR_REPO_COMMIT_TIMESTAMP=2018-06-26T00:23:38.0000000Z
+# APPVEYOR_REPO_NAME=lanl/Draco
+# APPVEYOR_REPO_PROVIDER=gitHub
+# APPVEYOR_REPO_SCM=git
+# APPVEYOR_REPO_TAG=false
+# APPVEYOR_URL=https://ci.appveyor.com
+# CI=True
+# CI_LINUX=False
+# CI_WINDOWS=True
+# CommonProgramFiles=C:\Program Files\Common Files
+# CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+# CommonProgramW6432=C:\Program Files\Common Files
+# ComSpec=C:\windows\system32\cmd.exe
+# GIT_LFS_PATH=C:\Program Files\Git LFS
+# HOMEDRIVE=C:
+# HOMEPATH=\Users\appveyor
+# LOCALAPPDATA=C:\Users\appveyor\AppData\Local
+# MSYS2_PATH_TYPE=inherit
+# NUMBER_OF_PROCESSORS=2
+# OMP_NUM_THREADS=4
+# OS=Windows_NT
+# Path=c:\projects\Draco\vendors\bin;C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin;C:\Perl\site\bin;C:\Perl\bin;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\ProgramData\GooGet;C:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk\bin;C:\Program Files\Compute Engine\sysprep;C:\Program Files\Google\Compute Engine\sysprep\;C:\Program Files\Google\Compute Engine\metadata_scripts\;C:\Program Files\7-Zip;C:\Program Files\Microsoft\Web Platform Installer\;C:\Tools\NuGet;C:\Tools\GitVersion;C:\Tools\PsTools;C:\Program Files\Git LFS;C:\Program Files\Mercurial\;C:\Program Files (x86)\Subversion\bin;C:\Tools\WebDriver;C:\Tools\Coverity\bin;C:\Tools\MSpec;C:\Tools\NUnit\bin;C:\Tools\NUnit3;C:\Tools\xUnit;C:\go\bin;C:\Tools\curl\bin;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\ManagementStudio\;C:\Program Files (x86)\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Ruby193\bin;C:\Program Files\nodejs;C:\Program Files (x86)\iojs;C:\Program Files\iojs;C:\Users\appveyor\AppData\Roaming\npm;C:\Python27;C:\Python27\Scripts;C:\Program Files\Java\jdk1.8.0\bin;C:\Program Files (x86)\Apache\Maven\bin;C:\Program Files (x86)\CMake\bin;C:\Users\appveyor\.dnx\bin;C:\Program Files\Microsoft DNX\Dnvm\;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130;C:\Program Files\Amazon\AWSCLI\;C:\Program Files\dotnet\;C:\Tools\vcpkg;C:\Users\appveyor\AppData\Local\Microsoft\WindowsApps;C:\Users\appveyor\AppData\Local\Yarn\bin;C:\Users\appveyor\AppData\Roaming\npm;C:\Program Files (x86)\dotnet\;C:\Users\appveyor\AppData\Local\Microsoft\WindowsApps;C:\Users\appveyor\AppData\Roaming\npm;C:\Users\appveyor\AppData\Local\Yarn\bin;C:\Program Files\Docker;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform;C:\Program Files\erl9.2\bin;C:\Program Files (x86)\Microsoft SQL Server\110\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\LLVM\bin;C:\Program Files (x86)\NSIS;C:\Program Files (x86)\nodejs;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Tools\Octopus;C:\Program Files (x86)\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin;C:\Program Files\PowerShell\6.0.2;C:\Program Files (x86)\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\usr\bin;C:\ProgramData\chocolatey\bin;C:\Users\appveyor\AppData\Local\Microsoft\WindowsApps;C:\Users\appveyor\AppData\Local\Yarn\bin;C:\Users\appveyor\.dotnet\tools;C:\Users\appveyor\AppData\Roaming\npm;C:\Program Files\AppVeyor\BuildAgent\
+# PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.CPL
+# PROCESSOR_ARCHITECTURE=AMD64
+# PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 63 Stepping 0, GenuineIntel
+# PROCESSOR_LEVEL=6
+# PROCESSOR_REVISION=3f00
+# PSModulePath=C:\Users\appveyor\Documents\WindowsPowerShell\Modules;C:\Program Files (x86)\WindowsPowerShell\Modules;C:\windows\system32\WindowsPowerShell\v1.0\Modules;C:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk\platform\PowerShell;C:\Users\appveyor\Documents\WindowsPowerShell\Modules;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules;C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules;C:\Program Files (x86)\AWS Tools\PowerShell;C:\Program Files\AppVeyor\BuildAgent\Modules;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ResourceManager\AzureResourceManager;C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ServiceManagement;C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\Storage
+# PUBLIC=C:\Users\Public
+# RANDOM123_INC_DIR=c:\projects\Draco\vendors\Random123-1.08\include
+# SESSIONNAME=Console
+# SystemDrive=C:
+# SystemRoot=C:\windows
+# USERNAME=appveyor
+# USERPROFILE=C:\Users\appveyor
+# VENDOR_DIR=c:\projects\Draco\vendors

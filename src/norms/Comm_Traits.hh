@@ -4,11 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 12:45:49 2005
  * \brief  Header for Comm_Traits.
- * \note   Copyright © 2016-2018 Los Alamos National Security, LLC.  All
- *         rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC. 
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_norms_Comm_Traits_hh
@@ -36,14 +33,20 @@ namespace rtt_norms {
  */
 //===========================================================================//
 
-template <class Index_t> class Comm_Traits {
+template <typename Index_t> class Comm_Traits {
   // The default implementation of Comm_Traits assumes that Index_t is
   // supported as an argument type to c4's send/receive.
 
 public:
-  static void send(const Index_t x, const size_t n) { rtt_c4::send(&x, 1, n); }
+  static void send(const Index_t x, const size_t n) {
+    Check(n < INT_MAX);
+    rtt_c4::send(&x, 1, static_cast<int>(n));
+  }
 
-  static void receive(Index_t &x, const size_t n) { rtt_c4::receive(&x, 1, n); }
+  static void receive(Index_t &x, const size_t n) {
+    Check(n < INT_MAX);
+    rtt_c4::receive(&x, 1, static_cast<int>(n));
+  }
 };
 
 //---------------------------------------------------------------------------//
@@ -69,5 +72,5 @@ public:
 #endif // rtt_norms_Comm_Traits_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/Comm_Traits.hh
+// end of norms/Comm_Traits.hh
 //---------------------------------------------------------------------------//

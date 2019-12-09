@@ -4,7 +4,7 @@
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton CSK_generator interface
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -12,10 +12,8 @@
 #include "compton/Compton.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
-// headers provided in Compton include directory:
-#include "compton_file.hh"
-#include "multigroup_data_types.hh"
-#include "multigroup_lib_builder.hh"
+
+#ifdef COMPTON_FOUND
 
 namespace rtt_compton {
 
@@ -32,17 +30,26 @@ namespace rtt_compton {
  * held by) the CSK_generator etemp_interp class.
  *
  * \param[in] filehandle The name of the Compton multigroup file
+ * \param[in] llnl_style Defaults to false. True indicates that data uses LLNL
+ *                       format.
  */
-Compton::Compton(const std::string &filehandle) {
+Compton::Compton(const std::string &filehandle, const bool llnl_style) {
 
   // Make a compton file object to read the multigroup data
   compton_file Cfile(false);
-
-  // initialize the electron temperature interpolator with the mg compton data
-  ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
-
-  // Make sure the SP exists...
-  Ensure(ei);
+  if (llnl_style) {
+    // initialize the etemp/frequency interpolated with the library data:
+    llnli = std::unique_ptr<llnl_interp>(
+        new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    // Make sure the SP exists...
+    Ensure(llnli);
+  } else {
+    // initialize the electron temperature interpolator with the mg compton data
+    ei = std::unique_ptr<etemp_interp>(
+        new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    // Make sure the SP exists...
+    Ensure(ei);
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -68,8 +75,8 @@ Compton::Compton(const std::string &filehandle) {
  *                       "flat", "wien" or "planck." Any other string will cause
  *                       CSK to throw an exception.
  * \param[in] induced    Bool to toggle consideration of induced effects off/on
- * \param[in] det_bal   Bool to toggle detailed balance enforcement off/on
- * \param[in] n_xi       The number of angular points/Legendre moments desired
+ * \param[in] det_bal    Bool to toggle detailed balance enforcement off/on
+ * \param[in] nxi        The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
                  const std::vector<double> &grp_bds,
@@ -121,6 +128,9 @@ Compton::Compton(const std::string &filehandle,
   Ensure(ei);
 }
 
+// Default destructor.
+Compton::~Compton(void) {}
+
 // ------------ //
 //  Interfaces  //
 // ------------ //
@@ -128,13 +138,16 @@ Compton::Compton(const std::string &filehandle,
 //---------------------------------------------------------------------------//
 /*!
  * \brief Interpolate opacity data to a given SCALED electron temperature
- * (T / m_e)
+ *        \f$ (T / m_e) \f$
  *
  * This method interpolates MG Compton opacity data to a given electron
  * temperature. It returns the interpolated values for ALL g, g', and angular
  * points in the specified multigroup structure.
  *
  * \param[in] etemp The SCALED electron temperature (temp / electron rest-mass)
+ * \param[in] limit_grps When true, CSK attempts to reduce the energy domain
+ *                  considered.  This can reduce required  memory and compute
+ *                  resources (default = true).
  * \return   n_opac x n_grp x n_grp x n_xi interpolated opacity values
  */
 std::vector<std::vector<std::vector<std::vector<double>>>>
@@ -158,6 +171,9 @@ Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
  * in the specified multigroup structure.
  *
  * \param[in] etemp The SCALED electron temperature (temp / electron rest-mass)
+ * \param[in] limit_grps When true, CSK attempts to reduce the energy domain
+ *                  considered.  This can reduce required  memory and compute
+ *                  resources (default = true).
  * \return    n_grp x n_grp interpolated nu_ratio values
  */
 std::vector<std::vector<double>>
@@ -170,4 +186,107 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
   // call the appropriate routine in the electron interp object
   return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate EREC data to a given electron temperature / frequency
+ *
+ * This method uses data and routines in CSK to interpolate a value
+ * of the expected relative energy change for some temperature / frequency
+ *
+ * \param[in] Tm   Electron temperature (temp / electron rest-mass)
+ * \param[in] freq Incident frequency (keV)
+ * \return    The interpolated relative energy change (Delta-E / E)
+ */
+double Compton::interpolate_erec(const double Tm, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_erec(Tm, freq);
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate Compton opacity data to a given electron temperature
+ *        / frequency
+ *
+ * This method uses data and routines in CSK to interpolate a value
+ * of the Compton scattering opacity for some temperature / frequency. The
+ * returned value will have units of cm^2/g, and must be scaled by density
+ * for direct use in transport
+ *
+ * \param[in] Tm   Electron temperature (temp / electron rest-mass)
+ * \param[in] freq Incident frequency (keV)
+ * \return    The interpolated opacity (cm^2 / g)
+ */
+double Compton::interpolate_sigc(const double Tm, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_sigc(Tm, freq);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate EREC data in a cell for a given frequency
+ *
+ * This method uses data and routines in CSK to interpolate a value
+ * of the expected relative energy change for some cell index / frequency.
+ * This call is only valid if the interpolate_precycle() function has been
+ * called, which interpolates all opacity data to the cell temperatures
+ * (otherwise, CSK will throw an error).
+ *
+ * \param[in] cell Cell index
+ * \param[in] freq Incident frequency (keV)
+ * \return    The interpolated relative energy change (Delta-E / E)
+ */
+double Compton::interpolate_cell_erec(const int64_t cell,
+                                      const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  Require(llnli->pre_interped());
+  return llnli->interpolate_erec(cell, freq);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate Compton opacity data in a cell for a given frequency
+ *
+ * This method uses data and routines in CSK to interpolate a value
+ * of the Compton scattering opacity for some cell index / frequency. The
+ * returned value will have units of cm^-1. This call is only valid if the
+ * interpolate_precycle() function has been called, which interpolates all
+ * EREC data to the cell temperatures (otherwise, CSK will throw an error).
+ *
+ * \param[in] cell Cell index
+ * \param[in] freq Incident frequency (keV)
+ * \return    The interpolated opacity (cm^-1)
+ */
+double Compton::interpolate_cell_sigc(const int64_t cell,
+                                      const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  Require(llnli->pre_interped());
+  return llnli->interpolate_sigc(cell, freq);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate opacity and EREC data to cell temperatures
+ *
+ * This function passes the cell temperatures and densities to CSK before a
+ * transport cycle. The opacity and EREC data is then "pre-interpolated" in
+ * electron temperature, so it can later be referenced by cell index.
+ *
+ * \param[in] Tms  Cell electron temperature (keV)
+ * \param[in] dens Cell densities (g/cc)
+ */
+void Compton::interpolate_precycle(const std::vector<double> &Tms,
+                                   const std::vector<double> &dens) const {
+  llnli->preinterp_in_temp(Tms, dens);
+}
+} // namespace rtt_compton
+
+#endif
+
+//---------------------------------------------------------------------------//
+// End compton/Compton.cc
+//---------------------------------------------------------------------------//

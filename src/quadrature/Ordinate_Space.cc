@@ -1,35 +1,33 @@
-//----------------------------------*-C++-*-----------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Space.cc
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Ordinate_Space
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
-
-#include <iostream>
+//---------------------------------------------------------------------------//
 
 // Vendor software
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_sf_legendre.h>
-
 #include "Ordinate_Space.hh"
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_sf_legendre.h>
+#include <iostream>
 
 using namespace rtt_units;
 
 namespace rtt_quadrature {
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Compute the Azimuthal angle for the current quadrature direction.
  */
 double Ordinate_Space::compute_azimuthalAngle(double const mu,
                                               double const eta) {
-  using rtt_units::PI;
   using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
 
   Require(std::abs(mu) <= 1.0);
   Require(std::abs(eta) <= 1.0);
@@ -59,7 +57,7 @@ double Ordinate_Space::compute_azimuthalAngle(double const mu,
   return azimuthalAngle;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * The computation of the tau and alpha coefficients is described by Morel in
  * various technical notes on the treatment of the angle derivatives in the
@@ -69,7 +67,7 @@ double Ordinate_Space::compute_azimuthalAngle(double const mu,
 /* private */
 void Ordinate_Space::compute_angle_operator_coefficients_() {
   vector<Ordinate> const &ordinates = this->ordinates();
-  unsigned const number_of_ordinates = ordinates.size();
+  size_t const number_of_ordinates = ordinates.size();
   rtt_mesh_element::Geometry const geometry = this->geometry();
 
   // Compute the ordinate derivative coefficients.
@@ -94,8 +92,8 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
       double const wt = ordinates[a].wt();
       if (!rtt_dsxx::soft_equiv(wt, 0.0) ||
           (rtt_dsxx::soft_equiv(wt, 0.0) && mu > 0))
-      // Not a starting ordinate.  Use Morel's recurrence relations to determine
-      // the next ordinate derivative coefficient.
+      // Not a starting ordinate.  Use Morel's recurrence relations to
+      // determine the next ordinate derivative coefficient.
       {
         Check(a > 0);
         alpha_[a] = alpha_[a - 1] + mu * wt;
@@ -134,8 +132,10 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
     // Save the normalization sum for the final level.
     Check(static_cast<int>(C.size()) == level);
     C.push_back(1.0 / Csum);
-    first_angles_.push_back(number_of_ordinates - 1);
-    number_of_levels_ = C.size();
+    Check(number_of_ordinates - 1 < UINT_MAX);
+    first_angles_.push_back(static_cast<unsigned>(number_of_ordinates - 1));
+    Check(C.size() < UINT_MAX);
+    number_of_levels_ = static_cast<unsigned>(C.size());
 
 #if DBC & 2
     unsigned const dimension = this->dimension();
@@ -207,7 +207,9 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
 
         if (mu < 0.0) {
           is_dependent_[a] = false;
-          first_angles_.push_back(number_of_ordinates - 1);
+          Check(number_of_ordinates - 1 < UINT_MAX);
+          first_angles_.push_back(
+              static_cast<unsigned>(number_of_ordinates - 1));
         } else {
           is_dependent_[a] = true;
         }
@@ -236,9 +238,9 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
     if (this->dimension() == 2 && this->ordering() == LEVEL_ORDERED) {
       // NEW: organize quadratures for 2D into levels, even for Cartesian
       // coordinates, but do not compute angular derivative approximation
-      // coefficients For our purposes here, the use of the first_angles_ vector
-      // is different from the use for axisymmetric coordinates; it is used to
-      // record find the index into the first ordinate on each level
+      // coefficients For our purposes here, the use of the first_angles_
+      // vector is different from the use for axisymmetric coordinates; it is
+      //  used to record find the index into the first ordinate on each level
 
       int level = 0;
       double etap;
@@ -262,7 +264,8 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
         }
       }
 
-      first_angles_.push_back(number_of_ordinates);
+      Check(number_of_ordinates < UINT_MAX);
+      first_angles_.push_back(static_cast<unsigned>(number_of_ordinates));
       number_of_levels_ = level + 1;
 
     } else
@@ -275,7 +278,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
          "unexpected starting direction reflection index");
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment>
 Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
                               unsigned const sn_order) {
@@ -285,25 +288,29 @@ Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
   if (dim == 3) {
     return compute_n2lk_3D_(quadrature_class, sn_order);
   } else if (dim == 2) {
-    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+    if (geometry == rtt_mesh_element::AXISYMMETRIC) {
+      // Insist(false, std::string("There are no unit tests for this branch, so ")
+      //       + "it was commented out.");
       return compute_n2lk_2Da_(quadrature_class, sn_order);
-    else
+    } else
       return compute_n2lk_2D_(quadrature_class, sn_order);
   } else {
     Check(dim == 1);
-    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+    if (geometry == rtt_mesh_element::AXISYMMETRIC) {
+      // Insist(false, std::string("There are no unit tests for this branch, so ")
+      //       + "it was commented out.");
       return compute_n2lk_1Da_(quadrature_class, sn_order);
-    else
+    } else
       return compute_n2lk_1D_(quadrature_class, sn_order);
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*! Compute the description of the moment space.
  *
  * N.B. This must not be called in the Ordinate_Space constructor, but in the
- * child class constructor, because it uses virtual functions of the child class
- * that are not set up until the child class is constructed.
+ * child class constructor, because it uses virtual functions of the child
+ * class that are not set up until the child class is constructed.
  */
 void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
                                       int const sn_order) {
@@ -315,7 +322,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
     number_of_moments_ = 0;
     for (unsigned n = 0; n < moments_.size(); ++n) {
       int const l = moments_[n].L();
-      if (l <= Lmax || !prune()) {
+      if (!prune() || l <= Lmax) {
         if (l > Lmax) {
           Lmax = l;
           moments_per_order_.resize(Lmax + 1, 0U);
@@ -333,7 +340,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  *
  * \param dimension Dimension of the physical problem space (1, 2, or 3)
@@ -382,7 +389,7 @@ Ordinate_Space::Ordinate_Space(unsigned const dimension,
   Ensure(has_extra_starting_directions() == extra_starting_directions);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * The psi coefficient is used to compute the self term in the angle derivative
  * term of the streaming operator.
@@ -397,10 +404,10 @@ double Ordinate_Space::psi_coefficient(unsigned const a) const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * The source coefficient is used to compute the previous midpoint angle term in
- * the angle derivative term of the streaming operator.
+ * The source coefficient is used to compute the previous midpoint angle term
+ * in the angle derivative term of the streaming operator.
  */
 double Ordinate_Space::source_coefficient(unsigned const a) const {
   Require(is_dependent(a));
@@ -412,7 +419,7 @@ double Ordinate_Space::source_coefficient(unsigned const a) const {
   double const Result = (alpha_a * (1 - tau_a) / tau_a + alpha_am1) / wt;
   return Result;
 }
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * The bookkeeping coefficient is used to compute the next midpoint angle
  * specific intensity.
@@ -427,14 +434,14 @@ double Ordinate_Space::bookkeeping_coefficient(unsigned const a) const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Ordinate_Space::check_class_invariants() const {
   if (geometry() == rtt_mesh_element::CARTESIAN) {
     return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
             (first_angles_.size() == number_of_levels_));
   } else {
     vector<Ordinate> const &ordinates = this->ordinates();
-    unsigned const number_of_ordinates = ordinates.size();
+    size_t const number_of_ordinates = ordinates.size();
 
     // Check that the number of levels is correct.
     unsigned levels = 0;
@@ -447,25 +454,26 @@ bool Ordinate_Space::check_class_invariants() const {
     if (number_of_levels_ < levels)
       return false;
 
-    // Check that the angle derivative coefficient arrays have the correct size.
+    // Check that the angle derivative coefficient arrays have the correct
+    // size.
     return is_dependent_.size() == number_of_ordinates &&
            alpha_.size() == number_of_ordinates &&
            tau_.size() == number_of_ordinates;
   }
 }
 
-//----------------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
 void Ordinate_Space::compute_reflection_maps_() {
   vector<Ordinate> const &ordinates = this->ordinates();
-  unsigned const number_of_ordinates = ordinates.size();
+  size_t const number_of_ordinates = ordinates.size();
 
   reflect_mu_.resize(number_of_ordinates);
   reflect_eta_.resize(number_of_ordinates);
   reflect_xi_.resize(number_of_ordinates);
 
-  // Since the ordinate set will likely never number more than a few hundred, we
-  // go ahead and do the simpleminded quadratic search to match the ordinates
-  // up.
+  // Since the ordinate set will likely never number more than a few hundred,
+  // we go ahead and do the simpleminded quadratic search to match the
+  // ordinates up.
 
   for (unsigned a = 0; a + 1 < number_of_ordinates; ++a) {
     for (unsigned ap = a + 1; ap < number_of_ordinates; ++ap) {
@@ -489,12 +497,12 @@ void Ordinate_Space::compute_reflection_maps_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * Return a mapping from the moments to the components of the astrophysical
  * flux. The astrophysical flux is defined consistently with the mean intensity
- * as \f$ F_i = \frac{1}{4 \pi}\int_{4 \pi}\Omega_i \psi d\omega\f$, that is, it
- * is the physical flux divided by \f$4 \pi\f$.
+ * as \f$ F_i = \frac{1}{4 \pi}\int_{4 \pi}\Omega_i \psi d\omega\f$, that is,
+ * it is the physical flux divided by \f$4 \pi\f$.
  *
  * The zeroth moment is presently always assumed to be equal to the mean
  * intensity, but the first order moments need not be in a basis in which they
@@ -505,12 +513,11 @@ void Ordinate_Space::compute_reflection_maps_() {
  *        corresponding to each astrophysical flux component. That is,
  *        flux_map[i] is the index (starting at zero) of the moment which
  *        corresponds to the ith astrophysical flux component.
+ * \param flux_fact On return, contains the normalization factors for
+ *        converting the the first moments to astrophysical flux components.
  *
- * \param flux_fact On return, contains the normalization factors for converting
- *        the the first moments to astrophysical flux components.
- *
- * Thus, if you are in 2-D Cartesian geometry, and phi contains the moments at a
- * particular point for a particular group, then the x-component of the
+ * Thus, if you are in 2-D Cartesian geometry, and phi contains the moments at
+ * a particular point for a particular group, then the x-component of the
  * astrophysical flux is equal to flux_fact[0]*phi[1+flux_map[0]] and the
  * y-component of the astrophysical flux is equal to
  * flux_fact[1]*phi[1+flux_map[1]].
@@ -552,12 +559,12 @@ void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
  * mapping from flux moments to astrophysical flux components.
  *
  * \param flux_map On return, contains the indices of the astrophysical flux
- *        components corresponding to each first moment. That is, flux_map[i] is
- *        the index (starting at zero) of the astrophysical flux component which
- *        corresponds to the ith first moment.
+ *        components corresponding to each first moment. That is, flux_map[i]
+ *        is the index (starting at zero) of the astrophysical flux component
+ *        which corresponds to the ith first moment.
  *
- * \param flux_fact On return, contains the normalization factors for converting
- *        the the astrophysical flux components to first moments.
+ * \param flux_fact On return, contains the normalization factors for
+ *        converting the the astrophysical flux components to first moments.
  *
  * Thus, if you are in 2-D Cartesian geometry, and F contains the astrophysical
  * flux at a particular point for a particular group, then the ith moment is
@@ -585,8 +592,8 @@ void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
   }
   // In 2-D and 3-D the polar axis is aligned with the second coordinate axis
   // and the mu axis is aligned with the first coordinate. Thus the x flux
-  // corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0) harmonic, and
-  // the z flux to the -Y(1,-1) harmonic.
+  // corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0) harmonic,
+  // and the z flux to the -Y(1,-1) harmonic.
   else if (dimension() == 2) {
     flux_map[0] = 1;
     flux_fact[0] = -ROOT3;
@@ -605,6 +612,6 @@ void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of Ordinate_Space.cc
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

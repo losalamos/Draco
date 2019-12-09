@@ -4,11 +4,8 @@
  * \author Thomas M. Evans
  * \date   Wed Feb  5 17:29:59 2003
  * \brief  SP test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -63,74 +60,74 @@ class ListD;
 
 class ListWithDerived {
 public:
-  ListWithDerived(void);
-  virtual ~ListWithDerived(void);
+  ListWithDerived();
+  virtual ~ListWithDerived();
   SP<ListD> next;
 };
 
 class ListD : public ListWithDerived {
 public:
-  ListD(void);
-  ~ListD(void);
+  ListD();
+  ~ListD() override;
 };
 
-ListWithDerived::ListWithDerived(void) : next() { /*empty*/
+ListWithDerived::ListWithDerived() : next() { /*empty*/
 }
-ListWithDerived::~ListWithDerived(void) { /*empty*/
+ListWithDerived::~ListWithDerived() { /*empty*/
 }
 
-ListD::ListD(void) : ListWithDerived() { /*empty*/
+ListD::ListD() : ListWithDerived() { /*empty*/
 }
-ListD::~ListD(void) { /*empty*/
+ListD::~ListD() { /*empty*/
 }
 
 class Foo {
 private:
-  int v;
+  int v{0};
 
 public:
-  Foo(void) : v(0) { nfoos++; }
-  explicit Foo(int i) : v(i) { nfoos++; }
+  Foo() { nfoos++; }
+  explicit Foo(int i) noexcept : v(i) { nfoos++; }
   Foo(const Foo &f) : v(f.v) { nfoos++; }
-  virtual ~Foo(void) { nfoos--; }
+  virtual ~Foo() { nfoos--; }
   virtual int vf() { return v; }
-  int f(void) { return v + 1; }
+  int f() { return v + 1; }
 };
 
 //---------------------------------------------------------------------------//
 
 class Bar : public Foo {
 private:
-  Bar(const Bar &);
+  Bar(const Bar &) = delete;
 
 public:
-  explicit Bar(int i) : Foo(i) { nbars++; }
-  virtual ~Bar(void) { nbars--; }
-  virtual int vf() { return Foo::f() + 1; }
-  int f(void) { return Foo::f() + 2; }
+  explicit Bar(int i) noexcept : Foo(i) { nbars++; }
+  ~Bar() override { nbars--; }
+  int vf() override { return Foo::f() + 1; }
+  int f() { return Foo::f() + 2; }
 };
 
 //---------------------------------------------------------------------------//
 
 class Baz : public Bar {
 private:
-  Baz(const Baz &);
+  Baz(const Baz &) = delete;
 
 public:
-  explicit Baz(int i) : Bar(i) { nbazs++; }
-  virtual ~Baz() { nbazs--; }
-  virtual int vf(void) { return Bar::f() + 1; }
-  int f(void) { return Bar::f() + 2; }
+  explicit Baz(int i) noexcept : Bar(i) { nbazs++; }
+  ~Baz() override { nbazs--; }
+  int vf() override { return Bar::f() + 1; }
+  int f() { return Bar::f() + 2; }
 };
 
 //---------------------------------------------------------------------------//
 
 class Wombat {
 private:
-  Wombat(const Wombat &);
+  Wombat(const Wombat &) = delete;
 
 public:
-  Wombat() { nbats++; }
+  Wombat() noexcept { nbats++; }
   virtual ~Wombat() { nbats--; }
 };
 
@@ -169,7 +166,7 @@ void temp_change_SP(rtt_dsxx::UnitTest &ut, SP<Foo> f) {
   CHECK_N_OBJECTS(1, 1, 0, 0);
 
   // this is a temporary change
-  f.reset(new Foo(100));
+  f = std::make_shared<Foo>(100);
 
   CHECK_N_OBJECTS(2, 1, 0, 0);
 
@@ -232,9 +229,9 @@ void type_T_test(rtt_dsxx::UnitTest &ut) {
       // no objects yet
       CHECK_0_OBJECTS;
 
-      Foo *f = new Foo(1);
-      Bar *b = new Bar(2);
-      Baz *bz = new Baz(3);
+      auto *f = new Foo(1);
+      auto *b = new Bar(2);
+      auto *bz = new Baz(3);
 
       SP<Foo> spfoo(f);
       SP<Bar> spbar(b);
@@ -272,7 +269,7 @@ void type_T_test(rtt_dsxx::UnitTest &ut) {
         PASSMSG("Copy construct of SP<T> ok.");
 
       // now make a foo pointer and assign
-      Foo *ff = new Foo(10);
+      auto *ff = new Foo(10);
       ispfoo.reset(ff);
 
       // still no new foos created
@@ -571,7 +568,7 @@ void type_X_test(rtt_dsxx::UnitTest &ut) {
     if (ff.vf() != 10)
       ITFAILS;
 
-    Bar *b = dynamic_cast<Bar *>(spfoo.get());
+    auto *b = dynamic_cast<Bar *>(spfoo.get());
     if (b->vf() != 12)
       ITFAILS;
     if (b->f() != 13)
@@ -604,7 +601,7 @@ void type_X_test(rtt_dsxx::UnitTest &ut) {
     if (spfoo2)
       ITFAILS;
     {
-      spbar.reset(new Bar(50));
+      spbar = std::make_shared<Bar>(50);
       CHECK_N_OBJECTS(1, 1, 0, 0);
 
       if (spbar->f() != 53)
@@ -653,7 +650,7 @@ void type_X_test(rtt_dsxx::UnitTest &ut) {
         PASSMSG("Copy constructor with SP<X> ok.");
 
       // now check assignment with X *
-      rspfoo.reset(new Bar(12));
+      rspfoo = std::make_shared<Bar>(12);
       CHECK_N_OBJECTS(2, 2, 0, 0);
 
       if (rspfoo->f() != 13)
@@ -670,18 +667,18 @@ void type_X_test(rtt_dsxx::UnitTest &ut) {
         PASSMSG("Assignment with X * ok.");
 
       // assign SPfoo2 to a bar
-      spfoo2.reset(new Bar(20));
+      spfoo2 = std::make_shared<Bar>(20);
       CHECK_N_OBJECTS(3, 3, 0, 0);
 
       // assign SPfoo2 to itself
-      spfoo2 = spfoo2;
+      // spfoo2 = spfoo2; // modern compilers flag this at compile time.
       CHECK_N_OBJECTS(3, 3, 0, 0);
     }
     // still have 2 object
     CHECK_N_OBJECTS(2, 2, 0, 0);
 
     // assign spfoo to a baz
-    spfoo2.reset(new Baz(45));
+    spfoo2 = std::make_shared<Baz>(45);
     CHECK_N_OBJECTS(2, 2, 1, 0);
 
     if (spfoo2->f() != 46)
@@ -965,11 +962,11 @@ void fail_modes_test(rtt_dsxx::UnitTest &ut) {
     CHECK_0_OBJECTS;
   }
   // now make a wombat and try
-  spbat.reset(new Wombat);
+  spbat = std::make_shared<Wombat>();
   CHECK_N_OBJECTS(0, 0, 0, 1);
 
   // now try copy and assignment on X *
-  Wombat *bat = new Wombat();
+  auto *bat = new Wombat();
   CHECK_N_OBJECTS(0, 0, 0, 2);
 
   // assign wombat to a pointer to clean it up
@@ -991,8 +988,8 @@ void equality_test(rtt_dsxx::UnitTest &ut) {
   SP<Foo> f1;
   SP<Foo> f2;
 
-  Foo *f = new Foo(5);
-  Foo *ff = new Foo(5);
+  auto *f = new Foo(5);
+  auto *ff = new Foo(5);
 
   f1.reset(f);
   f2 = f1;
@@ -1067,7 +1064,7 @@ void access_test(rtt_dsxx::UnitTest &ut) {
   kill_SPBar(b);
   CHECK_0_OBJECTS;
 
-  b.reset(new Bar(12));
+  b = std::make_shared<Bar>(12);
   temp_change_SP(ut, b); // this temporarily changes to a Foo
 
   if (b->vf() != 14)

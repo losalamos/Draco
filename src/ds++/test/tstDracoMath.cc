@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/draco_math.hh.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -16,29 +16,6 @@
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstabs(rtt_dsxx::UnitTest &ut) {
-  using rtt_dsxx::abs;
-
-  if (rtt_dsxx::soft_equiv(abs(-2.2), abs(2.2)))
-    PASSMSG("Correctly calculated abs(double)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(double)");
-  if (rtt_dsxx::soft_equiv(abs(-2.2f), abs(2.2f)))
-    PASSMSG("Correctly calculated abs(float)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(float)");
-  if (abs(-2) == abs(2))
-    PASSMSG("Correctly calculated abs(int)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(int)");
-  if (abs(-2L) == abs(2L))
-    PASSMSG("Correctly calculated abs(long)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(long)");
-  return;
-}
-
-//---------------------------------------------------------------------------//
 void tstconj(rtt_dsxx::UnitTest &ut) {
   if (rtt_dsxx::soft_equiv(rtt_dsxx::conj(3.5), 3.5))
     PASSMSG("conj(double) is correct");
@@ -145,7 +122,6 @@ void test_linear_interpolate(rtt_dsxx::UnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    tstabs(ut);
     tstconj(ut);
     tstcube(ut);
     tstpythag(ut);

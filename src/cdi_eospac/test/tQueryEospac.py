@@ -3,10 +3,8 @@
 # author Alex Long <along@lanl.gov>
 # date   Wednesday, September 14, 2016, 14:16 pm
 # brief  This is a Python script that is used to test cdi_eospac/QueryEospac
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
@@ -49,7 +47,7 @@ if(tQuery_Eospac.check_arg_is_set("GOLDFILE")):
   # run numdiff
   tQuery_Eospac.aut_numdiff()
 
-  # analyize the output directly
+  # analyze the output directly
   search_regex = re.compile("Specific Ion Internal Energy = ([0-9.]+).*$")
   reference_value = "6411.71"
   value_match = tQuery_Eospac.output_contains_value(search_regex, \
@@ -67,7 +65,8 @@ if(tQuery_Eospac.check_arg_is_set("GOLDFILE")):
 else:
 
   if tQuery_Eospac.check_arg_value("ARGVALUE", "--version"):
-    if tQuery_Eospac.output_contains("QueryEospac: version"):
+    if tQuery_Eospac.output_contains("QueryEospac: version") or \
+       tQuery_Eospac.output_contains("QueryEospac.exe: version"):
       tQuery_Eospac.passmsg("Version tag found in the output.")
     else:
       tQuery_Eospac.passmsg("Version tag NOT found in the output.")

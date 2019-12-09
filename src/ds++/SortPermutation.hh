@@ -4,7 +4,7 @@
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:18:27 2000
  * \brief  SortPermutation class definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -33,10 +33,10 @@ namespace rtt_dsxx {
  * Create an object of class SortPermutation using either of the following
  * constructors:
  * \code
- *      template<class ForwardIterator>
+ *      template<typename ForwardIterator>
  *      SortPermutation(ForwardIterator first, ForwardIterator last)
  *
- *      template<class ForwardIterator, class StrictWeakOrdering>
+ *      template<typename ForwardIterator, class StrictWeakOrdering>
  *      SortPermutation(ForwardIterator first, ForwardIterator last,
  *                      StrictWeakOrdering comp)
  * \endcode
@@ -70,31 +70,31 @@ class SortPermutation {
   // NESTED CLASSES AND TYPEDEFS
 
 public:
-  typedef int value_type;
+  typedef int value_type; // NOLINT
 
 private:
-  typedef std::vector<value_type> InternalRep;
+  typedef std::vector<value_type> InternalRep; // NOLINT
 
 public:
   // A SortPermutation can not be modified; therefor,
   // always use a const_iterator.
 
-  typedef InternalRep::const_iterator iterator;
-  typedef InternalRep::const_iterator const_iterator;
+  typedef InternalRep::const_iterator iterator;       // NOLINT
+  typedef InternalRep::const_iterator const_iterator; //NOLINT
 
 private:
   // Forward Declarations
 
-  template <class COMP> class CompareProxy;
-  template <class IT> class Proxy;
+  template <typename COMP> class CompareProxy;
+  template <typename IT> class Proxy;
 
-  template <class COMP> friend class CompareProxy;
-  template <class IT> friend class Proxy;
+  template <typename COMP> friend class CompareProxy;
+  template <typename IT> friend class Proxy;
 
-  template <class IT> class Proxy {
+  template <typename IT> class Proxy {
     friend class CompareProxy<Proxy>;
 
-    typedef typename std::iterator_traits<IT>::value_type value_type;
+    typedef typename std::iterator_traits<IT>::value_type value_type; // NOLINT
 
     SortPermutation::value_type pos;
     const std::vector<IT> &iters;
@@ -115,13 +115,13 @@ private:
     operator SortPermutation::value_type() { return pos; }
   };
 
-  template <class COMP> class CompareProxy {
+  template <typename COMP> class CompareProxy {
   public:
     const COMP &comp;
     CompareProxy(const COMP &comp_) : comp(comp_) { /* empty */
     }
-    template <class IT> CompareProxy &operator=(CompareProxy const &comp_);
-    template <class IT>
+    template <typename IT> CompareProxy &operator=(CompareProxy const &comp_);
+    template <typename IT>
     bool operator()(const Proxy<IT> &p1, const Proxy<IT> &p2) const {
       return comp(p1.value(), p2.value());
     }
@@ -138,19 +138,19 @@ public:
 
   //    SortPermutation() { /* empty */ }
 
-  template <class IT, class COMP>
+  template <typename IT, class COMP>
   SortPermutation(IT first, IT last, const COMP &comp)
       : indexTable_m(std::distance(first, last)),
         rankTable_m(indexTable_m.size()) {
     createPermutation(first, last, comp);
   }
 
-  template <class IT>
+  template <typename IT>
   SortPermutation(IT first, IT last)
       : indexTable_m(std::distance(first, last)),
         rankTable_m(indexTable_m.size()) {
-    typedef typename std::iterator_traits<IT>::value_type value_type;
-    createPermutation(first, last, std::less<value_type>());
+    typedef typename std::iterator_traits<IT>::value_type vtype; // NOLINT
+    createPermutation(first, last, std::less<vtype>());
   }
 
   //Defaulted: SortPermutation(const SortPermutation &rhs);
@@ -178,7 +178,7 @@ public:
    * results in sorted containing the sorted elements of [first, last).
    */
 
-  value_type operator[](int i) const { return indexTable_m[i]; }
+  value_type operator[](unsigned i) const { return indexTable_m[i]; }
 
   //! Returns the begin const_iterator into the index table.
   const_iterator begin() const { return indexTable_m.begin(); }
@@ -214,7 +214,7 @@ public:
 private:
   // IMPLEMENTATION
 
-  template <class IT, class COMP>
+  template <typename IT, class COMP>
   void createPermutation(IT first, IT last, const COMP &comp) {
     std::vector<IT> iters;
     iters.reserve(size());
@@ -227,10 +227,10 @@ private:
   }
 
 #ifdef ENSURE_ON
-  template <class IT, class COMP>
+  template <typename IT, class COMP>
   bool isPermutationSorted(IT first, IT last, const COMP &comp) {
-    typedef typename std::iterator_traits<IT>::value_type value_type;
-    std::vector<value_type> vv(first, last);
+    typedef typename std::iterator_traits<IT>::value_type vtype; // NOLINT
+    std::vector<vtype> vv(first, last);
 
     for (int i = 0; first != last && i < size(); ++i, ++first) {
       vv[inv(i)] = *first;
@@ -240,7 +240,7 @@ private:
   }
 #endif
 
-  template <class IT, class COMP>
+  template <typename IT, class COMP>
   void doCreatePermutation(IT Remember(first), IT Remember(last),
                            const COMP &comp, const std::vector<IT> &iters) {
     std::vector<Proxy<IT>> proxies;

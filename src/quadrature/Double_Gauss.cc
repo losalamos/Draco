@@ -5,7 +5,7 @@
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval dobule Gauss-Legendre quadrature
  *         set.
- * \note   Copyright 2016-2018 Los Alamos National Security, LLC. All rights
+ * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
  *         reserved. */
 //---------------------------------------------------------------------------//
 
@@ -78,8 +78,8 @@ unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
 
 //---------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const {
-  string Result = indent + "type = double gauss" + indent + "  order = " +
-                  to_string(sn_order()) + indent + "end";
+  string Result = indent + "type = double gauss" + indent +
+                  "  order = " + to_string(sn_order()) + indent + "end";
 
   return Result;
 }

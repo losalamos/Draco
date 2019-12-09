@@ -3,12 +3,12 @@ rtt_ascii                                              ! magic cookie
 header	                                               ! header keyword
 
   version   v1.0.0                                     ! version number
-  title     RTT_format mesh file definition, version 7.! mesh title 
+  title     RTT_format mesh file definition, version 7.! mesh title
   date      24 Jul 97                                  ! Date written
   cycle     1                                          ! Cycle number
   time      0.0                                        ! problem time
   ncomments 3                                          ! Number of comment lines
-    One tet mesh in an RTT mesh file format.           ! comment line#1
+    3D, 1 cell, 22 node mesh in an RTT file format.    ! comment line#1
     Date     : 24 Jul 97                               ! comment line#2
     Author(s): H. Trease, J.McGhee                     ! comment line#3
 
@@ -123,28 +123,28 @@ cell_defs                      ! cell_def block keyword
 end_cell_defs                  ! end cell_def block keyword
 
 nodes                          ! nodes block keyword
-  1  2.0   0.0   0.0   1  
-  2  2.0   0.0   2.0   2  
-  3  2.0   2.0   2.0   3  
-  4  2.0   2.0   0.0   4  
-  5  0.0   0.0   0.0   5  
-  6  0.0   0.0   2.0   6  
-  7  0.0   2.0   2.0   7  
-  8  0.0   2.0   0.0   8  
-  9  1.0   2.0   0.0   9  
- 10  0.0   2.0   1.0  10  
- 11  1.0   2.0   2.0  11  
- 12  2.0   2.0   1.0  12  
- 13  1.0   2.0   1.0  13  
- 14  1.0   0.0   0.0  14  
- 15  2.0   0.0   1.0  15  
- 16  1.0   0.0   2.0  16  
- 17  0.0   0.0   1.0  17  
- 18  1.0   0.0   1.0  18  
- 19  2.0   1.0   2.0  19  
- 20  1.0   2.0   2.0  20  
- 21  0.0   1.0   2.0  21  
- 22  1.0   1.0   2.0  22  
+  1  2.0   0.0   0.0   1
+  2  2.0   0.0   2.0   2
+  3  2.0   2.0   2.0   3
+  4  2.0   2.0   0.0   4
+  5  0.0   0.0   0.0   5
+  6  0.0   0.0   2.0   6
+  7  0.0   2.0   2.0   7
+  8  0.0   2.0   0.0   8
+  9  1.0   2.0   0.0   9
+ 10  0.0   2.0   1.0  10
+ 11  1.0   2.0   2.0  11
+ 12  2.0   2.0   1.0  12
+ 13  1.0   2.0   1.0  13
+ 14  1.0   0.0   0.0  14
+ 15  2.0   0.0   1.0  15
+ 16  1.0   0.0   2.0  16
+ 17  0.0   0.0   1.0  17
+ 18  1.0   0.0   1.0  18
+ 19  2.0   1.0   2.0  19
+ 20  1.0   2.0   2.0  20
+ 21  0.0   1.0   2.0  21
+ 22  1.0   1.0   2.0  22
 end_nodes                      ! end_nodes block keyword
 
 sides                          ! sides block keyword

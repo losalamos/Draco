@@ -1,3 +1,894 @@
+2019-09-11  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_3_0 and is tied to the release
+	of Jayenne-8_2_0 and Capsaicin-1_2_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  ---------------------------------------------------------------
+	  CTS-1              Intel 18.0.2    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ---------------------------------------------------------------
+	  ATS-1              Intel 18.0.2    Cray_MPICH2-7.7.4
+	  (TT/TR)            Intel 17.0.4    Cray_MPICH2-7.7.4
+	  ---------------------------------------------------------------
+	  LANL ARM           GCC 8.3.0       Cray_MPICH2-7.7.8
+	  TH/CP              CCE 9.0.1.80    Cray_MPICH2-7.7.8
+	  ---------------------------------------------------------------
+	  ATS-2              GCC 7.3.1       Spectrum MPI 2019.01.30
+	                                     Cuda-9.2
+	                     XL 2019.04      Spectrum MPI 2019.01.30
+                                             Cuda-9.2
+	  ---------------------------------------------------------------
+          Darwin - Power9    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - x86_64    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - ARM       GCC 8.2.0       OpenMPI-3.1.3
+	  ---------------------------------------------------------------
+
+	* Information:
+
+	Draco-7_3_0, build date 2019/09/12;build type: Debug;DBC: 7;
+	DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+	Alex R. Long, James S. Warsa, Matt A. Cleveland, Kendra P. Long,
+	Tim Kelley, Jae H. Chang, Andrew T. Till, Seth D. Cook, Ben R. Ryan,
+	and David A. Dixon.
+
+	Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber, Rob B. Lowrie,
+	Paul W. Talbot, Katherine J. Wang, Peter Ahrens, Daniel Holladay,
+	Jeff D. Densmore, Massimiliano Rosa, Todd J. Urbatsch, Jeff Furnish,
+	John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning,
+	Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2019 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 125 files changed, added or removed in 46 commits.
+	- PR #665 Normalize Planck emission CDF
+	- PR #648 Move the regression scripts to their own repository.
+	- PR #649 Fix some Win32 issues related to CAFS.
+
+	* Corrected Defects
+
+	- PR #667 Wrap call to readlink in macro to avoid failure on OSX.
+	- PR #665 Normalize Planck emission CDF
+	- PR #663 Fix broken MSVC (CAFS) build.
+	- PR #657 cleanup ei-coupling comments about units
+	- PR #649 Fix some Win32 issues related to CAFS.
+	- PR #647 Relocate the installed cmake config directory.
+	- PR #638 Fix constexpr compilation error with intel 17
+	- Github issue #662 PR 661 broke MSVC builds due to CAFS incompatibility
+	- Bug #1514 cuda+mpi issues on darwin power9 and arm
+	- Bug #1551 Make Draco 7-2 release compatible with Intel 17
+	- Bug #1572 Release on ATS-2 with older MPI
+	- Bug #1573 Fix install location of draco-config.cmake
+	- Bug #1581 Provide csk-0.4.2 on trinitite (and knl)
+	- Bug #1582 rzansel: release scripts using mpiexec instead of jsrun.
+	- Bug #1607 autodoc target broken
+	- Bug #1651 Darwin: regressions broken after system failure
+	- Bug #1670 Provide a version file with -config.cmake files
+
+	* New Features
+
+	- PR #668 Enable Draco GPU tests
+	- PR #664 Provide draco-config-version.cmake when installing.
+	- PR #661 Make language standards target properties.
+	- PR #660 Environment updates for capulin.
+	- PR #659 More updates to support ATS-2 machines
+	- PR #658 Deprecate the old 2d Draco_Mesh constructor
+	- PR #656 WIP: Tweak environments for Capulin support.
+	- PR #654 Update docker image used by CI.
+	- PR #653 Shake
+	- PR #652 Another attempt to suppress MSVC warnings about .dbg files.
+	- PR #650 MSVC: Suppress link warning
+	- PR #648 Move the regression scripts to their own repository.
+	- PR #646 Performance tweaks for Planck and Rosseland integration
+	- PR #645 Move draco_setenv to systemcall.hh
+	- PR #644 Fix MSVC build warnings.
+	- PR #643 Skeleton
+	- PR #642 + python PR parsers
+	- PR #641 Add environment and release scripts to support Darwin
+	- PR #639 Tweak for Draco-7_2_0
+	- Feature #1459 Demo cce/9 on capulin
+	- Feature #1558 Add matplotlib to python/3.6 install on ccs-net
+	- Feature #1559 Snow: Ensure newtools regression is running
+	- Feature #1579 core -> cta
+	- Feature #1583 Extend Darwin regression system
+	- Feature #1584 Release on sierra with spectrum-mpi/2019.01.30
+	- Feature #1602 Darwin: Add intel builds to nightly regressions.
+	- Feature #1604 Move basic_dbs_setup macro into Jayenne
+	- Feature #1614 Begin supporting builds on capulin
+	- Feature #1622 Draco build system fails for cce-9.0.1
+	- Feature #1653 Darwin: create nightly regression for gcc (no gpu)
+	- Feature #1656 rzansel: no longer need to hop through rzgw
+	- Feature #1663 Thunder: Install user_contrib stack
+	- Feature #1667 draco-7_2_0 built with GNU missing CSK
+	- Feature #1668 Demo cdt/19.08 on trinitite
+	- Task #1400 Move 'regression' to its own repository
+	- Task #1439 Create ability to read/plot LLNL opacity data
+	- Task #1481 Activate rng cuda tests
+	- Task #1554 Update asc_spackages and spack with new recipies
+	- Task #1654 Deprecate old 2D Draco_Mesh constructor
+
+	* Known Defects
+
+	- Github issue #526 Fix autodoc issues in package viz
+	- Github issue #525 Fix autodoc issues in Parser
+	- Bug #1550 release scripts break on rzansel
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1605 Remove dependency C4 -> MPI_Fortran
+
+2019-06-13  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_2_0 and is tied to the release
+	of Jayenne-8_1_0 and Capsaicin-1_1_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  CTS-1              Intel 18.0.2    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ATS-1              Intel 18.0.2    Cray_MPICH2-7.7.4
+	  (TT/TR)            Intel 17.0.4    Cray_MPICH2-7.7.4
+	  TH/CP              -               -
+	  ATS-2              GCC 7.3.1       Spectrum MPI, Cuda 9.2
+	                     XL 2019.04      Spectrum MPI, Cuda 9.2
+
+	* Information:
+
+	Draco-7_2_20190613, build date 2019/06/13;build type: Debug;DBC: 7;
+	DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+	Alex R. Long, James S. Warsa, Matt A. Cleveland, Kendra P. Long,
+	Tim Kelley, Jae H. Chang, Andrew T. Till, and David A. Dixon.
+
+	Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber, Rob B. Lowrie,
+	Paul W. Talbot, Katherine J. Wang, Peter Ahrens, Daniel Holladay,
+	Jeff D. Densmore, Massimiliano Rosa, Todd J. Urbatsch, Jeff Furnish,
+	John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning,
+	Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2019 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 192 files changed, added or removed in 121 commits.
+	- Github #590 Begin supporting rzansel and sierra (ATS-2) machines
+	              (power9 + volta).
+	- Gitlab #616, #623 Better support for some Darwin nodes (x86+volta,
+	              power9+volta, arm).
+	- Github #577 New Open Source License, Copyright record C19028
+	- Github #586 Add analytic electron-ion coupling coefficient support to
+	              CDI.
+	- Github #589, #604 Update device package and build system code to
+	              support newer CUDA (v9, v10).
+	- Github #592 Begin providing support for atomics.
+	- Github #620 Fix a "C++ static initialization fiasco" bug to fix broken
+	              static builds.
+	- Github #633 Enable 1D and 3D: mesh construction and X3D parsing
+	- Github #634 Provide a function to query env vars and provide access to
+	              SLURM info.
+
+	* Corrected Defects
+
+	- Github #585, #622 Update the IPCRESS reader for python3.
+	- Github #606 Don't force DBS settings on clients
+	- Github #618 Provide an implementation for Processor_Group when
+	              C4=SCALAR.
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1268 memory: needs more tests
+	- Bug #1399 tt-fey: fix sync_repository module errors
+	- Bug #1405 trinitite: new issues
+	- Bug #1409 Building cuda test/library fails due to pthread flag
+	- Bug #1418 Darwin: ARM regression fails to build draco
+	- Bug #1424 Regressions: switch to gcc/7.4.0 for nightly (new production
+	            compiler)
+	- Bug #1436 Unregistered dependency
+	- Bug #1441 Archive (gitlab) darwin & rzansel spack configs
+	- Bug #1442 Fix build warnings for darwin volta-x86 nodes
+	- Bug #1447 Create asc_packages recipes for TRT codes.
+	- Bug #1448 xlf2008_r issues weird warnings about incorrect arguments
+	- Bug #1505 cdi_ipcress_tIpcress_Interpreter_twomats_ipcress is failing
+	            for Win32-Release builds
+	- Bug #1513 numdiff syntax error on Win32
+	- Bug #1516 trinitite: Random123 issues after recent DST
+
+	* New Features
+
+	- Github #579 Begin using CMake @include_guard@ and
+ 	              @cmake_host_system_information@
+	- Github #580 Introduce build system variable @SITENAME_FAMILY@ while
+	              improving perfbench regressions. Create a nightly regression
+	              that uses intel/19.0.1 and openmpi/3.1.2.
+	- Github #581 Update compiler flags used by IBM XL.
+	- Github #582 Update regression system for Darwin's volta-x86 nodes.
+	- Github #600 Add graphic dump reset time, to refine overwrite behavior
+	- Github #607 Begin supporting mpich.
+	- Github #612 Remove use of deprecated FindPythonInterp
+	- Github #619 Rename nGray_Analytic_MultigroupOpacity to
+	              Compound_Analytic_MultigroupOpacity
+	- Github #624 Provide a newer Docker container for CI testing
+	- Feature #1351 Regressions: activate newtools regression
+	- Feature #1410 update GPU_device to use modern cuda, print compute capability
+	- Feature #1420 Provide Electron-Ion coupling models through CDI
+	- Feature #1451 Specialize add_component_library macro to set separable
+	                compilation for CUDA files
+	- Task #1062 Prepare Darwin as sierra-proxy machine
+	- Task #1083 Darwin: demo power9+volta nodes
+	- Task #1149 setupMPI.cmake: use 'cmake_host_system_information'
+	- Task #1168 Demonstrate device singleton for GPUs on Darwin
+	- Task #1229 Port codes to ARM processors
+	- Task #1233 Attempt TPL build on power9 with xlc
+	- Task #1272 Work with FCI to obtain CC# for Draco-7 == Draco-6_25_0
+	- Task #1379 Add Draco and Branson spackages to spack
+	- Task #1411 Create nightly regression on Darwin
+	- Task #1419 LLNL: Provide needed TPLs at ucontrib
+	- Task #1503 Draco_Mesh constructor using face indexing
+	- Task #1534 Provide a slurm_info class
+
+	* Known Defects
+
+	- Bug #1514 cuda+mpi issues on darwin power9 and arm
+	- Bug #1459 Demo cce/9 on capulin
+	- Bug #1446 DBS: If exe/lib has cu files --> force static link
+	- Bug #1444 Attempt to use clang on ATS-2 machines
+	- Bug #1443 CDash integration with GitHub
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1148 perfbench time variation on snow
+	- Bug #59 cdi_eospac design flaw
+
+2019-02-22  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* "Release draco-7_1_0":https://rtt.lanl.gov/redmine/versions/65.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Jayenne-8_0_0":https://rtt.lanl.gov/redmine/versions/44
+	  - "Capsaicin-4_16_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  SN/GR/FI/IC/CY     Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.3
+	                     Intel 17.0.4    Cray_MPICH2-7.7.3
+
+	* Summary of changes:
+	- 1040 files changed, added or removed in 35 commits.
+	- Jayenne was unable to release when Draco-7_0_0 was released
+	  because an updated ds++/FMA.hh file was required.
+
+ 	* Corrected Defects:
+	- Github #572 Eliminate 8 build warnings (Visual Studio)
+	- Github #571 Re-enable compilation with CUDA.
+	- Github #570 Fix RelWithDebInfo builds.
+	- Github #561 Win32: Fix CAFS issues wrt CMake-3.13+
+	- Github #558 Enable xthi and ythi unit tests for win32.
+	- Github #557 Fix a module load error
+	- Bug #1378 Help Capsaicin stand up regressions for core, trt, npt
+	- Bug #1354 Possible cyclic dependencies in Scalar/Parallel Unit Test implementation
+	- Bug #1246 Cannot delete branches from forked EAP repo
+	- Bug #1090 Regressions on trinitite occasionally fail with "address in use" errors
+
+	* New Features:
+
+	- Github #574 Move LaTeX related files to the dracodoc repository
+	- Github #573 Simplify some function signatures in CDI calls
+	- Github #569 Updates for win32 regressions
+	- Github #568 Update the version of our LaTeX macro.
+	- Github #567 Another tweak to FMA.hh
+	- Github #566 Simplifying and extending analytic opacity models
+	- Github #565 Updates to the regression system to support TRT and NPT
+	- Github #564 Experimental simplified class parser templates.
+	- Github #563 Upgrade Require to Insist to avoid unused variable warning
+	- Github #562 Setup for trt regressions
+	- Github #560 Update Copyright notifications
+	- Github #559 Merge Draco-7_0_0 back to develop
+	- Github #556 Enable cdi_eospac and memory packages for Win32 builds.
+	- Github #555 Modify/Upgrade how the FMA CPP macro works.
+	- Github #554 Fix fortran compiler config issues on mac
+	- Github #549 Add boilerplate base for Class_Parse_Table
+	- Github #548 Enable xthi and ythi builds/tests for Visual Studio.
+
+	- Feature #227  refactor cdi_analytic opacities
+	- Support #1350 ccs-net: add numpy to python@3.6.5 installation
+	- Task #1355 Demo spack chain on snow
+	- Task #1283 Demonstrate hierarchical modules on snow
+	- Task #1248 Review xthi, ythi and alternate implementations that are less Linux-specific.
+
+	* Known Defects:
+
+	- Bug #1399 tt-fey: fix sync_repository module errors
+	- Bug #1370 Get Shane Coffing's supernova problem running.
+	- Bug #1268 memory: needs more tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1148 perfbench time variation on snow
+	- Bug #59 cdi_eospac design flaw
+
+	* Statistics
+
+Contributers
+------------
+
+CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+     James S. Warsa, Alex R. Long, Kendra P. Keady, Jae H. Chang,
+     Matt A. Cleveland, Andrew T. Till, and Tim Kelley.
+
+Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber,
+     Lori A. Pritchett-Sheats, Rob B. Lowrie, Paul W. Talbot,
+     Katherine J. Wang, Peter Ahrens, Daniel Holladay, Jeff D. Densmore,
+     Massimiliano Rosa, Todd J. Urbatsch, Jeff Furnish, John McGhee,
+     Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning, Randy Roberts,
+     Seth Johnson, Todd Adams, and Tom Evans.
+
+Copyright (C) 2016-2019 Triad National Security, LLC. (LA-CC-16-016)
+
+Code Coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+FortranChecks/                         1 /     1 = 100%       7 /    14 =  50%
+RTT_Format_Reader/                   323 /   323 = 100%     377 /   434 =  86%
+cdi/                                  48 /    48 = 100%      82 /    96 =  85%
+cdi_eospac/                           52 /    52 = 100%      65 /   127 =  51%
+cdi_ipcress/                         106 /   106 = 100%     210 /   238 =  88%
+compton/                              16 /    16 = 100%       4 /     6 =  66%
+ds++/                                336 /   336 = 100%     493 /   553 =  89%
+fit/                                   1 /     1 = 100%      15 /    16 =  93%
+lapack_wrap/                          12 /    12 = 100%       0 /     0
+linear/                               16 /    16 = 100%     335 /   392 =  85%
+mesh/                                 56 /    56 = 100%      77 /    82 =  93%
+meshReaders/                          15 /    15 = 100%     122 /   162 =  75%
+mesh_element/                         23 /    23 = 100%     154 /   197 =  78%
+min/                                   9 /     9 = 100%     137 /   154 =  88%
+norms/                                27 /    27 = 100%      23 /    36 =  63%
+ode/                                   5 /     5 = 100%      29 /    32 =  90%
+rng/                                  57 /    57 = 100%      23 /    24 =  95%
+roots/                                 8 /     8 = 100%     258 /   310 =  83%
+special_functions/                    31 /    31 = 100%     193 /   216 =  89%
+timestep/                             62 /    62 = 100%     104 /   178 =  58%
+units/                                82 /    82 = 100%      58 /    58 = 100%
+viz/                                  32 /    32 = 100%     138 /   178 =  77%
+c4/                                  181 /   182 =  99%     442 /   504 =  87%
+quadrature/                          224 /   226 =  99%     603 /   732 =  82%
+parser/                              321 /   330 =  97%    1260 /  1611 =  78%
+cdi_analytic/                        146 /   158 =  92%     173 /   226 =  76%
+diagnostics/                          16 /    21 =  76%      37 /    55 =  67%
+memory/                                4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2210 /  2241 =  98%    5419 /  6633 =  81%
+
+Lines of Code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             439          12982          22648          53990
+C/C++ Header                    353           7384          21695          17732
+Lisp                             19           2038           2973          13118
+CMake                           126           2253           6133           9388
+Bourne Shell                     34            708           1511           3458
+Bourne Again Shell               12            302            592           1609
+Python                           16            447            766           1475
+CSS                               1            261             75           1260
+Fortran 90                        8            114            217            381
+C                                 4             59            129            288
+C Shell                           2             32             36            163
+CUDA                              4             46             89            132
+DOS Batch                         4             59             92            109
+HTML                              2              3             47             68
+YAML                              3             22            140             66
+make                              2             22             13             39
+--------------------------------------------------------------------------------
+SUM:                           1029          26732          57156         103276
+--------------------------------------------------------------------------------
+
+2018-12-18  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+ 	* "Release draco-7_0_0":https://rtt.lanl.gov/redmine/versions/63.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Capsaicin-4_15_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  SN/GR/FI/IC/CY     Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.3
+	                     Intel 17.0.4    Cray_MPICH2-7.7.3
+	  Thunder/Astra      NA
+	  Toolbox            NA
+	  Sierra/RZAnsel     NA
+	  Darwin Power9      NA
+	  Darwin ARM         NA
+
+	* Summary of changes:
+	- 378 files changed, added or removed in 58 commits.
+	- Extend draco_mesh and X3D parser capability
+	- Cleaned up the autodoc build target.
+	- Enable Compton and xthi/ythi tests under Visual Studio
+
+ 	* Corrected Defects:
+	- Github #508 A couple of tweaks to fix build/run on Darwin ARM nodes.
+	- Github #515 Fix DbC bug in Draco_Mesh and update X3D parser.
+	- Github #516 Fix a few typos in the release scripts.
+	- Github #518 A few more tweaks to the release scripts for draco-6_25_0
+	- Github #519 Fixes to target autodoc
+	- Github #520 Minor cleanup for environments and regressions
+	- Github #533 Fix a cmake logic error related to XCode.
+	- Github #539 Fix a bug related to setting version numbers.
+	- Github #541 Update regression environment to fix script-update.
+	- Github #544 Compton bugfix
+	- Github #547 Misc updates to prepare for next release
+	- Github #552 Added missing header.
+	- Bug #1250 Add git-commit-precomit-hook for f90
+	- Bug #1291 Review doxygen build errors
+	- Bug #1292 Track CMake + nvcc issue related to pthreads
+	- Bug #1304 doxygen not generating expected collaboration diagrams
+	- Bug #1308 Published autodoc has wrong stylesheet
+	- Bug #1330 Published autodoc: selecting Draco class from other project links to wrong page
+	- Bug #1335 'update_regression_scripts.sh' broken
+	- Bug #1339 CSK update to 0.4.0 broke ccs-net regression
+	- Bug #1353 Provide csk/0.4.1 on ccs-net machines
+	- Bug #1354 Possible cyclic dependencies in Scalar/Parallel Unit Test implementation
+
+	* New Features:
+
+	- Github #509 Teach the PR regression system to also build autodoc.
+	- Github #510 Core autodoc
+	- Github #511 Merge Draco-6_25_0 release back to develop
+	- Github #513 Make minor modifications following further usage of Draco_Mesh.
+	- Github #514 Add delete with size to complement unsized delete.
+	- Github #517 Update regression system to support new Capsaicin projects.
+	- Github #521 Cleanup Units/PhysicalConstants and add some comments.
+	- Github #522 General code cleanup
+	- Github #523 Add single-call test functions to Draco.
+	- Github #527 Fix warnings and errors generated when running doxygen.
+	- Github #528 Travis autodoc
+	- Github #530 Compton with average energy deposition
+	- Github #531 Provide new git commit hooks that test f90 code style.
+	- Github #534 Add F90 style and line-length checks to check_style.sh
+	- Github #536 More cleanup
+	- Github #540 Enhance autodoc features.
+	- Github #542 Add compton to VS2017 regressions.
+	- Github #543 Updates to the LANL HPC release scripts.
+	- Github #545 Corrected the release script for cts machines.
+	- Github #546 Remove csk-0.4.0 version specification from regression scripts so 0.4.1 can be loaded
+	- Github #548 Enable xthi and ythi builds/tests for Visual Studio.
+	- Github #549 Add boilerplate base for Class_Parse_Table
+	- Github #550 Order nodes counterclockwise for each face in `Draco_Mesh::Layout`.
+	- Feature #1284 Extend checkpr.sh to build/install generated autodoc.
+	- Support #1350 ccs-net: add numpy to python@3.6.5 installation
+	- Task #1301 Move the environment bash functions to common.sh
+	- Task #1303 Update spack for doxygen@1.8.14 + shared_ptr patch
+
+	* Known Defects:
+
+	- Bug #1306 Possible to have gitlab CI use cl.exe?
+	- Bug #1289 Move docker containers to gitlab?
+	- Bug #1282 Add support for newer superlu-dist
+	- Bug #1269 Demo CDash running in a docker container
+	- Bug #1268 memory: needs more tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature: Needs more unit tests
+	- Bug #1246 Cannot delete branches from forked EAP repo
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1207 Appveyor: enable more tests
+	- Bug #1152 Visualization: consider VTK or Silo
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1149 setupMPI.cmake: use 'cmake_host_system_information'
+	- Bug #1148 perfbench time variation on snow
+	- Bug #1133 Move code from c4 that doesn't wrap MPI
+	- Bug #1090 Regressions on trinitite occasionally fail with "address in use" errors
+	- Bug #1083 Darwin: demo power9+volta nodes
+	- Bug #1062 Prepare Darwin as sierra-proxy machine
+	- Bug #1049 Visit install not working on ccs-net machines
+	- Bug #1025 Add common build options to "Enabled features" list in build summary
+	- Bug #59 cdi_eospac design flaw
+
+	* Metrics:
+
+Contributers (updated Release.cc and README.md with this ordering).
+
+CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger, James S. Warsa,
+      Alex R. Long, Kendra P. Keady, Jae H. Chang, Matt A. Cleveland, Andrew T. Till,
+      Tim Kelley and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
+     Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
+     Paul W. Talbot, and Katherine J. Wang.
+
+Code Coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  82 /    82 = 100%      58 /    58 = 100%
+../source/src/quadrature/fctest/       1 /     1 = 100%       0 /     0
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/mesh/                   56 /    56 = 100%      77 /    82 =  93%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/special_functions/      31 /    31 = 100%     193 /   216 =  89%
+../source/src/ds++/                  336 /   336 = 100%     493 /   553 =  89%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/cdi_ipcress/           106 /   106 = 100%     210 /   238 =  88%
+../source/src/RTT_Format_Reader/     323 /   323 = 100%     377 /   434 =  86%
+../source/src/linear/                 16 /    16 = 100%     335 /   392 =  85%
+../source/src/c4/bin/                  4 /     4 = 100%      17 /    20 =  85%
+../source/src/cdi/                    46 /    46 = 100%      73 /    86 =  84%
+../source/src/roots/                   8 /     8 = 100%     258 /   310 =  83%
+../source/src/mesh_element/           23 /    23 = 100%     154 /   197 =  78%
+../source/src/viz/                    32 /    32 = 100%     138 /   178 =  77%
+../source/src/meshReaders/            15 /    15 = 100%     122 /   162 =  75%
+../source/src/compton/                16 /    16 = 100%       4 /     6 =  66%
+../source/src/norms/                  27 /    27 = 100%      23 /    36 =  63%
+../source/src/timestep/               62 /    62 = 100%     104 /   178 =  58%
+../source/src/cdi_eospac/             52 /    52 = 100%      65 /   127 =  51%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/c4/                    181 /   182 =  99%     440 /   504 =  87%
+../source/src/quadrature/            224 /   226 =  99%     603 /   732 =  82%
+../source/src/parser/                321 /   330 =  97%    1260 /  1611 =  78%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/diagnostics/            16 /    21 =  76%      37 /    55 =  67%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+../source/src/diagnostics/qt/          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2208 /  2246 =  98%    5407 /  6621 =  81%
+
+
+Lines of Code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             439          12982          22648          53990
+C/C++ Header                    353           7384          21695          17732
+Lisp                             19           2038           2973          13118
+CMake                           126           2253           6133           9388
+Bourne Shell                     34            708           1511           3458
+Bourne Again Shell               12            302            592           1609
+Python                           16            447            766           1475
+CSS                               1            261             75           1260
+Fortran 90                        8            114            217            381
+C                                 4             59            129            288
+C Shell                           2             32             36            163
+CUDA                              4             46             89            132
+DOS Batch                         4             59             92            109
+HTML                              2              3             47             68
+YAML                              3             22            140             66
+make                              2             22             13             39
+--------------------------------------------------------------------------------
+SUM:                           1029          26732          57156         103276
+--------------------------------------------------------------------------------
+
+	* LOC no-tests: Ratio: 71259/37325 = 1.91
+	- 0.9 lines of tests per line of code
+	- 1.07 lines of comments per line of code.
+
+2018-10-23  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* "Release draco-6_25_0":https://rtt.lanl.gov/redmine/versions/62.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Jayenne-7_18_0":https://rtt.lanl.gov/redmine/versions/61
+	  - "Capsaicin-4_14_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/WF              Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  SN/BA/GR/FI/IC     Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 6.4.0       OpenMPI-2.1.2
+	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.1
+	                     Intel 17.0.4    Cray_MPICH2-7.7.1
+
+	* Summary of changes:
+	- 594 files changed, added or removed in 211 commits.
+	- Python is now a required component for Draco.
+	- Added support for f90cache
+	- Added a runtime_check function to rtt_c4
+	- Added a parallel output stream.
+	- Added "ythi", which is like xthi except uses std::thread instead of OpenMP.
+	- Force DbC failures to print a stacktrace (when DRACO_DIAGNOSTICS & 2).
+	- Added an Appveyor (win32) build to the CI.
+	- Complete preliminary Draco_Mesh builder, using RTT mesh parser.
+	- Added a X3D Draco_Mesh parser.
+	- Begin using Docker images for Travis CI
+	- Begin supporting 64-bit builds under Visual Studio
+	- Begin requiring cmake-3.11+
+	- Provide a basic Prefetch capability.
+	- Fix a compatibility issue related to Python3
+	- Update developer environment for Darwin.
+	- Add unstructured cell type option to Ensight translator.
+
+	Corrected defects:
+
+	- Github #379 Fix an MPI detection issue.
+	- Github #391 Fix bug in operator precedence in Expression parser.
+	- Github #396 Fix OpenMPI detection when using clang++/clang/gfortran combination.
+	- Github #401 Fix a bad entry in valgrind_suppress.txt.
+	- Github #403 Fix a bug in sync_repository.sh that prevented PRs from running.
+	- Github #407 Fix bug in Timer::printline_mean
+	- Github #409 Fix bug in compilerEnv.cmake wrt MSVC builds.
+	- Github #410 Fix broken Jayenne-win32 builds (CMakeAddFortranSubdirectory failures)
+	- Github #431 Alternate solution for Processor_Group definition/instantiation conflict.
+	- Github #429 Ensure that Processor_Group.t.hh is installed in the include/c4 directory.
+	- Github #433 Minor patch to fix a bug related to Win32 builds.
+	- Github #435 Fix a bug in .bashrc; update sample dotfiles.
+	- Github #458 Fix ambiguous type conversion issue when compiling on a MAC
+	- Github #480 Fix some issues in ofpstream that were causing McGrid to fail.
+	- Github #482 Fix broken draco_info tool.
+	- Github #483 Fix GSL discovery.
+	- Github #485 Avoid compiling for AVX2 instructions on older hardware.
+	- Github #502 Fix warnings/errors reported in Visual Studio regressions.
+	- Github #503 Remove extraneous paren in .bash_slurm
+	- Bug #1048 Capsaicin builds broken for clang
+	- Bug #1115 Travis runner for Github is broken
+	- Bug #1116 trinitite: cmake/3.10.2 breaks MPI detection
+	- Bug #1117 Snow: Draco dev environment broken after 'newgrp'
+	- Bug #1119 ccs-net: update modulefiles to LMOD
+	- Bug #1120 Add clang/4.0.1 build to standard PR checks on ccscs2
+	- Bug #1121 Visual Studio: header files not listed under project sources
+	- Bug #1128 Review constants
+	- Bug #1130 Draco configure should fail if python is not found
+	- Bug #1131 checkpr.sh did not start after sync_repository found an update for capsaicin
+	- Bug #1154 Github Travis builds currently broken
+	- Bug #1167 Cray: Build system fails if CXX doesn't point to cray compile wrapper
+	- Bug #1172 modulefile for eospac/6.3.X missing from fire/ice
+	- Bug #1177 Move some regression testing from ccscs2 to ccscs3
+	- Bug #1178 CDash mismatch between email and online report
+	- Bug #1181 Create updated vendors.tar.gz to be used with gitlab runners
+	- Bug #1198 Win32 builds crash after PR #425
+	- Bug #1203 Trinitite: Run test to verify OOM killer messages are printed.
+	- Bug #1226 Regressions/Builds finding wrong 'mpiexec' on Cray machines
+	- Bug #1228 Cap Gitlab - use docker image for tests.
+	- Bug #1237 Create PR for CMake with Cray fixes for C++14
+	- Bug #1270 1-sided RMA messaging is broken on Trinitite/Trinity
+
+	New Features:
+
+	- Github #380 Add more valgrind suppression rules.
+	- Github #381 Cleanup to support newer win32 test environment.
+	- Github #382 Clean up some files that haven't been touched in a while.
+	- Github #383 Minor tweaks to the draco developer environment.
+	- Github #384 Ensure draco's bash functions are available in a subshell.
+	- Github #385 Promote python requirement to 'always required'
+	- Github #386 Allow multiple values for extra_params in the regression system. (allows knl + vtest)
+	- Github #388 Ensure that the lapack CMake target points to a blas installation.
+	- Github #392 Improve FindEOSPAC.cmake
+	- Github #393 Eliminate a Draco bashrc error from printing.
+	- Github #394 Add support for f90cache.
+	- Github #395 Provide small changes to better support newer versions of CMake.
+	- Github #399 CCS-NET: Update developer environment to use newer tools.
+	- Github #375 Use features of cmake-3.9 to set project version, related to #231
+	- Github #378 Add a runtime_check function to rtt_c4
+	- Github #400 Load modules 1-by-1 in bash_functions2 version of dracoenv.
+	- Github #402 Patch logic used to identify the Fortran compiler flavor.
+	- Github #404 Cleanup some code to eliminate build/run warnings.
+	- Github #405 Provide basic support for the flang (LLVM) compiler.
+	- Github #406 More GitHub badges
+	- Github #408 Improve robustness of compiler and MPI detection
+	- Github #411 Fixes for gitlab style runner
+	- Github #412 Add a parallel output stream.
+	- Github #413 Unstructured mesh prototype needs-work
+	- Github #414 Added "ythi", which is like xthi except uses std::thread instead of O…
+	- Github #415 Provide a unit test for ythi.
+	- Github #416 Update environments and regression scripts.
+	- Github #417 Force DbC failures to print a stacktrace (DRACO_DIAGNOSTICS & 2).
+	- Github #418 Minor tweaks to enable new package 'mesh' to build under VS2017.
+	- Github #419 Dbgopt
+	- Github #420 Disable Travis config/build/test builds.
+	- Github #421 Minor tweaks to the configure process.
+	- Github #422 Add an Appveyor (win32) build to the CI.
+	- Github #423 Safe a call to sqrt by wrapping its argument in fabs.
+	- Github #424 1st Draco_Mesh ghost cell implementation
+	- Github #425 Try to Re-enable a baseline (no MPI) Travis build.
+	- Github #426 Tweak indentation when printing valid keywords.
+	- Github #427 Cleanup C4 to allow DRACO_C4=SCALAR on Win32.
+	- Github #432 Enable more tests in the CI systems.
+	- Github #434 Complete preliminary Draco_Mesh builder, using RTT mesh parser.
+	- Github #436 Update clang-format rules for version 6.0
+	- Github #437 Add preliminary X3D Draco_Mesh parser.
+	- Github #438 Add ability to read X3D boundary files.
+	- Github #439 Fix url in pull request template.
+	- Github #440 Attempt to use Docker for Travis CI checks.
+	- Github #441 Tweaks to eliminate build warnings for 64-bit builds under VS2017.
+	- Github #442 Move default to Intel 18
+	- Github #443 More extensions to support 64-bit builds under VS 2017.
+	- Github #444 Include lapack_wrap for Linux+LLVM and Windows builds (if lapack is found)
+	- Github #445 More build system tweaks implemented while porting to VS2017 Win64.
+	- Github #446 More tweaks for Win32...
+	- Github #447 WIP: Begin requiring cmake-3.11+.
+	- Github #449 Add binary capability to Kent's parallel output file writer
+	- Github #451 Update mesh and X3D parser in src/mesh/ directory.
+	- Github #452 Add support for 5 static analysis tools.
+	- Github #453 Improve the use of implicit type conversion.
+	- Github #455 Update ds++/config.h to provide draco_isKNL.
+	- Github #456 Small tweaks and fixes.
+	- Github #457 Prefetch
+	- Github #461 Clean up build warnings reported by VS and fix some regression scripts
+	- Github #462 A few misc. updates.
+	- Github #463 Provide helper scripts for checking code style.
+	- Github #464 Fix a compatibility issue related to Python3
+	- Github #466 Improve ds++ code coverage by adding tests or removing features
+	- Github #467 Improve c4 code coverage by adding tests or removing features
+	- Github #468 Improve mesh_element and norms code coverage
+	- Github #469 Improve units, special_functions and viz code coverage
+	- Github #473 Improve quadrature coverage by adding tests or removing features.
+	- Github #474 Attempt to fix missing codecov reports.
+	- Github #476 Add support for Grizzly.
+	- Github #477 Restore the prune function to Ordinate_Space.
+	- Github #478 Extend rtt_viz::Ensight_Translator's ensight_dump function.
+	- Github #486 Improve coverage in cdi_ipcress (and other cleanup)
+	- Github #488 WIP: Clean up CAFS portion of build system to support x86 and x64.
+	- Github #489 Improve code coverage of cdi_ipcress by extending tests.
+	- Github #490 Ensure csk and ndi are loaded by default on trinity/trinitite.
+	- Github #491 Generalize X3D boundary condition specification.
+	- Github #492 Update developer environment for Darwin.
+	- Github #493 Fix build failure on Mac's associated with parse_number_impl
+	- Github #494 Move to cmake/3.12.1 on HPC machines.
+	- Github #495 Improve unit test coverage for quadrature/Level_Symmetric.cc
+	- Github #496 Enable warning level 4 for Visual Studio
+	- Github #497 Add a file include capability to Token_Streams.
+	- Github #498 Add unstructured cell type option to Ensight translator.
+	- Github #499 Formalize unstructured cell specification for Ensight.
+	- Github #505 Add more pragmas to suppress warnings found in R123 headers.
+	- Github #506 Minor patch to CMakeAddFortranSubdirectory to support Jayenne.
+	- Github #507 Minor code cleanup to eliminate build warnings from Visual Studio
+	- Github #509 Teach the PR regression system to also build autodoc.
+	- Feature #546 C++11 features to consider
+	- Feature #547 Begin using std::chrono
+	- Feature #648 CMake: Replace DLL_PUBLIC macros with WINDOWS_EXPORT_ALL_SYMBOLS
+	- Feature #1027 Test libquo@1.3 on ccs-net
+	- Feature #1245 DBS needs a way to identify KNL
+	- Support #1247 Evaulate vim bindings for clang-format
+	- Task #640 Demonstrate ParMetis build on Win32
+	- Task #1142 Update regression system to allow multiple values for option '-e'
+	- Task #1147 ccs-net: Provide newer tools for user_contrib
+	- Task #1153 tEospac fails when linked to EOSPAC 6.3.1
+	- Task #1158 Update scripts that mirror github/gitlab and push them
+	- Task #1159 Move dracodoc repository to gitlab
+	- Task #1160 User_contrib: build out tools for intel/18.0.2
+	- Task #1161 user_contrib: Provide modulefile for eospac/6.3.1
+	- Task #1195 Release Draco-6_24_0 with intel/18.0.2
+	- Task #1209 Test performance of intel/18 for 'fp-model'
+	- Task #1210 Move default dev environment/regressions to intel/18.0.2 on CTS and ATS
+	- Task #1218 Move windows regressions to new machine
+	- Task #1219 Update CMakeAddFortranSubdirectory
+	- Task #1234 Move default dev environment to cmake/3.12.1
+
+	Known Defects:
+
+	- Bug #1292 Track CMake + nvcc issue related to pthreads
+	- Bug #1291 Review doxygen build errors
+	- Bug #1289 Move docker containers to gitlab?
+	- Bug #1282 Add support for newer superlu-dist
+	- Bug #1269 Demo CDash running in a docker container
+	- Bug #1268 memory: needs more tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature: Needs more unit tests
+	- Bug #1250 Add git-commit-precomit-hook for f90
+	- Bug #1246 Cannot delete branches from forked EAP repo
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1207 Appveyor: enable more tests
+	- Bug #1152 Visualization: consider VTK or Silo
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1149 setupMPI.cmake: use 'cmake_host_system_information'
+	- Bug #1148 perfbench time variation on snow
+	- Bug #1133 Move code from c4 that doesn't wrap MPI
+	- Bug #1090 Regressions on trinitite occasionally fail with "address in use" errors
+	- Bug #1083 Darwin: demo power9+volta nodes
+	- Bug #1062 Prepare Darwin as sierra-proxy machine
+	- Bug #1049 Visit install not working on ccs-net machines
+	- Bug #1025 Add common build options to "Enabled features" list in build summary
+	- Bug #59 cdi_eospac design flaw
+
+	* Statistics
+
+Contributers (updated Release.cc and README.md with this ordering).
+
+CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger, James S. Warsa,
+      Alex R. Long, Kendra P. Keady, Jae H. Chang, Matt A. Cleveland, Andrew T. Till,
+      Tim Kelley and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
+     Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
+     Paul W. Talbot, and Katherine J. Wang.
+
+Lines of Code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             438          13056          22744          53868
+C/C++ Header                    348           7263          21164          17309
+Lisp                             18           2033           2927          13081
+CMake                           124           2182           5727           8982
+Bourne Shell                     33            706           1527           3164
+Python                           16            447            768           1474
+Bourne Again Shell               13            267            566           1460
+CSS                               1            113             37            395
+Fortran 90                        8            113            216            380
+C                                 4             59            129            288
+C Shell                           2             32             36            163
+DOS Batch                         4             59             92            109
+YAML                              3             22            140             65
+HTML                              2              6             47             65
+CUDA                              3             19             59             40
+make                              2             22             13             39
+--------------------------------------------------------------------------------
+SUM:                           1019          26399          56192         100882
+--------------------------------------------------------------------------------
+
+Code Coverage
+-------------
+
+Directory               Function Coverage           C/D Coverage
+---------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+quadrature/fctest/       1 /     1 = 100%       0 /     0
+lapack_wrap/            12 /    12 = 100%       0 /     0
+rng/                    57 /    57 = 100%      23 /    24 =  95%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+mesh/                   53 /    53 = 100%      75 /    80 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+ds++/                  333 /   333 = 100%     490 /   548 =  89%
+special_functions/      31 /    31 = 100%     193 /   216 =  89%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+cdi_ipcress/           106 /   106 = 100%     210 /   238 =  88%
+RTT_Format_Reader/     323 /   323 = 100%     377 /   434 =  86%
+linear/                 16 /    16 = 100%     335 /   392 =  85%
+cdi/                    46 /    46 = 100%      73 /    86 =  84%
+roots/                   8 /     8 = 100%     258 /   310 =  83%
+c4/bin/                  5 /     5 = 100%      23 /    28 =  82%
+mesh_element/           23 /    23 = 100%     154 /   197 =  78%
+viz/                    32 /    32 = 100%     138 /   178 =  77%
+meshReaders/            15 /    15 = 100%     122 /   162 =  75%
+norms/                  27 /    27 = 100%      23 /    36 =  63%
+cdi_eospac/             52 /    52 = 100%      65 /   127 =  51%
+compton/                10 /    10 = 100%       2 /     4 =  50%
+FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+c4/                    181 /   182 =  99%     445 /   511 =  87%
+quadrature/            224 /   226 =  99%     603 /   732 =  82%
+timestep/               62 /    63 =  98%     104 /   178 =  58%
+parser/                318 /   327 =  97%    1261 /  1609 =  78%
+cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+diagnostics/            16 /    21 =  76%      36 /    51 =  70%
+memory/                  4 /     6 =  66%       0 /     2 =   0%
+diagnostics/qt/          0 /     5 =   0%       0 /     0
+-------------------  ---------------------  ---------------------
+Total                 2193 /  2232 =  98%    5405 /  6613 =  81%
+
 2018-03-19  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* "Release draco-6_24_0":https://rtt.lanl.gov/redmine/versions/60.
@@ -233,7 +1124,7 @@ Total                               2100 /  2158 =  97%    5178 /  6463 =  80%
 	- Global_Timer was updated to be more useful for parallel runs. The new
 	  implementation provides mean time plus deviations per rank, #256.
 	- Provide a C++ version of the xthi tool.  This tool shows thread
-	  assignmetns to hardware, #269.
+	  assignments to hardware, #269.
 	- Added more MPI functions to c4 including, #280
 	  . Added non-blocking sends and receives with custom MPI datatypes
 	  . Added no-blocking allreduce call with the standard of send_is test
@@ -983,7 +1874,7 @@ Total                               2067 /  2117 =  97%    5074 /  6322 =  80%
 
 	* Developer Environment:
 
-	- Begin loading gsl/2.1 and lapack/3.5.0 as part of the stanard
+	- Begin loading gsl/2.1 and lapack/3.5.0 as part of the standard
 	  darwin vendor set.
 	- Begin using HPC provided grace on Toss2 machines.
 	- Adding support for a gcc-6.1.0 nightly regression on CCS-LAN
@@ -1069,7 +1960,7 @@ Total                               2067 /  2117 =  97%    5074 /  6322 =  80%
 	  . A new test and subdirectory (ftest) exercises the interface
 	  . This will ensure that any changes to Quadrature_Interface.hh
 	    are immediately incorporated into quadrature_interfaces.f90.
-	- Changing default axis ordering for 2D cartesian. Now mu and eta
+	- Changing default axis ordering for 2D Cartesian. Now mu and eta
 	  are x and y (like in 3D) and xi points in z. For tri cl, square
 	  cl, and product cl quadratures, this change means the polar
 	  angle moves alignment from y to z. Updated tests with the new
@@ -1763,12 +2654,12 @@ Total                               2071 /  2124 =  97%    5089 /  6407 =  79%
 	- Added specialized forms for Soft_Equiv: vector<double>,
 	  vector<vector<double>>, and vector<vector<vector<double>>>.
 	- Updated UnitTest to provide member function getTestSourcePath().
-	- Make path handling more consistent.  Alwasy convert paths to native
+	- Make path handling more consistent.  Always convert paths to native
 	  format using forward slashes as directory separators for Unix and
 	  backward slashes for Windows platforms.  Functions that return
 	  directory paths always end with a directory separator.  This
 	  standardization included the removal of tests in tstPath.cc where we
-	  tried to use Windows sytle paths on Unix.
+	  tried to use Windows style paths on Unix.
 	- Added SP::operator!= for two-SP comparisons. Before this addition, (p
 	  != p2) with two SPs would evaluate operator bool for each one, then
 	  compare the two bools, so the comparison became "is one SP NULL and the
@@ -1937,34 +2828,47 @@ Total                               2060 /  2125 =  96%    4989 /  6303 =  79%
 
 	* Summary of changes:
 	- 833 files changed, added or removed in 83 commits.
-	- A significant redesign of the parser component was completed (see details below, r7945).
+	- A significant redesign of the parser component was completed (see
+	  details below, r7945).
 	- This release includes many build system and minor package updates.
 
 	* Details per package:
 
 	Build System:
-	- Update the CMakeAddFortranSubdirectory (CAFS) feature of the build system to respect the selected build type (Debug,
-	  Release, etc.) in the Fortran subproject.
-	- Began supporting and using user_contrib modules on HPC platforms (removed many modulefiles from Draco).
-	- Reverting back to intel/14 for regressions and the default environment due to issues discovered in intel/15.  When
-	  intel/15.0.2 is available, we will consider moving back to version 15.
-	- Some Win32 specific implementations were implemented to allow nightly regressions of Draco and Jayenne from Win32.
-	- Some cleanup of how OpenMP is detected and toggled on/off by the build system.
+	- Update the CMakeAddFortranSubdirectory (CAFS) feature of the build
+	  system to respect the selected build type (Debug, Release, etc.) in
+	  the Fortran subproject.
+	- Began supporting and using user_contrib modules on HPC platforms
+	  (removed many modulefiles from Draco).
+	- Reverting back to intel/14 for regressions and the default environment
+	  due to issues discovered in intel/15.  When intel/15.0.2 is available,
+	  we will consider moving back to version 15.
+	- Some Win32 specific implementations were implemented to allow nightly
+	  regressions of Draco and Jayenne from Win32.
+	- Some cleanup of how OpenMP is detected and toggled on/off by the build
+	  system.
 	- Begin requiring cmake/3.2.1 or later (now using cmake's FindGSL.cmake)
 
 	c4:
-	- Reimplemented start, stop, and set_activity functions of Global_Timer to have desired behavior. Add report_all function to
-	  Global_Timer to print a unified report from all active Global_Timers. Add reset_all function to reset all active
-	  Global_Timers. Make constructor "explicit" to avoid even the remote possibility of unwittingy constructing a Global_Timer
-	  from a raw string implicitly. Get rid of destructor. Reports must be generated manually rather than popping up whenever
-	  the destructor fires. Make sure all this code is exercised by the test suite.
+	- Reimplemented start, stop, and set_activity functions of Global_Timer
+	  to have desired behavior. Add report_all function to Global_Timer to
+	  print a unified report from all active Global_Timers. Add reset_all
+	  function to reset all active Global_Timers. Make constructor
+	  "explicit" to avoid even the remote possibility of unwittingy
+	  constructing a Global_Timer from a raw string implicitly. Get rid of
+	  destructor. Reports must be generated manually rather than popping up
+	  whenever the destructor fires. Make sure all this code is exercised by
+	  the test suite.
 
 	cdi_ipcress:
-	-  Added the ability to plot Planckian or Rosseland absorption opacity (or both) in the python ipcress file plotter
+	-  Added the ability to plot Planckian or Rosseland absorption opacity
+	  (or both) in the python ipcress file plotter
 
 	parser:
-	- Modifications to parser package meant to more cleanly separate parser code from other code and to better support
-	  inheritance and reentrancy in class parsers. First, I have add a function template to parser/utilities.hh:
+	- Modifications to parser package meant to more cleanly separate parser
+	  code from other code and to better support inheritance and reentrancy
+	  in class parsers. First, I have add a function template to
+	  parser/utilities.hh:
 
           template<class MyClass> SP<MyClass> parse_class(Token_Stream &);
 
@@ -1972,35 +2876,48 @@ Total                               2060 /  2125 =  96%    4989 /  6303 =  79%
 
           SP<MyClass> my_object = parse_class<MyClass>(tokens);
 
-	  This is meant to eliminate the use of static members of classes for parsing, such as Quadrature::parse, so that parsing
-	  code is not entangled with the classes being parsed. It is also consistent with all the other parse functions in
-	  utilities, such as parse_real or parse_integer.
+	  This is meant to eliminate the use of static members of classes for
+	  parsing, such as Quadrature::parse, so that parsing code is not
+	  entangled with the classes being parsed. It is also consistent with
+	  all the other parse functions in utilities, such as parse_real or
+	  parse_integer.
 
-	  No default implementation is provided for this template function. It is meant to be specialized for every class for which
-	  we desire to provide a parser. However, there is a suggested implementation, described below.
+	  No default implementation is provided for this template function. It
+	  is meant to be specialized for every class for which we desire to
+	  provide a parser. However, there is a suggested implementation,
+	  described below.
 
-	  This is a relatively straightforward change to propagate. In Draco, only the Quadrature class is affected. The change is
-	  more extensive in Capsaicin, but I have propagated the change and will check that in at the same time I check in the Draco
-	  changes.
+	  This is a relatively straightforward change to propagate. In Draco,
+	  only the Quadrature class is affected. The change is more extensive in
+	  Capsaicin, but I have propagated the change and will check that in at
+	  the same time I check in the Draco changes.
 
-	  Second, I have eliminated Class_Parser.hh and Class_Parser.i.hh and replaced them with Class_Parse_Table.hh. The old
-	  Class_Parser template defined a class template that was basically a collection of static members and tables, and this was
-	  not amenable either to reentrancy or inheritance. The new Class_Parse_Table.hh does not define a class parser class
-	  template at all, but provides a templatized parser function:
+	  Second, I have eliminated Class_Parser.hh and Class_Parser.i.hh and
+	  replaced them with Class_Parse_Table.hh. The old Class_Parser template
+	  defined a class template that was basically a collection of static
+	  members and tables, and this was not amenable either to reentrancy or
+	  inheritance. The new Class_Parse_Table.hh does not define a class
+	  parser class template at all, but provides a templatized parser function:
 
 	  template<class Class_Parse_Table>
 	  SP<typename Class_Parse_Table::Return_Class>
 	  parse_class_from_table(Token_Stream &tokens);
 
-	  The class Class_Parse_Table must provide certain member and data functions, which are described in detail in
-	  Class_Parse_Table.hh, but the developer is otherwise given considerable flexibility in writing this class. By convention,
-	  the Class_Parse_Table class providing parsing support for MyClass is named Class_Parse_Table<MyClass>. This class template
-	  is declared but not defined in Class_Parse_Table.hh, the idea being that developers will specialize it for each class for
+	  The class Class_Parse_Table must provide certain member and data
+	  functions, which are described in detail in Class_Parse_Table.hh, but
+	  the developer is otherwise given considerable flexibility in writing
+	  this class. By convention, the Class_Parse_Table class providing
+	  parsing support for MyClass is named Class_Parse_Table<MyClass>. This
+	  class template is declared but not defined in Class_Parse_Table.hh,
+	  the idea being that developers will specialize it for each class for
 	  which they want a parser.
 
-	  To help developers do this, I have added template__parser.hh and template__parser.cc to the draco/environment/templates
-	  directory. If you are still using emacs for editing, you will find that the Draco->New file ... menu now includes "New C++
-	  class parser" as an option, which generates MyClass__parser.hh and MyClass__parser.cc defining Class_Parse_Table<MyClass>
+	  To help developers do this, I have added template__parser.hh and
+	  template__parser.cc to the draco/environment/templates directory. If
+	  you are still using emacs for editing, you will find that the
+	  Draco->New file ... menu now includes "New C++ class parser" as an
+	  option, which generates MyClass__parser.hh and MyClass__parser.cc
+	  defining Class_Parse_Table<MyClass>
 	  for whatever MyClass you choose.
 
 	  So how is parse_class_from_table intended to be used? As follows:
@@ -2011,20 +2928,26 @@ Total                               2060 /  2125 =  96%    4989 /  6303 =  79%
 	    return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
 	  }
 
-	  This actually appears in a comment in Class_Parse_Table.hh, from which you can conveniently cut it and paste it into your
-	  parser code, filling in Class with your class name. So why not make this the default definition? It turns out that if such
-	  a default definition is visible, then every time you call parse_class<AnyClass>, the compiler wants to see a definition of
-	  Class_Parse_Table<AnyClass>, which is highly undesirable. We want the compiler to know that parse_class<AnyClass> exists,
-	  but not try to instantiate it anywhere but in AnyClass__parser.cc, where you decide if the above definition is really what
-	  you want.
+	  This actually appears in a comment in Class_Parse_Table.hh, from which
+	  you can conveniently cut it and paste it into your parser code,
+	  filling in Class with your class name. So why not make this the
+	  default definition? It turns out that if such a default definition is
+	  visible, then every time you call parse_class<AnyClass>, the compiler
+	  wants to see a definition of Class_Parse_Table<AnyClass>, which is
+	  highly undesirable. We want the compiler to know that
+	  parse_class<AnyClass> exists, but not try to instantiate it anywhere
+	  but in AnyClass__parser.cc, where you decide if the above definition
+	  is really what you want.
 
 	quadrature:
-	- Added a reverse parse function to complement parse function for QIM enumeration.
-	- Modified "interval" (1D) quadrature classes to compute and store on construction their data for later access. The multi-D
-	  CL quadrature classes can then create and query an interval quadrature to get the polar ordinates, with all the associated
-	  DBCs that are involved in doing so. Added an S2 double-Gauss quadrature test because it is treated as a special case upon
-	  construction.
-
+	- Added a reverse parse function to complement parse function for QIM
+	  enumeration.
+	- Modified "interval" (1D) quadrature classes to compute and store on
+	  construction their data for later access. The multi-D CL quadrature
+	  classes can then create and query an interval quadrature to get the
+	  polar ordinates, with all the associated DBCs that are involved in
+	  doing so. Added an S2 double-Gauss quadrature test because it is
+	  treated as a special case upon construction.
 
 	* Details for defects and features can be found at https://rtt.lanl.gov/redmine/isues/#.
 
@@ -2558,7 +3481,7 @@ Total                               2058 /  2118 =  97%    4941 /  6203 =  79%
 	c4:
 	- Provide a pause function in c4's Timer.  This can be used to
 	  pause execution for a set number of seconds.
-	- liminate the use of std:binary_function as this feature is
+	- eliminate the use of std:binary_function as this feature is
 	  deprecated in C++11.  It is actually a case of over
 	  specialization (#405)
 
@@ -2576,7 +3499,7 @@ Total                               2058 /  2118 =  97%    4941 /  6203 =  79%
 	- Add HEXAGON_6 element to support AMR meshs.
 
 	parser:
-	- Modify the design of 3 classes to elminate inheritance from
+	- Modify the design of 3 classes to eliminate inheritance from
 	  standard C++ containers.  I changed the IS-A relationship to a
 	  HAS-A (composition in place of inheritance).  This change was
 	  motivated by a deep desire to eliminate compiler warnings.
@@ -3960,7 +4883,7 @@ Total                               2241 /  2290 =  97%    5030 /  6225 =  80%
 
 	cdi_eospac:
 	  - Provided a very simple interactive query tool for EOSPAC data.
-	  - Updated SesameTable class to use maps intead of vector to
+	  - Updated SesameTable class to use maps instead of vector to
 	    store relationship between registered materials and data
 	    tables.
 	  - Updated pack/unpack routines to support map<T1,T2> and
@@ -4245,7 +5168,7 @@ Total                               2231 /  2268 =  98%    4971 /  6116 =  81%
 	    arbitrarily deep STL objects to a provided tolerance value.  I
 	    used a simple class template recursion technique that
 	    minimizes the amount of new code.  The upside is that no
-	    exising code needs to be changed. The downside is that users
+	    existing code needs to be changed. The downside is that users
 	    will need to use a slightly different syntax for comparing STL
 	    containers that have more than 1 level.  This new feature
 	    cannot be used on multi-D C style arrays (e.g. double
@@ -4269,7 +5192,7 @@ Total                               2231 /  2268 =  98%    4971 /  6116 =  81%
 	  - Fixed some long-standing bugs and issues for quadratures,
 	    including bugs in axisymmetric coordinates in 1D and 2D,
 	    errors when using scattering  expansions greater than
-	    isotropic, and preparing for aaccess to the Galerkin
+	    isotropic, and preparing for access to the Galerkin
 	    Quadrature method via input.
 
 	rng:
@@ -4493,7 +5416,7 @@ Total                 2160 /  2240 =  96%    4880 /  6053 =  80%
 
 	FortranChecks:
 	  - This is a new draco component associated with making Fortran a
-	    primary Draco language.  This component tests operatio of the
+	    primary Draco language.  This component tests operation of the
 	    Fortran compiler and Fortran/C++ linkage.  It also provides
 	    sample ISO_C_BINDING syntax.
 
@@ -4509,7 +5432,7 @@ Total                 2160 /  2240 =  96%    4880 /  6053 =  80%
 
 	parser:
 	  - Fixed a memory leak discovered in Abstract_Class_Parser.
-	  - Add unit testst to improve code coverage.
+	  - Add unit tests to improve code coverage.
 	  - Added tests to improve code coverage.
 
 	quadrature:
@@ -4784,7 +5707,7 @@ Total                 2314 /  2370 =  97%    4889 /  5993 =  81%
 	    the CUDA SDK is available, but the developer does not want to
 	    use GPU code.
 	  - In DACS_Device_Interface.cc, modify the signature of the
-	    funciton pointer to avoid confusion between C and C++ linkage.
+	    function pointer to avoid confusion between C and C++ linkage.
 	    Here are the comments from DACS_Device_Interface.cc/hh:
 
             // The definition in the source file does not have extern "C"

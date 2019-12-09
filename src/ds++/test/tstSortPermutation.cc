@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/ds++/tstSortPermutation.cc
+ * \file   ds++/test/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
- * \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -42,15 +42,15 @@ template <typename IT>
 inline bool testit(const std::string & /*name*/, IT first, IT last) {
   rtt_dsxx::SortPermutation lfsp(first, last);
 
-  typedef typename std::iterator_traits<IT>::value_type value_type;
+  using value_type = typename std::iterator_traits<IT>::value_type;
   std::vector<value_type> vv1(first, last);
   std::vector<value_type> vv2;
 
-  for (size_t i = 0; i < vv1.size(); i++)
+  for (unsigned i = 0; i < vv1.size(); i++)
     vv2.push_back(vv1[lfsp[i]]);
 
   IT lfi = first;
-  for (size_t i = 0; lfi != last; i++, ++lfi)
+  for (unsigned i = 0; lfi != last; i++, ++lfi)
     vv1[lfsp.inv(i)] = *lfi;
 
   std::copy(first, last, std::ostream_iterator<value_type>(std::cout, " "));
@@ -80,15 +80,15 @@ inline bool testit(const std::string & /*name*/, IT first, IT last,
                    const CMP &comp) {
   rtt_dsxx::SortPermutation lfsp(first, last, comp);
 
-  typedef typename std::iterator_traits<IT>::value_type value_type;
+  using value_type = typename std::iterator_traits<IT>::value_type;
   std::vector<value_type> vv1(first, last);
   std::vector<value_type> vv2;
 
-  for (size_t i = 0; i < vv1.size(); i++)
+  for (unsigned i = 0; i < vv1.size(); i++)
     vv2.push_back(vv1[lfsp[i]]);
 
   IT lfi = first;
-  for (size_t i = 0; lfi != last; i++, ++lfi)
+  for (unsigned i = 0; lfi != last; i++, ++lfi)
     vv1[lfsp.inv(i)] = *lfi;
 
   std::copy(first, last, std::ostream_iterator<value_type>(std::cout, " "));
@@ -133,8 +133,8 @@ struct FooGT {
 
 template <typename F> struct evenIsLess {
   bool operator()(const F &f1, const F &f2) const {
-    int i1 = static_cast<int>(f1.d);
-    int i2 = static_cast<int>(f2.d);
+    auto i1 = static_cast<int>(f1.d);
+    auto i2 = static_cast<int>(f2.d);
 
     return i1 % 2 == 0 ? ((i2 % 2 == 0 ? i1 < i2 : true))
                        : (i2 % 2 == 0 ? false : i1 < i2);
@@ -142,7 +142,6 @@ template <typename F> struct evenIsLess {
 };
 
 //---------------------------------------------------------------------------//
-
 int main(int /*argc*/, char * /*argv*/ []) {
   cout << "Initiating test of the SortPermutation.\n";
 

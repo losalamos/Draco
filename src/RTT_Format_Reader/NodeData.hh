@@ -4,23 +4,14 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/NodeData class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_NodeData_hh__
 #define __RTT_Format_Reader_NodeData_hh__
 
-#include "Dims.hh"
 #include "Nodes.hh"
-#include "ds++/Assert.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!
@@ -52,23 +43,25 @@ private:
 
 public:
   /*!
- * \brief Returns all of the data field values for each of the nodes.
- * \return The data field values for each of the nodes.
- */
+   * \brief Returns all of the data field values for each of the nodes.
+   * \return The data field values for each of the nodes.
+   */
   vector_vector_dbl get_data() const { return data; }
+
   /*!
- * \brief Returns all of the data field values for the specified node.
- * \param node_numb Node number.
- * \return The node data field values.
- */
-  vector_dbl get_data(int node_numb) const { return data[node_numb]; }
+   * \brief Returns all of the data field values for the specified node.
+   * \param node_numb Node number.
+   * \return The node data field values.
+   */
+  vector_dbl get_data(size_t node_numb) const { return data[node_numb]; }
+
   /*!
- * \brief Returns the specified data field value for the specified node.
- * \param node_numb Node number.
- * \param data_index Data field.
- * \return The node data field value.
- */
-  double get_data(int node_numb, int data_index) const {
+   * \brief Returns the specified data field value for the specified node.
+   * \param node_numb Node number.
+   * \param data_index Data field.
+   * \return The node data field value.
+   */
+  double get_data(size_t node_numb, size_t data_index) const {
     return data[node_numb][data_index];
   }
 };

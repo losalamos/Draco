@@ -4,7 +4,7 @@
  * \author  John McGhee
  * \date    Thu Apr  2 14:06:18 1998
  * \brief   Defines the target time-step advisor.
- * \note    Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2016-2019 Triad National Security, LLC.
  *          All rights reserved.
  * \version $Id$
  */
@@ -58,7 +58,7 @@ bool target_ts_advisor::invariant_satisfied() const {
   return ts_advisor::invariant_satisfied();
 }
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 //---------------------------------------------------------------------------//
 // end of target_ts_advisor.cc

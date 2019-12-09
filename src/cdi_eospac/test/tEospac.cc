@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr 2 14:20:14 2001
  * \brief  Implementation file for tEospac
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -35,12 +35,12 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   // Create a SesameTables object //
   // ---------------------------- //
 
-  // The user must create a SesameTables object that links material ID
-  // numbers to EOSPAC data types (each SesameTables object only contains
-  // lookups for one material).  If the user needs heat capacity values for
-  // Al then he/she must create a SesameTables object for Aluminum and then
-  // assign an aluminum material ID (e.g. 3717) to the enelc EOSPAC data
-  // type.  See the tests below for more details.
+  // The user must create a SesameTables object that links material ID numbers
+  // to EOSPAC data types (each SesameTables object only contains lookups for
+  // one material).  If the user needs heat capacity values for Al then he/she
+  // must create a SesameTables object for Aluminum and then assign an aluminum
+  // material ID (e.g. 3717) to the enelc EOSPAC data type.  See the tests below
+  // for more details.
 
   // Set the material identifier
   // This one is for Aluminum (03717)
@@ -48,18 +48,18 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
 
   // See http://xweb.lanl.gov/projects/data/ for material ID information.
 
-  // This matID for Al has lookup tables for prtot, entot, tptot, tntot,
-  // pntot, eptot, prelc, enelc, tpelc, tnelc pnelc, epelc, prcld, and encld
-  // (see SesameTables.hh for an explanantion of these keywords).  I need
-  // the table that contains enion lookups so that I can query for Cve()
-  // values.
+  // This matID for Al has lookup tables for prtot, entot, tptot, tntot, pntot,
+  // eptot, prelc, enelc, tpelc, tnelc pnelc, epelc, prcld, and encld (see
+  // SesameTables.hh for an explanantion of these keywords).  I need the table
+  // that contains enion lookups so that I can query for Cve() values.
 
-  // Sesame Number 3717 provides data tables: 101 102 201 301 303 304 305 306 401
+  // Sesame Number 3717 provides data tables: 101 102 201 301 303 304 305 306
+  // 401
   int const Al3717 = 3717;
 
-  // I also want to lookup the mean ion charge (EOS_Zfc_DT) which is found
-  // in sesame table 601.  Add sesame number 23714 which provides data
-  // tables: 101 102 201 601 602 603 604
+  // I also want to lookup the mean ion charge (EOS_Zfc_DT) which is found in
+  // sesame table 601.  Add sesame number 23714 which provides data tables: 101
+  // 102 201 601 602 603 604
   int const Al23714 = 23714;
 
   // Create a SesameTables object for Aluminum.
@@ -68,9 +68,8 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   // Print a list of EosTables
   AlSt.printEosTableList();
 
-  // Assign matID Al3717 to enion lookups (used for Cvi) for AlSt.  We can
-  // also assign these tables when the Eospac object is created (see example
-  // below).
+  // Assign matID Al3717 to enion lookups (used for Cvi) for AlSt.  We can also
+  // assign these tables when the Eospac object is created (see example below).
 
   // Also assign matID Al23714 for temperature-based electron thermal
   // conductivity (tconde).
@@ -82,15 +81,15 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
 
   // Cvi (returnType=EOS_Uic_DT (=ES4enion)) should point to matID 3717.
   // The user should never need to access this function.  However Eospac.cc
-  // does and we need to test this funcitonality.
+  // does and we need to test this functionality.
 
   if (AlSt.matID(EOS_Uic_DT) != 3717)
     FAILMSG("AlSt.matID(EOS_Uic_DT) points to the wrong matID.");
 
-  // The temperature-based electorn thermal conductivity
+  // The temperature-based electron thermal conductivity
   // (returnType=27=EOS_Ktc_DT) should point to matID 23714.  The user should
   // never need to access this function.  However Eospac.cc does and we need
-  // to test this funcitonality.
+  // to test this functionality.
 
   if (AlSt.matID(EOS_Ktc_DT) != 23714)
     FAILMSG("AlSt.matID(27) points to the wrong matID.");
@@ -120,41 +119,14 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
     return;
   }
 
-  // CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!
-
-  // Adding this block breaks Eospac as currently implemented.  Effectively,
-  // the destructor for spEospacAlt destroys all of the table handles for
-  // libeospac.  This is a flaw in libeospac, but we may be forced to manage
-  // it in cdi_eospac by using a Singleton Eospac object that uses reference
-  // counting for each material+data tuple and calls eos_DestroyTables()
-  // instead of eos_DestroyAll().  A redesign is also required to make this
-  // package thread safe!
-
-  // {   // Test alternate ctor method:
-
-  //     // Alternatively, we can avoid carrying around the AlSt object.  We
-  //     // can, instead, create a temporary version that is only used here in
-  //     // the constructor of Eospac().
-
-  //     std::shared_ptr< rtt_cdi_eospac::Eospac const > spEospacAlt;
-  //     spEospacAlt = new rtt_cdi_eospac::Eospac(
-  //         rtt_cdi_eospac::SesameTables().Ue_DT( Al3717 ).Zfc_DT( Al23714
-  //             ).Uic_DT( Al3717 ).Ktc_DT( Al23714 ) );
-
-  //     if ( spEospacAlt )
-  //         PASSMSG("shared_ptr to new Eospac object created (Alternate ctor).");
-  //     else
-  //         FAILMSG("Unable to create shared_ptr to new Eospac object (Alternate ctor).");
-  // }
-
   // --------------------------- //
   // Test scalar access routines //
   // --------------------------- //
 
   double const K2keV = 1.0 / 1.1604412E+7; // keV/Kelvin
 
-  // All of these tests request an EoS value given a single temperature and
-  // a single density.
+  // All of these tests request an EoS value given a single temperature and a
+  // single density.
 
   // Retrieve an Electron internal energy value;
 
@@ -189,7 +161,7 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG("getElectronHeatCapacity() test failed.");
 
-  // Retrive an Ion Internal Energy
+  // Retrieve an Ion Internal Energy
 
   refValue = 5.23391652028; // kJ/g
 
@@ -252,8 +224,6 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   }
 
   // Test the getElectronTemperature function
-
-  // spEospac->printTableInformation( EOS_T_DUic, std::cout );
 
   double SpecificIonInternalEnergy(10.0); // kJ/g
   Tout = spEospac->getIonTemperature(density, SpecificIonInternalEnergy); // keV
@@ -431,7 +401,7 @@ void cdi_eospac_except_test(rtt_dsxx::UnitTest &ut) {
     if (exceptionThrown)
       PASSMSG("Attempted access to unloaded table throws exception.");
     else
-      FAILMSG("Failed to throw exeption for invalid table access.");
+      FAILMSG("Failed to throw exception for invalid table access.");
   }
 
   return;

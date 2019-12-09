@@ -4,27 +4,27 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
 #include "cdi/CDI.hh"
 #include "cdi_analytic/Analytic_Gray_Opacity.hh"
-#include "cdi_analytic/nGray_Analytic_MultigroupOpacity.hh"
+#include "cdi_analytic/Compound_Analytic_MultigroupOpacity.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include <sstream>
 
 using namespace std;
 
-using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
-using rtt_cdi_analytic::Analytic_Gray_Opacity;
-using rtt_cdi_analytic::Analytic_Opacity_Model;
-using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
-using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
+using rtt_cdi_analytic::Analytic_Gray_Opacity;
+using rtt_cdi_analytic::Analytic_Opacity_Model;
+using rtt_cdi_analytic::Compound_Analytic_MultigroupOpacity;
+using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
@@ -64,13 +64,13 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::ABSORPTION);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Absorption")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::ABSORPTION);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Absorption")
       ITFAILS;
   }
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Total")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::TOTAL);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Total")
       ITFAILS;
   }
 
@@ -79,8 +79,8 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
   vector<double> rho(10);
 
   for (size_t i = 0; i < T.size(); i++) {
-    T[i] = 0.1 + i / 100.0;
-    rho[i] = 1.0 + i / 10.0;
+    T[i] = 0.1 + static_cast<double>(i) / 100.0;
+    rho[i] = 1.0 + static_cast<double>(i) / 10.0;
 
     if (!rtt_dsxx::soft_equiv(grayp->getOpacity(T[i], rho[i]),
                               constant_opacity))
@@ -234,7 +234,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   {
     std::vector<double> params(amodel->get_parameters());
 
-    std::vector<double> expectedValue(8);
+    std::vector<double> expectedValue(11);
     expectedValue[0] = 0.0;
     expectedValue[1] = 100.0;
     expectedValue[2] = -3.0;
@@ -243,6 +243,9 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
     expectedValue[5] = 1.0;
     expectedValue[6] = 1.0;
     expectedValue[7] = 1.0;
+    expectedValue[8] = 0.0;
+    expectedValue[9] = 0.0;
+    expectedValue[10] = 0.0;
 
     double const tol(1.0e-12);
 
@@ -338,8 +341,8 @@ void type_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // another way to do this
-  nGray_Analytic_MultigroupOpacity *m =
-      dynamic_cast<nGray_Analytic_MultigroupOpacity *>(&*op);
+  Compound_Analytic_MultigroupOpacity *m =
+      dynamic_cast<Compound_Analytic_MultigroupOpacity *>(&*op);
   Analytic_Gray_Opacity *o = dynamic_cast<Analytic_Gray_Opacity *>(&*op);
 
   if (m)

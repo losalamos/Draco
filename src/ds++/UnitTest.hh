@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -25,7 +25,7 @@ namespace rtt_dsxx {
  * \brief Object to encapsulate unit testing of Draco classes and functions.
  *
  * This is a virtual class.  You should use one of the following UnitTest
- * classes in your test appliation:
+ * classes in your test application:
  *
  * \li ScalarUnitTest      - Used for testing code that does not use parallel
  *                       communication (rtt_c4).
@@ -62,24 +62,24 @@ public:
   // NESTED CLASSES AND TYPEDEFS
 
   //! Typedef for function pointer to this package's release function.
-  typedef std::string const (*string_fp_void)(void);
+  using string_fp_void = const std::string (*)();
 
   // CREATORS
 
   //! Default constructors.
-  DLL_PUBLIC_dsxx UnitTest(int &argc, char **&argv, string_fp_void release_,
-                           std::ostream &out_ = std::cout, bool verbose = true);
+  UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
+           std::ostream &out_, bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
 
   //! Destructor is virtual because this class will be inherited from.
-  virtual ~UnitTest(void){/*empty*/};
+  virtual ~UnitTest(){/*empty*/};
 
   // MANIPULATORS
 
   //! The assignment operator is disabled.
-  UnitTest &operator=(UnitTest const &rhs);
+  UnitTest &operator=(UnitTest const &rhs) = delete;
 
   /*!
    * \brief Only special cases should use these (like the unit test
@@ -98,27 +98,24 @@ public:
     return;
   }
 
-  //! Change the target for output
-  // void setostream( std::ostream out_ ) { out = out_; return; };
-
   // ACCESSORS
-  DLL_PUBLIC_dsxx bool failure(int line);
-  DLL_PUBLIC_dsxx bool failure(int line, char const *file);
-  DLL_PUBLIC_dsxx bool failure(std::string const &failmsg);
-  DLL_PUBLIC_dsxx bool passes(std::string const &passmsg);
-  DLL_PUBLIC_dsxx bool check(bool, std::string const &checkmsg,
-                             bool fatal = false);
-  DLL_PUBLIC_dsxx virtual bool check_all(bool good, std::string const &checkmsg,
-                                         bool fatal = false) {
+  bool failure(int line);
+  bool failure(int line, char const *file);
+  bool failure(std::string const &failmsg);
+  bool passes(std::string const &passmsg);
+  bool check(bool, std::string const &checkmsg, bool fatal = false);
+  virtual bool check_all(bool good, std::string const &checkmsg,
+                         bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
+
   /*!
    * \brief Provide a summary of the test status
    *
    * This pure virtual function must be provided by the inherited class.  It
-   *        should provide output concerning the status of UnitTest.
+   * should provide output concerning the status of UnitTest.
    */
-  void status(void) const {
+  void status() const {
     out << resultMessage() << std::endl;
     return;
   }
@@ -128,13 +125,14 @@ public:
     numFails = 0;
     return;
   }
-  bool dbcRequire(void) const { return m_dbcRequire; }
-  bool dbcCheck(void) const { return m_dbcCheck; }
-  bool dbcEnsure(void) const { return m_dbcEnsure; }
-  bool dbcNothrow(void) const { return m_dbcNothrow; }
-  bool dbcOn(void) const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
-  std::string getTestPath(void) const { return testPath; }
-  std::string getTestName(void) const { return testName; }
+
+  bool dbcRequire() const { return m_dbcRequire; }
+  bool dbcCheck() const { return m_dbcCheck; }
+  bool dbcEnsure() const { return m_dbcEnsure; }
+  bool dbcNothrow() const { return m_dbcNothrow; }
+  bool dbcOn() const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
+  std::string getTestPath() const { return testPath; }
+  std::string getTestName() const { return testName; }
   /*!
    * \brief Returns the path of the test binary directory (useful for locating
    *        input files).
@@ -146,7 +144,7 @@ public:
    * set_target_property( unit_test_target_name
    *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
    */
-  static inline std::string getTestInputPath(void) {
+  static inline std::string getTestInputPath() {
 #ifdef PROJECT_BINARY_DIR
     std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR,
                                                           rtt_dsxx::FC_NATIVE));
@@ -159,13 +157,13 @@ public:
 #else
     // We should never get here. However, when compiling ScalarUnitTest.cc, this
     // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defnied.
+    // PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
   /*!
    * \brief Returns the path of the test source directory (useful for locating
-   * input files).
+   *        input files).
    *
    * This function depends on the cmake build system setting the
    * COMPILE_DEFINITIONS target property. This should be done in
@@ -174,7 +172,7 @@ public:
    * set_target_property( unit_test_target_name
    *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
    */
-  static inline std::string getTestSourcePath(void) {
+  static inline std::string getTestSourcePath() {
 #ifdef PROJECT_SOURCE_DIR
     std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR,
                                                           rtt_dsxx::FC_NATIVE));
@@ -187,7 +185,7 @@ public:
 #else
     // We should never get here. However, when compiling ScalarUnitTest.cc, this
     // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defnied.
+    // PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
@@ -203,7 +201,7 @@ public:
 
 protected:
   // IMPLEMENTATION
-  DLL_PUBLIC_dsxx std::string resultMessage(void) const;
+  std::string resultMessage() const;
 
   // DATA
 
@@ -218,8 +216,8 @@ protected:
   //! Where should output be sent (default is std::cout)
   std::ostream &out;
 
-  /*! Save the state of DBC so that it is easily accessible from within a
-   * unit test.
+  /*! Save the state of DBC so that it is easily accessible from within a unit
+   * test.
    */
   bool m_dbcRequire;
   bool m_dbcCheck;
@@ -235,6 +233,7 @@ protected:
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
 #define UT_CHECK(ut, m) ut.check(m, #m);
+#define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
 #define FAIL_IF_NOT(c)                                                         \

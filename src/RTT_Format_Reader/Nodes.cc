@@ -4,11 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Nodes class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Nodes.hh"
@@ -86,7 +83,8 @@ void Nodes::readData(ifstream &meshfile) {
          ++j) {
       Check(j < flags[i].size());
       meshfile >> flags[i][j];
-      Insist(nodeFlags.allowed_flag(j, flags[i][j]),
+      Check(j < INT_MAX);
+      Insist(nodeFlags.allowed_flag(static_cast<int>(j), flags[i][j]),
              "Invalid mesh file: illegal node flag");
     }
     std::getline(meshfile, dummyString);

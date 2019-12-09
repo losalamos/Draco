@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   linear/qrupdt.cc
+ * \file   linear/qrupdt_pt.cc
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of qrupdt
- * \note   Copyright (C) 2004-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

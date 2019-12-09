@@ -4,11 +4,8 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Ensight_Stream.hh"
@@ -40,8 +37,8 @@ Ensight_Stream &endl(Ensight_Stream &s) {
 /*!
  * \brief Constructor
  *
- * This constructor opens the stream, if \a file_name is non-empty.
- * See open() for more information.
+ * This constructor opens the stream, if \a file_name is non-empty.  See open()
+ * for more information.
  *
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
@@ -67,9 +64,9 @@ Ensight_Stream::~Ensight_Stream(void) { close(); }
  * \brief Opens the stream.
  *
  * \a geom_file is used only so that the "C Binary" header may be dumped when
- * \a binary is true.  If the geometry file is binary, Ensight assumes that
- * all data files are also binary.  This class does NOT check whether \a
- * binary is consistent across all geometry and data files.
+ * \a binary is true.  If the geometry file is binary, Ensight assumes that all
+ *         data files are also binary.  This class does NOT check whether \a
+ *         binary is consistent across all geometry and data files.
  *
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
@@ -104,9 +101,7 @@ void Ensight_Stream::open(const std::string &file_name, const bool binary,
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Closes the stream.
- */
+//! Closes the stream.
 void Ensight_Stream::close() {
   if (d_stream.is_open()) {
     d_stream.close();
@@ -114,10 +109,8 @@ void Ensight_Stream::close() {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Output for ints.
- */
-Ensight_Stream &Ensight_Stream::operator<<(const int i) {
+//! Output for ints.
+Ensight_Stream &Ensight_Stream::operator<<(const int32_t i) {
   Require(d_stream.is_open());
 
   if (d_binary)
@@ -131,23 +124,50 @@ Ensight_Stream &Ensight_Stream::operator<<(const int i) {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Output for size_t.
+/*
+ * \brief Output for unsigned
  *
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
  */
-Ensight_Stream &Ensight_Stream::operator<<(const std::size_t i) {
-  Require(d_stream.is_open());
-
-  int j(i);
-  Check(j >= 0);
+Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
+  Check(i < INT_MAX);
+  int const j = static_cast<int>(i);
   *this << j;
-
-  Ensure(d_stream.good());
-
   return *this;
 }
+
+//---------------------------------------------------------------------------//
+/*
+ * \brief Output for int64_t.
+ *
+ * This is a convience function.  It simply casts to int.  Ensight does not
+ * support output of unsigned ints.
+ *
+ * \bug Not tested so commented out.
+ */
+// Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
+//   Check(i < INT_MAX && i > -1 * INT_MAX);
+//   int const j = static_cast<int>(i);
+//   *this << j;
+//   return *this;
+// }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Output for uint64_t.
+ *
+ * This is a convience function.  It simply casts to int.  Ensight does not
+ * support output of unsigned ints.
+ *
+ * \bug Not tested so commented out.
+ */
+// Ensight_Stream &Ensight_Stream::operator<<(const uint64_t i) {
+//   Check(i < INT_MAX);
+//   int const j = static_cast<int>(i);
+//   *this << j;
+//   return *this;
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -183,9 +203,7 @@ Ensight_Stream &Ensight_Stream::operator<<(const double d) {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Output for strings.
- */
+//! Output for strings.
 Ensight_Stream &Ensight_Stream::operator<<(const std::string &s) {
   Require(d_stream.is_open());
 
@@ -203,9 +221,7 @@ Ensight_Stream &Ensight_Stream::operator<<(const std::string &s) {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Output for function pointers.
- */
+//! Output for function pointers.
 Ensight_Stream &Ensight_Stream::operator<<(FP f) {
   Require(d_stream.is_open());
 
@@ -227,9 +243,10 @@ Ensight_Stream &Ensight_Stream::operator<<(FP f) {
  * \brief Does binary write of \a v.
  *
  * The type \a T must support sizeof(T).
+ *
+ * The template implementation is defined here because only functions within
+ * this translation unit should be calling this function.
  */
-// The template implementation is defined here because only functions within
-// this translation unit should be calling this function.
 template <typename T> void Ensight_Stream::binary_write(const T v) {
   Require(d_stream.is_open());
 
@@ -245,7 +262,7 @@ template <typename T> void Ensight_Stream::binary_write(const T v) {
   Ensure(d_stream.good());
 }
 
-} // end of rtt_viz
+} // namespace rtt_viz
 
 //---------------------------------------------------------------------------//
 // end of Ensight_Stream.cc

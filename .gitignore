@@ -1,8 +1,12 @@
-*.pyc
 *.elc
+*.pyc
 *~
-TAGS
-GPATH
-GTAGS
-GRTAGS
+.settings/
+build*/
+.*.sw[a-p]
 .nfs*
+GPATH
+GRTAGS
+GTAGS
+TAGS
+.vs

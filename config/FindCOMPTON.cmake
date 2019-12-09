@@ -3,7 +3,7 @@
 # author Kendra Keady <keadyk@lanl.gov>
 # date   2017 February 28
 # brief  Instructions for discovering the Compton vendor libraries.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -59,6 +59,11 @@
 # Include these modules to handle the QUIETLY and REQUIRED arguments.
 include(FindPackageHandleStandardArgs)
 
+# Use OpenMP version if OpenMP is available.
+if( NOT OPENMP_FOUND )
+  find_package(OpenMP QUIET)
+endif()
+
 #=============================================================================
 # If the user has provided ``COMPTON_ROOT_DIR``, use it!  Choose items found
 # at this location over system locations.
@@ -82,10 +87,7 @@ find_path( COMPTON_INCLUDE_DIR
   PATH_SUFFIXES Release Debug
 )
 
-set( COMPTON_LIBRARY_NAME Lib_compton)
-if( OPENMP_FOUND )
-  set( COMPTON_LIBRARY_NAME Lib_compton_omp)
-endif()
+set( COMPTON_LIBRARY_NAME Lib_compton_omp;Lib_compton;compton_omp;compton)
 find_library( COMPTON_LIBRARY
   NAMES ${COMPTON_LIBRARY_NAME}
   HINTS ${COMPTON_ROOT_DIR}/lib ${COMPTON_LIBDIR}
@@ -112,16 +114,20 @@ if( NOT COMPTON_VERSION )
     string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_MAJOR ${compton_h_major} )
     string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_MINOR ${compton_h_minor} )
     string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_SUBMINOR ${compton_h_subminor} )
+    set( COMPTON_VERSION "${COMPTON_MAJOR}.${COMPTON_MINOR}.${COMPTON_SUBMINOR}"
+      CACHE STRING "CSK version" FORCE )
   endif()
   # We might also try scraping the directory name for a regex match
   # "csk-X.X.X"
-  if( NOT COMPTON_MAJOR )
+  if( NOT COMPTON_VERSION )
     string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\1"
       COMPTON_MAJOR ${COMPTON_INCLUDE_DIR} )
     string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\2"
       COMPTON_MINOR ${COMPTON_INCLUDE_DIR} )
     string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\3"
       COMPTON_SUBMINOR ${COMPTON_INCLUDE_DIR} )
+    set( COMPTON_VERSION "${COMPTON_MAJOR}.${COMPTON_MINOR}.${COMPTON_SUBMINOR}"
+      CACHE STRING "CSK version" FORCE )
   endif()
 endif()
 

@@ -4,20 +4,13 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 15:24210 2001
  * \brief  IpcressOdfmgOpacity templated class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressOdfmgOpacity.hh"
-#include "IpcressDataTable.hh"
-#include "IpcressFile.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 
 namespace rtt_cdi_ipcress {
 
@@ -160,6 +153,7 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(std::vector<char> const &packed)
 //---------------------------------------------------------------------------//
 void IpcressOdfmgOpacity::loadGroupsAndBands(size_t const numBands) {
   using rtt_dsxx::soft_equiv;
+  using std::cerr;
   using std::string;
 
   Require(numBands > 0);
@@ -214,19 +208,17 @@ void IpcressOdfmgOpacity::loadGroupsAndBands(size_t const numBands) {
       // Also, loosen the tolerance for more groups.
       if (!soft_equiv(bandBoundaries.begin(), bandBoundaries.end(),
                       currentBandStructure.begin(), currentBandStructure.end(),
-                      numEffGroups * 1.e-12)) {
-        std::cerr << "Band boundaries do not match.\n"
-                  << "First (reverse, tops-style) band structure, " << group
-                  << "th band structure: \n";
+                      static_cast<double>(numEffGroups) * 1.e-12)) {
+        cerr << "Band boundaries do not match.\nFirst (reverse, tops-style) ba"
+             << "nd structure, " << group << "th band structure: \n";
         for (size_t i = 0; i <= numBands; i++) {
-          std::cerr << i + 1 << "\t" << std::setprecision(14)
-                    << bandBoundaries[i] << "\t" << std::setprecision(14)
-                    << currentBandStructure[i] << std::endl;
+          cerr << i + 1 << "\t" << std::setprecision(14) << bandBoundaries[i]
+               << "\t" << std::setprecision(14) << currentBandStructure[i]
+               << std::endl;
         }
 
-        throw rtt_dsxx::assertion(
-            string("Band boundaries do not match.  ") +
-            string("IpcressOdfmgOpacity::loadGroupsAndBands"));
+        throw rtt_dsxx::assertion(string("Band boundaries do not match.  ") +
+                                  "IpcressOdfmgOpacity::loadGroupsAndBands");
         ;
       }
     }
@@ -278,17 +270,15 @@ void IpcressOdfmgOpacity::loadGroupsAndBands(size_t const numBands) {
     bandBoundaries[0] = 0.0;
   else
     throw rtt_dsxx::assertion(
-        string("IpcressOdfmgOpacity::loadGroupsAndBands :: ") +
-        string("Bad bad bad band boundaries! ") +
-        string("Lowest band boundary is non-zero."));
+        string("IpcressOdfmgOpacity::loadGroupsAndBands :: Bad band boundar") +
+        "ies! Lowest band boundary is non-zero.");
 
   if (soft_equiv(bandBoundaries[numBands], 1.0))
     bandBoundaries[numBands] = 1.0;
   else
     throw rtt_dsxx::assertion(
-        string("IpcressOdfmgOpacity::loadGroupsAndBands :: ") +
-        string("Bad bad bad band boundaries! Highest band boundary ") +
-        string("should be one."));
+        string("IpcressOdfmgOpacity::loadGroupsAndBands :: Bad bad bad band ") +
+        "boundaries! Highest band boundary should be one.");
 }
 
 /*!
@@ -354,17 +344,6 @@ IpcressOdfmgOpacity::getOpacity(double targetTemperature,
         spIpcressDataTable->interpOpac(targetTemperature, targetDensity, g);
     Check(tempOpacity[g] >= 0.0);
   }
-  // logarithmic interpolation:
-  // tempOpacity = wrapper::wgintmglog(
-  //     spIpcressDataTable->getLogTemperatures(),
-  //     spIpcressDataTable->getNumTemperatures(),
-  //     spIpcressDataTable->getLogDensities(),
-  //     spIpcressDataTable->getNumDensities(),
-  //     spIpcressDataTable->getNumGroupBoundaries(),
-  //     spIpcressDataTable->getLogOpacities(),
-  //     spIpcressDataTable->getNumOpacities(),
-  //     std::log( targetTemperature ),
-  //     std::log( targetDensity ) );
 
   // groups * bands opacity 2D-vector to be returned by this function
   std::vector<std::vector<double>> opacity(numGroups);
@@ -383,7 +362,6 @@ IpcressOdfmgOpacity::getOpacity(double targetTemperature,
       }
     }
   }
-
   return opacity;
 }
 
@@ -422,10 +400,7 @@ std::vector<std::vector<std::vector<double>>> IpcressOdfmgOpacity::getOpacity(
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Returns a vector of temperatures that define the cached opacity data
- *     table.
- */
+// Returns a vector of temperatures that define the cached opacity data table.
 std::vector<double> IpcressOdfmgOpacity::getTemperatureGrid() const {
   return spIpcressDataTable->getTemperatures();
 }
@@ -437,10 +412,7 @@ size_t IpcressOdfmgOpacity::getNumTemperatures() const {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Returns a vector of densities that define the cached opacity data
- *     table.
- */
+//! Returns a vector of densities that define the cached opacity data table.
 std::vector<double> IpcressOdfmgOpacity::getDensityGrid() const {
   return spIpcressDataTable->getDensities();
 }
@@ -464,8 +436,8 @@ size_t IpcressOdfmgOpacity::getNumDensities() const {
  * iterators because they are \b not required to be char *.
  */
 std::vector<char> IpcressOdfmgOpacity::pack() const {
-  using std::vector;
   using std::string;
+  using std::vector;
 
   Require(spIpcressFile);
 

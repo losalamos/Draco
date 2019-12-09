@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building ds++/test level Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( dsxx_test CXX )
@@ -56,12 +56,18 @@ if( draco_isPGI )
    )
 endif()
 
+# tstData_Table.cc will fail for RelWithDebugInfo. Set extra CPP macros as a
+# work-around:
+set_target_properties( Ut_dsxx_tstData_Table_exe
+  PROPERTIES COMPILE_DEFINITIONS $<UPPER_CASE:$<CONFIG>> )
+
 # create the do_exception execurtable.
 add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
 target_link_libraries( Exe_do_exception Lib_dsxx )
 set_target_properties( Exe_do_exception PROPERTIES
   FOLDER dsxx_test
-  OUTPUT_NAME do_exception )
+  OUTPUT_NAME do_exception
+  ${Draco_std_target_props_CXX})
 
 include( ApplicationUnitTest )
 add_app_unit_test(

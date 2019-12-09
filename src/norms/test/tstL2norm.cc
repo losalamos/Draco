@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 18 09:06:26 2007
  * \brief  Test the L2norm function template.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

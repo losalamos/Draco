@@ -4,7 +4,7 @@
 ! author Allan Wollaber
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 quadrature_data passed into a C++ function
-! note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+! note   Copyright (c) 2016-2019 Triad National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
 

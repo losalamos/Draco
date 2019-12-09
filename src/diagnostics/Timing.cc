@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class member defininitions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -36,8 +36,8 @@ void Timing_Diagnostics::update_timer(const std::string &key, double value) {
  * \brief Return a vector of timer keys.
  */
 Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys() {
-  using std::string;
   using std::map;
+  using std::string;
 
   // keys
   Vec_Keys keys(timers.size());

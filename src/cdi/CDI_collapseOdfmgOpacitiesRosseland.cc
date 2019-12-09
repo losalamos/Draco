@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -20,11 +20,11 @@ namespace rtt_cdi {
  *        representative value weighted by the Rosseland function.
  *
  * \param groupBounds The vector of group boundaries. Size n+1
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
  * \param rosselandSpectrum A vector of Rosseland integrals for all groups in
  *                  the spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param bandWidths The width of odf-bands.
  * \return A single interval Rosseland weighted opacity value.
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this

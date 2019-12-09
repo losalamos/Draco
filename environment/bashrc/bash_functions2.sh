@@ -4,7 +4,7 @@
 ## File  : environment/bashrc/bash_functions2.sh
 ## Date  : Thursday, Dec 21, 2017, 12:14 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2017, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
 ##  Bash configuration file upon bash shell startup
@@ -16,7 +16,10 @@ if test $fn_exists = 0; then
   # only define if they do not already exist...
   function dracoenv ()
   {
-    module load $dracomodules
+    for m in $dracomodules; do
+	module load $m
+    done
+    unset MPI_ROOT
   }
   function rmdracoenv ()
   {
@@ -29,6 +32,8 @@ if test $fn_exists = 0; then
       fi
     done
   }
+  export -f dracoenv
+  export -f rmdracoenv
 fi
 
 ##---------------------------------------------------------------------------##

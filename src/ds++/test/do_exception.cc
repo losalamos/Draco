@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   fpe_trap/test/do_exception.cc
+ * \file   ds++/test/do_exception.cc
  * \author Rob Lowrie
  * \date   Thu Oct 13 14:33:59 2005
  * \brief  Does a floating-point exception.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -17,6 +17,13 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+#if defined(MSVC)
+#pragma warning(push)
+// This test deliberately divides by zero to test trapping of IEEE errors.
+// Silence the warning from MSVC about this issue.
+#pragma warning(disable : 4723)
+#endif
 
 using namespace std;
 
@@ -73,11 +80,11 @@ void run_test(int /*argc*/, char *argv[]) {
   double neg(-1.0); // for sqrt(-1.0)
   double result(-1.0);
 
-  // Certain tests may be optimized away by the compiler, by recogonizing the
+  // Certain tests may be optimized away by the compiler, by recognizing the
   // constants set above and precomputing the results below.  So do something
   // here to hopefully avoid this.  This tricks the optimizer, at least for gnu
   // and KCC. [2018-02-09 KT -- some web posts hint that marking zero and neg as
-  // 'volitile' may also prevent removal of logic due to optimization.]
+  // 'volatile' may also prevent removal of logic due to optimization.]
 
   if (test < -100) { // this should never happen
     Insist(0, "Something is very wrong.");
@@ -143,6 +150,12 @@ int main(int argc, char *argv[]) {
   }
   return 0;
 }
+
+//----------------------------------------------------------------------------//
+
+#if defined(MSVC)
+#pragma warning(pop)
+#endif
 
 //---------------------------------------------------------------------------//
 // end of do_exception.cc

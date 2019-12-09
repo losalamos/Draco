@@ -3,7 +3,7 @@
  * \file   cdi_ipcress/test/ReadOdfIpcressFile.cc
  * \author Seth R. Johnson
  * \date   Thu July 10 2008
- * \note   Copyright (C) 2008-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2008-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -13,16 +13,16 @@
 #include "ds++/XGetopt.hh"
 #include <cstdlib> // atof
 
-using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
+using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 
 using std::cerr;
-using std::cout;
 using std::cin;
+using std::cout;
 using std::endl;
-using std::string;
 using std::istringstream;
 using std::ostringstream;
+using std::string;
 
 typedef std::shared_ptr<const IpcressOdfmgOpacity> SP_Goo;
 typedef std::vector<double> vec_d;
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     ipcressFileName = argv[argc - 1];
   else
     ipcressFileName =
-        ut.getTestInputPath() + std::string("odfregression10.ipcress");
+        ut.getTestSourcePath() + std::string("odfregression10.ipcress");
 
   std::shared_ptr<const IpcressFile> file;
   try {
@@ -132,13 +132,14 @@ int main(int argc, char *argv[]) {
   int numBands = 0;
   rtt_cdi::Model model = rtt_cdi::ROSSELAND;
   rtt_cdi::Reaction reaction = rtt_cdi::ABSORPTION;
-  int matID = 19000;
+  int matID = 10001;
   int actionToTake = 0; // 0 for user input, 1 for analyze, 2 for print c
 
   double temperature = 0;
   double density = 0;
 
-  // loop on all arguments except the first (program name) and last (input file name)
+  // loop on all arguments except the first (program name) and last (input file
+  // name)
   for (int arg = 1; arg < argc - 1; arg++) {
     rtt_dsxx::XGetopt program_options(argc, argv, "hdtmrgbapci");
 
@@ -302,18 +303,12 @@ int main(int argc, char *argv[]) {
     std::cout << "\nChecking a few values for the unit test...\n" << std::endl;
     std::vector<std::vector<double>> opac =
         spGandOpacity->getOpacity(5.0, 0.05);
-    if (opac.size() != 80)
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(opac[0][0], 2128.526464249052))
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(opac[10][0], 221.5324065688365))
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(opac[20][0], 12.04514705449304))
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(opac[30][0], 0.9751198562573208))
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(opac[40][0], 0.3344851514293186))
-      ITFAILS;
+    FAIL_IF_NOT(opac.size() == 264);
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(opac[0][0], 0.1404115734213344));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(opac[10][0], 0.1399132061841302));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(opac[20][0], 0.139265648891887));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(opac[30][0], 0.1385270808014648));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(opac[40][0], 0.1378478184227526));
     if (ut.numFails != 0) {
       std::cout.precision(16);
       std::cout << "opac[0][0]  = " << opac[0][0] << std::endl;
@@ -323,15 +318,12 @@ int main(int argc, char *argv[]) {
       std::cout << "opac[40][0] = " << opac[40][0] << std::endl;
     }
     std::vector<double> grp_bnds = spGandOpacity->getGroupBoundaries();
-    if (grp_bnds.size() != 81)
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(grp_bnds[0], 0.01) ||
-        !rtt_dsxx::soft_equiv(grp_bnds[80], 100.0))
-      ITFAILS;
-    if (spGandOpacity->getNumTemperatures() != 6)
-      ITFAILS;
-    if (spGandOpacity->getNumDensities() != 4)
-      ITFAILS;
+    FAIL_IF_NOT(grp_bnds.size() == 265);
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(grp_bnds[0], 1.0e-5) &&
+                rtt_dsxx::soft_equiv(grp_bnds[264], 300.0));
+    FAIL_IF_NOT(spGandOpacity->getNumTemperatures() == 6);
+    FAIL_IF_NOT(spGandOpacity->getNumDensities() == 4);
+
     if (ut.numFails == 0)
       PASSMSG("Successfully extracted data from odfregression10.ipcress.");
     else
@@ -375,8 +367,8 @@ void askTempDens(double &temperature, double &density, bool is_unittest) {
 void analyzeData(SP_Goo spGandOpacity) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   const vec_d temperatures = spGandOpacity->getTemperatureGrid();
   const vec_d densities = spGandOpacity->getDensityGrid();
@@ -390,7 +382,7 @@ void analyzeData(SP_Goo spGandOpacity) {
           spGandOpacity->getOpacity(temperatures[t], densities[d]);
       cout << temperatures[t] << "\t" << densities[d] << "\t";
 
-      for (int group = 0; group < numGroups; group++) {
+      for (size_t group = 0; group < numGroups; group++) {
         cout << multiBandOpacities[group][numBands - 1] /
                     multiBandOpacities[group][0]
              << "\t";
@@ -404,8 +396,8 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
                        double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
   const rtt_cdi::Model model = spGandOpacity->getModelType();
 
   cout << "=============================================" << endl;
@@ -421,44 +413,45 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
   //calculate band widths
   Check(static_cast<size_t>(numBands + 1) == bandBoundaries.size());
 
-  for (int band = 0; band < numBands; band++) {
+  for (size_t band = 0; band < numBands; band++) {
     bandWidths[band] = bandBoundaries[band + 1] - bandBoundaries[band];
   }
 
   //loop over groups
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
-  for (int group = 0; group < numGroups; group++) {
+  for (size_t group = 0; group < numGroups; group++) {
     double collapsedOpacity = 0;
 
     // harmonic average for rosseland
     if (model == rtt_cdi::ROSSELAND) {
-      for (int band = numBands - 1; band >= 0; band--) {
+      for (size_t band = numBands - 1; band != 0; band--) {
         collapsedOpacity += bandWidths[band] / multiBandOpacities[group][band];
       }
       if (!rtt_dsxx::soft_equiv(collapsedOpacity, 0.0))
         collapsedOpacity = 1 / collapsedOpacity;
     } else // arithmetic average for planckian
     {
-      for (int band = 0; band < numBands; band++) {
+      for (size_t band = 0; band < numBands; band++) {
         collapsedOpacity += bandWidths[band] * multiBandOpacities[group][band];
       }
     }
 
-    printf("%4d\t%.6g", group + 1, collapsedOpacity);
+    printf("%4zu\t%.6f", group + 1, collapsedOpacity);
     cout << endl;
   }
 }
+
 //---------------------------------------------------------------------------//
 void printTable(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   cout << "Temperature:\t" << temperature << "\tDensity:\t" << density << endl;
 
-  // print group boundaries
+  // prsize_t group boundaries
   cout << "numGroups:\t" << numGroups << "\tnumBands:\t" << numBands << endl;
 
   const vec_d groupBoundaries = spGandOpacity->getGroupBoundaries();
@@ -478,9 +471,9 @@ void printTable(SP_Goo spGandOpacity, double temperature, double density) {
   // print opacity data
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
-  for (int group = 0; group < numGroups; group++) {
+  for (size_t group = 0; group < numGroups; group++) {
     // print data for each band
-    for (int band = 0; band < numBands; band++) {
+    for (size_t band = 0; band < numBands; band++) {
       printf("%.16g\t", multiBandOpacities[group][band]);
     }
 
@@ -493,15 +486,15 @@ void printTable(SP_Goo spGandOpacity, double temperature, double density) {
 void printCData(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   cout << "=============================================" << endl;
   cout << "Printing data at " << temperature << " keV, "
        << "rho = " << density << endl;
   cout << "=============================================" << endl;
 
-  // print group boundaries
+  // prsize_t group boundaries
   cout << "const int numGroups = " << numGroups << ";" << endl;
   cout << "const double groupBoundaries[numGroups + 1] = {" << endl;
 
@@ -537,16 +530,16 @@ void printCData(SP_Goo spGandOpacity, double temperature, double density) {
 
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
-  for (int group = 0; group < numGroups; group++) {
+  for (size_t group = 0; group < numGroups; group++) {
     cout << "{\n";
     // print data for each band
-    for (int band = 0; band < numBands; band++) {
+    for (size_t band = 0; band < numBands; band++) {
       printf("\t%#25.16g", multiBandOpacities[group][band]);
 
       if (band != numBands - 1)
         cout << ",";
 
-      printf("\t\t// group %d band %d", group + 1, band + 1);
+      printf("\t\t// group %zu band %zu", group + 1, band + 1);
 
       cout << "\n";
     }
@@ -564,8 +557,8 @@ void printCData(SP_Goo spGandOpacity, double temperature, double density) {
 void printData(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   const vec_d groupBoundaries = spGandOpacity->getGroupBoundaries();
   const vec_d bandBoundaries = spGandOpacity->getBandBoundaries();
@@ -576,10 +569,10 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
 
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
-  int maxGroup = 0;
+  size_t maxGroup = 0;
   double maxRatio = 0.0;
 
-  for (int group = 0; group < numGroups; group++) {
+  for (size_t group = 0; group < numGroups; group++) {
     double currentRatio = 0.0;
 
     cout << "=== Group " << group + 1 << " has energy range ["
@@ -587,11 +580,11 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
          << "Group Band  Width        Opacity  Ratio to first\n";
 
     // print data for each band
-    for (int band = 0; band < numBands; band++) {
+    for (size_t band = 0; band < numBands; band++) {
       currentRatio =
           multiBandOpacities[group][band] / multiBandOpacities[group][0];
 
-      printf("%5d %4d %6.3f %#14.6G  %14.3f\n", group + 1, band + 1,
+      printf("%5zu %4zu %6.3f %#14.6G  %14.3f\n", group + 1, band + 1,
              bandBoundaries[band + 1] - bandBoundaries[band],
              multiBandOpacities[group][band], currentRatio);
     }

@@ -5,7 +5,7 @@
  * \date   Fri Apr  6 08:57:48 2001
  * \brief  Header file for SesameTables (mapping material IDs
  *         to Sesame table indexes).
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -36,13 +36,8 @@ namespace rtt_cdi_eospac {
  * return types defined by EOSPAC.  Some data tables provide information for
  * more than one return type.
  *
- * \example cdi_eospac/test/tEospac.cc
+ * \sa cdi_eospac/test/tEospac.cc
  */
-
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
 class SesameTables {
@@ -52,12 +47,11 @@ class SesameTables {
   unsigned const numReturnTypes; // should be 305
 
   /*!
-     * \brief Map from EOSPAC data type to material identifier.
-     *
-     * Each of the enumerated EOSPAC data types can have a different
-     * SesameTable material identifier.  This vector contains a list of these
-     * material IDs.
-     */
+   * \brief Map from EOSPAC data type to material identifier.
+   *
+   * Each of the enumerated EOSPAC data types can have a different SesameTable
+   * material identifier.  This vector contains a list of these material IDs.
+   */
   std::map<EOS_INTEGER, unsigned> matMap;
   // std::vector< unsigned > matMap;
 
@@ -113,66 +107,67 @@ public:
   SesameTables &T_DUic(unsigned matID);
 
 #if 0
-    //! Temperature (K)
-    SesameTables& T_DUiz( unsigned matID );
-    //! Thermoelectric Coefficient (1/cm^2/s)
-    SesameTables& B_DT( unsigned matID );
-    //! Shear Modulus (Gpa)
-    SesameTables& Gs_D( unsigned matID );
-    //! Electron Conducitive Opacity (cm^2/g)
-    SesameTables& Kc_DT( unsigned matID );
-    //! Electrical Conductivity (1/s)
-    SesameTables& Kec_DT( unsigned matID );
-    //! Electron Conductive Opacity (cm^2/g)
-    SesameTables& Keo_DT( unsigned matID );
-    //! Planck Mean Opacity (cm^2/g)
-    SesameTables& Kp_DT(  unsigned matID );
-    //! Rosseland Mean Opacity (cm^2/g)
-    SesameTables& Kr_DT( unsigned matID );
-    //! Pressure Cold Curve (GPa)
-    SesameTables& Pc_D( unsigned matID );
-    //! Electron Pressure (GPa)
-    SesameTables& Pe_DT( unsigned matID );
-    //! Electron Pressure (GPa)
-    SesameTables& Pe_DUe( unsigned matID );
-    //! Freeze Pressure (GPa)
-    SesameTables& Pf_D( unsigned matID );
-    //! Ion Pressure plus Cold Curve Pressure (GPa)
-    SesameTables& Pic_DT( unsigned matID );
-    //! Ion Pressure plus Cold Curve Pressure (GPa)
-    SesameTables& Pic_DUic( unsigned matID );
-    //! Melt Pressure (GPa)
-    SesameTables& Pm_D(  unsigned matID );
-    //! Total Pressure (Gpa)
-    SesameTables& Pt_DUt( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DPe( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DPic( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DPt( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DUt( unsigned matID );
-    //! Freeze Temperature (eV)
-    SesameTables& Tf_D( unsigned matID );
-    //! Melt Temperature (K)
-    SesameTables& Tm_D(  unsigned matID );
-    //! Specific-Internal-Energy Cold Curve (MJ/kg)
-    SesameTables& Uc_D( unsigned matID );
-    //! Electron Specific-Internal-Energy (MJ/kg)
-    SesameTables& Ue_DPe( unsigned matID );
-    //! Freeze Specific-Internal-Energy (MJ/kg)
-    SesameTables& Uf_D( unsigned matID );
-    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
-    SesameTables& Uic_DPic( unsigned matID );
-    //! Melt Specific-Internal-Energy (MJ/kg)
-    SesameTables& Um_D(  unsigned matID );
-    //! Melt Specific-Internal-Energy (MJ/kg)
-    SesameTables& Ut_DPt( unsigned matID );
-    //! Melt Specific-Internal-Energy (MJ/kg)
-    SesameTables& Ut_DT( unsigned matID );
-    //! Mean Ion Charge (Opacity Modlel) (free electrons per atom)
-    SesameTables& Zfo_DT( unsigned matID );
+  //! Temperature (K)
+  SesameTables& T_DUiz( unsigned matID );
+  //! Thermoelectric Coefficient (1/cm^2/s)
+  SesameTables& B_DT( unsigned matID );
+  //! Shear Modulus (Gpa)
+  SesameTables& Gs_D( unsigned matID );
+  //! Electron Conducitive Opacity (cm^2/g)
+  SesameTables& Kc_DT( unsigned matID );
+  //! Electrical Conductivity (1/s)
+  SesameTables& Kec_DT( unsigned matID );
+  //! Electron Conductive Opacity (cm^2/g)
+  SesameTables& Keo_DT( unsigned matID );
+  //! Planck Mean Opacity (cm^2/g)
+  SesameTables& Kp_DT(  unsigned matID );
+  //! Rosseland Mean Opacity (cm^2/g)
+  SesameTables& Kr_DT( unsigned matID );
+  //! Pressure Cold Curve (GPa)
+  SesameTables& Pc_D( unsigned matID );
+  //! Electron Pressure (GPa)
+  SesameTables& Pe_DT( unsigned matID );
+  //! Electron Pressure (GPa)
+  SesameTables& Pe_DUe( unsigned matID );
+  //! Freeze Pressure (GPa)
+  SesameTables& Pf_D( unsigned matID );
+  //! Ion Pressure plus Cold Curve Pressure (GPa)
+  SesameTables& Pic_DT( unsigned matID );
+  //! Ion Pressure plus Cold Curve Pressure (GPa)
+  SesameTables& Pic_DUic( unsigned matID );
+  //! Melt Pressure (GPa)
+  SesameTables& Pm_D(  unsigned matID );
+  //! Total Pressure (Gpa)
+  SesameTables& Pt_DUt( unsigned matID );
+  //! Temperature (K)
+  SesameTables& T_DPe( unsigned matID );
+  //! Temperature (K)
+  SesameTables& T_DPic( unsigned matID );
+  //! Temperature (K)
+  SesameTables& T_DPt( unsigned matID );
+  //! Temperature (K)
+  SesameTables& T_DUt( unsigned matID );
+  //! Freeze Temperature (eV)
+  SesameTables& Tf_D( unsigned matID );
+  //! Melt Temperature (K)
+  SesameTables& Tm_D(  unsigned matID );
+  //! Specific-Internal-Energy Cold Curve (MJ/kg)
+  SesameTables& Uc_D( unsigned matID );
+  //! Electron Specific-Internal-Energy (MJ/kg)
+  SesameTables& Ue_DPe( unsigned matID );
+  //! Freeze Specific-Internal-Energy (MJ/kg)
+  SesameTables& Uf_D( unsigned matID );
+  /*! \brief Ion Specific-Internal-Energy plus Cold Curve
+   * Specific-Internal-Energy (MJ/kg) */
+  SesameTables& Uic_DPic( unsigned matID );
+  //! Melt Specific-Internal-Energy (MJ/kg)
+  SesameTables& Um_D(  unsigned matID );
+  //! Melt Specific-Internal-Energy (MJ/kg)
+  SesameTables& Ut_DPt( unsigned matID );
+  //! Melt Specific-Internal-Energy (MJ/kg)
+  SesameTables& Ut_DT( unsigned matID );
+  //! Mean Ion Charge (Opacity Modlel) (free electrons per atom)
+  SesameTables& Zfo_DT( unsigned matID );
 #endif
 
   // Get functions
@@ -193,9 +188,6 @@ public:
       mlist.push_back((*it).first);
     return mlist;
   }
-
-  //! Return the number of return types
-  // unsigned getNumReturnTypes() const { return numReturnTypes; }
 
   //! Pack a SesameTables object into a vector<char> stream.
   std::vector<char> pack() const;

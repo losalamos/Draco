@@ -4,11 +4,10 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 15:41:00 2002
  * \brief  C4 Reduction test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "c4/C4_Req.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -17,10 +16,10 @@ using namespace std;
 
 using rtt_c4::C4_Req;
 using rtt_c4::global_isum;
-using rtt_c4::global_sum;
-using rtt_c4::global_prod;
-using rtt_c4::global_min;
 using rtt_c4::global_max;
+using rtt_c4::global_min;
+using rtt_c4::global_prod;
+using rtt_c4::global_sum;
 using rtt_c4::prefix_sum;
 using rtt_dsxx::soft_equiv;
 
@@ -59,10 +58,16 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // test longs for blocking and non-blocking sums
-  long xlong = rtt_c4::node() + 10000000000;
+  long const max_long(std::numeric_limits<long>::max());
+  int64_t const ten_billion(10000000000L); // 1e10 > MAX_INT
+  int32_t const one_billion(1000000000L);  // 1e9 < MAX_INT
+
+  long xlong =
+      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   global_sum(xlong);
 
-  long xlong_send = rtt_c4::node() + 10000000000;
+  long xlong_send =
+      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   long xlong_recv = 0;
   C4_Req long_request;
   global_isum(xlong_send, xlong_recv, long_request);
@@ -70,7 +75,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
 
   long long_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
-    long_answer += i + 10000000000;
+    long_answer += i + (max_long > ten_billion ? ten_billion : one_billion);
 
   if (xlong != long_answer)
     ITFAILS;
@@ -296,13 +301,13 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // test floats
-  float xfloat = static_cast<float>(rtt_c4::node()) + 0.01;
+  float xfloat = static_cast<float>(rtt_c4::node() + 0.01);
   float xfloat_prefix_sum = prefix_sum(xfloat);
 
   float float_answer = 0.0;
   for (int i = 0; i < rtt_c4::nodes(); i++) {
     if (i <= rtt_c4::node() || i == 0)
-      float_answer += static_cast<float>(i) + 0.01;
+      float_answer += static_cast<float>(i + 0.01);
   }
 
   std::cout << "float: Prefix sum on this node: " << xfloat_prefix_sum;
@@ -337,8 +342,8 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // Calculate prefix sums on rank ID with MPI call and by hand and compare the
-  // output. The prefix sum on a node includes all previous node's value and the
-  // value of the current node
+  // output. The prefix sum on a node includes all previous node's value and
+  // the value of the current node
 
   const int array_size = 12;
 
@@ -410,8 +415,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
   }
 
-  // test unsigned long ints (use the maximum int64_t value to make sure all types are
-  // handled correctly in the calls)
+  // test unsigned long ints (use the maximum int64_t value to make sure all
+  // types are handled correctly in the calls)
   vector<uint64_t> xulong(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
     xulong[i] = std::numeric_limits<int64_t>::max() + rtt_c4::node() * 10 + i;
@@ -436,7 +441,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // test floats
   vector<float> xfloat(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xfloat[i] = rtt_c4::node() * 9.99 + i;
+    xfloat[i] = static_cast<float>(rtt_c4::node() * 9.99 + i);
 
   prefix_sum(&xfloat[0], array_size);
 
@@ -444,7 +449,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        float_answer[i] += r * 9.99 + i;
+        float_answer[i] += static_cast<float>(r * 9.99 + i);
     }
   }
 

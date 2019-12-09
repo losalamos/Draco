@@ -4,7 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/CellFlags class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -13,17 +13,17 @@
 
 #include "Dims.hh"
 #include "Flags.hh"
-#include <fstream>
-#include <iostream>
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
+ * \class CellFlags
  * \brief Controls parsing, storing, and accessing the data specific to the
  *        cell flags block of the mesh file.
  */
+//============================================================================//
 class CellFlags {
   // typedefs
   typedef std::ifstream ifstream;
@@ -33,7 +33,7 @@ class CellFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  CellFlags(const Dims &dims_)
+  explicit CellFlags(const Dims &dims_)
       : dims(dims_), flagTypes(dims.get_ncell_flag_types()) {}
   ~CellFlags() {}
 
@@ -46,61 +46,65 @@ private:
 
 public:
   /*!
- * \brief Validates the specified cell flag type and number.
- * \param flagtype Cell flag type number.
- * \param flag Flag number.
- * \return The existance of the cell flag type and number.
- */
-  bool allowed_flag(int flagtype, int flag) const {
+   * \brief Validates the specified cell flag type and number.
+   * \param flagtype Cell flag type number.
+   * \param flag Flag number.
+   * \return The existance of the cell flag type and number.
+   */
+  bool allowed_flag(size_t flagtype, size_t flag) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     return flagTypes[flagtype]->allowed_flag(flag);
   }
+
   /*!
- * \brief Returns the name of specified cell flag type read from the mesh file
- *        cell_flags data.
- * \param flagtype Cell flag type number.
- * \return The cell flag type name.
- */
-  string get_flag_type(int flagtype) const {
+   * \brief Returns the name of specified cell flag type read from the mesh file
+   *        cell_flags data.
+   * \param flagtype Cell flag type number.
+   * \return The cell flag type name.
+   */
+  string get_flag_type(size_t flagtype) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     return flagTypes[flagtype]->getFlagType();
   }
 
   int get_flag_type_index(string &desired_flag_type) const;
+
   /*!
- * \brief Returns the cell flag number associated with the specified cell flag
- *        type and cell flag index.
- * \param flagtype Cell flag type number.
- * \param flag_index Cell flag index.
- * \return The cell flag number.
- */
-  int get_flag_number(int flagtype, int flag_index) const {
+   * \brief Returns the cell flag number associated with the specified cell flag
+   *        type and cell flag index.
+   * \param flagtype Cell flag type number.
+   * \param flag_index Cell flag index.
+   * \return The cell flag number.
+   */
+  int get_flag_number(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,
            "Invalid cell flag number index number!");
     return flagTypes[flagtype]->getFlagNumber(flag_index);
   }
+
   /*!
- * \brief Returns the number of cell flags for the specified cell flag type.
- * \param flagtype Cell flag type number.
- * \return The number of cell flags.
- */
-  int get_flag_size(int flagtype) const {
+   * \brief Returns the number of cell flags for the specified cell flag type.
+   * \param flagtype Cell flag type number.
+   * \return The number of cell flags.
+   */
+  size_t get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     return flagTypes[flagtype]->getFlagSize();
   }
+
   /*!
- * \brief Returns the cell flag name associated with the specified cell flag
- *        type and cell flag index.
- * \param flagtype Cell flag type number.
- * \param flag_index Cell flag index.
- * \return The cell flag name.
- */
-  string get_flag_name(int flagtype, int flag_index) const {
+   * \brief Returns the cell flag name associated with the specified cell flag
+   *        type and cell flag index.
+   * \param flagtype Cell flag type number.
+   * \param flag_index Cell flag index.
+   * \return The cell flag name.
+   */
+  string get_flag_name(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,

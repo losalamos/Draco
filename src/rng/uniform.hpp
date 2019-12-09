@@ -73,10 +73,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #if defined(__GNUC__) && !defined(__clang__)
-#if (RNG_GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
+#endif
+
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4127)
 #endif
 
 #include <Random123/features/compilerfeatures.h>
@@ -151,7 +157,8 @@ template <typename T> R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue() {
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
   typedef typename make_unsigned<Itype>::type Utype;
-  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Utype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype factor =
+      Ftype(1.) / (static_cast<Ftype>(maxTvalue<Utype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Utype(in) * factor;
@@ -178,7 +185,8 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
   typedef typename make_signed<Itype>::type Stype;
-  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Stype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype factor =
+      Ftype(1.) / (Ftype(maxTvalue<Stype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Stype(in) * factor;
@@ -208,17 +216,22 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
       std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
   if (excess >= 0) {
 
-// 2015-09-26 KT - Suppress warnings for the following expressions (see https://rtt.lanl.gov/redmine/issues/416)
-//
-// Basically, GCC under BullseyeCoverage issues the following warning every time this file is included:
-//
-// Counter_RNG.hh:124:65:   required from here
-// uniform.hpp:200:48: warning: second operand of conditional expression has no effect [-Wunused-value]
-//         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
-//
-// Unfortunately, if this expression is simplified (see r7628) some compilers will not compile the code because the RHS of the
-// assignment may contain values that are not known at comile time (not constexpr).  We don't want to spend to much time debugging
-// this issue because the code is essentially vendor owned (Random123).
+    // 2015-09-26 KT - Suppress warnings for the following expressions (see
+    // https://rtt.lanl.gov/redmine/issues/416)
+    //
+    // Basically, GCC under BullseyeCoverage issues the following warning every
+    // time this file is included:
+    //
+    // Counter_RNG.hh:124:65:   required from here
+    // uniform.hpp:200:48: warning: second operand of conditional expression
+    // has no effect [-Wunused-value]
+    //         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
+    //
+    // Unfortunately, if this expression is simplified (see r7628) some
+    // compilers will not compile the code because the RHS of the assignment
+    // may contain values that are not known at comile time (not constexpr).
+    // We don't want to spend to much time debugging this issue because the
+    // code is essentially vendor owned (Random123).
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -240,6 +253,11 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
 }
 
 } // namespace r123
+
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(pop)
+#endif
 
 #if defined(__GNUC__) && !defined(__clang__)
 // Restore GCC diagnostics to previous state.

@@ -4,7 +4,7 @@
  * \author Jae Chang
  * \date   Tue Jan 27 08:51:19 2004
  * \brief  Quadrature interface definitions
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/factorial.i.hh
+ * \file   special_functions/factorial.i.hh
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -58,10 +58,10 @@ template <typename T> double factorial_fraction(T const k, T const l) {
   double result(1.0);
   if (k > l)
     for (T i = l + 1; i <= k; ++i)
-      result *= i;
+      result *= static_cast<double>(i);
   if (k < l)
     for (T i = k + 1; i <= l; ++i)
-      result /= 1.0 * i;
+      result /= static_cast<double>(i);
   return result;
 }
 

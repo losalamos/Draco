@@ -4,11 +4,8 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for File_Token_Stream class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -118,22 +115,25 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("Shift after pushback has correct value");
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      FAILMSG("Syntax error NOT correctly thrown");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
+      caught = true;
       PASSMSG("Syntax error correctly thrown and caught");
     }
+    FAIL_IF_NOT(caught); // FAILMSG("Syntax error NOT correctly thrown");
+
     try {
       tokens.check_syntax(true, "dummy syntax error");
       PASSMSG("Syntax error correctly checked");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       FAILMSG("Syntax error NOT correctly checked");
     }
     try {
       tokens.check_syntax(false, "dummy syntax error");
       FAILMSG("Syntax error NOT correctly checked");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("Syntax error correctly checked");
     }
     if (tokens.error_count() != 2) {
@@ -279,7 +279,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -302,7 +302,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -325,7 +325,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -339,8 +339,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  //---------------------------------------------------------------------------//
-
+  //-------------------------------------------------------------------------//
   {
     // Build path for the input file "scanner_recovery.inp"
     string const inputFile2(ut.getTestSourcePath() +
@@ -357,16 +356,14 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
           << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
       FAILMSG(msg.str());
     } catch (const Syntax_Error &msg) {
-      // cout << msg.what() << endl;
-      // exception = true;
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
@@ -384,20 +381,72 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
+  }
+
+  // Test #include directive.
+  {
+    File_Token_Stream tokens(ut.getTestSourcePath() +
+                             std::string("parallel_include_test.inp"));
+
+    Token token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try rewind
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try open of file in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() +
+                std::string("parallel_include_test.inp"));
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Try rewind in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Check empty stream
+    File_Token_Stream dummy;
+    ut.check(dummy.lookahead().type() == EXIT, "empty stream returns EXIT");
   }
   return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

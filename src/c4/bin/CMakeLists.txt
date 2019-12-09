@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/c4/bin/CMakeLists.txt
 # brief  Instructions for building xthi Makefiles
-# note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2017-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.5.0)
@@ -26,14 +26,20 @@ add_component_executable(
   TARGET      Exe_xthi
   TARGET_DEPS Lib_c4
   SOURCES     ${PROJECT_SOURCE_DIR}/xthi.cc
-  PREFIX       Draco
-  )
+  PREFIX       Draco )
 
+add_component_executable(
+  TARGET      Exe_ythi
+  TARGET_DEPS Lib_c4
+  SOURCES     ${PROJECT_SOURCE_DIR}/ythi.cc
+  PREFIX       Draco )
+  
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Exe_xthi EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Exe_ythi EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # End cdi_eospac/CMakeLists.txt

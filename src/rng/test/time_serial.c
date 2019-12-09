@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
   if (argc > 1)
-    count = atoi(argv[1]);
+    count = (uint)atoi(argv[1]);
   if ((cp = getenv("TIME_SERIAL_VERBOSE")) != NULL) {
     verbose = atoi(cp);
   }

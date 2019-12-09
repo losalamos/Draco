@@ -3,23 +3,20 @@
  * \file   parser/File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class File_Token_Stream.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_File_Token_Stream_HH
-#define CCS4_File_Token_Stream_HH
+#ifndef rtt_File_Token_Stream_HH
+#define rtt_File_Token_Stream_HH
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
 
 namespace rtt_parser {
-using std::string;
-using std::set;
 using std::ifstream;
+using std::set;
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -29,7 +26,6 @@ using std::ifstream;
  * stream from a file in the file system.  It reports errors to the standard
  * console error stream \c cerr.
  */
-
 class DLL_PUBLIC_parser File_Token_Stream : public Text_Token_Stream {
 public:
   // CREATORS
@@ -66,16 +62,42 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &file_name);
+  virtual void pop_include();
+
 private:
+  struct letter {
+    // IMPLEMENTATION
+
+    //! Constructor
+    explicit letter(string const &file_name);
+
+    bool check_class_invariants() const {
+      return true; // none at present
+    }
+
+    //! Open the input stream.
+    void open_();
+
+    //! Rewind the stream.
+    void rewind();
+
+    // DATA
+    string filename_; //!< File from which to take token text.
+    ifstream infile_; //!< Stream from which to take token text.
+  };
+
+  // IMPLEMENTATION
+
   // DATA
 
-  string filename_; //!< File from which to take token text.
-  ifstream infile_; //!< Stream from which to take token text.
+  std::stack<std::shared_ptr<letter>> letters_;
+  std::shared_ptr<letter> letter_;
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
-#endif // CCS4_File_Token_Stream_HH
+#endif // rtt_File_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of File_Token_Stream.hh

@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   viz/test/tstEnsightTranslator.cc
+ * \file   viz/test/tstEnsight_Translator.cc
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2000-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,6 +18,7 @@ using namespace std;
 using rtt_viz::Ensight_Translator;
 
 //---------------------------------------------------------------------------//
+template <typename IT>
 void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   if (binary)
     cout << "\nGenerating binary files...\n" << endl;
@@ -25,15 +26,15 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
     cout << "\nGenerating ascii files...\n" << endl;
 
   // dimensions
-  int ncells = 27;
-  int nvert = 64;
-  int ndim = 3;
-  int ndata = 2;
-  int nhexvert = 8;
-  int nrgn = 2;
+  size_t ncells = 27;
+  size_t nvert = 64;
+  size_t ndim = 3;
+  size_t ndata = 2;
+  size_t nhexvert = 8;
+  size_t nrgn = 2;
 
   typedef vector<string> vec_s;
-  typedef vector<int> vec_i;
+  typedef vector<IT> vec_i;
   typedef vector<vec_i> vec2_i;
   typedef vector<vec2_i> vec3_i;
   typedef vector<double> vec_d;
@@ -56,7 +57,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   // set region stuff
   rgn_name[1] = "RGN_B";
   rgn_data[1] = 2;
-  for (int i = 1; i < 5; i++)
+  for (size_t i = 1; i < 5; i++)
     rgn_index[i] = 2;
   rgn_index[14] = 2;
   rgn_index[15] = 2;
@@ -76,14 +77,18 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
                                                          rtt_dsxx::FC_NATIVE);
 
   // make data
-  for (int i = 0; i < ndata; i++) {
+  for (size_t i = 0; i < ndata; i++) {
     // cell data
-    for (int cell = 0; cell < ncells; cell++)
-      cell_data[cell][i] = 1 + cell;
+    for (size_t cell = 0; cell < ncells; cell++) {
+      Check(1 + cell < INT_MAX);
+      cell_data[cell][i] = static_cast<int>(1 + cell);
+    }
 
     // vrtx data
-    for (int v = 0; v < nvert; v++)
-      vrtx_data[v][i] = 1 + v;
+    for (size_t v = 0; v < nvert; v++) {
+      Check(1 + v < INT_MAX);
+      vrtx_data[v][i] = static_cast<int>(1 + v);
+    }
   }
 
   // read cell data
@@ -107,16 +112,17 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   vec2_i g_cell_indices(nrgn);
   vector<set<int>> tmp_vrtx(nrgn);
-  for (int i = 0; i < ncells; i++) {
-    int ipart = rgn_index[i] - 1;
-    g_cell_indices[ipart].push_back(i);
+  for (size_t i = 0; i < ncells; i++) {
+    size_t ipart = rgn_index[i] - 1;
+    Check(i < INT_MAX);
+    g_cell_indices[ipart].push_back(static_cast<int>(i));
     for (size_t j = 0; j < ipar[i].size(); j++)
       tmp_vrtx[ipart].insert(ipar[i][j] - 1);
   }
 
   typedef set<int>::const_iterator set_iter;
   vec2_i g_vrtx_indices(nrgn);
-  for (int i = 0; i < nrgn; i++) {
+  for (size_t i = 0; i < nrgn; i++) {
     for (set_iter s = tmp_vrtx[i].begin(); s != tmp_vrtx[i].end(); ++s)
       g_vrtx_indices[i].push_back(*s);
   }
@@ -129,35 +135,32 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   vec3_d p_pt_coor(nrgn);
   vec2_i p_iel_type(nrgn);
 
-  for (int i = 0; i < nrgn; i++) {
-    int p_ncells = g_cell_indices[i].size();
-    int p_nvert = g_vrtx_indices[i].size();
+  for (size_t i = 0; i < nrgn; i++) {
+    size_t p_ncells = g_cell_indices[i].size();
+    size_t p_nvert = g_vrtx_indices[i].size();
     p_ipar[i].resize(p_ncells, vec_i(nhexvert));
     p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0));
     p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));
     p_pt_coor[i].resize(p_nvert, vec_d(ndim));
     p_iel_type[i].resize(p_ncells, rtt_viz::eight_node_hexahedron);
 
-    for (int j = 0; j < p_nvert; j++) {
+    for (size_t j = 0; j < p_nvert; j++) {
       int g = g_vrtx_indices[i][j];
       // cout << g << endl;
       p_vrtx_data[i][j] = vrtx_data[g];
       p_pt_coor[i][j] = pt_coor[g];
     }
 
-    for (int j = 0; j < p_ncells; j++) {
+    for (size_t j = 0; j < p_ncells; j++) {
       int g = g_cell_indices[i][j];
       p_cell_data[i][j] = cell_data[g];
       p_iel_type[i][j] = iel_type[g];
 
       for (size_t k = 0; k < ipar[g].size(); k++) {
-        int tmp = ipar[g][k] - 1;
-
-        vector<int>::iterator f =
-            find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
-
+        IT tmp = ipar[g][k] - 1;
+        auto f = find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
         Require(f != g_vrtx_indices[i].end());
-        p_ipar[i][j][k] = f - g_vrtx_indices[i].begin() + 1;
+        p_ipar[i][j][k] = static_cast<int>(f - g_vrtx_indices[i].begin() + 1);
       }
     }
   }
@@ -178,7 +181,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   // build another ensight translator; this should overwrite the existing
   // directories
   Ensight_Translator translator2(prefix, gd_wpath, vdata_names, cdata_names,
-                                 true, static_geom, binary);
+                                 false, static_geom, binary);
 
   translator2.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
@@ -193,9 +196,9 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   translator3.ensight_dump(2, .05, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
 
-  // make yet a fourth translator that will append
+  // make yet a fourth translator that will append from the reset time
   Ensight_Translator translator4(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, static_geom, binary);
+                                 false, static_geom, binary, .05);
 
   // add yet another dump to the existing data
   translator4.ensight_dump(3, .10, dt, ipar, iel_type, rgn_index, pt_coor,
@@ -208,10 +211,13 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   translator5.open(icycle, time, dt);
 
-  for (int i = 0; i < nrgn; i++)
-    translator5.write_part(i + 1, rgn_name[i], p_ipar[i], p_iel_type[i],
-                           p_pt_coor[i], p_vrtx_data[i], p_cell_data[i],
-                           g_vrtx_indices[i], g_cell_indices[i]);
+  for (size_t i = 0; i < nrgn; i++) {
+    Check(i + 1 < INT_MAX);
+    translator5.write_part(static_cast<int>(i + 1), rgn_name[i], p_ipar[i],
+                           p_iel_type[i], p_pt_coor[i], p_vrtx_data[i],
+                           p_cell_data[i], g_vrtx_indices[i],
+                           g_cell_indices[i]);
+  }
 
   translator5.close();
   if (ut.numFails == 0)
@@ -227,11 +233,15 @@ int main(int argc, char *argv[]) {
   try {
     // ASCII dumps
     bool binary(false);
-    ensight_dump_test(ut, binary);
+    ensight_dump_test<int>(ut, binary);
 
     // Binary dumps
     binary = true;
-    ensight_dump_test(ut, binary);
+    ensight_dump_test<int>(ut, binary);
+
+    // ASCII dumps with unsigned integer data
+    binary = false;
+    ensight_dump_test<uint32_t>(ut, binary);
   }
   UT_EPILOG(ut);
 }

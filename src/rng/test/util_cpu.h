@@ -32,6 +32,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef UTIL_CPU_H__
 #define UTIL_CPU_H__ 1
 
+#ifdef __GNUC__
+#if !defined(__ICC) && !defined(NVCC)
+// Suppress GCC's "unused variable" warning.
+#if (DBS_GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+#endif
+
 #include "util.h"
 
 /*
@@ -218,4 +229,12 @@ void cpu_done(CPUInfo *tp) {
   free(tp->cpuname);
   free(tp);
 }
+
+#ifdef __GNUC__
+#if (DBS_GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+#endif
+
 #endif /* UTIL_CPU_H__ */

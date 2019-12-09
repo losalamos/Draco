@@ -3,17 +3,17 @@
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Ensure version is set and use config date as ver. patch value.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
 macro( set_ccs2_software_version PROJNAME )
 
-  if( NOT ${${PROJNAME}_VERSION_MAJOR} )
+  if( NOT DEFINED ${PROJNAME}_VERSION_MAJOR )
     message( WARNING "${PROJNAME}_VERSION_MAJOR should already be set!" )
     set(${PROJNAME}_VERSION_MAJOR 0)
   endif()
-  if( NOT ${${PROJNAME}_VERSION_MINOR} )
+  if( NOT DEFINED ${PROJNAME}_VERSION_MINOR )
     message( WARNING "${PROJNAME}_VERSION_MINOR should already be set!" )
     set(${PROJNAME}_VERSION_MINOR 0)
   endif()
@@ -71,9 +71,15 @@ macro( set_ccs2_software_version PROJNAME )
     # ")
   endif()
 
+  # Query git branch name?
+  # git rev-parse --abbrev-ref HEAD
+
+  string(TOUPPER ${PROJNAME} PROJNAME_UPPER)
   set( ${PROJNAME}_BUILD_DATE
     "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
-  if( "${${PROJNAME}_VERSION_PATCH}notset" STREQUAL "notset" ) # "[1-9]?[1-9]$")
+  if( DEFINED ${PROJNAME_UPPER}_VERSION_PATCH ) # "[1-9]?[1-9]$")
+    set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME_UPPER}_VERSION_PATCH} )
+  else()
     set( ${PROJNAME}_VERSION_PATCH
       "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
       )
@@ -83,8 +89,11 @@ macro( set_ccs2_software_version PROJNAME )
     CACHE STRING "${PROJNAME} version information" FORCE)
   set( ${PROJNAME}_VERSION_FULL  "${${PROJNAME}_VERSION}.${${PROJNAME}_VERSION_PATCH}"
     CACHE STRING "${PROJNAME} version information" FORCE)
+  mark_as_advanced( ${PROJNAME}_VERSION )
 
-  message( STATUS "This is ${PROJNAME} version ${${PROJNAME}_VERSION_FULL}.")
+  message( "\n======================================================\n"
+    "This is ${PROJNAME} version ${${PROJNAME}_VERSION_FULL}.\n"
+     "======================================================\n" )
 
   # Support for CPack
   set( CPACK_PACKAGE_VERSION_MAJOR ${${PROJNAME}_VERSION_MAJOR} )

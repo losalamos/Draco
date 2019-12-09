@@ -4,9 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Nov  1 15:49:44 2005
  * \brief  Unit test for C4_Req class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -46,23 +45,22 @@ void tstCopyConstructor(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void tstTraits(rtt_dsxx::UnitTest &ut) {
   using rtt_c4::C4_Traits;
 
   {
-    if (C4_Traits<unsigned char>::tag != 432)
-      ITFAILS;
-    if (C4_Traits<short>::tag != 433)
-      ITFAILS;
-    if (C4_Traits<unsigned short>::tag != 434)
-      ITFAILS;
-    if (C4_Traits<unsigned int>::tag != 436)
-      ITFAILS;
-    if (C4_Traits<unsigned long>::tag != 438)
-      ITFAILS;
-    if (C4_Traits<long double>::tag != 441)
-      ITFAILS;
+    constexpr bool is_uchar = C4_Traits<unsigned char>::tag == 432;
+    FAIL_IF_NOT(is_uchar);
+    constexpr bool is_short = C4_Traits<short>::tag == 433;
+    FAIL_IF_NOT(is_short);
+    constexpr bool is_ushort = C4_Traits<unsigned short>::tag == 434;
+    FAIL_IF_NOT(is_ushort);
+    constexpr bool is_uint = C4_Traits<unsigned int>::tag == 436;
+    FAIL_IF_NOT(is_uint);
+    constexpr bool is_ulong = C4_Traits<unsigned long>::tag == 438;
+    FAIL_IF_NOT(is_ulong);
+    constexpr bool is_longdouble = C4_Traits<long double>::tag == 441;
+    FAIL_IF_NOT(is_longdouble);
   }
 #ifdef C4_MPI
   {
@@ -85,7 +83,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void tstWait(rtt_dsxx::UnitTest &ut) {
   using namespace rtt_c4;
 

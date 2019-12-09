@@ -3,11 +3,8 @@
 * \file   linear/test/tstfnorm.cc
 * \author Kent Budge
 * \date   Mon Aug  9 13:39:20 2004
-* \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
-*         All rights reserved.
-*/
-//---------------------------------------------------------------------------//
-
+* \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+*         All rights reserved.*/
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -31,11 +28,8 @@ void func(const vector<double> &x, vector<double> &fvec) {
 
 //---------------------------------------------------------------------------//
 void tstfnorm(UnitTest &ut) {
-  vector<double> x(2);
+  vector<double> x = {0.235, 3.2};
   vector<double> fvec;
-
-  x[0] = 0.235;
-  x[1] = 3.2;
 
   if (soft_equiv(fnorm(x, fvec, &func), 0.5 * 3.2 * 3.2)) {
     ut.passes("fnorm is correct");
@@ -45,7 +39,6 @@ void tstfnorm(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

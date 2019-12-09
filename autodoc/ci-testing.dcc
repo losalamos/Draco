@@ -1,0 +1,32 @@
+/*!
+
+\page ci_testing Setup CI Testing on GitHub.
+
+Draco is hosted on GitHub at https://github.com/lanl/Draco.
+
+\par Travis testing
+
+New pull requests should be on development branches and the request is to merge
+each branch back to the 'develop' branch.  When a pull request is generated, we
+want Travis (https://travis-ci.org) to run a basic build test.
+
+You must have an account with travis-ci.org and register the Draco project with
+travis-ci.org so that a web hook is installed.  The web hook runs the code
+provided by ~/.travis.yml.
+
+It is desireable for the travis script to run (1) a code style check (this uses
+clang-format), (2) a build check using cmake and g++ and (3) a code coverage
+report (see next paragraph).
+
+\par Code Coverage
+
+Track code coverage
+
+\par AppVeyor
+
+Run basic build test with the Visual Studio compiler.
+
+*/
+//---------------------------------------------------------------------------//
+// end of ci-testing.dcc
+//---------------------------------------------------------------------------//

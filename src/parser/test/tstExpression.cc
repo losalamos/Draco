@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Jul 26 08:15:18 2006
  * \brief  Test the Expression class and expression parsing.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -131,7 +131,7 @@ void tstExpression(UnitTest &ut) {
 #pragma warning(pop)
 #endif
 
-  tokens = string("20*(r>=1.1*m && z<=1.5*m || r>=2.0*m)");
+  tokens = string("20*(r>=1.1*m && z<=1.5*m || r>=2.0*m && r<=7.0*m)");
 
   expression = Expression::parse(4, variable_map, tokens);
 
@@ -141,25 +141,27 @@ void tstExpression(UnitTest &ut) {
     FAILMSG("expression NOT successfully parsed");
 
   if (soft_equiv((*expression)(xs),
-                 20.0 * ((r >= 1.1) && ((z <= 1.5) || (r >= 2.0))))) {
+                 20.0 *
+                     ((r >= 1.1) && ((z <= 1.5) || (r >= 2.0 && r <= 7.0))))) {
     PASSMSG("expression successfully evaluated");
   } else {
     FAILMSG("expression NOT successfully evaluated");
   }
 
   {
-    ostringstream expression_text_copy;
-    expression->write(vars, expression_text_copy);
+    ostringstream lexpression_text_copy;
+    expression->write(vars, lexpression_text_copy);
 
-    char const *expression_text_raw = "20*(r>=1.1*m&&z<=1.5*m||r>=2*m)";
+    char const *lexpression_text_raw =
+        "20*(r>=1.1*m&&z<=1.5*m||r>=2*m&&r<=7*m)";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
-    if (expression_text_copy.str() == expression_text_raw) {
+    if (lexpression_text_copy.str() == lexpression_text_raw) {
       PASSMSG("expression successfully rendered as text");
     } else {
       FAILMSG("expression NOT successfully rendered as text");
-      cerr << expression_text_raw << endl;
-      cerr << expression_text_copy.str() << endl;
+      cerr << lexpression_text_raw << endl;
+      cerr << lexpression_text_copy.str() << endl;
     }
   }
 
@@ -203,19 +205,19 @@ void tstExpression(UnitTest &ut) {
   }
 
   {
-    ostringstream expression_text_copy;
-    expression->write(vars, expression_text_copy);
+    ostringstream lexpression_text_copy;
+    expression->write(vars, lexpression_text_copy);
 
-    char const *expression_text_raw =
+    char const *lexpression_text_raw =
         "exp(-0.5*r/m)*(3*cos(2*y/m)+5*sin(3*y/m))";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
-    if (expression_text_copy.str() == expression_text_raw) {
+    if (lexpression_text_copy.str() == lexpression_text_raw) {
       PASSMSG("expression successfully rendered as text");
     } else {
       FAILMSG("expression NOT successfully rendered as text");
-      cerr << expression_text_raw << endl;
-      cerr << expression_text_copy.str() << endl;
+      cerr << lexpression_text_raw << endl;
+      cerr << lexpression_text_copy.str() << endl;
     }
   }
 
@@ -234,34 +236,34 @@ void tstExpression(UnitTest &ut) {
     FAILMSG("expression NOT successfully evaluated");
 
   {
-    ostringstream expression_text_copy;
-    expression->write(vars, expression_text_copy);
+    ostringstream lexpression_text_copy;
+    expression->write(vars, lexpression_text_copy);
 
-    char const *expression_text_raw = "log(1)";
+    char const *lexpression_text_raw = "log(1)";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
-    if (expression_text_copy.str() == expression_text_raw) {
+    if (lexpression_text_copy.str() == lexpression_text_raw) {
       PASSMSG("expression successfully rendered as text");
     } else {
       FAILMSG("expression NOT successfully rendered as text");
-      cerr << expression_text_raw << endl;
-      cerr << expression_text_copy.str() << endl;
+      cerr << lexpression_text_raw << endl;
+      cerr << lexpression_text_copy.str() << endl;
     }
   }
 
   {
     tokens = String_Token_Stream("log(1.0) + cos(2.0) + exp(3.0) + sin(4.0)");
 
-    std::shared_ptr<Expression> expression =
+    std::shared_ptr<Expression> lexpression =
         Expression::parse(4, variable_map, tokens);
 
-    if (expression->is_constant(0))
+    if (lexpression->is_constant(0))
       PASSMSG("expression successfully const tested");
     else
       FAILMSG("expression NOT successfully const tested");
 
-    expression->set_units(J);
-    if (is_compatible(J, expression->units()))
+    lexpression->set_units(J);
+    if (is_compatible(J, lexpression->units()))
       PASSMSG("units correctly set");
     else
       FAILMSG("units NOT correctly set");
@@ -271,35 +273,47 @@ void tstExpression(UnitTest &ut) {
     tokens = String_Token_Stream(
         "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
 
-    std::shared_ptr<Expression> expression =
+    std::shared_ptr<Expression> lexpression =
         Expression::parse(4, variable_map, tokens);
 
-    if (expression->is_constant(0))
+    if (lexpression->is_constant(0))
       PASSMSG("expression successfully const tested");
     else
       FAILMSG("expression NOT successfully const tested");
 
-    ostringstream expression_text_copy;
-    expression->write(vars, expression_text_copy);
+    ostringstream lexpression_text_copy;
+    lexpression->write(vars, lexpression_text_copy);
 
-    cout << expression_text_copy.str() << endl;
+    cout << lexpression_text_copy.str() << endl;
 
-    char const *expression_text_raw = "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";
+    char const *lexpression_text_raw = "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
-    if (expression_text_copy.str() == expression_text_raw) {
+    if (lexpression_text_copy.str() == lexpression_text_raw) {
       PASSMSG("expression successfully rendered as text");
     } else {
       FAILMSG("expression NOT successfully rendered as text");
-      cerr << expression_text_raw << endl;
-      cerr << expression_text_copy.str() << endl;
+      cerr << lexpression_text_raw << endl;
+      cerr << lexpression_text_copy.str() << endl;
     }
 
-    expression->set_units(J);
-    if (is_compatible(J, expression->units()))
+    lexpression->set_units(J);
+    if (is_compatible(J, lexpression->units()))
       PASSMSG("units correctly set");
     else
       FAILMSG("units NOT correctly set");
+  }
+
+  {
+    tokens = String_Token_Stream(
+        "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(jerk*sh)");
+
+    std::shared_ptr<Expression> lexpression =
+        Expression::parse(4, variable_map, tokens);
+
+    ut.check(soft_equiv((*lexpression)(xs),
+                        (cos(2.0) + exp(3.0) + sin(4.0)) / (1e9 * 1e-8)),
+             "parse of exotic units");
   }
 }
 

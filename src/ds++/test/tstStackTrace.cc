@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thursday, Dec 19, 2013, 15:09 pm
  * \brief  Demonstrate/Test fpe_trap's print_stacktrace function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 

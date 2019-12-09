@@ -4,12 +4,10 @@
 ! \author Allan Wollaber
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
-! \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+! \note   Copyright (c) 2016-2019 Triad National Security, LLC.
 !         All rights reserved.
 !
 ! This is a modified version of jayenne/src/wedgehog/ftest/Wedgehog_MPI.F90
-!---------------------------------------------------------------------------
-! $Id$
 !---------------------------------------------------------------------------
 
 module draco_mpi
@@ -98,3 +96,7 @@ contains
   end subroutine f90_mpi_barrier
 
 end module draco_mpi
+
+!-----------------------------------------------------------------------------!
+! End Draco_MPI.F90
+!-----------------------------------------------------------------------------!

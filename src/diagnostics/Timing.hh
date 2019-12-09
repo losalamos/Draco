@@ -4,7 +4,7 @@
  * \author T.M. Kelly, Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class and macros definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -67,7 +67,7 @@ public:
   static double timer_value(const std::string &k) { return timers[k]; }
 
   //! Get number of timers in map.
-  static int num_timers() { return timers.size(); }
+  static size_t num_timers() { return timers.size(); }
 
   // Return a vector of timer keys.
   static Vec_Keys timer_keys();

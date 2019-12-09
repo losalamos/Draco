@@ -4,23 +4,15 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Cells class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 #ifndef __RTT_Format_Reader_Cells_hh__
 #define __RTT_Format_Reader_Cells_hh__
 
 #include "CellDefs.hh"
 #include "CellFlags.hh"
-#include "Dims.hh"
 #include "Nodes.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!
@@ -33,12 +25,14 @@ class Cells {
   typedef std::string string;
   typedef std::vector<int> vector_int;
   typedef std::vector<std::vector<int>> vector_vector_int;
+  typedef std::vector<unsigned> vector_uint;
+  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
 
   const CellFlags &cellFlags;
   const Dims &dims;
   const CellDefs &cellDefs;
   vector_int cellType;
-  vector_vector_int nodes;
+  vector_vector_uint nodes;
   vector_vector_int flags;
 
 public:
@@ -59,39 +53,43 @@ private:
 
 public:
   /*!
- * \brief Returns the cell type associated with the specified cell.
- * \param cell_numb Cell number.
- * \return The cell type.
- */
-  int get_type(int cell_numb) const { return cellType[cell_numb]; }
+   * \brief Returns the cell type associated with the specified cell.
+   * \param cell_numb Cell number.
+   * \return The cell type.
+   */
+  int get_type(size_t cell_numb) const { return cellType[cell_numb]; }
+
   /*!
- * \brief Returns all of the node numbers for each of the cells.
- * \return The node numbers for all cells.
- */
-  vector_vector_int get_nodes() const { return nodes; }
+   * \brief Returns all of the node numbers for each of the cells.
+   * \return The node numbers for all cells.
+  */
+  vector_vector_uint get_nodes() const { return nodes; }
+
   /*!
- * \brief Returns all of the node numbers associated with the specified cell.
- * \param cell_numb Cell number.
- * \return The cell node numbers.
- */
-  vector_int get_nodes(int cell_numb) const { return nodes[cell_numb]; }
+   * \brief Returns all of the node numbers associated with the specified cell.
+   * \param cell_numb Cell number.
+   * \return The cell node numbers.
+   */
+  vector_uint get_nodes(size_t cell_numb) const { return nodes[cell_numb]; }
+
   /*!
- * \brief Returns the node number associated with the specified cell and 
- *        cell-node index.
- * \param cell_numb Cell number.
- * \param node_numb Cell-node index number.
- * \return The cell node number.
- */
-  int get_nodes(int cell_numb, int node_numb) const {
+   * \brief Returns the node number associated with the specified cell and 
+   *        cell-node index.
+   * \param cell_numb Cell number.
+   * \param node_numb Cell-node index number.
+   * \return The cell node number.
+   */
+  int get_nodes(size_t cell_numb, size_t node_numb) const {
     return nodes[cell_numb][node_numb];
   }
+
   /*!
- * \brief Returns the cell flag for the specified cell and flag index
- * \param cell_numb Cell number.
- * \param flag_numb Cell flag index.
- * \return The cell flag.
- */
-  int get_flags(int cell_numb, int flag_numb) const {
+   * \brief Returns the cell flag for the specified cell and flag index
+   *  \param cell_numb Cell number.
+   * \param flag_numb Cell flag index.
+   * \return The cell flag.
+   */
+  int get_flags(size_t cell_numb, size_t flag_numb) const {
     return flags[cell_numb][flag_numb];
   }
 };

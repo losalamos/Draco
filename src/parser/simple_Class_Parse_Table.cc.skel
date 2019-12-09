@@ -1,0 +1,111 @@
+//----------------------------------*-C++-*-----------------------------------//
+/*!
+ * \file   MyPackage/MyClass__parser.cc
+ * \author Kent Budge
+ * \brief  Define methods of class Class_Parse_Table<MyClass>.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved.
+ *
+ * This is skeleton code for the use of developers who are writing a
+ * specialization of Class_Parse_Table that will work with the
+ * parse_class_from_table function template. The skeleton uses MyClass
+ * wherever the new class name should appear, and MyPackage where the new class
+ * package directory name should appear.
+ */
+//----------------------------------------------------------------------------//
+
+#include "MyClass__parser.hh"
+
+#include "parser/utilities.hh"
+
+namespace rtt_parser {
+using namespace MyNamespace;
+
+//----------------------------------------------------------------------------//
+/*! Parse a flag specification.
+ *
+ * \param tokens Tokens stream from which to parse the specification.
+ *
+ * \throw std::system_error
+ */
+void Class_Parse_Table<MyClass>::parse_flag(Token_Stream &tokens, int) {
+  tokens.check_semantics(current->flag, "duplicate flag specification");
+  current->flag = true;
+}
+
+//----------------------------------------------------------------------------//
+/*! Parse a constant specification.
+ *
+ * \param tokens Tokens stream from which to parse the specification.
+ *
+ * \throw std::system_error
+ */
+void Class_Parse_Table<MyClass>::parse_constant(Token_Stream &tokens, int) {
+  tokens.check_semantics(current->constant, "duplicate constant specification");
+  current->constant = parse_quantity(tokens, J, "energy");
+  tokens.check_semantics(current->constant > 0.0, "constant must be positive");
+}
+
+//----------------------------------------------------------------------------//
+/*! Constructor
+ *
+ * \param debug_word The debugging context.
+ *
+ * \throw std::bad_alloc
+ */
+
+Class_Parse_Table<MyClass>::Class_Parse_Table(Context_Type debug_word)
+    : Class_Parse_Table<MyBaseClass>(debug_word),
+      // Add other base class constructor calls here, or delete this one if there
+      // are no base classes.
+      debug_context(debug_word), flag(false), constant(0.0) {
+  const Keyword keywords[] = {
+      {"flag", parse_flag, 0, ""},
+      {"constant", parse_constant, 0, ""},
+  };
+  initialize(keywords, sizeof(keywords));
+  // Delete the next code section if there is no base class.
+  static bool first_time = true;
+  if (first_time) {
+    parse_table_.add(Class_Parse_Table<MyBaseClass>::shared_parse_table());
+    // Add similar line for every other base class.
+    first_time = false;
+  }
+}
+
+//----------------------------------------------------------------------------//
+/*! Check completeness and consistency of parsed specification.
+ *
+ * \param tokens Token stream to which to report errors.
+ *
+ * \throw std::bad_alloc
+ * \throw std::system_error
+ */
+
+void Class_Parse_Table<MyClass>::check_completeness(Token_Stream &tokens) {
+  tokens.check_semantics(constant > 0.0, "constant not specified");
+}
+
+//----------------------------------------------------------------------------//
+/*! Create an object from the parsed specification.
+ *
+ * \throw std::bad_alloc
+ */
+shared_ptr<Sweeper_Creator> Class_Parse_Table<MyClass>::create_object() {
+  return std::make_shared<MyClass>(debug_context, flag, constant);
+}
+
+//----------------------------------------------------------------------------//
+//! Specialization of parse_class for MyClass.
+
+template <>
+shared_ptr<MyClass> parse_class<MyClass>(Token_Stream &tokens,
+                                         Debug_Context debug_context) {
+  return parse_class_from_table<Class_Parse_Table<MyClass>>(tokens,
+                                                            debug_context);
+}
+} // end namespace rtt_parser
+
+//----------------------------------------------------------------------------//
+// end of MyPackage/MyClass__parser.cc
+//----------------------------------------------------------------------------//

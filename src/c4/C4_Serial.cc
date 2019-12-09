@@ -4,19 +4,17 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Implementation of C4 serial option.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "c4/config.h"
+#include "C4_Functions.hh"
+#include "ds++/SystemCall.hh"
+#include <chrono>
+#include <cstdlib>
+#include <ctime>
 
 #ifdef C4_SCALAR
-
-#include "C4_Serial.hh"
-#include "C4_sys_times.h"
-#include "ds++/SystemCall.hh"
-#include <cstdlib>
 
 namespace rtt_c4 {
 
@@ -36,22 +34,18 @@ const int proc_null = -2;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC_c4 int initialize(int & /* argc */, char **& /*argv */,
-                             int /*required*/) {
+int initialize(int & /* argc */, char **& /*argv */, int /*required*/) {
   return 0;
 }
 
 //---------------------------------------------------------------------------//
-
-DLL_PUBLIC_c4 void finalize() {}
+void finalize() {}
 
 //---------------------------------------------------------------------------//
+void type_free(C4_Datatype & /*old_type*/) {}
 
-DLL_PUBLIC_c4 void free_inherited_comm() {}
-
-//---------------------------------------------------------------------------------------//
-
-DLL_PUBLIC_c4 void type_free(C4_Datatype & /*old_type*/) {}
+//---------------------------------------------------------------------------//
+void free_inherited_comm() {}
 
 //---------------------------------------------------------------------------//
 // QUERY FUNCTIONS
@@ -60,7 +54,6 @@ DLL_PUBLIC_c4 void type_free(C4_Datatype & /*old_type*/) {}
 int node() { return 0; }
 
 //---------------------------------------------------------------------------//
-
 int nodes() { return 1; }
 
 //---------------------------------------------------------------------------//
@@ -75,24 +68,32 @@ void global_barrier() { /* empty */
 //---------------------------------------------------------------------------//
 
 #if defined(WIN32)
-DLL_PUBLIC_c4 double wall_clock_time() {
-  __timeb64 now;
-  return _ftime64_s(&now);
+double wall_clock_time(DRACO_TIME_TYPE &now) {
+  using namespace std::chrono;
+  now = high_resolution_clock::now();
+  high_resolution_clock::duration t0 = now.time_since_epoch();
+  return (static_cast<double>(t0.count()) *
+          high_resolution_clock::period::num) /
+         high_resolution_clock::period::den;
 }
-double wall_clock_time(__timeb64 &now) { return _ftime64_s(&now); }
+double wall_clock_time() {
+  DRACO_TIME_TYPE now;
+  return wall_clock_time(now);
+}
 #else
-DLL_PUBLIC_c4 double wall_clock_time() {
-  tms now;
-  return times(&now) / wall_clock_resolution();
+/* Linux */
+double wall_clock_time() {
+  DRACO_TIME_TYPE now;
+  return static_cast<double>(times(&now)) / wall_clock_resolution();
 }
-double wall_clock_time(tms &now) {
-  return times(&now) / wall_clock_resolution();
+double wall_clock_time(DRACO_TIME_TYPE &now) {
+  return static_cast<double>(times(&now)) / wall_clock_resolution();
 }
 #endif
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC_c4 double wall_clock_resolution() {
+double wall_clock_resolution() {
   return static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
 
@@ -100,22 +101,20 @@ DLL_PUBLIC_c4 double wall_clock_resolution() {
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC_c4 bool probe(int /* source */, int /* tag */,
-                         int & /* message_size */) {
+bool probe(int /* source */, int /* tag */, int & /* message_size */) {
   return false;
 }
 
-DLL_PUBLIC_c4 void blocking_probe(int /* source */, int /* tag */,
-                                  int & /* message_size */) {
+void blocking_probe(int /* source */, int /* tag */, int & /* message_size */) {
   Insist(false, "no messages expected in serial programs!");
 }
 
-DLL_PUBLIC_c4 void wait_all(unsigned /*count*/, C4_Req * /*requests*/) {
+void wait_all(unsigned /*count*/, C4_Req * /*requests*/) {
   // Insist(false, "no messages expected in serial programs!");
   return;
 }
 
-DLL_PUBLIC_c4 unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {
+unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {
   Insist(false, "no messages expected in serial programs!");
   return 0;
 }
@@ -136,7 +135,7 @@ int abort(int error) {
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-DLL_PUBLIC_c4 bool isScalar() { return true; }
+bool isScalar() { return true; }
 
 //---------------------------------------------------------------------------//
 // get_processor_name

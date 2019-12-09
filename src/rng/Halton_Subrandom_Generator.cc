@@ -3,11 +3,8 @@
  * \file   rng/Halton_Subrandom_Generator.cc
  * \author Kent Budge
  * \brief  Define methods of class Halton_Subrandom_Generator
- * \note   Copyright (C) 2016-2018 Los Alamos National Laboratory,
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Los Alamos National Laboratory,
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Halton_Subrandom_Generator.hh"
@@ -27,8 +24,8 @@ Halton_Subrandom_Generator::Halton_Subrandom_Generator(unsigned const count)
 //---------------------------------------------------------------------------//
 void Halton_Subrandom_Generator::shift_vector() {
   ++count_;
-  unsigned const N = sequences_.size();
-  for (unsigned i = 0; i < N; ++i) {
+  size_t const N = sequences_.size();
+  for (size_t i = 0; i < N; ++i) {
     sequences_[i].shift();
   }
   element_ = 0;
@@ -37,7 +34,9 @@ void Halton_Subrandom_Generator::shift_vector() {
 //---------------------------------------------------------------------------//
 double Halton_Subrandom_Generator::shift() {
   if (element_ == sequences_.size()) {
-    sequences_.push_back(Halton_Sequence(sequences_.size(), count_));
+    Check(sequences_.size() < UINT_MAX);
+    sequences_.push_back(
+        Halton_Sequence(static_cast<unsigned>(sequences_.size()), count_));
   }
   double const Result = sequences_[element_].lookahead();
   ++element_;

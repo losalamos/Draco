@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -20,8 +20,8 @@
 #include "mesh_element/Geometry.hh"
 
 namespace rtt_quadrature {
-using std::vector;
 using rtt_mesh_element::Geometry;
+using std::vector;
 
 //===========================================================================//
 /*!
@@ -47,11 +47,11 @@ public:
 
   // CREATORS
 
-  Ordinate_Set(unsigned const dimension, Geometry geometry,
+  Ordinate_Set(unsigned const dimension, Geometry const geometry,
                vector<Ordinate> const &ordinates,
                bool const has_starting_directions = true,
                bool const has_extra_starting_directions = false,
-               Ordering ordering = LEVEL_ORDERED);
+               Ordering const ordering = LEVEL_ORDERED);
 
   //! destructor
   virtual ~Ordinate_Set() {}

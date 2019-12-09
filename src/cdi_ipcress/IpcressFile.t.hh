@@ -4,10 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Template Implementation file for IpcressFile class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_ipcress_IpcressFile_t_hh__
@@ -24,9 +22,9 @@ namespace rtt_cdi_ipcress {
 /*! 
  * \brief Read 8 character strings from the binary file
  * 
- * \param byte_offset offset into the ipcress file where the data exists.
- * \param vdata       return value 
- * \return vdata
+ * \param[in]  byte_offset offset into the ipcress file where the data exists.
+ * \param[out] vdata       return value 
+ * \return void
  */
 template <typename T>
 void IpcressFile::read_v(size_t const byte_offset,
@@ -47,7 +45,7 @@ void IpcressFile::read_v(size_t const byte_offset,
   // Copy data into vector<int> container
   double ddata;
   for (size_t i = 0; i < nitems; ++i) {
-    // cast raw cahr data to double and perform a byte swap
+    // cast raw char data to double and perform a byte swap
     std::memcpy(&ddata, &memblock[i * ipcress_word_size], ipcress_word_size);
     if (!rtt_dsxx::is_big_endian())
       rtt_dsxx::byte_swap(ddata);

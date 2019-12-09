@@ -2,10 +2,10 @@
 /*!
  * \file   ds++/path.hh
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
- * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
+ * \bug Consider replacing path.cc and path.hh with C++17 filesystem
  */
 //---------------------------------------------------------------------------//
 
@@ -15,7 +15,7 @@
 #include "Assert.hh"
 #include "SystemCall.hh"
 #include <iostream>
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <dirent.h>   // struct DIR
 #include <sys/stat.h> // struct stat; S_ISDIR
 #endif
@@ -34,14 +34,18 @@ enum FilenameComponent {
 };
 
 //---------------------------------------------------------------------------//
-//! Get a specific component of a full filename.
-DLL_PUBLIC_dsxx std::string getFilenameComponent(std::string const &fqName,
-                                                 FilenameComponent fc);
+/*!
+ * \brief Get a specific component of a full filename.
+ * \param fqName a fully qualified pathname
+ * \param fc Enum type FilenameComponent that specifies the action.
+ */
+std::string getFilenameComponent(std::string const &fqName,
+                                 FilenameComponent fc);
 
 //---------------------------------------------------------------------------//
 //! Does the file exist?
-DLL_PUBLIC_dsxx bool fileExists(std::string const &filename);
-DLL_PUBLIC_dsxx bool isDirectory(std::string const &path);
+bool fileExists(std::string const &filename);
+bool isDirectory(std::string const &path);
 
 //---------------------------------------------------------------------------//
 //! Functor for printing all items in a directory tree
@@ -71,10 +75,10 @@ public:
  *      the directory. Recommend using wdtOpPrint or wdtOpRemove
  * \return void
  *
- * \sa draco_remove_dir Helper function to recurively delete a directory and all
- * its contents.
+ * \sa draco_remove_dir Helper function to recursively delete a directory and
+ *     all its contents.
  * \sa draco_dir_print Helper function that will print a directory and all its
- * contents.
+ *     contents.
  *
  * Sample implementation for Win32 (uses Win API which I don't want to do)
  * http://forums.codeguru.com/showthread.php?239271-Windows-SDK-File-System-How-to-delete-a-directory-and-subdirectories
@@ -168,10 +172,10 @@ void draco_walk_directory_tree(std::string const &dirname,
     // struct stat statbuf;
 
     dir = opendir(dirname.c_str());
-    Insist(dir != NULL, "Error opendir()");
+    Insist(dir != nullptr, "Error opendir()");
 
     // Loop over all entries in the current directory.
-    while ((entry = readdir(dir)) != NULL) {
+    while ((entry = readdir(dir)) != nullptr) {
       std::string d_name(entry->d_name);
 
       // Don't include "." or ".." entries.
@@ -204,9 +208,9 @@ void draco_walk_directory_tree(std::string const &dirname,
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-DLL_PUBLIC_dsxx void draco_remove_dir(std::string const &path);
+void draco_remove_dir(std::string const &path);
 //! Recursively print a directory tree.
-DLL_PUBLIC_dsxx void draco_dir_print(std::string const &path);
+void draco_dir_print(std::string const &path);
 
 } // end namespace rtt_dsxx
 

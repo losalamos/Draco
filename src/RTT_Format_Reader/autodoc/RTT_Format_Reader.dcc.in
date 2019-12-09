@@ -1,15 +1,11 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // RTT_Format_Reader.dcc
 // RTT_Format_Reader Overview page
 // Thomas M. Evans
 // Mon Apr 19 22:00:53 2004
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_rtt_format_reader Overview of the RTT_Format_Reader package
 \version Draco-@Draco_VERSION@
@@ -70,7 +66,208 @@ The following example "mesh" documents the format of the RTT file and
 explains the associated nomenclature. A graphical depiction of the
 \ref rtt_stdcell is provided via the links.
 
-\include RTT_Format.defined
+\code
+
+rtt_ascii                                              ! magic cookie
+
+header	                                               ! header keyword
+
+  version   v1.0.0                                     ! version number
+  title     RTT_format mesh file definition, version 7.! mesh title 
+  date      24 Jul 97                                  ! Date written
+  cycle     1                                          ! Cycle number
+  time      0.0                                        ! problem time
+  ncomments 3                                          ! Number of comment lines
+    One tet mesh in an RTT mesh file format.           ! comment line#1
+    Date     : 24 Jul 97                               ! comment line#2
+    Author(s): H. Trease, J.McGhee                     ! comment line#3
+
+end_header                                             ! end header keyword
+
+dims                           ! dimensions block keyword
+
+  coor_units       cm          ! Units for node coordinates
+  prob_time_units   s          ! Units for problem time
+  ncell_defs        8          ! number of cell types defined in "cell_defs" block
+  nnodes_max        8          ! max # of nodes for cells in the "cell_defs" block
+  nsides_max        6          ! max # of sides for cells in the "cell_defs" block
+  nnodes_side_max   4          ! max # of nodes on an cell side in "cell_defs" block
+
+  ndim              3          ! number of spatial dimensions (#coor to locate a node)
+  ndim_topo         3          ! number of topological dimensions
+  nnodes            4          ! total number of nodes in the mesh
+  nnode_flag_types  3          ! number of node_flag_types
+  nnode_flags       3  2  2    ! number of flags for each of the node_flag_types
+  nnode_data        3          ! number of node data fields
+
+  nsides            4          ! number of sides
+  nside_types       1          ! #side types actually present in "side" block 
+  side_types        3          ! list of side type indexes used in "side" block
+  nside_flag_types  1          ! number of side_flag_types
+  nside_flags       2          ! number of flags for each of the side_flag_types
+  nside_data        2          ! number of side data fields
+
+  ncells            1          ! total number of cells in the mesh
+  ncell_types       1          ! #cell types actually present in "cells" block 
+  cell_types        6          ! list of cell type indexes used in "cells" block
+  ncell_flag_types  2          ! number of cell_flag_types
+  ncell_flags       2  2       ! number of flags for each of the cell_flag_types
+  ncell_data        1          ! number of cell data fields
+
+end_dims                       ! end dimensions block keyword
+
+
+node_flags                     ! node flags keyword
+  1 node_type                  ! 1st node flag type name
+    11 interior                ! node flag index, name
+    21 dudded                  !
+    6  parent                  ! 
+  2 boundary                   ! 2nd node flag type name
+    1 reflective               ! node flag index, name
+    4 vacuum                   !  
+  3 source                     ! 3rd node flag type name
+    101 no_source              ! node flag index, name
+    22  rad_source             !   
+end_node_flags                 ! end node flags keyword
+
+side_flags                     ! side flags keyword
+  1 boundary                   ! 1st side flag type name
+    1 reflective               ! side flag index, name
+    2 vacuum                   ! end side flags keyword
+end_side_flags
+
+cell_flags                     ! cell flags keyword
+  1 material                   ! 1st cell flag type name
+    1 control_rod              ! cell flag index, name
+    2 shield                   !  
+  2 rad_source                 ! 2nd cell flag type name
+    1 src_name1                ! cell flag index, name
+    2 src_name2                !
+end_cell_flags                 ! end cell flags keyword
+
+node_data_ids                  ! node_data_ids keyword
+  1 density   gm/cm**3         ! node data name, units
+  2 ion_temp  keV              !
+  3 x_vel     cm/sec           ! 
+end_node_data_ids              ! end node_data_ids keyword
+
+side_data_ids                  ! side_data_ids keyword
+  1 density   gm/cm**3         ! node data name, units
+  2 ion_temp  keV              !
+end_side_data_ids              ! end side_data_ids keyword
+
+cell_data_ids                  ! cell_data_ids keyword
+  1 density   gm/cm**3         ! node data name, units
+end_cell_data_ids              ! end cell_data_ids keyword
+
+cell_defs                      ! cell_def block keyword
+  1 point                      ! cell index, cell name
+    1 0                        ! #nodes, #sides
+  2 line                       ! cell index, cell name
+    2 2                        ! #nodes, #sides
+    1  1                       ! side type index
+    1                          ! side #1 nodes
+    2                          ! side #2 nodes
+  3 triangle                   ! cell index, cell name
+    3 3                        ! #nodes, #sides
+    2 2 2                      ! side type index
+    2 3                        ! side #1 nodes
+    3 1                        ! side #2 nodes
+    1 2                        ! side #3 nodes
+  4 quad                       ! cell index, cell name
+    4 4                        ! #nodes, #sides
+    2 2 2 2                    ! side type index
+    1 2                        ! side #1 nodes
+    2 3                        ! side #2 nodes
+    3 4                        ! side #3 nodes
+    4 1                        ! side #4 nodes
+  5 quad_pyr                   ! cell index, cell name
+    5 5                        ! #nodes, #sides
+    4 3 3 3 3                  ! side type index
+    1 4 3 2                    ! side #1 nodes
+    1 2 5                      ! side #2 nodes
+    2 3 5                      ! side #3 nodes
+    3 4 5                      ! side #4 nodes
+    4 1 5                      ! side #5 nodes
+  6 tetrahedron                ! cell index, cell name
+    4 4                        ! #nodes, #sides
+    3 3 3 3                    ! side type index
+    2 3 4                      ! side #1 nodes
+    1 4 3                      ! side #2 nodes
+    1 2 4                      ! side #3 nodes
+    1 3 2                      ! side #4 nodes
+  7 tri_prism                  ! cell index, cell name
+    6 5                        ! #nodes, #sides
+    3 3 4 4 4                  ! side type index
+    1 3 2                      ! side #1 nodes
+    4 5 6                      ! side #2 nodes
+    1 2 5 4                    ! side #3 nodes
+    1 4 6 3                    ! side #4 nodes
+    2 3 6 5                    ! side #5 nodes
+  8 hexahedron                 ! cell index, cell name
+    8 6                        ! #nodes, #sides
+    4 4 4 4 4 4                ! side type index
+    1 4 3 2                    ! side #1 nodes
+    5 6 7 8                    ! side #2 nodes
+    1 2 6 5                    ! side #3 nodes
+    2 3 7 6                    ! side #4 nodes
+    3 4 8 7                    ! side #5 nodes
+    1 5 8 4                    ! side #6 nodes
+end_cell_defs                  ! end cell_def block keyword
+
+nodes                          ! nodes block keyword
+  1  0.0 0.0 0.0   1  11 1 101 ! node#, x,y,z-coord, parent, node_flags
+  2  0.0 0.0 3.0   2  21 1 101 ! 
+  3  0.0 2.0 0.0   3  21 4 101 ! 
+  4  1.0 0.0 0.0   4  6  4 22  ! 
+end_nodes                      ! end_nodes block keyword
+
+
+sides                          ! sides block keyword
+  1  3  2 3 4  2               ! side#, side type index, global node #, side flags
+  2  3  1 4 3  1               ! 
+  3  3  1 2 4  1               ! 
+  4  3  1 3 2  1               ! 
+end_sides                      ! end_sides block keyword
+
+cells                          ! cells block keyword
+  1  6   1 2 3 4   1 2         ! cell#, cell type index, global node #'s, cell flags
+end_cells                      ! end cell block keyword
+
+nodedat                        ! node data keyword
+  1  0.0 0.0 0.0               ! bs data just to test interface
+  2  0.0 0.0 3.0
+  3  0.0 2.0 0.0
+  4  1.0 0.0 0.0
+end_nodedat                    ! end node data keyword
+
+sidedat                        ! side data keyword
+  1  0.0 0.0                   ! bs data just to test interface
+  2  0.0 0.0
+  3  0.0 2.0
+  4  1.0 0.0
+end_sidedat                    ! end side data keyword
+
+celldat                        ! cell data keyword
+  1  0.0                       ! bs data just to test interface
+end_celldat                    ! end cell data keyword
+
+end_rtt_mesh                   ! end of file keyword
+
+General comments:
+
+ Idea is to make the file f77 readable with ease.
+ Header will always be as shown, in order shown
+ Always include all blocks.
+ dims block will always include all keywords in the order shown.
+ No comments inside of any block.
+ Blank lines between blocks will be ignored.
+ No blank lines inside a block?
+ Blocks will always be in order shown.
+ Lines beginning with ! outside of a block are assumed to 
+  be comments and ignored.
+
+\endcode
 
 <!---------------------------------------------------------------------------->
 
@@ -85,10 +282,8 @@ orientation of the sides relative to the problem coordinate system.
 
 \image html stdcell.jpg "Cell definitions"
 
-<!---------------------------------------------------------------------------->
-
 */
 
 //---------------------------------------------------------------------------//
-//                              end of RTT_Format_Reader.dcc
+// end of RTT_Format_Reader.dcc
 //---------------------------------------------------------------------------//

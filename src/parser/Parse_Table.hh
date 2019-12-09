@@ -3,15 +3,12 @@
  * \file   parser/Parse_Table.hh
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef CCS4_Parse_Table_HH
-#define CCS4_Parse_Table_HH
+#ifndef rtt_Parse_Table_HH
+#define rtt_Parse_Table_HH
 
 #include "Token_Stream.hh"
 #include <cstring> // strcmp
@@ -103,11 +100,11 @@ struct Keyword {
       : moniker(nullptr), func(nullptr), index(0), module(nullptr),
         description(nullptr) {}
 
-  Keyword(char const *moniker, void (*func)(Token_Stream &, int),
-          int const index, char const *module,
-          char const *description = nullptr)
-      : moniker(moniker), func(func), index(index), module(module),
-        description(description) {}
+  Keyword(char const *moniker_in, void (*func_in)(Token_Stream &, int),
+          int const index_in, char const *module_in,
+          char const *description_in = nullptr)
+      : moniker(moniker_in), func(func_in), index(index_in), module(module_in),
+        description(description_in) {}
 };
 
 //-------------------------------------------------------------------------//
@@ -292,9 +289,9 @@ inline bool operator==(Keyword const &a, Keyword const &b) {
 
 DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
-} // rtt_parser
+} // namespace rtt_parser
 
-#endif // CCS4_Parse_Table_HH
+#endif // rtt_Parse_Table_HH
 
 //---------------------------------------------------------------------------//
 // end of Parse_Table.hh

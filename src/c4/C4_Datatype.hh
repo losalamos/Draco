@@ -3,11 +3,8 @@
  * \file   c4/C4_Datatype.hh
  * \author Kent G. Budge
  * \brief  C4_Datatype class definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- #         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: C4_Datatype.hh 6334 2011-12-23 19:20:49Z warsa $
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_C4_Datatype_hh

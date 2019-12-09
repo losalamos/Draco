@@ -3,7 +3,7 @@
  * \file    rng/Random_Inline.hh
  * \author  Paul Henning
  * \brief   Header to bring in appropriate random number generators
- * \note    Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2016-2019 Triad National Security, LLC.
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,7 +18,7 @@ namespace rtt_rng {
  * global variable that some applications use for holding a stream number.
  */
 DLL_PUBLIC_rng extern uint64_t rn_stream;
-}
+} // namespace rtt_rng
 
 #endif // rtt_rng_Random_Inline_hh
 

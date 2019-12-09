@@ -3,7 +3,7 @@
  * \file   ds++/test/tstThread_Wrapper.cc
  * \author Tim Kelley
  * \date   Thursday, Oct 12, 2017, 10:51 am
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -3,7 +3,7 @@
  * \file   ds++/test/tstField_Traits.cc
  * \author Kent Budge
  * \date   Tue Aug 26 12:18:55 2008
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -64,9 +64,9 @@ namespace rtt_dsxx {
 
 template <> class Field_Traits<labeled> {
 public:
-  typedef unlabeled unlabeled_type;
+  using unlabeled_type = unlabeled;
 };
-}
+} // namespace rtt_dsxx
 
 bool operator==(unlabeled const &a, labeled const &b) { return a.i == b.s.i; }
 

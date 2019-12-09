@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu Jul 20 17:23:31 2006
  * \brief  A meta-programming implementation of the Russian Pesant algorithm.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC
  *
  * Use meta-programming to generate an efficient routine to compute integer
  * powers.
@@ -53,7 +53,8 @@ namespace {
 template <int N, typename F> struct P {
   static F compute(F x, F p) {
     x *= x;
-    if ((N / 2) * 2 == N)
+    constexpr bool is_divby2 = ((N / 2) * 2 == N);
+    if (is_divby2)
       return P<N / 2, F>::compute(x, p);
     else
       return P<N / 2, F>::compute(x, x * p);
@@ -65,7 +66,7 @@ template <int N, typename F> struct P {
 template <typename F> struct P<0, F> {
   static F compute(F /*x*/, F p) { return p; }
 };
-}
+} // namespace
 
 /* Function Power recursively implements the first half of the Russian Pesant
  * algorithm, by repeatedly computing x=x^2, N=N/2, so long as the remaining
@@ -74,9 +75,11 @@ template <typename F> struct P<0, F> {
  */
 
 template <int N, typename F> F Power(F x) {
-  if (N == 0)
+  constexpr bool is_zero = (N == 0);
+  constexpr bool is_divby2 = ((N / 2) * 2 == N);
+  if (is_zero)
     return static_cast<F>(1);
-  else if ((N / 2) * 2 == N)
+  else if (is_divby2)
     return Power<N / 2>(x * x);
   else
     return P<N / 2, F>::compute(x, x);

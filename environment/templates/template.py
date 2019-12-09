@@ -2,7 +2,7 @@
 ## <basename>.py
 ## <user>
 ## <date>
-## Copyright (C) 2018 Los Alamos National Security, LLC.
+## Copyright (C) 2018-2019 Triad National Security, LLC.
 ## All rights reserved.
 ###############################################################################
 

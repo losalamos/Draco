@@ -3,25 +3,18 @@
 # author Kelly Thompson
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Intel C++
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
 # History
 # ----------------------------------------
-# 07/20/2011 - Use -O3 for Release builds but reduce -fp-model from
-#              strict to precise to eliminate warning 1678.
-# 11/18/2013 - For RELEASE builds, begin using -fp-model precise
-#              -fp-speculation safe.  Jayenne sees about 10%
-#              performance bump.
-# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+# 07/20/2011 - Use -O3 for Release builds but reduce -fp-model from strict to
+#              precise to eliminate warning 1678.
+# 11/18/2013 - For RELEASE builds, begin using -fp-model precise -fp-speculation
+#              safe.  Jayenne sees about 10% performance bump.
+# 06/13/2016 - IPO settings moved to compilerEnv.cmake
 #              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
-
-#
-# Compiler flag checks
-#
-include(platform_checks)
-query_openmp_availability()
 
 #
 # Compiler Flags
@@ -30,12 +23,12 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  # [KT 2015-07-10] I would like to turn on -w2, but this generates
-  #    many warnings from Trilinos headers that I can't suppress easily
-  #    (warning 191: type qualifier is meaningless on cast type)
-  # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
-  #    issued when '-ip' is turned on and a library has no symbols (this
-  #    occurs when capsaicin links some trilinos libraries.)
+  # [KT 2015-07-10] I would like to turn on -w2, but this generates many
+  #    warnings from Trilinos headers that I can't suppress easily (warning 191:
+  #    type qualifier is meaningless on cast type)
+  # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is issued when
+  #    '-ip' is turned on and a library has no symbols (this occurs when
+  #    capsaicin links some trilinos libraries.)
   set( CMAKE_C_FLAGS
     "-w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -fma -diag-disable 11060" )
   set( CMAKE_C_FLAGS_DEBUG
@@ -54,8 +47,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
     "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe -fno-omit-frame-pointer" )
 
-  set( CMAKE_CXX_FLAGS
-    "${CMAKE_C_FLAGS} -std=c++11" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS_DEBUG
     "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE
@@ -99,8 +91,9 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
 # If this is a Cray, the compile wrappers take care of any xHost flags that are
 # needed.
 if( NOT CRAY_PE )
- include(CheckCCompilerFlag)
- check_c_compiler_flag(-xHost HAS_XHOST)
+# include(CheckCCompilerFlag)
+# check_c_compiler_flag(-xHost HAS_XHOST)
+ set( HAS_XHOST TRUE )
  toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX" "")
 #else()
  # -craype-verbose

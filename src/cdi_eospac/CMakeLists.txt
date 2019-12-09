@@ -1,23 +1,14 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   cdi_eospac/CMakeLists.txt
 # brief  Instructions for building cdi_eospac Makefiles.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( cdi_eospac CXX )
 
-##---------------------------------------------------------------------------##
-# Requires EOSPAC
-##---------------------------------------------------------------------------##
-find_package( EOSPAC QUIET )
-set_package_properties( EOSPAC PROPERTIES
-   DESCRIPTION "Access SESAME thermodynamic and transport data."
-   TYPE OPTIONAL
-   PURPOSE "Required for bulding the cdi_eospac component."
-   )
-
 if( EOSPAC_FOUND )
+
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
@@ -32,12 +23,10 @@ list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryEospac.cc )
 
 add_component_library(
    TARGET       Lib_cdi_eospac
-   TARGET_DEPS  Lib_cdi
+   TARGET_DEPS  "Lib_cdi;EOSPAC::eospac"
    LIBRARY_NAME cdi_eospac
    SOURCES      "${sources}"
-   HEADERS      "${headers}"
-   VENDOR_LIST "EOSPAC"
-   VENDOR_LIBS "${EOSPAC_LIBRARY}" )
+   HEADERS      "${headers}" )
 target_include_directories( Lib_cdi_eospac PUBLIC ${EOSPAC_INCLUDE_DIR} )
 
 add_component_executable(

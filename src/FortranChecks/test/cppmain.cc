@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   FortranCheck/test/cppmain.cc
+ * \file   FortranChecks/test/cppmain.cc
  * \author Kelly Thompson
  * \date   Tuesday, Jun 12, 2012, 16:03 pm
  * \brief  Test C++ main linking a Fortran library.
- * \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -23,8 +23,8 @@ void test_isocbinding_sub1(rtt_dsxx::UnitTest &ut) {
   size_t nf(ut.numFails);
   // Call fortran subroutine
   sub1(alpha, &np, &nf);
-  ut.numPasses = np;
-  ut.numFails = nf;
+  ut.numPasses = static_cast<unsigned>(np);
+  ut.numFails = static_cast<unsigned>(nf);
   std::cout << ut.numPasses << " " << ut.numFails << std::endl;
   return;
 }

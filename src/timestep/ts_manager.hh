@@ -4,7 +4,7 @@
  * \author  John McGhee
  * \date    Mon Apr  6 17:22:53 1998
  * \brief   Header file for the manager utility for time-step advisors.
- * \note    Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2016-2019 Triad National Security, LLC.
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -22,7 +22,7 @@ namespace rtt_timestep {
  * \brief Manages a list of time-step advisors.
  *
  * \sa The ts_advisor class provides the advisors to be registerd the the
- *      ts_manager class. Also, the \ref timestep_overview page provides useful
+ *      ts_manager class. Also, the \ref overview_timestep page provides useful
  *      info.
  *
  * Calculates a new timestep based on the recommended time-steps of its
@@ -135,7 +135,7 @@ public:
   bool invariant_satisfied() const;
 };
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 #endif // __timestep_ts_manager_hh__
 

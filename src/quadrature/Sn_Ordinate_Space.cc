@@ -1,30 +1,24 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Sn_Ordinate_Space.cc
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Sn_Ordinate_Space
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Sn_Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
-//---------------------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Sn_Ordinate_Space.hh"
-
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
-
-// Vendor software
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
-
 #include <iomanip>
 #include <iostream>
 
 namespace rtt_quadrature {
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -40,7 +34,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
   return result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
                                                     unsigned /*N*/) {
   vector<Moment> result;
@@ -56,7 +50,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
   return result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -71,7 +65,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
   return result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment>
 Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class,
                                      unsigned N) {
@@ -80,7 +74,7 @@ Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class,
   return result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -95,15 +89,15 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
   return result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void Sn_Ordinate_Space::compute_M() {
   using rtt_sf::Ylm;
 
   vector<Ordinate> const &ordinates = this->ordinates();
-  unsigned const numOrdinates = ordinates.size();
+  size_t const numOrdinates = ordinates.size();
 
   vector<Moment> const &n2lk = this->moments();
-  unsigned const numMoments = n2lk.size();
+  size_t const numMoments = n2lk.size();
 
   unsigned const dim = dimension();
   Geometry const geometry(this->geometry());
@@ -171,11 +165,10 @@ void Sn_Ordinate_Space::compute_M() {
   }   // moment loop
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*! This computation requires that the moment-to-discrete matrix M
  *  is already created.
  */
-
 void Sn_Ordinate_Space::compute_D() {
 
   Insist(
@@ -183,9 +176,9 @@ void Sn_Ordinate_Space::compute_D() {
       "The SN ordinate space computation for D requires that M be available.");
 
   vector<Ordinate> const &ordinates = this->ordinates();
-  unsigned const numOrdinates = ordinates.size();
+  size_t const numOrdinates = ordinates.size();
   vector<Moment> const &n2lk = this->moments();
-  unsigned const numMoments = n2lk.size();
+  size_t const numMoments = n2lk.size();
 
   // ---------------------------------------------------
   // Create diagonal matrix of quadrature weights
@@ -219,7 +212,7 @@ void Sn_Ordinate_Space::compute_D() {
   D_.swap(D);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  *
  * The computation of the tau and alpha coefficients is described by Morel in
@@ -236,12 +229,13 @@ void Sn_Ordinate_Space::compute_D() {
  * \param expansion_order Expansion order of the desired scattering moment
  * space. If negative, the moment space is not needed.
  *
- * \param extra_starting_directions Add extra directions to each level set. In most
- * geometries, an additional ordinate is added that is opposite in direction
- * to the starting direction. This is used to implement reflection exactly in
- * curvilinear coordinates. In 1D spherical, that means an additional angle is
- * added at mu=1. In axisymmetric, that means additional angles are added that
- * are oriented opposite to the incoming starting direction on each level.
+ * \param extra_starting_directions Add extra directions to each level set. In 
+ * most geometries, an additional ordinate is added that is opposite in 
+ * direction to the starting direction. This is used to implement reflection 
+ * exactly in curvilinear coordinates. In 1D spherical, that means an 
+ * additional angle is added at mu=1. In axisymmetric, that means additional 
+ * angles are added that are oriented opposite to the incoming starting 
+ * direction on each level.
  *
  * \param ordering Ordering into which to sort the ordinates.
  */
@@ -270,23 +264,23 @@ Sn_Ordinate_Space::Sn_Ordinate_Space(unsigned const dimension,
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Sn_Ordinate_Space::check_class_invariants() const {
   return D_.size() == ordinates().size() * moments().size() &&
          M_.size() == ordinates().size() * moments().size();
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 QIM Sn_Ordinate_Space::quadrature_interpolation_model() const { return SN; }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for the moment, we include all orders.
  */
 
 vector<double> Sn_Ordinate_Space::D() const { return D_; }
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for the moment, we include all orders.
@@ -295,6 +289,6 @@ vector<double> Sn_Ordinate_Space::M() const { return M_; }
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                 end of Sn_Ordinate_Space.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+// end of Sn_Ordinate_Space.cc
+//---------------------------------------------------------------------------//

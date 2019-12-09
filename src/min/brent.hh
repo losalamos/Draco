@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -12,7 +12,6 @@
 #define min_brent_hh
 
 #include "ds++/DracoMath.hh"
-#include <limits>
 
 namespace rtt_min {
 
@@ -36,8 +35,8 @@ namespace rtt_min {
 template <class Function>
 double brent(double const ax, double const bx, double const cx, Function f,
              double const tol, double &xmin) {
-  using std::numeric_limits;
   using rtt_dsxx::sign;
+  using std::numeric_limits;
 
   unsigned const ITMAX = 100;
   double const eps = numeric_limits<double>::epsilon();

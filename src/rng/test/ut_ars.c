@@ -31,55 +31,75 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rng/config.h"
 
+#ifdef _MSC_FULL_VER
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4127)
+#endif
+
 #include "ut_ars.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #if !R123_USE_SSE
-int main(int argc, char **argv){
-    (void)argc; (void)argv; /* unused */
-    printf("No SSE support.  This test is not compiled.  OK\n");
-    return 0;
+int main(int argc, char **argv) {
+  (void)argc;
+  (void)argv; /* unused */
+  printf("No SSE support.  This test is not compiled.  OK\n");
+  return 0;
 }
 #else
 #include "util_m128.h"
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 #if R123_USE_AES_NI
-    struct r123array1xm128i c, k, ret;
-    char m128str[M128_STR_SIZE], *kat;
+  struct r123array1xm128i c, k, ret;
+  char m128str[M128_STR_SIZE], *kat;
 
-    if (haveAESNI()) {
-	c.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-	k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-	ret = ars1xm128i_R(7, c, k);
-	kat = "2b1623350cd214dc 7740187993411872";
-	if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-	    fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
-	    exit(1);
-	}
-	printf("%s: OK, got %s\n", argv[0], kat);
-	c.v[0].m = m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-	k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-	ret = ars1xm128i_R(7, c, k);
-	kat = "2de6b66fa461b668 f380126f32b9cd22";
-	if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-	    fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
-	    exit(1);
-	}
-	printf("%s: OK, got %s\n", argv[0], kat);
-    } else {
-	printf("%s: no AES-NI on this machine\n", argv[0]);
+  if (haveAESNI()) {
+    c.v[0].m =
+        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m =
+        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    ret = ars1xm128i_R(7, c, k);
+    kat = "2b1623350cd214dc 7740187993411872";
+    if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
+              m128str);
+      exit(1);
     }
+    printf("%s: OK, got %s\n", argv[0], kat);
+    c.v[0].m =
+        m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m =
+        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    ret = ars1xm128i_R(7, c, k);
+    kat = "2de6b66fa461b668 f380126f32b9cd22";
+    if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
+              m128str);
+      exit(1);
+    }
+    printf("%s: OK, got %s\n", argv[0], kat);
+  } else {
+    printf("%s: no AES-NI on this machine\n", argv[0]);
+  }
 #else
-    printf("%s: no AES-NI compiled into this program\n", argv[0]);
+  printf("%s: no AES-NI compiled into this program\n", argv[0]);
 #endif
-    (void)argc; (void)argv; /* unused */
-    printf("ut_ars: all OK\n");
-    return 0;
+  (void)argc;
+  (void)argv; /* unused */
+  printf("ut_ars: all OK\n");
+  return 0;
 }
 
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif

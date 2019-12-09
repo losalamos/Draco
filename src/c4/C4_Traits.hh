@@ -4,18 +4,15 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:37:29 2002
  * \brief  Traits for C4 intrinsic types.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_C4_Traits_hh__
 #define __c4_C4_Traits_hh__
 
 #include "C4_Tags.hh"
-#include <stdint.h> // ensure types are same across compilers (pgi)
+// #include <stdint.h> // ensure types are same across compilers (pgi)
 
 namespace rtt_c4 {
 
@@ -24,16 +21,12 @@ namespace rtt_c4 {
  * \struct C4_Traits
  *
  * This struct and its specializations are used to implement the type-safe
- * default message tags in C4.  Any other type-determined property needed in
- * C4 would also go here.
+ * default message tags in C4.  Any other type-determined property needed in C4
+ * would also go here.
  */
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
-template <class T> struct C4_Traits {};
+template <typename T> struct C4_Traits {};
 
 //---------------------------------------------------------------------------//
 // SPECIALIZATION OF INTRINSIC ELEMENTAL TYPES

@@ -3,7 +3,7 @@
  * \file   plot2D/test/tstPlot2D.cc
  * \author Rob Lowrie
  * \brief  Plot2D test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -16,13 +16,13 @@
 #include <iostream>
 #include <sstream>
 
+using rtt_plot2D::Plot2D;
+using rtt_plot2D::SetProps;
 using std::cin;
 using std::cout;
 using std::endl;
-using std::string;
 using std::ofstream;
-using rtt_plot2D::Plot2D;
-using rtt_plot2D::SetProps;
+using std::string;
 
 namespace test {
 void pause();
@@ -41,7 +41,7 @@ void pause() {
   cout << "Press RETURN to continue: ";
   cin.get();
 }
-}
+} // namespace test
 
 //---------------------------------------------------------------------------//
 // The main test

@@ -1,24 +1,20 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // cdi_eospac.dcc
 // cdi_eospac Overview page
 // Thomas M. Evans
 // Mon Apr 19 14:16:42 2004
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
 /*!
-
-<!---------------------------------------------------------------------------->
 
 \page overview_cdi_eospac Overview of the cdi_eospac package
 \version draco-@Draco_VERSION@
 \author Kelly Thompson, Thomas M. Evans.
 
-\section abstract Abstract
+\section cdi_eospac_abstract Abstract
 
-The cdi_eospac package is part of cdi.  It provides an interface to
-the EOSPAC Equation-of-State and materials library.
+The cdi_eospac package is part of cdi.  It provides an interface to the EOSPAC
+Equation-of-State and materials library.
 
 \section requirements Requirements
 
@@ -26,28 +22,23 @@ This component requires version 6 of EOSPAC.
 
 \section building Building Draco with EOSPAC support
 
-The module \c eospac sets up the build environment to allow Draco to
-find and link against libeospac6.a.  This module will set the
-environment variables: \c EOSPAC_LIB_DIR, \c EOSPAC_INC_DIR, \c SESAMEPATH
+The module \c eospac sets up the build environment to allow Draco to find and
+link against libeospac6.a.  This module will set the environment variables: \c
+EOSPAC_LIB_DIR, \c EOSPAC_INC_DIR, \c SESAMEPATH
 
-If the build system cannot find \c libeospac6.a, then the component
-cdi_eospac will be ommitted from the build.
+If the build system cannot find \c libeospac6.a, then the component cdi_eospac
+will be ommitted from the build.
 
 \section info Information
 
 Documentation for EOSPAC can be found in the release directories
-(e.g. /usr/projects/data/eos/eospac/v6.2.3/doc/...)  This
-documentation details what physical quantities exist in the EOSPAC
-tables and how to access that data.  It also provides developer
-documentation concerning how to query libeospac6.a for available data,
-table limits, etc.
+(e.g. /usr/projects/data/eos/eospac/v6.2.3/doc/...)  This documentation details
+what physical quantities exist in the EOSPAC tables and how to access that data.
+It also provides developer documentation concerning how to query libeospac6.a
+for available data, table limits, etc.
 
-Finding the correct material identifier for each material-quantity
-tuple is done through a web interface:
-https://xweb.lanl.gov/projects/data/eos
-
-
-<!---------------------------------------------------------------------------->
+Finding the correct material identifier for each material-quantity tuple is done
+through a web interface: https://xweb.lanl.gov/projects/data/eos
 
 */
 

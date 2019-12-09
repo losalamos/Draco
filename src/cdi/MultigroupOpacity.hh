@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  MultigroupOpacity class header file (an abstract class)
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_MultigroupOpacity_hh__
@@ -32,10 +29,9 @@ namespace rtt_cdi {
  * functionality outlined in this routine.  This functionality includes
  * access to the data grid and the ability to return interpolated opacity
  * values.
- */
-/*!
- * \example cdi/test/tDummyOpacity.cc
- * \example cdi/test/tCDI.cc
+ * 
+ * \sa cdi/test/tDummyOpacity.cc
+ * \sa cdi/test/tCDI.cc
  */
 //========================================================================
 

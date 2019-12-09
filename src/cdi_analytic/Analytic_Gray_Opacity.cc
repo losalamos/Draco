@@ -4,14 +4,12 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity member definitions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Gray_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
-#include <cmath>
 
 namespace rtt_cdi_analytic {
 
@@ -27,10 +25,10 @@ namespace rtt_cdi_analytic {
  * The reaction type for this instance of the class is determined by the
  * rtt_cdi::Reaction argument.
  *
- * \param analytic_model_in shared_ptr to a derived
- * rtt_cdi_analytic::Analytic_Opacity_Model object
- *
+ * \param model_in shared_ptr to a derived
+ *                 rtt_cdi_analytic::Analytic_Opacity_Model object
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
+ * \param cdi_model_in CDI model type
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
                                              rtt_cdi::Reaction reaction_in,
@@ -237,7 +235,8 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const {
   // now add up the total size (in bytes): size of analytic model + 3
   // int--one for reaction type, one for model type, and one for size of
   // analytic model
-  int size = anal_model.size() + 3 * sizeof(int);
+  Check(anal_model.size() + 3 * sizeof(int) < INT_MAX);
+  int size = static_cast<int>(anal_model.size() + 3 * sizeof(int));
 
   // make a char array
   sf_char packed(size);
@@ -262,5 +261,5 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const {
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Analytic_Gray_Opacity.cc
+// end of Analytic_Gray_Opacity.cc
 //---------------------------------------------------------------------------//

@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/pseudo_line.cc
+ * \file   cdi_analytic/Pseudo_Line_Base.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -65,9 +65,10 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
     }
     double C;
     if (nu0_ < 0) {
-      unsigned N = continuum_table_.size();
+      size_t N = continuum_table_.size();
       if (N > 0) {
-        C = continuum_table_[static_cast<unsigned int>(edge_[i] * N / emax)];
+        C = continuum_table_[static_cast<unsigned int>(
+            edge_[i] * static_cast<double>(N) / emax)];
       } else {
         C = (*continuum_)(vector<double>(1, edge_[i]));
       }
@@ -106,6 +107,12 @@ Pseudo_Line_Base::Pseudo_Line_Base(
   setup_(emin, emax);
 }
 
+//----------------------------------------------------------------------------//
+// Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
+//                                    double line_peak, double line_width,
+//                                    int number_of_edges, double edge_ratio,
+//                                    double Tref, double Tpow, double emin,
+//                                    double emax, unsigned seed)
 Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
                                    double line_peak, double line_width,
                                    int number_of_edges, double edge_ratio,
@@ -172,12 +179,11 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+//! Packing function for Pseudo_Line_Base objects.
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
-// Because we haven't implemented packing functionality for Expression trees
-// yet.
+  // Because we haven't implemented packing functionality for Expression trees
+  // yet.
 
 #if 0
 // caculate the size in bytes
@@ -218,9 +224,10 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
   double Result;
   if (nu0_ < 0) {
-    unsigned N = continuum_table_.size();
+    size_t N = continuum_table_.size();
     if (N > 0) {
-      Result = continuum_table_[static_cast<unsigned int>(x * N / emax_)];
+      Result = continuum_table_[static_cast<unsigned int>(
+          x * static_cast<double>(N) / emax_)];
     } else {
       Result = (*continuum_)(vector<double>(1, x));
     }

@@ -1,20 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4_test/test/tstAbort.cc
+ * \file   c4/test/tstAbort.cc
  * \author Thomas M. Evans
  * \date   Thu Jun  2 09:28:02 2005
  * \brief  C4 Abort test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
-#include <iostream>
 
 //---------------------------------------------------------------------------//
 // TESTS

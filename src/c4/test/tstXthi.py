@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Saturday, Sep 09, 2017, 14:17 pm
 # brief  This is a Python script that is used to test c4/bin/xthi
-# note   Copyright (C) 2017, Los Alamos National Security, LLC.
+# note   Copyright (C) 2017-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys
@@ -26,6 +26,10 @@ try:
   sys.path.append(draco_config_dir)
   from application_unit_test import UnitTest
   #----------------------------------------------------------------------------#
+
+  ##---------------------------------------------------------------------------##
+  ## Test Xthi
+  ##---------------------------------------------------------------------------##
 
   # Setup test using sys.argv and run:
   tstXthi = UnitTest()

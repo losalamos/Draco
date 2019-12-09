@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator header file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -30,7 +30,7 @@ namespace rtt_viz {
  * Ensight 6.2 user manual for further information on Ensight cell types.
  *
  * \sa Ensight example page for examples of how this enumeration is used to
- * generate the iel_type field.
+ *     generate the iel_type field.
  */
 //===========================================================================//
 
@@ -49,7 +49,8 @@ enum Ensight_Cell_Types {
   eight_node_hexahedron,
   twenty_node_hexahedron,
   six_node_wedge,
-  fifteen_node_wedge
+  fifteen_node_wedge,
+  unstructured
 };
 
 //===========================================================================//
@@ -59,8 +60,8 @@ enum Ensight_Cell_Types {
  * \brief A translator for dumping problem data in EnSight format.
  *
  * This class is used to create data dumps that are readable by EnSight.
- * Currently, only ASCII format dumps are supported.  The present incantation
- * of this class is a C++ version of the ensight_dump model from Dante.
+ * Currently, only ASCII format dumps are supported.  The present incantation of
+ * this class is a C++ version of the ensight_dump model from Dante.
  *
  * \anchor Ensight_Translator_strings
  *
@@ -79,36 +80,33 @@ enum Ensight_Cell_Types {
  * are templated on field types.  These types and there restrictions are as
  * follows:
  *
- * \arg \b SSF (string scalar field) can be any field type that supports
- * random access iterators and operator[] indexing
- *
- * \arg \b ISF (integer scalar field) can be any field type that supports
- * random access iterators and operator[] indexing
- *
- * \arg \b IVF (integer vector field) uses the rtt_viz::Viz_Traits class
- * to convert to i,j indexing to operator(int, int).  See the
- * rtt_viz::Viz_Traits class to determine which 2D vector containers are
- * specialized
- *
- * \arg \b FVF (floating point vector field) uses the rtt_viz::Viz_Traits
- * class to convert to i,j indexing to operator(int, int).  See the
- * rtt_viz::Viz_Traits class to determine which 2D vector containers are
- * specialized
+ * \arg \b SSF (string scalar field) can be any field type that supports random
+ *         access iterators and operator[] indexing
+ * \arg \b ISF (integer scalar field) can be any field type that supports random
+ *         access iterators and operator[] indexing
+ * \arg \b IVF (integer vector field) uses the rtt_viz::Viz_Traits class to
+ *         convert to i,j indexing to operator(int, int).  See the
+ *         rtt_viz::Viz_Traits class to determine which 2D vector containers are
+ *         specialized
+ * \arg \b FVF (floating point vector field) uses the rtt_viz::Viz_Traits class
+ *         to convert to i,j indexing to operator(int, int).  See the
+ *         rtt_viz::Viz_Traits class to determine which 2D vector containers are
+ *         specialized
  *
  * The vector-field (VF) types will most commonly be std::vector<std::vector>
  * types.  Other types will require specialization in the rtt_viz::Viz_Traits
  * class.
  *
- * Data dumped to Ensight will be stored in the directory prefix argument
- * given to the constructor (Ensight_Translator::Ensight_Translator()).  The
- * directory created will have the name "prefix"_ensight. The directory is
- * placed in the path specified by the gd_wpath argument to the constructor.
- * This directory must exist.
+ * Data dumped to Ensight will be stored in the directory prefix argument given
+ * to the constructor (Ensight_Translator::Ensight_Translator()).  The directory
+ * created will have the name "prefix"_ensight. The directory is placed in the
+ * path specified by the gd_wpath argument to the constructor.  This directory
+ * must exist.
  *
  * To launch Ensight: select the "prefix".case file that resides in the
- * top-level ensight dump directory from the "file/Data (reader)" menu.  Set
- * the data file "Format" option in Ensight to "case" and hit the "(Set)
- * Geometry" button.  From there see the Ensight manual.
+ * top-level ensight dump directory from the "file/Data (reader)" menu.  Set the
+ * data file "Format" option in Ensight to "case" and hit the "(Set) Geometry"
+ * button.  From there see the Ensight manual.
  */
 /*!
  * \example viz/test/tstEnsight_Translator.cc
@@ -117,18 +115,9 @@ enum Ensight_Cell_Types {
  *
  * Example usage of the Ensight_Translator class. A two part, 3-D, nine cell
  * mesh graphics dump is performed.  Two vertex data field and two cell data
- * fields are dumped.  After running the test look in testproblem_ensight to
- * see the output.
+ * fields are dumped.  After running the test look in testproblem_ensight to see
+ * the output.
  */
-// revision history:
-// -----------------
-// 0) original
-// 1) 05-APR-03 : removed constructors where the dump_times are arguments;
-//                these were confusing and they were causing trouble on the
-//                IBM platforms because of a bug in xlC.
-// 2) 15-Nov-04 : Changed to Ensight Gold format.  Added option for binary
-//                dumps.
-//
 //===========================================================================//
 
 class DLL_PUBLIC_viz Ensight_Translator {
@@ -216,20 +205,20 @@ private:
 
   // Write out geometry file.
   template <typename IVF, typename FVF, typename ISF>
-  void write_geom(const int, const std_string &,
+  void write_geom(const uint32_t part_num, const std_string &,
                   const rtt_viz::Viz_Traits<IVF> &,
                   const rtt_viz::Viz_Traits<FVF> &, const sf2_int &,
                   const sf_int &, const ISF &, const ISF &);
 
   // Write out vertex data.
   template <typename FVF>
-  void write_vrtx_data(const int, const rtt_viz::Viz_Traits<FVF> &,
+  void write_vrtx_data(uint32_t part_num, const rtt_viz::Viz_Traits<FVF> &,
                        const sf_int &);
 
   // Write out cell data.
   template <typename FVF>
-  void write_cell_data(const int, const rtt_viz::Viz_Traits<FVF> &,
-                       const sf2_int &);
+  void write_cell_data(const uint32_t part_num,
+                       const rtt_viz::Viz_Traits<FVF> &, const sf2_int &);
 
   // Initializer used by constructors
   void initialize(const bool graphics_continue);
@@ -240,7 +229,8 @@ public:
   Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
                      const SSF &vdata_names, const SSF &cdata_names,
                      const bool overwrite = false,
-                     const bool static_geom = false, const bool binary = false);
+                     const bool static_geom = false, const bool binary = false,
+                     const double reset_time = -1.0);
 
   // Do an Ensight_Dump.
   template <typename ISF, typename IVF, typename SSF, typename FVF>
@@ -258,9 +248,10 @@ public:
 
   // Write ensight data for a single part.
   template <typename ISF, typename IVF, typename FVF>
-  void write_part(int part_num, const std_string &part_name, const IVF &ipar,
-                  const ISF &iel_type, const FVF &pt_coor, const FVF &vrtx_data,
-                  const FVF &cell_data, const ISF &g_vrtx_indices,
+  void write_part(uint32_t part_num, const std_string &part_name,
+                  const IVF &ipar_in, const ISF &iel_type,
+                  const FVF &pt_coor_in, const FVF &vrtx_data_in,
+                  const FVF &cell_data_in, const ISF &g_vrtx_indices,
                   const ISF &g_cell_indices);
 
   // >>> ACCESSORS
@@ -272,8 +263,8 @@ public:
 } // end namespace rtt_viz
 
 //---------------------------------------------------------------------------//
-// include template definitions so that template functions will be
-// automatically instantiated in client code
+// include template definitions so that template functions will be automatically
+// instantiated in client code
 
 #include "Ensight_Translator.i.hh"
 

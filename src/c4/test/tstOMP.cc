@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Demonstrate basic OMP threads under MPI.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -12,12 +12,10 @@
 #include "c4/Timer.hh"
 #include "c4/c4_omp.h"
 #include "c4/gatherv.hh"
-#include "c4/global.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <complex>
 #include <numeric>
-#include <vector>
 
 using namespace rtt_c4;
 
@@ -108,14 +106,14 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
   // if( one_mpi_rank_per_node )
   // {
   maxthreads = omp_get_max_threads();
-// nthreads   = omp_get_num_threads();
-// }
-// else
-// {
-//     // More than 1 MPI rank per node --> turn off OMP.
-//     maxthreads = 1;
-//     omp_set_num_threads( maxthreads );
-// }
+  // nthreads   = omp_get_num_threads();
+  // }
+  // else
+  // {
+  //     // More than 1 MPI rank per node --> turn off OMP.
+  //     maxthreads = 1;
+  //     omp_set_num_threads( maxthreads );
+  // }
 
 #pragma omp parallel private(tid)
   {
@@ -130,9 +128,9 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
                 << "\n   OMP num threads: " << nthreads
                 << "\n   OMP max threads: " << maxthreads
                 << "\n   procname(IO)   : " << procname
-                << "\n   Dynamic theads : " << (num_dynamic_threads == 0
-                                                    ? std::string("OFF")
-                                                    : std::string("ON"))
+                << "\n   Dynamic theads : "
+                << (num_dynamic_threads == 0 ? std::string("OFF")
+                                             : std::string("ON"))
                 << "\n"
                 << std::endl;
     }
@@ -330,13 +328,12 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
 
 #pragma omp ordered
     {
-      char c = ' ';
+      char cc = ' ';
       if (n > 0) {
         static const char charset[] = ".,c8M@jawrpogOQEPGJ";
-        c = charset[n % (sizeof(charset) - 1)];
+        cc = charset[n % (sizeof(charset) - 1)];
       }
-      // std::putchar(c);
-      image1 << c;
+      image1 << cc;
       if (x + 1 == width)
         image1 << "|\n"; //std::puts("|");
     }
@@ -366,13 +363,13 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
       n = 0;
 
     {
-      char c = ' ';
+      char cc = ' ';
       if (n > 0) {
         static const char charset[] = ".,c8M@jawrpogOQEPGJ";
-        c = charset[n % (sizeof(charset) - 1)];
+        cc = charset[n % (sizeof(charset) - 1)];
       }
       // std::putchar(c);
-      image2 << c;
+      image2 << cc;
       if (x + 1 == width)
         image2 << "|\n"; //std::puts("|");
     }

@@ -4,7 +4,7 @@
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -36,8 +36,9 @@ unsigned Product_Chebyshev_Legendre::number_of_levels() const {
 
 //---------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = " + parse_name() + indent + "  order = " +
-                  to_string(sn_order()) + " " + to_string(azimuthal_order_) +
+  string Result = indent + "type = " + parse_name() + indent +
+                  "  order = " + to_string(sn_order()) + " " +
+                  to_string(azimuthal_order_) +
                   Octant_Quadrature::as_text(indent);
 
   return Result;
@@ -46,10 +47,10 @@ string Product_Chebyshev_Legendre::as_text(string const &indent) const {
 //---------------------------------------------------------------------------//
 void Product_Chebyshev_Legendre::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
+  using rtt_dsxx::soft_equiv;
+  using std::cos;
   using std::fabs;
   using std::sqrt;
-  using std::cos;
-  using rtt_dsxx::soft_equiv;
 
   // The number of quadrature levels is equal to the requested SN order.
   size_t levels = sn_order();

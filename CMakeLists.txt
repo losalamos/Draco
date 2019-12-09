@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -11,21 +11,27 @@
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/Common_Configure_Options
 
-cmake_minimum_required(VERSION 3.9.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 project( Draco
-  VERSION 6.24
+  VERSION 7.3
   DESCRIPTION "An object-oriented component library supporting radiation transport applications."
   LANGUAGES CXX C )
 
-# Do not look for Fortran for
+# Do not look for Fortran/CUDA for
 # 1. XCode based Generators, or
 # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
 #    look for Fortran).
 # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
-# 4. Unix Makefile generators when $ENV{FC} is not set (clang on Linux)
-if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
-    ( NOT "$ENV{FC}x" STREQUAL "x" OR CMAKE_Fortran_COMPILER ))
-  enable_language( Fortran OPTIONAL )
+# 4. Unix Makefile generator when:
+#    - Fortran only: $ENV{FC} is not set (e.g. clang on Linux)
+#    - Cuda only   : $ENV{CUDADIR} is not set (e.g. cuda module not loaded)
+if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
+  if( DEFINED ENV{FC} OR DEFINED CMAKE_Fortran_COMPILER )
+    enable_language( Fortran OPTIONAL )
+  endif()
+  if( DEFINED ENV{CUDADIR} )
+    enable_language( CUDA OPTIONAL )
+  endif()
 endif()
 
 # Build system configuration files are located here.
@@ -66,10 +72,8 @@ dbsConfigInfo()
 
 # Platform Checks: Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is
 # gethostname() available?
-message("
-Platform Checks...
-")
 include( platform_checks )
+query_craype()
 set_draco_uname()
 query_have_gethostname()
 query_have_maxpathlen()
@@ -83,6 +87,7 @@ dbsSetupCompilers()
 dbsSetupCxx()
 dbsSetupFortran()
 dbsSetupProfilerTools()
+dbsSetupStaticAnalyzers()
 
 # Find any globally required libraries
 include( FeatureSummary )
@@ -107,7 +112,7 @@ configure_file(
 
 # install top level documents
 install(
-  FILES ChangeLog Copyright README.draco
+  FILES ChangeLog LICENSE.md README.md
   DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Add support for the 'uninstall' target
@@ -122,7 +127,7 @@ add_custom_target( uninstall
 # Export targets
 install(
   EXPORT draco-targets
-  DESTINATION cmake/draco
+  DESTINATION cmake
   EXPORT_LINK_INTERFACE_LIBRARIES )
 
 ##---------------------------------------------------------------------------##

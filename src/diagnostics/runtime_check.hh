@@ -3,7 +3,7 @@
  * \file   diagnostics/runtime_check.hh
  * \author Kent Grimmett Budge
  * \brief  Define runtime_check function
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

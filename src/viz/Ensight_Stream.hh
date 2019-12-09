@@ -4,11 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:28:37 2004
  * \brief  Header for Ensight_Stream.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_viz_Ensight_Stream_hh
@@ -34,15 +31,14 @@ DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
  *
  * This class handles output to an Ensight file.  It takes care of binary or
  * ascii mode, and the proper data formatting for each mode.  The data
- * formatting follows the Ensight Gold data format.  For binary mode, note
- * that Ensight supports the following data types:
+ * formatting follows the Ensight Gold data format.  For binary mode, note that
+ * Ensight supports the following data types:
  *    - 80 character strings
  *    - float
  *    - int
- * So for example, before output, a double will be cast to a float, and a
- * size_t will be cast to an int.  Note that double floating point accuracy
- * is not preserved by using ascii format, because Ensight requires output as
- * e12.5.
+ * So for example, before output, a double will be cast to a float, and a size_t
+ * will be cast to an int.  Note that double floating point accuracy is not
+ * preserved by using ascii format, because Ensight requires output as e12.5.
  */
 //===========================================================================//
 
@@ -50,8 +46,8 @@ class DLL_PUBLIC_viz Ensight_Stream {
 private:
   // TYPEDEFS
 
-  // FP is a function pointer.  This is usd for stream manipulators, such
-  // as rtt_viz::endl.
+  // FP is a function pointer.  This is usd for stream manipulators, such as
+  // rtt_viz::endl.
   typedef Ensight_Stream &(*FP)(Ensight_Stream &);
 
   // DATA
@@ -87,8 +83,10 @@ public:
 
   // The supported output stream functions.
 
-  Ensight_Stream &operator<<(const int i);
-  Ensight_Stream &operator<<(const std::size_t i);
+  Ensight_Stream &operator<<(const int32_t i);
+  Ensight_Stream &operator<<(const unsigned i);
+  // Ensight_Stream &operator<<(const int64_t i);
+  // Ensight_Stream &operator<<(const uint64_t i);
   Ensight_Stream &operator<<(const double d);
   Ensight_Stream &operator<<(const std::string &s);
   Ensight_Stream &operator<<(FP f);

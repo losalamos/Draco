@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:21:58 2004
  * \brief  Reduce norm of a set of functions on a ray.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -65,7 +65,7 @@ void lnsrch(RandomContainer const &xold, double const fold,
 
   double const eps =
       std::numeric_limits<typename RandomContainer::value_type>::epsilon();
-  const unsigned n = xold.size();
+  const size_t n = xold.size();
 
   x.resize(n);
   fvec.resize(n);

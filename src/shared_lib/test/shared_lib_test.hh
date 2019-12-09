@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Apr 21 14:31:07 2004
  * \brief  shared_lib testing infrastructure.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

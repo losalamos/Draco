@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Monday, Apr 22, 2013, 13:59 pm
  * \brief  Procmon test.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 

@@ -3,7 +3,7 @@
  * \file   quadrature/Tri_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -31,8 +31,9 @@ unsigned Tri_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
 //---------------------------------------------------------------------------//
 string Tri_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = tri cl" + indent + "  order = " +
-                  to_string(sn_order_) + Octant_Quadrature::as_text(indent);
+  string Result = indent + "type = tri cl" + indent +
+                  "  order = " + to_string(sn_order_) +
+                  Octant_Quadrature::as_text(indent);
 
   return Result;
 }

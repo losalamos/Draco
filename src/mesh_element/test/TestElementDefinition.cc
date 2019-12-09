@@ -4,9 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:06:55 2002
  * \brief  Test Element Definitions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC. 
- *         All rights reserved. 
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC. 
+ *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -177,10 +176,10 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   vector<Element_Definition> polyg_elem_defs;
   polyg_elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
 
-  vector<int> polyg_side_type(8,  // number of sides
-                              0); // index into elem_defs
+  vector<unsigned> polyg_side_type(8,  // number of sides
+                                   0); // index into elem_defs
 
-  vector<vector<size_t>> polyg_side_nodes(8);
+  vector<vector<unsigned>> polyg_side_nodes(8);
   for (unsigned side = 0; side < 8; ++side) {
     polyg_side_nodes[side].push_back(side);
     polyg_side_nodes[side].push_back((side + 1) % 8);
@@ -199,38 +198,38 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   cout << "\nBuilding POLYHEDRON Element ---\n" << endl;
 
   vector<Element_Definition> polyh_elem_defs;
-  vector<int> polyh_side_type;
-  vector<vector<size_t>> polyh_side_nodes;
+  vector<unsigned> polyh_side_type;
+  vector<vector<unsigned>> polyh_side_nodes;
 
   // First side is QUAD_4
   polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_4));
   polyh_side_type.push_back(0);
-  vector<size_t> side0_nodes = {0, 1, 5, 4};
+  vector<unsigned> side0_nodes = {0, 1, 5, 4};
   polyh_side_nodes.push_back(side0_nodes);
 
   // Next four sides are QUAD_5
   polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_5));
 
   polyh_side_type.push_back(1);
-  vector<size_t> side1_nodes = {1, 0, 3, 2, 11};
+  vector<unsigned> side1_nodes = {1, 0, 3, 2, 11};
   polyh_side_nodes.push_back(side1_nodes);
 
   polyh_side_type.push_back(1);
-  vector<size_t> side2_nodes = {5, 1, 2, 6, 10};
+  vector<unsigned> side2_nodes = {5, 1, 2, 6, 10};
   polyh_side_nodes.push_back(side2_nodes);
 
   polyh_side_type.push_back(1);
-  vector<size_t> side3_nodes = {4, 5, 6, 7, 9};
+  vector<unsigned> side3_nodes = {4, 5, 6, 7, 9};
   polyh_side_nodes.push_back(side3_nodes);
 
   polyh_side_type.push_back(1);
-  vector<size_t> side4_nodes = {0, 4, 7, 3, 8};
+  vector<unsigned> side4_nodes = {0, 4, 7, 3, 8};
   polyh_side_nodes.push_back(side4_nodes);
 
   // Last (sixth) side is QUAD_9
   polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_9));
   polyh_side_type.push_back(2);
-  vector<size_t> side5_nodes = {3, 7, 6, 2, 8, 9, 10, 11, 12};
+  vector<unsigned> side5_nodes = {3, 7, 6, 2, 8, 9, 10, 11, 12};
   polyh_side_nodes.push_back(side5_nodes);
 
   Element_Definition polyh("polyhedron1", // name
@@ -240,7 +239,6 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            polyh_elem_defs, polyh_side_type, polyh_side_nodes);
 
   //---------------------------------------------------------------------------//
-
   // Merely attempting construction, with DBC active, will invoke a slew of
   // precondition, postcondition, and consistency checks.  We perform no
   // other explicit checks here.
@@ -296,8 +294,10 @@ bool test_bar_2(rtt_dsxx::UnitTest &ut,
   const int size = 1;
   int s0[size] = {0};
   int s1[size] = {1};
-  ldum = ldum && (elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size));
-  ldum = ldum && (elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -327,8 +327,10 @@ bool test_bar_3(rtt_dsxx::UnitTest &ut,
   const int size = 1;
   int s0[size] = {0};
   int s1[size] = {1};
-  ldum = ldum && (elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size));
-  ldum = ldum && (elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -360,9 +362,9 @@ bool test_tri_3(rtt_dsxx::UnitTest &ut,
   int s0[size] = {0, 1};
   int s1[size] = {1, 2};
   int s2[size] = {2, 0};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -394,9 +396,9 @@ bool test_tri_6(rtt_dsxx::UnitTest &ut,
   int s0[size] = {0, 1, 3};
   int s1[size] = {1, 2, 4};
   int s2[size] = {2, 0, 5};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -430,10 +432,10 @@ bool test_quad_4(rtt_dsxx::UnitTest &ut,
   int s1[size] = {1, 2};
   int s2[size] = {2, 3};
   int s3[size] = {3, 0};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -470,10 +472,10 @@ bool test_quad_5(rtt_dsxx::UnitTest &ut,
   int s1[3] = {1, 2};
   int s2[3] = {2, 3};
   int s3[3] = {3, 0, 4};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 2);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 2);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 2);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 2);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
 
   if (ldum) {
     ostringstream message;
@@ -517,10 +519,10 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
     int s1[2] = {1, 2};
     int s2[3] = {2, 3, 4};
     int s3[3] = {3, 0, 5};
-    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 2);
-    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 3);
-    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 2);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 3);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
   } else {
     string ename = "QUAD_6o";
     ldum = ldum && elem_def.get_name() == ename;
@@ -540,10 +542,10 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
     int s1[3] = {1, 2, 4};
     int s2[2] = {2, 3};
     int s3[3] = {3, 0, 5};
-    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 3);
-    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 2);
-    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 3);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 2);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
   }
 
   if (ldum) {
@@ -582,10 +584,10 @@ bool test_quad_7(rtt_dsxx::UnitTest &ut,
   int s1[3] = {1, 2, 4};
   int s2[3] = {2, 3, 5};
   int s3[3] = {3, 0, 6};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 3);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 3);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 3);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 3);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
 
   if (ldum) {
     ostringstream message;
@@ -620,10 +622,10 @@ bool test_quad_8(rtt_dsxx::UnitTest &ut,
   int s1[size] = {1, 2, 5};
   int s2[size] = {2, 3, 6};
   int s3[size] = {3, 0, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -657,10 +659,10 @@ bool test_quad_9(rtt_dsxx::UnitTest &ut,
   int s1[size] = {1, 2, 5};
   int s2[size] = {2, 3, 6};
   int s3[size] = {3, 0, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -694,10 +696,10 @@ bool test_tetra_4(rtt_dsxx::UnitTest &ut,
   int s1[size] = {0, 1, 3};
   int s2[size] = {1, 2, 3};
   int s3[size] = {2, 0, 3};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -731,10 +733,10 @@ bool test_tetra_10(rtt_dsxx::UnitTest &ut,
   int s1[size] = {0, 1, 3, 4, 8, 7};
   int s2[size] = {1, 2, 3, 5, 9, 8};
   int s3[size] = {2, 0, 3, 6, 7, 9};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -773,11 +775,11 @@ bool test_pyra_5(rtt_dsxx::UnitTest &ut,
   int s2[sizet] = {1, 2, 4};
   int s3[sizet] = {2, 3, 4};
   int s4[sizet] = {3, 0, 4};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -810,11 +812,11 @@ bool test_pyra_14(rtt_dsxx::UnitTest &ut,
   int s2[sizet] = {1, 2, 4, 6, 11, 10};
   int s3[sizet] = {2, 3, 4, 7, 12, 11};
   int s4[sizet] = {3, 0, 4, 8, 9, 12};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
@@ -857,11 +859,11 @@ bool test_penta_6(rtt_dsxx::UnitTest &ut,
   const int sizet = 3;
   int s3[sizet] = {0, 2, 1};
   int s4[sizet] = {3, 4, 5};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -904,11 +906,11 @@ bool test_penta_15(rtt_dsxx::UnitTest &ut,
   const int sizet = 6;
   int s3[sizet] = {0, 2, 1, 8, 7, 6};
   int s4[sizet] = {3, 4, 5, 12, 13, 14};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -951,11 +953,11 @@ bool test_penta_18(rtt_dsxx::UnitTest &ut,
   const int sizet = 6;
   int s3[sizet] = {0, 2, 1, 8, 7, 6};
   int s4[sizet] = {3, 4, 5, 12, 13, 14};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
@@ -996,12 +998,12 @@ bool test_hexa_8(rtt_dsxx::UnitTest &ut,
   int s3[size] = {1, 2, 6, 5};
   int s4[size] = {0, 1, 5, 4};
   int s5[size] = {4, 5, 6, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5, s5 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
+  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -1042,12 +1044,12 @@ bool test_hexa_20(rtt_dsxx::UnitTest &ut,
   int s3[size] = {1, 2, 6, 5, 9, 14, 17, 13};
   int s4[size] = {0, 1, 5, 4, 8, 13, 16, 12};
   int s5[size] = {4, 5, 6, 7, 16, 17, 18, 19};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5, s5 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
+  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -1089,12 +1091,12 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
   int s3[size] = {1, 2, 6, 5, 9, 14, 17, 13, 23};
   int s4[size] = {0, 1, 5, 4, 8, 13, 16, 12, 24};
   int s5[size] = {4, 5, 6, 7, 16, 17, 18, 19, 25};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5, s5 + size);
+  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
+  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
+  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
+  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
@@ -1125,10 +1127,9 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
   }
   return ldum;
 }
-}
+} // namespace rtt_mesh_element_test
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

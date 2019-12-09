@@ -4,26 +4,21 @@
  * \author Kent Budge
  * \date   Tue Sep 14 13:16:09 2004
  * \brief  Gauss-Legendre quadrature
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_quadrature_gauleg_hh
 #define rtt_quadrature_gauleg_hh
 
-#include <limits>
-
-#include <gsl/gsl_sf_legendre.h>
-
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
+#include <gsl/gsl_sf_legendre.h>
+#include <limits>
 
 namespace rtt_quadrature {
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Gauss-Legendre quadrature
  *
  * Calculate abscissae and weights for Gauss-Legendre quadrature:
@@ -48,15 +43,14 @@ namespace rtt_quadrature {
  * This routine scales the range of integration from \f$(x_1,x_2)\f$ to (-1,1)
  * and provides the abscissas \f$ x_j\f$ and weights \f$ w_j \f$ for the
  * Gaussian formula provided above.
- * 
- * \arg \a FieldVector A random access container on a field type.
+ *
+ * \tparam FieldVector A random access container on a field type.
  *
  * \param x1 Start of integration interval
  * \param x2 End of integration interval
  * \param x On return, contains abscissae \f$x_j\f$ for quadrature.
  * \param w On return, contains weights \f$w_j\f$ for quadrature.
- * \param N Number of points in quadrature.
- * 
+ * \param n Number of points in quadrature.
  */
 template <typename FieldVector>
 void gauleg(
@@ -92,7 +86,8 @@ void gauleg(
   // Loop over the desired roots.
   for (size_t iroot = 0; iroot < numHrGaussPoints; ++iroot) {
     // Approximate the i-th root.
-    Field z(cos(PI * (iroot + 0.75) / (n + 0.5)));
+    Field z(cos(PI * (static_cast<double>(iroot) + 0.75) /
+                (static_cast<double>(n) + 0.5)));
 
     // Temporary storage;
     Field z1, pp;
@@ -115,7 +110,7 @@ void gauleg(
     } while (!soft_equiv(z, z1, tolerance));
 
     // Roots will be between -1 and 1.0 and symmetric about the origin.
-    int const idxSymPart(n - iroot - 1);
+    size_t const idxSymPart(n - iroot - 1);
 
     // Now, scale the root to tthe desired interval and put in its
     // symmetric counterpart.

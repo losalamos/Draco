@@ -4,7 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/SideFlags class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -42,48 +42,51 @@ private:
 
 public:
   /*!
- * \brief Validates the specified side flag type and number.
- * \param flagtype Side flag type number.
- * \param flag Flag number.
- * \return The existance of the side flag type and number.
- */
-  bool allowed_flag(int flagtype, int flag) const {
+   * \brief Validates the specified side flag type and number.
+   * \param flagtype Side flag type number.
+   * \param flag Flag number.
+   * \return The existance of the side flag type and number.
+   */
+  bool allowed_flag(size_t flagtype, int flag) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     return flagTypes[flagtype]->allowed_flag(flag);
   }
+
   /*!
- * \brief Returns the name of specified side flag type.
- * \param flagtype Side flag type number.
- * \return The side flag type name.
- */
-  string get_flag_type(int flagtype) const {
+   * \brief Returns the name of specified side flag type.
+   * \param flagtype Side flag type number.
+   * \return The side flag type name.
+   */
+  string get_flag_type(size_t flagtype) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     return flagTypes[flagtype]->getFlagType();
   }
 
   int get_flag_type_index(string &desired_flag_type) const;
+
   /*!
- * \brief Returns the side flag number associated with the specified side flag
- *        type and side flag index.
- * \param flagtype Side flag type number.
- * \param flag_index Side flag index.
- * \return The side flag number.
- */
-  int get_flag_number(int flagtype, int flag_index) const {
+   * \brief Returns the side flag number associated with the specified side flag
+   *        type and side flag index.
+   * \param flagtype Side flag type number.
+   * \param flag_index Side flag index.
+   * \return The side flag number.
+   */
+  int get_flag_number(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,
            "Invalid side flag number index number!");
     return flagTypes[flagtype]->getFlagNumber(flag_index);
   }
+
   /*!
- * \brief Returns the number of side flags for the specified side flag type.
- * \param flagtype Side flag type number.
- * \return The number of side flags.
- */
-  int get_flag_size(int flagtype) const {
+   * \brief Returns the number of side flags for the specified side flag type.
+   * \param flagtype Side flag type number.
+   * \return The number of side flags.
+   */
+  size_t get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     return flagTypes[flagtype]->getFlagSize();
@@ -95,7 +98,7 @@ public:
  * \param flag_index Side flag index.
  * \return The side flag name.
  */
-  string get_flag_name(int flagtype, int flag_index) const {
+  string get_flag_name(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,

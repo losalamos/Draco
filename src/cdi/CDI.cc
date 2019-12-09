@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -43,7 +43,7 @@ CDI::CDI(const std_string &id)
                           SF_MultigroupOpacity(constants::num_Reactions)),
       odfmgOpacities(constants::num_Models,
                      SF_OdfmgOpacity(constants::num_Reactions)),
-      spEoS(SP_EoS()), matID(id) {
+      CPElosses(), spEoS(SP_EoS()), spEICoupling(SP_EICoupling()), matID(id) {
   Ensure(grayOpacities.size() == constants::num_Models);
   Ensure(multigroupOpacities.size() == constants::num_Models);
   Ensure(odfmgOpacities.size() == constants::num_Models);
@@ -64,7 +64,6 @@ std::vector<double> CDI::opacityCdfBandBoundaries = std::vector<double>();
 //---------------------------------------------------------------------------//
 // STATIC FUNCTIONS
 //---------------------------------------------------------------------------//
-
 /*!
  * \brief Return the frequency group boundaries.
  *
@@ -221,12 +220,12 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex,
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
  * \param T          The temperature in keV (must be greater than 0.0)
- * \param PL         Reference argument for the Planckian integral
- * \param ROSL       Reference argument for the Rosseland integral
+ * \param planck     Reference argument for the Planckian integral
+ * \param rosseland  Reference argument for the Rosseland integral
  *
  * \return The integrated normalized Planckian and Rosseland over the requested
- *         frequency group. These are returned as references in argument PL and
- *         ROSL
+ *         frequency group. These are returned as references in argument planck and
+ *         rosseland
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex,
                                                  const double T, double &planck,
@@ -260,16 +259,16 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex,
 void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
                                        double const T,
                                        std::vector<double> &planck) {
-  Require(T >= 0.0);
+  Require(T >= std::numeric_limits<double>::min() &&
+          T < std::numeric_limits<double>::max());
   Require(bounds.size() > 0);
 
   size_t const groups(bounds.size() - 1);
   planck.resize(groups, 0.0);
 
-  // nu/T must be < numeric_limits<double>::max().  So, if T < nu*min(), then
-  // return early with planck == 0.0. This avoids a possible divide by zero.
-  if (T <= bounds[0] * std::numeric_limits<double>::min())
-    return;
+  // nu/T must be < numeric_limits<double>::max(), throw assertion in DBC mode
+  // if this occurs
+  Check(T > bounds.back() * std::numeric_limits<double>::min());
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
@@ -281,20 +280,62 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
     double const last_planck = planck_value;
 
     // New values:
-    if (T <= bounds[group + 1] * std::numeric_limits<double>::min())
-      planck[group] = 0.0;
-    else {
-      scaled_frequency = bounds[group + 1] / T;
-      Ensure(scaled_frequency > last_scaled_frequency);
-      planck_value = integrate_planck(scaled_frequency);
+    scaled_frequency = bounds[group + 1] / T;
+    Ensure(scaled_frequency > last_scaled_frequency);
+    planck_value = integrate_planck(scaled_frequency);
 
-      // Record the definite integral between frequencies.
-      planck[group] = planck_value - last_planck;
-    }
+    // Record the definite integral between frequencies.
+    planck[group] = planck_value - last_planck;
     Ensure(planck[group] >= 0.0);
     Ensure(planck[group] <= 1.0);
   }
   return;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Integrate the Planckian Specrum over an entire a set of frequency
+ *        groups directly returning the vector of the integrals
+ *
+ * \param bounds The vector of group boundaries. Size n+1
+ * \param T The temperature
+ * \return vector containing the Planckian integrals. Size n_groups
+ */
+std::vector<double>
+CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
+                                  double const T) {
+
+  Require(T >= std::numeric_limits<double>::min() &&
+          T < std::numeric_limits<double>::max());
+  Require(bounds.size() > 0);
+
+  size_t const groups(bounds.size() - 1);
+  std::vector<double> planck(groups, 0.0);
+
+  // nu/T must be < numeric_limits<double>::max(), throw assertion in DBC mode
+  // if this occurs
+  Check(T > bounds.back() * std::numeric_limits<double>::min());
+
+  // Initialize the loop:
+  double scaled_frequency = bounds[0] / T;
+  double planck_value = integrate_planck(scaled_frequency);
+
+  for (size_t group = 0; group < groups; ++group) {
+    // Shift the data down:
+    Remember(double const last_scaled_frequency = scaled_frequency;);
+    double const last_planck = planck_value;
+
+    // New values:
+    scaled_frequency = bounds[group + 1] / T;
+    Ensure(scaled_frequency > last_scaled_frequency);
+    planck_value = integrate_planck(scaled_frequency);
+
+    // Record the definite integral between frequencies.
+    planck[group] = planck_value - last_planck;
+    Ensure(planck[group] >= 0.0);
+    Ensure(planck[group] <= 1.0);
+  }
+  return planck;
 }
 
 //---------------------------------------------------------------------------//
@@ -309,16 +350,16 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
 void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
                                        double const T,
                                        std::vector<double> &rosseland) {
-  Require(T >= 0.0);
+  Require(T >= std::numeric_limits<double>::min() &&
+          T < std::numeric_limits<double>::max());
   Require(bounds.size() > 0);
 
   size_t const groups(bounds.size() - 1);
   rosseland.resize(groups, 0.0);
 
-  // nu/T must be < numeric_limits<double>::max().  So, if T < nu*min(), then
-  // return early with rosseland == 0.0. This avoids a possible divide by zero.
-  if (T <= bounds[0] * std::numeric_limits<double>::min())
-    return;
+  // nu/T must be < numeric_limits<double>::max(), throw assertion in DBC mode
+  // if this occurs
+  Check(T > bounds.back() * std::numeric_limits<double>::min());
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
@@ -336,18 +377,14 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
     double const last_rosseland = rosseland_value;
 
     // New values:
-    if (T <= bounds[group + 1] * std::numeric_limits<double>::min())
-      rosseland[group] = 0.0;
-    else {
-      scaled_frequency = bounds[group + 1] / T;
-      Check(scaled_frequency > last_scaled_frequency);
-      exp_scaled_frequency = std::exp(-scaled_frequency);
-      integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
-                                 planck_value, rosseland_value);
+    scaled_frequency = bounds[group + 1] / T;
+    Check(scaled_frequency > last_scaled_frequency);
+    exp_scaled_frequency = std::exp(-scaled_frequency);
+    integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
+                               planck_value, rosseland_value);
 
-      // Record the definite integral between frequencies.
-      rosseland[group] = rosseland_value - last_rosseland;
-    }
+    // Record the definite integral between frequencies.
+    rosseland[group] = rosseland_value - last_rosseland;
     Ensure(rosseland[group] >= 0.0);
     Ensure(rosseland[group] <= 1.0);
   }
@@ -368,18 +405,17 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     std::vector<double> const &bounds, double const T,
     std::vector<double> &planck, std::vector<double> &rosseland) {
 
-  Require(T >= 0.0);
+  Require(T >= std::numeric_limits<double>::min() &&
+          T < std::numeric_limits<double>::max());
   Require(bounds.size() > 0);
   size_t const groups(bounds.size() - 1);
 
   planck.resize(groups, 0.0);
   rosseland.resize(groups, 0.0);
 
-  // nu/T must be < numeric_limits<double>::max().  So, if T < nu*min(), then
-  // return early with planck ==0.0 and rosseland == 0.0. This avoids a possible
-  // divide by zero
-  if (T <= bounds[0] * std::numeric_limits<double>::min())
-    return;
+  // nu/T must be < numeric_limits<double>::max(), throw assertion in DBC mode
+  // if this occurs
+  Check(T > bounds.back() * std::numeric_limits<double>::min());
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
@@ -398,21 +434,15 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     double const last_rosseland = rosseland_value;
 
     // New values:
-    if (T <= bounds[group + 1] * std::numeric_limits<double>::min()) {
-      planck[group] = 0.0;
-      rosseland[group] = 0.0;
-    } else {
+    scaled_frequency = bounds[group + 1] / T;
+    Check(scaled_frequency > last_scaled_frequency);
+    exp_scaled_frequency = std::exp(-scaled_frequency);
+    integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
+                               planck_value, rosseland_value);
 
-      scaled_frequency = bounds[group + 1] / T;
-      Check(scaled_frequency > last_scaled_frequency);
-      exp_scaled_frequency = std::exp(-scaled_frequency);
-      integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
-                                 planck_value, rosseland_value);
-
-      // Record the definite integral between frequencies.
-      planck[group] = planck_value - last_planck;
-      rosseland[group] = rosseland_value - last_rosseland;
-    }
+    // Record the definite integral between frequencies.
+    planck[group] = planck_value - last_planck;
+    rosseland[group] = rosseland_value - last_rosseland;
     Ensure(planck[group] >= 0.0);
     Ensure(planck[group] <= 1.0);
     Ensure(rosseland[group] >= 0.0);
@@ -427,9 +457,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  *        weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \param emission_group_cdf
@@ -439,9 +468,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  * function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupOpacitiesPlanck(
-    std::vector<double> const &groupBounds,
-    //    double              const & T,
-    std::vector<double> const &opacity,
+    std::vector<double> const &groupBounds, std::vector<double> const &opacity,
     std::vector<double> const &planckSpectrum,
     std::vector<double> &emission_group_cdf) {
   Require(groupBounds.size() > 0);
@@ -474,6 +501,70 @@ double CDI::collapseMultigroupOpacitiesPlanck(
   //                         int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
 
   double planck_opacity(0.0);
+  if (planck_integral > 0.0) {
+    planck_opacity = sig_planck_sum / planck_integral;
+    for (size_t g = 1; g < groupBounds.size(); ++g) {
+      emission_group_cdf[g - 1] /= planck_integral;
+    }
+  } else {
+    // Weak check that the zero integrated Planck is due to a cold temperature
+    // whose Planckian peak is below the lowest (first) group boundary.
+    Check(rtt_dsxx::soft_equiv(sig_planck_sum, 0.0));
+    // Check( T >= 0.0 );
+    // Check( 3.0 * T <= groupBounds[0] );
+
+    // Set the ill-defined integrated Planck opacity to zero.
+    // planck_opacity = 0.0; // already initialized to zero.
+  }
+  Ensure(planck_opacity >= 0.0);
+  return planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup opacity set into a single representative value
+ *        weighted by the Planckian function without setting the emission CDF
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \return A single interval Planckian weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
+ */
+double CDI::collapseMultigroupOpacitiesPlanck(
+    std::vector<double> const &groupBounds, std::vector<double> const &opacity,
+    std::vector<double> const &planckSpectrum) {
+  Require(groupBounds.size() > 0);
+  Require(opacity.size() == groupBounds.size() - 1);
+  Require(planckSpectrum.size() == groupBounds.size() - 1);
+
+  // Integrate the unnormalized Planckian over the group spectrum
+  // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+  double const planck_integral =
+      std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+  Check(planck_integral >= 0.0);
+
+  // Perform integration of sigma * b_g over all groups:
+  // int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+
+  // Initialize sum:
+  double sig_planck_sum(0.0);
+  // Multiply by the absorption opacity and accumulate.
+  for (size_t g = 1; g < groupBounds.size(); ++g) {
+    Check(planckSpectrum[g - 1] >= 0.0);
+    Check(opacity[g - 1] >= 0.0);
+    sig_planck_sum += planckSpectrum[g - 1] * opacity[g - 1];
+  }
+
+  //                         int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+  // Planck opac:  sigma_P = --------------------------------------------------
+  //                         int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+  double planck_opacity(0.0);
   if (planck_integral > 0.0)
     planck_opacity = sig_planck_sum / planck_integral;
   else {
@@ -497,7 +588,7 @@ double CDI::collapseMultigroupOpacitiesPlanck(
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \return A single interval Planckian weighted reciprocal opacity value.
@@ -553,7 +644,6 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
  *        weighted by the Rosseland function.
  *
  * \param groupBounds The vector of group boundaries. Size n+1
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
  * \param rosselandSpectrum A vector of Rosseland integrals for all groups in
  *                  the spectrum (normally generated via
@@ -636,11 +726,11 @@ double CDI::collapseMultigroupOpacitiesRosseland(
  *        representative value weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
- * \param T         The material temperature.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param bandWidths Vector of energy band widths
  * \param emission_group_cdf
  * \return A single interval Planckian weighted opacity value.
  *
@@ -718,9 +808,10 @@ double CDI::collapseOdfmgOpacitiesPlanck(
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
- * \param plankSpectrum A vector of Planck integrals for all groups in the
+ * \param planckSpectrum A vector of Planck integrals for all groups in the
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param bandWidths Vector of energy band widths
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
  * function to obtain planckSpectrum.
@@ -783,6 +874,28 @@ double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
 // SET FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Register a charged particle eloss (rtt_cdi::CPEloss) with CDI.
+ *
+ * You cannot overwrite
+ * registered objects with the setCPEloss() function!
+ *
+ * \param spCPp smart pointer to an Eloss object
+ */
+void CDI::setCPEloss(const SP_CPEloss &spCPp) {
+  Require(spCPp);
+
+  // Store the particle / target pair
+  CPEloss_map.emplace(std::make_pair<pt_zaid_pair, size_t>(
+      std::make_pair(spCPp->getProjectileZAID(), spCPp->getTargetZAID()),
+      CPElosses.size()));
+
+  // assign the smart pointer
+  CPElosses.push_back(spCPp);
+
+  Ensure(CPElosses.back());
+}
+
+/*!
  * \brief Register a gray opacity (rtt_cdi::GrayOpacity) with CDI.
  *
  * This function sets a gray opacity object of type rtt_cdi::GrayOpacity with
@@ -824,7 +937,7 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp) {
  * CDI::reset() first.  You cannot overwrite registered objects with the
  * setMultigroupOpacity() function!
  *
- * \param spGOp smart pointer to a MultigroupOpacity object
+ * \param spMGOp smart pointer to a MultigroupOpacity object
  */
 void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
   using rtt_dsxx::soft_equiv;
@@ -875,7 +988,7 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
  * set of OdfmgOpacity objects call CDI::reset() first.  You cannot overwrite
  * registered objects with the setOdfmgOpacity() function!
  *
- * \param spGOp smart pointer to a OdfmgOpacity object
+ * \param spODFOp smart pointer to a OdfmgOpacity object
  */
 void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) {
   using rtt_dsxx::soft_equiv;
@@ -946,6 +1059,16 @@ void CDI::setEoS(const SP_EoS &in_spEoS) {
 }
 
 //---------------------------------------------------------------------------//
+
+void CDI::setEICoupling(const SP_EICoupling &in_spEICoupling) {
+  Require(in_spEICoupling);
+  Insist(!spEICoupling, "Tried to overwrite a set EICoupling object.!");
+  // set the smart pointer
+  spEICoupling = in_spEICoupling;
+  Ensure(spEICoupling);
+}
+
+//---------------------------------------------------------------------------//
 // GET FUNCTIONS
 //---------------------------------------------------------------------------//
 
@@ -1013,6 +1136,29 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
   return odfmgOpacities[m][r];
 }
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief This fuction returns the charged particle energy loss object.
+ *
+ * \code
+ * size_t numGroups = spCDI1->mg()->getNumGroupBoundaries();
+ * \endcode
+ *
+ * The appropriate charged particle eloss is returned for the given model/ trio.
+ *
+ * \param m rtt_cdi::CPModel specifying the desired CP physics model
+ * \param pz int32_t specifying the desired particle type.
+ * \param tz int32_t specifying the desired target type.
+ */
+CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModel m, int32_t pz, int32_t tz) const {
+  map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
+  Insist(entry != CPEloss_map.end(), "Undefined CPEloss!");
+  // Be sure model type is what the user expected.
+  Require(CPElosses[entry->second]->getModel() == m);
+
+  return CPElosses[entry->second];
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief This fuction returns the EoS object.
@@ -1027,6 +1173,22 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 CDI::SP_EoS CDI::eos() const {
   Insist(spEoS, "Undefined EoS!");
   return spEoS;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief This fuction returns the EICoupling object.
+ *
+ * This provides the CDI with the full functionality of the interface defined in
+ * EICoupling.hh.  For example, the host code could make the following call:
+ *
+ * \code
+ * double ei_coupling = spCDI1->ei_coupling()->getElectronIonCoupling( ... );
+ * \endcode
+ */
+CDI::SP_EICoupling CDI::ei_coupling() const {
+  Insist(spEICoupling, "Undefined EICoupling!");
+  return spEICoupling;
 }
 
 //---------------------------------------------------------------------------//
@@ -1083,6 +1245,10 @@ void CDI::reset() {
   // reset the EoS shared_ptr
   spEoS = SP_EoS();
   Check(!spEoS);
+
+  // reset the EoS shared_ptr
+  spEICoupling = SP_EICoupling();
+  Check(!spEICoupling);
 }
 
 //---------------------------------------------------------------------------//
@@ -1111,9 +1277,26 @@ bool CDI::isOdfmgOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 }
 
 /*!
+ * \brief Query to see if an odf multigroup opacity is set.
+ */
+bool CDI::isCPElossSet(rtt_cdi::CPModel m, int32_t pz, int32_t tz) const {
+  // Look up this particle / target zaid pair in the stored map:
+  map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
+
+  // return true if particle/target pair is in map, and model matches input:
+  return (entry != CPEloss_map.end() &&
+          CPElosses[entry->second]->getModel() == m);
+}
+
+/*!
  * \brief Query to see if an eos is set.
  */
 bool CDI::isEoSSet() const { return static_cast<bool>(spEoS); }
+
+/*!
+ * \brief Query to see if an eos is set.
+ */
+bool CDI::isEICouplingSet() const { return static_cast<bool>(spEICoupling); }
 
 } // end namespace rtt_cdi
 

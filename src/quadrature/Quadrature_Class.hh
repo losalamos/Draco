@@ -3,7 +3,7 @@
  * \file   quadrature/Quadrature_Class.hh
  * \author Kent G. Budge
  * \brief  Define Quadrature_Class enumeration
- * \note   Copyright © 2016-2018 Los Alamos National Security, LLC. All rights
+ * \note   Copyright © 2016-2019 Triad National Security, LLC. All rights
  *         reserved. 
  */
 //---------------------------------------------------------------------------------------//

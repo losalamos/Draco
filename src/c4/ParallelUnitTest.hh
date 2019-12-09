@@ -4,12 +4,11 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
- * class is to encapsulate the keywords and behavior of DBS parallel unit
- * tests.
+ * class is to encapsulate the keywords and behavior of DBS parallel unit tests.
  */
 //---------------------------------------------------------------------------//
 
@@ -17,7 +16,7 @@
 #define c4_ParallelUnitTest_hh
 
 #include "C4_Functions.hh"
-#include "ds++/UnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 namespace rtt_c4 {
 
@@ -71,16 +70,14 @@ public:
   // CREATORS
 
   //! Default constructor.
-  DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
-                                 string_fp_void release_,
-                                 std::ostream &out_ = std::cout,
-                                 bool verbose_ = true);
+  ParallelUnitTest(int &argc, char **&argv, string_fp_void release_,
+                   std::ostream &out_ = std::cout, bool verbose_ = true);
 
   //!  The copy constructor is disabled.
   ParallelUnitTest(ParallelUnitTest const &rhs);
 
   //! Destructor.
-  DLL_PUBLIC_c4 ~ParallelUnitTest();
+  ~ParallelUnitTest();
 
   // MANIPULATORS
 
@@ -90,13 +87,29 @@ public:
   // ACCESSORS
 
   //! Provide a report of the number of unit test passes and fails.
-  DLL_PUBLIC_c4 void status(void);
+  void status(void);
 
-  DLL_PUBLIC_c4 virtual bool check_all(bool good, std::string const &checkmsg,
-                                       bool fatal = false);
+  virtual bool check_all(bool good, std::string const &checkmsg,
+                         bool fatal = false);
 };
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Run a parallel unit test.
+ *
+ * \param[in] argc Number of command line arguments
+ * \param[in] argv Command line arguments
+ * \param[in] release Release string
+ * \param[in] lambda Lambda function defining the test.
+ * \return EXIT_SUCCESS or EXIT_FAILURE as appropriate.
+ */
+template <typename... Lambda, typename Release>
+int do_parallel_unit_test(int argc, char *argv[], Release release,
+                          Lambda const &... lambda);
+
 } // end namespace rtt_c4
+
+#include "ParallelUnitTest.i.hh"
 
 #endif // c4_ParallelUnitTest_hh
 

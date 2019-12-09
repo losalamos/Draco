@@ -4,12 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 12 12:11:22 2003
  * \brief  Assertion tests.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/StackTrace.hh"
+#include <regex>
 
 using namespace std;
 
@@ -19,7 +21,7 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 // The way this test article works is that each of the DBC macros are tested
-// in a seperate function.  A falst condition is asserted using each macro,
+// in a separate function.  A false condition is asserted using each macro,
 // and after this follows a throw.  Two catch clauses are available, one to
 // catch an assertion object, and one to catch anything else.  By comparing
 // the exception that is actually caught with the one that should be caught
@@ -28,15 +30,15 @@ using namespace std;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-// Make sure we can differentiate betweeen a std::runtime_error and a
+// Make sure we can differentiate between a std::runtime_error and a
 // rtt_dsxx::assertion.
 //---------------------------------------------------------------------------//
 
-static void t1(rtt_dsxx::UnitTest &ut) {
+void t1(rtt_dsxx::UnitTest &ut) {
   std::cout << "t1 test: ";
   try {
     throw std::runtime_error("hello1");
-  } catch (rtt_dsxx::assertion const &a) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
     FAILMSG("rtt_dsxx::assertion caught.");
   } catch (...) {
     PASSMSG("runtime_error exception caught");
@@ -44,12 +46,11 @@ static void t1(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
-// Make sure we can catch a rtt_dsxx::assertion and extract the error
-// message.
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Make sure we can catch a rtt_dsxx::assertion and extract the error message.
+// ---------------------------------------------------------------------------//
 
-static void t2(rtt_dsxx::UnitTest &ut) {
+void t2(rtt_dsxx::UnitTest &ut) {
   std::cout << "t2 test: ";
   std::string error_message;
   try {
@@ -58,14 +59,21 @@ static void t2(rtt_dsxx::UnitTest &ut) {
     PASSMSG("caught rtt_dsxx::assertion");
     error_message = std::string(a.what());
   } catch (...) {
-    FAILMSG("falied to catch rtt_dsxx:assertion");
+    FAILMSG("failed to catch rtt_dsxx:assertion");
   }
 
   // Make sure we can extract the error message.
   std::string const compare_value(
-      "Assertion: hello1, failed in myfile, line 42.\n");
-  if (error_message.compare(compare_value) != 0)
+      "Assertion: hello1, failed in myfile, line 42.");
+  std::regex rgx(std::string(".*") + compare_value + ".*");
+  std::smatch match;
+
+  if (!std::regex_search(error_message, match, rgx)) {
     ITFAILS;
+    std::cout << "compare_value = \"" << compare_value << "\"\n"
+              << "match = \"" << match[1] << "\n"
+              << std::endl;
+  }
 
   return;
 }
@@ -74,13 +82,13 @@ static void t2(rtt_dsxx::UnitTest &ut) {
 // Test throwing and catching of a literal
 //---------------------------------------------------------------------------//
 
-static void t3(rtt_dsxx::UnitTest &ut) {
+void t3(rtt_dsxx::UnitTest &ut) {
   std::cout << "t3 test: ";
   try {
     throw "hello";
-  } catch (rtt_dsxx::assertion const &a) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
     FAILMSG("Should not have caught an rtt_dsxx::assertion");
-  } catch (const char *msg) {
+  } catch (const char * /*message*/) {
     PASSMSG("Caught a const char* exception.");
   } catch (...) {
     FAILMSG("Failed to catch a const char* exception.");
@@ -92,7 +100,7 @@ static void t3(rtt_dsxx::UnitTest &ut) {
 // Check the toss_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
+void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "ttoss_cookies test: ";
     try {
@@ -100,7 +108,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       std::string const file("DummyFile.ext");
       int const line(55);
       rtt_dsxx::toss_cookies(msg, file, line);
-      throw "Bogus!";
+      // throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies.");
     } catch (...) {
@@ -114,7 +122,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
       char const *const file("DummyFile.ext");
       int const line(56);
       rtt_dsxx::toss_cookies_ptr(msg, file, line);
-      throw "Bogus!";
+      //throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies_ptr.");
     } catch (...) {
@@ -128,7 +136,7 @@ static void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the check_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
+void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "tcheck_cookies test: ";
     try {
@@ -160,7 +168,7 @@ static void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the show_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void tshow_cookies(rtt_dsxx::UnitTest &ut) {
+void tshow_cookies(rtt_dsxx::UnitTest &ut) {
   using namespace std;
   {
     cout << "tshow_cookies test: \n";
@@ -168,7 +176,7 @@ static void tshow_cookies(rtt_dsxx::UnitTest &ut) {
       string const msg("testing show_cookies()");
       string const file("DummyFile.ext");
       int const line(55);
-      cout << "The following line should be an an error "
+      cout << "The following line should be an error "
            << "message...\n\t";
       rtt_dsxx::show_cookies(msg, file, line);
       throw "Bogus!";
@@ -185,7 +193,7 @@ static void tshow_cookies(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Require() macro.
 //---------------------------------------------------------------------------//
 
-static void trequire(rtt_dsxx::UnitTest &ut) {
+void trequire(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Require test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -223,7 +231,7 @@ static void trequire(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Check() macro.
 //---------------------------------------------------------------------------//
 
-static void tcheck(rtt_dsxx::UnitTest &ut) {
+void tcheck(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Check test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -261,7 +269,7 @@ static void tcheck(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Ensure() macro.
 //---------------------------------------------------------------------------//
 
-static void tensure(rtt_dsxx::UnitTest &ut) {
+void tensure(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Ensure test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -295,9 +303,9 @@ static void tensure(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-// Check the operatio of the Remeber() macro.
+// Check the operation of the Remember() macro.
 //---------------------------------------------------------------------------//
-static void tremember(rtt_dsxx::UnitTest &ut) {
+void tremember(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Remember test: ";
   int x = 0;
   Remember(x = 5);
@@ -315,7 +323,7 @@ static void tremember(rtt_dsxx::UnitTest &ut) {
 // Check the operation of the Assert() macro, which works like Check().
 //---------------------------------------------------------------------------//
 
-static void tassert(rtt_dsxx::UnitTest &ut) {
+void tassert(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Assert test: \n";
   try {
     if (ut.dbcNothrow()) {
@@ -351,7 +359,7 @@ static void tassert(rtt_dsxx::UnitTest &ut) {
 // Basic test of the Insist() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist(rtt_dsxx::UnitTest &ut) {
+void tinsist(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "t-Insist test: ";
     std::string insist_message("You must be kidding!");
@@ -412,7 +420,7 @@ static void tinsist(rtt_dsxx::UnitTest &ut) {
 // Basic test of the Insist_ptr() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist_ptr(rtt_dsxx::UnitTest &ut) {
+void tinsist_ptr(rtt_dsxx::UnitTest &ut) {
   std::cout << "t-Insist test: ";
   try {
     Insist(0, "You must be kidding!");
@@ -447,6 +455,29 @@ void tverbose_error(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
+//----------------------------------------------------------------------------//
+// test catch of std::bad_alloc
+//----------------------------------------------------------------------------//
+void t_catch_bad_alloc(rtt_dsxx::UnitTest &ut) {
+
+  std::cout << "tstAssert::t_catch_bad_alloc()..." << std::endl;
+
+  try {
+    // instead of 'int * big = new int(999999999999999);'
+    std::bad_alloc exception;
+    throw exception;
+    //FAILMSG("failed to catch std::bad_alloc exception.");
+  } catch (std::bad_alloc & /*err*/) {
+    PASSMSG("caught a manually thrown std::bad_alloc exception.");
+    std::cout << rtt_dsxx::print_stacktrace("Caught a std::bad_alloc")
+              << std::endl;
+  } catch (...) {
+    FAILMSG("failed to catch std::bad_alloc exception.");
+  }
+
+  return;
+}
+
 //---------------------------------------------------------------------------//
 bool no_exception() NOEXCEPT;
 bool no_exception_c() NOEXCEPT_C(true);
@@ -476,7 +507,6 @@ int unused(int i) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try { // >>> UNIT TESTS
@@ -486,12 +516,12 @@ int main(int argc, char *argv[]) {
     t2(ut);
     t3(ut);
 
-    // Test mechanics of Assert funtions.
+    // Test mechanics of Assert functions.
     ttoss_cookies(ut);
     tshow_cookies(ut);
     tcheck_cookies(ut);
 
-    // Test Design-by-Constract macros.
+    // Test Design-by-Contract macros.
     trequire(ut);
     tcheck(ut);
     tensure(ut);
@@ -500,7 +530,7 @@ int main(int argc, char *argv[]) {
     tinsist(ut);
     tinsist_ptr(ut);
 
-    // fancy ouput
+    // fancy output
     tverbose_error(ut);
 
     // noexcept
@@ -509,6 +539,9 @@ int main(int argc, char *argv[]) {
     // noreturn
     // called only to keep code coverage good
     unused(0);
+
+    // catch bad_alloc
+    t_catch_bad_alloc(ut);
   }
   UT_EPILOG(ut);
 }

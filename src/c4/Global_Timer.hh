@@ -4,11 +4,8 @@
  * \author Kent G. Budge
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Global_Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: Timer.hh 7075 2013-04-01 22:48:15Z kellyt $
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_Global_Timer_hh__
@@ -40,19 +37,18 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Global_Timer : public Timer {
+class Global_Timer : public Timer {
 private:
   char const *name_; // name assigned by client to this timer, to
-                     // distinguish its output from that of any other
-                     // timers.
+                     // distinguish its output from that of any other timers.
 
   bool active_; // This timer is active. This does not mean it is
-                // currently accumulating timing statistics, but only
-                // that it is flagged to do so when start() is
-                // called. If not active, a call to start() is ignored.
+                // currently accumulating timing statistics, but only that it is
+                // flagged to do so when start() is called. If not active, a
+                // call to start() is ignored.
 
   //! All Global_Timers are active
-  static bool global_active_;
+  DLL_PUBLIC_c4 static bool global_active_;
 
   struct timer_entry {
     bool is_active; // permits activation of timers not yet constructed.
@@ -99,8 +95,11 @@ public:
 
   // Statics
 
-  static bool is_global_active() { return global_active_; }
+  // static bool is_global_active() { return global_active_; }
 
+  /*! 
+   *  \bug no documentation!
+   */
   static void set_global_activity(bool active);
 
   static void set_selected_activity(std::set<std::string> const &timer_list,

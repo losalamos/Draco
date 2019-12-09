@@ -3,25 +3,18 @@
 # author Gabriel Rockefeller
 # date   2011 June 13
 # brief  Instructions for building device Makefile.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
-cmake_minimum_required(VERSION 3.9.0)
-project( device CXX )
-
-if( USE_CUDA AND NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
-   find_package( CUDA QUIET )
-   # find_package will return CUDA_FOUND=TRUE if libcuda is
-   # available.  We also need the nvcc executable
-endif()
+cmake_minimum_required(VERSION 3.11.0)
+project( device CXX ${CUDA_DBS_STRING})
 
 # ---------------------------------------------------------------------------- #
 # Build one of DACS_Device or GPU_Device
 # ---------------------------------------------------------------------------- #
 
-if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
-   include( GPU_Device.cmake )
+if( WITH_CUDA )
+  include( GPU_Device.cmake )
 endif()
 
 # ---------------------------------------------------------------------------- #
@@ -29,7 +22,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 if( BUILD_TESTING )
-   add_subdirectory( test )
+  add_subdirectory( test )
 endif()
 
 # ---------------------------------------------------------------------------- #

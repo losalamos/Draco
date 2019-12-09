@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  LU decomposition
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -48,7 +48,7 @@ void ludcmp(FieldVector &a, IntVector &indx,
 template <class FieldVector1, class IntVector, class FieldVector2>
 void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b);
 
-} // end namespace astr_star1d
+} // namespace rtt_linear
 
 #endif // linear_ludcmp_hh
 

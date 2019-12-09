@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Mon Mar 24 09:26:31 2008
  * \brief  Member definitions of class global_containers
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_global_containers_i_hh
@@ -22,23 +19,19 @@
 #include "global_containers.hh"
 #include "ds++/Assert.hh"
 
-// #include <vector>
-// #include <stdexcept>
-// #include <string>
-
 namespace rtt_c4 {
-using namespace std;
+
 //---------------------------------------------------------------------------//
 /*!
  * Merge a set across all processors.
  *
  * \param local_set On entry, contains a local set. On exit, contains a set
- * consisting of the union of all the local sets that came into the function
- * on all processors.
+ *        consisting of the union of all the local sets that came into the 
+ *        function on all processors.
  */
-template <class ElementType> void global_merge(set<ElementType> &local_set) {
+template <typename ElementType>
+void global_merge(std::set<ElementType> &local_set) {
   using namespace std;
-  using namespace rtt_c4;
 
   // Break out promptly if not running in parallel.
 
@@ -47,7 +40,9 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
     return;
 
   // Flatten the sets
-  unsigned const number_of_local_elements = local_set.size();
+  Check(local_set.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_set.size());
   vector<ElementType> local_elements;
   local_elements.resize(number_of_local_elements);
   copy(local_set.begin(), local_set.end(), local_elements.begin());
@@ -59,14 +54,16 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
   if (rtt_c4::node() == 0) {
     Check(global_elements.size() == number_of_processors);
     for (unsigned p = 1; p < number_of_processors; ++p) {
-      unsigned const count = global_elements[p].size();
+      Check(global_elements[p].size() < UINT_MAX);
+      unsigned const count = static_cast<unsigned>(global_elements[p].size());
       for (unsigned i = 0; i < count; ++i) {
         local_set.insert(global_elements[p][i]);
       }
     }
   }
 
-  unsigned number_of_elements = local_set.size();
+  Check(local_set.size() < UINT_MAX);
+  unsigned number_of_elements = static_cast<unsigned>(local_set.size());
   broadcast(&number_of_elements, 1, 0);
 
   local_elements.resize(number_of_elements);
@@ -83,18 +80,18 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
 }
 
 //---------------------------------------------------------------------------//
-
-template <class IndexType, class ElementType>
-void global_merge(map<IndexType, ElementType> &local_map) {
+template <typename IndexType, typename ElementType>
+void global_merge(std::map<IndexType, ElementType> &local_map) {
   using namespace std;
-  using namespace rtt_c4;
 
   unsigned number_of_processors = nodes();
   if (number_of_processors < 2)
     return;
 
   // Flatten the maps
-  unsigned const number_of_local_elements = local_map.size();
+  Check(local_map.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_map.size());
   vector<IndexType> local_indices(number_of_local_elements);
   vector<ElementType> local_elements(number_of_local_elements);
   unsigned j;
@@ -122,21 +119,17 @@ void global_merge(map<IndexType, ElementType> &local_map) {
     for (unsigned p = 1; p < number_of_processors; ++p) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<ElementType> const &other_elements = global_elements[p];
-      unsigned const number_of_other_elements = other_index.size();
+      Check(other_index.size() < UINT_MAX);
+      unsigned const number_of_other_elements =
+          static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
-      for (unsigned i = 0; i < number_of_other_elements; ++i) {
+      for (unsigned k = 0; k < number_of_other_elements; ++k) {
         local_map.insert(
-            pair<IndexType, ElementType>(other_index[i], other_elements[i]));
-
-        //IndexType const &index = other_index[i];
-        //if (local_map.find(index)!=local_map.end() && local_map[index] != other_elements[i])
-        //{
-        //    throw invalid_argument("inconsistent global map");
-        //}
-        //local_map[index] = other_elements[i];
+            pair<IndexType, ElementType>(other_index[k], other_elements[k]));
       }
     }
-    number_of_elements = local_map.size();
+    Check(local_map.size() < UINT_MAX);
+    number_of_elements = static_cast<unsigned>(local_map.size());
     index.resize(number_of_elements);
     elements.resize(number_of_elements);
 
@@ -156,9 +149,8 @@ void global_merge(map<IndexType, ElementType> &local_map) {
   broadcast(number_of_elements ? &elements[0] : NULL, number_of_elements, 0);
 
   if (node() != 0) {
-    for (unsigned i = 0; i < number_of_elements; ++i) {
-      //local_map[index[i]] = elements[i];
-      local_map.insert(pair<IndexType, ElementType>(index[i], elements[i]));
+    for (unsigned k = 0; k < number_of_elements; ++k) {
+      local_map.insert(pair<IndexType, ElementType>(index[k], elements[k]));
     }
   }
 }
@@ -171,9 +163,9 @@ void global_merge(map<IndexType, ElementType> &local_map) {
  * might work as well and be more efficient; we can experiment with this if
  * this code ever proves a computational bottleneck.
  */
-template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
+template <typename IndexType>
+void global_merge(std::map<IndexType, bool> &local_map) {
   using namespace std;
-  using namespace rtt_c4;
 
   unsigned number_of_processors = nodes();
   if (number_of_processors < 2)
@@ -181,7 +173,9 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
 
   // Flatten the maps, promoting the bool elements to int so they will play
   // well with C4.
-  unsigned const number_of_local_elements = local_map.size();
+  Check(local_map.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_map.size());
   vector<IndexType> local_indices(number_of_local_elements);
   vector<int> local_elements(number_of_local_elements);
   unsigned j;
@@ -209,19 +203,22 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
     for (unsigned p = 1; p < number_of_processors; ++p) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<int> const &other_elements = global_elements[p];
-      unsigned const number_of_other_elements = other_index.size();
+      Check(other_index.size() < UINT_MAX);
+      unsigned const number_of_other_elements =
+          static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
-      for (unsigned i = 0; i < number_of_other_elements; ++i) {
-        IndexType const &index = other_index[i];
+      for (unsigned k = 0; k < number_of_other_elements; ++k) {
+        IndexType const &oindex = other_index[k];
 
-        if (local_map.find(index) != local_map.end() &&
-            local_map[index] != static_cast<bool>(other_elements[i])) {
+        if (local_map.find(oindex) != local_map.end() &&
+            local_map[oindex] != static_cast<bool>(other_elements[k])) {
           throw invalid_argument("inconsistent global map");
         }
-        local_map[index] = other_elements[i];
+        local_map[oindex] = other_elements[k];
       }
     }
-    number_of_elements = local_map.size();
+    Check(local_map.size() < UINT_MAX);
+    number_of_elements = static_cast<unsigned>(local_map.size());
     index.resize(number_of_elements);
     elements.resize(number_of_elements);
 
@@ -240,8 +237,8 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
 
   // Build the final map, converting the ints back to bool.
   if (node() != 0) {
-    for (unsigned i = 0; i < number_of_elements; ++i) {
-      local_map[index[i]] = static_cast<bool>(elements[i]);
+    for (unsigned k = 0; k < number_of_elements; ++k) {
+      local_map[index[k]] = static_cast<bool>(elements[k]);
     }
   }
 }

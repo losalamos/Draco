@@ -1,14 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Galerkin_Ordinate_Space.hh
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of class Galerkin_Ordinate_Space
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Galerkin_Ordinate_Space.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #ifndef quadrature_Galerkin_Ordinate_Space_hh
 #define quadrature_Galerkin_Ordinate_Space_hh
@@ -18,18 +16,18 @@
 namespace rtt_quadrature {
 using std::ostream;
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class Galerkin_Ordinate_Space
- * \brief Represents ordinate operators for a Galerkin moment space. 
+ * \brief Represents ordinate operators for a Galerkin moment space.
  *
  * The moment space contains all moments (that are not identically zero due to
  * symmetry) up to the specified scattering order, but the moment to discrete
- * operator M and discrete to moment operator D are computed as if enough additional
- * higher moments are included in the moment space to make D and M square. The
- * higher moment terms are then discarded, but the non-square D and M retain
- * the property that DM is the identity. This stabilizes the moment to
- * discrete and discrete to moment operations at high scattering orders.
+ * operator M and discrete to moment operator D are computed as if enough
+ * additional higher moments are included in the moment space to make D and M
+ * square. The higher moment terms are then discarded, but the non-square D and
+ * M retain the property that DM is the identity. This stabilizes the moment
+ * to discrete and discrete to moment operations at high scattering orders.
  *
  * When the additional moments are added, the SN quadrature order is provided,
  * and additional moments added based on the assumption that we are using
@@ -44,9 +42,8 @@ using std::ostream;
  * \todo The Galerkin quadrature is only currently implemented for triangular
  * quadratures, such that it will be necessary to extend the method to include
  * square (product) quadratures.
- *
  */
-//=======================================================================================//
+//===========================================================================//
 
 class Galerkin_Ordinate_Space : public Ordinate_Space {
 public:
@@ -55,12 +52,12 @@ public:
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
-  Galerkin_Ordinate_Space(unsigned dimension, Geometry geometry,
+  Galerkin_Ordinate_Space(unsigned const dimension, Geometry const geometry,
                           vector<Ordinate> const &ordinates,
                           Quadrature_Class quadrature_class, unsigned sn_order,
-                          unsigned expansion_order, QIM const method,
-                          bool extra_starting_directions = false,
-                          Ordering ordering = LEVEL_ORDERED);
+                          unsigned const expansion_order, QIM const method,
+                          bool const extra_starting_directions = false,
+                          Ordering const ordering = LEVEL_ORDERED);
 
   // MANIPULATORS
 
@@ -78,7 +75,13 @@ public:
   //! Return the moment to discrete transform matrix
   virtual vector<double> M() const;
 
-  bool prune() const { return method_ != GQF; }
+  bool prune() const {
+    // Prune any moments beyond the user-specified expansion order. Such
+    // moments are included in Galerkin methods for purposes of computing
+    // the M and D matrices, but are then removed from the moment space
+    // unless the GQF interpolation model has been specified.
+    return method_ != GQF;
+  }
 
   // STATICS
 
@@ -131,6 +134,6 @@ private:
 
 #endif // quadrature_Galerkin_Ordinate_Space_hh
 
-//---------------------------------------------------------------------------------------//
-//              end of quadrature/Galerkin_Ordinate_Space.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+// end of quadrature/Galerkin_Ordinate_Space.hh
+//---------------------------------------------------------------------------//

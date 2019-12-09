@@ -4,7 +4,7 @@
 # date   2014 April 23
 # brief  Instructions for configuring a Fortran subproject registered
 #        via CMakeAddFortranSubdirectory.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # Run this file from the command line as:

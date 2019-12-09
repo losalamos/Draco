@@ -4,11 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class member definitions.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Analytic_MultigroupOpacity.hh"
@@ -32,11 +29,10 @@ namespace rtt_cdi_analytic {
  * number of Analytic_Opacity_Model objects given in the models argument must
  * be equal to the number of groups.
  *
- * \param groups vector containing the group boundaries in keV from lowest to
- * highest
- *
- * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
+ * \param[in] groups vector containing the group boundaries in keV from lowest 
+ *               to highest
+ * \param[in] reaction_in rtt_cdi::Reaction type (enumeration)
+ * \param[in] model_in CDI type
  */
 Analytic_MultigroupOpacity::Analytic_MultigroupOpacity(
     const sf_double &groups, rtt_cdi::Reaction reaction_in,
@@ -50,15 +46,15 @@ Analytic_MultigroupOpacity::Analytic_MultigroupOpacity(
 /*!
  * \brief Unpacking constructor.
  * 
- * This constructor rebuilds and Analytic_MultigroupOpacity from a
- * vector<char> that was created by a call to pack().  It can only rebuild
- * Analytic_Model types that have been registered in the
- * rtt_cdi_analytic::Opacity_Models enumeration.
+ * This constructor rebuilds and Analytic_MultigroupOpacity from a vector<char>
+ * that was created by a call to pack().  It can only rebuild Analytic_Model 
+ * types that have been registered in the rtt_cdi_analytic::Opacity_Models 
+ * enumeration.
  */
 Analytic_MultigroupOpacity::Analytic_MultigroupOpacity(const sf_char &packed)
     : group_boundaries(), reaction(), model() {
-  // the packed size must be at least 4 integers (number of groups,
-  // reaction type, model type, analytic model indicator)
+  // the packed size must be at least 4 integers (number of groups, reaction
+  // type, model type, analytic model indicator)
   Require(packed.size() >= 4 * sizeof(int));
 
   // make an unpacker
@@ -93,19 +89,21 @@ Analytic_MultigroupOpacity::Analytic_MultigroupOpacity(const sf_char &packed)
 /*!
  * \brief Pack an analytic multigroup opacity.
  *
- * This function will pack up the Analytic_Mulitgroup_Opacity into a char
- * array (represented by a vector<char>).  The Analytic_Opacity_Model derived
- * class must have a pack function; this is enforced by the virtual
+ * This function will pack up the Analytic_Mulitgroup_Opacity into a char array
+ * (represented by a vector<char>).  The Analytic_Opacity_Model derived class
+ * must have a pack function; this is enforced by the virtual
  * Analytic_Opacity_Model base class.
  */
 Analytic_MultigroupOpacity::sf_char Analytic_MultigroupOpacity::pack() const {
   // make a packer
   rtt_dsxx::Packer packer;
 
-  // now add up the total size; number of groups + 1 int for number of
-  // groups, number of models + size in each model + models, 1 int for
-  // reaction type, 1 int for model type
-  int size = 3 * sizeof(int) + group_boundaries.size() * sizeof(double);
+  // now add up the total size; number of groups + 1 int for number of groups,
+  // number of models + size in each model + models, 1 int for reaction type,
+  // 1 int for model type
+  Check(3 * sizeof(int) + group_boundaries.size() * sizeof(double) < INT_MAX);
+  int size = static_cast<int>(3 * sizeof(int) +
+                              group_boundaries.size() * sizeof(double));
 
   // make a char array
   sf_char packed(size);
@@ -128,32 +126,10 @@ Analytic_MultigroupOpacity::sf_char Analytic_MultigroupOpacity::pack() const {
 //---------------------------------------------------------------------------//
 unsigned Analytic_MultigroupOpacity::packed_size() const {
   // This must match the size calculated in the previous function
-  return 3 * sizeof(int) + group_boundaries.size() * sizeof(double);
+  Check(3 * sizeof(int) + group_boundaries.size() * sizeof(double) < UINT_MAX);
+  return static_cast<unsigned>(3 * sizeof(int) +
+                               group_boundaries.size() * sizeof(double));
 }
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return a string describing the opacity model.
- */
-// Analytic_MultigroupOpacity::std_string
-// Analytic_MultigroupOpacity::getDataDescriptor() const
-// {
-//     std_string descriptor;
-
-//     if (reaction == rtt_cdi::TOTAL)
-// 	descriptor = "Analytic Multigroup Total";
-//     else if (reaction == rtt_cdi::ABSORPTION)
-// 	descriptor = "Analytic Multigroup Absorption";
-//     else if (reaction == rtt_cdi::SCATTERING)
-// 	descriptor = "Analytic Multigroup Scattering";
-//     else
-//     {
-// 	Insist (0, "Invalid analytic multigroup model opacity!");
-//     }
-
-//     return descriptor;
-// }
-
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//

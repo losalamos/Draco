@@ -4,10 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:00:47 2005
  * \brief  Implemention for Norms_Index class.
- * \note   Copyright © 2016-2018 Los Alamos National Security, LLC.  
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Comm_Traits.hh"
@@ -17,8 +15,7 @@ namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 //! Default constructor.
-//---------------------------------------------------------------------------//
-template <class Index_t>
+template <typename Index_t>
 Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
   /* empty */
 }
@@ -32,7 +29,7 @@ Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
   \param weight The weight factor for \a v.
 */
 //---------------------------------------------------------------------------//
-template <class Index_t>
+template <typename Index_t>
 void Norms_Index<Index_t>::add(const double v, const Index_t &index,
                                const double weight) {
   double vabs = std::fabs(v);
@@ -48,14 +45,11 @@ void Norms_Index<Index_t>::add(const double v, const Index_t &index,
 }
 
 //---------------------------------------------------------------------------//
-/*!
-  \brief  Re-initializes the norm values.
-*/
-//---------------------------------------------------------------------------//
-template <class Index_t> void Norms_Index<Index_t>::reset() {
-  Norms_Base::reset();
-  d_index_Linf = Index_t();
-}
+//! Re-initializes the norm values.
+// template <typename Index_t> void Norms_Index<Index_t>::reset() {
+//   Norms_Base::reset();
+//   d_index_Linf = Index_t();
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -64,11 +58,11 @@ template <class Index_t> void Norms_Index<Index_t>::reset() {
   After calling this function, processor \a n contains the norms over all
   processors.  All processors other than \a n still contain their same
   norm values.
-  
+
   \param n Processor on which norms are summed.
 */
 //---------------------------------------------------------------------------//
-template <class Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
+template <typename Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
   const size_t num_nodes = rtt_c4::nodes();
 
   if (num_nodes == 1)
@@ -84,13 +78,14 @@ template <class Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
     for (size_t i = 0; i < num_nodes; ++i) {
       if (i != n) {
         double x(0);
-        rtt_c4::receive(&x, 1, i);
+        Check(i < INT_MAX);
+        rtt_c4::receive(&x, 1, static_cast<int>(i));
         d_sum_L1 += x;
-        rtt_c4::receive(&x, 1, i);
+        rtt_c4::receive(&x, 1, static_cast<int>(i));
         d_sum_L2 += x;
-        rtt_c4::receive(&x, 1, i);
+        rtt_c4::receive(&x, 1, static_cast<int>(i));
         d_sum_weights += x;
-        rtt_c4::receive(&x, 1, i);
+        rtt_c4::receive(&x, 1, static_cast<int>(i));
         Comm_Traits<Index_t>::receive(pe_index, i);
         if (x > d_Linf) {
           d_Linf = x;
@@ -101,20 +96,18 @@ template <class Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
   } else {
     // Send this proc's result back to node n.
 
-    rtt_c4::send(&d_sum_L1, 1, n);
-    rtt_c4::send(&d_sum_L2, 1, n);
-    rtt_c4::send(&d_sum_weights, 1, n);
-    rtt_c4::send(&d_Linf, 1, n);
+    Check(n < INT_MAX);
+    rtt_c4::send(&d_sum_L1, 1, static_cast<int>(n));
+    rtt_c4::send(&d_sum_L2, 1, static_cast<int>(n));
+    rtt_c4::send(&d_sum_weights, 1, static_cast<int>(n));
+    rtt_c4::send(&d_Linf, 1, static_cast<int>(n));
     Comm_Traits<Index_t>::send(d_index_Linf, n);
   }
 }
 
 //---------------------------------------------------------------------------//
-/*!
-  \brief Equality operator.
-*/
-//---------------------------------------------------------------------------//
-template <class Index_t>
+//! Equality operator.
+template <typename Index_t>
 bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
   bool b = Norms_Base::operator==(n);
   return b && (d_index_Linf == n.d_index_Linf);

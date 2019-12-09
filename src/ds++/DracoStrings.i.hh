@@ -5,7 +5,7 @@
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
  * \brief  Enscapulates common string manipulations (implicit template
  *         implementation).
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -35,7 +35,7 @@ auto parse_number(std::string const &str, bool verbose) -> T {
           << "\tstring = \"" << str << "\"\n"
           << std::endl;
     throw e;
-  } catch (std::out_of_range &e) {
+  } catch (std::out_of_range & /*error*/) {
     // if the converted value would fall out of the range of the result type
     // or if the underlying function (std::strtol or std::strtoull) sets
     // errno to ERANGE.

@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   FortranCheck/test/mpi_hw.cc
+ * \file   FortranChecks/test/mpi_hw.cc
  * \author Kelly Thompson
  * \date   Thursday, Nov 12, 2015, 10:35 am
  * \brief  Test C++ main linking a Fortran library that uses MPI
- * \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -23,7 +23,7 @@ void test_mpi_hw(rtt_dsxx::UnitTest &ut) {
   // Call fortran subroutine
   tst_mpi_hw(&nf);
   ut.numPasses = 1;
-  ut.numFails = nf;
+  ut.numFails = static_cast<unsigned>(nf);
   return;
 }
 

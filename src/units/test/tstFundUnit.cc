@@ -3,36 +3,32 @@
  * \file   units/test/tstFundUnit.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \brief  
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \brief
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-
-#include <sstream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/FundUnit.hh"
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 void test_construction(rtt_dsxx::UnitTest &ut) {
-  using std::cout;
-  using std::endl;
-  using std::string;
-  using std::ostringstream;
   using rtt_dsxx::soft_equiv;
   using rtt_units::FundUnit;
-  using rtt_units::Ltype;
-  using rtt_units::L_null;
-  using rtt_units::L_labels;
   using rtt_units::L_cf;
+  using rtt_units::L_labels;
+  using rtt_units::L_null;
+  using rtt_units::Ltype;
+  using std::cout;
+  using std::endl;
+  using std::ostringstream;
+  using std::string;
 
   FundUnit<Ltype> myLength(L_null, L_cf, L_labels);
 

@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 07, 2012, 14:02 pm
  * \brief  Unit tests for rtt_c4::send_is()
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: tstsend_is.cc 5830 2011-05-05 19:43:43Z kellyt $
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -31,10 +28,10 @@ public:
     my_ints[0] = rank;
     my_ints[1] = rank * 1000;
     my_ints[2] = rank * 10000;
-    my_doubles[0] = double(rank);
-    my_doubles[1] = double(rank * 1000);
-    my_longs[0] = rank + 1000000000000;
-    my_longs[1] = rank + 10000000000000;
+    my_doubles[0] = static_cast<double>(rank);
+    my_doubles[1] = static_cast<double>(rank * 1000);
+    my_longs[0] = rank + 100000000l;
+    my_longs[1] = rank + 1000000000l;
   }
   ~Custom() {}
 
@@ -119,26 +116,35 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     left = rtt_c4::nodes() - 1;
 
   // create some data to send/recv
-  unsigned int const bsize(10);
+  unsigned const bsize(10);
   std::vector<int> buffer2(bsize);
   std::vector<int> buffer1(bsize);
-  for (size_t i = 0; i < bsize; ++i)
-    buffer1[i] = 1000 * rtt_c4::node() + i;
+  for (unsigned i = 0; i < bsize; ++i) {
+    Check(i < INT_MAX);
+    buffer1[i] = 1000 * rtt_c4::node() + static_cast<int>(i);
+  }
 
   // post asynchronous receives.
-  comm_int[0] = rtt_c4::receive_async(&buffer2[0], buffer2.size(), left);
+  Check(buffer2.size() < INT_MAX);
+  comm_int[0] = rtt_c4::receive_async(&buffer2[0],
+                                      static_cast<int>(buffer2.size()), left);
 
   try {
     // send data using non-blocking synchronous send.
-    rtt_c4::send_is(comm_int[1], &buffer1[0], buffer1.size(), right);
+    Check(buffer1.size() < INT_MAX);
+    rtt_c4::send_is(comm_int[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                    right);
 
     // wait for all communication to finish
-    rtt_c4::wait_all(comm_int.size(), &comm_int[0]);
+    Check(comm_int.size() < UINT_MAX);
+    rtt_c4::wait_all(static_cast<unsigned>(comm_int.size()), &comm_int[0]);
 
     // exected results
     std::vector<int> expected(bsize);
-    for (size_t i = 0; i < bsize; ++i)
-      expected[i] = 1000 * left + i;
+    for (size_t i = 0; i < bsize; ++i) {
+      Check(i < INT_MAX);
+      expected[i] = 1000 * left + static_cast<int>(i);
+    }
 
     if (expected == buffer2) {
       std::ostringstream msg;
@@ -151,7 +157,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
           << rtt_c4::node() << ".";
       FAILMSG(msg.str());
     }
-  } catch (rtt_dsxx::assertion const &error) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
     PASSMSG("Successfully caught a ds++ exception while trying to use "
             "send_is() in a C4_SCALAR build.");
@@ -261,7 +267,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     if (expected_custom.get_long2() != recv_custom_object.get_long2())
       ITFAILS;
 
-  } catch (rtt_dsxx::assertion const &error) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
     PASSMSG("Successfully caught a ds++ exception while trying to use "
             "send_is_custom() in a C4_SCALAR build.");

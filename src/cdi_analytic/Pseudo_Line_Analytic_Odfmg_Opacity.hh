@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Pseudo_Line_Analytic_Odfmg_Opacity class definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -27,9 +27,8 @@ using std::pair;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity
-    : public Analytic_Odfmg_Opacity,
-      public Pseudo_Line_Base {
+class Pseudo_Line_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity,
+                                           public Pseudo_Line_Base {
 private:
   Averaging averaging_;
   unsigned qpoints_;
@@ -48,7 +47,12 @@ public:
       double edge_ratio, double Tref, double Tpow, double emin, double emax,
       Averaging averaging, unsigned qpoints, unsigned seed);
 
-  // Constructor.
+  /*!
+   * \brief Constructor 2
+   * \bug No doxygen documentation
+   * \bug No unit test in Draco but used by Capsaicin in
+   *      thermal_data/microphysics_parser.cc.
+   */
   Pseudo_Line_Analytic_Odfmg_Opacity(
       const sf_double &groups, const sf_double &bands,
       rtt_cdi::Reaction reaction_in, string const &cont_file,
@@ -57,7 +61,12 @@ public:
       double emin, double emax, Averaging averaging, unsigned qpoints,
       unsigned seed);
 
-  // Constructor.
+  /*!
+   * \brief Constructor 3
+   * \bug No doxygen documentation
+   * \bug No unit test in Draco but used by Capsaicin in
+   *      thermal_data/microphysics_parser.cc.
+   */
   Pseudo_Line_Analytic_Odfmg_Opacity(
       const sf_double &groups, const sf_double &bands,
       rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
@@ -70,7 +79,7 @@ public:
   explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);
 
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
-                                              double targetDensity) const;
+                                              double /*targetDensity*/) const;
 
   std::vector<std::vector<std::vector<double>>>
   getOpacity(const std::vector<double> &targetTemperature,

@@ -4,14 +4,12 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  Data gatherv functions
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file contains the declarations for determinate and indeterminate
  * variable length gather functions.
  */
-//---------------------------------------------------------------------------//
-
 //---------------------------------------------------------------------------//
 
 #ifndef c4_gatherv_hh
@@ -36,9 +34,8 @@ namespace rtt_c4 {
  * size of the incoming message. On return, contains the gathered data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-determinate_gatherv(std::vector<T> &outgoing_data,
-                    std::vector<std::vector<T>> &incoming_data);
+void determinate_gatherv(std::vector<T> &outgoing_data,
+                         std::vector<std::vector<T>> &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -53,13 +50,11 @@ determinate_gatherv(std::vector<T> &outgoing_data,
  * the root processor, on return, contains the gathered data.
  */
 template <class T>
-DLL_PUBLIC_c4 void
-indeterminate_gatherv(std::vector<T> &outgoing_data,
-                      std::vector<std::vector<T>> &incoming_data);
+void indeterminate_gatherv(std::vector<T> &outgoing_data,
+                           std::vector<std::vector<T>> &incoming_data);
 
-DLL_PUBLIC_c4 void
-indeterminate_gatherv(std::string &outgoing_data,
-                      std::vector<std::string> &incoming_data);
+void indeterminate_gatherv(std::string &outgoing_data,
+                           std::vector<std::string> &incoming_data);
 
 } // end namespace rtt_c4
 

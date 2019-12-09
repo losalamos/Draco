@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator implementation file (non-templated code).
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -19,11 +19,11 @@
 namespace rtt_viz {
 
 using std::endl;
-using std::setw;
 using std::ios;
 using std::ofstream;
-using std::string;
 using std::setiosflags;
+using std::setw;
+using std::string;
 
 //---------------------------------------------------------------------------//
 // PUBLIC FUNCTIONS
@@ -43,8 +43,8 @@ void Ensight_Translator::open(const int icycle, const double time,
   Insist(!d_geom_out.is_open(),
          "Attempted to open an already open geometry file!");
 
-  using std::string;
   using std::ostringstream;
+  using std::string;
 
   // Increment local dump counter and add dump time
   d_dump_times.push_back(time);
@@ -149,8 +149,7 @@ void Ensight_Translator::close() {
 /*!
  * \brief Creates some of the file prefixes and filenames for ensight dump.
  *
- * \param prefix std_string giving the name of the problem
- * \param gd_wpath directory where dumps are stored
+ * \param[in] prefix std_string giving the name of the problem
  */
 void Ensight_Translator::create_filenames(const std_string &prefix) {
   if (d_dump_dir[d_dump_dir.size() - 1] == rtt_dsxx::UnixDirSep ||
@@ -169,23 +168,24 @@ void Ensight_Translator::create_filenames(const std_string &prefix) {
 /*!
  * \brief Common initializer for constructors.
  *
- * \param graphics_continue If true, use existing ensight directory.
- * If false, create or wipe out the existing directory.
+ * \param[in] graphics_continue If true, use existing ensight directory. If
+ *               false, create or wipe out the existing directory.
  */
 void Ensight_Translator::initialize(const bool graphics_continue) {
   using std::strerror;
 
-  d_num_cell_types = 15;
+  d_num_cell_types = 16;
 
   // Assign values to d_cell_names. These are the official "Ensight" names that
   // must be used in the Ensight file.
-  d_cell_names = {"point",     "bar2",  "bar3",   "tria3",   "tria6",
-                  "quad4",     "quad8", "tetra4", "tetra10", "pyramid5",
-                  "pyramid13", "hexa8", "hexa20", "penta6",  "penta15"};
+  d_cell_names = {"point",   "bar2",     "bar3",      "tria3",
+                  "tria6",   "quad4",    "quad8",     "tetra4",
+                  "tetra10", "pyramid5", "pyramid13", "hexa8",
+                  "hexa20",  "penta6",   "penta15",   "nsided"};
   Check(d_cell_names.size() == d_num_cell_types);
 
   // Assign values to vrtx_count, the number of vertices in a cell.
-  d_vrtx_cnt = {1, 2, 3, 3, 6, 4, 8, 4, 10, 5, 13, 8, 20, 6, 15};
+  d_vrtx_cnt = {1, 2, 3, 3, 6, 4, 8, 4, 10, 5, 13, 8, 20, 6, 15, -1};
   Check(d_vrtx_cnt.size() == d_num_cell_types);
 
   // Assign values to d_cell_type_index. The user will use these to identify
@@ -204,7 +204,8 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
                        eight_node_hexahedron,
                        twenty_node_hexahedron,
                        six_node_wedge,
-                       fifteen_node_wedge};
+                       fifteen_node_wedge,
+                       unstructured};
   Check(d_cell_type_index.size() == d_num_cell_types);
 
   // Check d_dump_dir
@@ -232,8 +233,8 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
 
   // build the ensight directory if this is not a continuation
   if (!graphics_continue) {
-    // We have guaranteed that our prefix directory exists at this
-    // point.  Now, wipe out files that we might have created in there...
+    // We have guaranteed that our prefix directory exists at this point.  Now,
+    // wipe out files that we might have created in there...
     if (!stat_ret) {
       rtt_dsxx::draco_remove_dir(d_prefix);
       rtt_dsxx::draco_mkdir(d_prefix);
@@ -391,7 +392,7 @@ void Ensight_Translator::write_case() {
     caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i] << endl;
 }
 
-} // end of rtt_viz
+} // namespace rtt_viz
 
 //---------------------------------------------------------------------------//
 // end of Ensight_Translator.cc

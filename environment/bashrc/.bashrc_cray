@@ -1,0 +1,185 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## File  : environment/bashrc/.bashrc_cray
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
+##         All rights are reserved.
+##
+## Bash configuration file for Cray HPC machines.
+##---------------------------------------------------------------------------##
+
+#verbose=true
+
+if test -n "$verbose"; then
+   echo "In draco/environment/bashrc/.bashrc_cray"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# Where is the vendor directory
+if [[ ! ${VENDOR_DIR} ]]; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
+# shell options
+# Do not escape $ for bash completion
+shopt -s direxpand
+
+# alias salloc='salloc --gres=craynetwork:0'
+
+add_to_path $VENDOR_DIR/bin
+
+# If LESS is set, is should include '-R' so that git diff's color
+# displays correctly.
+if [[ -n "${LESS}" ]]; then
+  unset LESS
+#  if test `echo $LESS | grep -c R` = 0; then
+#    export LESS="${LESS} -R"
+#  fi
+fi
+
+#
+# Cray environment and options
+#
+# CRAY_CPU_TARGET=arm-thunderx2 ==> capulin, thunder
+#
+
+#
+# OpenMP
+#
+# export OMP_PLACES=threads # lmdm says do not set this!
+
+unset OMP_NUM_THREADS
+if [[ ${CRAY_CPU_TARGET} =~ arm ]]; then
+#  export OMP_NUM_THREADS=28
+  export NRANKS_PER_NODE=56
+#if [[ `lscpu | grep Flags | grep -c avx512` == 0 ]]; then
+elif [[ ${CRAY_CPU_TARGET} =~ haswell ]]; then
+#  export OMP_NUM_THREADS=16
+  export NRANKS_PER_NODE=32
+elif [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+#  export OMP_NUM_THREADS=17
+  export NRANKS_PER_NODE=68
+fi
+
+#
+# MODULES
+#
+
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
+
+# Use modules found in the draco directory
+sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
+#if test -d $HOME/modulefiles/$sysname; then
+#  export ucmf=$HOME/modulefiles
+#  module use --append ~/modulefiles/$sysname
+#else
+  module load user_contrib
+#fi
+module load friendly-testing
+if [[ ${SLURM_JOB_PARTITION} == "knl" ]]; then
+  module swap craype-haswell craype-mic-knl
+fi
+
+if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+
+  module use --append ${VENDOR_DIR}-ec/modulefiles
+  dracomodules="git cmake/3.14.6 numdiff gsl metis eospac random123 parmetis \
+superlu-dist trilinos clang-format python/3.6-anaconda-5.0.1"
+
+  if [[ -d ${VENDOR_DIR}-ec ]]; then
+    group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`
+    if [[ `groups | grep -c $group_for_vendor_ec` != 0 ]]; then
+      dracomodules="$dracomodules csk/0.4.2 ndi"
+    fi
+  fi
+
+elif [[ ${CRAY_CPU_TARGET} =~ arm ]]; then
+
+  alias salloc='salloc --x11'
+
+  module use --append ${VENDOR_DIR}-ec/modulefiles-capulin
+  comp="gcc-8.3.0"
+  mpi="mpt-7.7.10"
+  dracomodules="git/2.20.1 cmake numdiff/5.9.0-${comp} gsl/2.5-${comp} openblas/0.3.6-${comp} metis/5.1.0-${comp} eospac/6.4.0-${comp} random123/1.09-${comp} parmetis/4.0.3-${comp}-${mpi} superlu-dist/5.4.0-${comp}-${mpi}-openblas trilinos/12.14.1-${comp}-${mpi}-openblas cray-python/3.6.5.6 qt"
+
+  if [[ -d ${VENDOR_DIR}-ec ]]; then
+    group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`
+    if [[ `groups | grep -c $group_for_vendor_ec` != 0 ]]; then
+      dracomodules="$dracomodules csk/0.4.2-${comp} ndi"
+    fi
+  fi
+
+fi
+
+export dracomodules
+
+# ---------------------------------------------------------------------------- #
+# Trinity
+# ---------------------------------------------------------------------------- #
+
+function dracoenv ()
+{
+  if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+    module unload gcc cray-libsci intel
+    module load intel/19.0.4
+  else
+    module unload PrgEnv-cray gcc
+    module load PrgEnv-gnu
+  fi
+  for m in $dracomodules; do
+    module load $m
+  done
+  if [[ `echo $LOADEDMODULES | grep -c hugepages` != 0 ]]; then
+    modname=`echo $LOADEDMODULES | sed -e 's/.*craype-hugepages/craype-hugepages/' | sed -e 's/[:].*//'`
+    module unload $modname
+  fi
+  export CXX=CC
+  export CC=cc
+  export FC=ftn
+  export CRAYPE_LINK_TYPE=dynamic
+  export DRACO_OLD_LD_LIBRARY_PATH=LD_LIBRARY_PATH
+  for dir in ${CRAY_LD_LIBRARY_PATH//:/ }; do
+    # remove each directory listed in CRAY_LD_LIBRARY_PATH from LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=$(echo "$LD_LIBRARY_PATH" | sed -e 's%:${dir}%%')
+    # Now prepend each $dir w/o respect to if it was removed above.
+    LD_LIBRARY_PATH=$dir:$LD_LIBRARY_PATH
+  done
+  #  export MPIEXEC_EXECUTABLE=`which srun`
+}
+export -f dracoenv
+
+function rmdracoenv ()
+{
+  # this setting recommended by Sam Guiterrez to allow correct core binding for
+  # C++ threads (maybe OpeNMP threads also) on KNLs.
+  export KMP_AFFINITY=disabled
+  export LD_LIBRARY_PATH=$DRACO_OLD_LD_LIBRARY_PATH
+  # unload in reverse order.
+  mods=( ${dracomodules} )
+  for ((i=${#mods[@]}-1; i>=0; i--)); do
+    # loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
+    #if test $loaded = 1; then
+    module unload ${mods[$i]}
+    #fi
+  done
+  if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+    module unload intel
+    module unload PrgEnv-intel
+    module load PrgEnv-intel
+  else
+    module unload PrgEnv-gnu gcc
+    module load PrgEnv-cray
+  fi
+}
+export -f rmdracoenv
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_cray
+##---------------------------------------------------------------------------##

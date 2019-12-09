@@ -4,7 +4,7 @@
 ;; Author : Kelly Thompson
 ;; Created: 30 Nov 2004
 ;; Brief  : ELisp package for making Draco related stuff easier.
-;; Note   : Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+;; Note   : Copyright (C) 2016-2019 Triad National Security, LLC.
 ;;======================================================================
 ;; Commentary:
 ;;
@@ -455,7 +455,7 @@ function or method. Width is set by draco-code-comment-width.
   (insert " * \\brief \n")
   (insert " * \n")
   (insert " * \\param[in] name description\n")
-  (insert " * \\param[inout] name description\n")
+  (insert " * \\param[in,out] name description\n")
   (insert " * \\param[out] name description\n")
   (insert " * \\return description\n")
   (insert " */\n")

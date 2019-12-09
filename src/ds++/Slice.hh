@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definition of Slice template
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef container_Slice_hh
@@ -37,23 +34,23 @@ namespace rtt_dsxx {
 
 template <typename Ran> class Slice {
 private:
-  typedef typename std::iterator_traits<Ran> traits;
+  typedef typename std::iterator_traits<Ran> traits; // NOLINT
 
 public:
   // NESTED CLASSES AND TYPEDEFS
 
-  typedef typename traits::value_type value_type;
+  using value_type = typename traits::value_type;
   // no allocator type
-  typedef unsigned size_type;
-  typedef typename traits::difference_type difference_type;
+  using size_type = unsigned int;
+  using difference_type = typename traits::difference_type;
 
   class iterator {
   public:
-    typedef typename traits::iterator_category iterator_category;
-    typedef typename traits::value_type value_type;
-    typedef typename traits::difference_type difference_type;
-    typedef typename traits::pointer pointer;
-    typedef typename traits::reference reference;
+    using iterator_category = typename traits::iterator_category;
+    using value_type = typename traits::value_type;
+    using difference_type = typename traits::difference_type;
+    using pointer = typename traits::pointer;
+    using reference = typename traits::reference;
 
     Ran first() const { return first_; }
     difference_type offset() const { return offset_; }
@@ -110,11 +107,11 @@ public:
 
   class const_iterator {
   public:
-    typedef typename traits::iterator_category iterator_category;
-    typedef typename traits::value_type value_type;
-    typedef typename traits::difference_type difference_type;
-    typedef typename traits::pointer pointer;
-    typedef typename traits::reference reference;
+    using iterator_category = typename traits::iterator_category;
+    using value_type = typename traits::value_type;
+    using difference_type = typename traits::difference_type;
+    using pointer = typename traits::pointer;
+    using reference = typename traits::reference;
 
     Ran first() const { return first_; }
     difference_type offset() const { return offset_; }
@@ -172,43 +169,44 @@ public:
     unsigned stride_;
   };
 
-  typedef std::reverse_iterator<iterator> reverse_iterator;
-  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  typedef typename traits::pointer pointer;
-  typedef typename traits::reference reference;
-  typedef value_type const *const_pointer;
-  typedef value_type const &const_reference;
+  using pointer = typename traits::pointer;
+  using reference = typename traits::reference;
+  using const_pointer = const value_type *;
+  using const_reference = const value_type &;
 
   // CREATORS
 
   //-----------------------------------------------------------------------//
   /*!
-     * \brief Construct from a sequence.
-     *
-     * The constructed Slice has reference semantics to the sequence.  That
-     * is, modifications to elements of the Slice are actually modifications
-     * to the elements of the underlying sequence, and the Slice becomes
-     * invalid if the underlying sequence becomes invalid.  For example, a
-     * sequence based on a vector becomes invalid if the vector is resized,
-     * and so will a Slice based on that sequence.
-     *
-     * A stride is applied to all indexing, so that an index \c i applied to
-     * the Slice references the element whose index is \c stride*i in the
-     * underlying sequence.  No offset is necessary, since the same result is
-     * easily obtained by modifying the starting iterator of the underlying
-     * sequence. Iterators behave in a comparable manner, so
-     * that \c begin() of the Slice points to \c begin()+offset of the
-     * underlying container, and the increment operator actually increments
-     * by \c stride.
-     *
-     * \param first Iterator to the beginning of a sequence.
-     * \param length Length of the constructed Slice.
-     * \param stride Stride to apply to the sequence.
-     */
-  Slice(Ran const first, unsigned const length, unsigned const stride = 1)
-      : first(first), length(length), stride(stride) {
-    Require(stride > 0);
+   * \brief Construct from a sequence.
+   *
+   * The constructed Slice has reference semantics to the sequence.  That
+   * is, modifications to elements of the Slice are actually modifications
+   * to the elements of the underlying sequence, and the Slice becomes
+   * invalid if the underlying sequence becomes invalid.  For example, a
+   * sequence based on a vector becomes invalid if the vector is resized,
+   * and so will a Slice based on that sequence.
+   *
+   * A stride is applied to all indexing, so that an index \c i applied to
+   * the Slice references the element whose index is \c stride*i in the
+   * underlying sequence.  No offset is necessary, since the same result is
+   * easily obtained by modifying the starting iterator of the underlying
+   * sequence. Iterators behave in a comparable manner, so
+   * that \c begin() of the Slice points to \c begin()+offset of the
+   * underlying container, and the increment operator actually increments
+   * by \c stride.
+   *
+   * \param first_in Iterator to the beginning of a sequence.
+   * \param length_in Length of the constructed Slice.
+   * \param stride_in Stride to apply to the sequence.
+   */
+  Slice(Ran const first_in, unsigned const length_in,
+        unsigned const stride_in = 1)
+      : first(first_in), length(length_in), stride(stride_in) {
+    Require(stride_in > 0);
   }
 
   // MANIPULATORS
@@ -267,15 +265,14 @@ private:
  * This is a convenient interface that avoids the necessity for writing a lot
  * of type expressions in user code.
  *
- * \arg \a Rab A random access iterator.
+ * \tparam Ran A random access iterator.
  *
  * \param first Start of a sequence
- * \param last Length of the Slice.
+ * \param length Length of the Slice.
  * \param stride Stride into the container
  *
  * \return The desired Slice.
  */
-
 template <typename Ran>
 inline Slice<Ran> slice(Ran const first, unsigned const length,
                         unsigned const stride = 1) {

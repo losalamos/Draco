@@ -3,13 +3,14 @@
  * \file   ds++/Assert.hh
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef RTT_dsxx_Assert_HH
 #define RTT_dsxx_Assert_HH
 
+#include "DracoTerminal.hh"
 #include "ds++/config.h"
 #include <stdexcept>
 #include <string>
@@ -21,6 +22,12 @@
 // non dll-interface class 'std::logic_error' used as base for dll-interface
 // class 'rtt_dsxx::assertion'
 #pragma warning(disable : 4275)
+#endif
+
+// DBC should be defined in ds++/config.h and can be set via cmake as
+// DRACO_DBC_LEVEL=[0-31]
+#if !defined(DBC)
+#define DBC 7
 #endif
 
 namespace rtt_dsxx {
@@ -83,7 +90,7 @@ namespace rtt_dsxx {
  *
  * Let rtt_dsxx::assertion derive from std::runtime_error.  G. Furnish intended
  * for the design to follow this model but the C++ compilers at time did not
- * have full support for \c <stdexcept>.  API is unchanged but the guts of the
+ * have full support for \c "stdexcept".  API is unchanged but the guts of the
  * class are significantly different (i.e.: use copy and assignment operators
  * from base class, use string instead of \c const \c char \c *, etc.).
  *
@@ -118,7 +125,7 @@ namespace rtt_dsxx {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx assertion : public std::logic_error {
+class assertion : public std::logic_error {
 public:
   /*!
    * \brief Default constructor for ds++/assertion class.
@@ -156,7 +163,7 @@ public:
 
   /*! \brief Destructor for ds++/assertion class.
    * We do not allow the destructor to throw! */
-  virtual ~assertion() throw();
+  ~assertion() noexcept override;
 
   /*! Helper function to build error message that includes source file name and
    *  line number. */
@@ -183,6 +190,7 @@ DLL_PUBLIC_dsxx void check_cookies(bool cond, char const *cond_text,
 //! Print error w/o throw
 DLL_PUBLIC_dsxx void show_cookies(std::string const &cond,
                                   std::string const &file, int const line);
+
 //! Throw a rtt_dsxx::assertion for Insist.
 [[noreturn]] DLL_PUBLIC_dsxx void insist(std::string const &cond,
                                          std::string const &msg,
@@ -195,6 +203,7 @@ DLL_PUBLIC_dsxx void show_cookies(std::string const &cond,
                                              char const *const file,
                                              int const line);
 
+#if DBC & 16
 //! Check version of insist
 DLL_PUBLIC_dsxx void check_insist(bool cond, char const *const condstr,
                                   std::string const &msg,
@@ -204,11 +213,12 @@ DLL_PUBLIC_dsxx void check_insist(bool cond, char const *const condstr,
 DLL_PUBLIC_dsxx void check_insist_ptr(bool cond, char const *const condstr,
                                       char const *const msg,
                                       char const *const file, int const line);
+#endif
 
 //! Add hostname and pid to error messages.
 DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
-} // end of rtt_dsxx
+} // namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
 /*!
@@ -226,7 +236,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  * \endcode
  *
  * If the assertion fails, the code should just bomb.  Philosophically, it
- * should be used to feret out bugs in preceding code, making sure that prior
+ * should be used to ferret out bugs in preceding code, making sure that prior
  * results are within reasonable bounds before proceeding to use those results
  * in further computation, etc.
  *
@@ -240,7 +250,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  0      Require
  1      Check
  2      Ensure, Remember
- 3      (nothrow option)
+ 3      (nothrow versions of above macros) [8-15]
+ 4      (deferred exception throwing versions of above macros)
  \endverbatim
  *
  * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all off,
@@ -255,10 +266,10 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  * control.  If the user makes a poor choice, we "insist" that it be corrected,
  * providing a corrective hint.
  *
- * \note We provide a way to eliminate assertions, but not insistings.  The idea
+ * \note We provide a way to eliminate assertions, but not insists.  The idea
  * is that \c Assert is used to perform sanity checks during program
  * development, which you might want to eliminate during production runs for
- * performance sake.  Insist is used for things which really really must be
+ * performance sake.  Insist is used for things which really must be
  * true, such as "the file must've been opened", etc.  So, use \c Assert for
  * things which you want taken out of production codes (like, the check might
  * inhibit inlining or something like that), but use Insist for those things you
@@ -305,12 +316,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
 // clang-format off
 
-#if !defined(DBC)
-#define DBC 7
-#endif
-
 //---------------------------------------------------------------------------//
-// No-throw versions of DBC
+// No-throw versions of DBC [8-15]
 //---------------------------------------------------------------------------//
 #if DBC & 8
 
@@ -460,7 +467,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  *           function type, a reference to function type, a pointer to member
  *           function type. It may appear on the declarator of a parameter or on
  *           the declarator of a return type.
- *           \ref http://en.cppreference.com/w/cpp/language/except_spec
+ *           \sa http://en.cppreference.com/w/cpp/language/except_spec
  */
 //----------------------------------------------------------------------------//
 
@@ -484,7 +491,35 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #endif
 
 //----------------------------------------------------------------------------//
+/*! Ensure all possible Draco DbC macros are defined.  If not already defined,
+ * then define them as no-op. */
+//----------------------------------------------------------------------------//
+#ifndef Require
+#define Require(c)
+#endif
+#ifndef Check
+#define Check(c)
+#endif
+#ifndef Assert
+#define Assert(c)
+#endif
+#ifndef Ensure
+#define Ensure(c)
+#endif
+#ifndef Insist
+#define Insist(c,m)
+#endif
+#ifndef Insist_ptr
+#define Insist_ptr(c,m)
+#endif
+#ifndef Bad_Case
+#define Bad_Case(m)
+#endif
+#ifndef Remember
+#define Remember(c)
+#endif
 
+//----------------------------------------------------------------------------//
 #if defined(MSVC)
 #pragma warning(pop)
 #endif

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
  *         All rights reserved.  */
 //---------------------------------------------------------------------------------------//
 
@@ -18,7 +18,8 @@ using rtt_dsxx::soft_equiv;
 
 //=======================================================================================//
 /*!
- * \class Ordinate \brief Class containing angle cosines and weights for an
+ * \class Ordinate 
+ * \brief Class containing angle cosines and weights for an
  *        element of an ordinate set.
  *
  * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x

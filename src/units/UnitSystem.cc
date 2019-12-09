@@ -2,7 +2,7 @@
 /*! \file   UnitSystem.cc
  *  \author Kelly Thompson
  *  \date   Thu Oct 24 15:10:32 2003
- *  \note   Copyright (C) 2003-2018 Los Alamos National Security, LLC.
+ *  \note   Copyright (C) 2003-2019 Triad National Security, LLC.
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 

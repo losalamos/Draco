@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 June 24
 # brief  Generate build project files for fortran.
-# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -41,9 +41,8 @@ if(NOT TARGET Lib_dsxx)
   string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
     "${Draco_TPL_INCLUDE_DIRS}" )
 
-  # message("dtplid = ${cafs_Draco_TPL_INCLUDE_DIRS}")
-
   include(CMakeAddFortranSubdirectory)
+
   get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../..
     ABSOLUTE )
   cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
@@ -61,7 +60,6 @@ if(NOT TARGET Lib_dsxx)
       CACHE PATH "Build runtime objects at this location.")
   endif()
   include( platform_checks )
-  #query_openmp_availability()
   include( compilerEnv )
   dbsSetupFortran()
   # Vendors are not needed here, but I'm trying to follow the model found in
@@ -70,40 +68,9 @@ if(NOT TARGET Lib_dsxx)
   include( vendor_libraries )
   setupVendorLibraries()
 
-  if(WIN32)
-    # MS-MPI 5 and gfortran/4.8 do not play nice together...
-    if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x")
-      message( FATAL_ERROR
-        "In ftest/CMakeLists.txt, CMAKE_BUILD_TYPE must be set."
-        "Note: for multi-config build tools, CMakeAddFortranSubdirectory will "
-        "set this for you.")
-    endif()
-    string( TOUPPER ${CMAKE_BUILD_TYPE} ucbt )
-    if( "${CMAKE_Fortran_FLAGS_${ucbt}}" MATCHES "frange-check" )
-      string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
-        ${CMAKE_Fortran_FLAGS_DEBUG} )
-    else()
-      set( CMAKE_Fortran_FLAGS_${ucbt}
-        "${CMAKE_Fortran_FLAGS_${ucbt}} -fno-range-check")
-    endif()
-
-    # Don't link to the C++ MS-MPI library when compiling with MinGW
-    # gfortran. Instead, link to libmsmpi.a that was created via gendef.exe and
-    # dlltool.exe from msmpi.dll.  Ref:
-    # http://www.geuz.org/pipermail/getdp/2012/001519.html
-    if( "${MPI_Fortran_LIBRARIES}none" STREQUAL "none" OR
-        "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
-      # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
-      find_file( MPI_gfortran_LIBRARIES NAMES "libmsmpi.a" )
-      if( MPI_gfortran_LIBRARIES )
-        set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-          "msmpi for gfortran" FORCE )
-      else()
-        message( FATAL_ERROR "Unable to find libmsmpi.a. This library must"
-        " be created from msmpi.dll and saved as a MinGW library. ")
-      endif()
-    endif()
-  endif()
+  # link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll,
+  # and ensure that the compiler option '-fno-range-check' is enabled.
+  cafs_fix_mpi_library()
 
 endif()
 

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity templated class implementation file.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -211,8 +211,8 @@ std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
  * iterators because they are \b not required to be char *.
  */
 std::vector<char> IpcressMultigroupOpacity::pack() const {
-  using std::vector;
   using std::string;
+  using std::vector;
 
   // pack up the energy policy descriptor
   vector<char> packed_descriptor;

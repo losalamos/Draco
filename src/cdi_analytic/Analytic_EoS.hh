@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS class definition.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -58,7 +58,7 @@ private:
 
 public:
   // Constructor.
-  explicit Analytic_EoS(SP_Analytic_Model);
+  explicit Analytic_EoS(SP_Analytic_Model model_in);
 
   // Unpacking constructor.
   explicit Analytic_EoS(const sf_char &);

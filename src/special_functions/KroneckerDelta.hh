@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/KroneckerDelta.hh
+ * \file   special_functions/KroneckerDelta.hh
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide declaration of templatized KroneckerDelta function.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -35,7 +35,7 @@ template <typename T>
 unsigned int kronecker_delta(
     T const test_value, T const offset,
     typename std::enable_if<std::is_floating_point<T>::value>::type * = 0) {
-  double const eps = std::numeric_limits<T>::epsilon();
+  T const eps = std::numeric_limits<T>::epsilon();
   return rtt_dsxx::soft_equiv(test_value, offset, eps) ? 1 : 0;
 }
 

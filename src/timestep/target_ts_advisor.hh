@@ -2,11 +2,8 @@
 /*!
  * \file timestep/target_ts_advisor.hh
  * \brief Header file for the target time-step advisor class.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_target_ts_advisor_hh__
@@ -22,7 +19,7 @@ namespace rtt_timestep {
  * problem time.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref timestep_overview page gives a summary of the Draco time 
+ * The \ref overview_timestep page gives a summary of the Draco time 
  * step control utilities. 
  *
  * This class provides a means to calculate 
@@ -43,11 +40,11 @@ private:
 
 public:
   //! Constructs a target time step advisor
-  /*! \param name a unique name for the advisor
-     *  \param usage_ how the advisor is to be used
-     *  \param target_value_ the problem target time (time)
-     *  \param active_ turns the advisor on/off
-     */
+  /*! \param name_ a unique name for the advisor
+   *  \param usage_ how the advisor is to be used
+   *  \param target_value_ the problem target time (time)
+   *  \param active_ turns the advisor on/off
+   */
   target_ts_advisor(const std::string &name_ = std::string("Unlabeled"),
                     const usage_flag usage_ = max,
                     const double target_value_ = -large(),
@@ -60,7 +57,7 @@ public:
 
   //! Set the target value
   /*! \param value_ the target value (time)
-     */
+   */
   void set_target(double const value_ = -large()) { target_value = value_; }
 
   // ACCESSORS
@@ -70,22 +67,22 @@ public:
 
   //! Returns the recommended time-step
   /*! \param tsm the time step manager in which the advisor resides 
-     *  \return the time step recommended by this advisor 
-     */
+   *  \return the time step recommended by this advisor 
+   */
   double get_dt_rec(const ts_manager &tsm) const;
 
   //! Prints state
   /*! Prints the internal state of the advisor to std out
-     */
+   */
   void print_state(std::ostream &out = std::cout) const;
 
   //! Invariant function
   /*! \return True if the invariant is satisfied
-     */
+   */
   bool invariant_satisfied() const;
 };
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 #endif // __target_timestep_ts_advisor_hh__
 

@@ -3,22 +3,15 @@
  * \file   cdi_eospac/Eospac.cc
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
- * \brief  
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \brief
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Eospac.hh"
 #include "EospacException.hh"
-
-// Other Draco dependencies
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
-
-// C++ standard library dependencies
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -35,9 +28,8 @@ namespace rtt_cdi_eospac {
  *
  * \sa The definition of rtt_cdi_eospac::SesameTables.
  *
- * \param SesTabs A rtt_cdi_eospac::SesameTables object that defines what data
+ * \param in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what data
  * tables will be available for queries from the Eospac object.
- *
  */
 Eospac::Eospac(SesameTables const &in_SesTabs)
     : SesTabs(in_SesTabs), matIDs(), returnTypes(), tableHandles(),
@@ -52,7 +44,7 @@ Eospac::Eospac(SesameTables const &in_SesTabs)
 } // end Eospac::Eospac()
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Construct an Eospac by unpacking a vector<char> stream
  */
 Eospac::Eospac(std::vector<char> const &packed)
@@ -60,8 +52,7 @@ Eospac::Eospac(std::vector<char> const &packed)
       infoItems(initializeInfoItems()),
       infoItemDescriptions(initializeInfoItemDescriptions()) {
   // Use the initializer list to build the needed SesTabs.  Now initialize
-  // libeospac using the data found in SesTabs just like in the default
-  // ctor.
+  // libeospac using the data found in SesTabs just like in the default ctor.
   expandEosTable();
 }
 
@@ -92,9 +83,8 @@ Eospac::~Eospac() {
                    << "\tThe associated error message is:\n\t\"" << errorMessage
                    << "\"\n";
     }
-    // Never throw an exception from the destructor.  This can cause
-    // confusion during stack unwiding.
-    // throw EospacException( outputString.str() );
+    // Never throw an exception from the destructor.  This can cause confusion
+    // during stack unwiding.
     std::cerr << outputString.str() << std::endl;
   }
 }
@@ -110,8 +100,11 @@ void Eospac::printTableInformation(EOS_INTEGER const tableType,
 
   EOS_INTEGER one(1);
   EOS_INTEGER errorCode(EOS_OK);
-  // std::vector< EOS_REAL > infoVals( infoItems.size() );
+  EOS_INTEGER ok(EOS_OK);
+  EOS_INTEGER invalid_info_flag(EOS_INVALID_INFO_FLAG);
   EOS_REAL infoVal;
+  EOS_BOOLEAN match1;
+  EOS_BOOLEAN match2;
 
   out << "\nEOSPAC information for Table " << SesTabs.tableName[tableType]
       << " (" << SesTabs.tableDescription[tableType] << ")\n"
@@ -119,7 +112,7 @@ void Eospac::printTableInformation(EOS_INTEGER const tableType,
       << "-------------------------\n";
 
   // There are 11 descriptions available for all tables.
-  unsigned numItems(infoItems.size());
+  size_t numItems(infoItems.size());
   // There are extra descriptions available for non inverted tables
   // (infoItems.size()).
   if (tableType == EOS_T_DUe || tableType == EOS_T_DUic)
@@ -128,16 +121,18 @@ void Eospac::printTableInformation(EOS_INTEGER const tableType,
   for (size_t i = 0; i < numItems; ++i) {
     eos_GetTableInfo(&tableHandle, &one, &infoItems[i], &infoVal, &errorCode);
 
-    if (errorCode == EOS_OK) {
+    eos_ErrorCodesEqual(&errorCode, &ok, &match1);
+    eos_ErrorCodesEqual(&errorCode, &invalid_info_flag, &match2);
+    if (match1 == EOS_TRUE) {
       out << std::setiosflags(std::ios::fixed) << std::setw(70) << std::left
           << infoItemDescriptions[i] << ": " << std::setprecision(6)
           << std::setiosflags(std::ios::fixed) << std::setw(13) << std::right
           << infoVal << std::endl;
-    } else if (errorCode != EOS_INVALID_INFO_FLAG) {
+    } else if (match2 == EOS_FALSE) {
       std::ostringstream outputString;
       EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
-      // Ignore EOS_INVALID_INFO_FLAG since not all infoItems are
-      // currently applicable to a specific tableHandle.
+      // Ignore EOS_INVALID_INFO_FLAG since not all infoItems are currently
+      // applicable to a specific tableHandle.
       eos_GetErrorMessage(&errorCode, errorMessage);
       outputString
           << "\n\tAn unsuccessful request for EOSPAC table information "
@@ -329,7 +324,8 @@ double Eospac::getIonTemperature(     // keV
     double /*Tguess*/) const          // keV
 {
   EOS_INTEGER const returnType = EOS_T_DUic;
-  // EOS_INTEGER const returnType = EOS_T_DUiz; // I think I need the DUic version!
+  // EOS_INTEGER const returnType = EOS_T_DUiz; - I think I need the DUic
+  // version!
   double Te_K = getF(dbl_v1(density), dbl_v1(SpecificIonInternalEnergy),
                      returnType, ETDD_VALUE)[0];
   return Te_K / keV2K(1.0); // Convert from K back to keV.
@@ -341,14 +337,14 @@ double Eospac::getIonTemperature(     // keV
 
 //---------------------------------------------------------------------------//
 /*!
- * Pack the Eospac state into a char string represented by a
- * vector<char>. This can be used for persistence, communication, etc. by
- * accessing the char * under the vector (required by implication by the
- * standard) with the syntax &char_string[0]. Note, it is unsafe to use
- * iterators because they are \b not required to be char *.
+ * Pack the Eospac state into a char string represented by a vector<char>. This
+ * can be used for persistence, communication, etc. by accessing the char *
+ * under the vector (required by implication by the standard) with the syntax
+ * &char_string[0]. Note, it is unsafe to use iterators because they are \b not
+ * required to be char *.
  *
- * Eospac has no state of its own to pack.  However, this function does call
- * the SesameTable pack() because this data is required to rebuild Eospac.
+ * Eospac has no state of its own to pack.  However, this function does call the
+ * SesameTable pack() because this data is required to rebuild Eospac.
  */
 std::vector<char> Eospac::pack() const { return SesTabs.pack(); }
 
@@ -357,37 +353,29 @@ std::vector<char> Eospac::pack() const { return SesTabs.pack(); }
 // -------------- //
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Retrieves the EoS data associated with the returnType specified and
- *        the given (density, temperature) tuples.
- *
- * Each of the public access functions calls either getF() or getdFdT() after
- * assigning the correct value to "returnType".
- *
- * \param vx         A vector of independent values (e.g. temperature or density).
- * \param vy         A vector of independent values (e.g. temperature or density).
- * \param returnType The integer index that corresponds to the type of data
- *                   being retrieved from the EoS tables. 
+/*! \brief Retrieves the EoS data associated with the returnType specified 
+ *         and the given (density, temperature) tuples.
  */
-std::vector<double> Eospac::getF(std::vector<double> const &vx,
-                                 std::vector<double> const &vy,
+std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
+                                 std::vector<double> const &vtemperature,
                                  EOS_INTEGER const returnType,
                                  EosTableDataDerivative const etdd) const {
   // The density and vector parameters must be a tuple.
-  Require(vy.size() == vx.size());
+  Require(vtemperature.size() == vdensity.size());
 
   unsigned returnTypeTableIndex(tableIndex(returnType));
 
-  // There is one piece of returned information for each (density,
-  // temperature) tuple.
-  int returnSize = vy.size();
+  // There is one piece of returned information for each (density, temperature)
+  // tuple.
+  Check(vtemperature.size() < INT32_MAX);
+  int returnSize = static_cast<int>(vtemperature.size());
 
   std::vector<double> returnVals(returnSize);
   std::vector<double> dFx(returnSize);
   std::vector<double> dFy(returnSize);
   int errorCode = 0;
-  std::vector<double> nc_vx(vx);
-  std::vector<double> nc_vy(vy);
+  std::vector<double> nc_vx(vdensity);
+  std::vector<double> nc_vy(vtemperature);
 
   eos_Interpolate(&tableHandles[returnTypeTableIndex], &returnSize, &nc_vx[0],
                   &nc_vy[0], &returnVals[0], &dFx[0], &dFy[0], &errorCode);
@@ -407,12 +395,11 @@ std::vector<double> Eospac::getF(std::vector<double> const &vx,
 
     if (errorCode == EOS_INTERP_EXTRAPOLATED) {
       // If the EOS_INTERP_EXTRAPOLATED error code is returned by either
-      // eos_Interpolate or eos_Mix, then the eos_CheckExtrap routine
-      // allows the user to determine which (x,y) pairs caused
-      // extrapolation and in which direction (high or low), it
-      // occurred. The units of the xVals, and yVals arguments listed
-      // below are determined by the units listed for each tableType in
-      // APPENDIX B and APPENDIX C.
+      // eos_Interpolate or eos_Mix, then the eos_CheckExtrap routine allows the
+      // user to determine which (x,y) pairs caused extrapolation and in which
+      // direction (high or low), it occurred. The units of the xVals, and yVals
+      // arguments listed below are determined by the units listed for each
+      // tableType in APPENDIX B and APPENDIX C.
 
       std::vector<EOS_INTEGER> xyBounds(returnSize);
 
@@ -447,9 +434,9 @@ std::vector<double> Eospac::getF(std::vector<double> const &vx,
     }
 
     // This is a fatal exception right now.  It might be useful to throw a
-    // specific exception that is derived from EospacException.  The host
-    // code could theoretically catch such an exception, fix the problem
-    // and then continue.
+    // specific exception that is derived from EospacException.  The host code
+    // could theoretically catch such an exception, fix the problem and then
+    // continue.
     throw EospacException(outputString.str());
   }
 
@@ -480,9 +467,9 @@ std::vector<double> Eospac::getF(std::vector<double> const &vx,
  *        Tables.
  */
 void Eospac::expandEosTable() const {
-  // loop over all possible EOSPAC data types.  If a matid has been assigned
-  // to a table then add this information to the vectors returnTypes[] and
-  // matIDs[] which are used by EOSPAC.
+  // loop over all possible EOSPAC data types.  If a matid has been assigned to
+  // a table then add this information to the vectors returnTypes[] and matIDs[]
+  // which are used by EOSPAC.
 
   std::vector<unsigned> materialTableList(SesTabs.matList());
   for (size_t i = 0; i < materialTableList.size(); ++i) {
@@ -494,15 +481,16 @@ void Eospac::expandEosTable() const {
     }
   }
 
-  // Allocate eosTable.  The length and location of eosTable will be
-  // modified by es1tabs() as needed.
+  // Allocate eosTable.  The length and location of eosTable will be modified by
+  // es1tabs() as needed.
   for (size_t i = 0; i < returnTypes.size(); ++i)
     tableHandles.push_back(EOS_NullTable);
 
   // Initialize eosTable and find it's required length
 
   EOS_INTEGER errorCode(0);
-  int nTables(returnTypes.size());
+  Check(returnTypes.size() < INT32_MAX);
+  int nTables(static_cast<int>(returnTypes.size()));
   eos_CreateTables(&nTables, &returnTypes[0], &matIDs[0], &tableHandles[0],
                    &errorCode);
 
@@ -531,26 +519,13 @@ void Eospac::expandEosTable() const {
     }
 
     // Clean up temporaries before we throw the exception.
-    // delete [] eosTable;
 
     // This is a fatal exception right now.  It might be useful to throw a
-    // specific exception that is derived from EospacException.  The host
-    // code could theoretically catch such an exception, fix the problem
-    // and then continue.
+    // specific exception that is derived from EospacException.  The host code
+    // could theoretically catch such an exception, fix the problem and then
+    // continue.
     throw EospacException(outputString.str());
   }
-
-  // Set options:
-  // for( size_t i=0; i <nTables; i++)
-  // {
-  //     /* enable smoothing */
-  //     eos_SetOption (&tableHandle[i], &EOS_SMOOTH, EOS_NullPtr, &errorCode);
-  //     if (errorCode != EOS_OK) {
-  //         eos_GetErrorMessage (&errorCode, errorMessage);
-  //         cout << "eos_SetOption ERROR " << errorCode << ": " << errorMessage
-  //              << '\n';
-  //     }
-  // }
 
   // Load data into table data objects
 
@@ -589,9 +564,9 @@ void Eospac::expandEosTable() const {
  *        loaded.
  */
 bool Eospac::typeFound(EOS_INTEGER returnType) const {
-  // Loop over all available types.  If the requested type id matches on in
-  // the list then return true.  If we reach the end of the list without a
-  // match return false.
+  // Loop over all available types.  If the requested type id matches on in the
+  // list then return true.  If we reach the end of the list without a match
+  // return false.
 
   for (size_t i = 0; i < returnTypes.size(); ++i)
     if (returnType == returnTypes[i])
@@ -601,9 +576,9 @@ bool Eospac::typeFound(EOS_INTEGER returnType) const {
 
 //---------------------------------------------------------------------------//
 unsigned Eospac::tableIndex(EOS_INTEGER returnType) const {
-  // Loop over all available types.  If the requested type id matches on in
-  // the list then return true.  If we reach the end of the list without a
-  // match return false.
+  // Loop over all available types.  If the requested type id matches on in the
+  // list then return true.  If we reach the end of the list without a match
+  // return false.
 
   // Throw an exception if the required return type has not been loaded by
   // Eospac.
@@ -618,7 +593,7 @@ unsigned Eospac::tableIndex(EOS_INTEGER returnType) const {
     throw EospacUnknownDataType(outputString.str());
   }
 
-  for (size_t i = 0; i < returnTypes.size(); ++i)
+  for (unsigned i = 0; i < returnTypes.size(); ++i)
     if (returnType == returnTypes[i])
       return i;
 

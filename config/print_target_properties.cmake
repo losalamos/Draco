@@ -4,7 +4,7 @@
 # brief  Use these tools for debugging cmake code.  Calling
 #        print_targets_properties( <target> ) will print all data associated
 #        with the named target.
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved
 #
 # Ref: Original idea taken from  http://www.kitware.com/blog/home/post/390
@@ -43,18 +43,18 @@ function(echo_target tgt)
   endif()
 
   message("======================== ${tgt} ========================")
-  
+
   # if ${tgt} is an IMPORTED target, it cannot be inspected directly.
   get_property(is_imported TARGET ${tgt} PROPERTY IMPORTED )
   if( is_imported )
     message( "IMPORTED = TRUE\n" )
-    return()
+    # return()
   endif()
 
-  # Get a list of known properties from cmake 
+  # Get a list of known properties from cmake
   # Ref: https://stackoverflow.com/questions/32183975/how-to-print-all-the-properties-of-a-target-in-cmake#34292622
   execute_process(
-    COMMAND cmake --help-property-list 
+    COMMAND cmake --help-property-list
     OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
   # Convert command output into a CMake list
   string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
@@ -62,7 +62,7 @@ function(echo_target tgt)
 
   foreach(prop ${CMAKE_PROPERTY_LIST})
     # special cases first
-    
+
     # Some targets aren't allowed:
     # Ref: https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
     if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR prop MATCHES "_LOCATION$")
@@ -70,16 +70,16 @@ function(echo_target tgt)
     elseif( prop MATCHES "<LANG>" )
       continue()
     endif()
-    
-    if( ${prop} MATCHES "<CONFIG>")      
+
+    if( ${prop} MATCHES "<CONFIG>")
       foreach (c DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
         string(REPLACE "<CONFIG>" "${c}" p ${prop})
         # message("prop ${p}")
         echo_target_property("${tgt}" "${p}")
       endforeach()
     endif()
-    
-    # everything else    
+
+    # everything else
     # message("prop ${prop}")
     echo_target_property("${tgt}" "${prop}")
   endforeach()

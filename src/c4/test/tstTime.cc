@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -19,17 +19,17 @@
 //---------------------------------------------------------------------------//
 
 void wall_clock_test(rtt_dsxx::UnitTest &ut) {
-  using std::endl;
   using std::cout;
+  using std::endl;
   using std::ostringstream;
   using std::set;
   using std::string;
 
-  using rtt_dsxx::soft_equiv;
-  using rtt_c4::wall_clock_time;
-  using rtt_c4::wall_clock_resolution;
-  using rtt_c4::Timer;
   using rtt_c4::Global_Timer;
+  using rtt_c4::Timer;
+  using rtt_c4::wall_clock_resolution;
+  using rtt_c4::wall_clock_time;
+  using rtt_dsxx::soft_equiv;
 
   Global_Timer do_timer("do_timer");
   Global_Timer do_not_timer("do_not_timer");
@@ -50,7 +50,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   do_timer.start();
 
   double const wcr(rtt_c4::wall_clock_resolution());
-  if (wcr > 0.0 && wcr <= 100.0) {
+  if (wcr > 0.0 && wcr <= 1000.0) {
     ostringstream msg;
     msg << "The timer has a wall clock resoution of " << wcr << " ticks."
         << endl;
@@ -93,6 +93,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   t.start();
 
+  FAIL_IF_NOT(t.on());
+
   // do some work
   if (rtt_c4::node() == 0)
     std::cout << "\nDoing some work..." << std::endl;
@@ -100,13 +102,15 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   std::vector<double> foo(len);
   double sum(0);
   for (size_t i = 0; i < len; ++i) {
-    double const d(i + 1);
+    double const d(static_cast<double>(i + 1));
     foo[i] = std::sqrt(std::log(d * 3.14) * std::fabs(std::cos(d / 3.14)));
     sum += foo[i];
   }
 
   double end = rtt_c4::wall_clock_time();
   t.stop();
+
+  FAIL_IF(t.on());
 
   double const error(t.wall_clock() - (end - begin));
   if (std::fabs(error) <= prec) {
@@ -173,7 +177,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   t.start();
   for (size_t i = 0; i < len; ++i)
-    foo[i] = i * 4;
+    foo[i] = static_cast<double>(i * 4);
   t.stop();
 
   t.print(cout, 6);

@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-#if (RNG_GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
 #endif
@@ -48,6 +48,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#endif
+
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4127)
 #endif
 
 #if defined(TRY_OTHER)
@@ -81,6 +87,11 @@ TEST_TPL(threefry, 4, 64, 72)
 TEST_TPL(ars, 4, 32, 5)
 TEST_TPL(ars, 4, 32, 7)
 TEST_TPL(aesni, 4, 32, 10)
+#endif
+
+#ifdef _MSC_FULL_VER
+// conditional expression is constant
+#pragma warning(pop)
 #endif
 
 #ifdef __clang__

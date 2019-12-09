@@ -2,7 +2,7 @@
 /*!
  * \file   compton/config.h
  * \brief  CPP defines necessary for the compton packages.
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
@@ -14,7 +14,12 @@
 #ifdef COMPTON_FOUND
 // headers provided in compton CSK_generator include directory
 #include "etemp_interp.hh"
+#include "compton_file.hh"
+#include "llnl_compton_data.hh"
+#include "llnl_interp.hh"
 #include "multigroup_compton_data.hh"
+#include "multigroup_lib_builder.hh"
+
 #endif
 
 #endif /* __compton_config_h__ */

@@ -3,7 +3,7 @@
  * \file   VendorChecks/test/tstSuperludist.cc
  * \date   Monday, May 16, 2016, 16:30 pm
  * \brief  Attempt to link to libsuperludist and run a simple problem.
- * \note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019, Triad National Security, LLC.
  *         All rights reserved.
  *
  * This code is a modified version of \c pddrive.c provided in the EXAMPLES
@@ -13,15 +13,13 @@
  */
 //---------------------------------------------------------------------------//
 
+#include "superlu-dist-wrapper.h"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
+#include <fstream>
 #include <sstream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wundef"
-#include <superlu_ddefs.h>
-#pragma GCC diagnostic pop
 #include <vector>
 
 // forward declarations
@@ -31,6 +29,7 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
+
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     test_superludist(ut);
@@ -84,6 +83,20 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   std::string const filename(inpPath + "big.rua");
   FILE *fp;
 
+#if 0
+  // check the file
+  if (rtt_c4::node() == 0) {
+    std::string line;
+    std::ifstream myfile(filename.c_str());
+    if (myfile.is_open()) {
+      while (getline(myfile, line)) {
+        std::cout << line << '\n';
+      }
+      myfile.close();
+    }
+  }
+#endif
+
   //---------------------------------------------------------------------------//
   // Initialize the SuperLU process grid
   //---------------------------------------------------------------------------//
@@ -109,7 +122,7 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   }
 
   //---------------------------------------------------------------------------//
-  // Load the matirx from file and setup the RHS.
+  // Load the matrix from file and setup the RHS.
   //---------------------------------------------------------------------------//
 
   dcreate_matrix(&A, nrhs, &b, &ldb, &xtrue, &ldx, fp, &grid);
@@ -138,7 +151,8 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
        options.Equil             = YES;
        options.ParSymbFact       = NO;
        options.ColPerm           = METIS_AT_PLUS_A;
-       options.RowPerm           = LargeDiag;
+       options.RowPerm           = LargeDiag;      // version < 5.4
+       options.RowPerm           = LargeDiag_MC64; // version > 5.4
        options.ReplaceTinyPivot  = YES;
        options.IterRefine        = DOUBLE;
        options.Trans             = NOTRANS;
@@ -156,8 +170,13 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
     ITFAILS;
   if (options.IterRefine != SLU_DOUBLE)
     ITFAILS;
+#if SUPERLU_DIST_MAJOR_VERSION == 5 && SUPERLU_DIST_MINOR_VERSION >= 4
+  if (options.RowPerm != LargeDiag_MC64)
+    ITFAILS;
+#else
   if (options.RowPerm != LargeDiag)
     ITFAILS;
+#endif
 
   if (!iam) {
     print_sp_ienv_dist(&options);
@@ -239,7 +258,7 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
  * \param[out] A    local matrix A in NR_loc format.
  * \param[in]  nrhs number of right-hand sides.
  * \param[out] rhs  the right-hand side matrix.
- * \param[out] lbd  leading dimension of the right-hand side matrix.
+ * \param[out] ldb  leading dimension of the right-hand side matrix.
  * \param[out] x    the true solution matrix.
  * \param[out] ldx  the leading dimension of the true solution matrix.
  * \param[in]  fp   the matrix file pointer.
@@ -257,7 +276,7 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
   double *nzval;                   /* global */
   double *nzval_loc;               /* local */
   int_t *colind, *rowptr;          /* local */
-  int_t m, n, nnz;
+  int_t m(0), n(0), nnz(0);
   int_t m_loc, fst_row, nnz_loc;
   int_t m_loc_fst; /* Record m_loc of the first p-1 processors,
                            when mod(m, p) is not zero. */
@@ -296,9 +315,9 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
   /* Compute the number of rows to be distributed to local process */
   m_loc = m / (grid->nprow * grid->npcol);
   m_loc_fst = m_loc;
-  /* When m / procs is not an integer */
+  /* When m / procsessors is not an integer */
   if ((m_loc * grid->nprow * grid->npcol) != m) {
-    if (iam == (grid->nprow * grid->npcol - 1)) /* last proc. gets all*/
+    if (iam == (grid->nprow * grid->npcol - 1)) /* last processor gets all*/
       m_loc = m - m_loc * (grid->nprow * grid->npcol - 1);
   }
 
@@ -307,9 +326,11 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
                               SLU_D, SLU_GE);
 
   /* Generate the exact solution and compute the right-hand side. */
-  if (!(b_global = doubleMalloc_dist(m * nrhs)))
+  b_global = doubleMalloc_dist(m * nrhs);
+  if (!b_global)
     ABORT("Malloc fails for b[]");
-  if (!(xtrue_global = doubleMalloc_dist(n * nrhs)))
+  xtrue_global = doubleMalloc_dist(n * nrhs);
+  if (!xtrue_global)
     ABORT("Malloc fails for xtrue[]");
   *trans = 'N';
 
@@ -368,7 +389,8 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
                                  colind, rowptr, SLU_NR_loc, SLU_D, SLU_GE);
 
   /* Get the local B */
-  if (!((*rhs) = doubleMalloc_dist(m_loc * nrhs)))
+  (*rhs) = doubleMalloc_dist(m_loc * nrhs);
+  if (!rhs)
     ABORT("Malloc fails for rhs[]");
   for (j = 0; j < nrhs; ++j) {
     for (i = 0; i < m_loc; ++i) {
@@ -380,7 +402,8 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
 
   /* Set the true X */
   *ldx = m_loc;
-  if (!((*x) = doubleMalloc_dist(*ldx * nrhs)))
+  (*x) = doubleMalloc_dist(*ldx * nrhs);
+  if (!(x))
     ABORT("Malloc fails for x_loc[]");
 
   /* Get the local part of xtrue_global */

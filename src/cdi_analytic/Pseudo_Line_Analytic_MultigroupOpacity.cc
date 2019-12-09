@@ -3,7 +3,7 @@
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -95,16 +95,16 @@ double PLRW_Functor::operator()(double x) {
 
 //---------------------------------------------------------------------------//
 Pseudo_Line_Analytic_MultigroupOpacity::Pseudo_Line_Analytic_MultigroupOpacity(
-    sf_double const &group_bounds, rtt_cdi::Reaction const reaction,
+    sf_double const &group_bounds_in, rtt_cdi::Reaction const reaction_in,
     std::shared_ptr<Expression const> const &continuum,
     unsigned number_of_lines, double line_peak, double line_width,
     unsigned number_of_edges, double edge_ratio, double Tref, double Tpow,
     double emin, double emax, Averaging const averaging, unsigned const qpoints,
-    unsigned seed)
-    : Analytic_MultigroupOpacity(group_bounds, reaction),
+    unsigned seed_in)
+    : Analytic_MultigroupOpacity(group_bounds_in, reaction_in),
       Pseudo_Line_Base(continuum, number_of_lines, line_peak, line_width,
                        number_of_edges, edge_ratio, Tref, Tpow, emin, emax,
-                       seed),
+                       seed_in),
       averaging_(averaging), qpoints_(qpoints) {}
 
 //---------------------------------------------------------------------------//
@@ -126,7 +126,7 @@ sf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
                                                    double /*rho*/) const {
   sf_double const &group_bounds = this->getGroupBoundaries();
-  unsigned const number_of_groups = group_bounds.size() - 1U;
+  size_t const number_of_groups = group_bounds.size() - 1;
   sf_double Result(number_of_groups, 0.0);
 
   double line_width = this->line_width();
@@ -134,7 +134,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
   switch (averaging_) {
   case NONE: {
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double const g0 = g1;
       g1 = group_bounds[g + 1];
       double const nu = 0.5 * (g0 + g1);
@@ -147,7 +147,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
     PLRW_Functor wfunctor(T);
 
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double const g0 = g1;
       g1 = group_bounds[g + 1];
       double eps = 1e-5;
@@ -182,7 +182,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
 
   case PLANCK: {
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       PLP_Functor pfunctor(this, T);
       PLPW_Functor wfunctor(T);
 
@@ -228,10 +228,10 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
 //---------------------------------------------------------------------------//
 vf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
                                                              double rho) const {
-  unsigned const n = T.size();
+  size_t const n = T.size();
   vf_double Result(n);
 
-  for (unsigned i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     double const Ti = T[i];
     Result[i] = getOpacity(Ti, rho);
   }
@@ -250,13 +250,13 @@ Pseudo_Line_Analytic_MultigroupOpacity::std_string
 Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const {
   std_string descriptor;
 
-  rtt_cdi::Reaction const reaction = getReactionType();
+  rtt_cdi::Reaction const rxn = getReactionType();
 
-  if (reaction == rtt_cdi::TOTAL)
+  if (rxn == rtt_cdi::TOTAL)
     descriptor = "Pseudo Line Multigroup Total";
-  else if (reaction == rtt_cdi::ABSORPTION)
+  else if (rxn == rtt_cdi::ABSORPTION)
     descriptor = "Pseudo Line Multigroup Absorption";
-  else if (reaction == rtt_cdi::SCATTERING)
+  else if (rxn == rtt_cdi::SCATTERING)
     descriptor = "Pseudo Line Multigroup Scattering";
   else {
     Insist(0, "Invalid Pseudo Line multigroup model opacity!");

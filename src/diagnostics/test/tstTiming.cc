@@ -4,11 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 12 15:32:10 2005
  * \brief  Test the diagnostics/TIMER macros
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "diagnostics/Diagnostics.hh"
@@ -219,7 +216,6 @@ void test_timing(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void test_macros(rtt_dsxx::UnitTest &ut) {
   // delete all existing timers
   D::delete_timers();
@@ -237,33 +233,33 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
 
   // if the timers are off we get no timing data
   vector<string> keys = D::timer_keys();
-  if (DRACO_TIMING == 0) {
-    if (keys.size() != 0)
-      ITFAILS;
-    if (D::num_timers() != 0)
-      ITFAILS;
-  } else {
-    if (keys.size() != 4)
-      ITFAILS;
-    cout << setw(15) << "Routine" << setw(15) << "Fraction" << endl;
-    cout << "------------------------------" << endl;
+#if DRACO_TIMING == 0
+  if (keys.size() != 0)
+    ITFAILS;
+  if (D::num_timers() != 0)
+    ITFAILS;
+#else
+  if (keys.size() != 4)
+    ITFAILS;
+  cout << setw(15) << "Routine" << setw(15) << "Fraction" << endl;
+  cout << "------------------------------" << endl;
 
-    // get the keys and print a table
-    double total = D::timer_value("Outer");
-    if (total <= 0.0)
-      ITFAILS;
+  // get the keys and print a table
+  double total = D::timer_value("Outer");
+  if (total <= 0.0)
+    ITFAILS;
 
-    cout.precision(4);
-    cout.setf(ios::fixed, ios::floatfield);
+  cout.precision(4);
+  cout.setf(ios::fixed, ios::floatfield);
 
-    for (int i = 0, N = keys.size(); i < N; ++i) {
-      double fraction = D::timer_value(keys[i]) / total;
-      cout << setw(15) << keys[i] << setw(15) << fraction << endl;
-    }
-
-    cout << "The total time was " << total << endl;
-    cout << endl;
+  for (size_t i = 0, N = keys.size(); i < N; ++i) {
+    double fraction = D::timer_value(keys[i]) / total;
+    cout << setw(15) << keys[i] << setw(15) << fraction << endl;
   }
+
+  cout << "The total time was " << total << endl;
+  cout << endl;
+#endif
 
   TIMER_REPORT(outer_timer, cout, "Total time");
 
@@ -272,7 +268,6 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
