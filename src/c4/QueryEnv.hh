@@ -24,16 +24,19 @@ namespace rtt_c4 {
 //----------------------------------------------------------------------------//
 /*!
  * \brief Get a value from the environment
+ *
  * \tparam T: the type of the value, must be default constructible
+ *
  * \param key: the key to which you would like the corresponding value
  * \param default_value: a default value to return if key undefined.
  * \return: {whether key was defined, corresponding value}
  *
  * \note Calls POSIX getenv() function, which is not required to be re-entrant.
  * If the key was set in the environment, get_env_val() returns the value
- * converted to type T, that was set in the environment. If the key was not
- * set in the environment, it returns the default_value that the caller
- * provides. The first argument of the pair describes whether the key was defined.
+ * converted to type T, that was set in the environment. If the key was not set
+ * in the environment, it returns the default_value that the caller
+ * provides. The first argument of the pair describes whether the key was
+ * defined.
  */
 template <typename T>
 std::pair<bool, T> get_env_val(std::string const &key, T default_value = T{}) {
@@ -77,6 +80,12 @@ public:
   /**\brief Get SLURM_JOB_NUM_NODES */
   int get_job_num_nodes() const { return job_num_nodes_; }
 
+  /**\brief Get SLURM_CPUS_ON_NODE */
+  int get_cpus_on_node() const { return cpus_on_node_; }
+
+  //! Return value of SLURM_NODELIST
+  std::string get_nodelist() const { return nodelist_; }
+
   /* note: these rely on the idea that n_cpus_per_task etc are never
    * going to be in the realm of 2 billion. On the blessaed day that
    * comes to pass, Machine Overlords, rethink this (please / thank you). */
@@ -97,17 +106,25 @@ public:
     std::tie(def_ntasks_, ntasks_) = get_env_val<int>("SLURM_NTASKS", ntasks_);
     std::tie(def_job_num_nodes_, job_num_nodes_) =
         get_env_val<int>("SLURM_JOB_NUM_NODES", job_num_nodes_);
+    std::tie(def_cpus_on_node_, cpus_on_node_) =
+        get_env_val<int>("SLURM_CPUS_ON_NODE", job_num_nodes_);
+    std::tie(def_nodelist_, nodelist_) =
+        get_env_val<std::string>("SLURM_NODELIST");
   }
 
   // state
 private:
-  int cpus_per_task_{0xFFFFFFF};  //!< arg to -c
-  int ntasks_{0xFFFFFFE};         //!< arg to -n
-  int job_num_nodes_{0xFFFFFFD};  //!< arg to -N
-  bool def_cpus_per_task_{false}; //!< whether SLURM_CPUS_PER_TASK was defined
-  bool def_ntasks_{false};        //!< whether SLURM_NTASKS was defined
-  bool def_job_num_nodes_{false}; //!< whether SLURM_JOB_NUM_NODES was defined
-};                                // SLURM_Task_Info
+  int cpus_per_task_{0xFFFFFFF};    //!< arg to -c
+  bool def_cpus_per_task_{false};   //!< whether SLURM_CPUS_PER_TASK was defined
+  int ntasks_{0xFFFFFFE};           //!< arg to -n
+  bool def_ntasks_{false};          //!< whether SLURM_NTASKS was defined
+  int job_num_nodes_{0xFFFFFFD};    //!< arg to -N
+  bool def_job_num_nodes_{false};   //!< whether SLURM_JOB_NUM_NODES was defined
+  int cpus_on_node_{0xFFFFFFD};     //!< SLURM_CPUS_ON_NODE
+  bool def_cpus_on_node_{false};    //!< was SLURM_CPUS_ON_NODE defined?
+  std::string nodelist_{"not set"}; //!< SLURM_NODELIST
+  bool def_nodelist_{false};        //!< was SLURM_NODELIST defined?
+};                                  // SLURM_Task_Info
 
 } // namespace rtt_c4
 

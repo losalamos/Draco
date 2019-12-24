@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Interval_Quadrature.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
  * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
- *         reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         reserved. */
+//----------------------------------------------------------------------------//
 
 #include "Interval_Quadrature.hh"
 
@@ -19,19 +16,19 @@ using namespace std;
 Interval_Quadrature::Interval_Quadrature(unsigned const sn_order)
     : Quadrature(sn_order) {}
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 Quadrature_Class Interval_Quadrature::quadrature_class() const {
   return INTERVAL_QUADRATURE;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 bool Interval_Quadrature::has_axis_assignments() const {
   return false; // cannot override default assignments
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate> Interval_Quadrature::create_ordinates_(
     unsigned const /*dimension*/, Geometry const geometry, double const norm,
@@ -48,7 +45,7 @@ vector<Ordinate> Interval_Quadrature::create_ordinates_(
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate> Interval_Quadrature::create_ordinates_(
     unsigned const /*dimension*/, Geometry const geometry, double const norm,
@@ -63,6 +60,6 @@ vector<Ordinate> Interval_Quadrature::create_ordinates_(
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// end of quadrature/Interval_Quadrature.cc
+//----------------------------------------------------------------------------//

@@ -340,8 +340,8 @@ macro( setupCrayMPI )
   #           simultaneously, this option is required to be set or they will
   #           stomp on the same cores.
 
-  set(postflags "-N 1 --cpu_bind=verbose,cores ")
-  string(APPEND postflags " --exclusive --gres=craynetwork:0")
+  set(postflags " ") # -N 1 --cpu_bind=verbose,cores
+  string(APPEND postflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_POSTFLAGS ${postflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
 

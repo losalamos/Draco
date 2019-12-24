@@ -59,6 +59,10 @@ install( TARGETS Lib_cdi_ipcress EXPORT draco-targets
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
 install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}bin )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_cdi_ipcress> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

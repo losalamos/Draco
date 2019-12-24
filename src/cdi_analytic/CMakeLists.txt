@@ -34,6 +34,10 @@ add_component_library(
 install( TARGETS Lib_cdi_analytic EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_analytic )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_cdi_analytic> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

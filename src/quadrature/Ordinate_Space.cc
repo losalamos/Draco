@@ -18,6 +18,8 @@
 #include <iostream>
 
 using namespace rtt_units;
+using rtt_dsxx::soft_equiv;
+using std::vector;
 
 namespace rtt_quadrature {
 //---------------------------------------------------------------------------//
@@ -39,13 +41,13 @@ double Ordinate_Space::compute_azimuthalAngle(double const mu,
 
   double azimuthalAngle(std::atan2(eta, mu));
 
-  // For axisymmetric cooridnates only, the azimuthal angle is on [0, 2\pi] It
+  // For axisymmetric coordinates only, the azimuthal angle is on [0, 2\pi] It
   // is important to remember that the positive mu axis points to the left and
   // the positive eta axis points up, when the unit sphere is projected on the
   // plane of the mu- and eta-axis. In this case, phi is measured from the
   // mu-axis counterclockwise.
   //
-  // This accounts for the fact that the aziumuthal angle is discretized on
+  // This accounts for the fact that the azimuthal angle is discretized on
   // levels of the xi-axis, making the computation of the azimuthal angle here
   // consistent with the discretization by using the eta and mu ordinates to
   // define phi.
@@ -283,7 +285,7 @@ vector<Moment>
 Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
                               unsigned const sn_order) {
   unsigned const dim = dimension();
-  Geometry const geometry = this->geometry();
+  rtt_mesh_element::Geometry const geometry = this->geometry();
 
   if (dim == 3) {
     return compute_n2lk_3D_(quadrature_class, sn_order);
@@ -364,7 +366,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
  * \param ordering Ordering into which to sort the ordinates.
  */
 Ordinate_Space::Ordinate_Space(unsigned const dimension,
-                               Geometry const geometry,
+                               rtt_mesh_element::Geometry const geometry,
                                vector<Ordinate> const &ordinates,
                                int const expansion_order,
                                bool const extra_starting_directions,
@@ -514,7 +516,7 @@ void Ordinate_Space::compute_reflection_maps_() {
  *        flux_map[i] is the index (starting at zero) of the moment which
  *        corresponds to the ith astrophysical flux component.
  * \param flux_fact On return, contains the normalization factors for
- *        converting the the first moments to astrophysical flux components.
+ *        converting the first moments to astrophysical flux components.
  *
  * Thus, if you are in 2-D Cartesian geometry, and phi contains the moments at
  * a particular point for a particular group, then the x-component of the
@@ -564,7 +566,7 @@ void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
  *        which corresponds to the ith first moment.
  *
  * \param flux_fact On return, contains the normalization factors for
- *        converting the the astrophysical flux components to first moments.
+ *        converting the astrophysical flux components to first moments.
  *
  * Thus, if you are in 2-D Cartesian geometry, and F contains the astrophysical
  * flux at a particular point for a particular group, then the ith moment is
@@ -577,7 +579,7 @@ void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
   // We hardwire these on the optimistic assumption that the moment basis used
   // by rtt_quadrature::Ordinate_Space will not often change.
   if (dimension() == 1) {
-    // In 1D nonaxisymmetric, the polar axis of the spherical harmonics is
+    // In 1D non-axisymmetric, the polar axis of the spherical harmonics is
     // aligned along the coordinate axis and only the k=0 harmonics are
     // nonzero. The flux is then the Y(1,0) harmonic (times the normalization
     // factor sqrt(3)). In 1D axisymmetric, the mu axis of the spherical

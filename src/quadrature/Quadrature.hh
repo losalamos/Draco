@@ -8,12 +8,13 @@
  *         reserved. */
 //----------------------------------------------------------------------------//
 
-#ifndef __quadrature_Quadrature_hh__
-#define __quadrature_Quadrature_hh__
+#ifndef rtt_quadrature_Quadrature_hh
+#define rtt_quadrature_Quadrature_hh
 
 #include "Ordinate_Space.hh"
 
 namespace rtt_quadrature {
+
 using rtt_mesh_element::Geometry;
 using std::string;
 using std::vector;
@@ -36,7 +37,7 @@ using std::vector;
  * When an Ordinate_Set is constructed from the Quadrature, the direction
  * cosines in the Quadrature must be mapped to coordinate axes in the problem
  * geometry. By default, 1-D non-axisymmetric maps xi to the coordinate axis;
- * 1-D axisymmetric maps mu to the coordinate axis ande xi to the
+ * 1-D axisymmetric maps mu to the coordinate axis and xi to the
  * (non-represented) symmetry axis; 2-D maps mu to the first coordinate axis and
  * xi to the second coordinate axis; and 3-D maps mu to the first, eta to the
  * second, and xi to the third coordinate axes. This is to ensure that the
@@ -47,8 +48,8 @@ using std::vector;
  * geometry, Bad Things Will Happen with any supported quadrature except
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
-//=======================================================================================//
-class DLL_PUBLIC_quadrature Quadrature {
+//============================================================================//
+class Quadrature {
 public:
   // ENUMERATIONS AND TYPEDEFS
 
@@ -98,10 +99,10 @@ public:
                                     bool include_starting_directions,
                                     bool include_extra_directions) const;
 
-  std::shared_ptr<Ordinate_Set> create_ordinate_set(
-      unsigned dimension, Geometry, double norm, unsigned mu_axis,
-      unsigned eta_axis, bool include_starting_directions,
-      bool include_extra_directions, Ordinate_Set::Ordering ordering) const;
+  //std::shared_ptr<Ordinate_Set> create_ordinate_set(
+  //    unsigned dimension, Geometry, double norm, unsigned mu_axis,
+  //    unsigned eta_axis, bool include_starting_directions,
+  //    bool include_extra_directions, Ordinate_Set::Ordering ordering) const;
 
   std::shared_ptr<Ordinate_Set>
   create_ordinate_set(unsigned dimension, Geometry, double norm,
@@ -156,7 +157,7 @@ protected:
 
 } // end namespace rtt_quadrature
 
-#endif // __quadrature_Quadrature_hh__
+#endif // rtt_quadrature_Quadrature_hh
 
 //----------------------------------------------------------------------------//
 // end of quadrature/Quadrature.hh

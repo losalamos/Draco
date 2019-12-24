@@ -16,6 +16,7 @@
 #include <numeric>
 
 namespace {
+
 using namespace std;
 using namespace rtt_quadrature;
 
@@ -69,15 +70,18 @@ bool Ordinate_Set_Mapper::check_class_invariants() const {
  */
 void Ordinate_Set_Mapper::map_angle_into_ordinates(
     const Ordinate &ord_in, const Interpolation_Type &interp_in,
-    vector<double> &weights) const {
+    std::vector<double> &weights) const {
+
   Require(os_.ordinates().size() == weights.size());
   Require(os_.dimension() == 2 ? check_2(ord_in) : true);
   Require(os_.dimension() == 1 ? check_4(ord_in) : true);
-  Require(os_.dimension() >= 2 ? // check norm == 1 in 2-D and 3-D
-              soft_equiv(dot_product_functor_3D(ord_in)(ord_in), 1.0)
-                               : true);
-  Require(os_.dimension() == 1 ? // check norm <= 1 in 1-D
-              dot_product_functor_1D(ord_in)(ord_in) <= 1.0
+  // check norm == 1 in 2-D and 3-D
+  Require(
+      os_.dimension() >= 2
+          ? rtt_dsxx::soft_equiv(dot_product_functor_3D(ord_in)(ord_in), 1.0)
+          : true);
+  // check norm <= 1 in 1-D
+  Require(os_.dimension() == 1 ? dot_product_functor_1D(ord_in)(ord_in) <= 1.0
                                : true);
 
   // Vector of all ordinates in the ordinate set
@@ -85,8 +89,8 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
 
   // Vector of dot products
   vector<double> dps(weights.size(), 0.0);
-  // Perform all of the dot products between the incoming ordinate
-  // and the ordinates in the Ordinate_Set
+  // Perform all of the dot products between the incoming ordinate and the
+  // ordinates in the Ordinate_Set
   if (os_.dimension() != 1) {
     dot_product_functor_3D dpf(ord_in);
     std::transform(ords.begin(), ords.end(), dps.begin(), dpf);
@@ -95,14 +99,14 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     std::transform(ords.begin(), ords.end(), dps.begin(), dpf);
   }
 
-  // Remove the "starting directions" as valid ordinates in the quadrature,
-  // if they exist
+  // Remove the "starting directions" as valid ordinates in the quadrature, if
+  // they exist
   if (os_.has_starting_directions()) {
     size_t i = 0;
     for (auto ord = ords.begin(); ord != ords.end(); ++ord, ++i) {
-      // If the ordinate weight is zero, we found a "starting direction"
-      // We remove it by saying its dot product is completely opposed
-      // to the ordinate we passed in (set to -1).
+      // If the ordinate weight is zero, we found a "starting direction". We
+      // remove it by saying its dot product is completely opposed to the
+      // ordinate we passed in (set to -1).
       if (ord->wt() <= 0.0)
         dps[i] = -1.0;
     }
@@ -121,7 +125,7 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     Require(dps.size() >= 3);
 
     // Vector of all ordinates in the ordinate set
-    const vector<Ordinate> &ord(os_.ordinates());
+    const std::vector<Ordinate> &ord(os_.ordinates());
 
     // Associate a container of indices with the dot products
     std::vector<std::pair<double, size_t>> dpsi(dps.size());
@@ -189,9 +193,9 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     break;
   }
 
-  // Test for energy conservation by integrating over all angles
-  // i.e., summing the quadrature weights
-  Ensure(soft_equiv(zeroth_moment(weights), ord_in.wt()));
+  // Test for energy conservation by integrating over all angles i.e., summing
+  // the quadrature weights
+  Ensure(rtt_dsxx::soft_equiv(zeroth_moment(weights), ord_in.wt()));
 }
 
 //---------------------------------------------------------------------------//
@@ -202,7 +206,8 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
  *
  * \return double value for the zeroth moment
  */
-double Ordinate_Set_Mapper::zeroth_moment(const vector<double> &weights) const {
+double
+Ordinate_Set_Mapper::zeroth_moment(const std::vector<double> &weights) const {
   Require(weights.size() == os_.ordinates().size());
 
   // Vector of all ordinates in the ordinate set

@@ -91,7 +91,7 @@ if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
 
   module use --append ${VENDOR_DIR}-ec/modulefiles
   dracomodules="git cmake/3.14.6 numdiff gsl metis eospac random123 parmetis \
-superlu-dist trilinos clang-format python/3.6-anaconda-5.0.1"
+superlu-dist trilinos clang-format python/3.6-anaconda-5.0.1 quo"
 
   if [[ -d ${VENDOR_DIR}-ec ]]; then
     group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`

@@ -16,6 +16,7 @@
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "C4_sys_times.h"
+#include "QuoWrapper.hh"
 
 namespace rtt_c4 {
 
@@ -57,6 +58,9 @@ int initialize(int &argc, char **&argv, int required) {
 //---------------------------------------------------------------------------//
 
 void finalize() {
+  // If Libquo is active, it must be torn-down before MPI_Finalize is
+  // called. Otherwise, this call is a no-op.
+  QuoWrapper::quo_free();
   MPI_Finalize();
   return;
 }
@@ -75,6 +79,12 @@ int node() {
   Check(node >= 0);
   return node;
 }
+uint32_t rank() {
+  int rank = 1;
+  MPI_Comm_rank(communicator, &rank);
+  Check(rank >= 0);
+  return static_cast<uint32_t>(rank);
+}
 
 //---------------------------------------------------------------------------//
 
@@ -83,6 +93,12 @@ int nodes() {
   MPI_Comm_size(communicator, &nodes);
   Check(nodes > 0);
   return nodes;
+}
+uint32_t nranks() {
+  int nranks = 0;
+  MPI_Comm_size(communicator, &nranks);
+  Check(nranks > 0);
+  return static_cast<uint32_t>(nranks);
 }
 
 //---------------------------------------------------------------------------//
@@ -186,6 +202,7 @@ int abort(int error) {
 // isScalar
 //---------------------------------------------------------------------------//
 bool isScalar() { return !initialized; }
+bool isMpiInit() { return initialized; }
 
 } // end namespace rtt_c4
 

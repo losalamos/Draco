@@ -15,8 +15,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifndef c4_C4_Functions_hh
-#define c4_C4_Functions_hh
+#ifndef rtt_c4_C4_Functions_hh
+#define rtt_c4_C4_Functions_hh
 
 #include "C4_Datatype.hh"
 #include "C4_Status.hh"
@@ -117,6 +117,7 @@ void type_free(C4_Datatype &old_type);
  * The rank is determined by the current communicator.
  */
 int node();
+uint32_t rank();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -125,6 +126,7 @@ int node();
  * The number of nodes is determined by the current communicator.
  */
 int nodes();
+uint32_t nranks();
 
 //---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
@@ -454,10 +456,11 @@ int abort(int error = 1);
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-/*!
- * \brief Is C4 executing in scalar-only mode?
- */
+//! Is C4 executing in scalar-only mode?
 bool isScalar();
+
+//! Has MPI been initialized (always false for scalar-mode).
+bool isMpiInit();
 
 //---------------------------------------------------------------------------//
 // get_processor_name
@@ -498,7 +501,7 @@ template <typename T> void prefix_sum(T *buffer, const int32_t n);
 #include "C4_MPI.hh"
 #endif
 
-#endif // c4_C4_Functions_hh
+#endif // rtt_c4_C4_Functions_hh
 
 //---------------------------------------------------------------------------//
 // end of c4/C4_Functions.hh

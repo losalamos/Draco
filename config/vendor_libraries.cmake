@@ -168,7 +168,7 @@ macro( setupLAPACKLibraries )
       endif()
 
       if( BLAS_FOUND )
-        # set( BLAS_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
+        unset(lapack_FOUND)
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
@@ -220,7 +220,6 @@ macro( setupLAPACKLibraries )
 
       if( BLAS_FOUND )
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
-        # set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
         set( lapack_flavor "openblas")
         set( lapack_url "http://www.openblas.net")
         add_library( lapack SHARED IMPORTED)
@@ -246,7 +245,6 @@ macro( setupLAPACKLibraries )
 
       if( BLAS_FOUND )
         find_package(LAPACK QUIET)
-        set( lapack_FOUND TRUE )
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
         set_target_properties( blas PROPERTIES
@@ -272,7 +270,8 @@ macro( setupLAPACKLibraries )
       DESCRIPTION "Linear Algebra PACKage"
       TYPE OPTIONAL
       PURPOSE "Required for building the lapack_wrap component." )
-  else()
+  elseif( "${lapack_flavor}" STREQUAL "mkl" OR
+          "${lapack_flavor}" STREQUAL "openblas")
     set_package_properties( LAPACK PROPERTIES
       URL "${lapack_url}"
       DESCRIPTION "Linear Algebra PACKage"
@@ -488,7 +487,7 @@ macro( setupParMETIS )
     # Include some information that can be printed by the build system.
     set_package_properties( METIS PROPERTIES
       DESCRIPTION "METIS"
-      TYPE OPTIONAL
+      TYPE RECOMMENDED
       URL "http://glaros.dtc.umn.edu/gkhome/metis/metis/overview"
       PURPOSE "METIS is a set of serial programs for partitioning graphs, partitioning finite
    element meshes, and producing fill reducing orderings for sparse matrices."
@@ -548,12 +547,42 @@ macro( setupSuperLU_DIST )
       DESCRIPTION "SuperLU_DIST"
       TYPE OPTIONAL
       PURPOSE "SuperLU is a general purpose library for the direct solution of
-   large, sparse, nonsymmetric systems of linear equations on high performance
-   machines."  )
-
+    large, sparse, nonsymmetric systems of linear equations on high performance
+    machines."  )
   endif()
 
 endmacro()
+
+#------------------------------------------------------------------------------
+# Setup Libquo (https://github.com/lanl/libquo
+#------------------------------------------------------------------------------
+macro( setupLIBQUO )
+
+  if( NOT TARGET LIBQUO::libquo AND MPI_C_FOUND)
+    message( STATUS "Looking for LIBQUO..." )
+
+    find_package( Libquo QUIET )
+
+    if( LIBQUO_FOUND )
+      message( STATUS "Looking for LIBQUO....found ${LIBQUO_LIBRARY}" )
+    else()
+      message( STATUS "Looking for LIBQUO....not found" )
+    endif()
+
+    #===========================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( Libquo PROPERTIES
+      URL "https://github.com/lanl/libquo"
+      DESCRIPTION "A runtime library that aids in accommodating thread-level
+   heterogeneity in dynamic, phased MPI+X appliations comprising single- and
+   multi-threaded libraries."
+      TYPE RECOMMENDED
+      PURPOSE "Required for allowing draco-clients to switch MPI+X bindings and
+   thread affinities when a library is called instead of at program ivokation.")
+  endif()
+
+endmacro()
+
 
 #------------------------------------------------------------------------------
 # Setup Eospac (https://laws.lanl.gov/projects/data/eos.html)
@@ -623,6 +652,7 @@ macro( SetupVendorLibrariesUnix )
   setupCudaEnv()
   setupPython()
   setupQt()
+  setupLIBQUO()
 
   # Grace ------------------------------------------------------------------
   message( STATUS "Looking for Grace...")

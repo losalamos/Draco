@@ -263,6 +263,23 @@ linear_interpolate_3(double const x0, double const x1, double const y0,
   return f;
 }
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Fast ceiling of an integer division
+ *
+ * \param[in] n numerator
+ * \param[in] d denominator
+ * \return ceil(n/d)
+ *
+ * If concerned about overflow, consider 1 + ((n-1)/d).
+ */
+template <typename T>
+constexpr inline typename std::enable_if<std::is_integral<T>::value, T>::type
+ceil_int_division(T const n, T const d) {
+  Require(d != 0);
+  return (n + d - 1) / d;
+}
+
 } // namespace rtt_dsxx
 
 #endif // rtt_dsxx_DracoMath_hh

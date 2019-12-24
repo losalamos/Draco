@@ -29,7 +29,7 @@ file( GLOB sources_glob RELATIVE "${PROJECT_SOURCE_DIR}" *.cc *.c )
 file( GLOB headers_glob RELATIVE "${PROJECT_SOURCE_DIR}" *.hh *.h *.hpp)
 
 # prefix header files with appropriate paths (build vs install).
-foreach( file ${headers_glob} )    
+foreach( file ${headers_glob} )
   list(APPEND headers_public "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/${file}>")
   #\bug can't add $<INSTALL_INTERFACE:$<CONFIG>/include/rng>
 endforeach()
@@ -43,18 +43,18 @@ list(APPEND headers_glob ${PROJECT_BINARY_DIR}/rng/config.h ) # install these!
 add_component_library(
    TARGET       Lib_rng
    TARGET_DEPS  "Lib_dsxx;GSL::gsl"
-   LIBRARY_NAME ${PROJECT_NAME} 
+   LIBRARY_NAME ${PROJECT_NAME}
    VENDOR_INCLUDE_DIRS "${RANDOM123_INCLUDE_DIR}" )
 target_sources( Lib_rng PUBLIC "${headers_public}" PRIVATE "${sources_glob}" )
 set_target_properties(Lib_rng PROPERTIES PUBLIC_HEADER "${headers_public}" )
-target_include_directories( Lib_rng PUBLIC 
-  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> 
+target_include_directories( Lib_rng PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   ${RANDOM123_INCLUDE_DIR} )
-  
-# \bug I would like to use the following property so that CMake can 
-# auto-generate draco-targets.cmake.  However, as of cmake-3.15, I can't write 
-# '$<CONFIG>' to exported properties for target Lib_rng.  If this issue fixed 
-# by CMake, then all of the machinery in compnent_macros.cmake that sets 
+
+# \bug I would like to use the following property so that CMake can
+# auto-generate draco-targets.cmake.  However, as of cmake-3.15, I can't write
+# '$<CONFIG>' to exported properties for target Lib_rng.  If this issue fixed
+# by CMake, then all of the machinery in compnent_macros.cmake that sets
 # INTERFACE_INCLUDE_DIRECTORIES in draco-config.cmake can be retired.
 # \sa https://gitlab.kitware.com/cmake/cmake/issues/19791
 #
@@ -66,6 +66,10 @@ target_include_directories( Lib_rng PUBLIC
 
 install( TARGETS Lib_rng EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers_glob} DESTINATION ${DBSCFGDIR}include/rng )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_rng> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

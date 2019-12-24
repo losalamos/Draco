@@ -17,6 +17,7 @@
 namespace rtt_quadrature {
 using namespace std;
 using namespace rtt_parser;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 void test_either(UnitTest &ut,
@@ -557,9 +558,9 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
     FAILMSG("Textification and parse did NOT give identical results");
   }
 
-  // ***** Test various geometry, dimensionaly, and interpolation model options.
+  // ***** Test various geometry, dimensionally, and interpolation model options.
 
-  // Test 1-D options. These requre that the axes have not been reassigned.
+  // Test 1-D options. These require that the axes have not been reassigned.
 
   if (!quadrature.has_axis_assignments()) {
 

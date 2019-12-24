@@ -13,8 +13,10 @@
 #include <algorithm>
 
 namespace rtt_quadrature {
+
 using std::make_shared;
 typedef Ordinate_Set::Ordering Ordering;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 /*!

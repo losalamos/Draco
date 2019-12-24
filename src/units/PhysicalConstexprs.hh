@@ -181,63 +181,72 @@ private:
   static constexpr double Power = Energy / Time;
 
   //! Dimensionless constants
-  //! Avogadro cosntant (CODATA 2018 exact value)
-  static constexpr double d_avogadro = 6.02214076e23;
+  //! Avogadro cosntant (CODATA 2010 value)
+  static constexpr double d_avogadro = 6.02214129e23;
 
-  //! Fine structure constant (CODATA 2018 value)
-  static constexpr double d_fineStructure = 7.2973525693e-3;
+  //! Fine structure constant (CODATA 2010 value)
+  static constexpr double d_fineStructure = 7.2973525698e-3;
 
   //! Pi
   static constexpr double d_pi = PI;
 
   //! SI values of fundamental constants
-  //! Planck constant (CODATA 2018 exact value)
-  static constexpr double d_planck_SI = 6.62607015e-34; // J s
+  //! Planck constant (CODATA 2010 value)
+  static constexpr double d_planck_SI = 6.62606957e-34; // J s
 
-  //! Molar gas constant (CODATA 2018 exact value up to precision)
-  static constexpr double d_gasConstant_SI = 8.3144621618; // J mol^-1 K^-1
+  //! Molar gas constant (CODATA 2010 value)
+  static constexpr double d_gasConstant_SI = 8.3144621; // J mol^-1 K^-1
 
-  //! Boltzmann constant (CODATA 2018 exact value)
-  static constexpr double d_boltzmann_SI = 1.380649e-23; // J K^-1
+  //! Boltzmann constant (CODATA 2010 value)
+  static constexpr double d_boltzmann_SI = 1.380648800e-23; // J K^-1
 
   //! Electron charge (CODATA 2018 exact value)
-  static constexpr double d_electronCharge_SI = 1.602176634e-19; // C
+  static constexpr double d_electronCharge_SI = 1.602176565e-19; // C
 
   //! Speed of light (CODATA 2018 exact value)
   static constexpr double d_speed_of_light_SI = 2.99792458e8; // m s^-1
 
-  //! Stefan-Boltzmann constant (CODATA 2018 exact value up to precision)
-  static constexpr double d_stefanBoltzmann_SI = 5.670374419e-8; // W m^-2 K^-4
-
-  //! Gravitational constant (CODATA 2018 value)
+  //! Gravitational constant (CODATA 2010 value)
   static constexpr double d_gravitationalConstant_SI =
-      6.67430e-11; // m^3 kg^-1 s^-2
+      6.67384e-11; // m^3 kg^-1 s^-2
 
-  //! Standard acceleration of gravity (CODATA 2018 exact value)
+  //! Standard acceleration of gravity (CODATA 2010 value)
   static constexpr double d_accelerationFromGravity_SI = 9.80665; // m s^-2
 
-  //! Faraday constant (CODATA 2018 exact value up to precision)
-  static constexpr double d_faradayConstant_SI = 96485.33212; // C mol^-1
+  //! Electron rest mass (CODATA 2010 value)
+  static constexpr double d_electronMass_SI = 9.10938291e-31; // kg
 
-  //! Permeability of free space (CODATA 2018 value)
+  //! Proton rest mass (CODATA 2010 value)
+  static constexpr double d_protonMass_SI = 1.672621777e-27; // kg
+
+  //! Stefan-Boltzmann constant
+  static constexpr double d_stefanBoltzmann_SI =
+      2.0 * PI * PI * PI * PI * PI * d_boltzmann_SI * d_boltzmann_SI *
+      d_boltzmann_SI * d_boltzmann_SI /
+      (15.0 * d_planck_SI * d_planck_SI * d_planck_SI * d_speed_of_light_SI *
+       d_speed_of_light_SI);
+
+  //! Faraday constant
+  static constexpr double d_faradayConstant_SI =
+      d_avogadro * d_electronCharge_SI; // C mol^-1
+
+  //! Permeability of free space
   static constexpr double d_permeabilityOfVacuum_SI =
-      1.25663706212e-6; // N A^-2
+      4.0 * PI * 1.0e-7; // N A^-2
 
-  //! Permittivity of free space (CODATA 2018 value)
+  //! Permittivity of free space
   static constexpr double d_permittivityOfVacuum_SI =
-      8.8541878128e-12; // F m^-1
+      1.0 / d_permeabilityOfVacuum_SI / d_speed_of_light_SI /
+      d_speed_of_light_SI; // F m^-1
 
-  //! Classical electron radius (CODATA 2018 value)
-  static constexpr double d_classicalElectronRadius_SI = 2.8179403262e-15; // m
+  //! Classical electron radius
+  static constexpr double d_classicalElectronRadius_SI =
+      d_electronCharge_SI * d_electronCharge_SI /
+      (4 * PI * d_permittivityOfVacuum_SI * d_electronMass_SI *
+       d_speed_of_light_SI * d_speed_of_light_SI); // m
 
-  //! Electron rest mass (CODATA 2018 value)
-  static constexpr double d_electronMass_SI = 9.1093837015e-31; // kg
-
-  //! Proton rest mass (CODATA 2018 value)
-  static constexpr double d_protonMass_SI = 1.67262192369e-27; // kg
-
-  //! Electron volt (CODATA 2018 exact value)
-  static constexpr double d_electronVolt_SI = 1.602176634e-19; // J
+  //! Electron volt
+  static constexpr double d_electronVolt_SI = d_electronCharge_SI; // J
 
   //! Dimensional values converted to templated unit system
   //! Planck constant value in unit system

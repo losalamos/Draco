@@ -49,7 +49,7 @@ module quadrature_interfaces
      end subroutine init_quadrature
 
      ! ----------------------------------------------------------------
-     ! This function inspects the desired quadrature specificiations
+     ! This function inspects the desired quadrature specifications
      ! in the enumerated (integer) struct values and fills in the
      ! ordinate data. It assumes there is space to write the data.
      ! ----------------------------------------------------------------

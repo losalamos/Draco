@@ -135,8 +135,8 @@ public:
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
-  Ordinate_Space(unsigned dimension, Geometry geometry,
-                 vector<Ordinate> const &, int expansion_order,
+  Ordinate_Space(unsigned dimension, rtt_mesh_element::Geometry geometry,
+                 std::vector<Ordinate> const &, int expansion_order,
                  bool extra_starting_directions = false,
                  Ordering ordering = LEVEL_ORDERED);
 
@@ -152,13 +152,13 @@ public:
 
   unsigned number_of_levels() const { return number_of_levels_; }
 
-  vector<unsigned> const &levels() const { return levels_; }
+  std::vector<unsigned> const &levels() const { return levels_; }
 
   //! Return the angle index for the most positively outward-directed angle
   //! on every level.
-  vector<unsigned> const &first_angles() const { return first_angles_; }
+  std::vector<unsigned> const &first_angles() const { return first_angles_; }
 
-  //! Is an ordinate on the same level as the preceeding ordinate?
+  //! Is an ordinate on the same level as the preceding ordinate?
   bool is_dependent(unsigned const ordinate) const {
     Require(ordinate < ordinates().size());
 
@@ -166,40 +166,38 @@ public:
   }
 
   //! Return \f$\alpha_{m+1/2}\f$ for ordinate \f$m\f$
-  vector<double> const &alpha() const { return alpha_; }
+  std::vector<double> const &alpha() const { return alpha_; }
 
   //! Return \f$P\tau_m\f$ for ordinate \f$m\f$
-  vector<double> const &tau() const { return tau_; }
+  std::vector<double> const &tau() const { return tau_; }
 
   //! Return \f$P_m\f$ for ordinate \f$m\f$
-  DLL_PUBLIC_quadrature double psi_coefficient(unsigned ordinate_index) const;
+  double psi_coefficient(unsigned ordinate_index) const;
 
   //! Return \f$S_m\f$ for ordinate \f$m\f$
-  DLL_PUBLIC_quadrature double
-  source_coefficient(unsigned ordinate_index) const;
+  double source_coefficient(unsigned ordinate_index) const;
 
   //! Return \f$B_m\f$ for ordinate \f$m\f$
-  DLL_PUBLIC_quadrature double
-  bookkeeping_coefficient(unsigned ordinate_index) const;
+  double bookkeeping_coefficient(unsigned ordinate_index) const;
 
   unsigned number_of_moments() const { return number_of_moments_; }
 
   //! Return the moment descriptions of the moment space.
-  vector<Moment> const &moments() const { return moments_; }
+  std::vector<Moment> const &moments() const { return moments_; }
 
   //! Return vector containing the number of moments for each L
-  vector<unsigned> const &moments_per_order() const {
+  std::vector<unsigned> const &moments_per_order() const {
     return moments_per_order_;
   }
 
   //! Return mu reflection map
-  vector<unsigned> const &reflect_mu() const { return reflect_mu_; }
+  std::vector<unsigned> const &reflect_mu() const { return reflect_mu_; }
 
   //! Return eta reflection map
-  vector<unsigned> const &reflect_eta() const { return reflect_eta_; }
+  std::vector<unsigned> const &reflect_eta() const { return reflect_eta_; }
 
   //! Return xi reflection map
-  vector<unsigned> const &reflect_xi() const { return reflect_xi_; }
+  std::vector<unsigned> const &reflect_xi() const { return reflect_xi_; }
 
   bool check_class_invariants() const;
 
@@ -209,10 +207,10 @@ public:
   virtual QIM quadrature_interpolation_model() const = 0;
 
   //! Return the discrete to moment transform matrix
-  virtual vector<double> D() const = 0;
+  virtual std::vector<double> D() const = 0;
 
   //! Return the moment to discrete transform matrix
-  virtual vector<double> M() const = 0;
+  virtual std::vector<double> M() const = 0;
 
   //! Should the moment space be pruned to the specified order?
   virtual bool prune() const {
@@ -238,22 +236,22 @@ protected:
 
   void compute_moments_(Quadrature_Class, int sn_order);
 
-  vector<Moment> compute_n2lk_(Quadrature_Class, unsigned sn_order);
+  std::vector<Moment> compute_n2lk_(Quadrature_Class, unsigned sn_order);
 
-  virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                          unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
+                                               unsigned sn_order) = 0;
 
-  virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                           unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
+                                                unsigned sn_order) = 0;
 
-  virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                          unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
+                                               unsigned sn_order) = 0;
 
-  virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                           unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
+                                                unsigned sn_order) = 0;
 
-  virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                          unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
+                                               unsigned sn_order) = 0;
 
 private:
   // NESTED CLASSES AND TYPEDEFS
@@ -269,28 +267,28 @@ private:
   int expansion_order_;
   bool has_extra_starting_directions_;
   unsigned number_of_levels_;
-  vector<unsigned> levels_;
-  vector<unsigned> first_angles_;
+  std::vector<unsigned> levels_;
+  std::vector<unsigned> first_angles_;
 
-  //! Is an ordinate dependent on the preceeding ordinate?
-  vector<bool> is_dependent_;
+  //! Is an ordinate dependent on the preceding ordinate?
+  std::vector<bool> is_dependent_;
 
   //! Reflection maps
-  vector<unsigned> reflect_mu_, reflect_eta_, reflect_xi_;
+  std::vector<unsigned> reflect_mu_, reflect_eta_, reflect_xi_;
 
   /*! Coefficients for angle derivative terms.  These are defined in
    * Morel's research note of 12 May 2003 for axisymmetric geometry.
    */
-  vector<double> alpha_;
-  vector<double> tau_;
+  std::vector<double> alpha_;
+  std::vector<double> tau_;
 
   //! Number of moments up to the expansion order. Does not include Galerkin
   //! augments. This is the moment rank of the M and D matrices.
   unsigned number_of_moments_;
   //! Moments of moment expansion. Includes Galerkin augments, if any.
-  vector<Moment> moments_;
+  std::vector<Moment> moments_;
   //! Moments per order. Does not include Galerkin augments.
-  vector<unsigned> moments_per_order_;
+  std::vector<unsigned> moments_per_order_;
 };
 
 } // end namespace rtt_quadrature

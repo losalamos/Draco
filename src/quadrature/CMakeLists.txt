@@ -35,6 +35,10 @@ install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
 install( FILES ${headers} ${f90sources}
   DESTINATION ${DBSCFGDIR}include/quadrature )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_quadrature> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

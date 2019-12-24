@@ -16,11 +16,12 @@
 namespace {
 using namespace std;
 using namespace rtt_quadrature;
+using rtt_dsxx::soft_equiv;
 
 // convenience functions to check ordinates
 
 //---------------------------------------------------------------------------//
-bool check_4(vector<Ordinate> const &ordinates) {
+bool check_4(std::vector<Ordinate> const &ordinates) {
   // In 1-D spherical geometry, the ordinates must be confined to the first
   // two octants.
 
@@ -33,7 +34,7 @@ bool check_4(vector<Ordinate> const &ordinates) {
 }
 
 //---------------------------------------------------------------------------//
-bool check_2(vector<Ordinate> const &ordinates) {
+bool check_2(std::vector<Ordinate> const &ordinates) {
   // In 2-D geometry, the ordinates must be confined to the first
   // four octants
 
@@ -108,7 +109,7 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
  *          geometry.
  * \param geometry Geometry of the problem.
  * \param ordinates Ordinate set for this problem.
- * \param has_starting_directions Hasw starting directions on each level set.
+ * \param has_starting_directions Has starting directions on each level set.
  * \param has_extra_starting_directions Has extra directions on each level set. In most
  * geometries, an additional ordinate is added that is opposite in direction
  * to the starting direction. This is used to implement reflection exactly in
@@ -117,8 +118,9 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
  * are oriented opposite to the incoming starting direction on each level. *
  * \param ordering Ordering into which to sort the ordinates.
 */
-Ordinate_Set::Ordinate_Set(unsigned const dimension, Geometry const geometry,
-                           vector<Ordinate> const &ordinates,
+Ordinate_Set::Ordinate_Set(unsigned const dimension,
+                           rtt_mesh_element::Geometry const geometry,
+                           std::vector<Ordinate> const &ordinates,
                            bool const has_starting_directions,
                            bool const has_extra_starting_directions,
                            Ordering const ordering)
@@ -140,7 +142,6 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, Geometry const geometry,
     norm_ += ordinates[i].wt();
   }
 
-  //std::cout << " RE-ORDERING QUADRATURE SET " << std::endl;
   switch (ordering) {
   case LEVEL_ORDERED:
     sort(ordinates_.begin(), ordinates_.end(), level_compare);
@@ -160,6 +161,14 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, Geometry const geometry,
          has_extra_starting_directions);
   Ensure(this->ordering() == ordering);
 }
+
+//! Copy constructor
+Ordinate_Set::Ordinate_Set(Ordinate_Set const &other)
+    : geometry_(other.geometry()), dimension_(other.dimension()),
+      has_starting_directions_(other.has_starting_directions()),
+      has_extra_starting_directions_(other.has_extra_starting_directions()),
+      ordering_(other.ordering()), norm_(other.norm()),
+      ordinates_(other.ordinates()) {}
 
 //---------------------------------------------------------------------------//
 bool Ordinate_Set::check_class_invariants() const {

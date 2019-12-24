@@ -47,12 +47,11 @@ namespace rtt_quadrature {
 std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
 
   using rtt_mesh_element::Geometry;
-  using namespace ::rtt_quadrature;
 
   bool add_starting_directions = false;
   bool add_extra_directions = false;
 
-  Geometry geometry;
+  rtt_mesh_element::Geometry geometry;
 
   // Find the geometry
   switch (quad_.geometry) {
@@ -71,7 +70,7 @@ std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
     break;
 
   default:
-    Insist(false, "Unrecongnized Geometry");
+    Insist(false, "Unrecognized Geometry");
     geometry = rtt_mesh_element::CARTESIAN;
   }
 
@@ -124,6 +123,9 @@ std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
           add_starting_directions, add_extra_directions,
           Ordinate_Set::LEVEL_ORDERED);
     }
+  } else {
+    Insist(quad_.dimension > 0 && quad_.dimension < 3,
+           "Expected 1 <= quad_.dimension < 3.");
   }
 
   Ensure(ordinate_set);

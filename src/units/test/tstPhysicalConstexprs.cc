@@ -24,8 +24,9 @@ void compare_constant(const std::string name, double expected, double value_a,
   using std::endl;
   using std::setprecision;
 
-  if (soft_equiv(expected, value_a) && soft_equiv(expected, value_b)) {
-    PASSMSG("Found expected value for " + name);
+  if (soft_equiv(1., value_a / expected) &&
+      soft_equiv(1., value_b / expected)) {
+    PASSMSG("Found expected value for " + name + ".");
   } else {
     std::ostringstream msg;
     msg << "Did not find expected value for " + name + "." << endl
@@ -50,39 +51,39 @@ void test_si(rtt_dsxx::UnitTest &ut) {
 
   constexpr rtt_units::PhysicalConstexprs<rtt_units::SI> pc;
 
-  compare_constant("Avogadro's number", 6.02214076e23, pc.avogadro(), pc.Na(),
+  compare_constant("Avogadro's number", 6.02214129e+23, pc.avogadro(), pc.Na(),
                    ut);
-  compare_constant("fine structure constant", 0.0072973525693,
+  compare_constant("fine structure constant", 0.0072973525698,
                    pc.fineStructure(), pc.alpha(), ut);
   compare_constant("pi", 3.141592653589793238462643383279, pc.pi(), pc.pi(),
                    ut);
-  compare_constant("Planck constant", 6.62607015e-34, pc.planck(), pc.h(), ut);
-  compare_constant("molar gas constant", 8.3144621618, pc.gasConstant(), pc.R(),
+  compare_constant("Planck constant", 6.62606957e-34, pc.planck(), pc.h(), ut);
+  compare_constant("molar gas constant", 8.3144621, pc.gasConstant(), pc.R(),
                    ut);
-  compare_constant("Boltzmann constant", 1.602176797090563e-25, pc.boltzmann(),
-                   pc.k(), ut);
-  compare_constant("electron charge", 1.602176634e-19, pc.electronCharge(),
+  compare_constant("Boltzmann constant", 1.3806488e-23, pc.boltzmann(), pc.k(),
+                   ut);
+  compare_constant("electron charge", 1.602176565e-19, pc.electronCharge(),
                    pc.e(), ut);
   compare_constant("speed of light", 299792458, pc.speedOfLight(), pc.c(), ut);
-  compare_constant("Stefan-Boltzmann constant", 5.670374419e-08,
+  compare_constant("Stefan-Boltzmann constant", 5.670372622591332e-08,
                    pc.stefanBoltzmann(), pc.sigma(), ut);
-  compare_constant("Gravitational constant", 6.6743e-11,
+  compare_constant("Gravitational constant", 6.67384e-11,
                    pc.gravitationalConstant(), pc.G(), ut);
   compare_constant("Standard acceleration of gravity", 9.80665,
                    pc.accelerationFromGravity(), pc.g(), ut);
-  compare_constant("Faraday constant", 96485.33212, pc.faradayConstant(),
+  compare_constant("Faraday constant", 96485.33645956869, pc.faradayConstant(),
                    pc.F(), ut);
-  compare_constant("Permeability of vacuum", 1.25663706212e-06,
+  compare_constant("Permeability of vacuum", 1.256637061435917e-06,
                    pc.permeabilityOfVacuum(), pc.mu0(), ut);
-  compare_constant("Permittivity of vacuum", 8.854187812800001e-12,
+  compare_constant("Permittivity of vacuum", 8.854187817620389e-12,
                    pc.permittivityOfVacuum(), pc.epsi0(), ut);
-  compare_constant("Classical electron radius", 2.8179403262e-13,
+  compare_constant("Classical electron radius", 2.817940326800028e-15,
                    pc.classicalElectronRadius(), pc.re(), ut);
-  compare_constant("Electron mass", 9.1093837015e-28, pc.electronMass(),
-                   pc.me(), ut);
-  compare_constant("Proton mass", 1.67262192369e-24, pc.protonMass(), pc.mp(),
+  compare_constant("Electron mass", 9.10938291e-31, pc.electronMass(), pc.me(),
                    ut);
-  compare_constant("Electron volt", 1.602176634e-28, pc.electronVolt(), pc.eV(),
+  compare_constant("Proton mass", 1.672621777e-27, pc.protonMass(), pc.mp(),
+                   ut);
+  compare_constant("Electron volt", 1.602176565e-19, pc.electronVolt(), pc.eV(),
                    ut);
 }
 
@@ -95,41 +96,40 @@ void test_cgs(rtt_dsxx::UnitTest &ut) {
 
   constexpr rtt_units::PhysicalConstexprs<rtt_units::CGS> pc;
 
-  compare_constant("Avogadro's number", 6.02214076e23, pc.avogadro(), pc.Na(),
+  compare_constant("Avogadro's number", 6.02214129e+23, pc.avogadro(), pc.Na(),
                    ut);
-  compare_constant("fine structure constant", 0.0072973525693,
+  compare_constant("fine structure constant", 0.0072973525698,
                    pc.fineStructure(), pc.alpha(), ut);
   compare_constant("pi", 3.141592653589793238462643383279, pc.pi(), pc.pi(),
                    ut);
-  compare_constant("Planck constant", 6.626070149999998e-27, pc.planck(),
-                   pc.h(), ut);
-  compare_constant("molar gas constant", 83144621.618, pc.gasConstant(), pc.R(),
+  compare_constant("Planck constant", 6.62606957e-27, pc.planck(), pc.h(), ut);
+  compare_constant("molar gas constant", 83144621, pc.gasConstant(), pc.R(),
                    ut);
-  compare_constant("Boltzmann constant", 1.602176797090563e-25, pc.boltzmann(),
-                   pc.k(), ut);
-  compare_constant("electron charge", 4.803204712570263e-10,
+  compare_constant("Boltzmann constant", 1.3806488e-16, pc.boltzmann(), pc.k(),
+                   ut);
+  compare_constant("electron charge", 4.803204505713468e-10,
                    pc.electronCharge(), pc.e(), ut);
   compare_constant("speed of light", 29979245800., pc.speedOfLight(), pc.c(),
                    ut);
-  compare_constant("Stefan-Boltzmann constant", 5.670374419e-05,
+  compare_constant("Stefan-Boltzmann constant", 5.670372622591332e-05,
                    pc.stefanBoltzmann(), pc.sigma(), ut);
-  compare_constant("Gravitational constant", 6.6743e-08,
+  compare_constant("Gravitational constant", 6.67384e-08,
                    pc.gravitationalConstant(), pc.G(), ut);
   compare_constant("Standard acceleration of gravity", 980.665,
                    pc.accelerationFromGravity(), pc.g(), ut);
-  compare_constant("Faraday constant", 8.667420510246794e+16,
+  compare_constant("Faraday constant", 8.667420900076685e+16,
                    pc.faradayConstant(), pc.F(), ut);
-  compare_constant("Permeability of vacuum", 12.5663706212,
+  compare_constant("Permeability of vacuum", 12.56637061435917,
                    pc.permeabilityOfVacuum(), pc.mu0(), ut);
-  compare_constant("Permittivity of vacuum", 0.07953848254861551,
+  compare_constant("Permittivity of vacuum", 0.07953848259191779,
                    pc.permittivityOfVacuum(), pc.epsi0(), ut);
-  compare_constant("Classical electron radius", 2.8179403262e-13,
+  compare_constant("Classical electron radius", 2.817940326800028e-13,
                    pc.classicalElectronRadius(), pc.re(), ut);
-  compare_constant("Electron mass", 9.1093837015e-28, pc.electronMass(),
-                   pc.me(), ut);
-  compare_constant("Proton mass", 1.67262192369e-24, pc.protonMass(), pc.mp(),
+  compare_constant("Electron mass", 9.10938291e-28, pc.electronMass(), pc.me(),
                    ut);
-  compare_constant("Electron volt", 1.602176634e-12, pc.electronVolt(), pc.eV(),
+  compare_constant("Proton mass", 1.672621777e-24, pc.protonMass(), pc.mp(),
+                   ut);
+  compare_constant("Electron volt", 1.602176565e-12, pc.electronVolt(), pc.eV(),
                    ut);
 }
 
@@ -142,40 +142,39 @@ void test_cgsh(rtt_dsxx::UnitTest &ut) {
 
   constexpr rtt_units::PhysicalConstexprs<rtt_units::CGSH> pc;
 
-  compare_constant("Avogadro's number", 6.02214076e23, pc.avogadro(), pc.Na(),
+  compare_constant("Avogadro's number", 6.02214129e+23, pc.avogadro(), pc.Na(),
                    ut);
-  compare_constant("fine structure constant", 0.0072973525693,
+  compare_constant("fine structure constant", 0.0072973525698,
                    pc.fineStructure(), pc.alpha(), ut);
   compare_constant("pi", 3.141592653589793238462643383279, pc.pi(), pc.pi(),
                    ut);
-  compare_constant("Planck constant", 6.626070149999998e-35, pc.planck(),
-                   pc.h(), ut);
-  compare_constant("molar gas constant", 0.09648533664909333, pc.gasConstant(),
+  compare_constant("Planck constant", 6.62606957e-35, pc.planck(), pc.h(), ut);
+  compare_constant("molar gas constant", 0.09648533593193405, pc.gasConstant(),
                    pc.R(), ut);
-  compare_constant("Boltzmann constant", 1.602176797090563e-25, pc.boltzmann(),
+  compare_constant("Boltzmann constant", 1.602176565000177e-25, pc.boltzmann(),
                    pc.k(), ut);
-  compare_constant("electron charge", 4.803204712570263e-10,
+  compare_constant("electron charge", 4.803204505713468e-10,
                    pc.electronCharge(), pc.e(), ut);
   compare_constant("speed of light", 299.792458, pc.speedOfLight(), pc.c(), ut);
-  compare_constant("Stefan-Boltzmann constant", 1.028301235680117,
+  compare_constant("Stefan-Boltzmann constant", 1.02830090990811,
                    pc.stefanBoltzmann(), pc.sigma(), ut);
-  compare_constant("Gravitational constant", 6.6743e-24,
+  compare_constant("Gravitational constant", 6.67384e-24,
                    pc.gravitationalConstant(), pc.G(), ut);
   compare_constant("Standard acceleration of gravity", 9.80665e-14,
                    pc.accelerationFromGravity(), pc.g(), ut);
-  compare_constant("Faraday constant", 8.667420510246794e+16,
+  compare_constant("Faraday constant", 8.667420900076685e+16,
                    pc.faradayConstant(), pc.F(), ut);
-  compare_constant("Permeability of vacuum", 1.25663706212e-15,
+  compare_constant("Permeability of vacuum", 1.256637061435917e-15,
                    pc.permeabilityOfVacuum(), pc.mu0(), ut);
-  compare_constant("Permittivity of vacuum", 0.07953848254861551,
+  compare_constant("Permittivity of vacuum", 0.07953848259191779,
                    pc.permittivityOfVacuum(), pc.epsi0(), ut);
-  compare_constant("Classical electron radius", 2.8179403262e-13,
+  compare_constant("Classical electron radius", 2.817940326800028e-13,
                    pc.classicalElectronRadius(), pc.re(), ut);
-  compare_constant("Electron mass", 9.1093837015e-28, pc.electronMass(),
-                   pc.me(), ut);
-  compare_constant("Proton mass", 1.67262192369e-24, pc.protonMass(), pc.mp(),
+  compare_constant("Electron mass", 9.10938291e-28, pc.electronMass(), pc.me(),
                    ut);
-  compare_constant("Electron volt", 1.602176634e-28, pc.electronVolt(), pc.eV(),
+  compare_constant("Proton mass", 1.672621777e-24, pc.protonMass(), pc.mp(),
+                   ut);
+  compare_constant("Electron volt", 1.602176565e-28, pc.electronVolt(), pc.eV(),
                    ut);
 }
 

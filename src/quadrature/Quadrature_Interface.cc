@@ -12,6 +12,8 @@
 #include "Ordinate_Set_Factory.hh"
 #include <iostream>
 
+using std::vector;
+
 //! An extern "C" interface to default constructor
 void init_quadrature(quadrature_data &quad) { quad = quadrature_data(); }
 

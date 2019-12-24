@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "c4/bin/xthi.hh"
 #include "c4/C4_Functions.hh"
+#include "c4/xthi_cpuset.hh"
 #include <iomanip>
 #include <iostream>
 

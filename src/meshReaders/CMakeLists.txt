@@ -36,6 +36,10 @@ install( TARGETS Lib_meshReaders
    EXPORT draco-targets
    DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/meshReaders )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_meshReaders> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

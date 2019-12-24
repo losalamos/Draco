@@ -17,6 +17,7 @@
 #include <iostream>
 
 using namespace rtt_units;
+using std::vector;
 
 namespace rtt_quadrature {
 
@@ -134,7 +135,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
  *             axisymmetric, Cartesian)
  * \param ordinates Set of ordinate directions
  * \param quadrature_class Class of the quadrature used to generate the ordinate
- *             set. At presente, only TRIANGLE_QUADRATURE is supported.
+ *             set. At present, only TRIANGLE_QUADRATURE is supported.
  * \param sn_order Order of the quadrature. This is equal to the number of
  *             levels for triangular and square quadratures.
  * \param expansion_order Expansion order of the desired scattering moment
@@ -150,7 +151,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
  * \param ordering Ordering into which to sort the ordinates.
  */
 Galerkin_Ordinate_Space::Galerkin_Ordinate_Space(
-    unsigned const dimension, Geometry const geometry,
+    unsigned const dimension, rtt_mesh_element::Geometry const geometry,
     vector<Ordinate> const &ordinates, Quadrature_Class quadrature_class,
     unsigned sn_order, unsigned const expansion_order, QIM const method,
     bool const extra_starting_directions, Ordering const ordering)
@@ -274,9 +275,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // set cartesian_ordinate weights to the first row of D
 
     for (unsigned i = 0; i < numCartesianOrdinates; ++i) {
-      //std::cout << " changing weight from " << cartesian_ordinates[i].wt();
       cartesian_ordinates[i].set_wt(cartesian_D[i + 0 * numCartesianOrdinates]);
-      //std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
     }
 
     // and reset ordinate weights to the first row of D
@@ -294,9 +293,8 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // accurately integrate all moments
 
     // This branch is not tested
-    Insist(
-        false,
-        "This branch commented out because there are no supporting unit tests");
+    Insist(false, "This branch commented out because there are no supporting "
+                  "unit tests");
   } else
     Insist(false, "Could not identify Galerkin Quadrature method.");
 
@@ -305,7 +303,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
   if (geometry == rtt_mesh_element::CARTESIAN) {
     M_ = cartesian_M;
     D_ = cartesian_D;
-  } else // augment the cartesian operators for the zero-weight starting
+  } else // augment the Cartesian operators for the zero-weight starting
          // directions then store
   {
     M_ = augment_M(indexes, cartesian_M);
@@ -430,7 +428,7 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
           // sphere is projected on the plane of the mu- and eta-axis in R-Z. In
           // this case, phi is measured from the mu-axis counterclockwise.
           //
-          // This accounts for the fact that the aziumuthal angle is discretized
+          // This accounts for the fact that the azimuthal angle is discretized
           // on levels of the xi-axis, making the computation of the azimuthal
           // angle here consistent with the discretization by using the eta and
           // mu ordinates to define phi.
@@ -463,11 +461,10 @@ Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
                                          vector<double> const &Ain) {
   // Invert an (m x n) matrix A
 
-  Insist(
-      !Ain.empty(),
-      "The GQ ordinate space computation for D requires that M be available.");
+  Insist(!Ain.empty(), "The GQ ordinate space computation for D requires "
+                       "that M be available.");
 
-  Insist(n == m, "Matrix must be squre.");
+  Insist(n == m, "Matrix must be square.");
 
   std::vector<double> A(Ain);
   std::vector<double> B(m * n);
@@ -480,7 +477,7 @@ Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
   // Create some local space for the permutation matrix.
   gsl_permutation *p = gsl_permutation_alloc(m);
 
-  // Store information aobut sign changes in this variable.
+  // Store information about sign changes in this variable.
   int signum(0);
 
   // Factorize the square matrix M into the LU decomposition PM = LU.  On output
@@ -491,7 +488,7 @@ Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
   //
   // The permutation matrix P is encoded in the permutation p.  The j-th column
   // of the matrix P is given by the k-th column of the identity, where k=p[j]
-  // thej-th element of the permutation vector.  The sign of the permutation is
+  // the j-th element of the permutation vector.  The sign of the permutation is
   // given by signum.  It has the value \f$ (-1)^n \f$, where n is the number of
   // interchanges in the permutation.
   //

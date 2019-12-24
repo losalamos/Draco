@@ -18,6 +18,8 @@
 
 namespace rtt_quadrature {
 
+using std::vector;
+
 //---------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
                                                    unsigned /*N*/) {
@@ -100,7 +102,7 @@ void Sn_Ordinate_Space::compute_M() {
   size_t const numMoments = n2lk.size();
 
   unsigned const dim = dimension();
-  Geometry const geometry(this->geometry());
+  rtt_mesh_element::Geometry const geometry(this->geometry());
   double const sumwt(norm());
 
   // resize the M matrix.
@@ -123,40 +125,33 @@ void Sn_Ordinate_Space::compute_M() {
 
         // R-Z coordinate system
         //
-        // It is important to remember here that the positive mu axis
-        // points to the left and the positive eta axis points up, when
-        // the unit sphere is projected on the plane of the mu- and
-        // eta-axis in R-Z. In this case, phi is measured from the
-        // mu-axis counterclockwise.
+        // It is important to remember here that the positive mu axis points to
+        // the left and the positive eta axis points up, when the unit sphere is
+        // projected on the plane of the mu- and eta-axis in R-Z. In this case,
+        // phi is measured from the mu-axis counterclockwise.
         //
-        // This accounts for the fact that the aziumuthal angle is
-        // discretized on levels of the xi-axis, making the computation
-        // of the azimuthal angle here consistent with the
-        // discretization by using the eta and mu ordinates to
-        // define phi.
+        // This accounts for the fact that the azimuthal angle is discretized on
+        // levels of the xi-axis, making the computation of the azimuthal angle
+        // here consistent with the discretization by using the eta and mu
+        // ordinates to define phi.
 
         // X-Y coordinate system
         //
-        // Note that we choose the same moments and spherical
-        // harmonics as for R-Z in this case, unlike the Galerkin
-        // method.
+        // Note that we choose the same moments and spherical harmonics as for
+        // R-Z in this case, unlike the Galerkin method.
         //
-        // This is because we choose the "front" of the
-        // hemisphere, here, so that the spherical harmoincs
-        // chosen are even in the azimuthal angle (symmetry from
-        // front to back) and not even in the polar angle.
-        // Thus, in this case, the polar angle is measured from the
-        // eta-axis [0, Pi], and the azimuthal angle is measured
-        // from the mu-axis [0,Pi].
+        // This is because we choose the "front" of the hemisphere, here, so
+        // that the spherical harmonics chosen are even in the azimuthal angle
+        // (symmetry from front to back) and not even in the polar angle. Thus,
+        // in this case, the polar angle is measured from the eta-axis [0, Pi],
+        // and the azimuthal angle is measured from the mu-axis [0,Pi].
         //
-        // In contrast, the Galerkin methods chooses the "top"
-        // hemisphere, and projects down onto the x-y plane.
-        // Hence the polar angle in that case is xi and extends from
-        // [0,Pi/2] while the azimuthal angle is on [0, 2 Pi].
-        // Therefore, in that case, the spherical harmonics must
-        // be those that are even in the polar angle.
-        // That may be determined by considering the even-ness
-        // of the associated legendre polynomials.
+        // In contrast, the Galerkin methods chooses the "top" hemisphere, and
+        // projects down onto the x-y plane. Hence the polar angle in that case
+        // is xi and extends from [0,Pi/2] while the azimuthal angle is on [0, 2
+        // Pi]. Therefore, in that case, the spherical harmonics must be those
+        // that are even in the polar angle. That may be determined by
+        // considering the even-ness of the associated Legendre polynomials.
 
         double phi(compute_azimuthalAngle(mu, xi));
         M_[n + m * numMoments] = Ylm(ell, k, eta, phi, sumwt);
@@ -166,8 +161,8 @@ void Sn_Ordinate_Space::compute_M() {
 }
 
 //---------------------------------------------------------------------------//
-/*! This computation requires that the moment-to-discrete matrix M
- *  is already created.
+/*! This computation requires that the moment-to-discrete matrix M is already
+ *  created.
  */
 void Sn_Ordinate_Space::compute_D() {
 
@@ -205,7 +200,7 @@ void Sn_Ordinate_Space::compute_D() {
 
   unsigned ierr = gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &gsl_M.matrix,
                                  gsl_W, 0.0, &gsl_D.matrix);
-  Insist(!ierr, "GSL blas interface error");
+  Insist(!ierr, "GSL BLAS interface error");
 
   gsl_matrix_free(gsl_W);
 
@@ -241,7 +236,7 @@ void Sn_Ordinate_Space::compute_D() {
  */
 
 Sn_Ordinate_Space::Sn_Ordinate_Space(unsigned const dimension,
-                                     Geometry const geometry,
+                                     rtt_mesh_element::Geometry const geometry,
                                      vector<Ordinate> const &ordinates,
                                      int const expansion_order,
                                      bool const extra_starting_directions,

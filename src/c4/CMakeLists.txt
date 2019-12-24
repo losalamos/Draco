@@ -9,6 +9,13 @@
 cmake_minimum_required(VERSION 3.9.0)
 project( c4 CXX )
 
+#------------------------------------------------------------------------------#
+# Quo related setup that will be saved to c4/config.h
+#------------------------------------------------------------------------------#
+if( TARGET LIBQUO::libquo )
+  set( HAVE_LIBQUO 1 )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # many c4 and mpi values are set in config/setupMPI.cmake.
@@ -34,6 +41,9 @@ endif()
 
 set( target_deps Lib_dsxx )
 if ( "${DRACO_C4}" STREQUAL "MPI")
+  if( HAVE_LIBQUO )
+    list(APPEND target_deps LIBQUO::libquo)
+  endif()
   list(APPEND target_deps MPI::MPI_CXX MPI::MPI_C )
   if (TARGET MPI::MPI_Fortran)
     list(APPEND target_deps MPI::MPI_Fortran )
@@ -55,13 +65,16 @@ target_include_directories( Lib_c4
 if( NOT APPLE )
   add_subdirectory( bin )
 endif()
-list( APPEND headers ${PROJECT_SOURCE_DIR}/bin/xthi.hh )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_c4> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

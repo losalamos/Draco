@@ -75,6 +75,15 @@
  */
 #cmakedefine MPICH2_CONST @MPICH2_CONST@
 
+/* ---------------------------------------- */
+/* Quo */
+/* ---------------------------------------- */
+
+#cmakedefine HAVE_LIBQUO @HAVE_LIBQUO@
+#ifdef HAVE_LIBQUO
+#include <quo.h>
+#endif
+
 #endif /* rtt_c4_config_h */
 
 /*---------------------------------------------------------------------------*/

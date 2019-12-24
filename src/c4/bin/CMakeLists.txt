@@ -8,17 +8,6 @@ cmake_minimum_required(VERSION 3.5.0)
 project( c4_bin CXX )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # component headers
-   ${PROJECT_BINARY_DIR}      # c4/config.h
-   ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
-   ${dsxx_BINARY_DIR}         # ds++/config.h
-)
-
-# ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
@@ -27,13 +16,17 @@ add_component_executable(
   TARGET_DEPS Lib_c4
   SOURCES     ${PROJECT_SOURCE_DIR}/xthi.cc
   PREFIX       Draco )
+#target_include_directories( Exe_xthi
+#  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 add_component_executable(
   TARGET      Exe_ythi
   TARGET_DEPS Lib_c4
   SOURCES     ${PROJECT_SOURCE_DIR}/ythi.cc
   PREFIX       Draco )
-  
+#target_include_directories( Exe_ythi
+#  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #

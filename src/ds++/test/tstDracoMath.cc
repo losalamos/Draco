@@ -119,6 +119,22 @@ void test_linear_interpolate(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+void tstceilintdiv(rtt_dsxx::UnitTest &ut) {
+  using namespace rtt_dsxx;
+  uint32_t const nf = ut.numFails;
+  FAIL_IF_NOT(rtt_dsxx::ceil_int_division(1, 2) == 1);
+  FAIL_IF_NOT(ceil_int_division(2, 2) == 1);
+  FAIL_IF_NOT(ceil_int_division(0, 2) == 0);
+  FAIL_IF_NOT(ceil_int_division(1, 200) == 1);
+  FAIL_IF_NOT(ceil_int_division(-1, 2) == 0);
+  if (ut.numFails == nf)
+    PASSMSG("Fast ceiling integer division checks ok.");
+  else
+    FAILMSG("Fast ceiling integer division checks fail.");
+  return;
+}
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -128,6 +144,7 @@ int main(int argc, char *argv[]) {
     tstsign(ut);
     tstsquare(ut);
     test_linear_interpolate(ut);
+    tstceilintdiv(ut);
   }
   UT_EPILOG(ut);
 }

@@ -1,12 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/bin/xthi.hh
+ * \file   c4/xthi_cpuset.hh
  * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>
  * \date   Wednesday, Aug 09, 2017, 11:45 am
  * \brief  Helper functions to generate string for core affinity.
  * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
- *         All rights reserved. */
+ *         All rights reserved.
+ *
+ * These functions are needed by c4's xthi and ythi programs to report human
+ * readable thread bindings.  It is also used by the unit test for libquo.
+ */
 //---------------------------------------------------------------------------//
+
+#ifndef rtt_c4__xthi_cpuset_hh
+#define rtt_c4__xthi_cpuset_hh
 
 #include "c4_omp.h"
 #include "ds++/Assert.hh"
@@ -117,6 +124,8 @@ std::string cpuset_to_string(unsigned const /*num_cpu*/) {
 
 } // end namespace rtt_c4
 
+#endif // rtt_c4__xthi_cpuset_hh
+
 //----------------------------------------------------------------------------//
-// End c4/bin/xthi.hh
+// End c4/xthi_cpuset.hh
 //----------------------------------------------------------------------------//

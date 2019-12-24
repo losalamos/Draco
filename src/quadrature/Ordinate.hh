@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate.hh
  * \author Kent Budge
@@ -6,17 +6,17 @@
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
  *         All rights reserved.  */
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef quadrature_Ordinate_hh
-#define quadrature_Ordinate_hh
+#ifndef rtt_quadrature_Ordinate_hh
+#define rtt_quadrature_Ordinate_hh
 
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/config.h"
 
 namespace rtt_quadrature {
-using rtt_dsxx::soft_equiv;
 
-//=======================================================================================//
+//============================================================================//
 /*!
  * \class Ordinate 
  * \brief Class containing angle cosines and weights for an
@@ -28,7 +28,7 @@ using rtt_dsxx::soft_equiv;
  * but the ordinates must satisfy certain invariants that are protected by the
  * class representation.
  */
-//=======================================================================================//
+//============================================================================//
 
 class Ordinate {
 public:
@@ -41,7 +41,7 @@ public:
   //! Construct an Ordinate from the specified vector and weight.
   Ordinate(double const mu, double const eta, double const xi, double const wt)
       : mu_(mu), eta_(eta), xi_(xi), wt_(wt) {
-    Require(soft_equiv(mu * mu + eta * eta + xi * xi, 1.0));
+    Require(rtt_dsxx::soft_equiv(mu * mu + eta * eta + xi * xi, 1.0));
   }
 
   //! Construct a 1D Ordinate from the specified angle and weight.
@@ -60,7 +60,7 @@ public:
   void set_wt(double const wt) { wt_ = wt; };
 
   double const *cosines() const {
-    // This is a little krufty, but guaranteed to work according to C++ object
+    // This is a little crufty, but guaranteed to work according to C++ object
     // layout rules.
     return &mu_;
   }
@@ -81,7 +81,7 @@ private:
   double wt_;
 };
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b) {
   return rtt_dsxx::soft_equiv(a.mu(), b.mu()) &&
@@ -92,8 +92,8 @@ inline bool operator==(Ordinate const &a, Ordinate const &b) {
 
 } // end namespace rtt_quadrature
 
-#endif // quadrature_Ordinate_hh
+#endif // rtt_quadrature_Ordinate_hh
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Ordinate.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

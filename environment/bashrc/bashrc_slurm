@@ -87,10 +87,10 @@ case ${-} in
        squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep -v "N/A" | egrep --color -E ".*${hluser}.*|$"
        squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep --color=never "N/A" | egrep --color -E ".*${hluser}.*|$"
      fi
-     if ! [[ `squeue ${squeue_args} -h -t S,CG,CF,F,TO,PR,NF | wc -l` == 0 ]]; then
-       echo -e "\n${boldface}OTHER:${normalface}"
-       squeue ${squeue_args} -o "%.7i %.10u %.12T %.6C %10l %R" -S "-T" -t S,CG,CF,F,TO,PR,NF | egrep --color -E ".*${hluser}.*|$"
-     fi
+#     if ! [[ `squeue ${squeue_args} -h -t S,CG,CF,F,TO,PR,NF | wc -l` == 0 ]]; then
+#       echo -e "\n${boldface}OTHER:${normalface}"
+#       squeue ${squeue_args} -o "%.7i %.10u %.12T %.6C %10l %R" -S "-T" -t S,CG,CF,F,TO,PR,NF | egrep --color -E ".*${hluser}.*|$"
+#     fi
      echo " "
    }
    export -f sq

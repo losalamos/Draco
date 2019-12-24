@@ -59,7 +59,7 @@ else
   export dracomodules="ack htop clang-format python \
 intel/19.0.4 openmpi/2.1.2 mkl \
 cmake/3.14.6 numdiff git totalview trilinos/12.10.1 \
-superlu-dist/5.1.3 metis parmetis random123 eospac/6.4.0"
+superlu-dist/5.1.3 metis parmetis random123 eospac/6.4.0 quo"
 
   if [[ -d ${VENDOR_DIR}-ec ]]; then
     group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`

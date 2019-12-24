@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#ifndef __c4_C4_Serial_hh__
-#define __c4_C4_Serial_hh__
+#ifndef rtt_c4_C4_Serial_hh
+#define rtt_c4_C4_Serial_hh
 
 #include "c4/config.h"
 #include "ds++/Assert.hh"
@@ -111,7 +111,7 @@ int message_size_custom(C4_Status /*status*/, const T & /*mpi_type*/) {
 
 #endif // C4_SCALAR
 
-#endif // __c4_C4_Serial_hh__
+#endif // rtt_c4_C4_Serial_hh
 
 //----------------------------------------------------------------------------//
 // end of c4/C4_Serial.hh

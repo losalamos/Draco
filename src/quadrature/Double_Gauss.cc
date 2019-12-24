@@ -3,7 +3,7 @@
  * \file   quadrature/Double_Gauss.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
- * \brief  A class representing an interval dobule Gauss-Legendre quadrature
+ * \brief  A class representing an interval double Gauss-Legendre quadrature
  *         set.
  * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
  *         reserved. */

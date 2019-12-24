@@ -25,7 +25,7 @@ namespace rtt_quadrature {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_quadrature Ordinate_Set_Factory {
+class Ordinate_Set_Factory {
 public:
   // CREATORS
 

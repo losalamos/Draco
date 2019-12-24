@@ -35,6 +35,10 @@ add_component_library(
 install( TARGETS Lib_RTT_Format_Reader EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/RTT_Format_Reader )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_RTT_Format_Reader>
+    DESTINATION ${DBSCFGDIR}lib  OPTIONAL)
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
