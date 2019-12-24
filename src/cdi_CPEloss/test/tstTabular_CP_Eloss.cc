@@ -64,38 +64,31 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
   // Get eloss value for almost first (1,1,1) grid point
   {
     double energy = 1.384272;
-    double density = 0.01314446475045816;
-    double temperature = 1.9783097972766984e-05;
-    printf("dedx: %28.18e\n", eloss_mod.getEloss(temperature, density, energy));
-    printf("equiv? %i\n", (rtt_dsxx::soft_equiv(                                            
-        eloss_mod.getEloss(temperature, density, energy), 2.652631e+03, 1.e-8)));
-    FAIL_IF_NOT(rtt_dsxx::soft_equiv(
-        //eloss_mod.getEloss(temperature, density, energy), 131.2710473, 1.e-8));
-        eloss_mod.getEloss(temperature, density, energy), 2.652630801632265957e+03, 1.e-8));
+    double density = 3.344490e-01;
+    double temperature = 3.981051e-04;
+    FAIL_IF_NOT(
+        rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
+                             1.958064043427486800e-01, 1.e-8));
   }
 
   // Get eloss value for almost last (2,3,4) grid point
   {
-    double energy = 1.384273e+02;
-    double density = 335853.3534222285;
-    double temperature = 505.47663380532043;
-    printf("dedx: %28.18e\n", eloss_mod.getEloss(temperature, density, energy));
-    FAIL_IF_NOT(rtt_dsxx::soft_equiv(
-        //eloss_mod.getEloss(temperature, density, energy), 40747641.884, 1.e-8));
-        eloss_mod.getEloss(temperature, density, energy), 6.777724392862609375e+12, 1.e-8));
-  }
-
-  // Get eloss value for a point between grid points (45.5,13.5,13.5, i.e. requiring linear interpolation)
-  // Get eloss value for a point between grid points (1.5,2.5,3.5, i.e. requiring linear interpolation)
-  {
-    double energy = 3.2272259644150236;
-    double density = 66.4425508644999;
-    double temperature = 0.09999946884616503;
-    printf("dedx: %28.18e\n", eloss_mod.getEloss(temperature, density, energy));
+    double energy = 1.384273e+01;
+    double density = 3.344495e+03;
+    double temperature = 2.511868e+01;
     FAIL_IF_NOT(
         rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
-                             //155837.597258, 1.e-8));
-                             3.125994000940805674e+07, 1.e-8));
+                             8.502486928162006370e+04, 1.e-8));
+  }
+
+  // Get eloss value for a point between grid points (1.5,2.5,3.5, i.e. requiring linear interpolation)
+  {
+    double energy = 4.377453e+00;
+    double density = 3.344494e+02;
+    double temperature = 3.981044e+00;
+    FAIL_IF_NOT(
+        rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
+                             1.391042023333255202e+05, 1.e-8));
   }
 
   if (ut.numFails == 0) {
