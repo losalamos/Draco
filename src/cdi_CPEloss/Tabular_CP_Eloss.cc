@@ -10,6 +10,7 @@
 
 #include "Tabular_CP_Eloss.hh"
 #include "ds++/DracoStrings.hh"
+#include <stdio.h> // TODO remove this!!
 
 namespace rtt_cdi_cpeloss {
 
@@ -158,9 +159,11 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
 
   // Convert units on table to match those of getEloss:
   //   energy:      MeV -> cm/shk (using target particle mass)
+  printf("min_log_energy first: %e\n", min_log_energy);
   double energy_cgs = exp(min_log_energy) * (1.e6 * 1.6021772e-12);
   min_log_energy = log(sqrt(2. * energy_cgs / target.get_mass()) * 1.e-8);
   d_log_energy = d_log_energy / 2.;
+  printf("min_log_transformed first: %e\n", min_log_energy);
   //   density:     cm^-3 -> g cm^-3
   min_log_density = log(exp(min_log_density) * target.get_mass());
   //   temperature: keV -> keV
@@ -175,12 +178,12 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
 
   // Initialize table bounds
   min_energy = exp(min_log_energy);
-  max_energy = exp(min_log_energy + d_log_energy * (n_energy - 1));
+  max_energy = exp(min_log_energy + d_log_energy * (n_energy));// - 1));
   min_density = exp(min_log_density);
-  max_density = exp(min_log_density + d_log_density * (n_density - 1));
+  max_density = exp(min_log_density + d_log_density * (n_density));// - 1));
   min_temperature = exp(min_log_temperature);
   max_temperature =
-      exp(min_log_temperature + d_log_temperature * (n_temperature - 1));
+      exp(min_log_temperature + d_log_temperature * (n_temperature));// - 1));
 }
 
 /*!
@@ -207,6 +210,13 @@ std::vector<std::string> const Tabular_CP_Eloss::read_line() {
 double Tabular_CP_Eloss::getEloss(const double temperature,
                                   const double density,
                                   const double partSpeed) const {
+  printf("temp: %e %e\n", min_temperature, max_temperature);
+  printf("temp: %e %e\n", min_density, max_density);
+  printf("temp: %e %e\n", min_energy, max_energy);
+  printf("t: %e d: %e E: %e\n", temperature, density, partSpeed);
+  printf("le: %e me: %e\n", exp(min_log_energy + d_log_energy), exp(min_log_energy + d_log_energy * (n_energy-1)));
+  printf("m_log_e: %e d_log_e: %e\n", min_log_energy, d_log_energy);
+  printf(": %e\n", exp(min_log_energy));
   Require(temperature >= min_temperature);
   Require(density >= min_density);
   Require(partSpeed >= min_energy);
@@ -252,7 +262,9 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
       x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010, f110, f011, f111,
       partSpeed, density, temperature));
   const double number_density = density / target.get_mass();
-  return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
+  double dedx2 = exp(stopping_data(0,0,0));
+  printf("dedx2 = %28.18e\n", stopping_data(0,0,0));
+  return dedx2 * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }
 
 } // namespace rtt_cdi_cpeloss
