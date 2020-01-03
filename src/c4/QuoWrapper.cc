@@ -15,8 +15,9 @@
 namespace rtt_c4 {
 
 //----------------------------------------------------------------------------//
-//! Initialize pointer to zero so that it can be initialized in first call to
-// getInstance
+/*! \brief Initialize pointer to zero so that it can be initialized in first
+ *         call to  getInstance
+ */
 QuoWrapper *QuoWrapper::instance = nullptr;
 #ifdef HAVE_LIBQUO
 QUO_context QuoWrapper::quo = nullptr;
@@ -117,7 +118,7 @@ uint32_t QuoWrapper::num_nodes() {
 }
 
 //----------------------------------------------------------------------------//
-//! Number of cores per node
+//! Number of cores per node used by the current process.
 uint32_t QuoWrapper::num_mpi_ranks_per_node() {
   // Construct on first use.
   Remember(bool isinit =) QuoWrapper::is_initialized();
@@ -134,7 +135,7 @@ uint32_t QuoWrapper::num_mpi_ranks_per_node() {
 }
 
 //----------------------------------------------------------------------------//
-//! Number of cores per node
+//! Number of sockets per node
 uint32_t QuoWrapper::num_sockets_per_node() {
   // Construct on first use.
   Remember(bool isinit =) QuoWrapper::is_initialized();
@@ -149,7 +150,7 @@ uint32_t QuoWrapper::num_sockets_per_node() {
 }
 
 //----------------------------------------------------------------------------//
-//! Number of cores per node
+//! Number of numa domains per node
 uint32_t QuoWrapper::num_numanodes_per_node() {
   // Construct on first use.
   Remember(bool isinit =) QuoWrapper::is_initialized();
@@ -166,7 +167,7 @@ uint32_t QuoWrapper::num_numanodes_per_node() {
 }
 
 //----------------------------------------------------------------------------//
-//! Is this thread bound to a resource?
+//! Is this process bound to a resource?
 bool QuoWrapper::is_bound() {
   // Construct on first use.
   Remember(bool isinit =) QuoWrapper::is_initialized();

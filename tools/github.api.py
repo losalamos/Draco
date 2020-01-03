@@ -58,8 +58,12 @@ all_done=False
 
 # parse the first json result page, onlt print PR data for PRs that were merged
 print("\nShowing merged pull requests dated after {0}:\n".format(start_date_str))
+
 for entry in result_json:
-    if  entry["merged_at"]:
+    if entry == "message":
+        if result_json["message"] == "Bad credentials":
+            raise Exception('Bad credentials. Check GitHub moniker and token string.')
+    if entry["merged_at"]:
         merge_date = entry["merged_at"]
         if (merge_date):
             str_result = re_date_str.findall(merge_date)[0]
@@ -85,7 +89,7 @@ while 'next' in result.links.keys() and not all_done:
             number_date = 10000*int(str_result[0]) + 100*int(str_result[1]) \
                           + int(str_result[2])
             if (number_date > start_date):
-                print("* \"PR #{0} {1}\":{2}".format(entry["iid"],
+                print("* \"PR #{0} {1}\":{2}".format(entry["number"],
                                                      entry["title"],
                                                      entry["html_url"]))
             else:
@@ -166,6 +170,6 @@ for entry in result_json:
         if entry["labels"]:
             for label in entry["labels"]:
                 if label["name"] == "bug":
-                    print("\"Github issue #{0} {1}\":{2}".format(entry["number"],
-                                                                 entry["title"],
-                                                                 entry["html_url"]))
+                    print("* \"Github issue #{0} {1}\":{2}".format(entry["number"],
+                                                                   entry["title"],
+                                                                   entry["html_url"]))

@@ -1,3 +1,139 @@
+2019-12-16  Kelly Glen Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_4_0 and is tied to the release
+	of Jayenne-8_3_0 and Capsaicin-1_3_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  ---------------------------------------------------------------
+	  CTS-1              Intel 19.0.4    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ---------------------------------------------------------------
+	  ATS-1              Intel 19.0.4    Cray_MPICH2-7.7.6
+	  (TT/TR)            Intel 18.0.2    Cray_MPICH2-7.7.6
+	                     Intel 17.0.4    Cray_MPICH2-7.7.6
+	  ---------------------------------------------------------------
+	  LANL ARM           GCC 8.3.0       Cray_MPICH2-7.7.8
+	  TH/CP              CCE 9.0.1.80    Cray_MPICH2-7.7.8
+	  ---------------------------------------------------------------
+	  ATS-2              GCC 7.3.1       Spectrum MPI 2019.01.30
+	                                     Cuda-9.2
+	                     XL 2019.04      Spectrum MPI 2019.01.30
+                                             Cuda-9.2
+	  ---------------------------------------------------------------
+          Darwin - Power9    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - x86_64    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - ARM       GCC 8.2.0       OpenMPI-3.1.3
+	  ---------------------------------------------------------------
+
+	* Information:
+
+          Draco-7_4_0, build date 2019/12/16;build type: Debug;
+               DBC: 7;DRACO_DIAGNOSTICS: 0
+
+          CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+               Ryan T. Wollaeger, Alex R. Long, James S. Warsa, Kendra P. Long,
+               Matt A. Cleveland, Tim Kelley, Ben R. Ryan, Jae H. Chang,
+               Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+          Prior Contributors: Gabriel M. Rockefeller, Allan B. Wollaber,
+	       Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang, Peter Ahrens,
+	       Daniel Holladay, Jeff D. Densmore, Massimiliano Rosa, Todd
+	       J. Urbatsch, Jeff Furnish, John McGhee, Kris C. Garrett, Mike
+	       Buksas, Nick Myers, Paul Henning, Randy Roberts, Seth Johnson,
+	       Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+          Copyright (C) 2016-2019 Triad National Security, LLC. (C19028,
+	       LA-CC-16-016), Released under a 3-Clause BSD License.
+
+          For information, send e-mail to draco@lanl.gov.
+
+	* Summary of changes:
+
+	- 225 files changed, added or removed in 52 commits.
+	- PR #704 Provide a singleton wrapper around libquo
+	- PR #701 A constexpr physical units class
+	- PR #686 Enable clang-tidy mode on ccs-net machines.
+	- PR #682 Provide a mechanism to colorize text.
+
+	* Corrected Defects
+
+	- Github issue #692 CMake Error at config/setupMPI.cmake:54
+	           (Unknown arguments specified)
+	- Github issue #688 Clang warns char comparison with negative
+	           integers is always false
+	- Bug #1710 Darwin: Move regressions to intel/19.0.5
+	- Bug #1731 Darwin builds can't find XMGrace
+	- Bug #1746 Draco: regression failures
+	- Bug #1757 cmake-3.15 fails to report cores correctly
+	- Bug #1781 Fix MathJax plugin
+
+	* New Features
+
+	- PR #710 Revert CDash server to rtt.
+	- PR #705 Cleanup in quadrature.
+	- PR #704 Provide a singleton wrapper around libquo
+	- PR #703 Rewind PhysicalConstexprs to CODATA 2010 values
+	- PR #702 Fix static build.
+	- PR #701 A constexpr physical units class
+	- PR #700 Minor cleanup
+	- PR #699 More robust pre-commit hooks
+	- PR #698 Begin posting all regression results to
+	          ccstest.lanl.gov.
+	- PR #693 Add quotes around ${MPI_FLAVOR}
+	- PR #691 Update Terminal to the latest version
+	- PR #687 Address regression issues reported on Darwin:
+	- PR #686 Enable clang-tidy mode on ccs-net machines.
+	- PR #685 Add extra checks for gcc-Debug builds
+	- PR #684 Mark some functions constexpr
+	- PR #683 Move export DRACO_ENV_DIR before use in path to alias
+	          script.
+	- PR #682 Provide a mechanism to colorize text.
+	- PR #681 HPC machines can't see new CDash so use old server.
+	- PR #680 Fix capitalization
+	- PR #679 Test new cdash server.
+	- PR #676 Two minor tweaks and some formatting fixes.
+	- PR #675 Minor cleanup of comments, decorators, spelling, etc.
+	- PR #674 Update algorithm for exporting target properties.
+	- PR #671 Update bash developer files.
+	- PR #670 Merge the Draco-7_3_0 release branch back to develop
+	- Feature #42 Demo cce/9 on capulin
+	- Feature #1444 Attempt to use clang on ATS-2 machines
+	- Feature #1682 Intel-19.0.4
+	- Feature #1708 Demo Certek's terminal class
+	- Feature #1729 Add '-Wconversion' for gcc Debug builds
+	- Feature #1761 Create a constexpr physical constants system
+	- Feature #1763 Add c4 wrapper for libquo (optional TPL)
+	- Task #1324 CDash 2.7 Released (install on ccsnet3?)
+	- Task #1385 Extend [xy]thi for ARM
+	- Task #1686 Create python script to query github info needed for
+	          releases
+	- Task #1740 Get clang-tidy working in Draco
+	- Task #1765 Teach Draco build system to install pdb files to
+	          support debugging.
+
+	* Known Defects
+
+	- Github issue #526 Fix autodoc issues in package viz
+	- Github issue #525 Fix autodoc issues in Parser
+	- Bug #1777 For trinitite cronjobs, try sourcing /etc/profile
+	- Bug #1716 Darwin: regressions: update logic to support nodes w/o
+	          IB network support
+	- Bug #1712 Fix Lib_rng so that include path for Random123 is
+	          provided transitively
+	- Bug #1550 release scripts break on rzansel
+	- Bug #1443 CDash integration with GitHub
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1148 perfbench time variation on snow
+	- Bug #59 cdi_eospac design flaw
+
+
 2019-09-11  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Overview

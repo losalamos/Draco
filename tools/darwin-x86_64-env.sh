@@ -22,7 +22,7 @@ environments="x86gcc730env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3*)
+  draco-7_2* | draco-7_3* | draco-7_4*)
     function x86gcc730env()
     {
       export darwin_queue="-p volta-v100-x86"

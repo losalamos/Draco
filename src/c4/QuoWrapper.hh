@@ -31,17 +31,19 @@ public:
   /*! \brief Destructor
    *
    * Because Quo must be torn-down before MPI_finalize is called and because
-   * this class uses the RAII pattern, we destroy Quo via QUO_free) in
+   * this class uses the RAII pattern, we destroy Quo via QUO_free in
    * C4_MPI.cc's finalize function.  This free's the quo context.
    *
-   * This destructor body is only kill when the program ends.
+   * This destructor body is only called when the program ends.
    */
   ~QuoWrapper() { quo_free(); }
 
   /* \brief Destructor helper
    *
    * This function will free the quo context.  It is called by C4_MPI.cc's
-   * finalize function. See notes for QuoWrapper destructor.
+   * finalize function.
+   *
+   * \sa Notes associated with the QuoWrapper destructor.
    */
   static void quo_free() {
 #ifdef HAVE_LIBQUO
@@ -84,7 +86,7 @@ public:
   //! Number of numa domains per node
   static uint32_t num_numanodes_per_node();
 
-  //! Is this thread bound to a resource?
+  //! Is this process bound to a resource?
   static bool is_bound();
 
   //! Return a string representation of the caller's current binding policy

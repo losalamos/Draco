@@ -90,7 +90,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS_DEBUG " /Z7"   )
   endif()
 
-  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa" )
+  # /Zc:__cplusplus - enables the __cplusplus preprocessor macro to report an updated value for recent C++ language standards
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa  /Zc:__cplusplus " )
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )

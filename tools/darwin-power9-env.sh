@@ -19,7 +19,7 @@ environments="p9gcc730env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3*)
+  draco-7_2* | draco-7_3* | draco-7_4* )
     function p9gcc730env()
     {
       export darwin_queue="-p power9-asc -A asc-priority"

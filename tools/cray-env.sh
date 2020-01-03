@@ -40,7 +40,7 @@ fi
 case $ddir in
 
   #------------------------------------------------------------------------------#
-  draco-7_3*)
+  draco-7_3* | draco-7_4*)
     function gcc830()
     {
       run "module load user_contrib friendly-testing"

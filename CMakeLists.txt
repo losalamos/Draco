@@ -13,7 +13,7 @@
 
 cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 project( Draco
-  VERSION 7.3
+  VERSION 7.4
   DESCRIPTION "An object-oriented component library supporting radiation transport applications."
   LANGUAGES CXX C )
 

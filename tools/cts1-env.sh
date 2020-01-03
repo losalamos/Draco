@@ -42,7 +42,7 @@ fi
 case $ddir in
 
   #------------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3*)
+  draco-7_2* | draco-7_3* | draco-7_4*)
     function intel1904env
     {
       run "module purge"
@@ -52,7 +52,7 @@ case $ddir in
       run "module load intel/19.0.4 openmpi/2.1.2"
       run "unset MPI_ROOT"
       run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt"
+      run "module load mkl metis ndi csk qt quo"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }
@@ -65,7 +65,7 @@ case $ddir in
       run "module load intel/18.0.2 openmpi/2.1.2"
       run "unset MPI_ROOT"
       run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt"
+      run "module load mkl metis ndi csk qt quo"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }
@@ -78,7 +78,7 @@ case $ddir in
       run "module load intel/17.0.4 openmpi/2.1.2"
       run "unset MPI_ROOT"
       run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt"
+      run "module load mkl metis ndi csk qt quo"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }
@@ -91,7 +91,7 @@ case $ddir in
       run "module load gcc/7.4.0 openmpi/2.1.2"
       run "unset MPI_ROOT"
       run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt"
+      run "module load mkl metis ndi csk qt quo"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }

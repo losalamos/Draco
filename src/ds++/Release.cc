@@ -105,26 +105,27 @@ const std::string author_list(bool const use_doxygen_formatting) {
   mmdevs current_developers;
   // not totally fair... KT got credit for LOC when svn repository was converted
   // to git.
-  current_developers.insert(fomdev(188732, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(13919, "Kent G. Budge"));
-  current_developers.insert(fomdev(3855, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(3701, "Alex R. Long"));
-  current_developers.insert(fomdev(2933, "James S. Warsa"));
-  current_developers.insert(fomdev(1518, "Matt A. Cleveland"));
-  current_developers.insert(fomdev(1247, "Kendra P. Long"));
-  current_developers.insert(fomdev(682, "Tim Kelley"));
-  current_developers.insert(fomdev(398, "Jae H. Chang"));
+  current_developers.insert(fomdev(191291, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(13713, "Kent G. Budge"));
+  current_developers.insert(fomdev(3826, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(3714, "Alex R. Long"));
+  current_developers.insert(fomdev(2894, "James S. Warsa"));
+  current_developers.insert(fomdev(1916, "Kendra P. Long"));
+  current_developers.insert(fomdev(1515, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(639, "Tim Kelley"));
+  current_developers.insert(fomdev(530, "Ben R. Ryan"));
+  current_developers.insert(fomdev(390, "Jae H. Chang"));
   current_developers.insert(fomdev(173, "Andrew T. Till"));
   current_developers.insert(fomdev(98, "Seth D. Cook"));
-  current_developers.insert(fomdev(1, "Ben R. Ryan"));
+  current_developers.insert(fomdev(94, "Ondrej Certik"));
   current_developers.insert(fomdev(1, "David A. Dixon"));
 
   mmdevs prior_developers;
 
-  prior_developers.insert(fomdev(4014, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(2132, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(524, "Rob B. Lowrie"));
-  prior_developers.insert(fomdev(307, "Paul W. Talbot"));
+  prior_developers.insert(fomdev(4007, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(2107, "Allan B. Wollaber"));
+  prior_developers.insert(fomdev(515, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(304, "Paul W. Talbot"));
   prior_developers.insert(fomdev(262, "Katherine J. Wang"));
   prior_developers.insert(fomdev(78, "Peter Ahrens"));
   prior_developers.insert(fomdev(25, "Daniel Holladay"));

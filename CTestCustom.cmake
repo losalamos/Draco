@@ -34,10 +34,9 @@ set( CTEST_CUSTOM_COVERAGE_EXCLUDE
   ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
 
   # don't report on actual unit tests
-  "/tests/"
-  "tests.cpp"
-  "tests/tst*.cpp"
-  "/src/pkg/tests/tstXercesConfig.cpp"
+  "src/.*/test/"
+  # terminal isn't our code. don't report lack of coverage
+  "src/.*/terminal/.*"
   )
 
 # @brief Specify additional files which should be considered for coverage
