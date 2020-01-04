@@ -14,8 +14,8 @@
 #include "cdi/CPCommon.hh"
 #include "cdi/CPEloss.hh"
 #include "ds++/Assert.hh"
-#include "ds++/DracoArray.hh"
 #include "ds++/DracoMath.hh"
+#include "experimental/mdspan"
 #include "units/PhysicalConstants.hh"
 #include "units/UnitSystemType.hh"
 #include <cmath>
@@ -67,7 +67,7 @@ private:
   // Note that after unit conversions, *_energy is really *_speed
 
   // Storage for tabulated data
-  rtt_dsxx::DracoArray<double> stopping_data;
+  std::experimental::basic_mdspan<double, std::experimental::extents<std::experimental::dynamic_extent, std::experimental::dynamic_extent, std::experimental::dynamic_extent>, std::experimental::layout_left> stopping_data;
 
   // Utility for skipping lines
   void skip_lines(uint32_t nlines);
