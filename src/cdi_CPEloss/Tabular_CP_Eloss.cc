@@ -15,9 +15,8 @@ namespace rtt_cdi_cpeloss {
 
 namespace stdex = std::experimental;
 using std::experimental::basic_mdspan;
-using std::experimental::extents;
 using std::experimental::dynamic_extent;
-using std::experimental::layout_right;
+using std::experimental::extents;
 using std::experimental::layout_left;
 
 //---------------------------------------------------------------------------//
@@ -153,7 +152,11 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in,
                            std::to_string(target.get_zaid()) +
                            "\" in DEDX file \"" + filename + "\"");
 
-  stopping_data = basic_mdspan<double, extents<dynamic_extent, dynamic_extent, dynamic_extent>, layout_left>(stopping_data_1d.data(), n_energy, n_density, n_temperature);
+  stopping_data =
+      basic_mdspan<double,
+                   extents<dynamic_extent, dynamic_extent, dynamic_extent>,
+                   layout_left>(stopping_data_1d.data(), n_energy, n_density,
+                                n_temperature);
 
   // Convert units on table to match those of getEloss:
   //   energy:      MeV -> cm/shk (using target particle mass)
