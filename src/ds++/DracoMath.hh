@@ -207,6 +207,62 @@ constexpr inline double linear_interpolate(double const x1, double const x2,
   return value;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Do a 3D linear interpolation between vertices of a rectangular prism.
+ *
+ * Algorithm from wikipedia's Trilinear Interpolation article, hat tip to E.
+ * Norris for the reference.
+ *
+ * \param[in] x0   lower x coordinate of lattice
+ * \param[in] x1   upper x coordinate of lattic
+ * \param[in] y0   lower y coordinate of lattice
+ * \param[in] y1   upper y coordinate of lattice
+ * \param[in] z0   lower z coordinate of lattice
+ * \param[in] z1   upper z coordinate of lattic
+ * \param[in] f000 function at (x0,y0,z0)
+ * \param[in] f100 function at (x1,y0,z0)
+ * \param[in] f001 function at (x0,y0,z1)
+ * \param[in] f101 function at (x1,y0,z1)
+ * \param[in] f010 function at (x0,y1,z0)
+ * \param[in] f110 function at (x1,y1,z0)
+ * \param[in] f011 function at (x0,y1,z1)
+ * \param[in] f111 function at (x1,y1,z1)
+ * \param[in] x    x coordinate of interpolation point
+ * \param[in] y    y coordinate of interpolation point
+ * \param[in] z    z coordinate of interpolation point
+ * \return The function value linearly interpolated to (x,y,z)
+ */
+inline double
+linear_interpolate_3(double const x0, double const x1, double const y0,
+                     double const y1, double const z0, double const z1,
+                     double const f000, double const f100, double const f001,
+                     double const f101, double const f010, double const f110,
+                     double const f011, double const f111, double const x,
+                     double const y, double const z) {
+  Require(std::abs(x1 - x0) > std::numeric_limits<double>::epsilon());
+  Require(std::abs(y1 - y0) > std::numeric_limits<double>::epsilon());
+  Require(std::abs(z1 - z0) > std::numeric_limits<double>::epsilon());
+  Require((x >= x0) && (x <= x1) && (y >= y0) && (y <= y1) && (z >= z0) &&
+          (z <= z1));
+
+  double xd = (x - x0) / (x1 - x0);
+  double yd = (y - y0) / (y1 - y0);
+  double zd = (z - z0) / (z1 - z0);
+
+  double f00 = f000 * (1. - xd) + f100 * xd;
+  double f01 = f001 * (1. - xd) + f101 * xd;
+  double f10 = f010 * (1. - xd) + f110 * xd;
+  double f11 = f011 * (1. - xd) + f111 * xd;
+
+  double f0 = f00 * (1. - yd) + f10 * yd;
+  double f1 = f01 * (1. - yd) + f11 * yd;
+
+  double f = f0 * (1. - zd) + f1 * zd;
+
+  return f;
+}
+
 //----------------------------------------------------------------------------//
 /*!
  * \brief Fast ceiling of an integer division

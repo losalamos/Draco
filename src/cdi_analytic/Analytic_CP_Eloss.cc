@@ -24,21 +24,21 @@ namespace rtt_cdi_analytic {
  * The reaction type for this instance of the class is determined by the
  * rtt_cdi::Reaction argument.
  *
- * \param model_in shared_ptr to a derived
+ * \param[in] model_in shared_ptr to a derived
  *                 rtt_cdi_analytic::Analytic_Eloss_Model object
- * \param target_zaid_in int32_t target particle zaid
- * \param projectile_zaid_in int32_t transporting particle zaid
+ * \param[in] target_in int32_t target particle
+ * \param[in] projectile_in int32_t particle being transported
  */
 Analytic_CP_Eloss::Analytic_CP_Eloss(SP_Analytic_Model model_in,
-                                     int32_t target_zaid_in,
-                                     int32_t projectile_zaid_in)
-    : analytic_model(model_in), projectile_zaid(projectile_zaid_in),
-      target_zaid(target_zaid_in) {
+                                     rtt_cdi::CParticle target_in,
+                                     rtt_cdi::CParticle projectile_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in), analytic_model(model_in) {
   Ensure(analytic_model);
+  model_type = rtt_cdi::CPModelType::ANALYTIC_ETYPE;
 }
 
 //---------------------------------------------------------------------------//
-// OPACITY INTERFACE FUNCTIONS
+// ELOSS INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return a scalar eloss given a scalar temperature, density, and 

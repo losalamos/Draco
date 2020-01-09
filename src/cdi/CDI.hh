@@ -610,7 +610,7 @@ public:
   SP_GrayOpacity gray(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
   SP_MultigroupOpacity mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
   SP_OdfmgOpacity odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
-  SP_CPEloss eloss(rtt_cdi::CPModel m, int32_t proj_zaid,
+  SP_CPEloss eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t proj_zaid,
                    int32_t targ_zaid) const;
   SP_EoS eos(void) const;
   SP_EICoupling ei_coupling(void) const;
@@ -675,7 +675,8 @@ public:
   bool isGrayOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isOdfmgOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
-  bool isCPElossSet(rtt_cdi::CPModel, int32_t pz, int32_t tz) const;
+  bool isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
+                    int32_t tz) const;
   bool isEoSSet() const;
   bool isEICouplingSet() const;
 
