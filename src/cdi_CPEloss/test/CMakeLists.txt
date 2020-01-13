@@ -1,0 +1,28 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   cdi_CPEloss/test/CMakeLists.txt
+# author Ben. R. Ryan <brryan@lanl.gov>
+# date   2019 Nov 4
+# brief  Generate build project files for cdi_CPEloss/test.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+project( cdi_CPEloss_test CXX )
+
+# ---------------------------------------------------------------------------- #
+# Source files
+# ---------------------------------------------------------------------------- #
+
+set( test_sources
+  tstTabular_CP_Eloss.cc )
+
+# ---------------------------------------------------------------------------- #
+# Build Unit tests
+# ---------------------------------------------------------------------------- #
+
+add_scalar_tests(
+  SOURCES "${test_sources}"
+  DEPS    "Lib_cdi_CPEloss" )
+
+#------------------------------------------------------------------------------#
+# End cdi_CPEloss/test/CMakeLists.txt
+#------------------------------------------------------------------------------#
