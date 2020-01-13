@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_CPEloss_Tabular_CP_Eloss_hh__
-#define __cdi_CPEloss_Tabular_CP_Eloss_hh__
+#ifndef cdi_CPEloss_Tabular_CP_Eloss_hh
+#define cdi_CPEloss_Tabular_CP_Eloss_hh
 
 #include "experimental/mdspan"
 #include "cdi/CPCommon.hh"
@@ -23,6 +23,9 @@
 #include <string>
 
 namespace rtt_cdi_cpeloss {
+
+namespace stdex = std::experimental;
+
 //===========================================================================//
 /*!                                                                              
  * \class Tabular_CP_Eloss                                                      
@@ -38,6 +41,10 @@ namespace rtt_cdi_cpeloss {
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
 public:
   typedef std::vector<double> sf_double;
+  typedef stdex::extents<stdex::dynamic_extent,
+                         std::experimental::dynamic_extent,
+                         std::experimental::dynamic_extent>
+      dynamic_extents_3;
 
 private:
   const std::string filename;
@@ -67,12 +74,7 @@ private:
   // Note that after unit conversions, *_energy is really *_speed
 
   // Storage for tabulated data
-  std::experimental::basic_mdspan<
-      double,
-      std::experimental::extents<std::experimental::dynamic_extent,
-                                 std::experimental::dynamic_extent,
-                                 std::experimental::dynamic_extent>,
-      std::experimental::layout_left>
+  stdex::basic_mdspan<double, dynamic_extents_3, std::experimental::layout_left>
       stopping_data;
 
   // Utility for skipping lines
@@ -110,4 +112,4 @@ public:
 
 } // namespace rtt_cdi_cpeloss
 
-#endif
+#endif // cdi_CPEloss_Tabular_CP_Eloss_hh
