@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_UnitSystemEnums_hh__
-#define __units_UnitSystemEnums_hh__
+#ifndef rtt_units_UnitSystemEnums_hh
+#define rtt_units_UnitSystemEnums_hh
 
 #include "ds++/config.h"
 #include <string>
@@ -132,7 +132,7 @@ std::string setUnitLabel(size_t const pos, std::string const &labels);
 
 } // end namespace rtt_units
 
-#endif // __units_UnitSystemEnums_hh__
+#endif // rtt_units_UnitSystemEnums_hh
 
 //---------------------------------------------------------------------------//
 // end of UnitSystemEnums.hh

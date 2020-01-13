@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_Dims_hh__
-#define __RTT_Format_Reader_Dims_hh__
+#ifndef rtt_RTT_Format_Reader_Dims_hh
+#define rtt_RTT_Format_Reader_Dims_hh
 
 #include "ds++/Assert.hh"
 #include <algorithm>
@@ -248,7 +248,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_Dims_hh__
+#endif // rtt_RTT_Format_Reader_Dims_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Dims.hh

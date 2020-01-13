@@ -1,16 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   timestep/fixed_ts_advisor.hh
  * \brief  Header file for the fixed time-step advisor class.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef __timestep_fixed_ts_advisor_hh__
-#define __timestep_fixed_ts_advisor_hh__
+#ifndef rtt_timestep_fixed_ts_advisor_hh
+#define rtt_timestep_fixed_ts_advisor_hh
 
 #include "ts_advisor.hh"
 #include "ds++/Assert.hh"
@@ -19,16 +16,16 @@ namespace rtt_timestep {
 
 //===========================================================================//
 /*!
- * \brief Introduces a user defined fixed value 
+ * \brief Introduces a user defined fixed value
  *        into the time-step calculation.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview_timestep page gives a summary of the Draco time 
- * step control utilities. 
+ * The \ref overview_timestep page gives a summary of the Draco time
+ * step control utilities.
  *
  * This is useful to set min and max timesteps, or to force a
  * timestep, etc. The recommendation for the new timestep is
- * simply the user input value. 
+ * simply the user input value.
  */
 //===========================================================================//
 class DLL_PUBLIC_timestep fixed_ts_advisor : public ts_advisor {
@@ -81,13 +78,13 @@ public:
    */
   double get_dt_rec(const ts_manager &tsm) const;
 
-  /*! 
+  /*!
     \brief Prints the state of a fixed advisor.
     \return Prints the internal state of the advisor to std out.
    */
   void print_state(std::ostream &out = std::cout) const;
 
-  /*! 
+  /*!
     \brief Fixed advisor invariant function.
     \return True if the invariant is satisfied.
    */
@@ -96,7 +93,7 @@ public:
 
 } // namespace rtt_timestep
 
-#endif // __timestep_fixed_ts_advisor_hh__
+#endif // rtt_timestep_fixed_ts_advisor_hh
 
 //---------------------------------------------------------------------------//
 // end of fixed_ts_advisor.hh

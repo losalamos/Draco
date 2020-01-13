@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_Flags_hh__
-#define __RTT_Format_Reader_Flags_hh__
+#ifndef rtt_RTT_Format_Reader_Flags_hh
+#define rtt_RTT_Format_Reader_Flags_hh
 
 #include <algorithm>
 #include <fstream>
@@ -86,7 +86,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_Flags_hh__
+#endif // rtt_RTT_Format_Reader_Flags_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Flags.hh

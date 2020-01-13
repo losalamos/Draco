@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   timestep/field_ts_advisor.hh
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __timestep_field_ts_advisor_hh__
-#define __timestep_field_ts_advisor_hh__
+#ifndef rtt_timestep_field_ts_advisor_hh
+#define rtt_timestep_field_ts_advisor_hh
 
 #include "ts_advisor.hh"
 
@@ -20,18 +20,18 @@ namespace rtt_timestep {
  * \brief Estimates a new timestep based on current fields.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview_timestep page gives a summary of the Draco time 
- * step control utilities. 
+ * The \ref overview_timestep page gives a summary of the Draco time
+ * step control utilities.
  *
  * This class provides a means to estimate a
  * new timestep based on the current dQ/dt where Q is some field quantity
  * to be controlled (i.e. temperature, energy, particle number density,
- * etc....), and dt is the current timestep. 
+ * etc....), and dt is the current timestep.
  *
  * The recommended timestep will be
  * based on a norm of a control function "alpha", where
  * alpha = abs(del_Q/Q_old), and where Q is a field  being monitored,
- * i.e. temperature, energy, particles, etc. 
+ * i.e. temperature, energy, particles, etc.
  * Alpha is computed point-wise in the field, then a vector
  * norm is applied to the point-wise values. The type of norm used is selected
  * by the update method flag.
@@ -66,7 +66,7 @@ private:
 public:
   //! Returns the name of the update method flag requested
   /*! \param i the update_method_flag for which a name is desired
-   *  \return the name of the vector norm associated with i 
+   *  \return the name of the vector norm associated with i
    */
   static std::string update_method_flag_name(const int i) {
     static const std::string update_method_flag_names[last_umf] = {
@@ -100,7 +100,7 @@ public:
   /*! \brief The floor is computed as the max of frac*y1
    *
    * A utility function to set the floor value as a fraction of the max
-   * value in a field 
+   * value in a field
    *
    *  \param y1 The field to be examined
    *  \param frac The fractional value to be applied to the field
@@ -108,7 +108,7 @@ public:
   template <class FT> void set_floor(FT const &y1, double frac = 0.001);
 
   //! Calculates a new recommended time-step for a field advisor.
-  /*! \param tsm the time step manager in which the advisor resides 
+  /*! \param tsm the time step manager in which the advisor resides
       \param q_old  the field value at the beginning of the current time-step,
       \param q_new the field value at the end of the current time-step.
   */
@@ -135,13 +135,13 @@ public:
   // ACCESSORS
 
   //! Produces the recommended time-step
-  /*! \param tsm the time step manager in which the advisor resides 
+  /*! \param tsm the time step manager in which the advisor resides
    *  \return the recommended timestep
    */
   double get_dt_rec(const ts_manager &tsm) const;
 
   //! Determines if the advisor is fit to use in a time-step calculation
-  /*! \param tsm the time step manager in which the advisor resides 
+  /*! \param tsm the time step manager in which the advisor resides
    *  \return true if the advisor is usable
    */
   bool advisor_usable(const ts_manager &tsm) const;
@@ -159,7 +159,7 @@ public:
 
 } //end namespace rtt_timestep
 
-#endif // __timestep_field_ts_advisor_hh__
+#endif // rtt_timestep_field_ts_advisor_hh
 
 //---------------------------------------------------------------------------//
 // end of field_ts_advisor.hh

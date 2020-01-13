@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __meshReaders_Mesh_Reader_hh__
-#define __meshReaders_Mesh_Reader_hh__
+#ifndef rtt_meshReaders_Mesh_Reader_hh
+#define rtt_meshReaders_Mesh_Reader_hh
 
 #include "mesh_element/Element_Definition.hh"
 #include <map>
@@ -138,7 +138,7 @@ private:
 
 } // end namespace rtt_meshReaders
 
-#endif // __meshReaders_Mesh_Reader_hh__
+#endif // rtt_meshReaders_Mesh_Reader_hh
 
 //---------------------------------------------------------------------------//
 // end of meshReaders/Mesh_Reader.hh

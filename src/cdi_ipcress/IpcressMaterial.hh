@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressMaterial_hh__
-#define __cdi_ipcress_IpcressMaterial_hh__
+#ifndef rtt_cdi_ipcress_IpcressMaterial_hh
+#define rtt_cdi_ipcress_IpcressMaterial_hh
 
 #include "ds++/Assert.hh"
 #include <algorithm>
@@ -160,7 +160,7 @@ private:
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressFile_hh__
+#endif // rtt_cdi_ipcress_IpcressFile_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh

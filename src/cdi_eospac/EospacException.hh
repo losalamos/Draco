@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_eospac_EospacException_hh__
-#define __cdi_eospac_EospacException_hh__
+#ifndef rtt_cdi_eospac_EospacException_hh
+#define rtt_cdi_eospac_EospacException_hh
 
 #include <stdexcept>
 #include <string>
@@ -23,16 +23,16 @@ namespace rtt_cdi_eospac {
  * \brief This class handles exceptions thrown by Eospac when it
  *        calls the EOSPAC library functions.
  *
- * This class provides an Eospac exception data object derived from 
+ * This class provides an Eospac exception data object derived from
  * std::exception.  When an exception is thrown in the cdi_eospac
- * package an EospacException object is created and may be trapped 
+ * package an EospacException object is created and may be trapped
  * by the calling routine by using a try/catch block.
  *
  * \sa cdi_eospac/test/tEospac.cc
  *
  * This example demonstrates how the try/catch blocks may be used
  * to trap errors thrown by the cdi_eospac package.  They also
- * demonstrate how the calling program can extract information about 
+ * demonstrate how the calling program can extract information about
  * the exception.
  */
 
@@ -94,7 +94,7 @@ public:
   /*!
      * \brief EospacException overrides the default
      *        std::exception.what() function so that a more
-     *        detailed message may be returned. 
+     *        detailed message may be returned.
      */
   // virtual const char* what() const throw();
 
@@ -117,7 +117,7 @@ public:
 
 } // end namespace rtt_cdi_eospac
 
-#endif // __cdi_eospac_EospacException_hh__
+#endif // rtt_cdi_eospac_EospacException_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_eospac/EospacException.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_DummyEICoupling_hh__
-#define __cdi_DummyEICoupling_hh__
+#ifndef rtt_cdi_DummyEICoupling_hh
+#define rtt_cdi_DummyEICoupling_hh
 
 #include "cdi/EICoupling.hh"
 
@@ -26,7 +26,7 @@ namespace rtt_cdi_test {
  * default constructor).  The data table has the following properties:
  *
  *    dummy_ei_coupling = etemperature + 10*itemperature + 100*density +
- *    1000*w_e + 10000*w_i 
+ *    1000*w_e + 10000*w_i
  *
  * \sa cdi/test/tEICoupling.cc
  * \sa cdi/test/tCDI.cc
@@ -113,7 +113,7 @@ public:
 
 } // end namespace rtt_cdi_test
 
-#endif // __cdi_DummyEICoupling_hh__
+#endif // rtt_cdi_DummyEICoupling_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi/test/DummyEICoupling.hh

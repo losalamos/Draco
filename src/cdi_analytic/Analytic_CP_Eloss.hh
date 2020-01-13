@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_CP_Eloss_hh__
-#define __cdi_analytic_Analytic_CP_Eloss_hh__
+#ifndef rtt_cdi_analytic_Analytic_CP_Eloss_hh
+#define rtt_cdi_analytic_Analytic_CP_Eloss_hh
 
 #include "Analytic_Models.hh"
 #include "cdi/CPCommon.hh"

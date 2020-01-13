@@ -8,8 +8,8 @@
  *         reserved.  */
 //----------------------------------------------------------------------------//
 
-#ifndef __quadrature_Interval_Quadrature_hh__
-#define __quadrature_Interval_Quadrature_hh__
+#ifndef rtt_quadrature_Interval_Quadrature_hh
+#define rtt_quadrature_Interval_Quadrature_hh
 
 #include "Quadrature.hh"
 
@@ -78,7 +78,7 @@ protected:
 
 } // end namespace rtt_quadrature
 
-#endif // __quadrature_Quadrature_hh__
+#endif // rtt_quadrature_Quadrature_hh
 
 //----------------------------------------------------------------------------//
 // end of quadrature/Interval_Quadrature.hh

@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __timestep_ts_manager_hh__
-#define __timestep_ts_manager_hh__
+#ifndef rtt_timestep_ts_manager_hh
+#define rtt_timestep_ts_manager_hh
 
 #include "ts_advisor.hh"
 #include <list>
@@ -137,7 +137,7 @@ public:
 
 } // namespace rtt_timestep
 
-#endif // __timestep_ts_manager_hh__
+#endif // rtt_timestep_ts_manager_hh
 
 //---------------------------------------------------------------------------//
 // end of ts_manager.hh

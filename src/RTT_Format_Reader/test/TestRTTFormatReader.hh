@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __test_TestRTT_Format_Reader_hh__
-#define __test_TestRTT_Format_Reader_hh__
+#ifndef rtt_test_TestRTT_Format_Reader_hh
+#define rtt_test_TestRTT_Format_Reader_hh
 
 #include "RTT_Format_Reader/RTT_Format_Reader.hh"
 #include "ds++/UnitTest.hh"
@@ -58,7 +58,7 @@ bool check_side_data(const RTT_Format_Reader &mesh, const Meshes &meshtype,
 bool check_cell_data(const RTT_Format_Reader &mesh, const Meshes &meshtype,
                      UnitTest &ut);
 
-#endif // _test_TestRTT_Format_Reader_hh__
+#endif // _test_TestRTT_Format_Reader_hh
 
 //---------------------------------------------------------------------------//
 // end of meshReaders/test/TestRTTFormatReader.hh

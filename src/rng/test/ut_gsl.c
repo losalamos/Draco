@@ -36,6 +36,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
 #ifdef _MSC_FULL_VER
 // 4311 - 'type cast': pointer truncation from 'char[54]' to 'long'
 // 4202 - nonstandard extension used: non-constant aggregate initializer
@@ -137,6 +143,11 @@ int main(int argc, char **argv) {
 
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
+#endif
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
 #endif
 
 #ifdef __GNUC__

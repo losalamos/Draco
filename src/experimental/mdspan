@@ -53,6 +53,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
 #include "__p0009_bits/accessor_basic.hpp"

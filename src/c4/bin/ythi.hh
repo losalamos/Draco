@@ -11,8 +11,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_c4__bin_ythi_hh
-#define rtt_c4__bin_ythi_hh
+#ifndef rtt_c4_bin_ythi_hh
+#define rtt_c4_bin_ythi_hh
 
 #include "c4/C4_Functions.hh"
 #include "c4/QueryEnv.hh"
@@ -67,7 +67,7 @@ void report_bindings(uint32_t const num_workers) {
 }
 } // namespace rtt_c4
 
-#endif // rtt_c4__bin_ythi_hh
+#endif // rtt_c4_bin_ythi_hh
 
 //----------------------------------------------------------------------------//
 // End c4/bin/ythi.hh

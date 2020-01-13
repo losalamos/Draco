@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_CellDefs_hh__
-#define __RTT_Format_Reader_CellDefs_hh__
+#ifndef rtt_RTT_Format_Reader_CellDefs_hh
+#define rtt_RTT_Format_Reader_CellDefs_hh
 
 #include "Dims.hh"
 #include <memory>
@@ -108,7 +108,7 @@ public:
 
   /*!
    * \brief Returns the side definition of the specified side index of this
-   *        cell definition with the returned cell-node indexes ordered to 
+   *        cell definition with the returned cell-node indexes ordered to
    *        preserve the right hand rule for the outward-directed normal.
    * \param s Side index number.
    * \return The side definition (i.e., the cell-node indexes that comprise
@@ -260,7 +260,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_CellDefs_hh__
+#endif // rtt_RTT_Format_Reader_CellDefs_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellDefs.hh

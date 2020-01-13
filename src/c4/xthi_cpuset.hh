@@ -12,8 +12,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_c4__xthi_cpuset_hh
-#define rtt_c4__xthi_cpuset_hh
+#ifndef rtt_c4_xthi_cpuset_hh
+#define rtt_c4_xthi_cpuset_hh
 
 #include "c4_omp.h"
 #include "ds++/Assert.hh"
@@ -124,7 +124,7 @@ std::string cpuset_to_string(unsigned const /*num_cpu*/) {
 
 } // end namespace rtt_c4
 
-#endif // rtt_c4__xthi_cpuset_hh
+#endif // rtt_c4_xthi_cpuset_hh
 
 //----------------------------------------------------------------------------//
 // End c4/xthi_cpuset.hh

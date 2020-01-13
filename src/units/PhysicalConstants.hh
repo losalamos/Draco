@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_PhysicalConstants_hh__
-#define __units_PhysicalConstants_hh__
+#ifndef rtt_units_PhysicalConstants_hh
+#define rtt_units_PhysicalConstants_hh
 
 #include "MathConstants.hh"
 #include "PhysicalConstantsSI.hh"
@@ -50,10 +50,10 @@ class PhysicalConstants {
 public:
   // Constructors.
   //----------------------------------------------------------------------------//
-  /*!                                                                              
-   * \brief Default constructor provides physical constants with SI units (kg,        
-   *        m, seconds, degree K, amp, radian, mole).                              
-   * \return A PhysicalConstants object.                                           
+  /*!
+   * \brief Default constructor provides physical constants with SI units (kg,
+   *        m, seconds, degree K, amp, radian, mole).
+   * \return A PhysicalConstants object.
    */
   constexpr PhysicalConstants()
       : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),
@@ -216,7 +216,7 @@ private:
 
 } // end namespace rtt_units
 
-#endif // __units_PhysicalConstants_hh__
+#endif // rtt_units_PhysicalConstants_hh
 
 //---------------------------------------------------------------------------//
 // end of units/PhysicalConstants.hh

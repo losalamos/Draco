@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_CPEloss_hh__
-#define __cdi_CPEloss_hh__
+#ifndef rtt_cdi_CPEloss_hh
+#define rtt_cdi_CPEloss_hh
 
 #include "CPCommon.hh"
 #include "ds++/config.h"
@@ -53,14 +53,14 @@ public:
   // --------- //
 
   /*!
-   * \brief Eloss accessor that returns a single eloss that 
+   * \brief Eloss accessor that returns a single eloss that
    *     corresponds to the provided temperature, density, and
    *     incident particle speed.
    *
    * \param targetTemperature The temperature value for which an
    *     eloss value is being requested (keV).
    *
-   * \param targetDensity The density value for which an eloss 
+   * \param targetDensity The density value for which an eloss
    *     value is being requested (g/cm^3).
    *
    * \param partSpeed The incident speed of the particle (cm/shk).
@@ -118,7 +118,7 @@ public:
    */
   virtual size_t getNumTemperatures() const = 0;
 
-  /*! 
+  /*!
    * \brief Returns the size of the density grid.
    */
   virtual size_t getNumDensities() const = 0;

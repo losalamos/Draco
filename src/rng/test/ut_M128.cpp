@@ -41,6 +41,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable : 4521 4244 4127)
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
 #include <Random123/features/compilerfeatures.h>
 #if !R123_USE_SSE
 #include <stdio.h>
@@ -171,6 +176,11 @@ int main(int, char **) {
   return 0;
 }
 
+#endif
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
 #endif
 
 #ifdef _MSC_FULL_VER

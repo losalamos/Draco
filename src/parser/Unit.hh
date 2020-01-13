@@ -7,8 +7,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __parser_Unit_hh__
-#define __parser_Unit_hh__
+#ifndef rtt_parser_Unit_hh
+#define rtt_parser_Unit_hh
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstantsSI.hh"
@@ -354,7 +354,7 @@ conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system);
 
 } // end namespace rtt_parser
 
-#endif // __parser_Unit_hh__
+#endif // rtt_parser_Unit_hh
 
 //---------------------------------------------------------------------------//
 // end of parser/Unit.hh

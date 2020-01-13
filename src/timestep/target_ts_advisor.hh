@@ -6,8 +6,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __timestep_target_ts_advisor_hh__
-#define __timestep_target_ts_advisor_hh__
+#ifndef rtt_timestep_target_ts_advisor_hh
+#define rtt_timestep_target_ts_advisor_hh
 
 #include "ts_advisor.hh"
 
@@ -15,17 +15,17 @@ namespace rtt_timestep {
 
 //===========================================================================//
 /*!
- * \brief  Calculates a new time-step required to hit some "target" 
+ * \brief  Calculates a new time-step required to hit some "target"
  * problem time.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview_timestep page gives a summary of the Draco time 
- * step control utilities. 
+ * The \ref overview_timestep page gives a summary of the Draco time
+ * step control utilities.
  *
- * This class provides a means to calculate 
+ * This class provides a means to calculate
  * a new time-step required to hit some "target" problem time. This
  * is useful to assure that graphics dumps/IO/etc. occur precisely at
- * a predetermined problem time. 
+ * a predetermined problem time.
  */
 //===========================================================================//
 class DLL_PUBLIC_timestep target_ts_advisor : public ts_advisor {
@@ -66,8 +66,8 @@ public:
   double get_target() { return target_value; }
 
   //! Returns the recommended time-step
-  /*! \param tsm the time step manager in which the advisor resides 
-   *  \return the time step recommended by this advisor 
+  /*! \param tsm the time step manager in which the advisor resides
+   *  \return the time step recommended by this advisor
    */
   double get_dt_rec(const ts_manager &tsm) const;
 
@@ -84,7 +84,7 @@ public:
 
 } // namespace rtt_timestep
 
-#endif // __target_timestep_ts_advisor_hh__
+#endif // target_timestep_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
 // end of target_ts_advisor.hh

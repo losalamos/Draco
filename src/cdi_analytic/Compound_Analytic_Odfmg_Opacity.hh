@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh__
-#define __cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh__
+#ifndef rtt_cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh
+#define rtt_cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh
 
 #include "Analytic_Odfmg_Opacity.hh"
 
@@ -112,7 +112,7 @@ Compound_Analytic_Odfmg_Opacity::getDataDescriptor() const {
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh__
+#endif // rtt_cdi_analytic_Compound_Analytic_Odfmg_Opacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Compound_Analytic_Odfmg_Opacity.hh

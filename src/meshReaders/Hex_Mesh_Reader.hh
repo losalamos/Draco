@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __meshReaders_Hex_Mesh_Reader_hh__
-#define __meshReaders_Hex_Mesh_Reader_hh__
+#ifndef rtt_meshReaders_Hex_Mesh_Reader_hh
+#define rtt_meshReaders_Hex_Mesh_Reader_hh
 
 #include "Mesh_Reader.hh"
 
@@ -112,7 +112,7 @@ private:
 
 } // end namespace rtt_meshReaders
 
-#endif // __meshReaders_Hex_Mesh_Reader_hh__
+#endif // rtt_meshReaders_Hex_Mesh_Reader_hh
 
 /*!
  * \page rtt_meshreaders_hexformat The CIC-19 Hex Mesh File Format

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_RTT_Format_Reader_hh__
-#define __RTT_Format_Reader_RTT_Format_Reader_hh__
+#ifndef rtt_RTT_Format_Reader_RTT_Format_Reader_hh
+#define rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 
 #include "CellData.hh"
 #include "CellDataIDs.hh"
@@ -821,7 +821,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_RTT_Format_Reader_hh__
+#endif // rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Format_Reader.hh

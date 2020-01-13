@@ -7,8 +7,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_FundUnit_hh__
-#define __units_FundUnit_hh__
+#ifndef rtt_units_FundUnit_hh
+#define rtt_units_FundUnit_hh
 
 #include "UnitSystemEnums.hh"
 
@@ -54,7 +54,7 @@ private:
 
 } // end namespace rtt_units
 
-#endif // __units_FundUnit_hh__
+#endif // rtt_units_FundUnit_hh
 
 //---------------------------------------------------------------------------//
 // end of FundUnit.hh

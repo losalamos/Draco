@@ -51,6 +51,7 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
 #include "Random123/threefry.h"

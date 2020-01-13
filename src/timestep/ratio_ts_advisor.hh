@@ -6,8 +6,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __timestep_ratio_ts_advisor_hh__
-#define __timestep_ratio_ts_advisor_hh__
+#ifndef rtt_timestep_ratio_ts_advisor_hh
+#define rtt_timestep_ratio_ts_advisor_hh
 
 #include "ts_advisor.hh"
 #include "ds++/Assert.hh"
@@ -15,18 +15,18 @@
 namespace rtt_timestep {
 
 //===========================================================================//
-/*! 
+/*!
  * \brief Calculates a new timestep as a ratio of the current time-step
  *
  * \sa The ts_manager class provides a means to manage this advisor.
  * The \ref overview_timestep page gives a summary of the Draco time
- * step control utilities. 
+ * step control utilities.
  *
  * This class provides a means to calculate a
  * new timestep as a ratio of the current time-step. This is useful to
- * limit the rate of change in the time-step from one time cycle to the 
- * next. The recommendation for the new time step is computed as 
- * current_dt*ratio. 
+ * limit the rate of change in the time-step from one time cycle to the
+ * next. The recommendation for the new time step is computed as
+ * current_dt*ratio.
  */
 //===========================================================================//
 class DLL_PUBLIC_timestep ratio_ts_advisor : public ts_advisor {
@@ -65,18 +65,18 @@ public:
   // ACCESSORS
 
   //! Returns the recommended time-step
-  /*! \return the time step recommended by this advisor  
+  /*! \return the time step recommended by this advisor
    *  \param tsm the time step manager in which the advisor resides
    */
   double get_dt_rec(const ts_manager &tsm) const;
 
   //! Prints state
-  /*! \return Prints the internal state of the advisor to std out 
+  /*! \return Prints the internal state of the advisor to std out
    */
   void print_state(std::ostream &out = std::cout) const;
 
   //! Invariant function
-  /*! \return True if the invariant is satisfied 
+  /*! \return True if the invariant is satisfied
    */
   bool invariant_satisfied() const;
 
@@ -89,7 +89,7 @@ public:
 
 } // namespace rtt_timestep
 
-#endif // __timestep_ratio_ts_advisor_hh__
+#endif // rtt_timestep_ratio_ts_advisor_hh
 
 //---------------------------------------------------------------------------//
 // end of ratio_ts_advisor.hh

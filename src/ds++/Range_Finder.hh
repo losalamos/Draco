@@ -5,12 +5,11 @@
  * \date   Thu Feb  6 12:10:56 2003
  * \brief  Header file for Range_finder
  * \note   Copyright C 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __dsxx_Range_finder_hh__
-#define __dsxx_Range_finder_hh__
+#ifndef rtt_dsxx_Range_finder_hh
+#define rtt_dsxx_Range_finder_hh
 
 #include "Assert.hh"
 #include <algorithm>
@@ -170,7 +169,7 @@ int Range_finder_catch_end(IT begin, IT end,
 
 } // end namespace rtt_dsxx
 
-#endif // __dsxx_Range_finder_hh__
+#endif // rtt_dsxx_Range_finder_hh
 
 //---------------------------------------------------------------------------//
 // end of dsxx/Range_finder.hh

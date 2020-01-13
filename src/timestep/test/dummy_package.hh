@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __timestep_test_dummy_package_hh__
-#define __timestep_test_dummy_package_hh__
+#ifndef rtt_timestep_test_dummy_package_hh
+#define rtt_timestep_test_dummy_package_hh
 
 #include "ds++/config.h"
 #include <memory>
@@ -25,8 +25,8 @@ class field_ts_advisor;
 namespace rtt_timestep_test {
 
 //===========================================================================//
-/*! 
- * \class dummy_package 
+/*!
+ * \class dummy_package
  * \brief Exercizes the field time-step advisors.
  *
  * This class serves as an example of how any particular package can make use
@@ -70,7 +70,7 @@ private:
 
 } // end namespace rtt_timestep_test
 
-#endif // __timestep_test_dummy_package_hh__
+#endif // rtt_timestep_test_dummy_package_hh
 
 //---------------------------------------------------------------------------//
 // end of dummy_package.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __diagnostics_config_h__
-#define __diagnostics_config_h__
+#ifndef rtt_diagnostics_config_h
+#define rtt_diagnostics_config_h
 
 /* DRACO TIMING LEVEL */
 #cmakedefine DRACO_TIMING @DRACO_TIMING@
@@ -17,7 +17,7 @@
 /* USE PROCMON - snapshot in time memory reporting via getrusage */
 #cmakedefine USE_PROCMON @USE_PROCMON@
 
-#endif /* __diagnostics_config_h__ */
+#endif /* rtt_diagnostics_config_h */
 
 /*---------------------------------------------------------------------------*/
 /* end of diagnostics/config.h */

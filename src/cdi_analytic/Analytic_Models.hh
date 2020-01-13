@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_Models_hh__
-#define __cdi_analytic_Analytic_Models_hh__
+#ifndef rtt_cdi_analytic_Analytic_Models_hh
+#define rtt_cdi_analytic_Analytic_Models_hh
 
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
@@ -697,17 +697,17 @@ public:
 //---------------------------------------------------------------------------//
 /*!
  * \class Analytic_KP_Alpha_Eloss_Model
- * \brief Derived CP energy loss class using analytic Kirkpatrick model for 
+ * \brief Derived CP energy loss class using analytic Kirkpatrick model for
  *        alpha particles in DT.
  *
  * This is designed to return energy loss rates based on the range fit
  * calculated in:
- * 
+ *
  * Kirkpatrick, R. C. and Wheeler, J. A. (1981).
- * ``The Physics of DT Ignition In Small Fusion Targets.'' 
+ * ``The Physics of DT Ignition In Small Fusion Targets.''
  * Nuclear Fusion, 21(3):389–401.
- * 
- * Equation (2) gives the range formula. We then convert this to an 
+ *
+ * Equation (2) gives the range formula. We then convert this to an
  * energy loss rate per unit time for ease of use in transport.
  */
 class Analytic_KP_Alpha_Eloss_Model : public Analytic_Eloss_Model {
@@ -724,7 +724,7 @@ public:
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_Models_hh__
+#endif // rtt_cdi_analytic_Analytic_Models_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_Models.hh

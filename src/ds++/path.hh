@@ -9,8 +9,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifndef __dsxx_path_hh__
-#define __dsxx_path_hh__
+#ifndef rtt_dsxx_path_hh
+#define rtt_dsxx_path_hh
 
 #include "Assert.hh"
 #include "SystemCall.hh"
@@ -214,7 +214,7 @@ void draco_dir_print(std::string const &path);
 
 } // end namespace rtt_dsxx
 
-#endif // __dsxx_path_hh__
+#endif // rtt_dsxx_path_hh
 
 //---------------------------------------------------------------------------//
 // end of path.hh

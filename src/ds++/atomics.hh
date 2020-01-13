@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __dsxx_Atomics_hh__
-#define __dsxx_Atomics_hh__
+#ifndef rtt_dsxx_Atomics_hh
+#define rtt_dsxx_Atomics_hh
 
 #include <atomic>
 #include <type_traits> // std::is_floating_point_v
@@ -68,7 +68,7 @@ FpT fetch_sub(std::atomic<FpT> &a, FpT arg,
 
 } // namespace rtt_dsxx
 
-#endif // __dsxx_Atomics_hh__
+#endif // rtt_dsxx_Atomics_hh
 
 //---------------------------------------------------------------------------//
 // end of ds++/atomics.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_test_hh__
-#define __cdi_ipcress_test_hh__
+#ifndef rtt_cdi_ipcress_test_hh
+#define rtt_cdi_ipcress_test_hh
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -191,7 +191,7 @@ void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut,
 
 } // end namespace rtt_cdi_ipcress_test
 
-#endif // __cdi_ipcress_test_hh__
+#endif // rtt_cdi_ipcress_test_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/test/cdi_ipcress_test.hh

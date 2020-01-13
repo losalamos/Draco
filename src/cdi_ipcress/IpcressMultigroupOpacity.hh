@@ -9,8 +9,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressMultigroupOpacity_hh__
-#define __cdi_ipcress_IpcressMultigroupOpacity_hh__
+#ifndef rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
+#define rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
 
 #include "IpcressDataTable.hh"
 #include "cdi/MultigroupOpacity.hh"
@@ -503,7 +503,7 @@ OpacityIterator IpcressMultigroupOpacity::getOpacity(
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressMultigroupOpacity_hh__
+#endif // rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressMultigroupOpacity.hh

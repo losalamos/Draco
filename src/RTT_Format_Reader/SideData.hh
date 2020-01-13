@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/SideData.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -8,14 +8,14 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_SideData_hh__
-#define __RTT_Format_Reader_SideData_hh__
+#ifndef rtt_RTT_Format_Reader_SideData_hh
+#define rtt_RTT_Format_Reader_SideData_hh
 
 #include "Sides.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        sidedata block of the mesh file.
  */
 class SideData {
@@ -68,7 +68,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_SideData__
+#endif // rtt_RTT_Format_Reader_SideData
 
 //---------------------------------------------------------------------------//
 // ned of RTT_Format_Reader/SideData.hh

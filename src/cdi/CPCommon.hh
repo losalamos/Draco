@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_CPCommon_hh__
-#define __cdi_CPCommon_hh__
+#ifndef rtt_cdi_CPCommon_hh
+#define rtt_cdi_CPCommon_hh
 
 #include <cstdint>
 

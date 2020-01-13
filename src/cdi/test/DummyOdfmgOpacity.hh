@@ -9,8 +9,8 @@
  *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_DummyOdfmgOpacity_hh__
-#define __cdi_DummyOdfmgOpacity_hh__
+#ifndef rtt_cdi_DummyOdfmgOpacity_hh
+#define rtt_cdi_DummyOdfmgOpacity_hh
 
 #include "cdi/OdfmgOpacity.hh"
 
@@ -432,7 +432,7 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
 
 } // end namespace rtt_cdi_test
 
-#endif // __cdi_DummyOdfmgOpacity_hh__
+#endif // rtt_cdi_DummyOdfmgOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi/test/DummyOdfmgOpacity.hh

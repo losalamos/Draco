@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_MathConstants_hh__
-#define __units_MathConstants_hh__
+#ifndef rtt_units_MathConstants_hh
+#define rtt_units_MathConstants_hh
 
 //! \namespace rtt_units Namespace for units and physical constants
 namespace rtt_units {
@@ -26,7 +26,7 @@ static double constexpr N_EULER = 2.7182818284590452353602874;
 
 } // end namespace rtt_units
 
-#endif // __units_MathConstants_hh__
+#endif // rtt_units_MathConstants_hh
 
 //---------------------------------------------------------------------------//
 // end of units/MathConstants.hh

@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_UnitSystemType_hh__
-#define __units_UnitSystemType_hh__
+#ifndef rtt_units_UnitSystemType_hh
+#define rtt_units_UnitSystemType_hh
 
 #include "FundUnit.hh"
 
@@ -117,7 +117,7 @@ private:
 
 } // end namespace rtt_units
 
-#endif // __units_UnitSystemType_hh__
+#endif // rtt_units_UnitSystemType_hh
 
 //---------------------------------------------------------------------------//
 // end of UnitSystemType.hh

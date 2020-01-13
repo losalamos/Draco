@@ -4,14 +4,12 @@
  * \author Randy M. Roberts
  * \date   Wed Feb 16 09:27:40 2000
  * \brief  Functions that checks to see if a container is sorted.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC
- */
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef __ds_isSorted_hh__
-#define __ds_isSorted_hh__
+#ifndef rtt_dsxx_isSorted_hh
+#define rtt_dsxx_isSorted_hh
 
 namespace rtt_dsxx {
 
@@ -68,8 +66,8 @@ bool isSorted(ForwardIterator first, ForwardIterator last,
 
 } // end namespace rtt_dsxx
 
-#endif // __ds_isSorted_hh__
+#endif // rtt_dsxx_isSorted_hh
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/isSorted.hh
+// end of ds++/isSorted.hh
 //---------------------------------------------------------------------------//

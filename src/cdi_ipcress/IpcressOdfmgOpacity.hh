@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressOdfmgOpacity_hh__
-#define __cdi_ipcress_IpcressOdfmgOpacity_hh__
+#ifndef rtt_cdi_ipcress_IpcressOdfmgOpacity_hh
+#define rtt_cdi_ipcress_IpcressOdfmgOpacity_hh
 
 #include "IpcressDataTable.hh"
 #include "cdi/OdfmgOpacity.hh"
@@ -85,7 +85,7 @@ class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity {
   // ----------------------- //
 
   /*!
-   * \brief An IpcressFile object. spIpcressFile acts as a hook to link this 
+   * \brief An IpcressFile object. spIpcressFile acts as a hook to link this
    *        object to an IPCRESS file. */
   std::shared_ptr<const IpcressFile> spIpcressFile;
 
@@ -108,8 +108,8 @@ class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity {
   // --------------- //
 
   /*!
-   * \brief The physics model that the current data set is based on. 
-   *        {Rosseland, Plank}.  This enumeration is defined in 
+   * \brief The physics model that the current data set is based on.
+   *        {Rosseland, Plank}.  This enumeration is defined in
    *        cdi/OpacityCommon.hh. */
   rtt_cdi::Model opacityModel;
 
@@ -137,30 +137,30 @@ class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity {
 
   /*!
    * \brief The group boundaries that we use are not the same as those read in
-   *        by Ipcress, because Tops pretends that the ODFs are extra groups. 
+   *        by Ipcress, because Tops pretends that the ODFs are extra groups.
    *        We therefore have to store our own group and band structure.
    */
   std::vector<double> groupBoundaries;
 
   /*!
    * \brief The band boundaries are derived from the group boundaries read from
-   *        the IPCRESS file and the number of bands input by the user.  It 
-   *        should be a vector with size(the number of bands + 1), 0 on the 
+   *        the IPCRESS file and the number of bands input by the user.  It
+   *        should be a vector with size(the number of bands + 1), 0 on the
    *        left, and 1 on the right.
    */
   std::vector<double> bandBoundaries;
 
   /*!
    * \brief Sometimes the opacities in the IPCRESS file are in ascending order
-   *        inside each band, sometimes not. Figure it out at the beginning 
+   *        inside each band, sometimes not. Figure it out at the beginning
    *        and store the result so that we know whether to reverse it later.
    */
   bool reverseBands;
 
   /*!
    * \brief This private function translates the group structure stored in the
-   *        IPCRESS file to the correct group and band structure, given the 
-   *        user-input number of bands. This should only need to be called 
+   *        IPCRESS file to the correct group and band structure, given the
+   *        user-input number of bands. This should only need to be called
    *        once during initialization.
    */
   void loadGroupsAndBands(size_t const numBands);
@@ -172,7 +172,7 @@ public:
 
   /*!
    * \brief This is the default IpcressOdfmgOpacity constructor.  It requires
-   *        four arguments plus the energy model (this class) to be 
+   *        four arguments plus the energy model (this class) to be
    *        instantiated.
    *
    * The combiniation of a data file and a material ID uniquely specifies a
@@ -532,7 +532,7 @@ OpacityIterator IpcressOdfmgOpacity::getOpacity(double targetTemperature,
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressOdfmgOpacity_hh__
+#endif // rtt_cdi_ipcress_IpcressOdfmgOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressOdfmgOpacity.hh

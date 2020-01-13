@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_MultigroupOpacity_hh__
-#define __cdi_analytic_Analytic_MultigroupOpacity_hh__
+#ifndef rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
+#define rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
@@ -147,7 +147,7 @@ public:
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_MultigroupOpacity_hh__
+#endif // rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_MultigroupOpacity.hh

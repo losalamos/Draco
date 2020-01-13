@@ -14,8 +14,17 @@
 #include <limits>
 #include <map>
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
 #ifndef _GLIBCXX_THROW
 #define _GLIBCXX_THROW(except) throw(except)
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic pop
 #endif
 
 namespace rtt_memory {

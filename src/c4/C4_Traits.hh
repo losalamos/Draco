@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_Traits_hh__
-#define __c4_C4_Traits_hh__
+#ifndef rtt_c4_C4_Traits_hh
+#define rtt_c4_C4_Traits_hh
 
 #include "C4_Tags.hh"
 // #include <stdint.h> // ensure types are same across compilers (pgi)
@@ -98,7 +98,7 @@ template <> struct C4_Traits<long long *> { static const int tag = 463; };
 
 } // end namespace rtt_c4
 
-#endif // __c4_C4_Traits_hh__
+#endif // rtt_c4_C4_Traits_hh
 
 //---------------------------------------------------------------------------//
 // end of c4/C4_Traits.hh

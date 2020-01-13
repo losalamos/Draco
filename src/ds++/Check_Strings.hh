@@ -19,8 +19,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifndef __ds_Check_Strings_hh__
-#define __ds_Check_Strings_hh__
+#ifndef rtt_dsxx_Check_Strings_hh
+#define rtt_dsxx_Check_Strings_hh
 
 #include <algorithm>
 #include <string>
@@ -183,7 +183,7 @@ std::vector<IT> check_strings_unique(IT first, IT const &last) {
 
 } // end namespace rtt_dsxx
 
-#endif // __ds_Check_Strings_hh__
+#endif // rtt_dsxx_Check_Strings_hh
 
 //---------------------------------------------------------------------------//
 // end of ds++/Check_Strings.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_eospac_Eospac_hh__
-#define __cdi_eospac_Eospac_hh__
+#ifndef rtt_cdi_eospac_Eospac_hh
+#define rtt_cdi_eospac_Eospac_hh
 
 #include "SesameTables.hh"
 #include "cdi/EoS.hh"
@@ -388,7 +388,7 @@ private:
    * Each of the public access functions calls either getF() or getdFdT() after
    * assigning the correct value to "returnType".
    *
-   * \param vdensity A vector of independent values (e.g. temperature or 
+   * \param vdensity A vector of independent values (e.g. temperature or
    *          density).
    * \param vtemperature A vector of independent values (e.g. temperature or
    *          density).
@@ -448,7 +448,7 @@ private:
 
 } // end namespace rtt_cdi_eospac
 
-#endif // __cdi_eospac_Eospac_hh__
+#endif // rtt_cdi_eospac_Eospac_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_eospac/Eospac.hh

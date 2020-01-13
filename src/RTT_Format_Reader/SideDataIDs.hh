@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/SideDataIDs.hh
  * \author Shawn Pautz/B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_SideDataIDs_hh__
-#define __RTT_Format_Reader_SideDataIDs_hh__
+#ifndef rtt_RTT_Format_Reader_SideDataIDs_hh
+#define rtt_RTT_Format_Reader_SideDataIDs_hh
 
 #include "Dims.hh"
 #include "ds++/Assert.hh"
@@ -20,7 +20,7 @@
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        side data ids block of the mesh file.
  */
 class SideDataIDs {
@@ -72,7 +72,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_SideDataIDs_hh__
+#endif // rtt_RTT_Format_Reader_SideDataIDs_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/SideDataIDs.hh

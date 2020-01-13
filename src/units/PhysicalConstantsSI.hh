@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_PhysicalConstantsSI_hh__
-#define __units_PhysicalConstantsSI_hh__
+#ifndef rtt_units_PhysicalConstantsSI_hh
+#define rtt_units_PhysicalConstantsSI_hh
 
 #include "MathConstants.hh"
 #include "UnitSystem.hh"
@@ -135,7 +135,7 @@ static double constexpr classicalElectronRadiusSI =
 
 } // end namespace rtt_units
 
-#endif // __units_PhysicalConstantsSI_hh__
+#endif // rtt_units_PhysicalConstantsSI_hh
 
 //----------------------------------------------------------------------------//
 // end of units/PhysicalConstantsSI.hh

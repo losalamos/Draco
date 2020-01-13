@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __compton_Compton_hh__
-#define __compton_Compton_hh__
+#ifndef rtt_compton_Compton_hh
+#define rtt_compton_Compton_hh
 
 #include "compton/config.h"
 
@@ -124,7 +124,7 @@ public:
 
 #endif // COMPTON_FOUND
 
-#endif // __compton_Compton_hh__
+#endif // rtt_compton_Compton_hh
 
 //----------------------------------------------------------------------------//
 // End compton/Compton.hh

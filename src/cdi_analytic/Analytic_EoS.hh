@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_EoS_hh__
-#define __cdi_analytic_Analytic_EoS_hh__
+#ifndef rtt_cdi_analytic_Analytic_EoS_hh
+#define rtt_cdi_analytic_Analytic_EoS_hh
 
 #include "Analytic_Models.hh"
 #include "cdi/EoS.hh"
@@ -110,7 +110,7 @@ public:
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_EoS_hh__
+#endif // rtt_cdi_analytic_Analytic_EoS_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_EoS.hh

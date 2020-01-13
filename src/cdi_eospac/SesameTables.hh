@@ -9,8 +9,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_eospac_SesameTables_hh__
-#define __cdi_eospac_SesameTables_hh__
+#ifndef rtt_cdi_eospac_SesameTables_hh
+#define rtt_cdi_eospac_SesameTables_hh
 
 #include "eos_Interface.h"
 #include <map>
@@ -204,7 +204,7 @@ public:
 
 } // end namespace rtt_cdi_eospac
 
-#endif // __cdi_eospac_SesameTables_hh__
+#endif // rtt_cdi_eospac_SesameTables_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_eospac/SesameTables.hh

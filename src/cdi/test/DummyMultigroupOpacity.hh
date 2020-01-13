@@ -9,8 +9,8 @@
  *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_DummyMultigroupOpacity_hh__
-#define __cdi_DummyMultigroupOpacity_hh__
+#ifndef rtt_cdi_DummyMultigroupOpacity_hh
+#define rtt_cdi_DummyMultigroupOpacity_hh
 
 #include "cdi/MultigroupOpacity.hh"
 
@@ -408,7 +408,7 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
 
 } // end namespace rtt_cdi_test
 
-#endif // __cdi_DummyMultigroupOpacity_hh__
+#endif // rtt_cdi_DummyMultigroupOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi/test/DummyMultigroupOpacity.hh

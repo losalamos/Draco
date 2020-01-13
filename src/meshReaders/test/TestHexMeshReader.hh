@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __meshReaders_test_TestHexMeshReader_hh__
-#define __meshReaders_test_TestHexMeshReader_hh__
+#ifndef rtt_meshReaders_test_TestHexMeshReader_hh
+#define rtt_meshReaders_test_TestHexMeshReader_hh
 
 #include "ds++/ScalarUnitTest.hh"
 #include <set>
@@ -54,7 +54,7 @@ bool check_get_dims_ndim(UnitTest &ut,
 
 } // end namespace rtt_meshReaders_test
 
-#endif // __meshReaders_test_TestHexMeshReader_hh__
+#endif // rtt_meshReaders_test_TestHexMeshReader_hh
 
 //---------------------------------------------------------------------------//
 // end of meshReaders/test/TestHexMeshReader.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_CellFlags_hh__
-#define __RTT_Format_Reader_CellFlags_hh__
+#ifndef rtt_RTT_Format_Reader_CellFlags_hh
+#define rtt_RTT_Format_Reader_CellFlags_hh
 
 #include "Dims.hh"
 #include "Flags.hh"
@@ -115,7 +115,7 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_CellFlags_hh__
+#endif // rtt_RTT_Format_Reader_CellFlags_hh
 
 //---------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellFlags.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressFile_t_hh__
-#define __cdi_ipcress_IpcressFile_t_hh__
+#ifndef rtt_cdi_ipcress_IpcressFile_t_hh
+#define rtt_cdi_ipcress_IpcressFile_t_hh
 
 #include "IpcressFile.hh"
 #include "ds++/Assert.hh"
@@ -19,11 +19,11 @@
 namespace rtt_cdi_ipcress {
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Read 8 character strings from the binary file
- * 
+ *
  * \param[in]  byte_offset offset into the ipcress file where the data exists.
- * \param[out] vdata       return value 
+ * \param[out] vdata       return value
  * \return void
  */
 template <typename T>
@@ -57,7 +57,7 @@ void IpcressFile::read_v(size_t const byte_offset,
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressFile_t_hh__
+#endif // rtt_cdi_ipcress_IpcressFile_t_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.t.hh

@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __mesh_element_Element_Definition_hh__
-#define __mesh_element_Element_Definition_hh__
+#ifndef rtt_mesh_element_Element_Definition_hh
+#define rtt_mesh_element_Element_Definition_hh
 
 #include "ds++/Assert.hh"
 #include <ostream>
@@ -423,7 +423,7 @@ private:
 
 } // end namespace rtt_mesh_element
 
-#endif // __mesh_element_Element_Definition_hh__
+#endif // rtt_mesh_element_Element_Definition_hh
 
 //---------------------------------------------------------------------------//
 // end of mesh_element/Element_Definition.hh

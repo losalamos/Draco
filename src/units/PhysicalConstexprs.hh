@@ -8,8 +8,8 @@
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __units_PhysicalConstexprs_hh__
-#define __units_PhysicalConstexprs_hh__
+#ifndef rtt_units_PhysicalConstexprs_hh
+#define rtt_units_PhysicalConstexprs_hh
 
 #include "MathConstants.hh"
 
@@ -307,7 +307,7 @@ private:
 };
 } // namespace rtt_units
 
-#endif // __units_PhysicalConstexprs_hh__
+#endif // rtt_units_PhysicalConstexprs_hh
 
 //----------------------------------------------------------------------------//
 // End units/FundamentalConstexprs.hh

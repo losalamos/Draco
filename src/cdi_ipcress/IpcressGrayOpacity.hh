@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressGrayOpacity_hh__
-#define __cdi_ipcress_IpcressGrayOpacity_hh__
+#ifndef rtt_cdi_ipcress_IpcressGrayOpacity_hh
+#define rtt_cdi_ipcress_IpcressGrayOpacity_hh
 
 #include "IpcressDataTable.hh" // IpcressDataTable object.
 #include "cdi/GrayOpacity.hh"
@@ -201,7 +201,7 @@ public:
   /*!
    * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
    *        expects a list of (temperature,density) tuples.  An opacity value
-   *        will be returned for each tuple.  The temperature and density 
+   *        will be returned for each tuple.  The temperature and density
    *        iterators are required to be the same length.  The opacity
    *        iterator should also have this same length.
    *
@@ -227,9 +227,9 @@ public:
              DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
-   * \brief Opacity accessor that utilizes STL-like iterators.  This accessor 
-   *        expects a list of temperatures in an STL container.  An opacity 
-   *        value will be returned for each temperature provided.  The opacity 
+   * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
+   *        expects a list of temperatures in an STL container.  An opacity
+   *        value will be returned for each temperature provided.  The opacity
    *        iterator should be the same length as the temperature STL container.
    *
    * \param temperatureFirst The beginning position of a STL
@@ -489,7 +489,7 @@ OpacityIterator IpcressGrayOpacity::getOpacity(double targetTemperature,
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressGrayOpacity_hh__
+#endif // rtt_cdi_ipcress_IpcressGrayOpacity_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressGrayOpacity.hh

@@ -7,8 +7,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Pseudo_Line_Base_hh__
-#define __cdi_analytic_Pseudo_Line_Base_hh__
+#ifndef rtt_cdi_analytic_Pseudo_Line_Base_hh
+#define rtt_cdi_analytic_Pseudo_Line_Base_hh
 
 #include "parser/Expression.hh"
 #include <cstdio>
@@ -138,7 +138,7 @@ public:
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Pseudo_Line_Base_hh__
+#endif // rtt_cdi_analytic_Pseudo_Line_Base_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Pseudo_Line_Base.hh
