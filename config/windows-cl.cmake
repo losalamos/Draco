@@ -90,7 +90,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS_DEBUG " /Z7"   )
   endif()
 
-  # /Zc:__cplusplus - enables the __cplusplus preprocessor macro to report an updated value for recent C++ language standards
+  # /Zc:__cplusplus - enables the __cplusplus preprocessor macro to report an 
+  #                   updated value for recent C++ language standards
   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa  /Zc:__cplusplus " )
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
@@ -151,7 +152,8 @@ foreach( lib ws2_32;wsock32;winsock32;mswsock32 )
     endif()
   endif()
 endforeach()
-unset(winkitdirs winkitlibdir)
+unset(winkitdirs)
+unset(winkitlibdir)
 
 # winsock is a required dependency.
 if( NOT Lib_win_winsock )
@@ -160,9 +162,13 @@ endif()
 
 # Extra logic to ensure correct winsock is found.
 if( "${Lib_win_winsock}" MATCHES "um/x86" AND CMAKE_CL_64 )
-  message( FATAL_ERROR "Found 32-bit winsock (${Lib_win_winsock} but targeting x64 architecture. Ensure that cmake is run from the x64 Visual Studio Command Prompt." )
+  message( FATAL_ERROR "Found 32-bit winsock (${Lib_win_winsock} but targeting "
+  "x64 architecture. Ensure that cmake is run from the x64 Visual Studio "
+  "Command Prompt." )
 elseif( "${Lib_win_winsock}" MATCHES "um/x64" AND NOT CMAKE_CL_64 )
-  message( FATAL_ERROR "Found 64-bit winsock (${Lib_win_winsock} but targeting x86 architecture. Ensure that cmake is run from the x86 Visual Studio Command Prompt." )
+  message( FATAL_ERROR "Found 64-bit winsock (${Lib_win_winsock} but "
+  "targeting x86 architecture. Ensure that cmake is run from the x86 Visual "
+  "Studio Command Prompt." )
 endif()
 
 #------------------------------------------------------------------------------#
