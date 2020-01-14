@@ -124,6 +124,13 @@ unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
+
+#ifdef _MSC_FULL_VER
+// - 4702 unreachable code
+#pragma warning(push)
+#pragma warning(disable : 4702)
+#endif
+
 int abort(int error) {
   // This test is not recorded as tested by BullseyeCoverage because abort
   // terminates the execution and BullseyeCoverage only reports coverage for
@@ -131,8 +138,12 @@ int abort(int error) {
 
   // call system exit
   std::abort();
-  return error;
+  return error; // unreachable
 }
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
 
 //---------------------------------------------------------------------------//
 // isScalar

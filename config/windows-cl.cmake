@@ -133,22 +133,25 @@ endif()
 #
 
 # Locate a Windows sockets library (required!)
-if( CMAKE_CL_64 )
+if( "${CMAKE_SIZEOF_VOID_P}" STREQUAL 8 )
   set( winsock_suffix_dir "x64")
 else()
   set( winsock_suffix_dir "x86")
 endif()
+set( winkitlibdir "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/Lib")
+file( GLOB winkitdirs "${winkitlibdir}/*/um/${winsock_suffix_dir}" )
 foreach( lib ws2_32;wsock32;winsock32;mswsock32 )
   if( NOT Lib_win_winsock )
-    find_library( winsock_lib_${lib} ${lib} )
     find_library( winsock_lib_${lib}
       NAMES ${lib}
-      HINTS "C:/Windows/System32"
-            "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/um/${winsock_suffix_dir}" )
-    set( Lib_win_winsock "${winsock_lib_${lib}}" CACHE FILEPATH
-      "Windows sockets library.")
+      HINTS C:/Windows/System32;${winkitdirs} )
+    if( EXISTS "${winsock_lib_${lib}}" )
+      set( Lib_win_winsock "${winsock_lib_${lib}}" CACHE FILEPATH
+        "Windows sockets library.")      
+    endif()
   endif()
 endforeach()
+unset(winkitdirs winkitlibdir)
 
 # winsock is a required dependency.
 if( NOT Lib_win_winsock )

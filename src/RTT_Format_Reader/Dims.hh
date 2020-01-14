@@ -229,20 +229,20 @@ public:
   /*!
    * \brief Validates the specified side type.
    * \param sidetype Side type number.
-   * \return The existance of the side type.
+   * \return The existence of the side type.
    */
   bool allowed_side_type(size_t sidetype) const {
-    return side_types.end() !=
-           std::find(side_types.begin(), side_types.end(), sidetype);
+    return side_types.end() != std::find(side_types.begin(), side_types.end(),
+                                         static_cast<int>(sidetype));
   }
   /*!
    * \brief Validates the specified cell type.
    * \param celltype Cell type number.
-   * \return The existance of the cell type.
+   * \return The existence of the cell type.
    */
   bool allowed_cell_type(size_t celltype) const {
-    return cell_types.end() !=
-           std::find(cell_types.begin(), cell_types.end(), celltype);
+    return cell_types.end() != std::find(cell_types.begin(), cell_types.end(),
+                                         static_cast<int>(celltype));
   }
 };
 

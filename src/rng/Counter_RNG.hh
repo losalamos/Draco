@@ -33,7 +33,7 @@
 
 /*
 #if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
+// Suppress GCC's "unused parameter" warning, about LHS and RHS in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
 */

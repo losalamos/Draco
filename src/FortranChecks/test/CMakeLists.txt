@@ -41,10 +41,13 @@ set( ptest_sources
 # When building with MVSE and linking Fortran libraries generated with MinGW's
 # gfortran, the libquadmath-0.dll library must be found in the path.
 if( MSVC )
-  find_file( mingw_libquadmath libquadmath-0.dll )
+  get_filename_component( CAFS_Fortran_DIR "${CAFS_Fortran_COMPILER}" DIRECTORY)
+  find_file( mingw_libquadmath libquadmath-0.dll 
+    HINTS ${CAFS_Fortran_DIR} )
   if( NOT mingw_libquadmath )
     message( FATAL_ERROR "ERROR in FortranChecks\test:
-      The library libquadmath-0.dll must be found in your PATH to allow these tests to run!")
+      The library libquadmath-0.dll must be found in your PATH to allow these "
+      "tests to run!")
   endif()
 endif()
 

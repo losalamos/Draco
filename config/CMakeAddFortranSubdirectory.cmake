@@ -405,7 +405,7 @@ function( cafs_fix_mpi_library )
   set(verbose FALSE)
 
   # MS-MPI and gfortran do not play nice together...
-  if(WIN32)
+  if(WIN32 AND "${DRACO_C4}" STREQUAL "MPI")
     if(verbose)
       message("CAFS: MPI_Fortran_LIBRARIES= ${MPI_Fortran_LIBRARIES}")
     endif()
@@ -461,7 +461,7 @@ function( cafs_fix_mpi_library )
     if(verbose)
       message("CAFS: MPI_gfortran_LIBRARIES= ${MPI_gfortran_LIBRARIES}")
     endif()
-  endif(WIN32)
+  endif()
 
 endfunction(cafs_fix_mpi_library)
 

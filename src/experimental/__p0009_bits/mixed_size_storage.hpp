@@ -185,7 +185,13 @@ public:
   template <class... Integral>
   MDSPAN_INLINE_FUNCTION constexpr mixed_static_and_dynamic_size_storage(
       construct_mixed_storage_from_sizes_tag_t, Integral... dyn_sizes)
-      : dynamic_sizes(ptrdiff_t{dyn_sizes}...) {}
+#if (defined(_MSC_VER) && !defined(_WIN64))
+      : dynamic_sizes(ptrdiff_t{static_cast<ptrdiff_t>(dyn_sizes)}...)
+#else
+      : dynamic_sizes(ptrdiff_t{dyn_sizes}...)
+#endif
+  {
+  }
 
   template <ptrdiff_t... USizes, ptrdiff_t... UDynOffs, size_t... UIdxs>
   MDSPAN_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14

@@ -50,11 +50,11 @@ public:
   /*!
    * \brief Validates the specified flag index.
    * \param flag Flag index.
-   * \return The existance of the flag.
+   * \return The existence of the flag.
    */
   bool allowed_flag(size_t flag) const {
-    return flag_nums.end() !=
-           std::find(flag_nums.begin(), flag_nums.end(), flag);
+    return flag_nums.end() != std::find(flag_nums.begin(), flag_nums.end(),
+                                        static_cast<int>(flag));
   }
 
   /*!
