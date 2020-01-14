@@ -1,8 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2019 Triad National Security, LLC. All rights reserved.
 #------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -20,8 +19,10 @@ endif()
 # ----------------------------------------
 if( DEFINED ENV{PAPI_HOME} )
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
-  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
+  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH 
+    "PAPI headers at this location" )
+  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH 
+    "PAPI library." )
 endif()
 
 if( HAVE_PAPI )
@@ -567,22 +568,25 @@ macro(dbsSetupFortran)
   else()
     # If CMake doesn't know about a Fortran compiler, $ENV{FC}, then
     # also look for a compiler to use with CMakeAddFortranSubdirectory.
-    message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler...")
+    message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+      "compiler...")
 	set( CAFS_Fortran_COMPILER "NOTFOUND" )
 
     # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
     find_program( CAFS_Fortran_COMPILER
       NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
       PATHS
+        c:/msys64/mingw64/bin
         c:/MinGW/bin
-        c:/msys64/usr/bin
-        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+        c:/msys64/usr/bin )
 
     if( EXISTS ${CAFS_Fortran_COMPILER} )
       set( HAVE_Fortran ON )
-      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... found ${CAFS_Fortran_COMPILER}")
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+        "compiler... found ${CAFS_Fortran_COMPILER}")
     else()
-      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... not found")
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+        "compiler... not found")
     endif()
 
   endif()

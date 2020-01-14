@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <iostream>
 
-/// Define the derived type as a C structure
+//! Define the derived type as a C structure
 struct my_informative_type {
   double some_double;
   int some_int;
@@ -23,9 +23,9 @@ struct my_informative_type {
   MG_Select some_enum;
 };
 
-// A simple function to test for valid values in a Fortran derived type
-extern "C" DLL_PUBLIC_FC_Derived_Type void
-rtt_test_derived_type(const my_informative_type &mit, int &error_code) {
+//! A simple function to test for valid values in a Fortran derived type
+extern "C" void rtt_test_derived_type(const my_informative_type &mit,
+                                      int &error_code) {
   std::cout << "In the C-interface, derived type has double = "
             << mit.some_double << std::endl
             << "int = " << mit.some_int << std::endl

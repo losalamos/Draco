@@ -65,30 +65,39 @@ if( BUILD_TESTING )
     # will need some of the current build system parameters:
     set( draco_DIR ${Draco_SOURCE_DIR}/config )
     set( build_system_state
-      "-Ddraco_DIR=${draco_DIR}"
+      # "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
+      "-DDRACO_C4=${DRACO_C4}"
       "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
       "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
-      "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
-      "-DDRACO_C4=${DRACO_C4}"
+      #"-DPython_EXECUTABLE=${Python_EXECUTABLE}"
+      #"-DRANDOM123_INCLUDE_DIR=${RANDOM123_INCLUDE_DIR}"
+      "-Ddraco_DIR=${draco_DIR}"
+      "-DMPI_C_LIBRARIES=${MPI_C_LIBRARIES}"
+      "-DMPI_C_INCLUDE_DIRS=${MPI_C_INCLUDE_DIRS}"
       )
     if( WIN32 )
       # For Win32 builds, DLL and applications are built in the directory
       # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
-      set( build_system_state "${build_system_state};-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
+      list( APPEND build_system_state 
+        "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
+      if(CMAKE_TOOLCHAIN_FILE)
+        list( APPEND build_system_state 
+          "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+      endif()
     else()
-      set( build_system_state "${build_system_state};-DWITH_CUDA=${WITH_CUDA}" )
+      list( APPEND build_system_state "-DWITH_CUDA=${WITH_CUDA}" )
     endif()
 
     cmake_add_fortran_subdirectory(
       ftest                        # directory name
-      PROJECT quadrature_ftest  # project name in toplevel CMakeLists.txt
+      PROJECT quadrature_ftest  # project name in top level CMakeLists.txt
       # Creates target named 'quadrature_ftest_build'
       ARCHIVE_DIR  ftest          # .lib location relative to root binary tree
       RUNTIME_DIR  ftest          # .dll location relative to root binary tree
-      LIBRARIES    rtt_quadrature_ftest   # new library will have this name.
-      # --> librtt_FC_f90.dll.
+      LIBRARIES    rtt_quadrature_ftest # new library will have this name.
+      # --> librtt_quadrature_ftest.dll.
       TARGET_NAMES Lib_quadrature_ftest
-      DEPENDS      "Lib_quadrature_test;Lib_quadrature;Lib_dsxx"
+      DEPENDS      "Lib_quadrature_test;Lib_quadrature;Lib_c4;Lib_dsxx"
       NO_EXTERNAL_INSTALL
       CMAKE_COMMAND_LINE "${build_system_state}"
       # VERBOSE

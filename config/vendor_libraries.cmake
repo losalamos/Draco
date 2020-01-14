@@ -224,13 +224,42 @@ macro( setupLAPACKLibraries )
         set( lapack_url "http://www.openblas.net")
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
+        if(WIN32)        
+          string( REPLACE ".lib" ".dll" BLAS_openblas_LIBRARY_DLL_libdir 
+            "${BLAS_openblas_LIBRARY}" )
+          string( REPLACE "/lib/" "/bin/" BLAS_openblas_LIBRARY_DLL_bindir 
+            "${BLAS_openblas_LIBRARY_DLL_libdir}" )
+          if( EXISTS "${BLAS_openblas_LIBRARY_DLL_libdir}" )
+            set( BLAS_openblas_LIBRARY_DLL 
+              "${BLAS_openblas_LIBRARY_DLL_libdir}")
+          elseif( EXISTS "${BLAS_openblas_LIBRARY_DLL_bindir}" )
+            set( BLAS_openblas_LIBRARY_DLL 
+              "${BLAS_openblas_LIBRARY_DLL_bindir}") 
+          else()
+            # only static libs available.
+            set( BLAS_openblas_LIBRARY_DLL "${BLAS_openblas_LIBRARY}") 
+          endif()
+          
         set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY_DLL}"
+          IMPORTED_IMPLIB                   "${BLAS_openblas_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
         set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY_DLL}"
+          IMPORTED_IMPLIB                   "${BLAS_openblas_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        message(STATUS "Looking for lapack (OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
+
+        else()
+           set_target_properties( blas PROPERTIES
+            IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+          set_target_properties( lapack PROPERTIES
+            IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        endif()
+
+        message(STATUS "Looking for lapack (OpenBLAS)...found "
+          "${BLAS_openblas_LIBRARY}")
       else()
         message(STATUS "Looking for lapack (OpenBLAS)...NOTFOUND")
       endif()

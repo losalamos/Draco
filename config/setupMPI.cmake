@@ -177,10 +177,10 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( query_topology )
 
-  # These cmake commands, while useful, don't provide the topology detail that we
-  # are interested in (i.e. number of sockets per node). We could use the results
-  # of these queries to know if hyperthreading is enabled (if logical != physical
-  # cores)
+  # These cmake commands, while useful, don't provide the topology detail that
+  # we are interested in (i.e. number of sockets per node). We could use the 
+  # results of these queries to know if hyper-threading is enabled (if logical 
+  # != physical cores)
   # - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES
   #   QUERY NUMBER_OF_PHYSICAL_CORES)
   # - cmake_host_system_information(RESULT MPI_LOGICAL_CORES
@@ -229,16 +229,16 @@ macro( query_topology )
     "Number of cores per cpu" FORCE )
 
   #
-  # Check for hyperthreading - This is important for reserving threads for
+  # Check for hyper-threading - This is important for reserving threads for
   # OpenMP tests...
   #
   math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
     "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
   if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?"
+    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyper-threading?"
       FORCE )
   else()
-    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?"
+    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyper-threading?"
       FORCE )
   endif()
 endmacro()
@@ -269,7 +269,7 @@ macro( setupOpenMPI )
   set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
   #
@@ -296,7 +296,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupMpichMPI )
 
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
 endmacro()
@@ -306,7 +306,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupIntelMPI )
 
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
 endmacro()
@@ -355,7 +355,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupSpectrumMPI )
 
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
   #
@@ -483,11 +483,41 @@ macro( setupMPILibrariesWindows )
   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
     message(STATUS "Looking for MPI...")
+    set(MPI_ASSUME_NO_BUILTIN_MPI TRUE)
+    set(MPI_GUESS_LIBRARY_NAME "MSMPI")
     find_package( MPI QUIET )
 
+    if( EXISTS "$ENV{MSMPI_INC}" )
+      # if msmpi is installed via vcpkg, then use the vcpkg include path 
+      # instead of the system one.
+      file(TO_CMAKE_PATH $ENV{MSMPI_INC} MSMPI_INC)
+      unset(tmp)
+      foreach( ipath ${MPI_C_INCLUDE_DIRS} )
+        if( "${ipath}" STREQUAL "${MSMPI_INC}" )
+          continue()
+        endif()
+        list(APPEND tmp ${ipath})
+      endforeach()
+      set(MPI_C_INCLUDE_DIRS ${tmp})
+      unset(tmp)
+    endif()
+
+    if(verbose)
+      message("
+        MPI_C_FOUND        = ${MPI_C_FOUND}
+        MPIEXEC_EXECUTABLE = ${MPIEXEC_EXECUTABLE}
+        MPI_C_LIBRARIES    = ${MPI_C_LIBRARIES}
+        MPI_CXX_LIBRARIES  = ${MPI_CXX_LIBRARIES}
+        MPI_Fortran_LIBRARIES = ${MPI_Fortran_LIBRARIES}
+        MPI_C_LIB_NAMES    = ${MPI_C_LIB_NAMES}
+        CMAKE_GENERATOR    = ${CMAKE_GENERATOR}
+        MPI_C_INCLUDE_DIRS = ${MPI_C_INCLUDE_DIRS}
+        MPI_C_VERSION_MAJOR = ${MPI_C_VERSION_MAJOR}")
+    endif()
+    
     # If this macro is called from a MinGW builds system (for a CAFS
-    # subdirectory) and is trying to MS-MPI, the above check will fail (when
-    # cmake > 3.12). However, MS-MPI is known to be good when linking with
+    # subdirectory) and is trying to discover MS-MPI, the above check will fail
+    # (when CMake > 3.12). However, MS-MPI is known to be good when linking with
     # Visual Studio so override the 'failed' report.
     if( "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
         "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
@@ -496,6 +526,12 @@ macro( setupMPILibrariesWindows )
         set( MPI_Fortran_FOUND TRUE )
       endif()
     endif()
+    
+    if(verbose)
+      message("
+        MPI_C_FOUND       = ${MPI_C_FOUND}
+        MPI_Fortran_FOUND = ${MPI_Fortran_FOUND}")
+    endif()
 
     # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch this
     # is and save this path to MPI_Fortran_INCLUDE_PATH
@@ -503,13 +539,21 @@ macro( setupMPILibrariesWindows )
     if( first_c_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
       get_filename_component( MPI_Fortran_INCLUDE_PATH
         "${first_c_mpi_library}" DIRECTORY )
-      string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH
-        ${MPI_Fortran_INCLUDE_PATH} )
-      set( MPI_Fortran_INCLUDE_PATH
-        "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
-        CACHE STRING "Location for MPI include files for Fortran.")
+      if(EXISTS "${MPI_Fortran_INCLUDE_PATH}/../include/mpifptr.h")
+        get_filename_component( MPI_Fortran_INCLUDE_PATH 
+          "${MPI_Fortran_INCLUDE_PATH}/../include" REALPATH )
+      elseif(EXISTS "${MPI_Fortran_INCLUDE_PATH}/../../include/mpifptr.h")
+        get_filename_component( MPI_Fortran_INCLUDE_PATH 
+          "${MPI_Fortran_INCLUDE_PATH}/../../include" REALPATH )
+      else()
+        string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH
+          ${MPI_Fortran_INCLUDE_PATH} )
+        set( MPI_Fortran_INCLUDE_PATH
+          "${MPI_C_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
+          CACHE STRING "Location for MPI include files for Fortran.")
+      endif()
       if( verbose )
-        message("MPI_Fortran_INCLUDE_PATH = ${MPI_Fortran_INCLUDE_PATH}")
+        message("    MPI_Fortran_INCLUDE_PATH = ${MPI_Fortran_INCLUDE_PATH}")
       endif()
     endif()
 
@@ -522,26 +566,26 @@ macro( setupMPILibrariesWindows )
       ERROR_VARIABLE DBS_MPI_VER_ERR
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_STRIP_TRAILING_WHITESPACE
-      )
+      ERROR_STRIP_TRAILING_WHITESPACE )
     if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
       string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER
         "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1"
-        DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2"
-        DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+      string(REPLACE "." ";" DBS_MPI_VER ${DBS_MPI_VER})
+      list(GET DBS_MPI_VER 0 DBS_MPI_VER_MAJOR)
+      list(GET DBS_MPI_VER 1 DBS_MPI_VER_MINOR)
       set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
     else()
       set(DBS_MPI_VER "5.0")
+    endif()
+    if(verbose)
+      message("    DBS_MPI_VER = ${DBS_MPI_VER}")
     endif()
 
     set_package_properties( MPI PROPERTIES
       URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
       DESCRIPTION "Microsoft MPI"
       TYPE RECOMMENDED
-      PURPOSE "If not available, all Draco components will be built as scalar applications."
-      )
+      PURPOSE "If not available, all Draco components will be built as scalar applications.")
 
     # Check flavor and add optional flags
     if("${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft MPI")
@@ -570,21 +614,21 @@ macro( setupMPILibrariesWindows )
       set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
         "Number of multi-core CPUs per node" FORCE )
       set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-        "Number of cores per cpu" FORCE )
+        "Number of cores per CPU" FORCE )
       set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
         "Total number of available MPI ranks" FORCE )
 
-      # Check for hyperthreading - This is important for reserving
-      # threads for OpenMP tests...
+      # Check for hyper-threading - This is important for reserving threads for
+      # OpenMP tests...
 
       math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
         "${MPI_CPUS_PER_NODE} * ${MPI_CORES_PER_CPU}" )
       if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
         set( MPI_HYPERTHREADING "OFF" CACHE BOOL
-          "Are we using hyperthreading?" FORCE )
+          "Are we using hyper-threading?" FORCE )
       else()
         set( MPI_HYPERTHREADING "ON" CACHE BOOL
-          "Are we using hyperthreading?" FORCE )
+          "Are we using hyper-threading?" FORCE )
       endif()
 
       set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
@@ -598,6 +642,18 @@ macro( setupMPILibrariesWindows )
 
   # Found MPI_C, but not MPI_CXX -- create a duplicate to satisfy link targets.
   if( TARGET MPI::MPI_C AND NOT TARGET MPI::MPI_CXX)
+
+    if(verbose)
+      message("    Found target MPI::MPI_C but not MPI::MPI_CXX
+
+      set_target_properties(MPI::MPI_CXX PROPERTIES
+        IMPORTED_LOCATION_RELEASE         \"${MPI_C_LIBRARIES}\"
+        IMPORTED_IMPLIB                   \"${MPI_C_LIBRARIES}\"
+        INTERFACE_INCLUDE_DIRECTORIES     \"${MPI_C_INCLUDE_DIRS}\"
+        IMPORTED_CONFIGURATIONS           Release
+        IMPORTED_LINK_INTERFACE_LANGUAGES \"CXX\" )
+      ")
+    endif()
 
     # Windows systems with dll libraries.
     add_library( MPI::MPI_CXX SHARED IMPORTED )
@@ -634,8 +690,12 @@ macro( setupMPILibrariesWindows )
   #     del msmpi.def
   #     copy libmsmpi.a %MSMPI_LIB32%/libmsmpi.a
 
-  if( WIN32 AND DEFINED CMAKE_Fortran_COMPILER AND
-      TARGET MPI::MPI_Fortran )
+  if( WIN32 AND DEFINED CMAKE_Fortran_COMPILER AND TARGET MPI::MPI_Fortran )
+
+    if(verbose)
+      message("    Win32 AND CMAKE_Fortran_COMPILER AND TARGET MPI::MPI_Fortran
+      ")
+    endif()
 
     # only do this if we are in a CMakeAddFortranSubdirectory directive when
     # the main Generator is Visual Studio and the Fortran subdirectory uses
@@ -643,8 +703,7 @@ macro( setupMPILibrariesWindows )
 
     # MS-MPI has an architecture specific include directory that FindMPI.cmake
     # doesn't seem to pickup correctly.  Add it here.
-    get_target_property(mpilibdir MPI::MPI_Fortran
-      INTERFACE_LINK_LIBRARIES)
+    get_target_property(mpilibdir MPI::MPI_Fortran INTERFACE_LINK_LIBRARIES)
     get_target_property(mpiincdir MPI::MPI_Fortran
       INTERFACE_INCLUDE_DIRECTORIES)
     foreach( arch x86 x64 )
@@ -660,8 +719,15 @@ macro( setupMPILibrariesWindows )
 
     # Reset the include directories for MPI::MPI_Fortran to pull in the extra
     # $arch locations (if any)
+
+    list(REMOVE_DUPLICATES mpiincdir)
     set_target_properties(MPI::MPI_Fortran
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
+
+    if(verbose)
+      message("set_target_properties(MPI::MPI_Fortran
+      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES \"${mpiincdir}\")")
+    endif()
 
   endif()
 

@@ -2,12 +2,12 @@
 # file   FortranChecks/f90sub/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 June 24
-# brief  Generate build project files for fortran.
+# brief  Generate build project files for Fortran.
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( FortranChecks_f90sub Fortran )
+project( FortranChecks_f90sub C Fortran )
 
 # ---------------------------------------------------------------------------- #
 # Setup - For Generators other than "Unix Makefiles", this folder is parsed
@@ -32,11 +32,11 @@ include( component_macros )
 # manually find these libraries.
 #
 # Note: A more complex example of CMakeAddFortranSubdirectory can be found in
-# jayenne/src/wedgehog/ftest.
+# jayenne/src/api/ftest.
 
 if(NOT TARGET Lib_dsxx)
   # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see
-  # wedgehog/CMakeLists.txt) by replacing triple underscores with a semicolon.
+  # api/CMakeLists.txt) by replacing triple underscores with a semicolon.
   # This must be done before calling find_package(draco)
   string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
     "${Draco_TPL_INCLUDE_DIRS}" )
@@ -47,6 +47,8 @@ if(NOT TARGET Lib_dsxx)
     ABSOLUTE )
   cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
     "${draco_BINARY_DIR}/src/ds++" CXX )
+  cafs_create_imported_targets( Lib_c4 "rtt_c4"
+    "${draco_BINARY_DIR}/src/c4" CXX )
   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
     "${draco_BINARY_DIR}/src/FortranChecks" CXX )
 
@@ -63,7 +65,7 @@ if(NOT TARGET Lib_dsxx)
   include( compilerEnv )
   dbsSetupFortran()
   # Vendors are not needed here, but I'm trying to follow the model found in
-  # wedgehog/ftest.  I've included these here to ensure that the slave build can
+  # api/ftest.  I've included these here to ensure that the slave build can
   # parse the find vendor scripts.
   include( vendor_libraries )
   setupVendorLibraries()
@@ -106,7 +108,14 @@ endif()
 
 # Xcode: Since cafs_create_imported_targets does not set all of the dependencies
 # between the imported libraries, we need to list them explicitly.
-set(target_deps "Lib_FC_Derived_Type;Lib_dsxx;${MPI_Fortran_LIBRARIES}" )
+set(target_deps Lib_FC_Derived_Type;Lib_c4;Lib_dsxx)
+if ( "${DRACO_C4}" STREQUAL "MPI")
+ if(MPI_gfortran_LIBRARIES)
+   list(APPEND target_deps ${MPI_gfortran_LIBRARIES})
+ else()
+   list(APPEND target_deps ${MPI_Fortran_LIBRARIES})
+ endif()
+endif()
 
 add_component_library(
   TARGET       Lib_FC_f90sub
@@ -115,6 +124,10 @@ add_component_library(
   LINK_LANGUAGE "Fortran"
   TARGET_DEPS   "${target_deps}"
   NOEXPORT )
+if( WIN32 )
+  set_target_properties( Lib_FC_f90sub PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
+endif()
 
 #------------------------------------------------------------------------------#
 # End f90sub/CMakeLists.txt
