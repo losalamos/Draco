@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/test/tstPseudo_Line_Analytic_MultigroupOpacity.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 09:01:03 2011
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh"
@@ -18,9 +18,9 @@ using namespace rtt_dsxx;
 using namespace rtt_cdi_analytic;
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 Pseudo_Line_Analytic_MultigroupOpacity::Averaging const NONE =
     Pseudo_Line_Analytic_MultigroupOpacity::NONE;
@@ -153,7 +153,7 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
@@ -162,6 +162,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstPseudo_Line_Analytic_MultigroupOpacity.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

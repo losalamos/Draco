@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/fpe_trap.cc
  * \author Rob Lowrie, Kelly Thompson
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  platform dependent implementation of fpe_trap functions.
  *
- * Copyright (C) 2016-2019 Triad National Security, LLC.
+ * Copyright (C) 2016-2020 Triad National Security, LLC.
  *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
@@ -14,20 +14,20 @@
  * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is
  * available at http://algae.sourceforge.net/.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "fpe_trap.hh"
 #include "Assert.hh"
 #include "StackTrace.hh"
 #include <sstream>
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Linux_x86
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_LINUX_X86
 
-#include <fenv.h>
-#include <signal.h>
+#include <cfenv>
+#include <csignal>
 
 /* Signal handler for floating point exceptions. */
 extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
@@ -79,17 +79,17 @@ extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
   Insist(false, rtt_dsxx::print_stacktrace(error_type));
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Enable trapping fpe signals.
  * \return \b true if trapping is enabled, \b false otherwise.
  *
  * A \b false return value is typically because the platform is not supported.
  */
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   struct sigaction act;
 
   // Choose to use Draco's DbC Insist.  If set to false, the compiler should
@@ -102,7 +102,7 @@ bool fpe_trap::enable(void) {
   act.sa_flags = SA_SIGINFO;   // want 3 args for handler
 
   // specify handler
-  Insist(!sigaction(SIGFPE, &act, NULL),
+  Insist(!sigaction(SIGFPE, &act, nullptr),
          "Unable to set floating point handler.");
 
   // The feenableexcept function is new for glibc 2.2.  See its description
@@ -137,7 +137,7 @@ bool fpe_trap::enable(void) {
 
 //----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) {
+void fpe_trap::disable() {
   (void)fedisableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
   fpeTrappingActive = false;
   return;
@@ -147,9 +147,9 @@ void fpe_trap::disable(void) {
 
 #endif // FPETRAP_LINUX_X86
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // OSF_ALPHA
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_OSF_ALPHA
 
 #include <machine/fpu.h>
@@ -171,9 +171,9 @@ static void catch_sigfpe(int sig) {
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //!  Enable trapping of floating point errors.
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   unsigned long csr = ieee_get_fp_control();
   csr |= IEEE_TRAP_ENABLE_INV | IEEE_TRAP_ENABLE_DZE | IEEE_TRAP_ENABLE_OVF;
   ieee_set_fp_control(csr);
@@ -186,9 +186,9 @@ bool fpe_trap::enable(void) {
   return fpeTrappingActive;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) {
+void fpe_trap::disable() {
   ieee_set_fp_control(0x00);
   fpeTrappingActive = false;
   return;
@@ -198,9 +198,9 @@ void fpe_trap::disable(void) {
 
 #endif // FPETRAP_OSF_ALPHA
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // WINDOWS X86
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_WINDOWS_X86
 
 #include <Windows.h> // defines STATUS_FLOAT_...
@@ -258,7 +258,7 @@ namespace rtt_dsxx {
 // - http://stackoverflow.com/questions/2769814/how-do-i-use-try-catch-to-catch-floating-point-errors
 // - See MSDN articles on fenv_access and _controlfp_s examples.
 // ----------------------------------------------------------------------------
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   // Always call this before setting control words.
   _clearfp();
 
@@ -289,9 +289,9 @@ bool fpe_trap::enable(void) {
   return fpeTrappingActive;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) {
+void fpe_trap::disable() {
   // Always call this before setting control words.
   _clearfp();
 
@@ -311,9 +311,9 @@ void fpe_trap::disable(void) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CCrashHandler
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void CCrashHandler::SetProcessExceptionHandlers() {
   std::cout << "In CCrashHandler::SetProcessExceptionHandlers" << std::endl;
   // Install top-level SEH handler
@@ -701,18 +701,18 @@ void CCrashHandler::SigtermHandler(int) {
 
 #endif // FPETRAP_WINDOWS_X86
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // DARWIN INTEL
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_DARWIN_INTEL
 
 #include <xmmintrin.h>
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Enable trapping of floating point errors.
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   _mm_setcsr(_MM_MASK_MASK &
              ~(_MM_MASK_OVERFLOW | _MM_MASK_INVALID | _MM_MASK_DIV_ZERO));
 
@@ -723,9 +723,9 @@ bool fpe_trap::enable(void) {
   fpeTrappingActive = true;
   return fpeTrappingActive;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) {
+void fpe_trap::disable() {
   _mm_setcsr(_MM_MASK_MASK & ~0x00);
   fpeTrappingActive = false;
   return;
@@ -735,9 +735,9 @@ void fpe_trap::disable(void) {
 
 #endif // FPETRAP_DARWIN_INTEL
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // DARWIN PPC
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_DARWIN_PPC
 
 #include <mach/mach.h>
@@ -783,7 +783,7 @@ static void catch_sigfpe(int sig) {
 
 namespace rtt_dsxx {
 //!  Enable trapping of floating point errors.
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   pthread_t enabler;
   void *mts = reinterpret_cast<void *>(mach_thread_self());
   pthread_create(&enabler, NULL, fpe_enabler, mts);
@@ -797,9 +797,9 @@ bool fpe_trap::enable(void) {
   return fpeTrappingActive;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) {
+void fpe_trap::disable() {
   // (void)feenableexcept( 0x00 );
   Insist(0, "Please update darwin_ppc.cc to provide instructions for disabling "
             "fpe traps.");
@@ -811,16 +811,16 @@ void fpe_trap::disable(void) {
 
 #endif // FPETRAP_DARWIN_PPC
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // UNSUPPORTED PLATFORMS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef FPETRAP_UNSUPPORTED
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //!  Enable trapping of floating point errors.
-bool fpe_trap::enable(void) {
+bool fpe_trap::enable() {
   // (unsupported platform.  leave fag set to false.
   // (using abortWithInsist to silence unused variable warning)
   if (abortWithInsist)
@@ -831,14 +831,14 @@ bool fpe_trap::enable(void) {
   return fpeTrappingActive;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
-void fpe_trap::disable(void) { return; }
+void fpe_trap::disable() { return; }
 
 } // end namespace rtt_dsxx
 
 #endif // FPETRAP_UNSUPPORTED
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/fpe_trap.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

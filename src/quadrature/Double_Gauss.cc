@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Double_Gauss.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
- * \brief  A class representing an interval dobule Gauss-Legendre quadrature
+ * \brief  A class representing an interval double Gauss-Legendre quadrature
  *         set.
- * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
+ * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
  *         reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
@@ -64,19 +64,19 @@ Double_Gauss::Double_Gauss(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Ensure(this->sn_order() == sn_order);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::name() const { return "Double-Gauss"; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::parse_name() const { return "double gauss"; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const {
   string Result = indent + "type = double gauss" + indent +
                   "  order = " + to_string(sn_order()) + indent + "end";
@@ -84,12 +84,12 @@ unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Double_Gauss::check_class_invariants() const {
   return sn_order() > 0 && sn_order() % 2 == 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate>
 Double_Gauss::create_level_ordinates_(double const norm) const {
@@ -115,6 +115,6 @@ Double_Gauss::create_level_ordinates_(double const norm) const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Double_Gauss.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

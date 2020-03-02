@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/test/tstOMP.cc
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Demonstrate basic OMP threads under MPI.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/Timer.hh"
@@ -19,11 +19,11 @@
 
 using namespace rtt_c4;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool topology_report(void) {
   size_t const mpi_ranks = rtt_c4::nodes();
   size_t const my_mpi_rank = rtt_c4::node();
@@ -74,7 +74,7 @@ bool topology_report(void) {
   return (one_mpi_rank_per_node == 1);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
   // Determine if MPI ranks are on unique machine nodes:
@@ -156,7 +156,7 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void sample_sum(rtt_dsxx::UnitTest &ut, bool const omrpn) {
   if (rtt_c4::node() == 0)
     std::cout << "Begin test sample_sum()...\n" << std::endl;
@@ -269,7 +269,7 @@ void sample_sum(rtt_dsxx::UnitTest &ut, bool const omrpn) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // This is a simple demonstration problem for OMP.  Nothing really to check
 // for PASS/FAIL.
 int MandelbrotCalculate(std::complex<double> c, int maxiter) {
@@ -400,7 +400,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -418,6 +418,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstOMP.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

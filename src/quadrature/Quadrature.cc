@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Quadrature.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 15:38:56 2000
- * \brief  Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \brief  Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Quadrature.hh"
 #include "Galerkin_Ordinate_Space.hh"
@@ -13,10 +13,12 @@
 #include <algorithm>
 
 namespace rtt_quadrature {
+
 using std::make_shared;
 typedef Ordinate_Set::Ordering Ordering;
+using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Create a set of ordinates from the Quadrature.
  *
@@ -51,7 +53,7 @@ Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Create a set of ordinates from the Quadrature.
  *
@@ -80,7 +82,7 @@ Quadrature::create_ordinates(unsigned const dimension, Geometry const geometry,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Create an ordinate set from the Quadrature.
  *
@@ -113,7 +115,7 @@ std::shared_ptr<Ordinate_Set> Quadrature::create_ordinate_set(
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* protected */
 void Quadrature::add_1D_starting_directions_(
     Geometry const geometry, bool const add_starting_directions,
@@ -188,7 +190,7 @@ void Quadrature::add_2D_starting_directions_(
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Quadrature::map_axes_(unsigned const mu_axis, unsigned const eta_axis,
                            vector<double> &mu, vector<double> &eta,
                            vector<double> &xi) const {
@@ -215,7 +217,7 @@ void Quadrature::map_axes_(unsigned const mu_axis, unsigned const eta_axis,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Create an Ordinate_Space from the Quadrature.
  *
@@ -275,7 +277,7 @@ std::shared_ptr<Ordinate_Space> Quadrature::create_ordinate_space(
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Create an angle operator from the Quadrature.
  *
@@ -318,7 +320,7 @@ std::shared_ptr<Ordinate_Space> Quadrature::create_ordinate_space(
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Quadrature::is_open_interval() const {
   // The great majority are. Lobatto and certain cases of General Octant are
   // at present our only exceptions.
@@ -328,6 +330,6 @@ bool Quadrature::is_open_interval() const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Quadrature.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

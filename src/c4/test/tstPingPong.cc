@@ -1,13 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/test/tstPingPong.cc
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -28,11 +27,12 @@ using rtt_c4::send_async;
 using rtt_c4::send_receive;
 using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
+
   if (rtt_c4::nodes() != 2)
     return;
 
@@ -71,18 +71,12 @@ void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     receive(&d, 1, 1);
 
     // check values
-    if (b != false)
-      ITFAILS;
-    if (c != 'B')
-      ITFAILS;
-    if (i != 2)
-      ITFAILS;
-    if (l != 2000)
-      ITFAILS;
-    if (!soft_equiv(f, 2.5f))
-      ITFAILS;
-    if (!soft_equiv(d, 3.5))
-      ITFAILS;
+    FAIL_IF_NOT(b == false);
+    FAIL_IF_NOT(c == 'B');
+    FAIL_IF_NOT(i == 2);
+    FAIL_IF_NOT(l == 2000);
+    FAIL_IF_NOT(soft_equiv(f, 2.5f));
+    FAIL_IF_NOT(soft_equiv(d, 3.5));
   }
 
   // receive and send on node 1
@@ -96,18 +90,12 @@ void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     receive(&d, 1, 0);
 
     // check values
-    if (b != true)
-      ITFAILS;
-    if (c != 'A')
-      ITFAILS;
-    if (i != 1)
-      ITFAILS;
-    if (l != 1000)
-      ITFAILS;
-    if (!soft_equiv(f, 1.5f))
-      ITFAILS;
-    if (!soft_equiv(d, 2.5))
-      ITFAILS;
+    FAIL_IF_NOT(b == true);
+    FAIL_IF_NOT(c == 'A');
+    FAIL_IF_NOT(i == 1);
+    FAIL_IF_NOT(l == 1000);
+    FAIL_IF_NOT(soft_equiv(f, 1.5f));
+    FAIL_IF_NOT(soft_equiv(d, 2.5));
 
     // assign new values
     b = false;
@@ -138,8 +126,8 @@ void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
   }
   return;
 }
-//---------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
 void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
 
   if (rtt_c4::nodes() != 2)
@@ -185,9 +173,8 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     f = 1.5;
     d = 2.5;
 
-    // send out data
-    // Test two forms of the send_async command plus one deprecated
-    // form (namespace C4::)
+    // send out data - test two forms of the send_async command plus one
+    // deprecated form (namespace C4::)
     brs = send_async(&b, 1, 1);
     send_async(crs, &c, 1, 1);
     irs = send_async(&i, 1, 1);
@@ -208,54 +195,36 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     C4_Status status;
 
     brr.wait(&status);
-    if (status.get_message_size() != sizeof(bool))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == sizeof(bool));
+    FAIL_IF_NOT(status.get_source() == 1);
 
     crr.wait(&status);
-    if (status.get_message_size() != 1)
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == 1);
+    FAIL_IF_NOT(status.get_source() == 1);
 
     irr.wait(&status);
-    if (status.get_message_size() != sizeof(int))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == sizeof(int));
+    FAIL_IF_NOT(status.get_source() == 1);
 
     lrr.wait(&status);
-    if (status.get_message_size() != sizeof(long))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == sizeof(long));
+    FAIL_IF_NOT(status.get_source() == 1);
 
     frr.wait(&status);
-    if (status.get_message_size() != sizeof(float))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == sizeof(float));
+    FAIL_IF_NOT(status.get_source() == 1);
 
     drr.wait(&status);
-    if (status.get_message_size() != sizeof(double))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
+    FAIL_IF_NOT(status.get_message_size() == sizeof(double));
+    FAIL_IF_NOT(status.get_source() == 1);
 
     // check values
-    if (br != false)
-      ITFAILS;
-    if (cr != 'B')
-      ITFAILS;
-    if (ir != 2)
-      ITFAILS;
-    if (lr != 2000)
-      ITFAILS;
-    if (!soft_equiv(fr, 2.5f))
-      ITFAILS;
-    if (!soft_equiv(dr, 3.5))
-      ITFAILS;
+    FAIL_IF_NOT(br == false);
+    FAIL_IF_NOT(cr == 'B');
+    FAIL_IF_NOT(ir == 2);
+    FAIL_IF_NOT(lr == 2000);
+    FAIL_IF_NOT(soft_equiv(fr, 2.5f));
+    FAIL_IF_NOT(soft_equiv(dr, 3.5));
   }
 
   // receive and send on node 1
@@ -270,18 +239,12 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     receive_async(drr, &dr, 1, 0);
 
     // check that all are inuse
-    if (!brr.inuse())
-      ITFAILS;
-    if (!crr.inuse())
-      ITFAILS;
-    if (!irr.inuse())
-      ITFAILS;
-    if (!lrr.inuse())
-      ITFAILS;
-    if (!frr.inuse())
-      ITFAILS;
-    if (!drr.inuse())
-      ITFAILS;
+    FAIL_IF_NOT(brr.inuse());
+    FAIL_IF_NOT(crr.inuse());
+    FAIL_IF_NOT(irr.inuse());
+    FAIL_IF_NOT(lrr.inuse());
+    FAIL_IF_NOT(frr.inuse());
+    FAIL_IF_NOT(drr.inuse());
 
     // check on receives
     int done = 0;
@@ -300,18 +263,12 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
         done++;
     }
 
-    if (br != true)
-      ITFAILS;
-    if (cr != 'A')
-      ITFAILS;
-    if (ir != 1)
-      ITFAILS;
-    if (lr != 1000)
-      ITFAILS;
-    if (!soft_equiv(fr, 1.5f))
-      ITFAILS;
-    if (!soft_equiv(dr, 2.5))
-      ITFAILS;
+    FAIL_IF_NOT(br == true);
+    FAIL_IF_NOT(cr == 'A');
+    FAIL_IF_NOT(ir == 1);
+    FAIL_IF_NOT(lr == 1000);
+    FAIL_IF_NOT(soft_equiv(fr, 1.5f));
+    FAIL_IF_NOT(soft_equiv(dr, 2.5));
 
     // assign new values
     b = false;
@@ -342,31 +299,19 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
   rtt_c4::global_barrier();
 
   // check that all requests are done
-  if (brs.inuse())
-    ITFAILS;
-  if (crs.inuse())
-    ITFAILS;
-  if (irs.inuse())
-    ITFAILS;
-  if (lrs.inuse())
-    ITFAILS;
-  if (frs.inuse())
-    ITFAILS;
-  if (drs.inuse())
-    ITFAILS;
+  FAIL_IF(brs.inuse());
+  FAIL_IF(crs.inuse());
+  FAIL_IF(irs.inuse());
+  FAIL_IF(lrs.inuse());
+  FAIL_IF(frs.inuse());
+  FAIL_IF(drs.inuse());
 
-  if (brr.inuse())
-    ITFAILS;
-  if (crr.inuse())
-    ITFAILS;
-  if (irr.inuse())
-    ITFAILS;
-  if (lrr.inuse())
-    ITFAILS;
-  if (frr.inuse())
-    ITFAILS;
-  if (drr.inuse())
-    ITFAILS;
+  FAIL_IF(brr.inuse());
+  FAIL_IF(crr.inuse());
+  FAIL_IF(irr.inuse());
+  FAIL_IF(lrr.inuse());
+  FAIL_IF(frr.inuse());
+  FAIL_IF(drr.inuse());
 
   if (ut.numFails == 0) {
     ostringstream m;
@@ -377,12 +322,11 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test the C4_Req.free() function.
 // After a asynchronous receive command is given, it can be terminated by
 // using the free() command.
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void tstC4_Req_free() {
 
   if (rtt_c4::nodes() != 2)
@@ -403,8 +347,7 @@ void tstC4_Req_free() {
   return;
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void probe_ping_pong(rtt_dsxx::UnitTest &ut) {
 
   if (rtt_c4::nodes() != 2)
@@ -469,6 +412,7 @@ void probe_ping_pong(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
+//----------------------------------------------------------------------------//
 void send_receive_ping_pong(rtt_dsxx::UnitTest &ut) {
   if (rtt_c4::nodes() != 2)
     return;
@@ -497,18 +441,12 @@ void send_receive_ping_pong(rtt_dsxx::UnitTest &ut) {
     send_receive(&d, 1, 1, &dr, 1, 1);
 
     // check values
-    if (br != false)
-      ITFAILS;
-    if (cr != 'B')
-      ITFAILS;
-    if (ir != 2)
-      ITFAILS;
-    if (lr != 2000)
-      ITFAILS;
-    if (!soft_equiv(fr, 2.5f))
-      ITFAILS;
-    if (!soft_equiv(dr, 3.5))
-      ITFAILS;
+    FAIL_IF_NOT(br == false);
+    FAIL_IF_NOT(cr == 'B');
+    FAIL_IF_NOT(ir == 2);
+    FAIL_IF_NOT(lr == 2000);
+    FAIL_IF_NOT(soft_equiv(fr, 2.5f));
+    FAIL_IF_NOT(soft_equiv(dr, 3.5));
   }
 
   // receive and send on node 1
@@ -529,18 +467,12 @@ void send_receive_ping_pong(rtt_dsxx::UnitTest &ut) {
     send_receive(&d, 1, 0, &dr, 1, 0);
 
     // check values
-    if (br != true)
-      ITFAILS;
-    if (cr != 'A')
-      ITFAILS;
-    if (ir != 1)
-      ITFAILS;
-    if (lr != 1000)
-      ITFAILS;
-    if (!soft_equiv(fr, 1.5f))
-      ITFAILS;
-    if (!soft_equiv(dr, 2.5))
-      ITFAILS;
+    FAIL_IF_NOT(br == true);
+    FAIL_IF_NOT(cr == 'A');
+    FAIL_IF_NOT(ir == 1);
+    FAIL_IF_NOT(lr == 1000);
+    FAIL_IF_NOT(soft_equiv(fr, 1.5f));
+    FAIL_IF_NOT(soft_equiv(dr, 2.5));
   }
 
   rtt_c4::global_barrier();
@@ -556,7 +488,7 @@ void send_receive_ping_pong(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -574,6 +506,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstPingPong.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

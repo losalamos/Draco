@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Tri_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2019 Triad National Security, LLC. All rights
+ * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
  *         reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Tri_Chebyshev_Legendre.hh"
 #include "parser/utilities.hh"
@@ -14,7 +14,7 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 std::shared_ptr<Quadrature>
 Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
@@ -36,6 +36,6 @@ Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Tri_Chebyshev_Legendre.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

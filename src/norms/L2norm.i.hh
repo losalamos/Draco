@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   norms/L2norm.i.hh
  * \author Kent Budge
  * \date   Tue Sep 18 08:22:09 2007
  * \brief  Member definitions of class L2norm
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This class is deprecated. New code should use Norm_Index instead.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef norms_L2norm_i_hh
 #define norms_L2norm_i_hh
@@ -22,7 +22,7 @@
 
 namespace rtt_norms {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Helper type for L2norm.
  *
  * \arg \a Field A real type such as float or double.
@@ -32,7 +32,7 @@ double accumulate_norm_(double const init, Field const &x) {
   return init + norm<Field>(x);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \arg \a In An input container type whose elements are real, such as
  *            <code>vector<double></code> or <code>list<float></code>.
@@ -57,7 +57,7 @@ template <typename In> double L2norm(In const &x) {
   return norm;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function computes the norm of the difference between two vectors. We
  * have found that this is a surprisingly common operation, and there is
@@ -105,6 +105,6 @@ double L2norm_diff(In1 const &x, In2 const &y) {
 
 #endif // norms_L2norm_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of norms/L2norm.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

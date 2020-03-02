@@ -4,7 +4,7 @@
  * \author Kendra Keady
  * \date   2017 Feb 10
  * \brief  Implementation file for tCompton
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -258,7 +258,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   const bool induced = false;
   const bool det_bal = false;
 
-  // set the number of angular points to retrieve (legendre or otherwise)
+  // set the number of angular points to retrieve (Legendre or otherwise)
   const size_t nxi = 5;
 
   try {

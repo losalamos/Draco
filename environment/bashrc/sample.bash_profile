@@ -26,7 +26,7 @@ fi
 # User Customizations
 #------------------------------------------------------------------------------#
 # module unload cmake ('module' may not be available for remote ssh connections)
-if [[ "$INTERACTIVE" = true ]]; then
+# if [[ $INTERACTIVE == true ]]; then
 
   # User Customization goes here
 
@@ -35,11 +35,12 @@ if [[ "$INTERACTIVE" = true ]]; then
   # export EDITOR="emacs -nw"
   # export LPDEST=gumibears
   # export COVFILE=${HOME}/test.cov
-  # export EDITOR="emacs -nw"
   # export NO_AT_BRIDGE=1          # Silence warnings from GTK/Gnome
+  # export LIBGL_ALWAYS_INDIRECT=1 # Fixes issues with FastX and OpenGL
 
-  # aliases
-  # source ~/.bash_interactive
+  # aliases and functions
+  # source ~/.bash_aliases
+  # source ~/.bash_functions
 
   # Prompt ----------------------------------------------------------------------#
   # - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
@@ -75,7 +76,7 @@ if [[ "$INTERACTIVE" = true ]]; then
   # export BSTINPUTS=$mydir:$BSTINPUTS
   # export BIBINPUTS=$mydir:$BIBINPUTS
 
-fi  # [[ "$INTERACTIVE" = "true" ]]
+# fi
 
 #------------------------------------------------------------------------------#
 # end ~/.bash_profile

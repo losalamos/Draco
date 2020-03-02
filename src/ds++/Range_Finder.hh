@@ -1,16 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Range_Finder.hh
  * \author Mike Buksas
  * \date   Thu Feb  6 12:10:56 2003
  * \brief  Header file for Range_finder
- * \note   Copyright C 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
+ * \note   Copyright C 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
-#ifndef __dsxx_Range_finder_hh__
-#define __dsxx_Range_finder_hh__
+#ifndef rtt_dsxx_Range_finder_hh
+#define rtt_dsxx_Range_finder_hh
 
 #include "Assert.hh"
 #include <algorithm>
@@ -18,7 +17,7 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Range_finder
  *
@@ -52,7 +51,7 @@ namespace rtt_dsxx {
  * bound index detection and a simple compuation for the index which works
  * whrether or not equality is obtained.
  */
-//===========================================================================//
+//============================================================================//
 
 enum RANGE_DIRECTION { LEFT = 0, RIGHT = 1 };
 
@@ -66,7 +65,7 @@ bool validate(const std::pair<IT, IT> &it, IT begin, IT end) {
 }
 } // namespace
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_left(IT begin, IT end,
                       typename std::iterator_traits<IT>::value_type value) {
@@ -80,7 +79,7 @@ int Range_finder_left(IT begin, IT end,
   return index;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_right(IT begin, IT end,
                        typename std::iterator_traits<IT>::value_type value) {
@@ -94,7 +93,7 @@ int Range_finder_right(IT begin, IT end,
   return index;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_left_catch_end(
     IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
@@ -112,7 +111,7 @@ int Range_finder_left_catch_end(
   return fix_index;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_right_catch_end(
     IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
@@ -130,11 +129,11 @@ int Range_finder_right_catch_end(
   return fix_index;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Generic versions.
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder(IT begin, IT end,
                  typename std::iterator_traits<IT>::value_type value,
@@ -151,7 +150,7 @@ int Range_finder(IT begin, IT end,
   return -1;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_catch_end(IT begin, IT end,
                            typename std::iterator_traits<IT>::value_type value,
@@ -170,8 +169,8 @@ int Range_finder_catch_end(IT begin, IT end,
 
 } // end namespace rtt_dsxx
 
-#endif // __dsxx_Range_finder_hh__
+#endif // rtt_dsxx_Range_finder_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of dsxx/Range_finder.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

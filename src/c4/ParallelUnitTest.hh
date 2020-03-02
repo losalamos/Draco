@@ -1,17 +1,16 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/ParallelUnitTest.hh
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
- * class is to encapsulate the keywords and behavior of DBS parallel unit
- * tests.
+ * class is to encapsulate the keywords and behavior of DBS parallel unit tests.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_ParallelUnitTest_hh
 #define c4_ParallelUnitTest_hh
@@ -21,7 +20,7 @@
 
 namespace rtt_c4 {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class ParallelUnitTest
  * \brief This class encapsulates services for parallel unit tests.
@@ -64,36 +63,36 @@ namespace rtt_c4 {
  * \example c4/test/tstParallelUnitTest.cc
  * This unit test demonstrates typical usage for ParallelUnitTest. *
  */
-//===========================================================================//
+//============================================================================//
 
 class ParallelUnitTest : public rtt_dsxx::UnitTest {
 public:
   // CREATORS
 
   //! Default constructor.
-  DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
-                                 string_fp_void release_,
-                                 std::ostream &out_ = std::cout,
-                                 bool verbose_ = true);
+  ParallelUnitTest(int &argc, char **&argv, string_fp_void release_,
+                   std::ostream &out_ = std::cout, bool verbose_ = true);
 
-  //!  The copy constructor is disabled.
-  ParallelUnitTest(ParallelUnitTest const &rhs);
+  //!  The copy/move constructors are disabled.
+  ParallelUnitTest(ParallelUnitTest const &rhs) = delete;
+  ParallelUnitTest(ParallelUnitTest &&rhs) = delete;
 
   //! Destructor.
-  DLL_PUBLIC_c4 ~ParallelUnitTest();
+  virtual ~ParallelUnitTest();
 
   // MANIPULATORS
 
-  //! The assignment operator is disabled.
-  ParallelUnitTest &operator=(ParallelUnitTest const &rhs);
+  //! The copy/move assignment operators are disabled.
+  ParallelUnitTest &operator=(ParallelUnitTest const &rhs) = delete;
+  ParallelUnitTest &operator=(ParallelUnitTest &&rhs) = delete;
 
   // ACCESSORS
 
   //! Provide a report of the number of unit test passes and fails.
-  DLL_PUBLIC_c4 void status(void);
+  void status(void);
 
-  DLL_PUBLIC_c4 virtual bool check_all(bool good, std::string const &checkmsg,
-                                       bool fatal = false);
+  virtual bool check_all(bool good, std::string const &checkmsg,
+                         bool fatal = false);
 };
 
 //----------------------------------------------------------------------------//
@@ -116,6 +115,6 @@ int do_parallel_unit_test(int argc, char *argv[], Release release,
 
 #endif // c4_ParallelUnitTest_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/ParallelUnitTest.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

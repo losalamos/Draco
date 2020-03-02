@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ode/rkqs.i.hh
  * \author Kent Budge
  * \date   Mon Sep 20 15:15:40 2004
  * \brief  Integrate an ordinary differential equation with local error
  *         control using fifth-order Cash-Karp Runge-Kutta steps.
- * \note   Copyright (C) 2004-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2004-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef ode_rkqs_i_hh
 #define ode_rkqs_i_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_ode {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Perform a single fifth-order Cash-Karp Runge-Kutta step.
  *
  * \arg \a Field A field type, such as \c double or \c std::complex<double>.
@@ -107,7 +107,7 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Integrate an ordinary differential equation with local error
  * control using fifth-order Cash-Karp Runge-Kutta steps.
@@ -195,6 +195,6 @@ void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
 
 #endif // ode_rkqs_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ode/rkqs.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

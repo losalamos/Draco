@@ -1,26 +1,26 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   Norms_Index.t.hh
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:00:47 2005
  * \brief  Implemention for Norms_Index class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Comm_Traits.hh"
 #include "Norms_Index.hh"
 
 namespace rtt_norms {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Default constructor.
 template <typename Index_t>
 Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
   /* empty */
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
   \brief Adds to the norm values.
 
@@ -28,7 +28,7 @@ Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
   \param index  The location of \a v.
   \param weight The weight factor for \a v.
 */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename Index_t>
 void Norms_Index<Index_t>::add(const double v, const Index_t &index,
                                const double weight) {
@@ -44,14 +44,14 @@ void Norms_Index<Index_t>::add(const double v, const Index_t &index,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Re-initializes the norm values.
 // template <typename Index_t> void Norms_Index<Index_t>::reset() {
 //   Norms_Base::reset();
 //   d_index_Linf = Index_t();
 // }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
   \brief Accumulates results to proc \a n.
 
@@ -61,7 +61,7 @@ void Norms_Index<Index_t>::add(const double v, const Index_t &index,
 
   \param n Processor on which norms are summed.
 */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
   const size_t num_nodes = rtt_c4::nodes();
 
@@ -105,7 +105,7 @@ template <typename Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Equality operator.
 template <typename Index_t>
 bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
@@ -115,6 +115,6 @@ bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
 
 } // namespace rtt_norms
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of norms/Norms_Index.t.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

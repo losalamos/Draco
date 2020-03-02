@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Tri_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Tri_Chebyshev_Legendre.hh"
 #include "Gauss_Legendre.hh"
@@ -15,21 +15,21 @@
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Tri_Chebyshev_Legendre::name() const { return "Tri Chebyshev Legendre"; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Tri_Chebyshev_Legendre::parse_name() const { return "tri cl"; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const {
   return TRIANGLE_QUADRATURE;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 unsigned Tri_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Tri_Chebyshev_Legendre::as_text(string const &indent) const {
   string Result = indent + "type = tri cl" + indent +
                   "  order = " + to_string(sn_order_) +
@@ -38,7 +38,7 @@ string Tri_Chebyshev_Legendre::as_text(string const &indent) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Tri_Chebyshev_Legendre::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
@@ -83,6 +83,6 @@ void Tri_Chebyshev_Legendre::create_octant_ordinates_(
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Tri_Chebyshev_Legendre.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

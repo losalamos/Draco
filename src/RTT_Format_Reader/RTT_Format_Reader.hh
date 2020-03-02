@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/RTT_Format_Reader.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_RTT_Format_Reader_hh__
-#define __RTT_Format_Reader_RTT_Format_Reader_hh__
+#ifndef rtt_RTT_Format_Reader_RTT_Format_Reader_hh
+#define rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 
 #include "CellData.hh"
 #include "CellDataIDs.hh"
@@ -21,7 +21,7 @@
 
 namespace rtt_RTT_Format_Reader {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * class RTT_Format_Reader
  *
@@ -33,7 +33,7 @@ namespace rtt_RTT_Format_Reader {
  *    to allow data retrieval. The \ref overview_rtt_format_reader page presents
  *    a summary of the capabilities provided by the class.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
@@ -821,8 +821,8 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_RTT_Format_Reader_hh__
+#endif // rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Format_Reader.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

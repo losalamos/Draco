@@ -4,9 +4,9 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader library.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "RTT_Format_Reader.hh"
 #include "ds++/Assert.hh"
@@ -141,6 +141,6 @@ void RTT_Format_Reader::reformatData(
 
 } // end namespace rtt_RTT_Format_Reader
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Format_Reader.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

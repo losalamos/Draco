@@ -1,10 +1,11 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2019-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
 include( FeatureSummary )
 
 if( NOT DEFINED PLATFORM_CHECK_OPENMP_DONE OR
@@ -17,17 +18,12 @@ endif()
 # ----------------------------------------
 # PAPI
 # ----------------------------------------
-if( EXISTS $ENV{PAPI_HOME} )
+if( DEFINED ENV{PAPI_HOME} )
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
-  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
-endif()
-
-# PAPI 4.2 on CT uses a different setup.
-if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
-  set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE $ENV{PAPI_INCLUDE_OPTS} )
-  string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR $ENV{PAPI_POST_LINK_OPTS} )
+  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH
+    "PAPI headers at this location" )
+  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
+    "PAPI library." )
 endif()
 
 if( HAVE_PAPI )
@@ -70,6 +66,9 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro(dbsSetupCompilers)
 
+  if( NOT dbsSetupCompilers_done )
+  set(dbsSetupCompilers_done "ON")
+
   # Bad platform
   if( NOT WIN32 AND NOT UNIX)
     message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
@@ -77,22 +76,19 @@ macro(dbsSetupCompilers)
 
   # Defaults for 1st pass:
 
-  # shared or static libararies?
+  # shared or static libraries?
   if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-    # message(STATUS "Building static libraries.")
-    set( MD_or_MT "MD" )
     set( DRACO_SHARED_LIBS 0 )
   elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-    # message(STATUS "Building shared libraries.")
-    set( MD_or_MT "MD" )
     # This CPP symbol is used by config.h to signal if we are need to add
     # declspec(dllimport) or declspec(dllexport) for MSVC.
     set( DRACO_SHARED_LIBS 1 )
     mark_as_advanced(DRACO_SHARED_LIBS)
   else()
-    message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
+    message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or "
+    "SHARED.")
   endif()
-  set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING
+  set( DRACO_SHARED_LIBS "${DRACO_SHARED_LIBS}" CACHE BOOL
     "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
 
   #----------------------------------------------------------------------------#
@@ -107,12 +103,62 @@ macro(dbsSetupCompilers)
   #  See https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
   if( WIN32 )
     set( USE_IPO OFF CACHE BOOL
-      "Enable Interprocedureal Optimization for Release builds." FORCE )
+      "Enable Interprocedural Optimization for Release builds." FORCE )
   else()
     include(CheckIPOSupported)
     check_ipo_supported(RESULT USE_IPO)
   endif()
 
+  #----------------------------------------------------------------------------#
+  # Special build mode for Coverage (gcov+lcov+genthml)
+  # https://github.com/codecov/example-cpp11-cmake
+  #----------------------------------------------------------------------------#
+  option(CODE_COVERAGE "Enable coverage reporting" OFF)
+  if( NOT TARGET coverage_config )
+    add_library(coverage_config INTERFACE)
+  endif()
+  if( NOT CODE_COVERAGE )
+    message( STATUS "Code coverage build ... disabled (CODE_COVERAGE=OFF)" )
+  endif()
+  if( CODE_COVERAGE AND NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message( STATUS "Code coverage build ... disabled (Compiler not GNU|Clang)")
+  endif()
+  if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    if( CMAKE_BUILD_TYPE STREQUAL Debug )
+      # Add required flags (GCC & LLVM/Clang)
+      target_compile_options(coverage_config INTERFACE
+        --coverage # sets all required flags
+        )
+      target_link_options(coverage_config INTERFACE --coverage)
+
+      # If env variable is set use it, otherwise search for default name.
+      find_program( LCOV NAMES "$ENV{LCOV}" lcov )
+      find_program( GCOV NAMES "$ENV{GCOV}" gcov )
+      if( EXISTS "${LCOV}" AND EXISTS "${GCOV}" )
+        # Add a custom target that prints the coverage report
+        set(lcovopts1 --gcov-tool ${GCOV})
+        set(lcovopts2 ${lcovopts1} --output-file coverage.info)
+        add_custom_target( covrep
+          COMMAND ${LCOV} ${lcovopts2} --capture --directory .
+          COMMAND ${LCOV} ${lcovopts2} --remove coverage.info '/usr/*'
+          COMMAND ${LCOV} ${lcovopts2} --remove coverage.info '*test/*'
+          COMMAND ${LCOV} ${lcovopts2} --remove coverage.info '*/opt/spack/*'
+          COMMAND ${LCOV} ${lcovopts2} --remove coverage.info '*terminal/*'
+          COMMAND genhtml coverage.info --demangle-cpp --output-directory cov-html
+          COMMAND ${LCOV} ${lcovopts1} --list coverage.info )
+          message( STATUS "Code coverage build ... enabled ('make covrep' to "
+            "see a text and/or a html report)")
+        else()
+          message( STATUS "Code coverage build ... disabled (lcov and/or gcov "
+            "not found)" )
+        endif()
+      else()
+        message( STATUS "Code coverage build ... disabled (CMAKE_BUILD_TYPE "
+          "!= Debug" )
+      endif()
+    endif()
+
+    endif() # dbsSetupCompilers_done
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -138,25 +184,6 @@ macro(dbsSetupCxx)
   else()
     set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
   endif()
-
-  # These CMAKE_* variables create defaults for the entire project so that we no
-  # longer need to set 'per_target' properties using:
-  # set_target_properties( <tgt> PROPERTIES C_STANDARD 11 ... )
-
-  # C11 support:
-  set( CMAKE_C_STANDARD 11 )
-
-  # C++14 support:
-  set( CMAKE_CXX_STANDARD 14 )
-  set( CMAKE_CXX_STANDARD_REQUIRED ON )
-
-  # Do not enable extensions (e.g.: --std=gnu++11)
-  # https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
-  set( CMAKE_CXX_EXTENSIONS OFF )
-  set( CMAKE_C_EXTENSIONS   OFF )
-
-  # -fPIC by default
-  set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
   # Setup compiler flags
   get_filename_component( my_cxx_compiler "${my_cxx_compiler}" NAME )
@@ -244,6 +271,10 @@ macro(dbsSetupCxx)
   # macros via -D, using CMake's add_definitions command, is an acceptable
   # alternative.  Such definitions appear below.
 
+  if( NOT DEFINED CMAKE_REQUIRED_DEFINITIONS )
+     set( CMAKE_REQUIRED_DEFINITIONS "" )
+  endif()
+
   # Enable the definition of UINT64_C in stdint.h (required by Random123).
   add_definitions(-D__STDC_CONSTANT_MACROS)
   set( CMAKE_REQUIRED_DEFINITIONS
@@ -274,7 +305,7 @@ macro(dbsSetupCxx)
   #    - EXE_LINKER_FLAGS
   # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
   #----------------------------------------------------------------------------#
-  foreach( lang C CXX Fortran EXE_LINKER )
+  foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
     if( DEFINED ENV{${lang}_FLAGS} )
       string( APPEND ${lang}_FLAGS " $ENV{${lang}_FLAGS}")
     endif()
@@ -349,7 +380,9 @@ endmacro()
 # - CMAKE_CXX_CPPLINT
 # - CMAKE_CXX_LINK_WHAT_YOU_USE
 
-# Ref: https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/
+# Refs:
+# - https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/
+# - https://github.com/KratosMultiphysics/Kratos/wiki/How-to-use-Clang-Tidy-to-automatically-correct-code
 #------------------------------------------------------------------------------#
 macro(dbsSetupStaticAnalyzers)
 
@@ -360,18 +393,57 @@ macro(dbsSetupStaticAnalyzers)
   if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 
     # clang-tidy
+    # Ex: cmake -DDRACO_STATIC_ANALYZER=clang-tidy \
+             #  -DCLANG_TIDY_CHECKS="-checks=generate-*" ...
     # https://clang.llvm.org/extra/clang-tidy/
-    if( ${DRACO_STATIC_ANALYZER} STREQUAL "clang-tidy" )
-      find_program( CMAKE_CXX_CLANG_TIDY clang-tidy )
+    if( "${DRACO_STATIC_ANALYZER}" MATCHES "clang-tidy" )
+      if( NOT CMAKE_CXX_CLANG_TIDY )
+        find_program( CMAKE_CXX_CLANG_TIDY clang-tidy )
+        get_filename_component(CT_BPATH ${CMAKE_CXX_CLANG_TIDY} DIRECTORY )
+        get_filename_component(CT_BPATH "${CT_BPATH}" DIRECTORY )
+        string(CONCAT CLANG_TIDY_IPATH ${CT_BPATH} "/include/c++/v1")
+        unset( CT_BPATH )
+      endif()
       if( CMAKE_CXX_CLANG_TIDY )
-        if( NOT "${CMAKE_CXX_CLANG_TIDY}" MATCHES "[-]checks[=]" )
-          set( CMAKE_CXX_CLANG_TIDY "${CMAKE_CXX_CLANG_TIDY};-checks=mpi-*,bugprone-*,performance-*"
+        if( NOT CLANG_TIDY_OPTIONS )
+          set( CLANG_TIDY_OPTIONS "-header-filter=.*[.]hh" )
+        endif()
+        set( CLANG_TIDY_OPTIONS "${CLANG_TIDY_OPTIONS}" CACHE STRING
+          "clang-tidy extra options (eg: -header-filter=.*[.]hh;-fix)" FORCE )
+
+        if( NOT CLANG_TIDY_CHECKS )
+          # -checks=mpi-*,bugprone-*,performance-*,modernize-*
+          # See full list: `clang-tidy -check=* -list-checks'
+          set( CLANG_TIDY_CHECKS "-checks=modernize-*" )
+        endif()
+        set( CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS}" CACHE STRING
+          "clang-tidy check options (eg: -checks=bugprone-*,mpi-*)" FORCE )
+
+        set( CLANG_TIDY_IPATH "${CLANG_TIDY_IPATH}" CACHE STRING
+          "clang-tidy extra include directories" FORCE )
+        if( NOT "${CLANG_TIDY_CHECKS}" MATCHES "[-]checks[=]" )
+          message( FATAL_ERROR "Option CLANG_TIDY_CHECKS string must start"
+                   " with the string '-check='")
+        endif()
+        # re-create clang-tidy command
+        if( "${CMAKE_CXX_CLANG_TIDY}" MATCHES "[-]checks[=]" )
+          list( GET CMAKE_CXX_CLANG_TIDY 0 CMAKE_CXX_CLANG_TIDY )
+        endif()
+        set( CMAKE_CXX_CLANG_TIDY
+            "${CMAKE_CXX_CLANG_TIDY};${CLANG_TIDY_CHECKS};${CLANG_TIDY_OPTIONS}"
             CACHE STRING "Run clang-tidy on each source file before compile."
             FORCE)
-        endif()
       else()
         unset( CMAKE_CXX_CLANG_TIDY )
         unset( CMAKE_CXX_CLANG_TIDY CACHE )
+      endif()
+      # Sanity check
+      if( NOT CLANG_TIDY_IPATH OR NOT CLANG_TIDY_CHECKS OR NOT CMAKE_CXX_CLANG_TIDY )
+        message(FATAL_ERROR "clang-tidy mode requested but some required"
+          " variables were not found:
+           - CLANG_TIDY_IPATH     = ${CLANG_TIDY_IPATH}
+           - CLANG_TIDY_CHECKS    = ${CLANG_TIDY_CHECKS}
+           - CMAKE_CXX_CLANG_TIDY = ${CMAKE_CXX_CLANG_TIDY}")
       endif()
     endif()
 
@@ -546,29 +618,95 @@ macro(dbsSetupFortran)
 
   else()
     # If CMake doesn't know about a Fortran compiler, $ENV{FC}, then
-    # also look for a compiler to use with
-    # CMakeAddFortranSubdirectory.
-    message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler...")
+    # also look for a compiler to use with CMakeAddFortranSubdirectory.
+    message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+      "compiler...")
+	set( CAFS_Fortran_COMPILER "NOTFOUND" )
 
     # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
     find_program( CAFS_Fortran_COMPILER
       NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
       PATHS
+        c:/msys64/mingw64/bin
         c:/MinGW/bin
-        c:/msys64/usr/bin
-        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+        c:/msys64/usr/bin )
 
     if( EXISTS ${CAFS_Fortran_COMPILER} )
       set( HAVE_Fortran ON )
-      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... found ${CAFS_Fortran_COMPILER}")
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+        "compiler... found ${CAFS_Fortran_COMPILER}")
     else()
-      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... not found")
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran "
+        "compiler... not found")
     endif()
 
   endif()
 
   set( HAVE_Fortran ${HAVE_Fortran} CACHE BOOL
     "Should we build Fortran portions of this project?" FORCE )
+
+endmacro()
+
+#------------------------------------------------------------------------------#
+# Setup Cuda Compiler
+#
+# Use:
+#    include( compilerEnv )
+#    dbsSetupCuda( [QUIET] )
+#
+# Helpers - these environment variables help cmake find/set CUDA envs.
+# - ENV{CUDACXX}
+# - ENV{CUDAFLAGS}
+# - ENV{CUDAHOSTCXX}
+#
+# Returns:
+#    BUILD_SHARED_LIBS - bool
+#    CMAKE_CUDA_FLAGS
+#    CMAKE_CUDA_FLAGS_DEBUG
+#    CMAKE_CUDA_FLAGS_RELEASE
+#    CMAKE_CUDA_FLAGS_RELWITHDEBINFO
+#    CMAKE_CUDA_FLAGS_MINSIZEREL
+#
+# Notes:
+# - https://devblogs.nvidia.com/tag/cuda/
+# - https://devblogs.nvidia.com/building-cuda-applications-cmake/
+#------------------------------------------------------------------------------#
+macro(dbsSetupCuda)
+
+  # Toggle if we should try to build Cuda parts of the project.  This will be
+  # set to true if $ENV{FC} points to a working compiler.
+  option( HAVE_CUDA "Should we build Cuda parts of the project?" OFF )
+
+  # Is Cuda enabled (it is considered 'optional' for draco)?
+  get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+  if( _LANGUAGES_ MATCHES CUDA )
+
+    # We found Cuda, keep track of this information.
+    set( HAVE_CUDA ON )
+
+    # User option to disable Cuda, even when it is available.
+    option(USE_CUDA "Use Cuda?" ON)
+
+    # Use this string as a toggle when calling add_component_library or
+    # add_scalar_tests to force compiling with nvcc.
+    set( COMPILE_WITH_CUDA LINK_LANGUAGE CUDA )
+
+    # setup flags
+    if( "${CMAKE_CUDA_COMPILER_ID}" MATCHES "NVIDIA" )
+      include( unix-cuda )
+    else()
+      message(FATAL_ERROR "Build system does not support "
+        "CUDACXX=${CMAKE_CUDA_COMPILER}")
+    endif()
+  endif()
+
+  # Save the results
+  set( HAVE_CUDA ${HAVE_CUDA} CACHE BOOL
+    "Should we build CUDA portions of this project?" FORCE )
+  if( ${HAVE_CUDA} )
+    set( CUDA_DBS_STRING "CUDA" CACHE STRING
+      "If CUDA is available, this variable is 'CUDA'")
+  endif()
 
 endmacro()
 
@@ -629,11 +767,12 @@ macro( toggle_compiler_flag switch compiler_flag
     if( NOT ${comp} STREQUAL "C" AND
         NOT ${comp} STREQUAL "CXX" AND
         NOT ${comp} STREQUAL "Fortran" AND
-        NOT ${comp} STREQUAL "EXE_LINKER")
-      message(FATAL_ERROR "When calling
-toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names),
-compiler_flag_var_names must be set to one or more of these valid
-names: C;CXX;EXE_LINKER.")
+        NOT ${comp} STREQUAL "EXE_LINKER" AND
+        NOT ${comp} STREQUAL "SHARED_LINKER")
+      message(FATAL_ERROR "When calling "
+"toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names), "
+"compiler_flag_var_names must be set to one or more of these valid "
+"names: C;CXX;EXE_LINKER.")
     endif()
 
     string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS

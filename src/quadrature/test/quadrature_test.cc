@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/test/quadrature_test.cc
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "quadrature_test.hh"
 #include "parser/String_Token_Stream.hh"
@@ -17,8 +17,9 @@
 namespace rtt_quadrature {
 using namespace std;
 using namespace rtt_parser;
+using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_either(UnitTest &ut,
                  std::shared_ptr<Ordinate_Space> const &ordinate_space,
                  Quadrature &quadrature, unsigned const expansion_order) {
@@ -376,7 +377,7 @@ void test_no_axis(UnitTest &ut, Quadrature &quadrature,
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
                rtt_mesh_element::Geometry const geometry,
                unsigned const expansion_order,
@@ -400,7 +401,7 @@ void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 
   if (quadrature.quadrature_class() != INTERVAL_QUADRATURE) {
@@ -460,7 +461,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void quadrature_test(UnitTest &ut, Quadrature &quadrature,
                      bool const cartesian_tests_only) {
   cout << "Testing quadrature " << quadrature.name()
@@ -557,9 +558,9 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
     FAILMSG("Textification and parse did NOT give identical results");
   }
 
-  // ***** Test various geometry, dimensionaly, and interpolation model options.
+  // ***** Test various geometry, dimensionally, and interpolation model options.
 
-  // Test 1-D options. These requre that the axes have not been reassigned.
+  // Test 1-D options. These require that the axes have not been reassigned.
 
   if (!quadrature.has_axis_assignments()) {
 
@@ -747,7 +748,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // This test gets called FROM Fortran to ensure that we can successfully create
 // and assign data into a "quadrature_data" type.  See
 // ftest/tstquadrature_interfaces.f90
@@ -812,6 +813,6 @@ extern "C" void rtt_test_quadrature_interfaces(const quadrature_data &quad,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/quadrature_test.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

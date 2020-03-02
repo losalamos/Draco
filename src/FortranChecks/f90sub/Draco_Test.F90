@@ -1,16 +1,14 @@
-!----------------------------------*-F90-*----------------------------------
+!----------------------------------*-F90-*-------------------------------------
 !
 ! \file   FortranChecks/f90sub/Draco_Test.f90
 ! \author Allan Wollaber, Kelly Thompson
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions for the F90 Draco tests
-! \note   Copyright (c) 2016-2019 Triad National Security, LLC.
+! \note   Copyright (c) 2016-2020 Triad National Security, LLC.
 !         All rights reserved.
 !
-! This is a modified version of jayenne/src/wedgehog/ftest/Wedgehog_Test.F90.
-!---------------------------------------------------------------------------
-! $Id$
-!---------------------------------------------------------------------------
+! This is a modified version of jayenne/src/api/ftest/API_Test.F90.
+!------------------------------------------------------------------------------
 module draco_test
   use iso_c_binding, only : c_double
   implicit none
@@ -62,21 +60,21 @@ contains
   ! ---------------------------------------------------------------------------
   ! Provide a routine to uniformly report test successes to CTEST
   ! ---------------------------------------------------------------------------
-  subroutine test_report(rank,nf)
-    implicit none
-    integer, intent(in ) :: rank
-    integer, intent(out) :: nf
+  ! subroutine test_report(rank,nf)
+  !   implicit none
+  !   integer, intent(in ) :: rank
+  !   integer, intent(out) :: nf
 
-    write(*,'(45("*"))')
-    if (f90_num_failures == 0 ) then
-       write (*,'("**** Test: PASSED on ", I3)') rank
-    else
-       write (*,'("**** Test: FAILED on ", I3, " with ", I3, " errors.")')  &
-            rank, f90_num_failures
-    end if
-    write(*,'(45("*"))')
-    nf = f90_num_failures
+  !   write(*,'(45("*"))')
+  !   if (f90_num_failures == 0 ) then
+  !      write (*,'("**** Test: PASSED on ", I3)') rank
+  !   else
+  !      write (*,'("**** Test: FAILED on ", I3, " with ", I3, " errors.")')  &
+  !           rank, f90_num_failures
+  !   end if
+  !   write(*,'(45("*"))')
+  !   nf = f90_num_failures
 
-  end subroutine test_report
+  ! end subroutine test_report
 
 end module draco_test

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/ParallelUnitTest.cc
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -16,7 +16,7 @@
 #include <string>
 
 namespace rtt_c4 {
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for ParallelUnitTest
  * \arg argc The number of command line arguments
@@ -97,7 +97,7 @@ ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Destructor.
  * The destructor provides a final status report before it calls MPI_Finalize
@@ -118,7 +118,7 @@ ParallelUnitTest::~ParallelUnitTest() {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Print a summary of the pass/fail status of ParallelUnitTest.
 void ParallelUnitTest::status() {
   { // Provide some space before the report -- but keep all the processors
@@ -136,7 +136,7 @@ void ParallelUnitTest::status() {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Increment either the pass or fail count and print a test description.
  *
@@ -178,6 +178,6 @@ bool ParallelUnitTest::check_all(bool const i_am_good,
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ParallelUnitTest.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

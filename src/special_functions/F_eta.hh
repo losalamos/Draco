@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/F_eta.hh
  * \author Kent Budge
@@ -6,12 +6,12 @@
  * \brief  For a fermionic species, calculate the dimensionless number
  *         density from the dimensionless chemical potential and dimensionless
  *         temperature.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * These routines are based on C routines from \em Numerical \em Recipes.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef sf_F_eta_hh
 #define sf_F_eta_hh
@@ -27,6 +27,6 @@ DLL_PUBLIC_special_functions double F_eta(double const eta, double const gamma);
 
 #endif // sf_F_eta_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of sf/F_eta.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

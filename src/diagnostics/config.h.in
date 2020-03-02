@@ -4,12 +4,12 @@
  * \author Thomas M. Evans
  * \date   Fri Dec  9 11:05:13 2005
  * \brief  diagnostics defines.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __diagnostics_config_h__
-#define __diagnostics_config_h__
+#ifndef rtt_diagnostics_config_h
+#define rtt_diagnostics_config_h
 
 /* DRACO TIMING LEVEL */
 #cmakedefine DRACO_TIMING @DRACO_TIMING@
@@ -17,7 +17,7 @@
 /* USE PROCMON - snapshot in time memory reporting via getrusage */
 #cmakedefine USE_PROCMON @USE_PROCMON@
 
-#endif /* __diagnostics_config_h__ */
+#endif /* rtt_diagnostics_config_h */
 
 /*---------------------------------------------------------------------------*/
 /* end of diagnostics/config.h */

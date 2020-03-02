@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/Halton_Sequence.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
  * \note   Copyright (C) 2016-2019 Los Alamos National Laboratory,
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Halton_Sequence.hh"
 #include "ds++/Assert.hh"
@@ -978,7 +978,7 @@ unsigned const NUMBER_OF_KNOWN_PRIMES = sizeof(prime) / sizeof(prime[0]);
 
 namespace rtt_rng {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param base_index Index of the prime number to use as the base of the
  * sequence. If the base index is \c n, the \c nth prime number will be the
@@ -1015,7 +1015,7 @@ Halton_Sequence::Halton_Sequence(unsigned const base_index,
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 double Halton_Sequence::shift() {
   double const Result = value_;
 
@@ -1040,7 +1040,7 @@ double Halton_Sequence::shift() {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Halton_Sequence::check_class_invariants() const {
   // The base must be a prime and the digits must be consistent with the
   // base and the count, but these conditions are difficult to check.
@@ -1049,6 +1049,6 @@ bool Halton_Sequence::check_class_invariants() const {
 
 } // end namespace rtt_rng
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Halton_Sequence.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

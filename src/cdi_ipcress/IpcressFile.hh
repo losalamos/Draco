@@ -1,30 +1,30 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.hh
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Header file for IpcressFile class
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressFile_hh__
-#define __cdi_ipcress_IpcressFile_hh__
+#ifndef rtt_cdi_ipcress_IpcressFile_hh
+#define rtt_cdi_ipcress_IpcressFile_hh
 
 #include "IpcressMaterial.hh"
 
 namespace rtt_cdi_ipcress {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class IpcressFile
  *
- * \brief This class controls access the the physical IPCRESS data file for
+ * \brief This class controls access the physical IPCRESS data file for
  *        IpcressOpacity. Only one IpcressFile object should exist for each data
  *        file. Several IpcressOpacity objects will access the same IpcressFile
  *        object (one per material found in the data file).
  *
- * This class is designed to be used in conjuction with IpcressOpacity. The
+ * This class is designed to be used in conjunction with IpcressOpacity. The
  * client code should create a IpcressFile object and that object is passed to
  * the IpcressOpacity constructor to create a link between the opacity object
  * and the IPCRESS data file.
@@ -58,9 +58,9 @@ namespace rtt_cdi_ipcress {
  * \endcode
  *
  * \example cdi_ipcress/test/tIpcressFile.cc
- * Example of IpcressFile useage independent of IpcressOpacity or CDI.
+ * Example of IpcressFile use independent of IpcressOpacity or CDI.
  */
-//===========================================================================//
+//============================================================================//
 
 class IpcressFile {
 
@@ -116,15 +116,12 @@ class IpcressFile {
   //! An array that hold disk offset to field data (e.g.: tgrid)
   std::vector<size_t> dfo;
 
-  /*
-   * \brief This array holds the length of each data set (how many entries in 
-   *        tgrid). */
+  //! This array holds the length of each data set (how many entries in tgrid).
   std::vector<size_t> ds;
 
   /*!
    * \brief A vector of containers.  Each contains all field data (tgrid,
-   *        ramg,...) for one material as loaded from the IPCRESS file.
-   */
+   *        ramg,...) for one material as loaded from the IPCRESS file. */
   std::vector<IpcressMaterial> materialData;
 
 public:
@@ -133,14 +130,13 @@ public:
   /*!
    * \brief Standard IpcressFile constructor.
    *
-   *    This is the standard IpcressFile constructor.  This object
-   *    is typically instantiated as a smart pointer.
+   * This is the standard IpcressFile constructor.  This object is typically
+   * instantiated as a smart pointer.
    *
-   * \param ipcressDataFilename A string that contains the name of
-   *     the Ipcress data file in IPCRESS format.  The f77 Ipcress
-   *     vendor library expects a name with 80 characters or less.
-   *     If the filename is longer than 80 characters the library
-   *     will not be able to open the file.
+   * \param[in] ipcressDataFilename A string that contains the name of the
+   *     Ipcress data file in IPCRESS format.  The f77 Ipcress vendor library
+   *     expects a name with 80 characters or less. If the filename is longer
+   *     than 80 characters the library will not be able to open the file.
    */
   explicit IpcressFile(std::string const &ipcressDataFilename);
 
@@ -159,8 +155,8 @@ public:
   bool materialFound(size_t matid) const;
 
   /*!
-   * \brief Locate the index into the materialData array for provided
-   *        material identifier. */
+   * \brief Locate the index into the materialData array for provided material
+   *        identifier. */
   size_t getMatIndex(size_t const matid) const {
     size_t pos =
         std::find(matIDs.begin(), matIDs.end(), matid) - matIDs.begin();
@@ -194,12 +190,12 @@ private:
   static std::string locateIpcressFile(std::string const &ipcressFile);
 
   /*!
-   * \brief Load the list of field data names and the associated data arrays
-   *        for the requested material from the Ipcress file and save them into
-   *        the IpcressMaterial container. */
+   * \brief Load the list of field data names and the associated data arrays for
+   *        the requested material from the Ipcress file and save them into the
+   *        IpcressMaterial container. */
   void loadFieldData(void);
 
-  //! Read an array of ints or doubles from the ipcress file.
+  //! Read an array of integers or doubles from the ipcress file.
   template <typename T>
   void read_v(size_t const offset_bytes, std::vector<T> &vdata) const;
 
@@ -210,8 +206,8 @@ private:
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressFile_hh__
+#endif // rtt_cdi_ipcress_IpcressFile_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

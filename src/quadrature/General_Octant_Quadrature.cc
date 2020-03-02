@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "General_Octant_Quadrature.hh"
 #include "ds++/DracoStrings.hh"
@@ -19,7 +19,7 @@
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 General_Octant_Quadrature::General_Octant_Quadrature(
     unsigned const sn_order, vector<double> const &mu,
     vector<double> const &eta, vector<double> const &xi,
@@ -52,7 +52,7 @@ General_Octant_Quadrature::General_Octant_Quadrature(
   Ensure(this->quadrature_class() == quadrature_class);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool General_Octant_Quadrature::check_class_invariants() const {
   return (mu_.size() > 0 && eta_.size() == mu_.size() &&
           xi_.size() == mu_.size() && wt_.size() == mu_.size()) &&
@@ -66,27 +66,27 @@ bool General_Octant_Quadrature::check_class_invariants() const {
           2 * number_of_levels_ * number_of_levels_ == 8 * mu_.size());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string General_Octant_Quadrature::name() const {
   return "General Octant Quadrature";
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string General_Octant_Quadrature::parse_name() const {
   return "general octant quadrature";
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Quadrature_Class General_Octant_Quadrature::quadrature_class() const {
   return quadrature_class_;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 unsigned General_Octant_Quadrature::number_of_levels() const {
   return number_of_levels_;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string General_Octant_Quadrature::as_text(string const &indent) const {
   string Result = indent + "  type = general octant quadrature";
   Result += indent + "  sn order = " + to_string(sn_order());
@@ -106,7 +106,7 @@ string General_Octant_Quadrature::as_text(string const &indent) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void General_Octant_Quadrature::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
   mu = mu_;
@@ -114,13 +114,13 @@ void General_Octant_Quadrature::create_octant_ordinates_(
   wt = wt_;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool General_Octant_Quadrature::is_open_interval() const {
   return is_open_interval_;
 }
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of General_Octant_Quadrature.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

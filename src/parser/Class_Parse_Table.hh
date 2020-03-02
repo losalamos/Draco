@@ -3,7 +3,7 @@
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
  * \brief  Define template function parse_class
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * utilities.hh declares a function template for parsers for class objects,
@@ -323,7 +323,7 @@ private:
   void initialize(Keyword const keywords[], unsigned count) {
     static bool first_time = true;
     if (first_time) {
-      count /= sizeof(Keyword);
+      count /= static_cast<unsigned>(sizeof(Keyword));
       parse_table_.add(keywords, count);
       first_time = false;
     }

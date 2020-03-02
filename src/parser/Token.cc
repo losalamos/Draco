@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   Token.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token helper functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Token.hh"
 #include <cstdlib>
@@ -126,7 +126,7 @@ bool Is_Integer_Text(char const *text) {
   return !*endtext;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param a First token to compare
  * \param b Second token to compare
@@ -138,7 +138,7 @@ bool operator==(Token const &a, Token const &b) {
          a.location() == b.location();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * The invariants all reflect the basic requirement that the token text is
  * consistent with the token type.  For example, if the type is REAL, the
@@ -157,6 +157,6 @@ bool Token::check_class_invariant() const {
 }
 
 } // namespace rtt_parser
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Token_Stream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

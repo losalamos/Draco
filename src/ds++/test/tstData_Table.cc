@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Data_Table.hh"
 #include "ds++/Release.hh"
@@ -14,7 +14,7 @@
 using namespace std;
 using rtt_dsxx::Data_Table;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_array(rtt_dsxx::UnitTest &ut) {
   const int array[3] = {10, 11, 12};
 
@@ -98,7 +98,7 @@ void test_array(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_scalar(rtt_dsxx::UnitTest &ut) {
   Data_Table<int> dt(32);
 
@@ -120,7 +120,7 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
     FAIL_IF_NOT(dt[0] == dt3[0]);
     FAIL_IF(&(dt[0]) == &(dt3[0]));
 
-    dt3 = dt3;
+    dt = dt3;
     FAIL_IF_NOT(dt[0] == dt3[0]);
     FAIL_IF(&(dt[0]) == &(dt3[0]));
   } catch (rtt_dsxx::assertion & /* error */) {
@@ -147,7 +147,7 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   if (ut.dbcOn() && !ut.dbcNothrow()) {
@@ -173,6 +173,6 @@ int main(int argc, char *argv[]) {
   return ut.numFails;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstData_Table.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

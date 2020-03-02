@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/Procmon.cc
  * \author Kelly Thompson
  * \date   Monday, Apr 22, 2013, 10:10 am
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Procmon.hh"
 #include "ds++/DracoStrings.hh" // tokenize()
@@ -223,6 +223,6 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
 
 } // end namespace rtt_diagnostics
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of diagnostics/Procmon.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

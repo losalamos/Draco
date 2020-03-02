@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/bin/xthi.cc
  * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>,
  *         Tim Kelley <tkelley@lanl.gov.
  * \date   Tuesday, Jun 05, 2018, 17:12 pm
  * \brief  Print MPI rank, thread number and core affinity bindings.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * Rewritten by Tim Kelley to run C++11 std::threads You may override
@@ -17,11 +17,17 @@
  * \endcode
  *
  * The default is 1 worker thread (over and above the host thread)
+ *
+ * If executed from a SLURM allocation and the \c NUM_WORKERS value is not set,
+ * then the number of workers will be set to the envoronment variable
+ * `SLURM_CPUS_PER_TASK`, which is set by SLURM.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
+#include "c4/bin/ythi.hh"
 #include "c4/C4_Functions.hh"
-#include "c4/bin/xthi.hh"
+#include "c4/QueryEnv.hh"
+#include "c4/xthi_cpuset.hh"
 #include <atomic>
 #include <iomanip>
 #include <iostream>
@@ -29,49 +35,23 @@
 #include <vector>
 
 //----------------------------------------------------------------------------//
-/**\brief After atomic bool changes to true, print out some thread info. */
-void run_thread(std::atomic<bool> &signal, std::string const &hostname,
-                int const rank, size_t const simple_thread_id) {
-  while (!signal) {
-  }
-  unsigned const num_cpu = std::thread::hardware_concurrency();
-  std::string cpuset = rtt_c4::cpuset_to_string(num_cpu);
-  std::cout << hostname << " :: Rank " << std::setfill('0') << std::setw(5)
-            << rank << ", Thread " << std::setfill('0') << std::setw(3)
-            << simple_thread_id << ", core affinity = " << cpuset << std::endl;
-  return;
-}
-
-//----------------------------------------------------------------------------//
 int main(int argc, char **argv) {
-  size_t const YTHI_NUM_WORKERS = (argc > 1) ? std::stoi(argv[1]) : 1;
+  rtt_c4::SLURM_Task_Info sti;
+  uint32_t const numthreads =
+      sti.is_cpus_per_task_set() ? sti.get_cpus_per_task() : 1;
+  uint32_t const YTHI_NUM_WORKERS =
+      (argc > 1) ? std::stoi(argv[1]) : numthreads - 1;
   unsigned const num_cpus = std::thread::hardware_concurrency();
 
   rtt_c4::initialize(argc, argv);
-  int const rank = rtt_c4::node();
-  if (rank == 0)
-    std::cout << "Found " << num_cpus << " logical CPUs per node." << std::endl;
+  {
+    uint32_t const myrank = rtt_c4::rank();
+    if (myrank == 0)
+      std::cout << "Found " << num_cpus
+                << " logical CPUs (hardware therads) per node." << std::endl;
 
-  std::string const hostname = rtt_dsxx::draco_gethostname();
-
-  std::vector<std::atomic<bool>> signals(YTHI_NUM_WORKERS);
-  std::vector<std::thread> threads(YTHI_NUM_WORKERS);
-
-  for (size_t i = 0; i < YTHI_NUM_WORKERS; ++i) {
-    signals[i].store(false);
-    threads[i] = std::thread(run_thread, std::ref(signals[i]),
-                             std::ref(hostname), rank, i + 1);
+    rtt_c4::report_bindings(YTHI_NUM_WORKERS);
   }
-  std::string cpuset = rtt_c4::cpuset_to_string(num_cpus);
-  int const host_thread(0);
-  std::cout << hostname << " :: Rank " << std::setfill('0') << std::setw(5)
-            << rank << ", Thread " << std::setfill('0') << std::setw(3)
-            << host_thread << ", core affinity = " << cpuset << std::endl;
-  for (size_t i = 0; i < YTHI_NUM_WORKERS; ++i) {
-    signals[i].store(true);
-    threads[i].join();
-  }
-
   rtt_c4::finalize();
   return (0);
 }

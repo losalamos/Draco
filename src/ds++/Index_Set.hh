@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Index_Set.hh
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef dsxx_Index_Set_hh
 #define dsxx_Index_Set_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Index_Set
  * \brief Represents a D-dimensional set if indices.
@@ -24,13 +24,13 @@ namespace rtt_dsxx {
 /*!
  * \example ds++/test/tstIndex_Set.cc
  */
-//===========================================================================//
+//============================================================================//
 template <unsigned D, int OFFSET> class Index_Set {
 public:
   // CREATORS
 
   //! Default constructors.
-  Index_Set() : m_array_size(0) { /* ... */
+  Index_Set() { /* ... */
   }
 
   //! Construct with pointer to sizes
@@ -96,7 +96,7 @@ public:
 private:
   void compute_size();
 
-  unsigned m_array_size;    //!< Sizes of the whole index range
+  unsigned m_array_size{0}; //!< Sizes of the whole index range
   unsigned m_dimensions[D]; //!< Sizes of each dimension
 
 protected:
@@ -115,6 +115,6 @@ protected:
 
 #endif // dsxx_Index_Set_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Index_Set.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

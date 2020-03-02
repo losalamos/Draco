@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/Subrandom_Generator.hh
  * \author Kent Budge
  * \brief  Definition of class Subrandom_Generator
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rng_Subrandom_Generator_hh
 #define rng_Subrandom_Generator_hh
@@ -14,7 +14,7 @@
 
 namespace rtt_rng {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Subrandom_Generator
  * \brief Abstract class representing various generators for a sequence of
@@ -32,7 +32,7 @@ namespace rtt_rng {
  * Note that this implies that we have defined a maximum permissible length
  * for the Markov chain.
  */
-//===========================================================================//
+//============================================================================//
 
 class Subrandom_Generator {
 public:
@@ -78,6 +78,6 @@ protected:
 
 #endif // rng_Subrandom_Generator_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of rng/Subrandom_Generator.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/Power.hh
  * \author Mike Buksas
  * \date   Thu Jul 20 17:23:31 2006
  * \brief  A meta-programming implementation of the Russian Pesant algorithm.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC
  *
  * Use meta-programming to generate an efficient routine to compute integer
  * powers.
@@ -32,7 +32,7 @@
  * The meta-algorithm is based on the Russian Peasant Algorithm, modified to be
  * recursive, since this is required for template meta-programming in C++.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef special_functions_Power_hh
 #define special_functions_Power_hh
@@ -89,6 +89,6 @@ template <int N, typename F> F Power(F x) {
 
 #endif // special_functions_Power_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of special_functions/Power.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/test/tstRnd_Control_Inline.cc
  * \author Paul Henning
  * \brief  Rnd_Control test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,9 +16,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_rng;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void test_control(UnitTest &ut) {
   // Create two controllers with different seeds.
@@ -126,7 +126,7 @@ void test_control(UnitTest &ut) {
     PASSMSG("test_control passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_exceptions(UnitTest &ut) {
 // 1. Only test exceptions if DbC is enabled.
 // 2. However, do not run these tests if no-throw DbC is enabled (DBC & 8)
@@ -235,7 +235,7 @@ void test_exceptions(UnitTest &ut) {
     PASSMSG("test_exceptions passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -245,6 +245,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstRnd_Control.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh/Draco_Mesh_Builder_pt.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Tuesday, Jul 03, 2018, 11:52 am
  * \brief  Draco_Mesh_Builder class header file.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Draco_Mesh_Builder.t.hh"
 #include "RTT_Draco_Mesh_Reader.hh"
@@ -19,6 +19,6 @@ template class Draco_Mesh_Builder<X3D_Draco_Mesh_Reader>;
 
 } // end namespace rtt_mesh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh_Builder_pt.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

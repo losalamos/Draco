@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Slice.hh
  * \author Kent Budge
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definition of Slice template
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef container_Slice_hh
 #define container_Slice_hh
@@ -16,7 +16,7 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Slice
  * \brief A reference to a Slice from a random access sequence.
@@ -30,27 +30,27 @@ namespace rtt_dsxx {
  * \arg \a Ran A random access iterator type, such as double* or
  * std::vector<double>::iterator.
  */
-//===========================================================================//
+//============================================================================//
 
 template <typename Ran> class Slice {
 private:
-  typedef typename std::iterator_traits<Ran> traits;
+  typedef typename std::iterator_traits<Ran> traits; // NOLINT
 
 public:
   // NESTED CLASSES AND TYPEDEFS
 
-  typedef typename traits::value_type value_type;
+  using value_type = typename traits::value_type;
   // no allocator type
-  typedef unsigned size_type;
-  typedef typename traits::difference_type difference_type;
+  using size_type = unsigned int;
+  using difference_type = typename traits::difference_type;
 
   class iterator {
   public:
-    typedef typename traits::iterator_category iterator_category;
-    typedef typename traits::value_type value_type;
-    typedef typename traits::difference_type difference_type;
-    typedef typename traits::pointer pointer;
-    typedef typename traits::reference reference;
+    using iterator_category = typename traits::iterator_category;
+    using value_type = typename traits::value_type;
+    using difference_type = typename traits::difference_type;
+    using pointer = typename traits::pointer;
+    using reference = typename traits::reference;
 
     Ran first() const { return first_; }
     difference_type offset() const { return offset_; }
@@ -107,11 +107,11 @@ public:
 
   class const_iterator {
   public:
-    typedef typename traits::iterator_category iterator_category;
-    typedef typename traits::value_type value_type;
-    typedef typename traits::difference_type difference_type;
-    typedef typename traits::pointer pointer;
-    typedef typename traits::reference reference;
+    using iterator_category = typename traits::iterator_category;
+    using value_type = typename traits::value_type;
+    using difference_type = typename traits::difference_type;
+    using pointer = typename traits::pointer;
+    using reference = typename traits::reference;
 
     Ran first() const { return first_; }
     difference_type offset() const { return offset_; }
@@ -169,13 +169,13 @@ public:
     unsigned stride_;
   };
 
-  typedef std::reverse_iterator<iterator> reverse_iterator;
-  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  typedef typename traits::pointer pointer;
-  typedef typename traits::reference reference;
-  typedef value_type const *const_pointer;
-  typedef value_type const &const_reference;
+  using pointer = typename traits::pointer;
+  using reference = typename traits::reference;
+  using const_pointer = const value_type *;
+  using const_reference = const value_type &;
 
   // CREATORS
 
@@ -199,13 +199,14 @@ public:
    * underlying container, and the increment operator actually increments
    * by \c stride.
    *
-   * \param first Iterator to the beginning of a sequence.
-   * \param length Length of the constructed Slice.
-   * \param stride Stride to apply to the sequence.
+   * \param first_in Iterator to the beginning of a sequence.
+   * \param length_in Length of the constructed Slice.
+   * \param stride_in Stride to apply to the sequence.
    */
-  Slice(Ran const first, unsigned const length, unsigned const stride = 1)
-      : first(first), length(length), stride(stride) {
-    Require(stride > 0);
+  Slice(Ran const first_in, unsigned const length_in,
+        unsigned const stride_in = 1)
+      : first(first_in), length(length_in), stride(stride_in) {
+    Require(stride_in > 0);
   }
 
   // MANIPULATORS
@@ -257,7 +258,7 @@ private:
   unsigned stride;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a Slice.
  *
@@ -284,6 +285,6 @@ inline Slice<Ran> slice(Ran const first, unsigned const length,
 
 #endif // container_Slice_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of container/Slice.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

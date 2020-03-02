@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/svbksb.hh
  * \author Kent Budge
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Solve a linear system from its singular value decomposition.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef linear_svbksb_hh
 #define linear_svbksb_hh
@@ -22,6 +22,6 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
 
 #endif // linear_svbksb_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of linear/svbksb.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

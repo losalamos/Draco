@@ -4,7 +4,7 @@
 # brief  Use these tools for debugging cmake code.  Calling
 #        print_targets_properties( <target> ) will print all data associated
 #        with the named target.
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved
 #
 # Ref: Original idea taken from  http://www.kitware.com/blog/home/post/390
@@ -60,6 +60,8 @@ function(echo_target tgt)
   string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
   string(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
 
+  list(REMOVE_DUPLICATES CMAKE_PROPERTY_LIST)
+
   foreach(prop ${CMAKE_PROPERTY_LIST})
     # special cases first
 
@@ -74,13 +76,12 @@ function(echo_target tgt)
     if( ${prop} MATCHES "<CONFIG>")
       foreach (c DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
         string(REPLACE "<CONFIG>" "${c}" p ${prop})
-        # message("prop ${p}")
         echo_target_property("${tgt}" "${p}")
       endforeach()
+      continue()
     endif()
 
     # everything else
-    # message("prop ${prop}")
     echo_target_property("${tgt}" "${prop}")
   endforeach()
   message("")

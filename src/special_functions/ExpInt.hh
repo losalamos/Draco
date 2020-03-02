@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/ExpInt.hh
  * \author Paul Talbot
  * \date   Tue Jul 26 14:48:13 MDT 2011
  * \brief  Declare the ExpInt function templates.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef special_functions_ExpInt_hh
 #define special_functions_ExpInt_hh

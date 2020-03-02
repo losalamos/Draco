@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellDefs.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for CellDefs library.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_CellDefs_hh__
-#define __RTT_Format_Reader_CellDefs_hh__
+#ifndef rtt_RTT_Format_Reader_CellDefs_hh
+#define rtt_RTT_Format_Reader_CellDefs_hh
 
 #include "Dims.hh"
 #include <memory>
@@ -20,7 +20,7 @@ namespace rtt_RTT_Format_Reader {
 // forward declaration.
 class CellDefs;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
@@ -108,7 +108,7 @@ public:
 
   /*!
    * \brief Returns the side definition of the specified side index of this
-   *        cell definition with the returned cell-node indexes ordered to 
+   *        cell definition with the returned cell-node indexes ordered to
    *        preserve the right hand rule for the outward-directed normal.
    * \param s Side index number.
    * \return The side definition (i.e., the cell-node indexes that comprise
@@ -127,7 +127,7 @@ public:
   const vector_uint &get_node_map() const { return node_map; }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
@@ -260,8 +260,8 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_CellDefs_hh__
+#endif // rtt_RTT_Format_Reader_CellDefs_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellDefs.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

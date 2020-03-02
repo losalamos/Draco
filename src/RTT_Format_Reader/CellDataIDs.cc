@@ -4,19 +4,16 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDataIDs class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "CellDataIDs.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Parses the cell_data_ids data block from the mesh file via calls 
- *        to private member functions.
+ * \brief Parses the cell_data_ids data block from the mesh file via calls to
+ *        private member functions.
  * \param meshfile Mesh file name.
  */
 void CellDataIDs::readDataIDs(ifstream &meshfile) {
@@ -67,6 +64,6 @@ void CellDataIDs::readEndKeyword(ifstream &meshfile) {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellDataIDs.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

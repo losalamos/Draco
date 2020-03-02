@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Factory.cc
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
  * \brief  Implementation file for the class
  *         rtt_quadrature::Ordinate_Set_Factory.
- * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Ordinate_Set_Factory.hh"
 #include "Gauss_Legendre.hh"
@@ -25,7 +25,7 @@
 
 namespace rtt_quadrature {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Primary service method to create an Ordinate_Set
  *
@@ -47,12 +47,11 @@ namespace rtt_quadrature {
 std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
 
   using rtt_mesh_element::Geometry;
-  using namespace ::rtt_quadrature;
 
   bool add_starting_directions = false;
   bool add_extra_directions = false;
 
-  Geometry geometry;
+  rtt_mesh_element::Geometry geometry;
 
   // Find the geometry
   switch (quad_.geometry) {
@@ -71,7 +70,7 @@ std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
     break;
 
   default:
-    Insist(false, "Unrecongnized Geometry");
+    Insist(false, "Unrecognized Geometry");
     geometry = rtt_mesh_element::CARTESIAN;
   }
 
@@ -124,6 +123,9 @@ std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
           add_starting_directions, add_extra_directions,
           Ordinate_Set::LEVEL_ORDERED);
     }
+  } else {
+    Insist(quad_.dimension > 0 && quad_.dimension < 3,
+           "Expected 1 <= quad_.dimension < 3.");
   }
 
   Ensure(ordinate_set);
@@ -132,6 +134,6 @@ std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Ordinate_Set_Factory.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

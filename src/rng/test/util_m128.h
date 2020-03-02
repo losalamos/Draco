@@ -29,8 +29,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef UTIL_M128_H__
-#define UTIL_M128_H__
+#ifndef UTIL_M128_H
+#define UTIL_M128_H
 #include "rng/config.h"
 
 #ifdef __GNUC__
@@ -41,53 +41,57 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* The formatting in fips-197 seems to correspond to
    byte[15] [14] ... [0] */
-__m128i m128i_from_charbuf(const char *s){
-    unsigned int bytes[16];
-    sscanf(s, "%02x%02x%02x%02x" "%02x%02x%02x%02x" "%02x%02x%02x%02x" "%02x%02x%02x%02x",
-             &bytes[0], &bytes[1], &bytes[2], &bytes[3],
-             &bytes[4], &bytes[5], &bytes[6], &bytes[7],
-             &bytes[8], &bytes[9], &bytes[10], &bytes[11],
-             &bytes[12], &bytes[13], &bytes[14], &bytes[15]);
-    return _mm_set_epi8(
-                         bytes[15], bytes[14], bytes[13], bytes[12],
-                         bytes[11], bytes[10], bytes[9], bytes[8],
-                         bytes[7], bytes[6], bytes[5], bytes[4],
-                         bytes[3], bytes[2], bytes[1], bytes[0]
-                         );
+__m128i m128i_from_charbuf(const char *s) {
+  unsigned int bytes[16];
+  sscanf(s,
+         "%02x%02x%02x%02x"
+         "%02x%02x%02x%02x"
+         "%02x%02x%02x%02x"
+         "%02x%02x%02x%02x",
+         &bytes[0], &bytes[1], &bytes[2], &bytes[3], &bytes[4], &bytes[5],
+         &bytes[6], &bytes[7], &bytes[8], &bytes[9], &bytes[10], &bytes[11],
+         &bytes[12], &bytes[13], &bytes[14], &bytes[15]);
+  return _mm_set_epi8(bytes[15], bytes[14], bytes[13], bytes[12], bytes[11],
+                      bytes[10], bytes[9], bytes[8], bytes[7], bytes[6],
+                      bytes[5], bytes[4], bytes[3], bytes[2], bytes[1],
+                      bytes[0]);
 }
 
-#define M128_STR_SIZE 34    /* minimum size of the charbuf "hex" argument */
+#define M128_STR_SIZE 34 /* minimum size of the charbuf "hex" argument */
 
-char *m128i_to_charbuf(__m128i m, char *hex){
-    union {
-	unsigned char bytes[16];
-	__m128i m;
-    } u;
-    _mm_storeu_si128((__m128i*)&u.bytes[0], m);
-    sprintf(hex, "%02x%02x%02x%02x" "%02x%02x%02x%02x"
-            " "
-            "%02x%02x%02x%02x""%02x%02x%02x%02x",
-             u.bytes[0], u.bytes[1], u.bytes[2], u.bytes[3],
-             u.bytes[4], u.bytes[5], u.bytes[6], u.bytes[7],
-             u.bytes[8], u.bytes[9], u.bytes[10], u.bytes[11],
-             u.bytes[12], u.bytes[13], u.bytes[14], u.bytes[15]);
+char *m128i_to_charbuf(__m128i m, char *hex) {
+  union {
+    unsigned char bytes[16];
+    __m128i m;
+  } u;
+  _mm_storeu_si128((__m128i *)&u.bytes[0], m);
+  sprintf(hex,
+          "%02x%02x%02x%02x"
+          "%02x%02x%02x%02x"
+          " "
+          "%02x%02x%02x%02x"
+          "%02x%02x%02x%02x",
+          u.bytes[0], u.bytes[1], u.bytes[2], u.bytes[3], u.bytes[4],
+          u.bytes[5], u.bytes[6], u.bytes[7], u.bytes[8], u.bytes[9],
+          u.bytes[10], u.bytes[11], u.bytes[12], u.bytes[13], u.bytes[14],
+          u.bytes[15]);
 
-    return hex;
+  return hex;
 }
 
 #ifdef __cplusplus
 #include <string>
 
-__m128i m128i_from_string(const std::string& s) {
-    return m128i_from_charbuf(s.c_str());
+__m128i m128i_from_string(const std::string &s) {
+  return m128i_from_charbuf(s.c_str());
 }
 
 std::string m128i_to_string(__m128i m) {
-    char hex[M128_STR_SIZE];
-    
-    m128i_to_charbuf(m, hex);
-    return std::string(hex);
+  char hex[M128_STR_SIZE];
+
+  m128i_to_charbuf(m, hex);
+  return std::string(hex);
 }
 #endif /* __cplusplus */
 
-#endif /* UTIL_M128_H__ */
+#endif /* UTIL_M128_H */

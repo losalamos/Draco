@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/test/tstSwap.cc
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::determinate_swap and c4::indeterminate_swap functions
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/swap.hh"
@@ -20,9 +17,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void tstDeterminateSwap(UnitTest &ut) {
   vector<unsigned> outgoing_pid, incoming_pid;
@@ -215,52 +212,9 @@ void tstSemideterminateSwap(UnitTest &ut) {
       ut.passes("Incoming data is correct");
     }
   }
-
-  // Second version (no processor list)
-
-  //     outgoing_data.resize(0);
-  //     outgoing_data.resize(rtt_c4::nodes());
-  //     incoming_data.resize(0);
-  //     incoming_data.resize(rtt_c4::nodes());
-  //     for (unsigned i=0; i<outgoing_pid.size(); ++i)
-  //     {
-  //         unsigned const pid = outgoing_pid[i];
-  //         outgoing_data[pid].resize(2);
-  //         outgoing_data[pid][0] = rtt_c4::node();
-  //         outgoing_data[pid][1] = pid;
-  //     }
-  //     for (unsigned i=0; i<incoming_pid.size(); ++i)
-  //     {
-  //         unsigned const pid = incoming_pid[i];
-  //         incoming_data[pid].resize(2);
-  //     }
-  //     rtt_c4::determinate_swap(outgoing_data, incoming_data);
-
-  //     for (unsigned i=0; i<incoming_pid.size(); ++i)
-  //     {
-  //         unsigned const pid = incoming_pid[i];
-  //         if (incoming_data[pid].size() != 2)
-  //         {
-  //             ut.failure("Incoming data is NOT correct size");
-  //         }
-  //         else
-  //         {
-  //             ut.passes("Incoming data is correct size");
-  //         }
-  //         if (incoming_data[pid][0] != pid ||
-  //             incoming_data[pid][1] != rtt_c4::node())
-  //         {
-  //             ut.failure("Incoming data is NOT correct");
-  //         }
-  //         else
-  //         {
-  //             ut.passes("Incoming data is correct");
-  //         }
-  //     }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
@@ -270,6 +224,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstSwap.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

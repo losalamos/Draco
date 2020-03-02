@@ -4,18 +4,18 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2019 Triad National Security, LLC.
+ * \note   Copyright 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __quadrature_Gauss_Legendre_hh__
-#define __quadrature_Gauss_Legendre_hh__
+#ifndef rtt_quadrature_Gauss_Legendre_hh
+#define rtt_quadrature_Gauss_Legendre_hh
 
 #include "Interval_Quadrature.hh"
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Gauss_Legendre
  *
@@ -24,7 +24,7 @@ namespace rtt_quadrature {
  * This is an interval (e.g. 1D) angle quadrature set that achieves high formal
  * accuracy by using Gaussian integration based on the Legendre polynomials.
  */
-//===========================================================================//
+//============================================================================//
 
 class Gauss_Legendre : public Interval_Quadrature {
 public:
@@ -55,8 +55,8 @@ protected:
 
 } // end namespace rtt_quadrature
 
-#endif // __quadrature_Quadrature_hh__
+#endif // rtt_quadrature_Quadrature_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Quadrature.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

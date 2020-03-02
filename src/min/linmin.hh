@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   min/linmin.hh
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a multivariate function on a specified line.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef min_linmin_hh
 #define min_linmin_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_min {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \class f1dim
  * \brief Helper template for line minimization
@@ -28,8 +28,8 @@ namespace rtt_min {
  */
 template <typename RandomContainer, typename Function> class f1dim {
 public:
-  f1dim(Function func, RandomContainer &p, RandomContainer &xi)
-      : func(func), p(p), xi(xi) {}
+  f1dim(Function func_in, RandomContainer &p_in, RandomContainer &xi_in)
+      : func(func_in), p(p_in), xi(xi_in) {}
 
   double operator()(double const x) const {
     Check(p.size() < UINT_MAX);
@@ -46,7 +46,7 @@ private:
   RandomContainer &p, &xi;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Find minimum of a multivariate function on a specified line.
  *
@@ -57,7 +57,7 @@ private:
  * \param[in,out] p  On entry, contains a starting guess of the minimum.  On
  *                   exit, contains an improved estimate of the minimum.
  * \param[in,out] xi On entry, contains the search direction.  On exit,
- *                   contains the actual displacement to the minimum in the 
+ *                   contains the actual displacement to the minimum in the
  *                   search direction.
  * \param[out] fret  Final minimum value of the function.
  * \param[in]  func  Function to be minimized
@@ -92,6 +92,6 @@ void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
 
 #endif // min_linmin_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of min/linmin.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/UnitTest.cc
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "UnitTest.hh"
 #include "path.hh"
@@ -19,10 +19,10 @@
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for UnitTest object.
- * 
+ *
  * \param argv A list of command line arguments.
  * \param release_ A function pointer to the local package's release() function.
  * \param out_ A user selectable output stream.  By default this is std::cout.
@@ -42,7 +42,7 @@ UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
           rtt_dsxx::FC_PATH)),
       release(release_), out(out_), m_dbcRequire(false), m_dbcCheck(false),
       m_dbcEnsure(false), m_dbcNothrow(false), verbose(verbose_) {
-  Require(release != NULL);
+  Require(release != nullptr);
   Ensure(numPasses == 0);
   Ensure(numFails == 0);
   Ensure(testName.length() > 0);
@@ -71,33 +71,41 @@ UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Build the final message that will be desplayed when UnitTest is destroyed.
 std::string UnitTest::resultMessage() const {
+  using DT = Term::DracoTerminal;
   std::ostringstream msg;
-  msg << "\n*********************************************\n";
-  if (UnitTest::numPasses > 0 && UnitTest::numFails == 0)
-    msg << "**** " << testName << " Test: PASSED.\n";
-  else
-    msg << "**** " << testName << " Test: FAILED.\n";
-  msg << "*********************************************\n";
-
+  std::string const div("*********************************************");
+  if (UnitTest::numPasses > 0 && UnitTest::numFails == 0) {
+    msg << "\n"
+        << Term::ccolor(DT::pass) << div << "\n"
+        << "**** " << testName << " Test: PASSED.\n"
+        << div << Term::ccolor(DT::reset) << "\n";
+  } else {
+    msg << "\n"
+        << Term::ccolor(DT::fail) << div << "\n"
+        << "**** " << testName << " Test: FAILED.\n"
+        << div << Term::ccolor(DT::reset) << "\n";
+  }
   return msg.str();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!\brief Increment the failure count and print a message with the source line
  *        number.
  * \param[in] line The line number of the source code where the failure was
  *        ecnountered.
  */
 bool UnitTest::failure(int line) {
-  out << "Test: failed on line " << line << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line
+      << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Increment the failure count and print a message with the source line
  *        number.
@@ -105,12 +113,14 @@ bool UnitTest::failure(int line) {
  * \param file The name of the file where the failure occured.
  */
 bool UnitTest::failure(int line, char const *file) {
-  out << "Test: failed on line " << line << " in " << file << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line << " in "
+      << file << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Increment the pass count and print a message that a test passed.
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
@@ -124,7 +134,7 @@ bool UnitTest::passes(const std::string &passmsg) {
   return true;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Increment either the pass or fail count and print a test description.
  *
@@ -175,20 +185,21 @@ bool UnitTest::check(bool const good, std::string const &passmsg,
   return true;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Increment the failure count and print a message that a test failed.
  * \param failmsg The message to be printed to the iostream \c UnitTest::out.
  */
 bool UnitTest::failure(const std::string &failmsg) {
-  out << "Test: failed" << std::endl;
-  out << "     " << failmsg << std::endl;
+  using DT = Term::DracoTerminal;
+  out << Term::ccolor(DT::fail) << "Test: failed\n"
+      << "     " << failmsg << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
 
 } // end namespace rtt_dsxx
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of UnitTest.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

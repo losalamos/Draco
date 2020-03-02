@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressWithCDI.cc
  * \author Thomas M. Evans
  * \date   Mon Oct 29 17:16:32 2001
  * \brief  Ipcress + CDI test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi/CDI.hh" // this includes everything from CDI
@@ -24,9 +24,9 @@ using rtt_cdi_ipcress::IpcressFile;
 using rtt_cdi_ipcress::IpcressGrayOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
 
@@ -63,8 +63,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   } catch (rtt_dsxx::assertion const &excpt) {
     FAILMSG(excpt.what());
     ostringstream message;
-    message << "Aborting tests because unable to instantiate "
-            << "IpcressFile object";
+    message << "Aborting tests because unable to instantiate IpcressFile "
+            << "object";
     FAILMSG(message.str());
     return;
   }
@@ -76,8 +76,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // Create a IpcressGrayOpacity object. //
   // ----------------------------------- //
 
-  // Material identifier.  This data file has two materials: Al and
-  // BeCu.  Al has the id tag "10001".
+  // Material identifier.  This data file has two materials: First has mat tag
+  // "10001".
   int const matid = 10001;
 
   // Create a smart pointer to an opacity object.
@@ -91,8 +91,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
     ostringstream message;
     message
         << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
-        << "Al_BeCu.ipcress data." << endl
-        << "\t" << excpt.what();
+        << "two-mats.ipcress data.\n\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -101,8 +100,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // If we get here then the object was successfully instantiated.
   {
     ostringstream message;
-    message << "shared_ptr to new IpcressGrayOpacity object created "
-            << "for analyticOpacities.ipcress.";
+    message << "shared_ptr to new IpcressGrayOpacity object created for "
+            << "analyticOpacities.ipcress.";
     PASSMSG(message.str());
   }
 
@@ -175,11 +174,9 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // STL-like accessor
-
-  // The virtual base class does not support STL-like accessors
-  // so we don't test this feature.
-
-  // Currently, KCC does not allow pure virtual + templates.
+  //
+  // The virtual base class does not support STL-like accessors so we don't test
+  // this feature.
 
   // ----------------------------------------- //
   // Create a IpcressMultigorupOpacity object. //
@@ -195,8 +192,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressMultigroupOpacity "
-            << "object for Al_BeCu.ipcress data." << endl
-            << "\t" << excpt.what();
+            << "object for two-mats.ipcress data.\n\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -274,7 +270,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
     FAILMSG("Failed to catch illegal accessor to CDI-gray().");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -283,6 +279,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tIpcressWithCDI.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

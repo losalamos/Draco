@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/Timer.hh
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __c4_Timer_hh__
-#define __c4_Timer_hh__
+#ifndef rtt_c4_Timer_hh
+#define rtt_c4_Timer_hh
 
 #include "C4_Functions.hh"
 #include <cstring>
@@ -18,18 +18,18 @@
 
 namespace rtt_c4 {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Timer
  *
  * \brief POSIX standard timer.
  *
- * The Timer class is used to calculate wall clock, user cpu, and system cpu
+ * The Timer class is used to calculate wall clock, user CPU, and system CPU
  * timings.  It uses the POSIX standard times function, so it should work well
  * on all (POSIX) systems.
  *
  * On systems where the PAPI performance tool is available, the Timer class also
- * records some basic cache perfomance statistics. This is much less portable,
+ * records some basic cache performance statistics. This is much less portable,
  * but is also not as important.  \sa
  * http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
@@ -103,9 +103,9 @@ namespace rtt_c4 {
  *
  * \example c4/test/tstTime.cc
  */
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_c4 Timer {
+class Timer {
 private:
   //! Beginning wall clock time.
   double begin;
@@ -181,9 +181,12 @@ private:
 
 public:
   Timer(); //! default constructor
-  // Use default copy constructor and assignment operator
-  Timer const &operator=(Timer const &rhs) = delete; //! assignment operator
-  Timer(Timer const &rhs) = delete;                  //! copy constructor
+  // Disable copy and assignment operators
+  Timer const &
+  operator=(Timer const &rhs) = delete;         //! copy assignment operator
+  Timer const &operator=(Timer &&rhs) = delete; //! move assignment operator
+  Timer(Timer const &rhs) = delete;             //! copy constructor
+  Timer(Timer &&rhs) = delete;                  //! move constructor
   virtual ~Timer(){/* empty */};
   inline void start();
   inline void stop();
@@ -252,9 +255,9 @@ public:
   static void initialize(int &argc, char *argv[]);
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Set the beginning of the time interval.
 void Timer::start() {
@@ -277,7 +280,7 @@ void Timer::start() {
   begin = wall_clock_time(tms_begin);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Set the end of the time interval.
 void Timer::stop() {
   Require(timer_on);
@@ -313,26 +316,26 @@ void Timer::stop() {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Return the wall clock time in seconds, for the last interval.
 double Timer::wall_clock() const {
   Require(!timer_on);
   return (end - begin);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Return the system cpu time in seconds, for the last interval.
 double Timer::system_cpu() const {
   Require(!timer_on);
 #if defined(WIN32)
   return 0.0; // difftime( tms_end, tms_begin );
 #else
-  return (tms_end.tms_stime - tms_begin.tms_stime) /
+  return static_cast<double>(tms_end.tms_stime - tms_begin.tms_stime) /
          static_cast<double>(posix_clock_ticks_per_second);
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Return the user cpu time in seconds, for the last interval.
 double Timer::user_cpu() const {
   Require(!timer_on);
@@ -341,18 +344,18 @@ double Timer::user_cpu() const {
   duration<double> diff = tms_end - tms_begin;
   return duration_cast<nanoseconds>(diff).count() / 1.0e9;
 #else
-  return (tms_end.tms_utime - tms_begin.tms_utime) /
+  return static_cast<double>(tms_end.tms_utime - tms_begin.tms_utime) /
          static_cast<double>(posix_clock_ticks_per_second);
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! The error in the posix timings
 double Timer::posix_err() const {
   return 1.0 / static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Reset the interval sums.
 void Timer::reset() {
   Require(!timer_on);
@@ -377,7 +380,7 @@ void Timer::reset() {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Merge counts from another Timer.
 void Timer::merge(Timer const &t) {
   Require(!timer_on);
@@ -395,9 +398,9 @@ void Timer::merge(Timer const &t) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 inline std::ostream &operator<<(std::ostream &out, const Timer &t) {
   t.print(out, 2);
@@ -406,8 +409,8 @@ inline std::ostream &operator<<(std::ostream &out, const Timer &t) {
 
 } // end namespace rtt_c4
 
-#endif // __c4_Timer_hh__
+#endif // rtt_c4_Timer_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/Timer.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

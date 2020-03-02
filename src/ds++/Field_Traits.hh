@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Field_Traits.hh
  * \author Kent Budge
  * \brief  Define the Field_Traits class template.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef dsxx_Field_Traits_hh
 #define dsxx_Field_Traits_hh
@@ -14,7 +14,7 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Field_Traits
  * \brief Standardized description of field types
@@ -24,14 +24,14 @@ namespace rtt_dsxx {
  * Field_Traits class is useful in template programming for capturing the
  * properties of such field types.
  */
-//===========================================================================//
+//============================================================================//
 
 template <typename Field> class Field_Traits {
 public:
   //! Field types can be "labeled." For example, a value-plus-derivatives class
   //! has a field value that is labeled with its derivatives. The following
   //! typedef specifies the unlabeled type, by default the field type itself.
-  typedef Field unlabeled_type;
+  using unlabeled_type = Field;
 
   //! Return the unique zero element of the field. By default, this is
   //! convertible from double 0.
@@ -41,7 +41,7 @@ public:
   static Field one() { return 1.0; }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Sepcialization: const double
  *
@@ -53,7 +53,7 @@ public:
   //! Field types can be "labeled." For example, a value-plus-derivatives class
   //! has a field value that is labeled with its derivatives. The following
   //! typedef specifies the unlabeled type, by default the field type itself.
-  typedef double unlabeled_type;
+  using unlabeled_type = double;
 
   //! Return the unique zero element of the field. By default, this is
   //! convertible from double 0.
@@ -63,9 +63,9 @@ public:
   static double one() { return 1.0; }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // value.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Strip a field type of any labeling.
  *
  * Implicit conversion of a labeled field type (such as a value-plus-derivatives
@@ -83,7 +83,7 @@ inline typename Field_Traits<Field>::unlabeled_type &value(Field &x) {
   return x;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! A version of the value function template for const arguments.
 template <class Field>
 inline typename Field_Traits<Field>::unlabeled_type const &
@@ -95,6 +95,6 @@ value(Field const &x) {
 
 #endif // traits_Field_Traits_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Field_Traits.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

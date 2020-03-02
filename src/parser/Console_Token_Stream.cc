@@ -3,7 +3,7 @@
  * \file   Console_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Definitions of Console_Token_Stream methods.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -140,7 +140,7 @@ void Console_Token_Stream::rewind() {
   Ensure(location_() == "input");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Console_Token_Stream does not presently support the include directive.
  */
@@ -151,7 +151,7 @@ void Console_Token_Stream::push_include(std::string &) {
 #ifdef _BullseyeCoverage
 #pragma BullseyeCoverage off
 #endif
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Console_Token_Stream does not presently support the include directive.
  */

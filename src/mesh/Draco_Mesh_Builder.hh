@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh/Draco_Mesh_Builder.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Friday, Jun 29, 2018, 09:55 am
  * \brief  Draco_Mesh_Builder class header file.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_Draco_Mesh_Builder_hh
 #define rtt_mesh_Draco_Mesh_Builder_hh
@@ -19,18 +19,18 @@ namespace rtt_mesh {
 // Forward declare mesh class
 class Draco_Mesh;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Draco_Mesh_Builder
  *
  * \brief Draco_Mesh unstructured mesh builder from reader.
  *
- * Reader is a template parameter ("FRT" = "Format Reater Type") to the builder
+ * Reader is a template parameter ("FRT" = "Format Reader Type") to the builder
  * class. Hence all readers that instantiate the template must have a common set
  * of accessors.  In particular the reader must supply some functions in the
  * RTT_Format_Reader class.
  */
-//===========================================================================//
+//============================================================================//
 
 template <typename FRT> class Draco_Mesh_Builder {
 private:
@@ -53,6 +53,6 @@ public:
 
 #endif // rtt_mesh_Draco_Mesh_Builder_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh_Builder.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

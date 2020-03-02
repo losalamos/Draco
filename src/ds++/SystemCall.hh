@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/SystemCall.hh
  * \brief  Wrapper for system calls. Hide differences between Unix/Windows
  *         system calls.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_SystemCall_hh
 #define rtt_dsxx_SystemCall_hh
@@ -13,6 +13,7 @@
 #include "ds++/config.h"
 #include <string>
 #ifdef WIN32
+#define _WINSOCKAPI_
 #include <WinSock2.h>
 #include <Windows.h>
 #include <sys/types.h>
@@ -32,10 +33,10 @@ char const dirSep = UnixDirSep;
 std::string const exeExtension("");
 #endif
 
-//===========================================================================//
+//============================================================================//
 // General discussion.  See .cc file for detailed implementation discussion
 // (mostly Linux vs. Windows issues).
-//===========================================================================//
+//============================================================================//
 
 /*! \section HOST_NAME_MAX HOST_NAME_MAX
  *
@@ -58,18 +59,18 @@ std::string const exeExtension("");
  *  - On Mac OSX, we use \c _POSIX_HOST_NAME_MAX.
  */
 
-//===========================================================================//
+//============================================================================//
 // FREE FUNCTIONS
-//===========================================================================//
+//============================================================================//
 
 //! Return the local hostname
-DLL_PUBLIC_dsxx std::string draco_gethostname(void);
+std::string draco_gethostname();
 
 //! Return the local process id
-DLL_PUBLIC_dsxx int draco_getpid(void);
+int draco_getpid();
 
 //! Return the current working directory
-DLL_PUBLIC_dsxx std::string draco_getcwd(void);
+std::string draco_getcwd();
 
 //! Return the stat value for a file
 class DLL_PUBLIC_dsxx draco_getstat {
@@ -87,10 +88,10 @@ public:
   //! constructor
   explicit draco_getstat(std::string const &fqName);
   //! If the call to stat failed, this function will return false.
-  bool valid(void) { return stat_return_code == 0; };
-  bool isreg(void);
-  bool isdir(void);
-  int errorCode(void) { return stat_return_code; }
+  bool valid() { return stat_return_code == 0; };
+  bool isreg();
+  bool isdir();
+  int errorCode() { return stat_return_code; }
   /*!
    * \brief Determine if the file has the requested permission bits set.
    * \note The leading zero for the mask is important.
@@ -99,10 +100,10 @@ public:
 };
 
 //! Use Linux realpath to resolve symlinks
-DLL_PUBLIC_dsxx std::string draco_getrealpath(std::string const &path);
+std::string draco_getrealpath(std::string const &path);
 
 //! Create a directory
-DLL_PUBLIC_dsxx void draco_mkdir(std::string const &path);
+void draco_mkdir(std::string const &path);
 
 /*!
  * \brief Remove file or directory (not recursive)
@@ -110,12 +111,23 @@ DLL_PUBLIC_dsxx void draco_mkdir(std::string const &path);
  * For recursive directory delete, see path.hh's walk_directory_tree and
  * the functor wdtOpRemove.
  */
-DLL_PUBLIC_dsxx void draco_remove(std::string const &path);
+void draco_remove(std::string const &path);
 
 } // namespace rtt_dsxx
 
+/*!
+ * \brief set and unset environment variables.
+ */
+#ifdef MSVC
+#define draco_unsetenv(k) _putenv_s(k, "")
+#define draco_setenv(k, v) _putenv_s(k, v)
+#else
+#define draco_unsetenv(k) unsetenv(k)
+#define draco_setenv(k, v) setenv(k, v, 1)
+#endif
+
 #endif // rtt_dsxx_SystemCall_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of SystemCall.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

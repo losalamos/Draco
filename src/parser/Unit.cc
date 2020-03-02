@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   Unit.cc
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of Unit methods.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Unit.hh"
 #include <iostream>
@@ -16,7 +16,7 @@
 namespace {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Write text for a component of a unit.
  *
@@ -52,7 +52,7 @@ void dash_insert(ostream &str, bool &dash, double const value,
 namespace rtt_parser {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param str Stream to which to write the text description.
  * \param u Unit to write the text description for.
@@ -74,7 +74,7 @@ std::ostream &operator<<(std::ostream &str, const Unit &u) {
   return str;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 double conversion_factor(Unit const &units, Unit const &unit_system) {
   using std::pow;
 
@@ -88,7 +88,7 @@ double conversion_factor(Unit const &units, Unit const &unit_system) {
   return conv;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 double conversion_factor(Unit const &units,
                          rtt_units::UnitSystem const &unit_system) {
   using std::pow;
@@ -104,6 +104,6 @@ double conversion_factor(Unit const &units,
 
 } // namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Unit.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

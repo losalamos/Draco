@@ -1,38 +1,31 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set.hh
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: Ordinate.hh 6607 2012-06-14 22:31:45Z kellyt $
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_OrdinateSet_hh
 #define quadrature_OrdinateSet_hh
-
-#include <vector>
 
 #include "Ordinate.hh"
 #include "mesh_element/Geometry.hh"
 
 namespace rtt_quadrature {
-using rtt_mesh_element::Geometry;
-using std::vector;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Ordinate_Set
  *
  * \brief An ordered collection of Ordinates that make up a complete
  * quadrature set for a specified geometry.
  */
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_quadrature Ordinate_Set {
+class Ordinate_Set {
 public:
   // ENUMERATIONS
 
@@ -47,11 +40,14 @@ public:
 
   // CREATORS
 
-  Ordinate_Set(unsigned const dimension, Geometry const geometry,
-               vector<Ordinate> const &ordinates,
+  Ordinate_Set(unsigned const dimension,
+               rtt_mesh_element::Geometry const geometry,
+               std::vector<Ordinate> const &ordinates,
                bool const has_starting_directions = true,
                bool const has_extra_starting_directions = false,
                Ordering const ordering = LEVEL_ORDERED);
+
+  Ordinate_Set(Ordinate_Set const &other);
 
   //! destructor
   virtual ~Ordinate_Set() {}
@@ -59,13 +55,13 @@ public:
   // ACCESSORS
 
   //! Return the ordinates.
-  vector<Ordinate> const &ordinates() const { return ordinates_; }
+  std::vector<Ordinate> const &ordinates() const { return ordinates_; }
 
   //! Return the ordinates.
-  vector<Ordinate> &ordinates() { return ordinates_; }
+  std::vector<Ordinate> &ordinates() { return ordinates_; }
 
   //! Return the geometry.
-  Geometry geometry() const { return geometry_; }
+  rtt_mesh_element::Geometry geometry() const { return geometry_; }
 
   //! Return the dimension.
   unsigned dimension() const { return dimension_; }
@@ -102,19 +98,19 @@ private:
   // DATA
 
   // initialized
-  Geometry geometry_;
+  rtt_mesh_element::Geometry geometry_;
   unsigned dimension_;
   bool has_starting_directions_;
   bool has_extra_starting_directions_;
   Ordering ordering_;
   double norm_;
-  vector<Ordinate> ordinates_;
+  std::vector<Ordinate> ordinates_;
 };
 
 } // end namespace rtt_quadrature
 
 #endif // quadrature_OrdinateSet_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/OrdinateSet.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -55,7 +55,7 @@ void host_execute_tests(kat_instance *tests_host, size_t ntests){
     // and then insure that each of the threads got the same result.
     dev_execute_tests<<<1, 1>>>(tests_dev, ntests);
 
-    CHECKCALL(cudaThreadSynchronize());
+    CHECKCALL(cudaDeviceSynchronize());
     CHECKCALL(cudaMemcpy(tests_host, tests_dev, tests_sz, cudaMemcpyDeviceToHost));
     CHECKCALL(cudaFree(tests_dev));
     cuda_done(infop);

@@ -58,6 +58,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
 #include <Random123/MicroURNG.hpp>
@@ -66,6 +73,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <stdexcept>
 #include <utility>
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
 
 #if (DBS_GNUC_VERSION >= 40600)
 // Restore GCC diagnostics to previous state.
@@ -246,6 +258,6 @@ void host_execute_tests(kat_instance *tests, size_t ntests) {
   dev_execute_tests(tests, (unsigned)ntests);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end kat_cpp.cpp
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

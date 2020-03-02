@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Models.hh
  * \author Thomas M. Evans
  * \date   Wed Aug 29 16:46:52 2001
  * \brief  Analytic_Model definitions
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_Models_hh__
-#define __cdi_analytic_Analytic_Models_hh__
+#ifndef rtt_cdi_analytic_Analytic_Models_hh
+#define rtt_cdi_analytic_Analytic_Models_hh
 
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
@@ -18,9 +18,9 @@
 
 namespace rtt_cdi_analytic {
 
-//===========================================================================//
+//============================================================================//
 // ENUMERATIONS
-//===========================================================================//
+//============================================================================//
 
 /*!
  * \brief Enumeration describing the opacity models that are available.
@@ -36,6 +36,13 @@ enum Opacity_Models {
 
 //----------------------------------------------------------------------------//
 /*!
+ * \brief Enumeration describing the charged particle eloss models available.
+ *
+ */
+enum CP_Models { ANALYTIC_KP_ALPHA_ELOSS_MODEL };
+
+//----------------------------------------------------------------------------//
+/*!
  * \brief Enumeration describing the eos  models that are available.
  *
  * Only EoS models that have been registered here can be unpacked by the
@@ -44,7 +51,17 @@ enum Opacity_Models {
  */
 enum EoS_Models { POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL };
 
-//===========================================================================//
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Enumeration describing the electron-ion coupling models.
+ *
+ * Only three temperature coupling models that can be regesterd here and
+ * unpacked by the Analytic_ieCoupling classes. The enumeration name should be
+ * the same as the derived class names.
+ */
+enum EICoupling_Models { CONSTANT_ANALYTIC_EICOUPLING_MODEL };
+
+//============================================================================//
 /*!
  * \class Analytic_Opacity_Model
  * \brief Analytic_Opacity_Model base class.
@@ -67,7 +84,7 @@ enum EoS_Models { POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL };
  *
  * The returned opacity should have units of cm^2/g.
  */
-//===========================================================================//
+//============================================================================//
 
 class Analytic_Opacity_Model {
 public:
@@ -101,7 +118,7 @@ public:
   virtual sf_char pack() const = 0;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \class Constant_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a constant opacity.
@@ -149,7 +166,7 @@ public:
   sf_char pack() const;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \class Polynomial_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a polynomial
@@ -263,7 +280,7 @@ public:
   sf_char pack() const;
 };
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Analytic_EoS_Model
  * \brief Analytic_EoS_Model base class.
@@ -298,7 +315,7 @@ public:
  *
  * This class is a pure virtual base class.
  */
-//===========================================================================//
+//============================================================================//
 
 class Analytic_EoS_Model {
 public:
@@ -352,7 +369,7 @@ public:
   virtual sf_char pack() const = 0;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \class Polynomial_Specific_Heat_Analytic_EoS_Model
  * \brief Derived Analytic_EoS_Model class that defines polymomial functions for
@@ -553,10 +570,162 @@ struct find_elec_temperature_functor {
   }
 };
 
+//============================================================================//
+/*!
+ * \class Analytic_EICoupling_Model
+ * \brief Analytic_EICoupling_Model base class.
+ *
+ * This is a base class that defines the interface give to
+ * Constant_Analytic_EICoupling_Model.  The user can define any derived model
+ * class that will work with these analtyic electron-ion coupling classes as
+ * long as it contains the following function: (declared
+ * pure virtual in this class).
+ *
+ * \arg double (double T, double rho)
+ *
+ * To enable packing functionality, the class must be registered in the
+ * Opacity_Models enumeration.  Also, it must contain the following pure virtual
+ * function:
+ *
+ * \arg vector<char> pack() const;
+ *
+ * This class is a pure virtual base class.
+ *
+ * The returned opacity should have units of cm^2/g.
+ */
+//============================================================================//
+
+class Analytic_EICoupling_Model {
+public:
+  // Typedefs.
+  typedef std::vector<char> sf_char;
+  typedef std::vector<double> sf_double;
+
+public:
+  //! Virtual destructor for proper inheritance destruction.
+  virtual ~Analytic_EICoupling_Model() { /*...*/
+  }
+
+  //! Interface for derived analytic opacity models.
+  virtual double calculate_ei_coupling(double /*Te*/, double /*Ti*/,
+                                       double /*rho*/, double /*w_e*/,
+                                       double /*w_i*/) const = 0;
+
+  //! Return parameters.
+  virtual sf_double get_parameters() const = 0;
+
+  //! Return a char string of packed data.
+  virtual sf_char pack() const = 0;
+};
+
+//----------------------------------------------------------------------------//
+/*!
+ * \class Constant_Analytic_EICoupling_Model
+ * \brief Derived electron-ion coupling class that defines a constant coupling.
+ *
+ * The election-ion coupling is defined:
+ *
+ * \arg ei_coupling = alpha
+ *
+ * where the coefficient has the following units:
+ *
+ * \arg alpha = [kJ/cc/keV/s]
+ */
+class Constant_Analytic_EICoupling_Model : public Analytic_EICoupling_Model {
+private:
+  // Constant electron-ion coupling coeffiecent
+  double ei_coupling;
+
+public:
+  //! Constructor, alpha has units of kJ/g/K/s.
+  explicit Constant_Analytic_EICoupling_Model(double alpha)
+      : ei_coupling(alpha) {
+    Require(ei_coupling >= 0.0);
+  }
+
+  //! Constructor for packed state.
+  explicit Constant_Analytic_EICoupling_Model(const sf_char &packed);
+
+  //! Calculate the ei_coupling in units of kJ/cc/keV/s.
+  double calculate_ei_coupling(double /*Te*/, double /*Ti*/, double /*rho*/,
+                               double /*w_e*/, double /*w_i*/) const {
+    return ei_coupling;
+  }
+
+  //! Return the model parameters.
+  sf_double get_parameters() const;
+
+  //! Pack up the class for persistence.
+  sf_char pack() const;
+};
+
+//============================================================================//
+/*!
+ * \class Analytic_Eloss_Model
+ * \brief Analytic_Eloss_Model base class.
+ *
+ * This is a base class that defines the interface given to
+ * Analytic_Eloss_Model constructors.  The user
+ * can define any derived model class that will work with these analytic opacity
+ * generation classes as long as it implements the functions required, namely
+ *
+ * \arg double calculate_eloss(double T, double rho)
+ * \arg sf_double get_parameters()
+ *
+ * This class is a pure virtual base class.
+ *
+ * The returned eloss coefficient is a rate, and should have units of shk^-1.
+ */
+//============================================================================//
+
+class Analytic_Eloss_Model {
+public:
+  // Typedefs.
+  typedef std::vector<char> sf_char;
+  typedef std::vector<double> sf_double;
+
+public:
+  //! Virtual destructor for proper inheritance destruction.
+  virtual ~Analytic_Eloss_Model() { /*...*/
+  }
+
+  //! Interface for derived analytic eloss models.
+  virtual double calculate_eloss(const double T, const double rho,
+                                 const double v0) const = 0;
+};
+
+//----------------------------------------------------------------------------//
+/*!
+ * \class Analytic_KP_Alpha_Eloss_Model
+ * \brief Derived CP energy loss class using analytic Kirkpatrick model for
+ *        alpha particles in DT.
+ *
+ * This is designed to return energy loss rates based on the range fit
+ * calculated in:
+ *
+ * Kirkpatrick, R. C. and Wheeler, J. A. (1981).
+ * ``The Physics of DT Ignition In Small Fusion Targets.''
+ * Nuclear Fusion, 21(3):389–401.
+ *
+ * Equation (2) gives the range formula. We then convert this to an
+ * energy loss rate per unit time for ease of use in transport.
+ */
+class Analytic_KP_Alpha_Eloss_Model : public Analytic_Eloss_Model {
+private:
+public:
+  //! Constructor
+  Analytic_KP_Alpha_Eloss_Model(){};
+
+  //! Calculate the eloss rate in units of shk^-1;
+  //! T given in keV, rho in g/cc, v0 in cm/shk
+  double calculate_eloss(const double T, const double rho,
+                         const double v0) const;
+};
+
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_Models_hh__
+#endif // rtt_cdi_analytic_Analytic_Models_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_Models.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

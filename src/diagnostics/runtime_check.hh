@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/runtime_check.hh
  * \author Kent Grimmett Budge
  * \brief  Define runtime_check function
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef diagnostics_runtime_check_hh
 #define diagnostics_runtime_check_hh
@@ -14,7 +14,7 @@
 
 namespace rtt_diagnostics {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Parallel synchronous runtime check
 *
 * This function supports a synchronous check of a local condition on all
@@ -46,6 +46,6 @@ DLL_PUBLIC_diagnostics void runtime_check(bool condition,
 
 #endif // diagnostics_runtime_check_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of diagnostics/runtime_check.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

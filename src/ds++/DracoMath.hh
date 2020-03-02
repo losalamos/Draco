@@ -1,16 +1,17 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/DracoMath.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  New or overloaded cmath or cmath-like functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoMath_hh
 #define rtt_dsxx_DracoMath_hh
 
+#include "Constexpr_Functions.hh"
 #include "Soft_Equivalence.hh"
 #include <algorithm>
 #include <complex>
@@ -19,7 +20,7 @@
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // isFinite.hh
 //
 // Try to use the C++11/C99 functions isinf, isnan and isfinite defined in
@@ -48,30 +49,7 @@ template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 
 #endif
 
-//---------------------------------------------------------------------------//
-/*!
- * \brief abs
- *
- * \tparam Ordered_Group A type for which operator< and unary operator- are
- *             defined.
- * \param arg Argument whose absolute value is to be calculated.
- * \return \f$|a|\f$
- *
- * Absolute values are a mess in the STL, in part because they are a mess in the
- * standard C library. We do our best to give a templatized version here.
- */
-template <typename Ordered_Group>
-inline Ordered_Group abs(Ordered_Group const arg) {
-  return arg < 0 ? -arg : arg;
-}
-
-// Specialization for standard types - There is no standard abs function for
-// float -- one reason why we define this template!
-template <> inline double abs(double a) { return std::fabs(a); }
-template <> inline int abs(int a) { return std::abs(a); }
-template <> inline long abs(long a) { return std::labs(a); }
-
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the conjugate of a quantity.
  *
@@ -89,7 +67,7 @@ template <> inline std::complex<double> conj(const std::complex<double> &arg) {
   return std::conj(arg);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the cube of a value.
  *
@@ -127,7 +105,7 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
     return a - b;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the square of a value.
  *
@@ -141,7 +119,7 @@ template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
   return x * x;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the hypotenuse of a right triangle.
  *
@@ -154,6 +132,7 @@ template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
  * \return Hypotenuse, \f$\sqrt{a^2+b^2}\f$
  */
 template <typename Real> inline double pythag(Real a, Real b) {
+  using std::abs;
   Real absa = abs(a), absb = abs(b);
   // We must avoid (a/b)^2 > max.
   if (absa <= absb * std::sqrt(std::numeric_limits<Real>::min()))
@@ -167,7 +146,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
     return absb * std::sqrt(1.0 + square(absa / absb));
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief  Transfer the sign of the second argument to the first argument.
  *
@@ -185,7 +164,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
  */
 template <typename Ordered_Group>
 inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
-  using rtt_dsxx::abs; // just to be clear
+  using std::abs; // just to be clear
 
   if (b < 0)
     return -abs(a);
@@ -193,7 +172,7 @@ inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
     return abs(a);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do a linear interpolation between two values.
  *
@@ -215,10 +194,10 @@ inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
  * \pre  x in (x1,x2), extrapolation is not allowed.
  * \post y in (y1,y2), extrapolation is not allowed.
  */
-inline double linear_interpolate(double const x1, double const x2,
-                                 double const y1, double const y2,
-                                 double const x) {
-  Require(std::abs(x2 - x1) > std::numeric_limits<double>::epsilon());
+constexpr inline double linear_interpolate(double const x1, double const x2,
+                                           double const y1, double const y2,
+                                           double const x) {
+  Require(ce_fabs(x2 - x1) > std::numeric_limits<double>::epsilon());
   Require(((x >= x1) && (x <= x2)) || ((x >= x2) && (x <= x1)));
 
   // return value
@@ -228,10 +207,27 @@ inline double linear_interpolate(double const x1, double const x2,
   return value;
 }
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Fast ceiling of an integer division
+ *
+ * \param[in] n numerator
+ * \param[in] d denominator
+ * \return ceil(n/d)
+ *
+ * If concerned about overflow, consider 1 + ((n-1)/d).
+ */
+template <typename T>
+constexpr inline typename std::enable_if<std::is_integral<T>::value, T>::type
+ceil_int_division(T const n, T const d) {
+  Require(d != 0);
+  return (n + d - 1) / d;
+}
+
 } // namespace rtt_dsxx
 
 #endif // rtt_dsxx_DracoMath_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of DracoMath.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

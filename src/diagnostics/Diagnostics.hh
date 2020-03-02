@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/Diagnostics.hh
  * \author Thomas M. Evans, Aimee Hungerford
  * \date   Fri Dec  9 10:52:38 2005
  * \brief  Diagnostics class for runtime info.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef diagnostics_Diagnostics_hh
 #define diagnostics_Diagnostics_hh
@@ -19,7 +19,7 @@
 
 namespace rtt_diagnostics {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \namespace Diagnostics
  * \brief Allows code clients to register diagnostics data during runtime.
@@ -45,7 +45,7 @@ namespace rtt_diagnostics {
  *
  * \example diagnostics/test/tstDiagnostics.cc
  */
-//===========================================================================//
+//============================================================================//
 
 namespace Diagnostics {
 
@@ -67,7 +67,7 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
 
 } // end namespace rtt_diagnostics
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \page diagnostics Diagnostics Levels
  *
@@ -127,7 +127,7 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
  * \endcode
  * On when DRACO_DIAGNOSTICS & 4 is true.  Defines DRACO_DIAGNOSTICS_LEVEL_3.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef DRACO_DIAGNOSTICS_LEVEL_1
 #define DIAGNOSTICS_ONE(member) rtt_diagnostics::Diagnostics::member
 #else
@@ -148,6 +148,6 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
 
 #endif // diagnostics_Diagnostics_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of diagnostics/Diagnostics.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

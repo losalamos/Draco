@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstEndian.cc
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Endian.hh"
 #include "ds++/Release.hh"
@@ -17,9 +17,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_char_data(ScalarUnitTest &ut) {
   unsigned char data[] = {'a', 'b', 'c'};
   unsigned int length = sizeof(data) / sizeof(unsigned char);
@@ -38,7 +38,7 @@ void test_char_data(ScalarUnitTest &ut) {
     ut.failure("plain char_byte_swap function failed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_integer(ScalarUnitTest &ut) {
   // Integer. This value overflows unsigned ints.
   int moo = 0xDEADBEEF;
@@ -65,7 +65,7 @@ void test_integer(ScalarUnitTest &ut) {
     ut.failure("byte_swap_copy failed for for unsigned integer type");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_int64(ScalarUnitTest &ut) {
   // Integer.
   int64_t moo = 0xFADEDDEADBEEFBAD;
@@ -94,18 +94,17 @@ void test_int64(ScalarUnitTest &ut) {
     ut.failure("byte_swap_copy failed for for uint64 integer type");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+/* This test demonstrates that two applications of byte-swap in succession
+ * return the original value.
+ *
+ * To do this, we sweep over a lot of double values. We use a non-integral
+ * multiplier for successive values to avoid small subsets of the available
+ * patterns of bits. E.g. multiples of 2.
+ */
 void test_idempotence(ScalarUnitTest &ut) {
 
-  /* This test demonstrates that two applications of byte-swap in succession
-   * return the original value.
-   *
-   * To do this, we sweep over a lot of double values. We use a non-integral
-   * multiplier for successive values to avoid small subsets of the available
-   * patterns of bits. E.g. multiples of 2.
-   */
-
-  for (double value = 1.0;
+  for (double value = 1.0;                               // NOLINT
        value < std::numeric_limits<double>::max() / 4.0; // divide by 4 to
        value *= 3.4)                                     // prevent overflow
   {
@@ -128,7 +127,7 @@ void test_idempotence(ScalarUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_ieee_float(ScalarUnitTest &ut) {
   // These tests always pass, but they may print different messages.
 
@@ -152,7 +151,7 @@ void test_ieee_float(ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_externc(ScalarUnitTest &ut) {
   int result(42);
   result = dsxx_is_big_endian();
@@ -182,7 +181,7 @@ void test_externc(ScalarUnitTest &ut) {
 
   return;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
@@ -198,6 +197,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstEndian.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Factory.hh
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
  * \brief  Builds an Ordinate_Set using a Quadrature_Interface struct
- * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_Set_Factory_hh
 #define quadrature_Ordinate_Set_Factory_hh
@@ -17,15 +17,15 @@
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Ordinate_Set_Factory
  *
  * \brief Factory class to create an Ordinate_Set from quadrature_data
  */
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_quadrature Ordinate_Set_Factory {
+class Ordinate_Set_Factory {
 public:
   // CREATORS
 
@@ -49,6 +49,6 @@ private:
 
 #endif // quadrature_Ordinate_Set_Factory
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Ordinate_Set_Factory.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

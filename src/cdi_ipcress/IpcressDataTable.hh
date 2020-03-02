@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressDataTable.hh
  * \author Kelly Thompson
  * \date   Wednesday, Nov 16, 2011, 17:07 pm
  * \brief  Header file for IpcressDataTable
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressDataTable_hh__
-#define __cdi_ipcress_IpcressDataTable_hh__
+#ifndef rtt_cdi_ipcress_IpcressDataTable_hh
+#define rtt_cdi_ipcress_IpcressDataTable_hh
 
 #include "IpcressFile.hh"
 #include "cdi/OpacityCommon.hh"
@@ -17,11 +17,11 @@
 
 namespace rtt_cdi_ipcress {
 
-//===========================================================================//
+//============================================================================//
 /*!
- * \class IpcressDataTable 
+ * \class IpcressDataTable
  * \brief Encapsulates all of the data associated with a
- *        specific opacity type (e.g.: total, plank, multigroup) for a single 
+ *        specific opacity type (e.g.: total, plank, multigroup) for a single
  *        single material.
  *
  * When the user instantiates a IpcressOpacity object a IpcressDataTable
@@ -31,7 +31,7 @@ namespace rtt_cdi_ipcress {
  * table that is loaded is specified by the combination of { opacityModel,
  * opacityReaction and the opacityEnergyDescriptor }.
  */
-//===========================================================================//
+//============================================================================//
 
 class IpcressDataTable {
 
@@ -152,8 +152,8 @@ private:
 
 } // namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressDataTable_hh__
+#endif // rtt_cdi_ipcress_IpcressDataTable_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressDataTable.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

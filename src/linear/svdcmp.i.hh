@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/svdcmp.i.hh
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef linear_svdcmp_i_hh
 #define linear_svdcmp_i_hh
@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace rtt_linear {
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the singular value decomposition of a matrix.
  *
@@ -298,6 +298,6 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
 
 #endif // linear_svdcmp_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of linear/svdcmp.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

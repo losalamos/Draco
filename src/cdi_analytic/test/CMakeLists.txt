@@ -18,7 +18,6 @@ file( GLOB test_sources *.cc )
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 set ( parallel_test
-      ${PROJECT_SOURCE_DIR}/tstAnalytic_Odfmg_Opacity.cc
       ${PROJECT_SOURCE_DIR}/tstPseudo_Line_Analytic_MultigroupOpacity.cc )
 add_parallel_tests(
    SOURCES "${parallel_test}"
@@ -27,7 +26,6 @@ add_parallel_tests(
 )
 
 list ( REMOVE_ITEM test_sources
-    ${PROJECT_SOURCE_DIR}/tstAnalytic_Odfmg_Opacity.cc
     ${PROJECT_SOURCE_DIR}/tstPseudo_Line_Analytic_MultigroupOpacity.cc)
 
 

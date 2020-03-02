@@ -1,9 +1,11 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-g++.cmake
 # brief  Establish flags for Unix/Linux - Gnu C++
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 # Note: In config/compilerEnv.cmake, the build system sets flags for
 # 1) the language standard (C++14, C99, etc)
@@ -22,7 +24,7 @@
 # Declare CMake options related to GCC
 #
 if( NOT DEFINED GCC_ENABLE_ALL_WARNINGS )
-  option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." 
+  option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options."
     OFF )
 endif()
 if( NOT DEFINED GCC_ENABLE_GLIBCXX_DEBUG )
@@ -35,11 +37,12 @@ endif()
 #
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
+# arm --> -mcpu=thunderx2t99 ??? Darwin volta nodes?
 check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
 if( DEFINED CMAKE_CXX_COMPILER_ID )
   check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
   check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
-  check_cxx_compiler_flag( "-Wunused-local-typedefs"   
+  check_cxx_compiler_flag( "-Wunused-local-typedefs"
     HAS_WUNUSED_LOCAL_TYPEDEFS )
   #check_cxx_compiler_flag( "-Wunused-macros" HAS_WUNUSED_MACROS )
   #check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
@@ -89,10 +92,16 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined -Wnarrowing" )
   endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
-  # -Wfloat-equal
-  # -Werror
-  # -Wconversion
-  # -Winline
+  # Ref: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
+  # -Wfloat-equal       # Warn when if-statement compares floats directly
+  # -Werror             # Promote all warnings to 'error' status
+  # -Wconversion        # warn on type conversions that may lose data
+  # -Wdouble-promotion  # warn if float is implicit promoted to double
+  # -Wformat=2          # warn on security issues around functions that format
+  #                       output (ie printf)
+  # -Winline            # Warn if function marked 'inline' cannot be inlined
+  # -Wold-style-cast    # Warn if c-style casts are used, replace with
+  #                       c++-style cast.
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
@@ -100,9 +109,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # See https://gcc.gnu.org/gcc-5/changes.html
     # UndefinedBehaviorSanitizer gained a few new sanitization options:
-    #  -fsanitize=float-divide-by-zero: detect floating-point division by 0
-    #  -fsanitize=float-cast-overflow: check that the result of floating-point
-    #             type to integer conversions do not overflow;
     #  -fsanitize=alignment: enable alignment checking, detect various
     #             misaligned objects;
     #  -fsanitize=object-size: enable object size checking, detect various
@@ -146,10 +152,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
   endif()
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 )
     # See https://gcc.gnu.org/gcc-8/changes.html
-    # -Wold-style-cast diagnostic can now emit fix-it hints telling you when you
-    #                  can use a static_cast, const_cast, or reinterpret_cast.
-    # -fdiagnostics-show-template-tree visualizes such mismatching templates in
-    #                  a hierarchical form:
+    # -fsanitize=pointer-compare warn about subtraction (or comparison) of
+    #                  pointers that point to a different memory object.
+    # -fsanitize=pointer-subtract
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast")
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
   endif()
@@ -163,9 +168,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
       NOT CRAY_PE AND
       NOT "${sitename}" MATCHES "toolbox")
     string( APPEND CMAKE_C_FLAGS " -march=native" )
+  elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+    string( APPEND CMAKE_C_FLAGS " -mcpu=powerpc64le -mtune=powerpc64le" )
   endif()
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")

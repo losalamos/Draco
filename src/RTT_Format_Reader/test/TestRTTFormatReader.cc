@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/test/TestRTTFormatReader.cc
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:26:42 2002
  * \brief  RTT_Format_Reader test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
@@ -18,16 +18,16 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 map<Meshes, bool> Dims_validated;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void runTest(UnitTest &ut) {
   // Find the mesh file
-  string const inpPath = ut.getTestInputPath();
+  string const inpPath = ut.getTestSourcePath();
 
   // New meshes added to this test will have to be added to the enumeration
   // Meshes in the header file.
@@ -104,7 +104,7 @@ void runTest(UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                  UnitTest &ut) {
   // Verify that the Dims data was previously validated.
@@ -114,7 +114,7 @@ bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return Dims_validated.find(meshtype)->second;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                   UnitTest &ut) {
   // Exercise the header accessor functions for this mesh.
@@ -191,7 +191,7 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                 UnitTest &ut) {
   // Exercise the dims accessor functions for this mesh.
@@ -413,7 +413,7 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                       UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -524,7 +524,7 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                       UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -613,7 +613,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                       UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -712,7 +712,7 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                          UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -771,7 +771,7 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                          UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -828,7 +828,7 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                          UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -883,9 +883,9 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //!\brief Test reading of the cell defs block from an RTT file
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                      UnitTest &ut) {
@@ -1201,9 +1201,9 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                  UnitTest &ut) {
@@ -1306,7 +1306,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                  UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -1408,7 +1408,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                  UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -1502,7 +1502,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                      UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -1564,7 +1564,7 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                      UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -1625,7 +1625,7 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
                      UnitTest &ut) {
   // Return if the Dims data is corrupt.
@@ -1684,7 +1684,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -1693,6 +1693,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of TestRTTFormatReader.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

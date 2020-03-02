@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/Termination_Detector.cc
  * \author Kent Budge
  * \date   Thu Jan 12 10:27:45 2006
  * \brief  
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Termination_Detector.hh"
 #include "C4_Functions.hh"
@@ -15,7 +15,7 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
  * \brief Constructor
  * \param[in] tag Tag to use for termination algorithm messages. This must be
@@ -44,7 +44,7 @@ Termination_Detector::Termination_Detector(int const tag)
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Termination_Detector::init() {
   state_ = UP;
   send_count_ = 0;
@@ -53,14 +53,14 @@ void Termination_Detector::init() {
   old_global_work_count_ = 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Termination_Detector::~Termination_Detector() {
 #ifdef PRINTF_DEBUG
   cout << pid_ << '/' << tag_ << ": destroyed" << endl;
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Return \c true if we have terminated; \c false otherwise.
 bool Termination_Detector::is_terminated() {
   static unsigned buffer[3];
@@ -301,6 +301,6 @@ bool Termination_Detector::is_terminated() {
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Termination_Detector.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

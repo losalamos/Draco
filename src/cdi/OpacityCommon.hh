@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/OpacityCommon.hh
  * \author Kelly Thompson
@@ -6,16 +6,16 @@
  * \brief  Datatypes needed in GrayOpacity and MultigroupOpacity
  * \note   Copyright (C) 2016-2019 Los Alamos National Securty, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_OpacityCommon_hh__
-#define __cdi_OpacityCommon_hh__
+#ifndef rtt_cdi_OpacityCommon_hh
+#define rtt_cdi_OpacityCommon_hh
 
 namespace rtt_cdi {
 
-//===========================================================================//
+//============================================================================//
 // NUMBER OF MODELS AND REACTIONS
-//===========================================================================//
+//============================================================================//
 
 namespace constants {
 //! Number of models contained in rtt_cdi::Model.
@@ -25,11 +25,11 @@ unsigned int const num_Models(7);
 unsigned int const num_Reactions(3);
 } // namespace constants
 
-//===========================================================================//
+//============================================================================//
 // ENUMERATIONS USED BY OPACITY CLASSES IN CDI
-//===========================================================================//
+//============================================================================//
 /*!
- * \brief Physics model used to compute the opacity values.  
+ * \brief Physics model used to compute the opacity values.
  *
  * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The
  * number of models is given by rtt_cdi::constants::num_Models.
@@ -44,7 +44,7 @@ enum Model {
   NOMODEL    /*!< null model */
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Opacity reaction type stored in this opacity object.
  *
@@ -58,16 +58,16 @@ enum Reaction {
   LAST_VALUE  /*!< dummy value */
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * \brief Type of opacity model: analytic, or gandolf. 
- * 
- * Used in Milagro Material_Data in packing the objects, returned by each 
- * opacity type. It was previously defined as 
- * \code 
+ * \brief Type of opacity model: analytic, or gandolf.
+ *
+ * Used in Milagro Material_Data in packing the objects, returned by each
+ * opacity type. It was previously defined as
+ * \code
  *   typeid(rtt_cdi_analytic::Analytic_Odfmg_Opacity)
  * \endcode
- * mapping to 1, and 
+ * mapping to 1, and
  * \code
  *   typeid(rtt_cdi_gandolf::GandolfOdfmgOpacity)
  * \endcode
@@ -83,8 +83,8 @@ enum OpacityModelType {
 };
 } // end namespace rtt_cdi
 
-#endif // __cdi_OpacityCommon_hh__
+#endif // rtt_cdi_OpacityCommon_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/OpacityCommon.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

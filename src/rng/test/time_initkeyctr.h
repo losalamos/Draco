@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
 #endif
 
@@ -158,6 +159,6 @@ static aesni4x32_ctr_t good_aesni4x32_10 = {
 
 #endif /* TIME_INITKEYCTR_H__ */
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end time_initkeyctr.h
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

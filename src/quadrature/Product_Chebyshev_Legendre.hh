@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Product_Chebyshev_Legendre.hh
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Product_Chebyshev_Legendre_hh
 #define quadrature_Product_Chebyshev_Legendre_hh
@@ -15,12 +15,12 @@
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Product_Chebyshev_Legendre
  * \brief A class to encapsulate a triangular Chebyshev-Legendre quadrature set.
  */
-//===========================================================================//
+//============================================================================//
 
 class Product_Chebyshev_Legendre : public Octant_Quadrature {
 public:
@@ -90,6 +90,6 @@ private:
 
 #endif // quadrature_Product_Chebyshev_Legendre_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Product_Chebyshev_Legendre.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   lapack_wrap/Blas.hh
  * \brief  Header for BLAS functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __lapack_wrap_Blas_hh__
-#define __lapack_wrap_Blas_hh__
+#ifndef rtt_lapack_wrap_Blas_hh
+#define rtt_lapack_wrap_Blas_hh
 
 #include "Blas_Prototypes.hh"
 #include "ds++/Assert.hh"
@@ -17,9 +17,9 @@
 
 namespace rtt_lapack_wrap {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // y <- x (COPY)
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ y\leftarrow x \f$ for type float.
  *
@@ -36,7 +36,7 @@ inline void blas_copy(int N, const float *x, int increment_x, float *y,
   (&N, const_cast<float *>(x), &increment_x, y, &increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ y\leftarrow x \f$ for type double.
  *
@@ -53,7 +53,7 @@ inline void blas_copy(int N, const double *x, int increment_x, double *y,
   (&N, const_cast<double *>(x), &increment_x, y, &increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ y\leftarrow x \f$ for vector<T> type.
  *
@@ -73,7 +73,7 @@ inline void blas_copy(const std::vector<T> &x, int increment_x,
   blas_copy(static_cast<int>(x.size()), &x[0], increment_x, &y[0], increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ x\leftarrow\alpha x \f$ for type double.
  */
@@ -84,7 +84,7 @@ inline void blas_scal(int N, double alpha, double *x, int increment_x) {
   FC_GLOBAL(dscal, DSCAL)(&N, &alpha, x, &increment_x);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ x\leftarrow\alpha x \f$ for vector<T> type.
  *
@@ -100,7 +100,7 @@ inline void blas_scal(T alpha, std::vector<T> &x, int /*increment_x*/) {
   blas_scal(static_cast<int>(x.size()), alpha, &x[0], 1);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ \mbox{dot}\leftarrow x^{T}y \f$ for type double.
  */
@@ -115,7 +115,7 @@ inline double blas_dot(int N, const double *x, int increment_x, const double *y,
                                const_cast<double *>(y), &increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ \mbox{dot}\leftarrow x^{T}y \f$ for vector<T> type.
  *
@@ -136,7 +136,7 @@ inline T blas_dot(const std::vector<T> &x, int increment_x,
                   increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ y\leftarrow\alpha x + y \f$ for type double.
  *
@@ -153,7 +153,7 @@ inline void blas_axpy(int N, double alpha, const double *x, int increment_x,
   (&N, &alpha, const_cast<double *>(x), &increment_x, y, &increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ y\leftarrow\alpha x + y \f$ for vector<T> type.
  *
@@ -175,7 +175,7 @@ inline void blas_axpy(T alpha, const std::vector<T> &x, int increment_x,
             increment_y);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ for type double.
  */
@@ -190,11 +190,11 @@ inline double blas_nrm2(int N, const double *x, int increment_x) {
   return nrm2;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ stl-algorithms style.
  *
- * The iterators must point to float or double value_type's. 
+ * The iterators must point to float or double value_type's.
  *
  * \param x_begin iterator pointing to the beginning of x
  * \param x_end iterator pointing to the end of x
@@ -234,7 +234,7 @@ blas_nrm2(Forward_Iterator x_begin, Forward_Iterator x_end) {
   return nrm2;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ vector<T> type.
  *
@@ -252,8 +252,8 @@ inline T blas_nrm2(const std::vector<T> &x, int increment_x) {
 
 } // end namespace rtt_lapack_wrap
 
-#endif // __lapack_wrap_Blas_hh__
+#endif // rtt_lapack_wrap_Blas_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of lapack_wrap/Blas.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,21 +1,21 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Gray_Opacity.cc
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity member definitions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Analytic_Gray_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CONSTRUCTORS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic gray opacity model.
  *
@@ -26,7 +26,7 @@ namespace rtt_cdi_analytic {
  * rtt_cdi::Reaction argument.
  *
  * \param model_in shared_ptr to a derived
- *           rtt_cdi_analytic::Analytic_Opacity_Model object
+ *                 rtt_cdi_analytic::Analytic_Opacity_Model object
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  * \param cdi_model_in CDI model type
  */
@@ -40,7 +40,7 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
   Ensure(analytic_model);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
  *
@@ -103,9 +103,9 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
   Ensure(analytic_model);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // OPACITY INTERFACE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a scalar opacity given a scalar temperature and density.
  *
@@ -130,7 +130,7 @@ double Analytic_Gray_Opacity::getOpacity(double temperature,
   return opacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a field of opacities given a field of temperatures and a
  * scalar density.
@@ -172,7 +172,7 @@ Analytic_Gray_Opacity::getOpacity(const sf_double &temperature,
   return opacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a field of opacities given a field of densities and a scalar
  * temperature.
@@ -214,7 +214,7 @@ Analytic_Gray_Opacity::getOpacity(double temperature,
   return opacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Pack an analytic gray opacity.
  *
@@ -260,6 +260,6 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const {
 
 } // end namespace rtt_cdi_analytic
 
-//---------------------------------------------------------------------------//
-//                              end of Analytic_Gray_Opacity.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// end of Analytic_Gray_Opacity.cc
+//----------------------------------------------------------------------------//

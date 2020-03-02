@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/qr_unpack.hh
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef linear_qr_unpack_hh
 #define linear_qr_unpack_hh
@@ -21,6 +21,6 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
 
 #endif // linear_qr_unpack_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of linear/qr_unpack.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

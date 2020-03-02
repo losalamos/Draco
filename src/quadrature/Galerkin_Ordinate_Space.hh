@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Galerkin_Ordinate_Space.hh
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of class Galerkin_Ordinate_Space
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Galerkin_Ordinate_Space_hh
 #define quadrature_Galerkin_Ordinate_Space_hh
@@ -16,7 +16,7 @@
 namespace rtt_quadrature {
 using std::ostream;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Galerkin_Ordinate_Space
  * \brief Represents ordinate operators for a Galerkin moment space.
@@ -32,7 +32,7 @@ using std::ostream;
  * When the additional moments are added, the SN quadrature order is provided,
  * and additional moments added based on the assumption that we are using
  * triangular quadrature sets. If an expansion order L < N-1 is
- * requested, both D and M wlll be appropriately truncated. If an expansion
+ * requested, both D and M will be appropriately truncated. If an expansion
  * order L > N-1 is requested, the computation cannot proceed and an exception
  * thrown.
  *
@@ -43,7 +43,7 @@ using std::ostream;
  * quadratures, such that it will be necessary to extend the method to include
  * square (product) quadratures.
  */
-//===========================================================================//
+//============================================================================//
 
 class Galerkin_Ordinate_Space : public Ordinate_Space {
 public:
@@ -52,8 +52,9 @@ public:
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
-  Galerkin_Ordinate_Space(unsigned const dimension, Geometry const geometry,
-                          vector<Ordinate> const &ordinates,
+  Galerkin_Ordinate_Space(unsigned const dimension,
+                          rtt_mesh_element::Geometry const geometry,
+                          std::vector<Ordinate> const &ordinates,
                           Quadrature_Class quadrature_class, unsigned sn_order,
                           unsigned const expansion_order, QIM const method,
                           bool const extra_starting_directions = false,
@@ -70,10 +71,10 @@ public:
   virtual QIM quadrature_interpolation_model() const;
 
   //! Return the discrete to moment transform matrix
-  virtual vector<double> D() const;
+  virtual std::vector<double> D() const;
 
   //! Return the moment to discrete transform matrix
-  virtual vector<double> M() const;
+  virtual std::vector<double> M() const;
 
   bool prune() const {
     // Prune any moments beyond the user-specified expansion order. Such
@@ -90,15 +91,20 @@ private:
 
   // IMPLEMENTATION
 
-  virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
+                                               unsigned sn_order);
 
-  virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
+                                                unsigned sn_order);
 
-  virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
+                                               unsigned sn_order);
 
-  virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
+                                                unsigned sn_order);
 
-  virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
+                                               unsigned sn_order);
 
 private:
   // NESTED CLASSES AND TYPEDEFS
@@ -107,33 +113,33 @@ private:
 
   void compute_operators();
 
-  vector<double> compute_M_SN(vector<Ordinate> const &ordinates);
-  vector<double> compute_D_SN(vector<Ordinate> const &ordinates,
-                              vector<double> const &Min);
+  std::vector<double> compute_M_SN(std::vector<Ordinate> const &ordinates);
+  std::vector<double> compute_D_SN(std::vector<Ordinate> const &ordinates,
+                                   std::vector<double> const &Min);
 
-  vector<double> compute_inverse(unsigned const m, unsigned const n,
-                                 vector<double> const &Ain);
+  std::vector<double> compute_inverse(unsigned const m, unsigned const n,
+                                      std::vector<double> const &Ain);
 
-  vector<double> augment_D(vector<unsigned> const &indexes,
-                           unsigned const numCartesianOrdinates,
-                           vector<double> const &D);
+  std::vector<double> augment_D(std::vector<unsigned> const &indexes,
+                                unsigned const numCartesianOrdinates,
+                                std::vector<double> const &D);
 
-  vector<double> augment_M(vector<unsigned> const &indexes,
-                           vector<double> const &M);
+  std::vector<double> augment_M(std::vector<unsigned> const &indexes,
+                                std::vector<double> const &M);
   // DATA
 
   QIM const method_;
 
   //! Discrete to moment matrix
-  vector<double> D_;
+  std::vector<double> D_;
   //! Moment to discrete matrix
-  vector<double> M_;
+  std::vector<double> M_;
 };
 
 } // end namespace rtt_quadrature
 
 #endif // quadrature_Galerkin_Ordinate_Space_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Galerkin_Ordinate_Space.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

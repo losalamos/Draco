@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh_element/Element_Definition.hh
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __mesh_element_Element_Definition_hh__
-#define __mesh_element_Element_Definition_hh__
+#ifndef rtt_mesh_element_Element_Definition_hh
+#define rtt_mesh_element_Element_Definition_hh
 
 #include "ds++/Assert.hh"
 #include <ostream>
@@ -19,7 +19,7 @@
 
 namespace rtt_mesh_element {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Element_Definition
  *
@@ -78,7 +78,7 @@ namespace rtt_mesh_element {
  * \sa The \ref overview_meshreaders page provides an overview of the other
  *     utilities in the rtt_mesh_element namespace.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_mesh_element Element_Definition {
 
@@ -423,8 +423,8 @@ private:
 
 } // end namespace rtt_mesh_element
 
-#endif // __mesh_element_Element_Definition_hh__
+#endif // rtt_mesh_element_Element_Definition_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh_element/Element_Definition.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

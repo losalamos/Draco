@@ -1,27 +1,24 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/test/cdi_analytic_test.hh
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:04:00 2001
  * \brief  Dummy model used for testing cdi_analytic software.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#ifndef __cdi_analytic_test_hh__
-#define __cdi_analytic_test_hh__
+#ifndef rtt_cdi_analytic_test_hh
+#define rtt_cdi_analytic_test_hh
 
 #include "cdi_analytic/Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic_test {
 
-//===========================================================================//
+//============================================================================//
 // USER-DEFINED ANALYTIC_OPACITY_MODEL
-//===========================================================================//
+//============================================================================//
 
 class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model {
 private:
@@ -60,8 +57,8 @@ public:
 
 } // end namespace rtt_cdi_analytic_test
 
-#endif // __cdi_analytic_test_hh__
+#endif // rtt_cdi_analytic_test_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_analytic/test/cdi_analytic_test.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

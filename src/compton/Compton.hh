@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   compton/Compton.hh
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
  * \brief  Header file for compton CSK_generator interface
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __compton_Compton_hh__
-#define __compton_Compton_hh__
+#ifndef rtt_compton_Compton_hh
+#define rtt_compton_Compton_hh
 
 #include "compton/config.h"
 
@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace rtt_compton {
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Compton
  *
@@ -71,8 +71,7 @@ public:
   //! Constructor to build a multigroup library from an existing pointwise file
   Compton(const std::string &file, const std::vector<double> &group_bounds,
           const std::string &opac_type, const std::string &wt_func,
-          const bool induced, const bool det_bal = false,
-          const size_t n_xi = 0);
+          const bool induced, const bool det_bal = false, const size_t nxi = 0);
 
   //! Dtor - defined in .cc file to prevent incomplete_type issues
   ~Compton();
@@ -125,7 +124,7 @@ public:
 
 #endif // COMPTON_FOUND
 
-#endif // __compton_Compton_hh__
+#endif // rtt_compton_Compton_hh
 
 //----------------------------------------------------------------------------//
 // End compton/Compton.hh

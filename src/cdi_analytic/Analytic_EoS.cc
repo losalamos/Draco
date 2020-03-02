@@ -1,21 +1,21 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_EoS.cc
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS member definitions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Analytic_EoS.hh"
 #include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CONSTRUCTOR
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic EoS model.
  *
@@ -30,7 +30,7 @@ Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
   Ensure(analytic_model);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
  *
@@ -80,9 +80,9 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed) : analytic_model() {
   Ensure(analytic_model);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // EoS INTERFACE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar electron internal energy given a scalar temperature
@@ -108,7 +108,7 @@ double Analytic_EoS::getSpecificElectronInternalEnergy(double T,
   return internal_energy;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of electron internal energies given fields of
@@ -145,7 +145,7 @@ Analytic_EoS::getSpecificElectronInternalEnergy(const sf_double &T,
   return internal_energy;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar ion internal energy given a scalar temperature and
@@ -170,7 +170,7 @@ double Analytic_EoS::getSpecificIonInternalEnergy(double T, double rho) const {
   return internal_energy;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of ion internal energies given fields of temperature
@@ -207,7 +207,7 @@ Analytic_EoS::getSpecificIonInternalEnergy(const sf_double &T,
   return internal_energy;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar electron heat capacity given a scalar temperature
@@ -232,7 +232,7 @@ double Analytic_EoS::getElectronHeatCapacity(double T, double rho) const {
   return heat_capacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of electron heat capacities given fields of
@@ -269,7 +269,7 @@ Analytic_EoS::getElectronHeatCapacity(const sf_double &T,
   return heat_capacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar ion heat capacity given a scalar temperature and
@@ -293,7 +293,7 @@ double Analytic_EoS::getIonHeatCapacity(double T, double rho) const {
   return heat_capacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of ion heat capacities given fields of temperature
@@ -330,7 +330,7 @@ Analytic_EoS::getIonHeatCapacity(const sf_double &T,
   return heat_capacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar number of free electrons per ion given a scalar
@@ -354,7 +354,7 @@ double Analytic_EoS::getNumFreeElectronsPerIon(double T, double rho) const {
   return number;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of numbers of free electrons per ion given fields of
@@ -392,7 +392,7 @@ Analytic_EoS::getNumFreeElectronsPerIon(const sf_double &T,
   return number;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a scalar electron thermal conductivity given a scalar
@@ -418,7 +418,7 @@ double Analytic_EoS::getElectronThermalConductivity(double T,
   return thermal_conductivity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a field of electron thermal conductivities given fields of
@@ -456,7 +456,7 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
   return thermal_conductivity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the electron temperature given density and the specific
  *        electron energy.
@@ -483,7 +483,7 @@ double Analytic_EoS::getElectronTemperature(double rho, double Ue,
   return T_new;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the ion temperature given density and the specific ion
  *        energy.
@@ -510,7 +510,7 @@ double Analytic_EoS::getIonTemperature(double rho, double Uic,
   return T_new;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Pack an analytic EoS opacity.
  *
@@ -552,6 +552,6 @@ Analytic_EoS::sf_char Analytic_EoS::pack() const {
 
 } // end namespace rtt_cdi_analytic
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Analytic_EoS.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

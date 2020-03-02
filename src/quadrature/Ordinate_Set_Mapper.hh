@@ -1,33 +1,29 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Mapper.hh
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
  * \brief  Declarations for the class rtt_quadrature::Ordinate_Set_Mapper.
- * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_OrdinateSetMapper_hh
 #define quadrature_OrdinateSetMapper_hh
 
 #include "Ordinate_Set.hh"
-#include <vector>
 
 namespace rtt_quadrature {
 
-using rtt_mesh_element::Geometry;
-using std::vector;
-
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Ordinate_Set_Mapper
  *
  * \brief Provides services to map an angle ordinate onto an ordinate set
  */
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_quadrature Ordinate_Set_Mapper {
+class Ordinate_Set_Mapper {
 public:
   // ENUMERATIONS
 
@@ -42,20 +38,15 @@ public:
     NEAREST_THREE,
 
     //! Currently unimplemented, but would use an interpolating function based
-    //! on a bandwidth dependening on the dot product
+    //! on a bandwidth depending on the dot product
     KERNEL_DENSITY_ESTIMATOR
   };
 
   // CREATORS
 
-  Ordinate_Set_Mapper(const Ordinate_Set &os_in) : os_(os_in) {
+  explicit Ordinate_Set_Mapper(const Ordinate_Set &os_in) : os_(os_in) {
     Ensure(check_class_invariants());
   }
-
-  // ACCESSORS
-
-  //! Return the ordinate set.
-  // Ordinate_Set const &ordinate_set() const { return os_; }
 
   // SERVICES
 
@@ -65,7 +56,7 @@ public:
   //! Maps an ordinate and weight into the ordinate set
   void map_angle_into_ordinates(const Ordinate &ord_in,
                                 const Interpolation_Type &interp_in,
-                                vector<double> &weights_in) const;
+                                std::vector<double> &weights_in) const;
 
 private:
   // DATA
@@ -107,7 +98,7 @@ private:
      *  \sqrt{1-\mu_1^2} . \f$
      */
     double operator()(const Ordinate &o2) const {
-      if (soft_equiv(o1.mu(), o2.mu()))
+      if (rtt_dsxx::soft_equiv(o1.mu(), o2.mu()))
         return 1.0;
 
       const double &mu1(o1.mu());
@@ -124,13 +115,13 @@ private:
   };
 
   //! Simple function to integrate the 0th moment
-  double zeroth_moment(const vector<double> &weights) const;
+  double zeroth_moment(const std::vector<double> &weights) const;
 };
 
 } // end namespace rtt_quadrature
 
 #endif // quadrature_OrdinateSetMapper_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/OrdinateSetMapper.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

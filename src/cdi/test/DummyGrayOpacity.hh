@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/test/DummyGrayOpacity.hh
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:29:17 2001
  * \brief  DummyGrayOpacity class header file (derived from ../GrayOpacity)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_DummyGrayOpacity_hh__
-#define __cdi_DummyGrayOpacity_hh__
+#ifndef rtt_cdi_DummyGrayOpacity_hh
+#define rtt_cdi_DummyGrayOpacity_hh
 
 #include "cdi/GrayOpacity.hh"
 #include "cdi/OpacityCommon.hh"
@@ -20,10 +20,10 @@ namespace rtt_cdi_test {
 /*!
  * \class DummyGrayOpacity
  *
- * \brief This is an opacity class that derives its interface from 
+ * \brief This is an opacity class that derives its interface from
  *        cdi/GrayOpacity and is used for testing purposes only.
  *
- * \sa This opacity class always contains the same data (set by the default 
+ * \sa This opacity class always contains the same data (set by the default
  *     constructor).  The data table has the following properties:
  *
  *     Temperatures = { 1.0, 2.0, 3.0 }
@@ -31,8 +31,8 @@ namespace rtt_cdi_test {
  *
  *     Opacity = temperature + density/1000
  *
- * In addition to providing definitions for the member functions outlined in 
- * GrayOpacity this class provides three additional 1-D STL-like accessors for 
+ * In addition to providing definitions for the member functions outlined in
+ * GrayOpacity this class provides three additional 1-D STL-like accessors for
  * opacity data.
  *
  * \sa cdi/test/tDummyOpacity.cc
@@ -67,7 +67,7 @@ public:
   /*!
    * \brief Constructor for DummyGrayOpacity object.
    *
-   * The constructor assigns fixed values for all of the member data.  Every 
+   * The constructor assigns fixed values for all of the member data.  Every
    * instance of this object has the same member data.
    */
   DummyGrayOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL,
@@ -76,7 +76,7 @@ public:
   /*!
    * \brief Default DummyGrayOpacity() destructor.
    *
-   * This is required to correctly release memory when a DummyGrayOpacity 
+   * This is required to correctly release memory when a DummyGrayOpacity
    * object is destroyed.
    */
   ~DummyGrayOpacity(void){/*empty*/};
@@ -91,9 +91,9 @@ public:
    *
    * Opacity = temperature + density/1000
    *
-   * \param targetTemperature The temperature value for which an opacity value 
+   * \param targetTemperature The temperature value for which an opacity value
    *           is being requested (keV).
-   * \param targetDensity The density value for which an opacity value is being 
+   * \param targetDensity The density value for which an opacity value is being
    *           requested (g/cm^3).
    * \return A single interpolated opacity (cm^2/g).
    */
@@ -153,20 +153,20 @@ public:
   };
 
   /*!
-   * \brief Returns the name of the associated data file.  Since there is no 
+   * \brief Returns the name of the associated data file.  Since there is no
    *        data file associated with this opacity class the string "none" is
    *        returned.
    */
   std::string getDataFilename() const { return dataFilename; };
 
   /*!
-   * \brief Returns a vector of temperatures that define the cached opacity 
+   * \brief Returns a vector of temperatures that define the cached opacity
    *        data table.
    */
   std::vector<double> getTemperatureGrid() const { return temperatureGrid; };
 
   /*!
-   * \brief Returns a vector of densities that define the cached opacity data 
+   * \brief Returns a vector of densities that define the cached opacity data
    *        table.
    */
   std::vector<double> getDensityGrid() const { return densityGrid; };
@@ -188,8 +188,8 @@ public:
 
 } // end namespace rtt_cdi_test
 
-#endif // __cdi_DummyGrayOpacity_hh__
+#endif // rtt_cdi_DummyGrayOpacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/test/DummyGrayOpacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

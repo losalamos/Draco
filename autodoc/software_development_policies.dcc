@@ -1,7 +1,7 @@
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // software_development_policies.dcc
 // Example configure commands
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 /*!
 
@@ -12,7 +12,7 @@ Before a file is commited back to the version control repository, the
 copyright statment in the file header must be updated.  The updated statement
 should have one of these forms:
 
-- Copyright (C) 2016-2019 Triad National Security, LLC. All rights reserved.
+- Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved.
 
 \section agile_manifesto Agile C++ Development
 
@@ -142,6 +142,6 @@ C++? How did you find it? Did I miss anything obvious above?
 
 
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

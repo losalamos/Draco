@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/test/tstYlm.cc
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
  * \brief  
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,9 +18,9 @@
 using namespace std;
 using namespace rtt_sf;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Tests
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void comparecPlk(unsigned const l, int const k, double const x,
                  double const expVal, rtt_dsxx::UnitTest &ut) {
@@ -41,7 +41,7 @@ void comparecPlk(unsigned const l, int const k, double const x,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstcPlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -105,7 +105,7 @@ void tstcPlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void compareNormYlk(unsigned const l, int const k, double const theta,
                     double const phi, double const expVal,
                     rtt_dsxx::UnitTest &ut) {
@@ -126,7 +126,7 @@ void compareNormYlk(unsigned const l, int const k, double const theta,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void compareRealYlk(unsigned const l, int const k, double const theta,
                     double const phi, double const expVal,
                     rtt_dsxx::UnitTest &ut) {
@@ -147,7 +147,7 @@ void compareRealYlk(unsigned const l, int const k, double const theta,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void compareGalerkinYlk(unsigned const l, int const k, double const theta,
                         double const phi, double const expVal,
                         rtt_dsxx::UnitTest &ut) {
@@ -168,7 +168,7 @@ void compareGalerkinYlk(unsigned const l, int const k, double const theta,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void compareComplexYlk(unsigned const l, int const k, double const theta,
                        double const phi, double const expVal,
                        rtt_dsxx::UnitTest &ut) {
@@ -189,7 +189,7 @@ void compareComplexYlk(unsigned const l, int const k, double const theta,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -246,7 +246,7 @@ void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
 
   return;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstRealYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -272,7 +272,7 @@ void tstRealYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -299,7 +299,7 @@ void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -325,7 +325,7 @@ void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -338,6 +338,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of testYlm.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

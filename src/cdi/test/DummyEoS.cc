@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/test/DummyEoS.cc
  * \author Kelly Thompson
  * \date   Mon Jan 8 16:25:09 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
 #include <cmath>
@@ -17,7 +17,7 @@ namespace rtt_cdi_test {
 // Constructors & Destructors //
 // -------------------------- //
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for DummyEoS object.
  * 
@@ -29,7 +29,7 @@ DummyEoS::DummyEoS() {
   // empty
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Default DummyEoS() destructor.
  *
@@ -44,7 +44,7 @@ DummyEoS::~DummyEoS() {
 // Accessors //
 // --------- //
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief EoS accessor that returns a single specific electron 
  *        internal energy that corresponds to the provided
@@ -63,7 +63,7 @@ double DummyEoS::getSpecificElectronInternalEnergy(double temperature,
   return temperature + 1000.0 * density;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief EoS accessor that returns a vector of specific
  *     electron internal energies that
@@ -87,7 +87,7 @@ std::vector<double> DummyEoS::getSpecificElectronInternalEnergy(
   return seie;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve the electron based heat capacity for this
  *        material at the provided density and temperature.
@@ -103,7 +103,7 @@ double DummyEoS::getElectronHeatCapacity(double temperature,
   return temperature + density / 1000.0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve a set of electron based heat capacities for
  *        this material that correspond to the tuple list of
@@ -124,7 +124,7 @@ DummyEoS::getElectronHeatCapacity(const std::vector<double> &vtemperature,
   return ehc;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve the specific ion internal energy for this
  *        material at the provided density and temperature.    
@@ -140,7 +140,7 @@ double DummyEoS::getSpecificIonInternalEnergy(double temperature,
   return getSpecificElectronInternalEnergy(density, temperature);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve a set of specific ion internal energies for
  *        this material that correspond to the tuple list of
@@ -158,7 +158,7 @@ std::vector<double> DummyEoS::getSpecificIonInternalEnergy(
   return getSpecificElectronInternalEnergy(vdensity, vtemperature);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve the ion based heat capacity for this
  *        material at the provided density and temperature.
@@ -173,7 +173,7 @@ double DummyEoS::getIonHeatCapacity(double temperature, double density) const {
   return getElectronHeatCapacity(density, temperature);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve a set of ion based heat capacities for
  *        this material that correspond to the tuple list of
@@ -191,7 +191,7 @@ DummyEoS::getIonHeatCapacity(const std::vector<double> &vtemperature,
   return getElectronHeatCapacity(vdensity, vtemperature);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve the number of free electrons per ion for this
  *        material at the provided density and temperature.
@@ -207,7 +207,7 @@ double DummyEoS::getNumFreeElectronsPerIon(double temperature,
   return temperature / 100.0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve a set of free electrons per ion averages for
  *        this material that correspond to the tuple list of
@@ -226,7 +226,7 @@ DummyEoS::getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
   return nfepi;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve the electron based thermal conductivity for this
  *        material at the provided density and temperature.
@@ -242,7 +242,7 @@ double DummyEoS::getElectronThermalConductivity(double temperature,
   return 1000.0 * temperature + density;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Retrieve a set of electron based thermal conductivities for
  *        this material that correspond to the tuple list of
@@ -264,7 +264,7 @@ std::vector<double> DummyEoS::getElectronThermalConductivity(
   return ebtc;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Return Electron Temperature (keV) given Specific Electron Internal Energy (kJ/g).
 double DummyEoS::getElectronTemperature(double /*density*/,
                                         double SpecificElectronInternalEnergy,
@@ -281,6 +281,6 @@ double DummyEoS::getIonTemperature(double /*density*/,
 
 } // end namespace rtt_cdi_test
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/test/DummyEoS.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

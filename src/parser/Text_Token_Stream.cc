@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Text_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Contains definitions of all Text_Token_Stream member functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Text_Token_Stream.hh"
 #include "ds++/path.hh"
@@ -20,7 +20,7 @@
 namespace rtt_parser {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Helper function to allow a string && argument to take over storage of a
 // string.
 static string give(string &source) {
@@ -29,13 +29,13 @@ static string give(string &source) {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 char const default_ws_string[] = "=:;,";
 
 set<char> const Text_Token_Stream::default_whitespace(
     default_ws_string, default_ws_string + sizeof(default_ws_string));
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the specified set of breaking
  * whitespace characters.
@@ -77,7 +77,7 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
   Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the default set of breaking
  * whitespace characters. See the previous constructor documentation for a
@@ -95,7 +95,7 @@ Text_Token_Stream::Text_Token_Stream(void)
   Ensure(!no_nonbreaking_ws());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Scan the next token from the character stream. The character stream
  * is accessed via the fill_character_buffer, error, and end functions, which
@@ -251,7 +251,7 @@ Token Text_Token_Stream::fill_() {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief This function searches for the argument character in its internal
  *        list of whitespace characters.
@@ -265,7 +265,7 @@ bool Text_Token_Stream::is_whitespace(char const c) const {
   return isspace(c) || whitespace_.count(c);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief This function searches for the argument character in the
  * Token_Stream's internal list of nonbreaking whitespace characters.
@@ -280,7 +280,7 @@ bool Text_Token_Stream::is_nb_whitespace(char const c) const {
   return !whitespace_.count(c) && (c == ' ' || c == '\t');
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -305,7 +305,7 @@ char Text_Token_Stream::pop_char_() {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a floating literal.
  *
@@ -325,7 +325,7 @@ unsigned Text_Token_Stream::scan_floating_literal_() {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a digit sequence.
  *
@@ -338,7 +338,7 @@ unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an exponent part.
  *
@@ -359,7 +359,7 @@ unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a fractional constant.
  *
@@ -383,7 +383,7 @@ unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an integer literal.
  *
@@ -400,7 +400,7 @@ unsigned Text_Token_Stream::scan_integer_literal_() {
   return pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan decimal literal.
  *
@@ -418,7 +418,7 @@ unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan hexadecimal literal.
  *
@@ -447,7 +447,7 @@ unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Try to scan octal literal.
  *
@@ -465,7 +465,7 @@ unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -486,7 +486,7 @@ char Text_Token_Stream::peek_(unsigned const pos) {
   return buffer_[pos];
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function flushes the Text_Token_Stream's internal buffers, so that
  * scanning resumes at the beginning of the file stream.  It is normally called
@@ -506,10 +506,10 @@ void Text_Token_Stream::rewind() {
   Ensure(error_count() == 0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Text_Token_Stream::check_class_invariants() const { return line_ > 0; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function skips past any whitespace present at the cursor position,
  * leaving the cursor at the first non-whitespace character following the
@@ -552,7 +552,7 @@ void Text_Token_Stream::eat_whitespace_() {
   // private member function -- no invariant check
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param c Character to be pushed onto the back of the character queue.
  */
@@ -567,7 +567,7 @@ void Text_Token_Stream::character_push_back_(char const c) {
   Ensure(buffer_.back() == c);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param file_name Name of file to be included at this point. On
  * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
@@ -584,7 +584,7 @@ void Text_Token_Stream::character_push_back_(char const c) {
  * child class must implement this function, but part of its implementation
  * must be to include
  *
- * \code 
+ * \code
  *    Text_Token_Stream::push_include(include_file_name);
  * \endcode
  *
@@ -620,14 +620,14 @@ void Text_Token_Stream::push_include(std::string &file_name) {
   Require(line() == 1);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function is pure virtual with an implementation. This means that every
  * child class must implement this function, but part of its implementation
  * must be to reset the line number by directly calling the base version. That
  * is, every child class must include
  *
- * \code 
+ * \code
  *    Text_Token_Stream::pop_include(include_file_name);
  * \endcode
  *
@@ -644,7 +644,7 @@ void Text_Token_Stream::pop_include() {
   Require(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Token Text_Token_Stream::scan_keyword() {
   Require(isalpha(peek_()) || peek_() == '_');
 
@@ -707,7 +707,7 @@ Token Text_Token_Stream::scan_keyword() {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Token Text_Token_Stream::scan_manifest_string() {
   Require(peek_() == '"');
 
@@ -774,12 +774,15 @@ Token Text_Token_Stream::scan_manifest_string() {
   text += '"';
   pop_char_();
 
+  //! \cond doxygen_ignore_block
   Ensure(check_class_invariants());
+  //! \endcond
+
   return {STRING, give(text), give(token_location)};
 }
 
 } // end namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Text_Token_Stream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

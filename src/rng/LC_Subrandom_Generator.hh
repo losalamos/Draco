@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/LC_Subrandom_Generator.hh
  * \author Kent Budge
  * \brief  Definition of class LC_Subrandom_Generator
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rng_LC_Subrandom_Generator_hh
 #define rng_LC_Subrandom_Generator_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_rng {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class LC_Subrandom_Generator
  * \brief Generator for a sequence of subrandom (pseudorandom) vectors.
@@ -27,7 +27,7 @@ namespace rtt_rng {
  * this sequence as quadrature points converges smoothly, but only as
  * 1/sqrt(N) rather than 1/N.
  */
-//===========================================================================//
+//============================================================================//
 
 class LC_Subrandom_Generator : public Subrandom_Generator {
 public:
@@ -71,6 +71,6 @@ private:
 
 #endif // rng_LC_Subrandom_Generator_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of rng/LC_Subrandom_Generator.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

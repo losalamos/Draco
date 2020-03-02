@@ -69,6 +69,7 @@
 
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
 set( VERBOSE_DEBUG OFF )
 
 function(JOIN VALUES GLUE OUTPUT)
@@ -249,7 +250,7 @@ macro( aut_register_test )
   endif(VERBOSE_DEBUG)
 
   # Look for python, which is used to drive application unit tests
-  if( NOT PYTHONINTERP_FOUND )
+  if( NOT Python_Interpreter_FOUND )
      # python should have been found when vendor_libraries.cmake was run.
     message( FATAL_ERROR "Draco requires python. Python not found in PATH.")
   endif()
@@ -289,7 +290,7 @@ macro( aut_register_test )
   if (${PYTHON_TEST})
     add_test(
       NAME ${ctestname_base}${argname}
-      COMMAND "${PYTHON_EXECUTABLE}"
+      COMMAND "${Python_EXECUTABLE}"
       ${aut_DRIVER}
       ${SHARED_ARGUMENTS}
       )
@@ -381,7 +382,9 @@ macro( add_app_unit_test )
   else()
 
     # Scalar tests
-    if( "${MPIEXEC_EXECUTABLE}" MATCHES "aprun" OR "${MPIEXEC_EXECUTABLE}" MATCHES "srun" )
+    if( "${MPIEXEC_EXECUTABLE}" MATCHES "aprun" OR
+        "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" OR
+        "${MPIEXEC_EXECUTABLE}" MATCHES "srun" )
       set( RUN_CMD "${MPIEXEC_EXECUTABLE} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1" )
     endif()
   endif()

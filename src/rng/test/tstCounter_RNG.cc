@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/test/tstCounter_RNG.cc
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Counter_RNG tests.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,9 +18,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_rng;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void test_equality(UnitTest &ut) {
   // Create a Counter_RNG by specifying a seed and stream number.
@@ -191,7 +191,7 @@ void test_equality(UnitTest &ut) {
     PASSMSG("test_equality passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_stream(UnitTest &ut) {
   // Create two identical Counter_RNGs.
   uint32_t seed = 0x12121212;
@@ -286,7 +286,7 @@ void test_stream(UnitTest &ut) {
     PASSMSG("test_stream passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_alias(UnitTest &ut) {
   // Create four Counter_RNGs; rng and rng2 are identical, and rng, rng2, and
   // rng3 have the same stream number.
@@ -499,7 +499,7 @@ void test_alias(UnitTest &ut) {
     PASSMSG("test_alias passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_rollover(UnitTest &ut) {
   // Create a Counter_RNG with a large counter value.
   vector<uint64_t> data(CBRNG_DATA_SIZE);
@@ -568,7 +568,7 @@ void test_rollover(UnitTest &ut) {
     PASSMSG("test_rollover passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_spawn(UnitTest &ut) {
   // Create a generator.
   uint32_t seed = 0xabcdef;
@@ -852,7 +852,7 @@ void test_spawn(UnitTest &ut) {
     PASSMSG("test_spawn passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_unique(UnitTest &ut) {
   // Create three identical generators.
   uint32_t seed = 332211;
@@ -932,7 +932,7 @@ void test_unique(UnitTest &ut) {
     PASSMSG("test_unique passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -947,6 +947,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstCounter_RNG.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

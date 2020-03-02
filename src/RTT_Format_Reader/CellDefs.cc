@@ -1,18 +1,18 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellDefs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDefs class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "CellDefs.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Parses the cell_defs (cell definitions) data block from the mesh
  *        file via calls to private member functions.
@@ -24,7 +24,7 @@ void CellDefs::readCellDefs(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_defs block (cell definitions) keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +38,7 @@ void CellDefs::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_defs (cell definitions) block data.
  * \param meshfile Mesh file name.
@@ -61,7 +61,7 @@ void CellDefs::readDefs(ifstream &meshfile) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_cell_defs block keyword.
  * \param meshfile Mesh file name.
@@ -75,7 +75,7 @@ void CellDefs::readEndKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file to an
  *        alternative coordinate-system independent cell definition (e.g.,
@@ -104,7 +104,7 @@ void CellDefs::redefineCellDefs(
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Used by the CellDefs class objects to parse the number of nodes and
  *        sides per cell, the side type indices, and the nodes for each side.
@@ -151,7 +151,7 @@ void CellDef::readDef(ifstream &meshfile) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file to an
  *        alternative coordinate-system independent cell definition (e.g.,
@@ -468,7 +468,7 @@ void CellDef::redefineCellDef(vector_uint const &new_side_types,
       // coordinate system. The transformed cell may be rotated about it's
       // outward normal relative to the input cell definition.
       node_map[0] = 0;
-      // The right hand rule has to apply, so only the ordering of thenodes
+      // The right hand rule has to apply, so only the ordering of the nodes
       // (edges) can change for a two-dimensional cell.
       size_t old_node = 0;
       size_t new_node = 0;
@@ -512,6 +512,6 @@ void CellDef::redefineCellDef(vector_uint const &new_side_types,
 
 } // end namespace rtt_RTT_Format_Reader
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellDefs.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

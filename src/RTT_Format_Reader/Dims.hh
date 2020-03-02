@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/Dims.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Dims class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_Dims_hh__
-#define __RTT_Format_Reader_Dims_hh__
+#ifndef rtt_RTT_Format_Reader_Dims_hh
+#define rtt_RTT_Format_Reader_Dims_hh
 
 #include "ds++/Assert.hh"
 #include <algorithm>
@@ -229,27 +229,27 @@ public:
   /*!
    * \brief Validates the specified side type.
    * \param sidetype Side type number.
-   * \return The existance of the side type.
+   * \return The existence of the side type.
    */
   bool allowed_side_type(size_t sidetype) const {
-    return side_types.end() !=
-           std::find(side_types.begin(), side_types.end(), sidetype);
+    return side_types.end() != std::find(side_types.begin(), side_types.end(),
+                                         static_cast<int>(sidetype));
   }
   /*!
    * \brief Validates the specified cell type.
    * \param celltype Cell type number.
-   * \return The existance of the cell type.
+   * \return The existence of the cell type.
    */
   bool allowed_cell_type(size_t celltype) const {
-    return cell_types.end() !=
-           std::find(cell_types.begin(), cell_types.end(), celltype);
+    return cell_types.end() != std::find(cell_types.begin(), cell_types.end(),
+                                         static_cast<int>(celltype));
   }
 };
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_Dims_hh__
+#endif // rtt_RTT_Format_Reader_Dims_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Dims.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

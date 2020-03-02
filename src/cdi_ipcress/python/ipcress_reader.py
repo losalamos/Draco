@@ -16,6 +16,7 @@
 import re
 from numpy import arange, sin, pi, min, max
 import sys
+import struct
 import numpy as np
 from struct import *
 from math import *
@@ -40,6 +41,16 @@ def get_data_for_id(filename, data_start_index, num_entries):
 
 
 ################################################################################
+def write_data_for_id(filename, data_start_index, num_entries, new_values):
+  # "wb" is write binary mode
+  with open(filename, "r+b") as f:
+    f.seek(data_start_index*8)
+    for i in range(num_entries):
+      s = struct.pack('>d', new_values[i])
+      f.write(s)
+################################################################################
+
+################################################################################
 def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, \
     target_rho, target_T, print_str=""):
   n_rho = len(rho_grid)
@@ -51,9 +62,10 @@ def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, \
   if (target_rho  > np.max(rho_grid)):  target_rho = np.max(rho_grid)
   if (target_T    < np.min(T_grid)):    target_T = np.min(T_grid)
   if (target_T    > np.max(T_grid)):    target_T = np.max(T_grid)
-  print( \
-    "Interpolating {0}--Target rho: {1} , target T: {2}".format( \
-    print_str, target_rho, target_T))
+  if (print_str is not None):
+    print( \
+      "Interpolating {0}--Target rho: {1} , target T: {2}".format( \
+      print_str, target_rho, target_T))
 
   # get correct index of adjacent density points
   rho_L = 1000; rho_G =0
@@ -99,7 +111,8 @@ def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, \
 ###############################################################################
 
 ################################################################################
-def interpolate_gray_opacity_data(T_grid, rho_grid, op_data, target_rho, target_T):
+def interpolate_gray_opacity_data(T_grid, rho_grid, op_data, target_rho, \
+    target_T, print_str = ""):
   n_rho = len(rho_grid)
   n_T = len(T_grid)
 
@@ -108,7 +121,10 @@ def interpolate_gray_opacity_data(T_grid, rho_grid, op_data, target_rho, target_
   if (target_rho  > np.max(rho_grid)):  target_rho = np.max(rho_grid)
   if (target_T    < np.min(T_grid)):    target_T = np.min(T_grid)
   if (target_T    > np.max(T_grid)):    target_T = np.max(T_grid)
-  print("Target rho: {0} , target T: {1}".format(target_rho, target_T))
+  if (print_str is not None):
+    print( \
+      "Interpolating {0}--Target rho: {1} , target T: {2}".format( \
+      print_str, target_rho, target_T))
 
   rho_L = 1000; rho_G =0
   for rho_i, rho in enumerate(rho_grid[:-1]):
@@ -170,7 +186,7 @@ def read_information_from_file(ipcress_file):
   #print("Beginnging of data: {0}".format(toc_int[0]))
   #print("Max records: {0} , max search keys: {1}".format(mxrec, mxkey))
 
-  property = []
+  mat_property = []
 
   ds = []
   dfo = []
@@ -211,13 +227,18 @@ def read_information_from_file(ipcress_file):
       temp_property = []
       for j in range(mxkey):
         three_string = []
-        three_string.append( f.read(8))
-        three_string.append( f.read(8))
-        three_string.append( f.read(8))
+        three_string.append( f.read(8).decode("utf-8"))
+        three_string.append( f.read(8).decode("utf-8"))
+        three_string.append( f.read(8).decode("utf-8"))
         if (j==0): temp_property.append(three_string[2].strip() )
         elif (j==1): temp_property.append(three_string[0].strip())
         else: temp_property.append(i) #index of data table containing values
-      property.append(temp_property)
+      try:
+        temp_property = [temp_property[0].decode('ascii'), \
+                         temp_property[1].decode('ascii'), temp_property[2]]
+        mat_property.append(temp_property)
+      except:
+        mat_property.append(temp_property)
 
   materials = []
   for m in range(num_mats):
@@ -232,8 +253,46 @@ def read_information_from_file(ipcress_file):
   #  print(i)
 
   #return the list of available properties, data file offsets and data sizes
-  return materials, property, dfo, ds
+  return materials, mat_property, dfo, ds
 ################################################################################
+
+
+###############################################################################
+def write_information_to_file(ipcress_file, material_ID, mat_property, new_values):
+  materials, property_list, dfo, ds = read_information_from_file(ipcress_file)
+  # check to make sure material is in file
+  material_IDs = []
+  for imat in materials:
+    material_IDs.append(str(imat[1]))
+  if (not (material_ID in material_IDs)):
+    print("ERROR: Material ID not found in file, not changing anything!")
+    return
+
+  # try to find property in file
+  property_found = False
+  propery_index = 0
+  for prop_i, prop in enumerate(property_list):
+    if (material_ID == prop[0] and mat_property == prop[1]):
+      property_found = True
+      property_index = prop_i
+      break
+
+  # make sure sizes match of property you're about to write
+  if (property_found and  ds[property_index+1] != len(new_values)):
+    print("ERROR: Number of new values does not match size of old values, not changing anything!")
+    return
+
+  # if the combination of property and material was found, write the new data to
+  # the ipcress file
+  if property_found:
+    write_data_for_id( ipcress_file, dfo[property_index+1], \
+      ds[property_index+1], new_values)
+  else:
+    print("ERROR: Combination of material ID and property not found, not changing anything!")
+  return
+################################################################################
+
+
 
 ################################################################################
 # Checks to see if there are any zeros in the opcaity data--zero data is

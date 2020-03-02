@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of File_Token_Stream methods.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -277,14 +277,14 @@ void File_Token_Stream::letter::rewind() {
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void File_Token_Stream::push_include(std::string &file_name) {
   Text_Token_Stream::push_include(file_name);
   letters_.push(letter_);
   letter_ = make_shared<letter>(file_name);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void File_Token_Stream::pop_include() {
   Require(!letters_.empty());
 

@@ -2,8 +2,8 @@
 # file   src/compton/CMakeLists.txt
 # author Kendra Keady
 # date   2017 February 28
-# brief  Instructions for building compton Makefiles.
-# note   Copyright (C) 2017-2019 Triad National Security, LLC.
+# brief  Instructions for building Compton Makefiles.
+# note   Copyright (C) 2017-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -47,6 +47,10 @@ if( TARGET COMPTON::compton )
   install( TARGETS Lib_compton EXPORT draco-targets DESTINATION
     ${DBSCFGDIR}lib )
   install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton )
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  install(FILES $<TARGET_PDB_FILE:Lib_compton> DESTINATION ${DBSCFGDIR}lib
+    OPTIONAL)
+endif()
 
   # -------------------------------------------------------------------------- #
   # Unit tests
@@ -64,7 +68,7 @@ if( TARGET COMPTON::compton )
 
 else()
 
-  # If no compton library, only install headers (stubs).
+  # If no Compton library, only install headers (stubs).
   install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton )
 
 endif()

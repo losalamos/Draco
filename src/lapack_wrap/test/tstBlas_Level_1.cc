@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
 * \file   lapack_wrap/test/tstBlas_Level_1.cc
 * \brief  Test Blas level 1 wrap.
-* \note   Copyright (C) 2016-2019 Triad National Security, LLC
+* \note   Copyright (C) 2016-2020 Triad National Security, LLC
 *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "lapack_wrap/Blas.hh"
 #include "ds++/Release.hh"
@@ -20,24 +20,27 @@ using rtt_lapack_wrap::blas_dot;
 using rtt_lapack_wrap::blas_nrm2;
 using rtt_lapack_wrap::blas_scal;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T> void tst_copy(rtt_dsxx::UnitTest &ut) {
   vector<T> x(10, 0.0);
   vector<T> y(10, 0.0);
 
   for (size_t i = 0; i < 10; i++)
-    x[i] = static_cast<T>(1.2 + i);
+    x[i] = static_cast<T>(1.2) + static_cast<T>(i);
 
   blas_copy(10, &x[0], 1, &y[0], 1);
-  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
+                         static_cast<T>(1.0e-12)));
 
   std::fill(y.begin(), y.end(), static_cast<T>(0.0));
-  FAIL_IF(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
+  FAIL_IF(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
+                     static_cast<T>(1.0e-12)));
 
   blas_copy(x, 1, y, 1);
-  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end()));
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
+                         static_cast<T>(1.0e-12)));
 
   string ttype(typeid(T).name());
   if (ut.numFails == 0)
@@ -47,7 +50,7 @@ template <typename T> void tst_copy(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T> void tst_scal(rtt_dsxx::UnitTest &ut) {
   vector<double> x(10, 0.0);
   vector<double> y(10, 0.0);
@@ -76,7 +79,7 @@ template <typename T> void tst_scal(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T> void tst_dot(rtt_dsxx::UnitTest &ut) {
   vector<double> x(10, 0.0);
   vector<double> y(10, 0.0);
@@ -106,7 +109,7 @@ template <typename T> void tst_dot(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T> void tst_axpy(rtt_dsxx::UnitTest &ut) {
   vector<double> x(10, 0.0);
   vector<double> y(10, 1.0);
@@ -134,7 +137,7 @@ template <typename T> void tst_axpy(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T> void tst_nrm2(rtt_dsxx::UnitTest &ut) {
   vector<double> x(10, 0.0);
 
@@ -142,7 +145,7 @@ template <typename T> void tst_nrm2(rtt_dsxx::UnitTest &ut) {
   double nrm = 0.0;
 
   for (size_t i = 0; i < x.size(); i++) {
-    x[i] = 1.25 + (1.0 - i * 0.5);
+    x[i] = 1.25 + (1.0 - static_cast<double>(i) * 0.5);
     ref += x[i] * x[i];
   }
   ref = sqrt(ref);
@@ -166,7 +169,7 @@ template <typename T> void tst_nrm2(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -184,6 +187,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstBlas_Level_1.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

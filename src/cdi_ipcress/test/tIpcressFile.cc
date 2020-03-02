@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressFile.cc
  * \author Kelly Thompson
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Ipcress file test
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi_ipcress/IpcressFile.hh"
@@ -17,29 +17,29 @@ using namespace std;
 
 using rtt_cdi_ipcress::IpcressFile;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Tests the IpcressFile constructor and access routines.
 void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
 
-  const std::string op_data_file = ut.getTestSourcePath() + "Al_BeCu.ipcress";
+  const string op_data_file = ut.getTestSourcePath() + "two-mats.ipcress";
 
   // Start the test.
 
-  std::cout << "\nTesting the IpcressFile component of the "
-            << "cdi_ipcress package." << std::endl;
+  cout << "\nTesting the IpcressFile component of the "
+       << "cdi_ipcress package." << endl;
 
   // Create a IpcressFile Object
 
-  std::cout << "Creating a Ipcress File object\n" << std::endl;
+  cout << "Creating a Ipcress File object\n" << endl;
 
   shared_ptr<IpcressFile> spGF(new rtt_cdi_ipcress::IpcressFile(op_data_file));
 
   // Test the new object to verify the constructor and accessors.
 
-  std::vector<size_t> matIDs = spGF->getMatIDs();
+  vector<size_t> matIDs = spGF->getMatIDs();
   if (matIDs[0] == 10001 && matIDs[1] == 10002)
     PASSMSG("Found two materials in IPCRESS file with expected IDs.");
   else
@@ -81,35 +81,34 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  std::cout << "\nMaterials found in the data file:" << std::endl;
+  cout << "\nMaterials found in the data file:" << endl;
 
   for (size_t i = 0; i < spGF->getNumMaterials(); ++i)
-    std::cout << "  Material " << i << " has the identification number "
-              << spGF->getMatIDs()[i] << std::endl;
+    cout << "  Material " << i << " has the identification number "
+         << spGF->getMatIDs()[i] << endl;
 
   // Retrieve a list of fields available for material 10001
   {
     size_t const matid(10001);
-    std::vector<std::string> fieldNames = spGF->listDataFieldNames(matid);
-    std::cout << "\nMaterial 0 (10001) provides the following fields:\n";
+    vector<string> fieldNames = spGF->listDataFieldNames(matid);
+    cout << "\nMaterial 0 (10001) provides the following fields:\n";
     for (size_t i = 0; i < fieldNames.size(); ++i)
-      std::cout << "   " << fieldNames[i] << "\n";
-    std::cout << std::endl;
+      cout << "   " << fieldNames[i] << "\n";
+    cout << endl;
 
-    if (fieldNames[0] == std::string("tgrid"))
+    if (fieldNames[0] == string("tgrid"))
       PASSMSG("Found tgrid in the list of fields for mat 10001.");
     else
       FAILMSG("Did not find tgrid in the list of fields for mat 10001.");
 
-    std::vector<double> tgrid = spGF->getData(matid, fieldNames[0]);
-    std::cout << "\nMaterial 0 (10001)'s tgrid field has " << tgrid.size()
-              << " entries: \n{ ";
+    vector<double> tgrid = spGF->getData(matid, fieldNames[0]);
+    cout << "\nMaterial 0 (10001)'s tgrid field has " << tgrid.size()
+         << " entries: \n{ ";
     for (size_t i = 0; i < tgrid.size() - 1; ++i)
-      std::cout << tgrid[i] << ", ";
-    std::cout << tgrid[tgrid.size() - 1] << " }\n" << std::endl;
+      cout << tgrid[i] << ", ";
+    cout << tgrid[tgrid.size() - 1] << " }\n" << endl;
 
-    std::vector<double> tgrid_expect = {0.0005, 0.0015, 0.004, 0.0125, 0.04,
-                                        0.125,  0.4,    1.25,  4.0,    15.0};
+    vector<double> tgrid_expect = {0.01, 0.2575, 0.505, 0.7525, 1.0};
     if (rtt_dsxx::soft_equiv(tgrid_expect.begin(), tgrid_expect.end(),
                              tgrid.begin(), tgrid.end()))
       PASSMSG("tgrid for mat 10001 has the expected values.");
@@ -118,7 +117,7 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -127,6 +126,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tIpcressFile.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
 * \author Thomas M. Evans, Kelly Thompson <kgt@lanl.gov>
 * \date   Mon Mar 25 17:06:25 2002
 * \brief  Implementation of C4 serial option.
-* \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+* \note   Copyright (C) 2016-2020 Triad National Security, LLC.
 *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -88,7 +88,7 @@ void send_is(C4_Req & /*request*/, const T * /*buffer*/, int /*size*/,
   Insist(false, "send_is is not support for C4_SCALAR builds.");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 C4_Req receive_async(T * /*buffer*/, int /*size*/, int /*source*/,
                      int /*tag*/) {

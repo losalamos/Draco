@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.hh
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_General_Octant_Quadrature_hh
 #define quadrature_General_Octant_Quadrature_hh
@@ -16,12 +16,12 @@
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class General_Octant_Quadrature
  * \brief A class to encapsulate a client-defined ordinate set.
  */
-//===========================================================================//
+//============================================================================//
 
 class General_Octant_Quadrature : public Octant_Quadrature {
 public:
@@ -82,6 +82,6 @@ private:
 
 #endif // quadrature_General_Octant_Quadrature_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/General_Octant_Quadrature.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

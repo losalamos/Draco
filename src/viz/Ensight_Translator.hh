@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   viz/Ensight_Translator.hh
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator header file.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_viz_Ensight_Translator_hh
 #define rtt_viz_Ensight_Translator_hh
@@ -18,7 +18,7 @@
 
 namespace rtt_viz {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \enum Ensight_Cell_Types
  *
@@ -32,7 +32,7 @@ namespace rtt_viz {
  * \sa Ensight example page for examples of how this enumeration is used to
  *     generate the iel_type field.
  */
-//===========================================================================//
+//============================================================================//
 
 enum Ensight_Cell_Types {
   point = 0,
@@ -53,7 +53,7 @@ enum Ensight_Cell_Types {
   unstructured
 };
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Ensight_Translator
  *
@@ -118,7 +118,7 @@ enum Ensight_Cell_Types {
  * fields are dumped.  After running the test look in testproblem_ensight to see
  * the output.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_viz Ensight_Translator {
 public:
@@ -229,7 +229,8 @@ public:
   Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
                      const SSF &vdata_names, const SSF &cdata_names,
                      const bool overwrite = false,
-                     const bool static_geom = false, const bool binary = false);
+                     const bool static_geom = false, const bool binary = false,
+                     const double reset_time = -1.0);
 
   // Do an Ensight_Dump.
   template <typename ISF, typename IVF, typename SSF, typename FVF>
@@ -261,7 +262,7 @@ public:
 
 } // end namespace rtt_viz
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // include template definitions so that template functions will be automatically
 // instantiated in client code
 
@@ -269,6 +270,6 @@ public:
 
 #endif // rtt_viz_Ensight_Translator_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of viz/Ensight_Translator.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

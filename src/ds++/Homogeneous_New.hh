@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Homogeneous_New.hh
  * \author Kent Budge
  * \date   Tue Nov 28 08:27:37 2006
  * \brief  Definition of class Homogeneous_New
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef dsxx_Homogeneous_New_hh
 #define dsxx_Homogeneous_New_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Homogeneous_New
  * \brief Allocator for large number of individual objects of identical size
@@ -81,7 +81,7 @@ namespace rtt_dsxx {
  * The concepts underlying this class are from a paper by Andy Koenig
  * presented at a USENIX meeting in the early 1990s.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_dsxx Homogeneous_New {
 public:
@@ -128,10 +128,10 @@ private:
   // IMPLEMENTATION
 
   //! Copy constructor: not implemented
-  Homogeneous_New(const Homogeneous_New &rhs);
+  Homogeneous_New(const Homogeneous_New &rhs) = delete;
 
   //! Assignment operator for Homogeneous_New: not implemented.
-  Homogeneous_New &operator=(const Homogeneous_New &rhs);
+  Homogeneous_New &operator=(const Homogeneous_New &rhs) = delete;
 
   void allocate_block_(unsigned const block_size);
 
@@ -148,6 +148,6 @@ private:
 
 #endif // dsxx_Homogeneous_New_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Homogeneous_New.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/Termination_Detector.hh
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_Termination_Detector_hh
 #define c4_Termination_Detector_hh
@@ -14,7 +14,7 @@
 
 namespace rtt_c4 {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Termination_Detector
  * \brief Detect termination of an indeterminate parallel algorithm.
@@ -46,7 +46,7 @@ namespace rtt_c4 {
  *
  * See test/tstTermination_Detector for an example of how this works.
  */
-//===========================================================================//
+//============================================================================//
 
 class Termination_Detector {
 public:
@@ -121,6 +121,6 @@ private:
 
 #endif // c4_Termination_Detector_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/Termination_Detector.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

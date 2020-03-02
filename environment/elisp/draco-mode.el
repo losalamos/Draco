@@ -4,7 +4,7 @@
 ;; Author : Kelly Thompson
 ;; Created: 30 Nov 2004
 ;; Brief  : ELisp package for making Draco related stuff easier.
-;; Note   : Copyright (C) 2016-2019 Triad National Security, LLC.
+;; Note   : Copyright (C) 2016-2020 Triad National Security, LLC.
 ;;======================================================================
 ;; Commentary:
 ;;
@@ -438,7 +438,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 "Default function for inserting a comment block in front of a C++
 function or method. Width is set by draco-code-comment-width.
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief
  *
@@ -466,11 +466,11 @@ function or method. Width is set by draco-code-comment-width.
 "Function for inserting a class desicription boilerplate.  Width is set
 by draco-code-comment-width.
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class
  * \brief
-//===========================================================================//
+//============================================================================//
 "
   (interactive)
   (insert "//")
@@ -715,9 +715,9 @@ c-----------------------------------------------------------------------------c
 
 (defun draco-cc-divider ()
 "Insert a C style comment block:
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //
-//---------------------------------------------------------------------------//"
+//----------------------------------------------------------------------------//"
   (interactive)
   (beginning-of-line)
   (insert "//")

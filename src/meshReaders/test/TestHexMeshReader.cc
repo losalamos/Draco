@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   meshReaders/test/TestHexMeshReader.cc
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:37:01 2002
  * \brief  Hex Mesh Reader test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "TestHexMeshReader.hh"
 #include "ds++/Release.hh"
@@ -17,9 +17,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void runTest(UnitTest &ut) {
   using rtt_mesh_element::Element_Definition;
@@ -28,7 +28,7 @@ void runTest(UnitTest &ut) {
   cout << "\n******* CIC-19 Hex Mesh Reader Tests *******" << std::endl;
 
   // Read and test a 1D mesh.g
-  string const inpPath = ut.getTestInputPath();
+  string const inpPath = ut.getTestSourcePath();
 
   std::string filename = inpPath + "slab.mesh";
   std::cout << "Creating mesh from file: " << filename << std::endl;
@@ -84,7 +84,7 @@ void runTest(UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 namespace rtt_meshReaders_test {
 
 bool check_mesh(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
@@ -458,7 +458,7 @@ bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets,
 }
 } // namespace rtt_meshReaders_test
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -467,6 +467,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of TestHexMeshReader.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

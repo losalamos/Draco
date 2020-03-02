@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Abstract_Class_Parser.i.hh
  * \author Kent Budge
  * \date   Thu Jul 17 14:08:42 2008
  * \brief  Member definitions of class Abstract_Class_Parser
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef utils_Abstract_Class_Parser_i_hh
 #define utils_Abstract_Class_Parser_i_hh
@@ -14,7 +14,7 @@
 //! \bug This file needs to be cleaned up for doxygen parsing.
 //! \cond doxygen_ignore_block
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 Contextual_Parse_Functor<Abstract_Class, Context, get_context>::
@@ -30,7 +30,7 @@ operator()(Token_Stream &tokens) const {
   return f_(tokens, get_context());
 }
 
-//===========================================================================//
+//============================================================================//
 /*!
  * Helper class defining a table of raw strings created by strdup that will be
  * properly deallocated using free on program termination.
@@ -44,7 +44,7 @@ public:
 };
 DLL_PUBLIC_parser extern c_string_vector abstract_class_parser_keys;
 
-//===========================================================================//
+//============================================================================//
 /*
  * The following rather lengthy and clumsy declaration declares storage for the
  * parse functions.
@@ -59,7 +59,7 @@ template <typename Class, Parse_Table &get_parse_table(),
 vector<Parse_Function> Abstract_Class_Parser<
     Class, get_parse_table, get_parsed_object, Parse_Function>::map_;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function allows a host code to register children of the abstract class
  * with the parser. This helps support extensions by local developers.
@@ -92,7 +92,7 @@ void Abstract_Class_Parser<
   Ensure(check_static_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function allows a host code to register children of the abstract class
  * with the parser. This helps support extensions by local developers.
@@ -126,7 +126,7 @@ void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
   Ensure(check_static_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This is the generic parse function associated with all child keywords. It
  * makes use of the Parse_Function associated with each child keyword.
@@ -147,7 +147,7 @@ void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
   Ensure(check_static_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
 bool Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
@@ -159,6 +159,6 @@ bool Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
 
 #endif // utils_Abstract_Class_Parser_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of utils/Abstract_Class_Parser.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

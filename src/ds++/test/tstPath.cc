@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstPath.cc
  * \author Kelly Thompson
  * \date   Tue Jul 12 16:00:59 2011
  * \brief  Test functions found in ds++/path.hh and path.cc
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,9 +16,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_currentPath(ScalarUnitTest &ut) {
   cout << "\nTesting currentPath() function ... \n" << endl;
 
@@ -46,7 +46,7 @@ void test_currentPath(ScalarUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   // Convert path to Native format
   std::string const fqpn = getFilenameComponent(fqp, rtt_dsxx::FC_NATIVE);
@@ -238,7 +238,7 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_draco_remove(rtt_dsxx::ScalarUnitTest &ut) {
   std::cout << "\nBegin test tstPath::test_draco_remove.\n" << std::endl;
   {
@@ -334,7 +334,7 @@ void test_draco_remove(rtt_dsxx::ScalarUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
   try {
@@ -345,6 +345,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstPath.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

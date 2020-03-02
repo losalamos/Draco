@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   viz/test/tstEnsight_Translator.cc
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2000-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2000-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -17,7 +17,7 @@
 using namespace std;
 using rtt_viz::Ensight_Translator;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename IT>
 void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   if (binary)
@@ -181,7 +181,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   // build another ensight translator; this should overwrite the existing
   // directories
   Ensight_Translator translator2(prefix, gd_wpath, vdata_names, cdata_names,
-                                 true, static_geom, binary);
+                                 false, static_geom, binary);
 
   translator2.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
@@ -196,9 +196,9 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   translator3.ensight_dump(2, .05, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
 
-  // make yet a fourth translator that will append
+  // make yet a fourth translator that will append from the reset time
   Ensight_Translator translator4(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, static_geom, binary);
+                                 false, static_geom, binary, .05);
 
   // add yet another dump to the existing data
   translator4.ensight_dump(3, .10, dt, ipar, iel_type, rgn_index, pt_coor,
@@ -227,7 +227,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -246,6 +246,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstEnsight_Translator.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

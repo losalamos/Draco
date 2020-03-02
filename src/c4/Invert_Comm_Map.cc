@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/Invert_Comm_Map.cc
  * \author Rob Lowrie
  * \date   Mon Nov 19 10:09:11 2007
  * \brief  Implementation of Invert_Comm_Map
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Invert_Comm_Map.hh"
 #include "MPI_Traits.hh"
@@ -15,7 +15,7 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // MPI version of get_num_recv()
 #ifdef C4_MPI
 int get_num_recv(Invert_Comm_Map_t::const_iterator first,
@@ -51,7 +51,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
   Ensure(num_recv >= 0 && num_recv < num_procs);
   return num_recv;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // SCALAR version of get_num_recv
 #elif defined(C4_SCALAR)
 int get_num_recv(Invert_Comm_Map_t::const_iterator /*first*/,
@@ -59,7 +59,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator /*first*/,
   return 0;
 }
 #else
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Default version of get_num_recv, which throws an error.
 int get_num_recv(Invert_Comm_Map_t::const_iterator /*first*/,
                  Invert_Comm_Map_t::const_iterator /*last*/) {
@@ -67,7 +67,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator /*first*/,
 }
 #endif // ifdef C4_MPI
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void invert_comm_map(Invert_Comm_Map_t const &to_map,
                      Invert_Comm_Map_t &from_map) {
   const int my_proc = rtt_c4::node();
@@ -130,6 +130,6 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Invert_Comm_Map.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

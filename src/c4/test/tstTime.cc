@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/test/tstTime.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "c4/Global_Timer.hh"
 #include "c4/ParallelUnitTest.hh"
@@ -14,9 +14,9 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   using std::cout;
@@ -102,7 +102,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   std::vector<double> foo(len);
   double sum(0);
   for (size_t i = 0; i < len; ++i) {
-    double const d(i + 1.0);
+    double const d(static_cast<double>(i + 1));
     foo[i] = std::sqrt(std::log(d * 3.14) * std::fabs(std::cos(d / 3.14)));
     sum += foo[i];
   }
@@ -177,7 +177,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 
   t.start();
   for (size_t i = 0; i < len; ++i)
-    foo[i] = i * 4.0;
+    foo[i] = static_cast<double>(i * 4);
   t.stop();
 
   t.print(cout, 6);
@@ -264,7 +264,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_pause(rtt_dsxx::UnitTest &ut) {
   using rtt_c4::Timer;
 
@@ -286,7 +286,7 @@ void test_pause(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   rtt_c4::Timer::initialize(argc, argv);
@@ -297,6 +297,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstTime.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

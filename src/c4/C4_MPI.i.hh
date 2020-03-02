@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/C4_MPI.i.hh
  * \author Alex R Long
  * \date   Mon Aug 21 07:47:01 2017
  * \brief  C4 MPI standard implementations.
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_i_hh
 #define c4_C4_MPI_i_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
                     int tag /* = C4_Traits<T *>::tag */) {
@@ -35,7 +35,7 @@ void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int send_custom(const T *buffer, int size, int destination, int tag) {
   Require(buffer != nullptr);
@@ -44,7 +44,7 @@ int send_custom(const T *buffer, int size, int destination, int tag) {
   return C4_SUCCESS;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
                           int tag) {
@@ -64,7 +64,7 @@ void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int receive_custom(T *buffer, int size, int source, int tag) {
   Require(buffer != nullptr);
@@ -82,7 +82,7 @@ int receive_custom(T *buffer, int size, int source, int tag) {
   return count;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int message_size_custom(C4_Status status, const T &mpi_type) {
   int receive_count = 0;
@@ -96,6 +96,6 @@ int message_size_custom(C4_Status status, const T &mpi_type) {
 
 #endif // c4_C4_MPI_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/C4_MPI.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

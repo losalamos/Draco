@@ -1,13 +1,13 @@
 !----------------------------------*-F90-*----------------------------------
 !
-! \file   wedgehog/f90sub/Draco_MPI.F90
+! \file   FortranChecks/f90sub/Draco_MPI.F90
 ! \author Allan Wollaber
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
-! \note   Copyright (c) 2016-2019 Triad National Security, LLC.
+! \note   Copyright (c) 2016-2020 Triad National Security, LLC.
 !         All rights reserved.
 !
-! This is a modified version of jayenne/src/wedgehog/ftest/Wedgehog_MPI.F90
+! This is a modified version of jayenne/src/api/ftest/API_MPI.F90
 !---------------------------------------------------------------------------
 
 module draco_mpi

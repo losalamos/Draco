@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Parse_Table.hh
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_Parse_Table_HH
 #define rtt_Parse_Table_HH
@@ -100,11 +100,11 @@ struct Keyword {
       : moniker(nullptr), func(nullptr), index(0), module(nullptr),
         description(nullptr) {}
 
-  Keyword(char const *moniker, void (*func)(Token_Stream &, int),
-          int const index, char const *module,
-          char const *description = nullptr)
-      : moniker(moniker), func(func), index(index), module(module),
-        description(description) {}
+  Keyword(char const *moniker_in, void (*func_in)(Token_Stream &, int),
+          int const index_in, char const *module_in,
+          char const *description_in = nullptr)
+      : moniker(moniker_in), func(func_in), index(index_in), module(module_in),
+        description(description_in) {}
 };
 
 //-------------------------------------------------------------------------//
@@ -259,7 +259,7 @@ private:
   unsigned char flags_; //!< Option flags for this parse table.
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Test equality of Keywords
  *
@@ -284,7 +284,7 @@ inline bool operator==(Keyword const &a, Keyword const &b) {
          a.index == b.index && strcmp(a.module, b.module) == 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Check whether a keyword is well-formed.
 
 DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
@@ -293,6 +293,6 @@ DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
 #endif // rtt_Parse_Table_HH
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Parse_Table.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

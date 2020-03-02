@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   VendorChecks/test/tstSuperludist.cc
  * \date   Monday, May 16, 2016, 16:30 pm
@@ -11,8 +11,9 @@
  * program for the PDGSSVX example. The original code is dated 11/1/2007 and is
  * attributed to Lawrence Berkeley National Lab, Univ. of California Berkeley.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
+#include "superlu-dist-wrapper.h"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -21,22 +22,14 @@
 #include <sstream>
 #include <vector>
 
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wundef"
-#endif
-#include <superlu_ddefs.h>
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
-
 // forward declarations
 void test_superludist(rtt_c4::ParallelUnitTest &ut);
 int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
                    int *ldx, FILE *fp, gridinfo_t *grid);
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
+
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     test_superludist(ut);
@@ -44,7 +37,7 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* Purpose
  * =======
  *
@@ -104,9 +97,9 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   }
 #endif
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Initialize the SuperLU process grid
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
 
   // This file contains the matrix (g20.rua)
   fp = fopen(filename.c_str(), "r");
@@ -128,9 +121,9 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
               << std::endl;
   }
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Load the matrix from file and setup the RHS.
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
 
   dcreate_matrix(&A, nrhs, &b, &ldb, &xtrue, &ldx, fp, &grid);
 
@@ -149,9 +142,9 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
     ITFAILS;
   PASSMSG("Successfully loaded data file.");
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Solve the linear system
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
 
   /* Set the default input options:
        options.Fact              = DOFACT;
@@ -230,9 +223,9 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   /* Print the statistics. */
   PStatPrint(&options, &stat, &grid);
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Deallocate storage
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
 
   PStatFree(&stat);
   Destroy_CompRowLoc_Matrix_dist(&A);
@@ -246,16 +239,16 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   SUPERLU_FREE(xtrue);
   SUPERLU_FREE(berr);
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Release the SuperLU process grid
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
 
   superlu_gridexit(&grid);
 
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Read the matrix from data file in Harwell-Boeing format, and
  *        distribute it to processors in a distributed compressed row format. It
@@ -426,6 +419,6 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
   return 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstSuperludist.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/runtime_check.cc
  * \author Kent Grimmett Budge
  * \date   Wed Mar 28 07:58:48 2018
  * \brief  Member definitions of class runtime_check
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "diagnostics/runtime_check.hh"
 #include "c4/C4_Functions.hh"
@@ -31,6 +31,6 @@ void runtime_check(bool condition, char const *message) noexcept(false) {
 
 } // end namespace rtt_diagnostics
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of diagnostics/runtime_check.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

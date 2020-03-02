@@ -1,0 +1,150 @@
+NDI:  tndata version=2.0
+
+process date: 02/2006
+
+An issue with the einbar data was identified.  Hale originally provided
+data for einbar in the center-of-mass frame whilst we believed it was
+in the lab frame - a difference of 3/2kT at each temperature.  The
+data in the einbar keyword has been changed to be the lab frame of
+reference and the center of mass frame data have been given the 
+keyword name of einbar_cm.  The einbar_cm data are given in a
+comment/end_comment block for each zaid at this time as NDI does
+not yet understand this keyword.
+
+process date: 09/05/2005
+
+This file contains new data for six reactions with 8Be intermediate state:
+   and three reactions with A=11.
+
+     7Be(n,p)7Li
+     6Li(d,a)4He
+     6Li(d,n)7Be
+     6Li(d,p)7Li
+     7Li(p,a)4He
+     7Li(p,n)7Be
+     10B(n,a)7Li
+     10B(n,a)7Li+g
+     10B(p,a)7Be
+
+This new data is based on evaluations performed by P. R. Page (see references below) and
+ Gerry Hale.
+
+This data, together with some data contained in the lanl01 file, constitute the LANL04
+library.  The LANL04 library is the same as the LANL01 library, except data for the
+first eight reactions above have been updated and data for the ninth has been added. 
+Thus, LANL01 contains information for 29 reactions, but LANL04 contains data for 30
+reactions.
+
+The TN reaction list "lanl01_list" may be used to obtain a list of all of the reactions 
+in the LANL04 library.
+
+The reaction 10B(n,a) is special because two different sets of data exist for it.  The 
+  combination/addition of the two data sets provided are the total for this reaction. 
+  Users must include BOTH data sets for this reaction because they both will occur.  In 
+  one case, the ground state only is populated directly and there is no gamma-ray.  In the
+  second case, the excited state is populated and instantaneously decays by gamma-ray emission
+  into the ground state.  To account for this, the gamma ray is added as a 3rd reaction 
+  product with its own energy distribution.  The Q-value for the reaction to the excited 
+  state is 2.312 MeV, but after the gamma ray decays, it is 2.790 MeV.  In this data, it
+  is assumed that the gamma ray has already decayed with an energy of 0.478 MeV, so the 
+  total Q is 2.78952 MeV as in the reaction without the gamma ray.
+
+REFERENCES
+General info about data contained in our TN libraries:
+G. M. Hale, T. L. Talley, and A. S. Johnson, "Maxwellian Data for 
+  Thermonuclear Reactions," Los Alamos National Laboratory memorandum, 
+  T-16:NW-8/3-01  (May, 2001).
+
+Info on the source evaluation for LANL04:
+P. R. Page, "8Be Nuclear Data Evaluation," LA-UR-04-7172 (June, 2004)
+P. R. Page and G. M. Hale, "8Be Nuclear Data Evaluation," Proceedings of the 
+  International Conference on Nuclear Data for Science and Technology,
+  Santa Fe, NM (September 26 - October 1, 2004).
+P. R. Page, "11C Nuclear Data Evaluation," Los Alamos National Laboratory report
+  LA-UR-05-6250 (August, 2005).
+G. M. Hale, "New 10B(n,alpha) Cross Sections from an Analysis of the 11B System," Los Alamos National Laboratory memorandum T-16:NW-20/11-05 (November, 2005).
+
+
+Info about NDI library LANL04:
+J. M. Campbell, "The LANL04 Thermonuclear Reaction Data Library," Los Alamos
+  National Laboratory memorandum, X-5:04-94 (December, 2004).
+____________________________________________________________________________________________
+
+zaid
+  n+be7->p+li7.040ztn
+library_name
+  lanl04
+date_source
+  06/24/2004
+date_processed
+  12/20/2004
+info
+  thermal averaged data for 7Be(n,p)7Li from P. Page (6/24/04)
+num_temps
+  3
+temps
+ 1.00000000E-04 1.07977516E-04 1.16591440E-04
+int_einbars
+    1
+    3    5
+einbars
+ 2.96807133E-04 3.20412456E-04 3.45887869E-04
+comment
+einbars_cm
+ 1.46803364E-04 1.58442113E-04 1.70996315E-04
+end_comment
+int_sigvbars
+    1
+   3    5
+sigvbars
+ 7.50485062E-15 7.48634809E-15 7.46748850E-15
+reactants
+  2
+   1 1 4007 1
+rprods
+  2
+  1001 1 3007 1
+reac_q
+ 1.64429
+num_sec_parts
+  2
+sec_part_types
+ 1001 3007
+e_dist_1001
+   3    1
+   3    5
+ 1.00000000E-04
+    3    2
+   60    2
+    3    4
+ 1.40110493E+00 3.61491216E-07 1.40209386E+00 9.96622901E-07 1.40308314E+00 2.67241188E-06
+ 1.07977516E-04
+    3    2
+   60    2
+    3    4
+ 1.39968258E+00 3.47776291E-07 1.40070968E+00 9.58809937E-07 1.40173717E+00 2.57101569E-06
+ 1.16591440E-04
+    3    2
+   60    2
+    3    4
+ 1.39820568E+00 3.34581805E-07 1.39927242E+00 9.22431151E-07 1.40033956E+00 2.47346341E-06
+ 1.25892541E-04
+e_dist_3007
+    3   1
+    3   5
+ 1.00000000E-04
+   3    2
+   60    2
+   3    4
+ 1.71090782E-01 3.65721620E-07 1.72004771E-01 1.00810912E-06 1.72919189E-01 2.70271835E-06
+ 1.07977516E-04
+    3    2
+   60    2
+    3    4
+ 1.69774637E-01 3.51931864E-07 1.70719742E-01 9.70100118E-07 1.71667471E-01 2.60082344E-06
+ 1.16591440E-04
+    3    2
+   60    2
+    3    4
+ 1.68412430E-01 3.38660167E-07 1.69390621E-01 9.33519033E-07 1.70371645E-01 2.50275644E-06
+end

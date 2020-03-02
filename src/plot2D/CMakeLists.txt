@@ -9,20 +9,17 @@
 cmake_minimum_required(VERSION 3.9.0)
 project( plot2D CXX )
 
+if( Grace_FOUND )
+
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-
-# Create config.h
-if( Grace_FOUND )
-   set( GRACE_H ${Grace_INCLUDE_DIR}/grace_np.h )
-endif()
+set( GRACE_H ${Grace_INCLUDE_DIR}/grace_np.h )
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/plot2D/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB sources *.cc )
 file( GLOB headers *.hh *.h )
 list( APPEND headers ${PROJECT_BINARY_DIR}/plot2D/config.h )
@@ -30,14 +27,13 @@ list( APPEND headers ${PROJECT_BINARY_DIR}/plot2D/config.h )
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_plot2D
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME plot2D
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
- target_include_directories( Lib_plot2D
+target_include_directories( Lib_plot2D
    PUBLIC
      ${Grace_INCLUDE_DIR}
      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
@@ -45,14 +41,12 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
 install( TARGETS Lib_plot2D EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/plot2D )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -60,8 +54,9 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
+
+endif( Grace_FOUND )
 
 #------------------------------------------------------------------------------#
 # End plot2D/CMakeLists.txt

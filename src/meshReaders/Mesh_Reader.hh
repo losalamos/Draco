@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   meshReaders/Mesh_Reader.hh
  * \author John McGhee
  * \date   Fri Feb 25 08:14:54 2000
  * \brief  Header file for the RTT Mesh_Reader base class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __meshReaders_Mesh_Reader_hh__
-#define __meshReaders_Mesh_Reader_hh__
+#ifndef rtt_meshReaders_Mesh_Reader_hh
+#define rtt_meshReaders_Mesh_Reader_hh
 
 #include "mesh_element/Element_Definition.hh"
 #include <map>
@@ -18,7 +18,7 @@
 
 namespace rtt_meshReaders {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Mesh_Reader
  * \brief Base class for the RTT mesh readers.
@@ -29,7 +29,7 @@ namespace rtt_meshReaders {
  * called "AMR" or "hanging-node" meshes and C0 connectivity meshes can be
  * described.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_meshReaders Mesh_Reader {
   // NESTED CLASSES AND TYPEDEFS
@@ -138,8 +138,8 @@ private:
 
 } // end namespace rtt_meshReaders
 
-#endif // __meshReaders_Mesh_Reader_hh__
+#endif // rtt_meshReaders_Mesh_Reader_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of meshReaders/Mesh_Reader.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

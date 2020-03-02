@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan  8 15:06:30 1999
  * \brief  put the right includes for MPI header files
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 

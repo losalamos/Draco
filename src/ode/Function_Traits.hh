@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ode/Function_Traits.hh
  * \author Kent Budge
  * \date   Wed Aug 18 10:31:24 2004
  * \brief  Definition of class template Function_Traits
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef ode_Function_Traits_hh
 #define ode_Function_Traits_hh
@@ -19,7 +19,7 @@
 
 namespace rtt_ode {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Function_Traits
  * \brief Traits of Function category
@@ -37,7 +37,7 @@ namespace rtt_ode {
  * 
  * \arg \a Function A function type.
  */
-//===========================================================================//
+//============================================================================//
 
 template <typename Function> class DLL_PUBLIC_ode Function_Traits {
 public:
@@ -47,7 +47,7 @@ public:
   typedef typename Function::return_type return_type;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Traits for ordinary function mapping double to double
 template <> class Function_Traits<double (*)(double)> {
 public:
@@ -55,7 +55,7 @@ public:
 };
 
 #ifdef draco_isAIX
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Traits for ordinary function mapping const double to double
  *
  * AIX considers top const qualifiers significant in function
@@ -68,7 +68,7 @@ public:
 };
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Traits for ordinary function mapping double to complex
 template <> class Function_Traits<std::complex<double> (*)(double)> {
 public:
@@ -79,6 +79,6 @@ public:
 
 #endif // ode_Function_Traits_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ode/Function_Traits.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

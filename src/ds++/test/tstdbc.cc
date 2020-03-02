@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \brief  Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
@@ -15,18 +15,18 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 class sum_predicate_Test_Predicate {
 public:
-  typedef double Return_Type;
+  using Return_Type = double;
 
   double operator()(const std::pair<double, char *> &p) { return p.first; }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void dbc_test(UnitTest &ut) {
   using rtt_dsxx::dim;
   using std::pair;
@@ -98,7 +98,7 @@ void dbc_test(UnitTest &ut) {
             string("incorrectly reported length=1 container monotonic."));
 
   if (std::find_if(sum_test_array, sum_test_array + 6,
-                   bind2nd(greater<double>(), 2.)) != sum_test_array + 1)
+                   [](double x) { return x > 2.0; }) != sum_test_array + 1)
     FAILMSG("std::bind2nd or std::greater function templates FAILED");
   else
     PASSMSG("std::bind2nd or std::greater function templates ok");
@@ -141,13 +141,13 @@ void dbc_test(UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void isFinite_test(UnitTest &ut) {
   UT_MSG(rtt_dsxx::isFinite(15.0), "Correctly found 15.0 to be finite.");
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -157,6 +157,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstdbc.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,19 +1,19 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/opstream.cc
  * \author Kent G. Budge
  * \date   Mon Jun 25 12:12:31 MDT 2018
  * \brief  Define methods of class opstream
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "opstream.hh"
 #include "C4_Functions.hh"
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Write all buffered data to console.
  *
  * Causes all buffered data to be written to console in MPI rank order; that is,
@@ -49,7 +49,7 @@ void opstream::mpibuf::send() {
   rtt_c4::global_barrier();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Add the specified character to the buffer.
  *
  * For simplicity, opstream is currently implemented by treating every
@@ -72,7 +72,7 @@ void opstream::mpibuf::send() {
   return c;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Shrink the buffer to fit the current data.
  *
  * This is included for completeness, and also to let a user who is really
@@ -84,6 +84,6 @@ void opstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of opstream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

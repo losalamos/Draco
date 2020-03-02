@@ -1,16 +1,16 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressMultigroupOpacity.hh
  * \author Kelly Thompson
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity class header file (derived from
  *         cdi/MultigroupOpacity)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_IpcressMultigroupOpacity_hh__
-#define __cdi_ipcress_IpcressMultigroupOpacity_hh__
+#ifndef rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
+#define rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
 
 #include "IpcressDataTable.hh"
 #include "cdi/MultigroupOpacity.hh"
@@ -25,7 +25,7 @@ namespace rtt_cdi_ipcress {
 class IpcressFile;
 class IpcressDataTable;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class IpcressMultigroupOpacity
  *
@@ -78,7 +78,7 @@ class IpcressDataTable;
  * This example tests and demonstrates how to use the cdi_ipcress package as a
  * plug-in for the CDI class.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity
     : public rtt_cdi::MultigroupOpacity {
@@ -432,9 +432,9 @@ public:
 
 }; // end of class IpcressMultigroupOpacity
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // INCLUDE TEMPLATE MEMBER DEFINITIONS FOR AUTOMATIC TEMPLATE INSTANTIATION
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 // --------------------------------- //
 // STL-like accessors for getOpacity //
@@ -503,8 +503,8 @@ OpacityIterator IpcressMultigroupOpacity::getOpacity(
 
 } // end namespace rtt_cdi_ipcress
 
-#endif // __cdi_ipcress_IpcressMultigroupOpacity_hh__
+#endif // rtt_cdi_ipcress_IpcressMultigroupOpacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressMultigroupOpacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

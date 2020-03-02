@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/GrayOpacity.hh
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:02:21 2001
  * \brief  GrayOpacity class header file (an abstract class)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_GrayOpacity_hh__
-#define __cdi_GrayOpacity_hh__
+#ifndef rtt_cdi_GrayOpacity_hh
+#define rtt_cdi_GrayOpacity_hh
 
 #include "OpacityCommon.hh"
 #include "ds++/config.h"
@@ -58,13 +58,13 @@ public:
   // --------- //
 
   /*!
-     * \brief Opacity accessor that returns a single opacity that 
+     * \brief Opacity accessor that returns a single opacity that
      *     corresponds to the provided temperature and density.
      *
      * \param targetTemperature The temperature value for which an
      *     opacity value is being requested (keV).
      *
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested (g/cm^3).
      *
      * \return A single interpolated opacity (cm^2/g).
@@ -75,12 +75,12 @@ public:
   /*!
      * \brief Opacity accessor that returns a vector of opacities that
      *     correspond to the provided vector of temperatures and a
-     *     single density value. 
+     *     single density value.
      *
      * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested (keV).
      *
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested (g/cm^3).
      *
      * \return A vector of opacities (cm^2/g).
@@ -92,9 +92,9 @@ public:
   /*!
      * \brief Opacity accessor that returns a vector of opacities
      *     that correspond to the provided vector of densities and a
-     *     single temperature value. 
+     *     single temperature value.
      *
-     * \param targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested (keV).
      *
      * \param targetDensity A vector of density values for which
@@ -130,7 +130,7 @@ public:
   /*!
      * \brief Returns a "plain English" description of the opacity
      *     data that this class references. (e.g. "Gray Rosseland
-     *     Scattering".) 
+     *     Scattering".)
      */
   virtual std::string getDataDescriptor() const = 0;
 
@@ -156,7 +156,7 @@ public:
      */
   virtual size_t getNumTemperatures() const = 0;
 
-  /*! 
+  /*!
      * \brief Returns the size of the density grid.
      */
   virtual size_t getNumDensities() const = 0;
@@ -181,8 +181,8 @@ public:
 
 } // end namespace rtt_cdi
 
-#endif // __cdi_GrayOpacity_hh__
+#endif // rtt_cdi_GrayOpacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/GrayOpacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

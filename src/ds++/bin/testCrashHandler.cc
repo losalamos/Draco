@@ -1,17 +1,17 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/bin/testCrashHandler.cc
  * \author Kelly Thomposn
  * \date   Wed Nov 06 2013
  * \brief  Windows/x86 crash handler tests
  *
- * Copyright (C) 2016-2019 Triad National Security, LLC.
+ * Copyright (C) 2016-2020 Triad National Security, LLC.
  *               All rights reserved.
  *
  * See ds++/COPYING file for more copyright information.  This code is based
  * substantially on http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
@@ -20,7 +20,7 @@
 #include <iostream>
 #include <signal.h> // SIGABRT
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void sigfpe_test() {
   // Code taken from http://www.devx.com/cplus/Article/34993/1954
 
@@ -216,6 +216,6 @@ int main(int argc, char *argv[]) {
   }
   return 0;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/bin/testCrashHandler.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

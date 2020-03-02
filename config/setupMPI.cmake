@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -14,9 +14,115 @@
 # DRACO_C4   MPI|SCALAR
 # C4_SCALAR  BOOL
 # C4_MPI     BOOL
+# MPI_FLAVOR openmpi|mpih|intel|mvapich2|spectrum|msmpi
+# MPI_VERSION NN.NN.NN
 #
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 include( FeatureSummary )
+
+##---------------------------------------------------------------------------##
+## Set MPI flavor and vendor version
+##
+## Returns (as cache variables)
+## - MPI_VERSION
+## - MPI_FLAVOR = {openmpi, mpich, cray, spectrum, mvapich2, intel}
+##---------------------------------------------------------------------------##
+function( setMPIflavorVer )
+
+  # First attempt to determine MPI flavor -- scape flavor from full path
+  # (this ususally works for HPC or systems with modules)
+  if( CRAY_PE )
+    set( MPI_FLAVOR "cray" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi")
+    set( MPI_FLAVOR "openmpi" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mpich" OR
+      "${MPI_C_HEADER_DIR}" MATCHES "mpich")
+    set( MPI_FLAVOR "mpich" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "impi" OR
+      "${MPIEXEC_EXECUTABLE}" MATCHES "clusterstudio" )
+    set( MPI_FLAVOR "intel" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mvapich2")
+    set( MPI_FLAVOR "mvapich2" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
+      "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
+    set( MPI_FLAVOR "spectrum")
+  endif()
+
+  if( CRAY_PE )
+    if( DEFINED ENV{CRAY_MPICH2_VER} )
+      set( MPI_VERSION $ENV{CRAY_MPICH2_VER} )
+    endif()
+  elseif( "${MPI_FLAVOR}" STREQUAL "spectrum" )
+    if( DEFINED ENV{LMOD_MPI_VERSION} )
+      set( LMOD_MPI_VERSION $ENV{LMOD_MPI_VERSION} )
+    endif()
+  else()
+    execute_process( COMMAND ${MPIEXEC_EXECUTABLE} --version
+      OUTPUT_VARIABLE DBS_MPI_VER_OUT
+      ERROR_VARIABLE DBS_MPI_VER_ERR)
+    set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+    string(REPLACE "\n" ";" TEMP ${DBS_MPI_VER})
+    foreach( line ${TEMP} )
+
+      # extract the version...
+      if( ${line} MATCHES "Version" OR ${line} MATCHES "OpenRTE" OR
+          ${line} MATCHES "Open MPI" OR ${line} MATCHES "Spectrum MPI")
+        set(DBS_MPI_VER "${line}")
+        if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
+          string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
+            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\2"
+            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\3"
+            DBS_MPI_VER_PATCH ${DBS_MPI_VER} )
+          set( MPI_VERSION
+            "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}.${DBS_MPI_VER_PATCH}" )
+        elseif( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+" )
+          string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\1"
+            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\2"
+            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+          set( MPI_VERSION "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}" )
+        endif()
+      endif()
+
+      # if needed, make a 2nd pass at identifying the MPI flavor
+      if( NOT DEFINED MPI_FLAVOR )
+        if ("${line}" MATCHES "HYDRA")
+          set(MPI_FLAVOR "mpich")
+        elseif("${line}" MATCHES "OpenRTE")
+          set(MPI_FLAVOR "openmpi")
+        elseif("${line}" MATCHES "intel-mpi" OR
+            "${line}" MATCHES "Intel[(]R[)] MPI Library" )
+          set(MPI_FLAVOR "intel")
+        endif()
+      endif()
+
+      # Once we have the needed information stop parsing...
+      if( DEFINED MPI_FLAVOR AND DEFINED MPI_VERSION )
+        break()
+      endif()
+    endforeach()
+
+  endif()
+
+  # if the FindMPI.cmake module didn't set the version, then try to do so here.
+  if( NOT DEFINED MPI_VERSION AND DEFINED MPI_C_VERSION)
+    set( MPI_VERSION ${MPI_C_VERSION} )
+  endif()
+
+  # Return the discovered values to the calling scope
+  if( DEFINED MPI_FLAVOR )
+    set( MPI_FLAVOR "${MPI_FLAVOR}" CACHE STRING "Vendor brand of MPI" FORCE )
+  endif()
+  if( DEFINED MPI_VERSION )
+    set( MPI_VERSION "${MPI_VERSION}" CACHE STRING "Vendor version of MPI"
+      FORCE )
+  endif()
+
+endfunction()
 
 ##---------------------------------------------------------------------------##
 ## Set Draco specific MPI variables
@@ -24,7 +130,7 @@ include( FeatureSummary )
 macro( setupDracoMPIVars )
 
   # Set Draco build system variables based on what we know about MPI.
-  if( MPI_CXX_FOUND )
+  if( MPI_CXX_FOUND OR MPI_C_FOUND )
     set( DRACO_C4 "MPI" )
   else()
     set( DRACO_C4 "SCALAR" )
@@ -35,12 +141,6 @@ macro( setupDracoMPIVars )
     "C4 communication mode (SCALAR or MPI)" )
   # Provide a constrained pull down list in cmake-gui
   set_property( CACHE DRACO_C4 PROPERTY STRINGS SCALAR MPI )
-  if( "${DRACO_C4}" STREQUAL "MPI"    OR
-      "${DRACO_C4}" STREQUAL "SCALAR" )
-    # no-op
-  else()
-    message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
-  endif()
 
   if( "${DRACO_C4}" MATCHES "MPI" )
     set( C4_SCALAR 0 )
@@ -76,6 +176,15 @@ endmacro()
 ##     for srun or aprun.
 ##---------------------------------------------------------------------------##
 macro( query_topology )
+
+  # These cmake commands, while useful, don't provide the topology detail that
+  # we are interested in (i.e. number of sockets per node). We could use the
+  # results of these queries to know if hyper-threading is enabled (if logical
+  # != physical cores)
+  # - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES
+  #   QUERY NUMBER_OF_PHYSICAL_CORES)
+  # - cmake_host_system_information(RESULT MPI_LOGICAL_CORES
+  #   QUERY NUMBER_OF_LOGICAL_CORES)
 
   # start with default values
   set( MPI_CORES_PER_CPU 4 )
@@ -120,19 +229,18 @@ macro( query_topology )
     "Number of cores per cpu" FORCE )
 
   #
-  # Check for hyperthreading - This is important for reserving threads for
+  # Check for hyper-threading - This is important for reserving threads for
   # OpenMP tests...
   #
   math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
     "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
   if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?"
+    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyper-threading?"
       FORCE )
   else()
-    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?"
+    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyper-threading?"
       FORCE )
   endif()
-
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -140,10 +248,8 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupOpenMPI )
 
-  set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." ) # OpenMPI
-
   # sanity check, these OpenMPI flags (below) require version >= 1.8
-  if( ${MPI_C_VERSION} VERSION_LESS 1.8 )
+  if( ${MPI_VERSION} VERSION_LESS 1.8 )
     message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
@@ -163,7 +269,7 @@ macro( setupOpenMPI )
   set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
   #
@@ -173,15 +279,25 @@ macro( setupOpenMPI )
     # -bind-to fails on OSX, See #691
     set( MPIEXEC_OMP_POSTFLAGS
       "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
-      # "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket
-      # --report-bindings ${runasroot}"
+    # "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket
+    # --report-bindings ${runasroot}"
   endif()
 
   set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
     CACHE STRING "extra mpirun flags (list)." FORCE )
 
   mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
-     MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+    MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Setup Mpich
+##---------------------------------------------------------------------------##
+macro( setupMpichMPI )
+
+  # Find cores/cpu, cpu/node, hyper-threading
+  query_topology()
 
 endmacro()
 
@@ -190,23 +306,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupIntelMPI )
 
-  set( MPI_FLAVOR "impi" CACHE STRING "Flavor of MPI." )
-
-  # Find the version of Intel MPI
-
-  if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
-      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
-      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-  elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
-      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
-      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-  endif()
-
-  # Find cores/cpu, cpu/node, hyperthreading
+  # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
 endmacro()
@@ -215,17 +315,6 @@ endmacro()
 ## Setup Cray MPI wrappers (APRUN)
 ##---------------------------------------------------------------------------##
 macro( setupCrayMPI )
-
-  if( "${DBS_MPI_VER}x" STREQUAL "x" AND
-      NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
-    set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
-    if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
-        DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
-        DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-    endif()
-  endif()
 
   query_topology()
 
@@ -251,8 +340,8 @@ macro( setupCrayMPI )
   #           simultaneously, this option is required to be set or they will
   #           stomp on the same cores.
 
-  set(postflags "-N 1 --cpu_bind=verbose,cores ")
-  string(APPEND postflags " --exclusive")
+  set(postflags " ") # -N 1 --cpu_bind=verbose,cores
+  string(APPEND postflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_POSTFLAGS ${postflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
@@ -262,34 +351,26 @@ macro( setupCrayMPI )
 endmacro()
 
 ##---------------------------------------------------------------------------##
-## Setup Sequoia MPI wrappers
+## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
 ##---------------------------------------------------------------------------##
-macro( setupSequoiaMPI )
+macro( setupSpectrumMPI )
 
-  if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
-    set( MPI_CPUS_PER_NODE 1 CACHE STRING
-      "Number of multi-core CPUs per node" FORCE )
-    set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
-      "Number of cores per cpu" FORCE )
-    set( MPIEXEC_OMP_POSTFLAGS "-c ${MPI_CORES_PER_CPU}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
-  else()
-    message( STATUS "
-WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
-         all OMP tests will be disabled." )
+  # Find cores/cpu, cpu/node, hyper-threading
+  query_topology()
+
+  #
+  # Setup for OMP plus MPI
+  #
+
+  if( DEFINED ENV{OMP_NUM_THREADS} )
+    set( MPIEXEC_OMP_POSTFLAGS "-c $ENV{OMP_NUM_THREADS}" )
   endif()
 
-  set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
-    STRING "flag used to specify number of processes." FORCE)
+  set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
+    CACHE STRING "extra mpirun flags (list)." FORCE )
 
-  # [2016-11-17 KT] Ensure that the MPI headers in mpi.h use function signatures
-  # from the MPI-2.2 standard that include 'const' parameters for MPI_put. The
-  # MPI headers found on Sequoia claim to be MPI-2.2 compliant. However, this
-  # CPP macro has been altered to be empty and this violates the v. 2.2
-  # standard. For compatibility with the CCS-2 codebase, manually set this CPP
-  # macro back to 'const'.  This definition will appear in c4/config.h.
-  set( MPICH2_CONST "const" "Sequoia MPICH2-1.5 compile option.")
-  mark_as_advanced( MPICH2_CONST )
+  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
+    MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
 
 endmacro()
 
@@ -298,162 +379,97 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro( setupMPILibrariesUnix )
 
-   # MPI ---------------------------------------------------------------------
-   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
+  # MPI ---------------------------------------------------------------------
+  if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
-      message(STATUS "Looking for MPI...")
+    message(STATUS "Looking for MPI...")
 
-      # Preserve data that may already be set.
-      if( DEFINED ENV{MPIRUN} )
-        set( MPIEXEC_EXECUTABLE $ENV{MPIRUN} CACHE STRING
-          "Program to execute MPI parallel programs." )
-      elseif( DEFINED ENV{MPIEXEC_EXECUTABLE} )
-        set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC_EXECUTABLE} CACHE STRING
-          "Program to execute MPI parallel programs." )
-      elseif( DEFINED ENV{MPIEXEC} )
-        set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC} CACHE STRING
-          "Program to execute MPI parallel programs." )
+    # Preserve data that may already be set.
+    if( DEFINED ENV{MPIRUN} )
+      set( MPIEXEC_EXECUTABLE $ENV{MPIRUN} CACHE STRING
+        "Program to execute MPI parallel programs." )
+    elseif( DEFINED ENV{MPIEXEC_EXECUTABLE} )
+      set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC_EXECUTABLE} CACHE STRING
+        "Program to execute MPI parallel programs." )
+    elseif( DEFINED ENV{MPIEXEC} )
+      set( MPIEXEC_EXECUTABLE $ENV{MPIEXEC} CACHE STRING
+        "Program to execute MPI parallel programs." )
+    endif()
+
+    # If this is a Cray system and the Cray MPI compile wrappers are used, then
+    # do some special setup:
+
+    if( CRAY_PE )
+      if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
+        find_program( MPIEXEC_EXECUTABLE srun )
       endif()
-
-      # If this is a Cray system and the Cray MPI compile wrappers are used,
-      # then do some special setup:
-
-      if( CRAY_PE )
-        if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
-          find_program( MPIEXEC_EXECUTABLE srun )
-        endif()
-        set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
-          "Program to execute MPI prallel programs." FORCE )
-        set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
-          "mpirun flag used to specify the number of processors to use")
+      set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
+        "Program to execute MPI parallel programs." FORCE )
+      set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
+        "mpirun flag used to specify the number of processors to use")
+    elseif( DEFINED ENV{SYS_TYPE} AND
+        "$ENV{SYS_TYPE}" MATCHES "ppc64le_ib_p9" ) # ATS-2
+      if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
+        find_program( MPIEXEC_EXECUTABLE jsrun )
       endif()
+      set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
+        "Program to execute MPI parallel programs." FORCE )
+      set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
+        "mpirun flag used to specify the number of processors to use")
+    endif()
 
-      # Temporary work around until FindMPI.cmake is fixed: Setting
-      # MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE forces FindMPI to skip
-      # it's bad logic and just rely on the MPI compiler wrapper to do the right
-      # thing. see Bug #467.
-      #
-      # After cmake-3.9.0, this logic probably isn't needed.
-      # foreach( lang C CXX Fortran )
-      #    get_filename_component( CMAKE_${lang}_COMPILER_NOPATH
-      #      "${CMAKE_${lang}_COMPILER}" NAME )
-      #    if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
-      #      get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}"
-      #        NAME )
-      #      set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
-      #      set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
-      #    endif()
-      #  endforeach()
+    # Call the standard CMake FindMPI macro.
+    find_package( MPI QUIET )
 
-      # Call the standard CMake FindMPI macro.
-      find_package( MPI QUIET )
+    # Try to discover the MPI flavor and the vendor version. Returns
+    # MPI_VERSION, MPI_FLAVOR as cache variables
+    setMPIflavorVer()
 
-      # if the FindMPI.cmake module didn't set the version, then try to do so
-      # here.
-      if( NOT MPI_VERSION )
-
-        # If the language specific MPI version is found, use it.
-        if( MPI_C_VERSION )
-          set( MPI_VERSION ${MPI_C_VERSION} )
-
-        # Otherwise, try 'mpirun --version' and parse the output.
-        else()
-
-          if( NOT CRAY_PE )
-            execute_process( COMMAND ${MPIEXEC_EXECUTABLE} --version
-              OUTPUT_VARIABLE DBS_MPI_VER_OUT
-              ERROR_VARIABLE DBS_MPI_VER_ERR)
-            set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-          endif()
-
-          if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
-            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
-              DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\2"
-              DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\3"
-              DBS_MPI_VER_PATCH ${DBS_MPI_VER} )
-            set( MPI_VERSION
-              "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}.${DBS_MPI_VER_PATCH}" )
-          elseif( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+" )
-            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\1"
-              DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\2"
-              DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-            set( MPI_VERSION "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}" )
-          endif()
-          foreach( lang C CXX Fortran )
-            set( MPI_${lang}_VERSION ${MPI_VERSION} )
-          endforeach()
-
-        endif()
-      endif()
-
-      # Set DRACO_C4 and other variables
-      setupDracoMPIVars()
-
-      # ---------------------------------------------------------------------- #
-      # Check flavor and add optional flags
-      #
-      # Notes:
-      # 1. For Intel MPI when cross compiling for MIC, the variable DBS_MPI_VER
-      #    will be bad because this configuration is done on x86 but mpiexec is
-      #    a mic executable and cannot be run on the x86.  To correctly match
-      #    the MPI flavor to Intel (on darwin), we rely on the path
-      #    MPIEXEC_EXECUTABLE to match the string "impi/[0-9.]+/mic".
-
-      if( "${MPIEXEC_EXECUTABLE}" MATCHES openmpi OR
-          "${DBS_MPI_VER}" MATCHES open-mpi )
-        setupOpenMPI()
-
-      elseif( "${MPIEXEC_EXECUTABLE}" MATCHES intel-mpi OR
-          "${MPIEXEC_EXECUTABLE}" MATCHES "impi/.*/mic" OR
-          "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
-        setupIntelMPI()
-
-      elseif( CRAY_PE )
-        setupCrayMPI()
-
-      # LANL Cray systems also use srun, so this 'elseif' must appear after our
-      # test for CRAY_PE.
-      elseif( "${MPIEXEC_EXECUTABLE}" MATCHES srun)
-        setupSequoiaMPI()
-
-      else()
-         message( FATAL_ERROR "
+    # Set additional flags, environments that are MPI vendor specific.
+    if( "${MPI_FLAVOR}" MATCHES "openmpi" )
+      setupOpenMPI()
+    elseif( "${MPI_FLAVOR}" MATCHES "mpich" )
+      setupMpichMPI()
+    elseif( "${MPI_FLAVOR}" MATCHES "intel" )
+      setupIntelMPI()
+    elseif( "${MPI_FLAVOR}" MATCHES "spectrum" )
+      setupSpectrumMPI()
+    elseif( "${MPI_FLAVOR}" MATCHES "cray" )
+      setupCrayMPI()
+    else()
+      message( FATAL_ERROR "
 The Draco build system doesn't know how to configure the build for
   MPIEXEC_EXECUTABLE     = ${MPIEXEC_EXECUTABLE}
   DBS_MPI_VER = ${DBS_MPI_VER}
   CRAY_PE     = ${CRAY_PE}")
-      endif()
-
-      # Mark some of the variables created by the above logic as 'advanced' so
-      # that they do not show up in the 'simple' ccmake view.
-      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
-
-      message(STATUS "Looking for MPI.......found ${MPIEXEC_EXECUTABLE}")
-
-      # Sanity Checks for DRACO_C4==MPI
-      if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
-         message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU "
-           "is not set!")
-      endif()
-
-    else()
-      # Set DRACO_C4 and other variables
-      setupDracoMPIVars()
     endif()
 
-    set_package_properties( MPI PROPERTIES
-      URL "http://www.open-mpi.org/"
-      DESCRIPTION "A High Performance Message Passing Library"
-      TYPE RECOMMENDED
-      PURPOSE "If not available, all Draco components will be built as scalar applications."
-      )
+    # Mark some of the variables created by the above logic as 'advanced' so
+    # that they do not show up in the 'simple' ccmake view.
+    mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
 
-   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
+    message(STATUS "Looking for MPI.......found ${MPIEXEC_EXECUTABLE}")
 
- endmacro()
+    # Sanity Checks for DRACO_C4==MPI
+    if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
+      message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU "
+        "is not set!")
+    endif()
+
+  endif()
+
+  # Set DRACO_C4 and other variables. Returns DRACO_C4, C4_SCALAR, C4_MPI
+  setupDracoMPIVars()
+
+  set_package_properties( MPI PROPERTIES
+    URL "http://www.open-mpi.org/"
+    DESCRIPTION "A High Performance Message Passing Library"
+    TYPE RECOMMENDED
+    PURPOSE "If not available, all Draco components will be built as scalar applications."  )
+
+  mark_as_advanced( MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
+
+endmacro()
 
 ##---------------------------------------------------------------------------##
 ## setupMPILibrariesWindows
@@ -463,201 +479,265 @@ macro( setupMPILibrariesWindows )
 
   set( verbose FALSE )
 
-   # MPI ---------------------------------------------------------------------
-   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
+  # MPI ---------------------------------------------------------------------
+  if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
-      message(STATUS "Looking for MPI...")
-      find_package( MPI QUIET )
-      
-      # If this macro is called from a MinGW builds system (for a CAFS 
-      # subdirectory) and is trying to MS-MPI, the above check will fail (when 
-      # cmake > 3.12). However, MS-MPI is known to be good when linking with 
-      # Visual Studio so override the 'failed' report.
-      if(
-#       NOT "${MPI_C_FOUND}" AND "${Draco_MPI_C_WORKS}" AND
-          "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
-          "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
-        if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
-          set( MPI_C_FOUND TRUE )          
-          set( MPI_Fortran_FOUND TRUE )
+    message(STATUS "Looking for MPI...")
+    set(MPI_ASSUME_NO_BUILTIN_MPI TRUE)
+    set(MPI_GUESS_LIBRARY_NAME "MSMPI")
+    find_package( MPI QUIET )
+
+    if( EXISTS "$ENV{MSMPI_INC}" )
+      # if msmpi is installed via vcpkg, then use the vcpkg include path
+      # instead of the system one.
+      file(TO_CMAKE_PATH $ENV{MSMPI_INC} MSMPI_INC)
+      unset(tmp)
+      foreach( ipath ${MPI_C_INCLUDE_DIRS} )
+        if( "${ipath}" STREQUAL "${MSMPI_INC}" )
+          continue()
         endif()
-      endif()
+        list(APPEND tmp ${ipath})
+      endforeach()
+      set(MPI_C_INCLUDE_DIRS ${tmp})
+      unset(tmp)
+    endif()
 
-      # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch
-      # this is and save this path to MPI_Fortran_INCLUDE_PATH
-      list( GET MPI_C_LIBRARIES 0 first_c_mpi_library )
-      if( first_c_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
+    if(verbose)
+      message("
+        MPI_C_FOUND        = ${MPI_C_FOUND}
+        MPIEXEC_EXECUTABLE = ${MPIEXEC_EXECUTABLE}
+        MPI_C_LIBRARIES    = ${MPI_C_LIBRARIES}
+        MPI_CXX_LIBRARIES  = ${MPI_CXX_LIBRARIES}
+        MPI_Fortran_LIBRARIES = ${MPI_Fortran_LIBRARIES}
+        MPI_C_LIB_NAMES    = ${MPI_C_LIB_NAMES}
+        CMAKE_GENERATOR    = ${CMAKE_GENERATOR}
+        MPI_C_INCLUDE_DIRS = ${MPI_C_INCLUDE_DIRS}
+        MPI_C_VERSION_MAJOR = ${MPI_C_VERSION_MAJOR}")
+    endif()
+
+    # If this macro is called from a MinGW builds system (for a CAFS
+    # subdirectory) and is trying to discover MS-MPI, the above check will fail
+    # (when CMake > 3.12). However, MS-MPI is known to be good when linking with
+    # Visual Studio so override the 'failed' report.
+    if( "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
+        "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
+      if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
+        set( MPI_C_FOUND TRUE )
+        set( MPI_Fortran_FOUND TRUE )
+      endif()
+    endif()
+
+    if(verbose)
+      message("
+        MPI_C_FOUND       = ${MPI_C_FOUND}
+        MPI_Fortran_FOUND = ${MPI_Fortran_FOUND}")
+    endif()
+
+    # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch this
+    # is and save this path to MPI_Fortran_INCLUDE_PATH
+    list( GET MPI_C_LIBRARIES 0 first_c_mpi_library )
+    if( first_c_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
+      get_filename_component( MPI_Fortran_INCLUDE_PATH
+        "${first_c_mpi_library}" DIRECTORY )
+      if(EXISTS "${MPI_Fortran_INCLUDE_PATH}/../include/mpifptr.h")
         get_filename_component( MPI_Fortran_INCLUDE_PATH
-          "${first_c_mpi_library}" DIRECTORY )
+          "${MPI_Fortran_INCLUDE_PATH}/../include" REALPATH )
+      elseif(EXISTS "${MPI_Fortran_INCLUDE_PATH}/../../include/mpifptr.h")
+        get_filename_component( MPI_Fortran_INCLUDE_PATH
+          "${MPI_Fortran_INCLUDE_PATH}/../../include" REALPATH )
+      else()
         string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH
           ${MPI_Fortran_INCLUDE_PATH} )
         set( MPI_Fortran_INCLUDE_PATH
-             "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
-             CACHE STRING "Location for MPI include files for Fortran.")
-        if( verbose )
-           message("MPI_Fortran_INCLUDE_PATH = ${MPI_Fortran_INCLUDE_PATH}")
+          "${MPI_C_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
+          CACHE STRING "Location for MPI include files for Fortran.")
+      endif()
+      if( verbose )
+        message("    MPI_Fortran_INCLUDE_PATH = ${MPI_Fortran_INCLUDE_PATH}")
+      endif()
+    endif()
+
+    setupDracoMPIVars()
+
+    # Find the version
+    # This is not working (hardwire it for now)
+    execute_process( COMMAND "${MPIEXEC_EXECUTABLE}" -help
+      OUTPUT_VARIABLE DBS_MPI_VER_OUT
+      ERROR_VARIABLE DBS_MPI_VER_ERR
+      ERROR_QUIET
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_STRIP_TRAILING_WHITESPACE )
+    if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
+      string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER
+        "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+      string(REPLACE "." ";" DBS_MPI_VER ${DBS_MPI_VER})
+      list(GET DBS_MPI_VER 0 DBS_MPI_VER_MAJOR)
+      list(GET DBS_MPI_VER 1 DBS_MPI_VER_MINOR)
+      set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
+    else()
+      set(DBS_MPI_VER "5.0")
+    endif()
+    if(verbose)
+      message("    DBS_MPI_VER = ${DBS_MPI_VER}")
+    endif()
+
+    set_package_properties( MPI PROPERTIES
+      URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
+      DESCRIPTION "Microsoft MPI"
+      TYPE RECOMMENDED
+      PURPOSE "If not available, all Draco components will be built as scalar applications.")
+
+    # Check flavor and add optional flags
+    if("${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft MPI")
+      set( MPI_FLAVOR "MicrosoftMPI" CACHE STRING "Flavor of MPI." )
+
+      # Use wmic to learn about the current machine
+      execute_process(
+        COMMAND wmic cpu get NumberOfCores
+        OUTPUT_VARIABLE MPI_CORES_PER_CPU
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+      execute_process(
+        COMMAND wmic computersystem get NumberOfLogicalProcessors
+        OUTPUT_VARIABLE MPIEXEC_MAX_NUMPROCS
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+      execute_process(
+        COMMAND wmic computersystem get NumberOfProcessors
+        OUTPUT_VARIABLE MPI_CPUS_PER_NODE
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+      string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPI_CORES_PER_CPU
+        ${MPI_CORES_PER_CPU})
+      string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPIEXEC_MAX_NUMPROCS
+        ${MPIEXEC_MAX_NUMPROCS})
+      string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPI_CPUS_PER_NODE
+        ${MPI_CPUS_PER_NODE})
+
+      set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+        "Number of multi-core CPUs per node" FORCE )
+      set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+        "Number of cores per CPU" FORCE )
+      set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
+        "Total number of available MPI ranks" FORCE )
+
+      # Check for hyper-threading - This is important for reserving threads for
+      # OpenMP tests...
+
+      math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+        "${MPI_CPUS_PER_NODE} * ${MPI_CORES_PER_CPU}" )
+      if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+        set( MPI_HYPERTHREADING "OFF" CACHE BOOL
+          "Are we using hyper-threading?" FORCE )
+      else()
+        set( MPI_HYPERTHREADING "ON" CACHE BOOL
+          "Are we using hyper-threading?" FORCE )
+      endif()
+
+      set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
+        CACHE STRING "extra mpirun flags (list)." FORCE )
+    endif()
+
+  else()
+    # Set DRACO_C4 and other variables
+    setupDracoMPIVars()
+  endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
+
+  # Found MPI_C, but not MPI_CXX -- create a duplicate to satisfy link targets.
+  if( TARGET MPI::MPI_C AND NOT TARGET MPI::MPI_CXX)
+
+    if(verbose)
+      message("    Found target MPI::MPI_C but not MPI::MPI_CXX
+
+      set_target_properties(MPI::MPI_CXX PROPERTIES
+        IMPORTED_LOCATION_RELEASE         \"${MPI_C_LIBRARIES}\"
+        IMPORTED_IMPLIB                   \"${MPI_C_LIBRARIES}\"
+        INTERFACE_INCLUDE_DIRECTORIES     \"${MPI_C_INCLUDE_DIRS}\"
+        IMPORTED_CONFIGURATIONS           Release
+        IMPORTED_LINK_INTERFACE_LANGUAGES \"CXX\" )
+      ")
+    endif()
+
+    # Windows systems with dll libraries.
+    add_library( MPI::MPI_CXX SHARED IMPORTED )
+
+    # Windows with dlls, but only Release libraries.
+    set_target_properties(MPI::MPI_CXX PROPERTIES
+      IMPORTED_LOCATION_RELEASE         "${MPI_C_LIBRARIES}"
+      IMPORTED_IMPLIB                   "${MPI_C_LIBRARIES}"
+      INTERFACE_INCLUDE_DIRECTORIES     "${MPI_C_INCLUDE_DIRS}"
+      IMPORTED_CONFIGURATIONS           Release
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" )
+
+  endif()
+
+  # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
+  # Instead, link to libmsmpi.a that was created via gendef.exe and dlltool.exe
+  # from msmpi.dll.  Ref: http://www.geuz.org/pipermail/getdp/2012/001520.html,
+  # or
+  # https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment
+
+  # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by
+  # creating libmsmpi.a. (Last tested: 2017-08-31)
+  #
+  # 1.) You need MinGW/MSYS. Please make sure that the Devel tools are
+  #     installed.
+  # 2.) Download and install Microsoft's MPI. You need the main program and
+  #     the SDK.
+  # 3.) In the file %MSMPI_INC%\mpif.h, replace INT_PTR_KIND() by 8
+  # 4.) Create a MSYS version of the MPI library:
+  #     cd %TEMP%
+  #     copy c:\Windows\System32\msmpi.dll msmpi.dll
+  #     gendef msmpi.dll
+  #     dlltool -d msmpi.def -l libmsmpi.a -D msmpi.dll
+  #     del msmpi.def
+  #     copy libmsmpi.a %MSMPI_LIB32%/libmsmpi.a
+
+  if( WIN32 AND DEFINED CMAKE_Fortran_COMPILER AND TARGET MPI::MPI_Fortran )
+
+    if(verbose)
+      message("    Win32 AND CMAKE_Fortran_COMPILER AND TARGET MPI::MPI_Fortran
+      ")
+    endif()
+
+    # only do this if we are in a CMakeAddFortranSubdirectory directive when
+    # the main Generator is Visual Studio and the Fortran subdirectory uses
+    # gfortran with Makefiles.
+
+    # MS-MPI has an architecture specific include directory that FindMPI.cmake
+    # doesn't seem to pickup correctly.  Add it here.
+    get_target_property(mpilibdir MPI::MPI_Fortran INTERFACE_LINK_LIBRARIES)
+    get_target_property(mpiincdir MPI::MPI_Fortran
+      INTERFACE_INCLUDE_DIRECTORIES)
+    foreach( arch x86 x64 )
+      string(FIND "${mpilibdir}" "lib/${arch}" found_lib_arch)
+      string(FIND "${mpiincdir}" "include/${arch}" found_inc_arch)
+      if( ${found_lib_arch} GREATER 0 AND
+          ${found_inc_arch} LESS 0 )
+        if( IS_DIRECTORY "${mpiincdir}/${arch}")
+          list(APPEND mpiincdir "${mpiincdir}/${arch}")
         endif()
       endif()
+    endforeach()
 
-      setupDracoMPIVars()
+    # Reset the include directories for MPI::MPI_Fortran to pull in the extra
+    # $arch locations (if any)
 
-      # Find the version
-      # This is not working (hardwire it for now)
-      execute_process( COMMAND "${MPIEXEC_EXECUTABLE}" -help
-        OUTPUT_VARIABLE DBS_MPI_VER_OUT
-        ERROR_VARIABLE DBS_MPI_VER_ERR
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_STRIP_TRAILING_WHITESPACE
-        )
-      if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
-          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER
-            "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1"
-            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2"
-            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-          set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
-      else()
-         set(DBS_MPI_VER "5.0")
-      endif()
+    list(REMOVE_DUPLICATES mpiincdir)
+    set_target_properties(MPI::MPI_Fortran
+      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
 
-      set_package_properties( MPI PROPERTIES
-        URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
-        DESCRIPTION "Microsoft MPI"
-        TYPE RECOMMENDED
-        PURPOSE "If not available, all Draco components will be built as scalar applications."
-        )
+    if(verbose)
+      message("set_target_properties(MPI::MPI_Fortran
+      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES \"${mpiincdir}\")")
+    endif()
 
-      # Check flavor and add optional flags
-      if("${MPIEXEC_EXECUTABLE}" MATCHES "Microsoft MPI")
-         set( MPI_FLAVOR "MicrosoftMPI" CACHE STRING "Flavor of MPI." )
+  endif()
 
-         # Use wmic to learn about the current machine
-         execute_process(
-            COMMAND wmic cpu get NumberOfCores
-            OUTPUT_VARIABLE MPI_CORES_PER_CPU
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-         execute_process(
-            COMMAND wmic computersystem get NumberOfLogicalProcessors
-            OUTPUT_VARIABLE MPIEXEC_MAX_NUMPROCS
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-         execute_process(
-            COMMAND wmic computersystem get NumberOfProcessors
-            OUTPUT_VARIABLE MPI_CPUS_PER_NODE
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-         string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPI_CORES_PER_CPU
-           ${MPI_CORES_PER_CPU})
-         string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPIEXEC_MAX_NUMPROCS
-           ${MPIEXEC_MAX_NUMPROCS})
-         string( REGEX REPLACE ".*[\n]([0-9]+$)" "\\1" MPI_CPUS_PER_NODE
-           ${MPI_CPUS_PER_NODE})
+  if( ${MPI_C_FOUND} )
+    message(STATUS "Looking for MPI.......found ${MPIEXEC_EXECUTABLE}")
+  else()
+    message(STATUS "Looking for MPI.......not found")
+  endif()
 
-         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-            "Number of multi-core CPUs per node" FORCE )
-         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-            "Number of cores per cpu" FORCE )
-         set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
-            "Total number of available MPI ranks" FORCE )
-
-         # Check for hyperthreading - This is important for reserving
-         # threads for OpenMP tests...
-
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-           "${MPI_CPUS_PER_NODE} * ${MPI_CORES_PER_CPU}" )
-         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL
-              "Are we using hyperthreading?" FORCE )
-         else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL
-              "Are we using hyperthreading?" FORCE )
-         endif()
-
-         set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
-            CACHE STRING "extra mpirun flags (list)." FORCE )
-      endif()
-
-    else()
-      # Set DRACO_C4 and other variables
-      setupDracoMPIVars()
-   endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
-
-   # Found MPI_C, but not MPI_CXX -- create a duplicate to satisfy link targets.
-   if( TARGET MPI::MPI_C AND NOT TARGET MPI::MPI_CXX)
-
-     # Windows systems with dll libraries.
-       add_library( MPI::MPI_CXX SHARED IMPORTED )
-
-     # Windows with dlls, but only Release libraries.
-       set_target_properties(MPI::MPI_CXX PROPERTIES
-         IMPORTED_LOCATION_RELEASE         "${MPI_C_LIBRARIES}"
-         IMPORTED_IMPLIB                   "${MPI_C_LIBRARIES}"
-         INTERFACE_INCLUDE_DIRECTORIES     "${MPI_C_INCLUDE_DIRS}"
-         IMPORTED_CONFIGURATIONS           Release
-         IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" )
-
-   endif()
-
-   # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
-   # Instead, link to libmsmpi.a that was created via gendef.exe and
-   # dlltool.exe from msmpi.dll.  Ref:
-   # http://www.geuz.org/pipermail/getdp/2012/001520.html, or
-   # https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment
-
-   # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by
-   # creating libmsmpi.a. (Last tested: 2017-08-31)
-   #
-   # 1.) You need MinGW/MSYS. Please make sure that the Devel tools are
-   #     installed.
-   # 2.) Download and install Microsoft's MPI. You need the main program and
-   #     the SDK.
-   # 3.) In the file %MSMPI_INC%\mpif.h, replace INT_PTR_KIND() by 8
-   # 4.) Create a MSYS version of the MPI library:
-   #     cd %TEMP%
-   #     copy c:\Windows\System32\msmpi.dll msmpi.dll
-   #     gendef msmpi.dll
-   #     dlltool -d msmpi.def -l libmsmpi.a -D msmpi.dll
-   #     del msmpi.def
-   #     copy libmsmpi.a %MSMPI_LIB32%/libmsmpi.a
-
-   if( WIN32 AND EXISTS "${CMAKE_Fortran_COMPILER}" AND
-       TARGET MPI::MPI_Fortran )
-
-     # only do this if we are in a CMakeAddFortranSubdirectory directive
-     # when the main Generator is Visual Studio and the Fortran subdirectory
-     # uses gfortran with Makefiles.
-
-     # MS-MPI has an architecture specific include directory that
-     # FindMPI.cmake doesn't seem to pickup correctly.  Add it here.
-     get_target_property(mpilibdir MPI::MPI_Fortran
-       INTERFACE_LINK_LIBRARIES)
-     get_target_property(mpiincdir MPI::MPI_Fortran
-       INTERFACE_INCLUDE_DIRECTORIES)
-     foreach( arch x86 x64 )
-       string(FIND "${mpilibdir}" "lib/${arch}" found_lib_arch)
-       string(FIND "${mpiincdir}" "include/${arch}" found_inc_arch)
-       if( ${found_lib_arch} GREATER 0 AND
-         ${found_inc_arch} LESS 0 )
-         if( IS_DIRECTORY "${mpiincdir}/${arch}")
-           list(APPEND mpiincdir "${mpiincdir}/${arch}")
-         endif()
-       endif()
-     endforeach()
-
-     # Reset the include directories for MPI::MPI_Fortran to pull in the
-     # extra $arch locations (if any)
-     set_target_properties(MPI::MPI_Fortran
-       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
-
-   endif()
-
-   if( ${MPI_C_FOUND} )
-      message(STATUS "Looking for MPI...found${MPIEXEC_EXECUTABLE}")
-   else()
-      message(STATUS "Looking for MPI...not found")
-   endif()
-
-   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
+  mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
 endmacro( setupMPILibrariesWindows )
 

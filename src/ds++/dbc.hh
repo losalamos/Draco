@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/dbc.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Extensions to the STL algorithm library
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This header defines several function templates that perform common numerical
@@ -12,7 +12,7 @@
  * useful STL-style predicates. These predicates are particularly useful for
  * writing Design by Contract assertions.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_dbc_hh
 #define rtt_dsxx_dbc_hh
@@ -49,6 +49,6 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
 #include "dbc.i.hh"
 
 #endif // rtt_dsxx_dbc_hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of dbc.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,23 +1,24 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/test/tstsend_is.cc
  * \author Kelly Thompson
  * \date   Friday, Dec 07, 2012, 14:02 pm
  * \brief  Unit tests for rtt_c4::send_is()
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <numeric>
 #include <sstream>
 
 using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 // This is a simple class that has a static MPI type and a method to commit that
 // type
@@ -98,92 +99,830 @@ int Custom::MPI_Type = 0;
 MPI_Datatype Custom::MPI_Type = MPI_Datatype();
 #endif
 
+//----------------------------------------------------------------------------//
 void test_simple(rtt_dsxx::UnitTest &ut) {
   // borrowed from http://mpi.deino.net/mpi_functions/MPI_Issend.html.
+  using namespace std;
+  int const pid = rtt_c4::node();
 
-  if (rtt_c4::node() == 0)
-    std::cout << "Test send_is() by sending data to proc myid+1..."
-              << std::endl;
-
-  // C4_Req communication handles.
-  std::vector<rtt_c4::C4_Req> comm_int(2);
+  if (pid == 0)
+    cout << "Test send_is() by sending data to proc myid+1..." << endl;
 
   // for point-to-point communiction we need to know neighbor's identifiers:
   // left, right.
-  int right = (rtt_c4::node() + 1) % rtt_c4::nodes();
-  int left = rtt_c4::node() - 1;
+  int right = (pid + 1) % rtt_c4::nodes();
+  int left = pid - 1;
   if (left < 0)
     left = rtt_c4::nodes() - 1;
-
-  // create some data to send/recv
   unsigned const bsize(10);
-  std::vector<int> buffer2(bsize);
-  std::vector<int> buffer1(bsize);
-  for (unsigned i = 0; i < bsize; ++i) {
-    Check(i < INT_MAX);
-    buffer1[i] = 1000 * rtt_c4::node() + static_cast<int>(i);
-  }
 
-  // post asynchronous receives.
-  Check(buffer2.size() < INT_MAX);
-  comm_int[0] = rtt_c4::receive_async(&buffer2[0],
-                                      static_cast<int>(buffer2.size()), left);
+  { // T = int
 
-  try {
-    // send data using non-blocking synchronous send.
-    Check(buffer1.size() < INT_MAX);
-    rtt_c4::send_is(comm_int[1], &buffer1[0], static_cast<int>(buffer1.size()),
-                    right);
+    if (pid == 0)
+      std::cout << "\nStarting send_is<int> tests..." << std::endl;
 
-    // wait for all communication to finish
-    Check(comm_int.size() < UINT_MAX);
-    rtt_c4::wait_all(static_cast<unsigned>(comm_int.size()), &comm_int[0]);
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
 
-    // exected results
-    std::vector<int> expected(bsize);
-    for (size_t i = 0; i < bsize; ++i) {
-      Check(i < INT_MAX);
-      expected[i] = 1000 * left + static_cast<int>(i);
+    // create some size 10 data to send/recv.
+    vector<int> buffer2(bsize);
+    vector<int> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = 1000 * pid + static_cast<int>(i);
     }
 
-    if (expected == buffer2) {
-      std::ostringstream msg;
-      msg << "Expected data found after send_is() on node " << rtt_c4::node()
-          << ".";
-      PASSMSG(msg.str());
-    } else {
-      std::ostringstream msg;
-      msg << "Did not find expected data after send_is() on node "
-          << rtt_c4::node() << ".";
-      FAILMSG(msg.str());
-    }
-  } catch (rtt_dsxx::assertion const & /*error*/) {
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<int> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = 1000 * left + static_cast<int>(i);
+      }
+
+      if (expected == buffer2) {
+        ostringstream msg;
+        msg << "Expected int data found after send_is() on node " << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected int data after send_is() on node " << pid
+            << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-    PASSMSG("Successfully caught a ds++ exception while trying to use "
-            "send_is() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<int>() in a C4_SCALAR build.");
 #else
-    FAILMSG("Encountered a ds++ exception while testing send_is().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<int>().");
 #endif
+    }
   }
 
+  { // T=double
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<double> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<double> buffer2(bsize);
+    vector<double> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<double>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<double> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<double>(1000 * left + i);
+      }
+
+      if (soft_equiv(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected double data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected double data after send_is() on node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<double>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<double>().");
+#endif
+    }
+  }
+
+  { // T=float
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<float> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<float> buffer2(bsize);
+    vector<float> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<float>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<float> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<float>(1000 * left + i);
+      }
+
+      float const eps = 1.0e-6f;
+      if (soft_equiv(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end(), eps)) {
+        ostringstream msg;
+        msg << "Expected float data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected float data after send_is() on node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<float>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<float>().");
+#endif
+    }
+  }
+
+  { // T=long double
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<long double> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<long double> buffer2(bsize);
+    vector<long double> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<long double>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<long double> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<long double>(1000 * left + i);
+      }
+
+      long double const eps = 1.0e-6f;
+      if (soft_equiv(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end(), eps)) {
+        ostringstream msg;
+        msg << "Expected long double data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected long double data after send_is() on node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<long double>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG(
+          "Encountered a ds++ exception while testing send_is<long double>().");
+#endif
+    }
+  }
+  { // T=unsigned int
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<unsigned int> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<unsigned int> buffer2(bsize);
+    vector<unsigned int> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<unsigned int>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<unsigned int> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<unsigned int>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected unsigned int data found after send_is() on node "
+            << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected unsigned int data after send_is() on "
+               "node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<unsigned int>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "int>().");
+#endif
+    }
+  }
+
+  { // T=unsigned long
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<unsigned long> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<unsigned long> buffer2(bsize);
+    vector<unsigned long> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<unsigned long>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<unsigned long> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<unsigned long>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected unsigned long data found after send_is() on node "
+            << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected unsigned long data after send_is() on "
+               "node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<unsigned long>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "long>().");
+#endif
+    }
+  }
+
+  { // T=unsigned short
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<unsigned short> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<unsigned short> buffer2(bsize);
+    vector<unsigned short> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<unsigned short>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<unsigned short> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<unsigned short>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected unsigned short data found after send_is() on node "
+            << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected unsigned short data after send_is() on "
+               "node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<unsigned short>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "long>().");
+#endif
+    }
+  }
+
+  { // T=unsigned long long
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<unsigned long long> tests..."
+                << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<unsigned long long> buffer2(bsize);
+    vector<unsigned long long> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<unsigned long long>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<unsigned long long> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<unsigned long long>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected unsigned long long data found after send_is() on node "
+            << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected unsigned long long data after send_is() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<unsigned long long>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "long>().");
+#endif
+    }
+  }
+  { // T=long
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<long> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<long> buffer2(bsize);
+    vector<long> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<long>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<long> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<long>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected long data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected long data after send_is() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<long>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "long>().");
+#endif
+    }
+  }
+  { // T=short
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<short> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<short> buffer2(bsize);
+    vector<short> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<short>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<short> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<short>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected short data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected short data after send_is() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<short>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "short>().");
+#endif
+    }
+  }
+
+  { // T=long long
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<long long> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<long long> buffer2(bsize);
+    vector<long long> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = static_cast<long long>(1000 * pid + i);
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<long long> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = static_cast<long long>(1000 * left + i);
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected long long data found after send_is() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected long long data after send_is() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<long long>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "long long>().");
+#endif
+    }
+  }
+
+  { // T=bool
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<bool> tests..." << std::endl;
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    bool buffer2[10];
+    bool buffer1[10];
+    for (unsigned i = 0; i < 10; ++i) {
+      buffer1[i] = i > 5;
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0], 10, left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], 10, right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<bool> expected(10);
+      for (size_t i = 0; i < 10; ++i) {
+        expected[i] = i > 5;
+      }
+
+      if (std::equal(begin(expected), end(expected), begin(buffer2),
+                     end(buffer2))) {
+        ostringstream msg;
+        msg << "Expected bool data found after send_is<bool>() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected bool data after send_is<bool>() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<bool>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
+              "bool>().");
+#endif
+    }
+  }
+
+  { // T=char
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<char> tests..." << std::endl;
+
+    vector<char> alphabet(bsize + rtt_c4::nranks());
+    std::iota(alphabet.begin(), alphabet.end(), 'A');
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<char> buffer2(bsize);
+    vector<char> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = alphabet[pid + i];
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<char> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = alphabet[left + i];
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected char data found after send_is<char>() on node " << pid
+            << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected char data after send_is<char>() "
+            << "on node " << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<char>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<"
+              "char>().");
+#endif
+    }
+  }
+
+  { // T=unsigned char
+
+    rtt_c4::global_barrier();
+    if (pid == 0)
+      std::cout << "\nStarting send_is<unsigned char> tests..." << std::endl;
+
+    vector<unsigned char> alphabet(bsize + rtt_c4::nranks());
+    std::iota(alphabet.begin(), alphabet.end(), 'A');
+
+    // C4_Req communication handles.
+    vector<rtt_c4::C4_Req> comm(2);
+
+    // create some size 10 data to send/recv.
+    vector<unsigned char> buffer2(bsize);
+    vector<unsigned char> buffer1(bsize);
+    for (unsigned i = 0; i < bsize; ++i) {
+      buffer1[i] = alphabet[pid + i];
+    }
+
+    // post asynchronous receives.
+    comm[0] = rtt_c4::receive_async(&buffer2[0],
+                                    static_cast<int>(buffer2.size()), left);
+    try {
+      // send data using non-blocking synchronous send.
+      rtt_c4::send_is(comm[1], &buffer1[0], static_cast<int>(buffer1.size()),
+                      right);
+
+      // wait for all communication to finish
+      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // exected results
+      vector<unsigned char> expected(bsize);
+      for (size_t i = 0; i < bsize; ++i) {
+        expected[i] = alphabet[left + i];
+      }
+
+      if (std::equal(expected.begin(), expected.end(), buffer2.begin(),
+                     buffer2.end())) {
+        ostringstream msg;
+        msg << "Expected unsigned char data found after send_is<unsigned "
+            << "char>() on node " << pid << ".";
+        PASSMSG(msg.str());
+      } else {
+        ostringstream msg;
+        msg << "Did not find expected unsigned char data after "
+               "send_is<unsigned char>() on node "
+            << pid << ".";
+        FAILMSG(msg.str());
+      }
+    } catch (rtt_dsxx::assertion const & /*error*/) {
+#ifdef C4_SCALAR
+      PASSMSG("Successfully caught a ds++ exception while trying to use "
+              "send_is<unsigned char>() in a C4_SCALAR buildb.");
+#else
+      FAILMSG("Encountered a ds++ exception while testing send_is<"
+              "unsigned char>().");
+#endif
+    }
+  }
+
+  rtt_c4::global_barrier();
   return;
 }
 
+//----------------------------------------------------------------------------//
 void test_send_custom(rtt_dsxx::UnitTest &ut) {
   // borrowed from http://mpi.deino.net/mpi_functions/MPI_Issend.html.
 
   // commit the MPI type for the Custom class. This must be done before
   // send_is_custom is called. DMC checks will throw if the type has not been
-  // committed because size comparison will fail and MPI throws an error when
-  // an uncommited type is used in a send/receive
+  // committed because size comparison will fail and MPI throws an error when an
+  // uncommited type is used in a send/receive
   Custom::commit_mpi_type();
 
 #ifdef C4_SCALAR
-  std::cout << "SERIAL TEST: This should just end in a try block catching an ";
-  std::cout << "insist failure" << std::endl;
+  std::cout << "\nSERIAL TEST: This should just end in a try block catching ";
+  std::cout << "an insist failure" << std::endl;
 #else
   if (rtt_c4::node() == 0) {
-    std::cout << "Test send_is_custom() by sending data to proc myid+1..."
+    std::cout << "\nTest send_is_custom() by sending data to proc myid+1..."
               << std::endl;
     int custom_mpi_type_size(0);
     MPI_Type_size(Custom::MPI_Type, &custom_mpi_type_size);
@@ -191,8 +930,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     std::cout << " Size of custom MPI type: " << custom_mpi_type_size
               << std::endl;
 
-    if (custom_mpi_type_size != sizeof(Custom))
-      ITFAILS;
+    FAIL_IF_NOT(custom_mpi_type_size == sizeof(Custom));
   }
 #endif
 
@@ -232,8 +970,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
         rtt_c4::message_size_custom(recv_custom_status, Custom::MPI_Type);
 
     // make sure only one object was received
-    if (recv_size != 1)
-      ITFAILS;
+    FAIL_IF_NOT(recv_size == 1);
 
     // check that the exected results match the custom type from the left rank
     Custom expected_custom(left);
@@ -245,27 +982,20 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
               << recv_custom_object.get_int2() << " "
               << recv_custom_object.get_int3() << std::endl;
 
-    if (expected_custom.get_int1() != recv_custom_object.get_int1())
-      ITFAILS;
-    if (expected_custom.get_int2() != recv_custom_object.get_int2())
-      ITFAILS;
-    if (expected_custom.get_int3() != recv_custom_object.get_int3())
-      ITFAILS;
+    FAIL_IF_NOT(expected_custom.get_int1() == recv_custom_object.get_int1());
+    FAIL_IF_NOT(expected_custom.get_int2() == recv_custom_object.get_int2());
+    FAIL_IF_NOT(expected_custom.get_int3() == recv_custom_object.get_int3());
 
     std::cout << "Expected double 1: " << expected_custom.get_double1() << " ";
     std::cout << "Received double 1: " << recv_custom_object.get_double1();
     std::cout << std::endl;
 
-    if (!soft_equiv(expected_custom.get_double1(),
-                    recv_custom_object.get_double1()))
-      ITFAILS;
-    if (!soft_equiv(expected_custom.get_double2(),
-                    recv_custom_object.get_double2()))
-      ITFAILS;
-    if (expected_custom.get_long1() != recv_custom_object.get_long1())
-      ITFAILS;
-    if (expected_custom.get_long2() != recv_custom_object.get_long2())
-      ITFAILS;
+    FAIL_IF_NOT(soft_equiv(expected_custom.get_double1(),
+                           recv_custom_object.get_double1()));
+    FAIL_IF_NOT(soft_equiv(expected_custom.get_double2(),
+                           recv_custom_object.get_double2()));
+    FAIL_IF_NOT(expected_custom.get_long1() == recv_custom_object.get_long1());
+    FAIL_IF_NOT(expected_custom.get_long2() == recv_custom_object.get_long2());
 
   } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
@@ -323,33 +1053,31 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
               << recv_custom_object_block.get_int2() << " "
               << recv_custom_object_block.get_int3() << std::endl;
 
-    if (expected_custom.get_int1() != recv_custom_object_block.get_int1())
-      ITFAILS;
-    if (expected_custom.get_int2() != recv_custom_object_block.get_int2())
-      ITFAILS;
-    if (expected_custom.get_int3() != recv_custom_object_block.get_int3())
-      ITFAILS;
+    FAIL_IF_NOT(expected_custom.get_int1() ==
+                recv_custom_object_block.get_int1());
+    FAIL_IF_NOT(expected_custom.get_int2() ==
+                recv_custom_object_block.get_int2());
+    FAIL_IF_NOT(expected_custom.get_int3() ==
+                recv_custom_object_block.get_int3());
 
     std::cout << "Expected double 1: " << expected_custom.get_double1() << " ";
     std::cout << "Received double 1: "
               << recv_custom_object_block.get_double1();
     std::cout << std::endl;
 
-    if (!soft_equiv(expected_custom.get_double1(),
-                    recv_custom_object_block.get_double1()))
-      ITFAILS;
-    if (!soft_equiv(expected_custom.get_double2(),
-                    recv_custom_object_block.get_double2()))
-      ITFAILS;
-    if (expected_custom.get_long1() != recv_custom_object_block.get_long1())
-      ITFAILS;
-    if (expected_custom.get_long2() != recv_custom_object_block.get_long2())
-      ITFAILS;
+    FAIL_IF_NOT(soft_equiv(expected_custom.get_double1(),
+                           recv_custom_object_block.get_double1()));
+    FAIL_IF_NOT(soft_equiv(expected_custom.get_double2(),
+                           recv_custom_object_block.get_double2()));
+    FAIL_IF_NOT(expected_custom.get_long1() ==
+                recv_custom_object_block.get_long1());
+    FAIL_IF_NOT(expected_custom.get_long2() ==
+                recv_custom_object_block.get_long2());
   }
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -359,6 +1087,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstsend_is.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

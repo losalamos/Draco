@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/path_getFilenameComponent.cc
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "path.hh"
 #include <algorithm> // std::replace()
@@ -12,13 +12,13 @@
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Helper function to extract path information from a filename.
  * \param fqName A fully qualified filename (/path/to/the/unit/test)
  * \return filename only, or path to file only.
  *
- * This function expects a fully qualfied name of a unit test (e.g.: argv[0]).
+ * This function expects a fully qualified name of a unit test (e.g.: argv[0]).
  * It strips off the path and returns the name of the unit test.
  *
  * Options:
@@ -61,8 +61,7 @@ std::string getFilenameComponent(std::string const &fqName,
     break;
 
   case FC_NAME:
-    // if fqName is a directory and ends with "/", trim the trailing
-    // dirSep.
+    // if fqName is a directory and ends with "/", trim the trailing dirSep.
     if (fqName.rfind(rtt_dsxx::UnixDirSep) == fqName.length() - 1)
       fullName = fqName.substr(0, fqName.length() - 1);
     if (fqName.rfind(rtt_dsxx::WinDirSep) == fqName.length() - 1)
@@ -126,6 +125,6 @@ std::string getFilenameComponent(std::string const &fqName,
 
 } // end namespace rtt_dsxx
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of path_getFilenameComponent.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

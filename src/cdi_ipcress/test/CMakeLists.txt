@@ -15,8 +15,7 @@ project( cdi_ipcress_test CXX )
 set( test_sources
   tIpcressFile.cc
   tIpcressOpacity.cc
-  tIpcressWithCDI.cc
-  tIpcressOdfmgOpacity.cc )
+  tIpcressWithCDI.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -26,21 +25,16 @@ add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "Lib_cdi_ipcress" )
 
-add_scalar_tests(
-  SOURCES "ReadOdfIpcressFile.cc"
-  DEPS    "Lib_cdi_ipcress"
-  TEST_ARGS "-u" )
-
 include( ApplicationUnitTest )
 # Test multi-group opacities found in an ipcressfile
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
-  TEST_ARGS "-v;-h;${PROJECT_SOURCE_DIR}/Al_BeCu.ipcress;missingfile.ipcress"
+  TEST_ARGS "-v;-h;${PROJECT_SOURCE_DIR}/two-mats.ipcress;missingfile.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
-  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
+  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-two-mats.ipcress.gold"
   )
-# Test gray opacities found in an ipcressfile  
+# Test gray opacities found in an ipcressfile
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>

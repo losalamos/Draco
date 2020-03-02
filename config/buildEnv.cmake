@@ -3,9 +3,11 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 #------------------------------------------------------------------------------#
 # Build Parameters
@@ -122,7 +124,8 @@ macro( dbsSetDefaults )
   set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
   # Enable parallel build for Eclipse:
-  set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
+  cmake_host_system_information( RESULT logical_cores QUERY NUMBER_OF_LOGICAL_CORES )
+  set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${logical_cores}" )
 
   # Set RPATH for all libraries on Apple platform
   if (APPLE)
@@ -130,8 +133,8 @@ macro( dbsSetDefaults )
   endif()
 
   if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-     # Set replacement RPATH for installed libraries and executables
-     # See http://www.cmake.org/Wiki/CMake_RPATH_handling
+     # Set replacement RPATH for installed libraries and executables. See
+     # http://www.cmake.org/Wiki/CMake_RPATH_handling
 
      # Do not skip the full RPATH for the build tree
      set( CMAKE_SKIP_BUILD_RPATH OFF )
@@ -139,8 +142,8 @@ macro( dbsSetDefaults )
      # installing)
      set( CMAKE_BUILD_WITH_INSTALL_RPATH OFF )
 
-     # For libraries created within the build tree, replace the RPATH
-     # in the installed files with the install location.
+     # For libraries created within the build tree, replace the RPATH in the
+     # installed files with the install location.
      set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH
        "RPATH to embed in dynamic libraries and executables when
 targets are installed." FORCE )
@@ -156,7 +159,7 @@ endmacro()
 ## dbsInitExportTargets
 ##
 ## These fields are constructed during Draco configure and are
-## saved/installed to lib/cmake/draco-X.X/draco-config.cmake.
+## saved/installed to cmake/draco-config.cmake.
 ##---------------------------------------------------------------------------##
 macro( dbsInitExportTargets PREFIX )
   # Data for exporting during install

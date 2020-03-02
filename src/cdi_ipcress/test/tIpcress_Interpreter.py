@@ -54,13 +54,13 @@ try:
   if tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_v":
 
     check_for_expected_string(tIpcress_Interpreter, "Ipcress_Interpreter")
-    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, ": version ")
 
   ##---------------------------------------------------------------------------##
   elif tIpcress_Interpreter.testname == "cdi_ipcress_tIpcress_Interpreter_h":
 
     check_for_expected_string(tIpcress_Interpreter, "Usage: IpcressInterpreter")
-    check_for_expected_string(tIpcress_Interpreter, ": version Draco")
+    check_for_expected_string(tIpcress_Interpreter, ": version ")
     check_for_expected_string(tIpcress_Interpreter, "Follow the prompts")
 
   ##---------------------------------------------------------------------------##
@@ -74,7 +74,7 @@ try:
 
   ##---------------------------------------------------------------------------##
   elif tIpcress_Interpreter.testname == \
-    "cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress":
+    "cdi_ipcress_tIpcress_Interpreter_twomats_ipcress":
 
     # These strings should be found:
 
@@ -87,8 +87,8 @@ try:
 
     # Diff the output vs a gold file.
     # - use no extra options for numdiff
-    tIpcress_Interpreter.aut_numdiff()
-    
+    tIpcress_Interpreter.aut_numdiff("-r 1.0e-7")
+
   ##---------------------------------------------------------------------------##
   elif tIpcress_Interpreter.testname == \
     "cdi_ipcress_tIpcress_Interpreter_odfregression10_ipcress":
@@ -98,11 +98,11 @@ try:
     check_for_expected_string(tIpcress_Interpreter,
       "This opacity file has 1 materials:")
     check_for_expected_string(tIpcress_Interpreter,
-      "Material 1 has ID number 19000")
+      "Material 1 has ID number 10001")
     check_for_expected_string(tIpcress_Interpreter, "Frequency grid")
-    check_for_expected_string(tIpcress_Interpreter, 
+    check_for_expected_string(tIpcress_Interpreter,
       "The Gray Planck Absorption Opacity for")
-    check_for_expected_string(tIpcress_Interpreter, 
+    check_for_expected_string(tIpcress_Interpreter,
       "The Gray Rosseland Absorption Opacity for")
     print(" ")
 
@@ -116,7 +116,7 @@ try:
     msg = "tIpcress_Interpreter.py error: The test '{0}' is unknown.".format(tIpcress_Interpreter.testname)
     msg += "\nPlease add a block of code to the .py file."
     raise ValueError(msg)
-    
+
   ##---------------------------------------------------------------------------##
   ## Final report
   ##---------------------------------------------------------------------------##

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh/X3D_Draco_Mesh_Reader.cc
- * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Keady
+ * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
  * \date   Thursday, Jul 12, 2018, 08:46 am
  * \brief  X3D_Draco_Mesh_Reader class implementation file.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "X3D_Draco_Mesh_Reader.hh"
 #include "ds++/DracoStrings.hh"
@@ -16,15 +16,16 @@
 
 namespace rtt_mesh {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CONSTRUCTOR
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief X3D_Draco_Mesh_Reader constructor.
  *
  * \param[in] filename_ name of file to be parsed
  * \param[in] bdy_filenames_ names of files with lists of side node indexes
- * \param[in] bdy_flags_ uint indicating B.C. per side file (bdy_filenames_)
+ * \param[in] bdy_flags_ unsigned int indicating B.C. per side file
+ *           (bdy_filenames_)
  */
 X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(
     const std::string &filename_,
@@ -38,9 +39,9 @@ X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(
          "Number of B.C.s > number of boundary (side) node files.");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // PUBLIC FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Build the cell-face index map to the corresponding coordinates.
  */
@@ -141,7 +142,7 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
   Ensure(x3d_cellface_map.size() > 0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return number of nodes for a given cell.
  *
@@ -151,18 +152,18 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
  */
 unsigned X3D_Draco_Mesh_Reader::get_celltype(size_t cell) const {
 
-  // get the list of cell nodes
-  const std::vector<unsigned> node_indexes = get_cellnodes(cell);
+  // x3d file's node, face, and cell indexes start from 1
+  Check(cell + 1 < INT_MAX);
+  const std::vector<int> &cell_data =
+      x3d_cellface_map.at(static_cast<int>(cell + 1));
+  const size_t num_faces = cell_data[0];
 
-  // merely the size of the vector of unique nodes
-  size_t num_nodes_pc = node_indexes.size();
-
-  Ensure(num_nodes_pc > 0);
-  Ensure(num_nodes_pc < UINT_MAX);
-  return static_cast<unsigned>(num_nodes_pc);
+  Ensure(num_faces > 0);
+  Ensure(num_faces < UINT_MAX);
+  return static_cast<unsigned>(num_faces);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the vector of node indices for a given cell.
  *
@@ -194,13 +195,11 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
     std::vector<unsigned> tmp_vec = get_facenodes(face);
 
     // insert into the cell vector
-    for (auto j : tmp_vec) {
-      if (node_index_set.insert(j).second)
-        node_indexes.push_back(j);
-    }
+    for (auto j : tmp_vec)
+      node_indexes.push_back(j);
   }
 
-  // substract 1 to get base 0 nodes
+  // subtract 1 to get base 0 nodes
   for (size_t i = 0; i < node_indexes.size(); ++i)
     node_indexes[i]--;
 
@@ -208,9 +207,44 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   return node_indexes;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Return the vector of node indices for a given cell.
+ *
+ * \param[in] cell index of cell
+ * \param[in] face face index local to cell
+ *
+ * \return vector of int node indices
+ */
+std::vector<unsigned>
+X3D_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size_t face) const {
+
+  Require(cell < static_cast<size_t>(x3d_header_map.at("elements")[0]));
+
+  // x3d file's node, face, and cell indexes start from 1
+  Check(cell + 1 < INT_MAX);
+  const std::vector<int> &cell_data =
+      x3d_cellface_map.at(static_cast<int>(cell + 1));
+  Remember(const size_t num_faces = cell_data[0]);
+  Check(face < num_faces);
+
+  // get the face index, which will by key for face-to-node map
+  int map_face = cell_data[face + 1];
+
+  // get a vector of nodes for this face
+  std::vector<unsigned> node_indexes = get_facenodes(map_face);
+
+  // subtract 1 to get base 0 nodes
+  for (size_t i = 0; i < node_indexes.size(); ++i)
+    node_indexes[i]--;
+
+  Ensure(node_indexes.size() > 0);
+  return node_indexes;
+}
+
+//----------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Find iterator of a vector of pairs at a key value.
  *
@@ -230,7 +264,7 @@ X3D_Draco_Mesh_Reader::find_iter_of_key(const Parsed_Elements &pairs,
   return it;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Simply return key as specialization to numerical conversion.
  *
@@ -245,7 +279,7 @@ X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey) {
   return ret_key;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the vector of node indices for a given face.
  *
@@ -274,9 +308,9 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_facenodes(size_t face) const {
   return node_indexes;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * \brief Read side node lists from given bdy files
+ * \brief Read side node lists from given boundary files
  */
 void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
@@ -331,7 +365,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
   }
 
   // Insist that there was at least one side node in all the files
-  Insist(bc_node_map.size() > 0, "Bdy file(s) read, but no side nodes.");
+  Insist(bc_node_map.size() > 0, "Boundary file(s) read, but no side nodes.");
 
   // treat sides as a subset of cell faces here
   int num_side = 0;
@@ -389,6 +423,6 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
 } // end namespace rtt_mesh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/X3D_Draco_Mesh_Reader.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

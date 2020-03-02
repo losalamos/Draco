@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Gray_Opacity.hh
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_Gray_Opacity_hh__
-#define __cdi_analytic_Analytic_Gray_Opacity_hh__
+#ifndef rtt_cdi_analytic_Analytic_Gray_Opacity_hh
+#define rtt_cdi_analytic_Analytic_Gray_Opacity_hh
 
 #include "Analytic_Models.hh"
 #include "cdi/GrayOpacity.hh"
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_analytic {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Analytic_Gray_Opacity
  *
@@ -52,7 +52,7 @@ namespace rtt_cdi_analytic {
  * Example usage of Analytic_Gray_Opacity, Analytic_Opacity_Model, and their
  * incorporation into rtt_cdi::CDI.
  */
-//===========================================================================//
+//============================================================================//
 
 class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity {
 public:
@@ -139,9 +139,9 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the energy policy descriptor (gray for
  * Analytic_Gray_Opacity).
@@ -151,7 +151,7 @@ Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const {
   return std_string("gray");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a string describing the opacity model.
  */
@@ -171,7 +171,7 @@ Analytic_Gray_Opacity::getDataDescriptor() const {
   return descriptor;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return NULL string for the data filename.
  */
@@ -182,8 +182,8 @@ Analytic_Gray_Opacity::getDataFilename() const {
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_Gray_Opacity_hh__
+#endif // rtt_cdi_analytic_Analytic_Gray_Opacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_Gray_Opacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

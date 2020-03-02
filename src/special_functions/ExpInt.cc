@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/ExpInt.cc
  * \author Paul Talbot
@@ -6,7 +6,7 @@
  * \brief  Iterative methods to calculate Ei(x), E_n(x)
  * \note   Copyright (C) 2016-2019 Los Alamos Natinal Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ExpInt.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -18,7 +18,7 @@
 
 namespace rtt_sf {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute general exponential integrals of type Ei(x) or E_n(x).
  *
@@ -106,7 +106,7 @@ double En(unsigned const n, double const x) {
   return ans;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute general exponential integrals of type Ei(x).
  *
@@ -148,8 +148,8 @@ double Ei(double const x) {
     fact = 1.0;
     size_t k(1);
     for (; k <= MAXIT; ++k) {
-      fact *= x / k;
-      term = fact / k;
+      fact *= x / static_cast<double>(k);
+      term = fact / static_cast<double>(k);
       sum += term;
       if (term < EPS * sum)
         break;
@@ -162,7 +162,7 @@ double Ei(double const x) {
     term = 1.0; //starts with second term
     for (size_t k = 1; k <= MAXIT; ++k) {
       prev = term;
-      term *= k / x;
+      term *= static_cast<double>(k) / x;
       if (term < EPS)
         break; //term approximates relative error
 

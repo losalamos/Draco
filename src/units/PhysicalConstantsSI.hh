@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*! \file   PhysicalConstantsSI.hh
  *  \author Kelly Thompson, Kent G. Budge
  *  \brief  Provide a single place where physical constants (pi, speed of
  *          light, etc) are defined in SI units.
  *  \date   Fri Nov 07 10:04:52 2003
- *  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *          All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __units_PhysicalConstantsSI_hh__
-#define __units_PhysicalConstantsSI_hh__
+#ifndef rtt_units_PhysicalConstantsSI_hh
+#define rtt_units_PhysicalConstantsSI_hh
 
 #include "MathConstants.hh"
 #include "UnitSystem.hh"
@@ -37,25 +37,25 @@ namespace rtt_units {
  *
  * - Fundamental constants are listed first.
  * - Derived constants are listed second.
- * - Actual data is placed in a user-defined type for C-interoperatbility.
+ * - Actual data is placed in a user-defined type for C-interoperability.
  */
 //----------------------------------------------------------------------------//
 
 //! [c] SPEED OF LIGHT (M/S)
 // exact value by NIST definition
-static double const cLightSI = 2.99792458e8; // m s^-1
+static double constexpr cLightSI = 2.99792458e8; // m s^-1
 
 //! [Na] AVOGADRO'S NUMBER ("entities"/MOLE)
 // Wikipedia (2013-12-3) == NIST Codata 2010
-static double const AVOGADRO = 6.02214129e23; // entities/mol
+static double constexpr AVOGADRO = 6.02214129e23; // entities/mol
 
 //! [h] Planck constant ( Energy seconds )
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
-static double const planckSI = 6.62606957e-34; // J s
+static double constexpr planckSI = 6.62606957e-34; // J s
 
 //! [R] Molar Gas constant
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps 9.1e-7)
-static double const gasConstantSI = 8.3144621; // J/mol/K
+static double constexpr gasConstantSI = 8.3144621; // J/mol/K
 
 /*!
  * \brief [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
@@ -63,39 +63,39 @@ static double const gasConstantSI = 8.3144621; // J/mol/K
  * \note If this changes you msut update the Enumerated Temperature Type in
  *       UnitSystemEnusm.hh!
  */
-static double const boltzmannSI = 1.380648800E-23; // J K^-1
+static double constexpr boltzmannSI = 1.380648800E-23; // J K^-1
 
 /*!
  * \brief [e] ELECTRON CHARGE (COULOMBS)
  *
  * Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 2.2e-8)
- * \note If this changes you msut update the Enumerated Temperature Type in
+ * \note If this changes you must update the Enumerated Temperature Type in
  *       UnitSystemEnusm.hh!
  */
-static double const electronChargeSI = 1.602176565e-19; // Amp / sec
+static double constexpr electronChargeSI = 1.602176565e-19; // Amp / sec
 
 //! [me] ELECTRON REST MASS (KG)	 s
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4e-8)
-static double const electronMassSI = 9.10938291e-31; // kg
+static double constexpr electronMassSI = 9.10938291e-31; // kg
 
 //! [G] Gravitational Constant
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 1.2e-4)
-static double const gravitationalConstantSI = 6.67384e-11; // m^3/kg/s^2
+static double constexpr gravitationalConstantSI = 6.67384e-11; // m^3/kg/s^2
 
 //! [g] Acceleration due to gravity (standard)
 // Wikipedia (2013-12-3)
-static double const accelerationFromGravitySI = 9.80665; // m/s^2
+static double constexpr accelerationFromGravitySI = 9.80665; // m/s^2
 
 //! [mp] PROTON REST MASS (KG)
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
-static double const protonMassSI = 1.672621777e-27; // kg
+static double constexpr protonMassSI = 1.672621777e-27; // kg
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // DERIVED CONSTANTS
 //  - constants derived from fundamental constants listed above
 //  - constants with alternate units
 //  - conversion factors
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 /*! \brief EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
  *
@@ -104,9 +104,9 @@ static double const protonMassSI = 1.672621777e-27; // kg
  * \note If this number is changed, you must also update the conversion factor
  *       found in UniSystemUnums.hh.
  */
-static double const EV2K = electronChargeSI / boltzmannSI;
+static double constexpr EV2K = electronChargeSI / boltzmannSI;
 
-/*! 
+/*!
  * \brief [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
  *
  * \f[
@@ -114,28 +114,28 @@ static double const EV2K = electronChargeSI / boltzmannSI;
  *             = 5.670373e-8
  * \f]
  */
-static double const stefanBoltzmannSI =
-    2.0 * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
-    (15.0 * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
+static double constexpr stefanBoltzmannSI =
+    2.0 * PI * PI * PI * PI * PI * boltzmannSI * boltzmannSI * boltzmannSI *
+    boltzmannSI / (15.0 * planckSI * planckSI * planckSI * cLightSI * cLightSI);
 
 //! [F] Faraday constant == Na * e
-static double const faradayConstantSI = AVOGADRO * electronChargeSI;
+static double constexpr faradayConstantSI = AVOGADRO * electronChargeSI;
 
 //! [mu0] Permeability of vacuum (free space)
-static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
+static double constexpr permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
 
 //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
-static double const permittivityOfFreeSpaceSI =
-    1.0 / permeabilityOfVacuumSI / cLightSI / cLightSI; // Coloumb^2/J/m
+static double constexpr permittivityOfFreeSpaceSI =
+    1.0 / permeabilityOfVacuumSI / cLightSI / cLightSI; // Coulomb^2/J/m
 
 //! [re] Classical electron radius (M)
-static double const classicalElectronRadiusSI =
-    std::pow(electronChargeSI, 2) / (4 * PI * permittivityOfFreeSpaceSI *
-                                     electronMassSI * std::pow(cLightSI, 2));
+static double constexpr classicalElectronRadiusSI =
+    electronChargeSI * electronChargeSI /
+    (4 * PI * permittivityOfFreeSpaceSI * electronMassSI * cLightSI * cLightSI);
 
 } // end namespace rtt_units
 
-#endif // __units_PhysicalConstantsSI_hh__
+#endif // rtt_units_PhysicalConstantsSI_hh
 
 //----------------------------------------------------------------------------//
 // end of units/PhysicalConstantsSI.hh

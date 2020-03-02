@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "General_Octant_Quadrature.hh"
 #include "parser/utilities.hh"
@@ -13,7 +13,7 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * The specification body must specify the number of ordinates and the number of
  * levels.  If it's organized in levels, then there is an sn order with which it
@@ -75,6 +75,6 @@ General_Octant_Quadrature::parse(Token_Stream &tokens) {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

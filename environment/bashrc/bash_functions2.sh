@@ -32,6 +32,8 @@ if test $fn_exists = 0; then
       fi
     done
   }
+  export -f dracoenv
+  export -f rmdracoenv
 fi
 
 ##---------------------------------------------------------------------------##

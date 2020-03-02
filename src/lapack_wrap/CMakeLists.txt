@@ -9,22 +9,29 @@
 cmake_minimum_required(VERSION 3.9.0)
 project( lapack_wrap CXX )
 
+#------------------------------------------------------------------------------#
+# Skip this package if
+# 1. LAPACK isn't found.
+# 2. We are targeting an Xcode solution (necessary cmake logic is missing).
+#------------------------------------------------------------------------------#
+
+if( HAVE_Fortran )
+
+if( NOT TARGET lapack OR ${CMAKE_GENERATOR} MATCHES Xcode)
+  message( STATUS
+    "NOTE: Skipping lapack_wrap component because LAPACK is not found (or
+maybe you are targeting an Xcode solution." )
+  return()
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-if( NOT TARGET lapack OR ${CMAKE_GENERATOR} MATCHES Xcode)
-  if( NOT TARGET lapack )
-    message( STATUS
-      "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
-  else()
-    message( STATUS
-      "NOTE: Skipping lapack_wrap component because Generator is XCode" )
-  endif()
 
-else()
-
-  if( MSVC )
-
+#------------------------------------------------------------------------------#
+# MSVC + MinGW's gfortran
+if( MSVC)
+  if(NOT EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h)
     set( file_content "
 #ifndef FC_HEADER_INCLUDED
 #define FC_HEADER_INCLUDED
@@ -43,74 +50,63 @@ else()
 
 #endif
 ")
-    if( NOT EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
-      file( WRITE ${PROJECT_BINARY_DIR}/lapack_wrap/config.h ${file_content} )
-    endif()
-
-  else()
-
-    # cmake --help-module FortranCInterface
-    # This module automatically detects the API by which C and Fortran languages
-    # interact.
-    include(FortranCInterface)
-
-    # A function is provided to generate a C header file containing macros to
-    # mangle symbol names:
-    #
-    # FortranCInterface_HEADER(<file>
-    #                          [MACRO_NAMESPACE <macro-ns>]
-    #                          [SYMBOL_NAMESPACE <ns>]
-    #                          [SYMBOLS [<module>:]<function> ...])
-
-    if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
-      # This creates a "lapack_wrap.h" header that defines mangling macros
-      # FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().  define saxpy
-      # FC_GLOBAL(saxpy, SAXPY)
-      FortranCInterface_HEADER( lapack_wrap/config.h
-        MACRO_NAMESPACE "FC_"
-        SYMBOLS scopy dcopy saxpy daxpy sscal dscal sdot ddot snrm2 dnrm2
-        SYMBOL_NAMESPACE "FC_"
-        )
-    endif()
-
+    file( WRITE ${PROJECT_BINARY_DIR}/lapack_wrap/config.h ${file_content} )
   endif()
 
-  # Omit this package if the mangling was not found by FortranCInterface.cmake
-  if( EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+else()
 
-    # ------------------------------------------------------------------------ #
-    # Source files
-    # ------------------------------------------------------------------------ #
+  #--------------------------------------------------------------------------#
+  # Linux solution (main path)
 
-    file( GLOB sources *.cc )
-    file( GLOB headers *.hh )
-    list( APPEND headers ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
-
-    # ------------------------------------------------------------------------ #
-    # Installation instructions
-    # ------------------------------------------------------------------------ #
-
-    install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/lapack_wrap )
-
-    # ------------------------------------------------------------------------ #
-    # Unit tests
-    # ------------------------------------------------------------------------ #
-
-    if( BUILD_TESTING )
-      add_subdirectory( test )
-    endif()
-
-    # ------------------------------------------------------------------------ #
-    # Autodoc
-    # ------------------------------------------------------------------------ #
-
-    process_autodoc_pages()
-
-  else()
-    message("   lapack_wrap - skipped because FortranCInterface failed.")
+  # This module automatically detects the API by which C and Fortran languages
+  # interact.
+  include(FortranCInterface)
+  if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
+    FortranCInterface_HEADER( lapack_wrap/config.h
+      MACRO_NAMESPACE "FC_"
+      SYMBOLS scopy dcopy saxpy daxpy sscal dscal sdot ddot snrm2 dnrm2
+      SYMBOL_NAMESPACE "FC_" )
   endif()
 
-endif() # no lapack target
+endif()
+
+#------------------------------------------------------------------------------#
+# Omit this package if the mangling was not found by FortranCInterface.cmake
+if( EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+
+  # ------------------------------------------------------------------------ #
+  # Source files
+  # ------------------------------------------------------------------------ #
+
+  file( GLOB sources *.cc )
+  file( GLOB headers *.hh )
+  list( APPEND headers ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+
+  # ------------------------------------------------------------------------ #
+  # Installation instructions
+  # ------------------------------------------------------------------------ #
+
+  install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/lapack_wrap )
+
+  # ------------------------------------------------------------------------ #
+  # Unit tests
+  # ------------------------------------------------------------------------ #
+
+  if( BUILD_TESTING )
+    add_subdirectory( test )
+  endif()
+
+  # ------------------------------------------------------------------------ #
+  # Autodoc
+  # ------------------------------------------------------------------------ #
+
+  process_autodoc_pages()
+
+else()
+  message("   lapack_wrap - skipped because FortranCInterface failed.")
+endif()
+
+endif( HAVE_Fortran )
 
 #------------------------------------------------------------------------------#
 # End lapack_wrap/CMakeLists.txt

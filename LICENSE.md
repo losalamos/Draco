@@ -6,7 +6,7 @@
 Please read these terms and conditions of use carefully before using this
 software. Version 7_X_X of this code has been reviewed by the Los Alamos
 National Laboratory (LANL) Export Control and the Classification Teams and
-deeped to be Open Source Software under a 3-Clause BSD license.  The copyright
+deemed to be Open Source Software under a 3-Clause BSD license.  The copyright
 disclosure record is C19028 for "Draco-7_X_X".
 
 Version 6_X_X was also released as Open Source Software and given the
@@ -38,8 +38,9 @@ be found in the LICENSE file in the main development branch of the repository.
 ### 3-Clause BSD License
 ------------------------------
 
-Additionally, redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+This program is open source under the BSD-3 License.  Redistribution
+and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
 
 - Redistributions of source code must retain the above copyright notice, this
   list of conditions and the following disclaimer.
@@ -64,7 +65,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-### Additional Copyright Information:
+### Additional License Information:
 ----------------------------------------
 
 The Draco software suite links against external libraries. Copyrights to these
@@ -131,3 +132,11 @@ associated software packages may are listed below:
 
    A general purpose library for the direct solution of large, sparse,
    nonsymmetric systems of linear equations on high performance machines.
+
+10. ds++/terminal.h and ds++/terminal_base.h developed by Ondřej Čertík
+    https://github.com/certik/terminal
+    MIT License
+
+11. experimental/mdspan - https://github.com/kokkos/mdspan
+    Kokkos v. 2.0, Copyright (2019) Sandia Corporation, BSD-3 License
+    Git version hash: a7990884f090365787a90cdc12e689822d642c65

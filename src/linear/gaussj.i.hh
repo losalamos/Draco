@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/gaussj.i.hh
  * \author Kent Budge
  * \brief  Solve a linear system by Gaussian elimination.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef linear_gaussj_i_hh
 #define linear_gaussj_i_hh
@@ -23,7 +23,7 @@ using std::fabs;
 using std::max;
 using std::sqrt;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Is a double-subscript random container square?
 template <class DoubleRandomContainer>
 bool is_square(DoubleRandomContainer const &A) {
@@ -36,7 +36,7 @@ bool is_square(DoubleRandomContainer const &A) {
   return true;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \arg \a RandomContainer A random access container type
  *
@@ -125,7 +125,7 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
   Ensure(b.size() == n * m);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \arg \a DoubleRandomContainer A double-subscript random access container type
  * \arg \a RandomContainer A random access container type
@@ -215,6 +215,6 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
 
 #endif // linear_gaussj_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of linear/gaussj.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

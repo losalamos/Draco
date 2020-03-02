@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/test/cdi_ipcress_test.hh
  * \author Thomas M. Evans
  * \date   Fri Oct 12 15:36:36 2001
  * \brief  cdi_ipcress test function headers.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_ipcress_test_hh__
-#define __cdi_ipcress_test_hh__
+#ifndef rtt_cdi_ipcress_test_hh
+#define rtt_cdi_ipcress_test_hh
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -17,9 +17,9 @@
 
 namespace rtt_cdi_ipcress_test {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // COMPARISON FUNCTIONS USED IN IPCRESS OPACITY TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename temperatureType, typename densityType,
           typename testValueType, typename opacityClassType>
@@ -33,8 +33,7 @@ bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut,
   // Interpolate the multigroup opacities.
   testValueType grayOpacity = spOpacity->getOpacity(temperature, density);
 
-  // Make sure that the interpolated value matches previous
-  // interpolations.
+  // Make sure that the interpolated value matches previous interpolations.
 
   if (rtt_dsxx::soft_equiv(grayOpacity, tabulatedValue)) {
     ostringstream message;
@@ -54,7 +53,7 @@ bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut,
   return true;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename opacityClassType>
 void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
@@ -64,9 +63,9 @@ void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
   // Read the temperature grid from the IPCRESS file.
   std::vector<double> temps = spOpacity->getTemperatureGrid();
 
-  // Verify that the size of the temperature grid looks right.  If
-  // it is the right size then compare the temperature grid data to
-  // the data specified when we created the IPCRESS file using TOPS.
+  // Verify that the size of the temperature grid looks right.  If it is the
+  // right size then compare the temperature grid data to the data specified
+  // when we created the IPCRESS file using TOPS.
   if (temps.size() == spOpacity->getNumTemperatures() && temps.size() == 3) {
     ostringstream message;
     message << "The number of temperature points found in the data\n\t"
@@ -96,7 +95,7 @@ void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename opacityClassType>
 void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
@@ -106,9 +105,9 @@ void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
   // Read the grid from the IPCRESS file.
   std::vector<double> density = spOpacity->getDensityGrid();
 
-  // Verify that the size of the density grid looks right.  If
-  // it is the right size then compare the density grid data to
-  // the data specified when we created the IPCRESS file using TOPS.
+  // Verify that the size of the density grid looks right.  If it is the right
+  // size then compare the density grid data to the data specified when we
+  // created the IPCRESS file using TOPS.
   if (density.size() == 3 && density.size() == spOpacity->getNumDensities()) {
     ostringstream message;
     message << "The number of density points found in the data\n\t"
@@ -138,8 +137,7 @@ void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 template <typename opacityClassType>
 void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut,
                                 opacityClassType const spOpacity) {
@@ -193,8 +191,8 @@ void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut,
 
 } // end namespace rtt_cdi_ipcress_test
 
-#endif // __cdi_ipcress_test_hh__
+#endif // rtt_cdi_ipcress_test_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_ipcress/test/cdi_ipcress_test.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Index_Counter.hh
  * \author Mike Buksas
  * \date   Tue Jan 31 16:45:39 2006
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef dsxx_Index_Counter_hh
 #define dsxx_Index_Counter_hh
@@ -18,7 +18,7 @@ namespace rtt_dsxx {
 // forward declaration
 template <unsigned D, int OFFSET> class Index_Converter;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Index_Counter
  * \brief Facilitates iterating over a multi-dimensional range of indices.
@@ -27,7 +27,7 @@ template <unsigned D, int OFFSET> class Index_Converter;
 /*!
  * \example ds++/test/tstIndex_Counter.cc
  */
-//===========================================================================//
+//============================================================================//
 template <unsigned D, int OFFSET> class Index_Counter {
 public:
   friend class Index_Converter<D, OFFSET>;
@@ -93,7 +93,7 @@ private:
   bool dimension_okay(size_t d) const { return d < D; }
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Construct from an Index_Set object
 template <unsigned D, int OFFSET>
 Index_Counter<D, OFFSET>::Index_Counter(const Index_Set<D, OFFSET> &converter)
@@ -102,11 +102,11 @@ Index_Counter<D, OFFSET>::Index_Counter(const Index_Set<D, OFFSET> &converter)
     indices[d] = OFFSET;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // IMPLEMENTATION
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Increment the iterator
 template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::increment() {
 
@@ -129,7 +129,7 @@ template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::increment() {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Decrement the iterator
 template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::decrement() {
 
@@ -156,6 +156,6 @@ template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::decrement() {
 
 #endif // dsxx_Index_Counter_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Index_Counter.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

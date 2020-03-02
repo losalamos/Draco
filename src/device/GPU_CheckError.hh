@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   device/GPU_CheckError.hh
  * \author Kelly (KT) Thompson
  * \brief  Provide helper macros for CUDA code
- * \note   Copyright (C) 2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef device_GPU_CheckError_hh
 #define device_GPU_CheckError_hh
@@ -47,6 +47,6 @@ inline void CheckErrorMsg(cudaError_t const err, char const *const msg,
 
 #endif // device_GPU_CheckError_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of device/GPU_CheckError.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

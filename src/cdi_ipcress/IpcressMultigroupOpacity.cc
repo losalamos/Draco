@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressMultigroupOpacity.cc
  * \author Kelly Thompson
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity templated class implementation file.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "IpcressMultigroupOpacity.hh"
 #include "IpcressDataTable.hh"
@@ -22,7 +22,7 @@ namespace rtt_cdi_ipcress {
 // Constructors //
 // ------------ //
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for IpcressMultigroupOpacity object.
  *
@@ -54,7 +54,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
 
 } // end of IpcressData constructor
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressMultigroupOpacity object.
  *
@@ -143,7 +143,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
 // Accessors //
 // --------- //
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns a single opacity (or a vector of
  *     opacities for the multigroup EnergyPolicy) that corresponds to the
@@ -168,7 +168,7 @@ IpcressMultigroupOpacity::getOpacity(double targetTemperature,
   return opacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns a vector of opacities (or a
  *     vector of vectors of opacities for the multigroup
@@ -183,7 +183,7 @@ std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
   return opacity;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns a vector of opacities (or a
  *     vector of vectors of opacities for the multigroup
@@ -202,7 +202,7 @@ std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
 // Packing //
 // ------- //
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Pack the IpcressMultigroupOpacity state into a char string represented by
  * a vector<char>. This can be used for persistence, communication, etc. by
@@ -257,6 +257,6 @@ std::vector<char> IpcressMultigroupOpacity::pack() const {
 
 } // end namespace rtt_cdi_ipcress
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of IpcressMultigroupOpacity.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

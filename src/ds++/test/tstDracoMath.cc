@@ -1,44 +1,21 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstDracoMath.cc
  * \author Kent G. Budge
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/draco_math.hh.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-void tstabs(rtt_dsxx::UnitTest &ut) {
-  using rtt_dsxx::abs;
-
-  if (rtt_dsxx::soft_equiv(abs(-2.2), abs(2.2)))
-    PASSMSG("Correctly calculated abs(double)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(double)");
-  if (rtt_dsxx::soft_equiv(abs(-2.2f), abs(2.2f)))
-    PASSMSG("Correctly calculated abs(float)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(float)");
-  if (abs(-2) == abs(2))
-    PASSMSG("Correctly calculated abs(int)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(int)");
-  if (abs(-2L) == abs(2L))
-    PASSMSG("Correctly calculated abs(long)");
-  else
-    FAILMSG("Did NOT correctly calculate abs(long)");
-  return;
-}
-
-//---------------------------------------------------------------------------//
 void tstconj(rtt_dsxx::UnitTest &ut) {
   if (rtt_dsxx::soft_equiv(rtt_dsxx::conj(3.5), 3.5))
     PASSMSG("conj(double) is correct");
@@ -54,7 +31,7 @@ void tstconj(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstcube(rtt_dsxx::UnitTest &ut) {
   if (rtt_dsxx::soft_equiv(rtt_dsxx::cube(2.0), 8.0))
     PASSMSG("rtt_dsxx::square function returned correct double");
@@ -63,7 +40,7 @@ void tstcube(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstpythag(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::pythag;
   if (rtt_dsxx::soft_equiv(pythag(3.0e307, 4.0e307), 5.0e307))
@@ -81,7 +58,7 @@ void tstpythag(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstsign(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::sign;
   if (!rtt_dsxx::soft_equiv(sign(3.2, 5.6), 3.2))
@@ -95,7 +72,7 @@ void tstsign(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void tstsquare(rtt_dsxx::UnitTest &ut) {
   if (rtt_dsxx::soft_equiv(rtt_dsxx::square(3.0), 9.0))
     PASSMSG("square function returned correct double");
@@ -104,7 +81,7 @@ void tstsquare(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_linear_interpolate(rtt_dsxx::UnitTest &ut) {
   // function y = 2.5 * x - 1.0
 
@@ -141,21 +118,37 @@ void test_linear_interpolate(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+void tstceilintdiv(rtt_dsxx::UnitTest &ut) {
+  using namespace rtt_dsxx;
+  uint32_t const nf = ut.numFails;
+  FAIL_IF_NOT(rtt_dsxx::ceil_int_division(1, 2) == 1);
+  FAIL_IF_NOT(ceil_int_division(2, 2) == 1);
+  FAIL_IF_NOT(ceil_int_division(0, 2) == 0);
+  FAIL_IF_NOT(ceil_int_division(1, 200) == 1);
+  FAIL_IF_NOT(ceil_int_division(-1, 2) == 0);
+  if (ut.numFails == nf)
+    PASSMSG("Fast ceiling integer division checks ok.");
+  else
+    FAILMSG("Fast ceiling integer division checks fail.");
+  return;
+}
+
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    tstabs(ut);
     tstconj(ut);
     tstcube(ut);
     tstpythag(ut);
     tstsign(ut);
     tstsquare(ut);
     test_linear_interpolate(ut);
+    tstceilintdiv(ut);
   }
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstDracoMath.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

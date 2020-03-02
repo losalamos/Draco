@@ -2,12 +2,12 @@
 /*!
  * \file   compton/config.h
  * \brief  CPP defines necessary for the compton packages.
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __compton_config_h__
-#define __compton_config_h__
+#ifndef rtt_compton_config_h
+#define rtt_compton_config_h
 
 #cmakedefine COMPTON_FOUND
 
@@ -22,7 +22,7 @@
 
 #endif
 
-#endif /* __compton_config_h__ */
+#endif /* rtt_compton_config_h */
 
 /*---------------------------------------------------------------------------*/
 /* end of compton/config.h */

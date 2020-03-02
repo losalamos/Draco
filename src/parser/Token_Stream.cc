@@ -1,14 +1,14 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token_Stream member functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Token_Stream.hh"
 #include <string.h>
@@ -16,7 +16,7 @@
 namespace rtt_parser {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Syntax_Error::Syntax_Error() : runtime_error("syntax error") {
   Ensure(!strcmp(what(), "syntax error"));
 }
@@ -167,7 +167,7 @@ void Token_Stream::report_semantic_error(Token const &token,
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * The default implementation of this function passes its message
@@ -189,7 +189,7 @@ void Token_Stream::report_semantic_error(string const &message) {
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  *
  * The default implementation of this function passes its message on to
@@ -211,7 +211,7 @@ void Token_Stream::report_semantic_error(exception const &message) {
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reset the token stream.
  *
@@ -227,6 +227,6 @@ void Token_Stream::rewind() {
 
 } // namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Token_Stream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

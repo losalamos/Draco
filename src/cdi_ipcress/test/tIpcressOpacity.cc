@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressOpacity.cc
  * \author Thomas M. Evans
  * \date   Fri Oct 26 10:50:44 2001
  * \brief
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi/OpacityCommon.hh"
@@ -15,6 +15,7 @@
 #include "cdi_ipcress/IpcressMultigroupOpacity.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/path.hh"
 #include <algorithm>
 
 using namespace std;
@@ -26,13 +27,17 @@ using rtt_cdi_ipcress::IpcressGrayOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
+void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = ut.getTestSourcePath() + "Al_BeCu.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "two-mats.ipcress";
+  FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
+
+  cout << "Starting test \"file_check_two_mats\"...\n"
+       << "Examining the ipcress file \"" << op_data_file << "\"...\n\n";
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -51,30 +56,30 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
 
     // If we make it here then spIF was successfully instantiated.
     PASSMSG(string("shared_ptr to new IpcressFile object created for ") +
-            string("Al_BeCu.ipcress data."));
+            string("two_mats.ipcress data."));
 
     // Test the IpcressFile object.
     if (spIF->getDataFilename() == op_data_file) {
       ostringstream message;
       message << "IpcressFile object is now linked to the "
-              << "Al_BeCu.ipcress data file.";
+              << "two_mats.ipcress data file.";
       PASSMSG(message.str());
     } else {
       ostringstream message;
       message << "IpcressFile object failed to link itself to the "
-              << "Al_BeCu.ipcress  data file.";
+              << "two_mats.ipcress  data file.";
       FAILMSG(message.str());
     }
 
     if (spIF->getNumMaterials() == 2) {
       ostringstream message;
       message << "The correct number of materials was found in the "
-              << "Al_BeCu.ipcress data file.";
+              << "two_mats.ipcress data file.";
       PASSMSG(message.str());
     } else {
       ostringstream message;
       message << "spIF did not find the correct number of materials "
-              << "in the Al_BeCu.ipcress data file.";
+              << "in the two_mats.ipcress data file.";
       FAILMSG(message.str());
     }
   }
@@ -83,105 +88,100 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
   // Create Opacity object. //
   // ---------------------- //
 
-  // Material identifier.  This data file has two materials: Al and
-  // BeCu.  Al has the id tag "10001".
+  // Material identifier.  This data file has two materials: 10001 and 10002
   size_t const matid(10001);
 
-  // Try to instantiate the Opacity object. (Rosseland, Gray Total
-  // for material 10001 in the IPCRESS file pointed to by spIF).
-  shared_ptr<GrayOpacity> spOp_Al_rgt;
+  // Try to instantiate the Opacity object. (Rosseland, Gray Total for material
+  // 10001 in the IPCRESS file pointed to by spIF).
+  shared_ptr<GrayOpacity> spOp_twomat_rgt;
 
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_Al_rgt.reset(new IpcressGrayOpacity(spIF, matid, rtt_cdi::ROSSELAND,
-                                             rtt_cdi::TOTAL));
+    spOp_twomat_rgt.reset(new IpcressGrayOpacity(
+        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
     // spIF goes out of scope
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
-            << "Al_BeCu.ipcress data." << endl
-            << "\t" << excpt.what();
+            << "two_mats.ipcress data.\n\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
   }
 
   // If we get here then the object was successfully instantiated.
-  PASSMSG("shared_ptr to new Opacity object created for Al_BeCu.ipcress data.");
+  PASSMSG(
+      "shared_ptr to new Opacity object created for two_mats.ipcress data.");
 
   // ----------------- //
   // Gray Opacity Test //
   // ----------------- //
 
-  double temperature = 0.1;                         // keV
-  double density = 27.0;                            // g/cm^3
-  double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
+  double temperature = 0.1;                        // keV
+  double density = 27.0;                           // g/cm^3
+  double tabulatedGrayOpacity = 6.157321485417703; // cm^2/g
 
   if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Al_rgt, temperature, density, tabulatedGrayOpacity)) {
+          ut, spOp_twomat_rgt, temperature, density, tabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
 
   // Check accessor functions
 
-  rtt_cdi::OpacityModelType omt(spOp_Al_rgt->getOpacityModelType());
+  rtt_cdi::OpacityModelType omt(spOp_twomat_rgt->getOpacityModelType());
   if (omt == rtt_cdi::IPCRESS_TYPE)
     PASSMSG("OpacityModelType() returned expected value.");
   else
     FAILMSG("OpacityModelType() did not return the expected value.");
 
-  string edp(spOp_Al_rgt->getEnergyPolicyDescriptor());
+  string edp(spOp_twomat_rgt->getEnergyPolicyDescriptor());
   if (edp == string("gray"))
     PASSMSG("EDP = gray");
   else
     FAILMSG("EDP != gray");
 
-  if (!spOp_Al_rgt->data_in_tabular_form())
+  if (!spOp_twomat_rgt->data_in_tabular_form())
     ITFAILS;
 
-  size_t nd(spOp_Al_rgt->getNumDensities());
-  size_t nt(spOp_Al_rgt->getNumTemperatures());
+  size_t nd(spOp_twomat_rgt->getNumDensities());
+  size_t nt(spOp_twomat_rgt->getNumTemperatures());
   if (nd != 5)
     FAILMSG("Found wrong number of density values.");
-  if (nt != 10)
+  if (nt != 5)
     FAILMSG("Found wrong number of temperature values.");
 
-  vector<double> densGrid(spOp_Al_rgt->getDensityGrid());
-  vector<double> tempGrid(spOp_Al_rgt->getTemperatureGrid());
+  vector<double> densGrid(spOp_twomat_rgt->getDensityGrid());
+  vector<double> tempGrid(spOp_twomat_rgt->getTemperatureGrid());
   if (densGrid.size() != nd)
     ITFAILS;
   if (tempGrid.size() != nt)
     ITFAILS;
 
-  double expected_densGrid[] = {0.01, 0.1, 1.0, 10.0, 100.0};
-  double expected_tempGrid[] = {0.0005, 0.0015, 0.004, 0.0125, 0.04,
-                                0.125,  0.4,    1.25,  4,      15};
+  vector<double> expected_densGrid = {0.01, 0.1, 1.0, 10.0, 100.0};
+  vector<double> expected_tempGrid = {0.01, 0.2575, 0.505, 0.7525, 1.0};
 
-  for (size_t i = 0; i < densGrid.size(); ++i)
-    if (!soft_equiv(densGrid[i], expected_densGrid[i]))
-      ITFAILS;
-  for (size_t i = 0; i < tempGrid.size(); ++i)
-    if (!soft_equiv(tempGrid[i], expected_tempGrid[i]))
-      ITFAILS;
+  FAIL_IF_NOT(soft_equiv(densGrid.begin(), densGrid.end(),
+                         expected_densGrid.begin(), expected_densGrid.end()));
+  FAIL_IF_NOT(soft_equiv(tempGrid.begin(), tempGrid.end(),
+                         expected_tempGrid.begin(), expected_tempGrid.end()));
 
   // --------------- //
   // MG Opacity test //
   // --------------- //
 
-  // Create a Multigroup Rosseland Total Opacity object (again for Al).
-  shared_ptr<MultigroupOpacity> spOp_Al_rtmg;
+  // Create a Multigroup Rosseland Total Opacity object.
+  shared_ptr<MultigroupOpacity> spOp_twomat_rtmg;
 
   // Try to instantiate the Opacity object.
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_Al_rtmg.reset(new IpcressMultigroupOpacity(
+    spOp_twomat_rtmg.reset(new IpcressMultigroupOpacity(
         spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
-    // spIF goes out of scope
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
-            << "Al_BeCu.ipcress data." << endl
+            << "two_mats.ipcress data." << endl
             << "\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
@@ -194,62 +194,58 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Check accessor functions
 
-  omt = spOp_Al_rtmg->getOpacityModelType();
+  omt = spOp_twomat_rtmg->getOpacityModelType();
   if (omt == rtt_cdi::IPCRESS_TYPE)
     PASSMSG("OpacityModelType() returned expected value.");
   else
     FAILMSG("OpacityModelType() did not return the expected value.");
 
-  edp = spOp_Al_rtmg->getEnergyPolicyDescriptor();
+  edp = spOp_twomat_rtmg->getEnergyPolicyDescriptor();
   if (edp == string("mg"))
     PASSMSG("EDP = mg");
   else
     FAILMSG("EDP != mg");
 
-  if (!spOp_Al_rtmg->data_in_tabular_form())
-    ITFAILS;
+  FAIL_IF_NOT(spOp_twomat_rtmg->data_in_tabular_form());
 
   size_t numGroups = 33;
-  if (spOp_Al_rtmg->getNumGroups() != numGroups)
-    ITFAILS;
+  FAIL_IF_NOT(spOp_twomat_rtmg->getNumGroups() == numGroups);
 
   // The solution to compare against:
-  double tabulatedMGOpacityArray[] = {
-      2.4935245299837247e+08, 2.6666789027326573e+04,
-      1.6270621515227660e+04, 1.7634711671468522e+04,
-      4.4999455359684442e+04, 9.9917674335613032e+04,
-      8.3261383385464113e+04, 5.9742975304886764e+04,
-      4.0373209722602740e+04, 2.6156503146710609e+04,
-      1.6356701105166874e+04, 1.0007184686170869e+04,
-      5.9763667878215247e+03, 3.5203912630050986e+03,
-      2.0765528559140448e+03, 6.8550529299142445e+03,
-      4.1257095227186965e+03, 2.4199006949490426e+03,
-      1.3894677080938793e+03, 7.9046985091966621e+02,
-      4.4088463936537232e+02, 2.4514360684176387e+02,
-      1.3541656611912146e+02, 7.1828886317050177e+01,
-      3.9793827527329107e+01, 2.3312673181867030e+01,
-      1.4879458895157605e+01, 1.0862672679200283e+01,
-      9.0590676798691288e+00, 8.2841367649864175e+00,
-      7.3809286930540363e+00, 7.1057875403123791e+00,
-      6.8907716134926735e+00}; // KeV, numGroups entries.
-
-  vector<double> tabulatedMGOpacity(numGroups);
-  copy(tabulatedMGOpacityArray, tabulatedMGOpacityArray + numGroups,
-       tabulatedMGOpacity.begin());
+  vector<double> tabulatedMGOpacity = {
+      1.65474413066534,  1.25678363987902,
+      0.969710642123251, 0.809634824544866,
+      0.724209752535695, 0.657174133970242,
+      0.60418067688849,  0.56102837685666,
+      0.526678715472818, 0.498691712866007,
+      0.476029518181352, 0.458069153077808,
+      0.443645292733958, 0.432168463782148,
+      0.422976580403301, 0.415262388915466,
+      0.408791600852843, 0.402940726234063,
+      0.397310792049752, 0.391533709574117,
+      0.385148585211532, 0.377799945947677,
+      0.368969609795487, 0.358190516168003,
+      0.345144753971726, 0.329280962243614,
+      0.310427778423081, 0.288524502929352,
+      0.263718520343973, 0.236783648295996,
+      0.208267355739943, 0.179391299272131,
+      0.15400996177649}; // KeV, numGroups entries.
 
   if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Al_rtmg, temperature, density, tabulatedMGOpacity)) {
+          ut, spOp_twomat_rtmg, temperature, density, tabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
+
+  cout << "\nStarting test \"file_check_analytic\"...\n";
+
   // ----------------------------------------------------------------
-  // The Opacities in this file are computed from the following
-  // analytic formula:
+  // The Opacities in this file are computed from the following analytic
+  // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
   //
@@ -262,6 +258,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Ipcress data filename (IPCRESS format required)
   string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
+  FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -274,7 +271,6 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   try {
     spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
   } catch (rtt_dsxx::assertion const &error) {
-    ostringstream message;
     FAILMSG(error.what());
     FAILMSG("Aborting tests.");
     return;
@@ -402,15 +398,15 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   // Test the Plank routines using analyticOpacities.ipcress data //
   // ------------------------------------------------------------ //
 
-  // The Opacities in this file are computed from the following
-  // analytic formula:
+  // The Opacities in this file are computed from the following analytic
+  // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
 
   // spGFAnalytic already points to the correct file so we don't repeat the
   // coding.
 
-  // Dito for spOpacityAnalytic.
+  // Ditto for spOpacityAnalytic.
 
   // ----------------- //
   // Gray Opacity Test //
@@ -707,9 +703,11 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
+
+  cout << "\nStarting test \"check_ipcress_stl_accessors\"...\n";
+
   // Ipcress data filename (IPCRESS format required)
   string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
@@ -1067,13 +1065,16 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
+
+  cout << "\nStarting test \"gray_opacity_packing_test\"...\n";
+
   vector<char> packed;
   // Ipcress data filename (IPCRESS format required)
   string const op_data_file =
       ut.getTestSourcePath() + "analyticOpacities.ipcress";
+  FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
 
   {
     // ------------------------- //
@@ -1160,13 +1161,16 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
+
+  cout << "\nStarting test \"mg_opacity_packing_test\"...\n";
+
   vector<char> packed;
   // Ipcress data filename (IPCRESS format required)
   string const op_data_file =
       ut.getTestSourcePath() + "analyticOpacities.ipcress";
+  FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
 
   {
     // ------------------------- //
@@ -1282,13 +1286,12 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // >>> UNIT TESTS
-    file_check_Al_BeCu(ut);
+    file_check_two_mats(ut);
     file_check_analytic(ut);
     check_ipcress_stl_accessors(ut);
 
@@ -1298,6 +1301,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tIpcressOpacity.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

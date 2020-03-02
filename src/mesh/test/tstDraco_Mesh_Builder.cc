@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh/test/tstDraco_Mesh_Builder.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Sunday, Jul 01, 2018, 18:21 pm
  * \brief  Draco_Mesh_Builder class unit test.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Test_Mesh_Interface.hh"
 #include "c4/ParallelUnitTest.hh"
@@ -19,9 +19,9 @@ using rtt_mesh::Draco_Mesh;
 using rtt_mesh::Draco_Mesh_Builder;
 using rtt_mesh::RTT_Draco_Mesh_Reader;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 // Parse a 2D Cartesian mesh and compare to reference
 void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
@@ -40,6 +40,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // short-cut to some arrays
   const std::vector<unsigned> &cell_type = mesh_iface.cell_type;
+  const std::vector<unsigned> &face_type = mesh_iface.face_type;
   const std::vector<unsigned> &cell_to_node_linkage =
       mesh_iface.cell_to_node_linkage;
   const std::vector<unsigned> &side_node_count = mesh_iface.side_node_count;
@@ -50,7 +51,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   std::shared_ptr<Draco_Mesh> ref_mesh(new Draco_Mesh(
       mesh_iface.dim, geometry, cell_type, cell_to_node_linkage,
       mesh_iface.side_set_flag, side_node_count, side_to_node_linkage,
-      mesh_iface.coordinates, mesh_iface.global_node_number));
+      mesh_iface.coordinates, mesh_iface.global_node_number, face_type));
 
   // >>> PARSE AND BUILD MESH
 
@@ -103,16 +104,27 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     std::vector<unsigned>::const_iterator ref_cn_first = ref_cn_linkage.begin();
     std::vector<unsigned>::const_iterator cn_first = cn_linkage.begin();
 
+    unsigned fc_indx = 0;
     for (unsigned cell = 0; cell < mesh_iface.num_cells; ++cell) {
 
+      unsigned num_nodes_per_cell = 0;
+      for (unsigned face = 0; face < cell_type[cell]; ++face) {
+
+        // accumulate number of nodes
+        num_nodes_per_cell += face_type[fc_indx];
+
+        // increment face-type counter
+        fc_indx++;
+      }
+
       // nodes must only be permuted at the cell level
-      if (!std::is_permutation(cn_first, cn_first + cell_type[cell],
-                               ref_cn_first, ref_cn_first + cell_type[cell]))
+      if (!std::is_permutation(cn_first, cn_first + num_nodes_per_cell,
+                               ref_cn_first, ref_cn_first + num_nodes_per_cell))
         ITFAILS;
 
       // update the iterators
-      ref_cn_first += cell_type[cell];
-      cn_first += cell_type[cell];
+      ref_cn_first += num_nodes_per_cell;
+      cn_first += num_nodes_per_cell;
     }
   }
 
@@ -147,7 +159,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -157,6 +169,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/test/tstDraco_Mesh_Builder.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

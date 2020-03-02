@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/ofpstream.cc
  * \author Kent G. Budge
  * \date   Mon Jun 25 11:36:43 MDT 2018
  * \brief  Define methods of class ofpstream
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ofpstream.hh"
 #include "C4_Functions.hh"
@@ -14,7 +14,7 @@
 namespace rtt_c4 {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Create an ofpstream directed to a specified file.
  *
  * Create an ofpstream that synchronizes output to the specified file by MPI
@@ -32,7 +32,7 @@ ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Synchronously write all buffered data.
  *
  * Write all buffered data to the specified file by MPI rank. That is, all
@@ -82,7 +82,7 @@ void ofpstream::mpibuf::send() {
   rtt_c4::global_barrier();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Add the specified character to the buffer.
  *
  * For simplicity, ofpstream is currently implemented by treating every
@@ -106,7 +106,7 @@ ofpstream::mpibuf::overflow(int_type c) {
   return c;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Shrink the buffer to fit the current data.
  *
  * This is included for completeness, and also to let a user who is really
@@ -118,6 +118,6 @@ void ofpstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ofpstream.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

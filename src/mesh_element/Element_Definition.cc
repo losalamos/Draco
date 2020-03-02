@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh_element/Element_Definition.cc
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Element_Definition.hh"
 #include <algorithm>
@@ -15,7 +15,7 @@
 
 namespace rtt_mesh_element {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Element_Definition::Element_Definition(Element_Type const &type_)
     : name(), type(type_), dimension(0), number_of_nodes(0), number_of_sides(0),
       elem_defs(), side_type(), side_nodes() {
@@ -90,7 +90,7 @@ Element_Definition::Element_Definition(Element_Type const &type_)
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Element_Definition::Element_Definition(
     std::string name_, unsigned dimension_, unsigned number_of_nodes_,
     unsigned number_of_sides_,
@@ -137,7 +137,7 @@ Element_Definition::Element_Definition(
   Ensure(invariant_satisfied());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Element_Definition::invariant_satisfied() const {
   bool ldum = (name.empty() == false);
 
@@ -174,7 +174,7 @@ bool Element_Definition::invariant_satisfied() const {
   return ldum;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_node() {
   name = "NODE";
@@ -183,7 +183,7 @@ void Element_Definition::construct_node() {
   number_of_nodes = 1;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_bar() {
   std::vector<unsigned> tmp;
@@ -211,7 +211,7 @@ void Element_Definition::construct_bar() {
     side_type.push_back(0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_tri() {
   std::vector<unsigned> tmp;
@@ -250,7 +250,7 @@ void Element_Definition::construct_tri() {
     side_type.push_back(0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_quad() {
   std::vector<unsigned> tmp;
@@ -393,7 +393,7 @@ void Element_Definition::construct_quad() {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 /*
 void Element_Definition::construct_pentagon()
@@ -458,7 +458,7 @@ void Element_Definition::construct_pentagon()
 }
 */
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // No test for this function.
 
 // void Element_Definition::construct_pentagon() {
@@ -496,7 +496,7 @@ void Element_Definition::construct_pentagon()
 //     side_type.push_back(0);
 // }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Element_Definition::construct_tetra() {
   std::vector<unsigned> tmp;
   dimension = 3;
@@ -554,7 +554,7 @@ void Element_Definition::construct_tetra() {
     side_type.push_back(0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_pyra() {
   std::vector<unsigned> tmp;
@@ -627,7 +627,7 @@ void Element_Definition::construct_pyra() {
     side_type.push_back(1);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Element_Definition::construct_penta() {
   std::vector<unsigned> tmp;
   dimension = 3;
@@ -720,7 +720,7 @@ void Element_Definition::construct_penta() {
     side_type.push_back(1);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void Element_Definition::construct_hexa() {
   std::vector<unsigned> tmp;
@@ -821,7 +821,7 @@ void Element_Definition::construct_hexa() {
     side_type.push_back(0);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 std::ostream &Element_Definition::print(std::ostream &os_out) const {
   os_out << "Element Type   : " << get_type() << std::endl;
   os_out << "Element Name   : " << get_name() << std::endl;
@@ -864,6 +864,6 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
 
 } // end namespace rtt_mesh_element
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Element_Definition.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

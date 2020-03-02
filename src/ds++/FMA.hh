@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file    ds++/FMA.hh
  * \author  Kelly Thompson
  * \date    Thursday, Feb 09, 2017, 11:22 am
  * \brief   Provide extra control for FMA operations.
- * \note    Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note    Copyright (C) 2017-2020 Triad National Security, LLC.
  *          All rights reserved.
  *
  * Intel Haswell and later (and also modern AMD cpus) have hardware FMA
@@ -39,7 +39,7 @@
  * \sa [What Every Computer Scientist Should Know About Floating-Point
  * Arithmetic](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_FMA_hh
 #define rtt_dsxx_FMA_hh
@@ -211,6 +211,6 @@ inline T fma_with_diagnostics(T const a, T const b, T const c,
 
 #endif // rtt_dsxx_FMA_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/FMA.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

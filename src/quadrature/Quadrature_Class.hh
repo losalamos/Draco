@@ -1,17 +1,14 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Quadrature_Class.hh
  * \author Kent G. Budge
  * \brief  Define Quadrature_Class enumeration
- * \note   Copyright © 2016-2019 Triad National Security, LLC. All rights
- *         reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature_Class.hh 6937 2012-12-06 14:39:34Z kgbudge $
-//---------------------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights
+ *         reserved. */
+//----------------------------------------------------------------------------//
 
-#ifndef __quadrature_Quadrature_Class_hh__
-#define __quadrature_Quadrature_Class_hh__
+#ifndef rtt_quadrature_Quadrature_Class_hh
+#define rtt_quadrature_Quadrature_Class_hh
 
 namespace rtt_quadrature {
 
@@ -27,8 +24,8 @@ enum Quadrature_Class {
 
 } // end namespace rtt_quadrature
 
-#endif // __quadrature_Quadrature_Class_hh__
+#endif // rtt_quadrature_Quadrature_Class_hh
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature_Class.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// end of quadrature/Quadrature_Class.hh
+//----------------------------------------------------------------------------//

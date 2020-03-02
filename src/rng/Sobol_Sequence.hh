@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/Sobol_Sequence.hh
  * \author Kent Budge
  * \brief  Definition of class Sobol_Sequence
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rng_Sobol_Sequence_hh
 #define rng_Sobol_Sequence_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_rng {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Sobol_Sequence
  * \brief Generator for a sequence of subrandom (pseudorandom) numbers.
@@ -31,7 +31,7 @@ namespace rtt_rng {
  * region. The down side is that the Sobol' sequence is difficult to compute
  * and to restart for arbitrarily large random vectors.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_rng Sobol_Sequence {
 public:
@@ -74,6 +74,6 @@ private:
 
 #endif // rng_Sobol_Sequence_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of rng/Sobol_Sequence.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

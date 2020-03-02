@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/Ylm.hh
  * \author Kent Budge
  * \date   Tue Jul  6 10:03:25 MDT 2004
  * \brief  Declare the Ylm function template.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef special_functions_Ylm_hh
 #define special_functions_Ylm_hh
@@ -56,6 +56,6 @@ DLL_PUBLIC_special_functions double Ylm(unsigned const l, int const m,
 
 #endif // special_functions_Ylm_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of utils/Ylm.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -4,11 +4,8 @@
 !* \author Allan Wollaber, Tom Evans, Kelly Thompson
 !* \date   Fri Mar 15 11:25:00 2002
 !* \brief  Infinite medium Draco shunt.
-!* \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+!* \note   Copyright (C) 2016-2020 Triad National Security, LLC.
 !*         All rights reserved.
-!*
-!---------------------------------------------------------------------------//
-! $Id$
 !---------------------------------------------------------------------------//
 
 subroutine tst_mpi_hw_f(nf) bind(C, name="tst_mpi_hw")

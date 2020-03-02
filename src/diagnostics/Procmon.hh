@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/Procmon.hh
  * \author Kelly Thompson
  * \date   Monday, Apr 22, 2013, 10:10 am
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * A file with the same name lives in wedgehog_components and provided the
@@ -23,7 +23,7 @@
  * files are: \c procmon_info.h, \c procmon_info.c, \c procmon_iface.h and
  * \c resources.f90.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef diagnostics_Procmon_hh
 #define diagnostics_Procmon_hh
@@ -36,7 +36,7 @@
 
 namespace rtt_diagnostics {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \brief Access and report on system and process resources.
  *
@@ -120,7 +120,7 @@ namespace rtt_diagnostics {
  *
  * \example diagnostics/test/tstProcmon.cc
  */
-//===========================================================================//
+//============================================================================//
 DLL_PUBLIC_diagnostics void
 procmon_resource_print(std::string const &identifier, int const &mynode = -1,
                        std::ostream &msg = std::cout);
@@ -135,6 +135,6 @@ procmon_resource_print(std::string const &identifier, int const &mynode = -1,
 
 #endif // diagnostics_Procmon_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of diagnostics/Procmon.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

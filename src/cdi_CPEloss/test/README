@@ -1,0 +1,4 @@
+001-H-001 is a tabulated stopping power data file in the standard LANL format.
+It was generated specifically for testing this module using a basic stopping
+power model and with a small number of grid points and target ions for a reduced
+file size.

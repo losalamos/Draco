@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*! \file   UnitSystemType.cc
  *  \author Kelly Thompson
- *  \brief  Aggregates a collection of FundUnits to create a complete 
+ *  \brief  Aggregates a collection of FundUnits to create a complete
  *          UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *          All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "UnitSystemType.hh"
 
@@ -44,7 +41,7 @@ UnitSystemType::UnitSystemType(UnitSystemType const &rhs)
       d_A(rhs.A()), d_Q(rhs.Q()) { /* empty */
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Set a FundUnit type for this UnitSystem
 
@@ -86,6 +83,6 @@ UnitSystemType &UnitSystemType::Q(Qtype myType, double const *cf,
 
 } // end namespace rtt_units
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of UnitSystemType.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

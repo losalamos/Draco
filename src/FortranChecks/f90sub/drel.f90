@@ -4,7 +4,7 @@
 ! author Kelly Thompson
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 main linking against C++ library and calling a C++ function.
-! note   Copyright (c) 2016-2019 Triad National Security, LLC.
+! note   Copyright (c) 2016-2020 Triad National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
 

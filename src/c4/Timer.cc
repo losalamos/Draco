@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/Timer.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:56:11 2002
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Timer.hh"
 #include "ds++/XGetopt.hh"
@@ -34,17 +34,24 @@ int selected_cache = 2;
 
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Constructor
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Constructor
 Timer::Timer()
     : begin(0.0), end(0.0), tms_begin(DRACO_TIME_TYPE()),
       tms_end(DRACO_TIME_TYPE()),
-      posix_clock_ticks_per_second(DRACO_CLOCKS_PER_SEC), timer_on(false),
-      isMPIWtimeAvailable(setIsMPIWtimeAvailable()), sum_wall(0.0),
-      sum_system(0.0), sum_user(0.0), num_intervals(0) {
+      posix_clock_ticks_per_second(static_cast<int>(DRACO_CLOCKS_PER_SEC)),
+      timer_on(false), isMPIWtimeAvailable(setIsMPIWtimeAvailable()),
+      sum_wall(0.0), sum_system(0.0), sum_user(0.0), num_intervals(0) {
+#if defined(WIN32)
+  static_assert(DRACO_CLOCKS_PER_SEC < INT32_MAX,
+                "!(DRACO_CLOCKS_PER_SEC < INT32_MAX)");
+#else
+  Check(DRACO_CLOCKS_PER_SEC < INT32_MAX);
+#endif
+
 #ifdef HAVE_PAPI
 
   // Initialize the PAPI library on construction of first timer if it has not
@@ -65,9 +72,9 @@ Timer::Timer()
   reset();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Member functions
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Print out a timing report.
 void Timer::print(std::ostream &out, int p) const {
@@ -124,7 +131,7 @@ void Timer::print(std::ostream &out, int p) const {
   out.flush();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Print out a timing report as a single line summary.
 void Timer::printline(std::ostream &out, unsigned const p,
                       unsigned const w) const {
@@ -153,9 +160,9 @@ void Timer::printline(std::ostream &out, unsigned const p,
   out.flush();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Is this an MPI or Posix timer?
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Timer::setIsMPIWtimeAvailable() const {
 #ifdef C4_SCALAR
   return false;
@@ -164,9 +171,9 @@ bool Timer::setIsMPIWtimeAvailable() const {
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Statics
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 /* static */
 #ifdef HAVE_PAPI
@@ -297,7 +304,7 @@ void Timer::papi_init_() {
 }
 #endif // HAVE_PAPI
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Wait until the wall_clock value exceeds the requested pause time.
 void Timer::pause(double const pauseSeconds) {
   Require(pauseSeconds > 0.0);
@@ -317,7 +324,7 @@ void Timer::pause(double const pauseSeconds) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Print out a summary timing report for averages across MPI ranks.
  *
  * \param out Stream to which to write the report.
@@ -384,6 +391,6 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
 
 } // end namespace rtt_c4
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Timer.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   config/query_fma.cc
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Thursday, Feb 09, 2017, 08:11 am
  * \brief  FMA features test.
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * Supporting functions:
@@ -15,7 +15,7 @@
  * An alternative approach for Visual Studio can be found at
  * https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=vs-2017
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include <string>
 
@@ -55,7 +55,7 @@ int check_4th_gen_intel_core_features(int const mode = 0) {
 #define MYINT uint32_t
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void run_cpuid(MYINT eax, MYINT ecx, MYINT *abcd) {
 #if defined(_MSC_VER)
   __cpuidex(abcd, eax, ecx);
@@ -77,7 +77,7 @@ void run_cpuid(MYINT eax, MYINT ecx, MYINT *abcd) {
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int check_xcr0_ymm() {
   MYINT xcr0;
 #if defined(_MSC_VER)
@@ -92,7 +92,7 @@ int check_xcr0_ymm() {
           6); /* checking if xmm and ymm state are enabled in XCR0 */
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int check_4th_gen_intel_core_features(int const mode = 0) {
   MYINT abcd[4];
   MYINT fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
@@ -135,7 +135,7 @@ int check_4th_gen_intel_core_features(int const mode = 0) {
 
 #endif /* non-Intel compiler */
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Query the CPU for Gen4 features.
  *
@@ -158,6 +158,6 @@ int main(int argc, char *argv[]) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of query_fma.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

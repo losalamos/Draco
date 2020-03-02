@@ -8,17 +8,14 @@
 #------------------------------------------------------------------------------#
 project( memory_test CXX )
 
-# ---------------------------------------------------------------------------- #
-# Source files
-# ---------------------------------------------------------------------------- #
-
-file( GLOB test_sources *.cc )
-
-# ---------------------------------------------------------------------------- #
-# Build Unit tests
-# ---------------------------------------------------------------------------- #
-
-add_scalar_tests( SOURCES "${test_sources}"  DEPS Lib_memory  )
+if( NOT "${DRACO_DIAGNOSTICS}" STREQUAL "7" )
+  # This test fails when fpe_trap is enabled.
+  #
+  add_scalar_tests(
+    SOURCES "tstmemory.cc"
+    DEPS Lib_memory
+    LABEL "nomemcheck" )
+endif()
 
 #------------------------------------------------------------------------------#
 # End memory/test/CMakeLists.txt

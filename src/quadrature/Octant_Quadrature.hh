@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Octant_Quadrature.hh
  * \author Kent Budge
  * \date   Friday, Nov 30, 2012, 08:28 am
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Octant_Quadrature_hh
 #define quadrature_Octant_Quadrature_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Octant_Quadrature
  * \brief This is an abstract class representing all quadratures over the unit
@@ -28,7 +28,7 @@ namespace rtt_quadrature {
  * user may override the default axis assignments when he constructs an
  * Ordinate_Set or an Ordinate_Space from the Octant_Quadrature.
  */
-//===========================================================================//
+//============================================================================//
 
 class Octant_Quadrature : public Quadrature {
 public:
@@ -92,6 +92,6 @@ private:
 
 #endif // quadrature_Octant_Quadrature_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Octant_Quadrature.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

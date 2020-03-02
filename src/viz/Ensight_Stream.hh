@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   viz/Ensight_Stream.hh
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:28:37 2004
  * \brief  Header for Ensight_Stream.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_viz_Ensight_Stream_hh
 #define rtt_viz_Ensight_Stream_hh
@@ -24,7 +24,7 @@ class Ensight_Stream;
 //! A specific "endl" manipulator for Ensight_Stream.
 DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Ensight_Stream
  * \brief Output file stream for Ensight files.
@@ -40,7 +40,7 @@ DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
  * will be cast to an int.  Note that double floating point accuracy is not
  * preserved by using ascii format, because Ensight requires output as e12.5.
  */
-//===========================================================================//
+//============================================================================//
 
 class DLL_PUBLIC_viz Ensight_Stream {
 private:
@@ -102,6 +102,6 @@ private:
 
 #endif // rtt_viz_Ensight_Stream_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of viz/Ensight_Stream.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

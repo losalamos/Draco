@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/C4_Status.hh
  * \author Robert B. Lowrie
  * \date   Friday May 19 6:54:21 2017
  * \brief  C4_Status class definition.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_C4_Status_hh
 #define c4_C4_Status_hh
@@ -21,7 +21,7 @@
 
 namespace rtt_c4 {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class C4_Status
  * \brief Status container for communications.
@@ -29,9 +29,9 @@ namespace rtt_c4 {
  * This class contains the status information for communications.  For MPI,
  * this class wraps MPI_Status.
  */
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_c4 C4_Status {
+class C4_Status {
 
 #ifdef C4_MPI
   typedef MPI_Status status_type;
@@ -42,8 +42,6 @@ class DLL_PUBLIC_c4 C4_Status {
   status_type d_status;
 
 public:
-  // Use default ctor, dtor, assignment
-
   //! Returns the message size (in bytes) of the last communication.
   int get_message_size() const;
 
@@ -58,6 +56,6 @@ public:
 
 #endif // c4_C4_Status_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/C4_Status.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

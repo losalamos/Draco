@@ -1,22 +1,22 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_eospac/Eospac.hh
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
  * \brief
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_eospac_Eospac_hh__
-#define __cdi_eospac_Eospac_hh__
+#ifndef rtt_cdi_eospac_Eospac_hh
+#define rtt_cdi_eospac_Eospac_hh
 
 #include "SesameTables.hh"
 #include "cdi/EoS.hh"
 #include <iostream>
 
 namespace rtt_cdi_eospac {
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Eospac
  *
@@ -26,15 +26,14 @@ namespace rtt_cdi_eospac {
  * \sa The web page for <a
  *     href="http://xweb.lanl.gov/PROJECTS/DATA/">EOSPAC</a>.
  *
- * Eospac allows the client code to retrive equation of state (EoS) data for a
+ * Eospac allows the client code to retrieve equation of state (EoS) data for a
  * specified material.  The material is specified by the SesameTables object
  * which links a lookup table to each type of data requested.
  *
  * This is a concrete class derived from cdi/EoS.  This class allows the client
- * to access (interpolate) on the EoS tables provided by X-5 (sesame, sescu1,
- * sesou, sescu and sescu9).
+ * to access (interpolate) on the EoS tables.
  *
- * This class is designed to be used in conjuction with the CDI package. The
+ * This class is designed to be used in conjunction with the CDI package. The
  * client code will need to create a SesameTable object that is used in the
  * construction of Eospac.  The Eospac object is then used in the instantiation
  * of a CDI object.  The CDI object might contain other material data
@@ -43,11 +42,11 @@ namespace rtt_cdi_eospac {
  *
  * <b>User's environment</b>
  *
- * The eos data files live in specific locations on the X-Div LAN and ACL.  If
- * you are not working on one of these LANs you must set the following two
- * system environment variables (SESPATHU and SESPATHC) so that the EOSPAC
- * libraries can find the data tables.  On the CCS Linux LAN you can use the
- * following values:
+ * The equation of state data files live in specific locations on the X-Div LAN
+ * and ACL.  If you are not working on one of these LANs you must set the
+ * following two system environment variables (SESPATHU and SESPATHC) so that
+ * the EOSPAC libraries can find the data tables.  On the CCS Linux LAN you can
+ * use the following values:
  *
  * export SESPATHU=/ccs/codes/radtran/physical_data/eos
  * export SESPATHC=/ccs/codes/radtran/physical_data/eos
@@ -71,7 +70,7 @@ namespace rtt_cdi_eospac {
 // --------------------
 // 1. Add STL like accessors.
 
-//===========================================================================//
+//============================================================================//
 
 class Eospac : public rtt_cdi::EoS {
 
@@ -94,8 +93,7 @@ class Eospac : public rtt_cdi::EoS {
    * \brief The SesameTables object uniquely defines a material.
    *
    * The SesameTables object uniquely defines a material by linking specific
-   * lookup tables (sesame, sescu1, sesou, sescu and sescu9) to material
-   * identifiers.
+   * lookup tables (sesame, sesou) to material identifiers.
    *
    * \sa rtt_cdi_eospac::SesameTables class definition.
    *
@@ -108,21 +106,21 @@ class Eospac : public rtt_cdi::EoS {
   // Available data types //
   // -------------------- //
 
-  // These next four data members are mutalbe because they specify what data is
+  // These next four data members are mutable because they specify what data is
   // cached by the Eospac object.  The cached data set may be changed when the
   // user calls a get... function.
 
   /*!
-   * \brief List of materierial IDs that are specified by SesTabs.
+   * \brief List of material IDs that are specified by SesTabs.
    *
    * \sa returnTypes data member.
    *
    * These are the materials that are available for querying.  There is a
    * one-to-one correspondence between matIDs and returnTypes.  The returnTypes
-   * correspond to data that you can request from the sesame tables
-   * (e.g. electron based interal energy has returnType 12) and the
-   * corresponding matID value is the material identifier extracted from the
-   * associated SesameTables object.
+   * correspond to data that you can request from the sesame tables (e.g.
+   * electron based internal energy has returnType 12) and the corresponding
+   * matID value is the material identifier extracted from the associated
+   * SesameTables object.
    */
   mutable std::vector<int> matIDs;
 
@@ -134,10 +132,10 @@ class Eospac : public rtt_cdi::EoS {
    * List of numeric identifiers that specify what EoS data tables are available
    * from this object. (e.g. P(T,rho), internal energy, etc.).  There is a
    * one-to-one correspondence between matIDs and returnTypes.  The returnTypes
-   * correspond to data that you can request from the sesame tables
-   * (e.g. electron based interal energy has returnType 12) and the
-   * corresponding matID value is the material identifier extracted from the
-   * associated SesameTables object.
+   * correspond to data that you can request from the sesame tables (e.g.
+   * electron based internal energy has returnType 12) and the corresponding
+   * matID value is the material identifier extracted from the associated
+   * SesameTables object.
    */
   mutable std::vector<EOS_INTEGER> returnTypes;
 
@@ -166,12 +164,13 @@ public:
    *
    * \sa The definition of rtt_cdi_eospac::SesameTables.
    *
-   * \param in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what
-   *           data tables will be available for queries from the Eospac object.
+   * \param[in] in_SesTabs A rtt_cdi_eospac::SesameTables object that defines
+   *           what data tables will be available for queries from the Eospac
+   *           object.
    */
   explicit Eospac(SesameTables const &in_SesTabs);
 
-  //! Create an Eospack by unpacking a vector<char> stream.
+  //! Create an Eospac by unpacking a vector<char> stream.
   explicit Eospac(std::vector<char> const &packed);
 
   // (defaulted) Eospac(const Eospac &rhs);
@@ -179,7 +178,7 @@ public:
   /*!
    * \brief Default Eospac() destructor.
    *
-   * This is required to correctly release memeroyt when an Eospac object is
+   * This is required to correctly release memory when an Eospac object is
    * destroyed.  We define the destructor in the implementation file to avoid
    * including the unnecessary header files.
    */
@@ -215,8 +214,8 @@ public:
    *        correspond to a tuple list of temperatures and densities for this
    *        material.
    *
-   * \param vdensity Density of the material in g/cm^3
-   * \param vtemperature Temperature of the material in keV.
+   * \param[in] vdensity Density of the material in g/cm^3
+   * \param[in] vtemperature Temperature of the material in keV.
    * \return The specific electron internal energy in kJ/g.
    */
   std::vector<double>
@@ -238,8 +237,8 @@ public:
    *        that correspond to the tuple list of provided densities and
    *        temperatures.
    *
-   * \param vdensity Density of the material in g/cm^3
-   * \param vtemperature Temperature of the material in keV.
+   * \param[in] vdensity Density of the material in g/cm^3
+   * \param[in] vtemperature Temperature of the material in keV.
    * \return The electron based heat capacity in kJ/g/keV.
    */
   std::vector<double>
@@ -388,7 +387,7 @@ private:
    * Each of the public access functions calls either getF() or getdFdT() after
    * assigning the correct value to "returnType".
    *
-   * \param vdensity A vector of independent values (e.g. temperature or 
+   * \param vdensity A vector of independent values (e.g. temperature or
    *          density).
    * \param vtemperature A vector of independent values (e.g. temperature or
    *          density).
@@ -441,15 +440,15 @@ private:
    * This is only used in getF() and getdFdT().
    */
   static inline double keV2K(double tempKeV) {
-    const double c = 1.1604412E+7; // Kelven per keV
+    const double c = 1.1604412E+7; // Kelvin per keV
     return c * tempKeV;
   }
 };
 
 } // end namespace rtt_cdi_eospac
 
-#endif // __cdi_eospac_Eospac_hh__
+#endif // rtt_cdi_eospac_Eospac_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_eospac/Eospac.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

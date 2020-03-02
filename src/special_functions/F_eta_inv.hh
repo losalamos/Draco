@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/F_eta_inv.hh
  * \author Kent Budge
@@ -6,9 +6,9 @@
  * \brief  For a fermion species, calculate the dimensionless chemical 
  *         potential given the dimensionless number density and dimensionless
  *         temperature.  
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifndef sf_F_eta_inv_hh
 #define sf_F_eta_inv_hh
 
@@ -23,6 +23,6 @@ DLL_PUBLIC_special_functions double F_eta_inv(double n, double gamma);
 
 #endif // sf_F_eta_inv_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of sf/F_eta_inv.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -52,6 +52,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
 #include "ut_Engine.hh"
 
 #include <Random123/ReinterpretCtr.hpp>
@@ -72,11 +78,6 @@ template <typename EType> typename EType::result_type kat1000() {
   // results, so we don't have known answers for them.
   return 0;
 }
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wexpansion-to-defined"
-#endif
 
 #if R123_USE_PHILOX_64BIT
 template <> uint64_t kat1000<Engine<Philox2x64>>() {
@@ -286,6 +287,6 @@ int main(int, char **) {
 #pragma warning(pop)
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // End ut_Engine.cpp
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

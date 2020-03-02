@@ -1,21 +1,21 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   viz/Ensight_Translator.i.hh
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator template definitions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include <map>
 #include <sstream>
 
 namespace rtt_viz {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // CONSTRUCTOR
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for Ensight_Translator.
  *
@@ -38,6 +38,7 @@ namespace rtt_viz {
  *           across all calls to Ensight_Translator::ensight_dump.
  * \param binary If true, geometry and variable data files are output in binary
  *           format.
+ * \param reset_time time after which to rewrite dumps, if overwrite=false
  *
  * NOTE: If appending data (\a overwrite is false), then \a binary must be the
  * same value as the first ensight dump.  This class does NOT check for this
@@ -48,7 +49,7 @@ template <typename SSF>
 Ensight_Translator::Ensight_Translator(
     const std_string &prefix, const std_string &gd_wpath,
     const SSF &vdata_names, const SSF &cdata_names, const bool overwrite,
-    const bool static_geom, const bool binary)
+    const bool static_geom, const bool binary, const double reset_time)
     : d_static_geom(static_geom), d_binary(binary), d_dump_dir(gd_wpath),
       d_num_cell_types(0), d_cell_names(), d_vrtx_cnt(0), d_cell_type_index(),
       d_dump_times(), d_prefix(), d_vdata_names(vdata_names),
@@ -101,15 +102,32 @@ Ensight_Translator::Ensight_Translator(
 
       casefile.close();
       graphics_continue = true;
+
+      // check if a valid reset time was provided
+      if (reset_time > 0.0) {
+
+        // find nearest graphics dump before reset time
+        int idump = num_steps;
+        for (int i = num_steps - 1; i >= 0; --i) {
+          if (reset_time > d_dump_times[i]) {
+            idump = i + 1;
+            break;
+          }
+        }
+
+        // truncate times at most recent graphics dump before restart
+        if (idump < num_steps)
+          d_dump_times.erase(d_dump_times.begin() + idump, d_dump_times.end());
+      }
     }
   }
 
   initialize(graphics_continue);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // ENSIGHT DUMP PUBLIC INTERFACES
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Do an Ensight dump to disk.
  *
@@ -297,7 +315,7 @@ void Ensight_Translator::ensight_dump(
   close();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Write ensight data for a single part.
  *
@@ -391,9 +409,9 @@ void Ensight_Translator::write_part(
   write_cell_data(part_num, cell_data, cells_of_type);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // ENSIGHT DATA OUTPUT FUNCTIONS (PRIVATE)
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Write out data to ensight geometry file.
 template <typename IVF, typename FVF, typename ISF>
@@ -481,7 +499,7 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
   } // done looping over cell types
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Write out data to ensight vertex data.
 template <typename FVF>
 void Ensight_Translator::write_vrtx_data(
@@ -512,7 +530,7 @@ void Ensight_Translator::write_vrtx_data(
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Write out data to ensight cell data.
 template <typename FVF>
 void Ensight_Translator::write_cell_data(
@@ -558,6 +576,6 @@ void Ensight_Translator::write_cell_data(
 
 } // namespace rtt_viz
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of viz/Ensight_Translator.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

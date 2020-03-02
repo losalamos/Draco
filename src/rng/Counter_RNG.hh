@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/Counter_RNG.hh
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Declaration of class Counter_RNG.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef Counter_RNG_hh
 #define Counter_RNG_hh
@@ -33,13 +33,14 @@
 
 /*
 #if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
+// Suppress GCC's "unused parameter" warning, about LHS and RHS in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
 */
 #pragma GCC diagnostic push
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -50,6 +51,7 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
 #include "Random123/threefry.h"
@@ -91,7 +93,7 @@ typedef CBRNG::key_type key_type;
 namespace // anonymous
 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! \brief Generate a nearly-unique identifier.
  *
  * Given a pointer to RNG state data, this function generates a 64-bit
@@ -113,7 +115,7 @@ static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
   return result[0];
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! \brief Generate a random double.
  *
  * Given a pointer to RNG state data, this function returns a random double in
@@ -145,7 +147,7 @@ static inline double _ran(ctr_type::value_type *const data) {
 
 } // namespace
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Counter_RNG_Ref
  * \brief A reference to a Counter_RNG.
@@ -157,7 +159,7 @@ static inline double _ran(ctr_type::value_type *const data) {
  * counter); instead, it operates using a data block specified during
  * construction.
  */
-//===========================================================================//
+//============================================================================//
 class Counter_RNG_Ref {
 public:
   //! Constructor.  db and de specify the extents of an RNG state block.
@@ -187,7 +189,7 @@ private:
   mutable rtt_dsxx::Data_Table<ctr_type::value_type> data;
 };
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Counter_RNG
  * \brief A counter-based random-number generator.
@@ -207,7 +209,7 @@ private:
  * private copy constructor), an Rnd_Control must be able to initialize a
  * generator that was instantiated outside of its control.
  */
-//===========================================================================//
+//============================================================================//
 class Counter_RNG {
   friend class Counter_RNG_Ref;
   friend class Rnd_Control;
@@ -293,22 +295,22 @@ private:
   inline void _spawn(ctr_type::value_type *const parent_data);
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Implementation
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //! Spawn a new, independent generator from this reference.
 inline void Counter_RNG_Ref::spawn(Counter_RNG &new_gen) const {
   new_gen._spawn(data.access());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Is this Counter_RNG_Ref a reference to rng?
 inline bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng) const {
   return rng.begin() == data.access();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! \brief Initialize internal state from a seed and stream number.
 inline void Counter_RNG::initialize(const uint32_t seed,
                                     const uint64_t streamnum) {
@@ -325,7 +327,7 @@ inline void Counter_RNG::initialize(const uint32_t seed,
   data[3] = 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! \brief Spawn a new, independent generator from the provided state block.
  *
  * To provide parallel reproducibility independent of the number of ranks or
@@ -384,7 +386,7 @@ inline void Counter_RNG::initialize(const uint32_t seed,
  */
 inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
   // Initialize this generator with the seed and stream number from the parent.
-  uint32_t seed = parent_data[1] >> 32;
+  uint32_t seed = static_cast<uint32_t>(parent_data[1] >> 32);
   uint64_t streamnum = parent_data[2];
   initialize(seed, streamnum);
 
@@ -416,6 +418,6 @@ inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
 
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end Counter_RNG.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

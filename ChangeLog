@@ -1,3 +1,392 @@
+2019-12-16  Kelly Glen Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_4_0 and is tied to the release
+	of Jayenne-8_3_0 and Capsaicin-1_3_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  ---------------------------------------------------------------
+	  CTS-1              Intel 19.0.4    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 18.0.2    OpenMPI-2.1.2
+	                     Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ---------------------------------------------------------------
+	  ATS-1              Intel 19.0.4    Cray_MPICH2-7.7.6
+	  (TT/TR)            Intel 18.0.2    Cray_MPICH2-7.7.6
+	                     Intel 17.0.4    Cray_MPICH2-7.7.6
+	  ---------------------------------------------------------------
+	  LANL ARM           GCC 8.3.0       Cray_MPICH2-7.7.8
+	  TH/CP              CCE 9.0.1.80    Cray_MPICH2-7.7.8
+	  ---------------------------------------------------------------
+	  ATS-2              GCC 7.3.1       Spectrum MPI 2019.01.30
+	                                     Cuda-9.2
+	                     XL 2019.04      Spectrum MPI 2019.01.30
+                                             Cuda-9.2
+	  ---------------------------------------------------------------
+          Darwin - Power9    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - x86_64    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - ARM       GCC 8.2.0       OpenMPI-3.1.3
+	  ---------------------------------------------------------------
+
+	* Information:
+
+          Draco-7_4_0, build date 2019/12/16;build type: Debug;
+               DBC: 7;DRACO_DIAGNOSTICS: 0
+
+          CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+               Ryan T. Wollaeger, Alex R. Long, James S. Warsa, Kendra P. Long,
+               Matt A. Cleveland, Tim Kelley, Ben R. Ryan, Jae H. Chang,
+               Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+          Prior Contributors: Gabriel M. Rockefeller, Allan B. Wollaber,
+	       Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang, Peter Ahrens,
+	       Daniel Holladay, Jeff D. Densmore, Massimiliano Rosa, Todd
+	       J. Urbatsch, Jeff Furnish, John McGhee, Kris C. Garrett, Mike
+	       Buksas, Nick Myers, Paul Henning, Randy Roberts, Seth Johnson,
+	       Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+          Copyright (C) 2016-2020 Triad National Security, LLC. (C19028,
+	       LA-CC-16-016), Released under a 3-Clause BSD License.
+
+          For information, send e-mail to draco@lanl.gov.
+
+	* Summary of changes:
+
+	- 225 files changed, added or removed in 52 commits.
+	- PR #704 Provide a singleton wrapper around libquo
+	- PR #701 A constexpr physical units class
+	- PR #686 Enable clang-tidy mode on ccs-net machines.
+	- PR #682 Provide a mechanism to colorize text.
+
+	* Corrected Defects
+
+	- Github issue #692 CMake Error at config/setupMPI.cmake:54
+	           (Unknown arguments specified)
+	- Github issue #688 Clang warns char comparison with negative
+	           integers is always false
+	- Bug #1710 Darwin: Move regressions to intel/19.0.5
+	- Bug #1731 Darwin builds can't find XMGrace
+	- Bug #1746 Draco: regression failures
+	- Bug #1757 cmake-3.15 fails to report cores correctly
+	- Bug #1781 Fix MathJax plugin
+
+	* New Features
+
+	- PR #710 Revert CDash server to rtt.
+	- PR #705 Cleanup in quadrature.
+	- PR #704 Provide a singleton wrapper around libquo
+	- PR #703 Rewind PhysicalConstexprs to CODATA 2010 values
+	- PR #702 Fix static build.
+	- PR #701 A constexpr physical units class
+	- PR #700 Minor cleanup
+	- PR #699 More robust pre-commit hooks
+	- PR #698 Begin posting all regression results to
+	          ccstest.lanl.gov.
+	- PR #693 Add quotes around ${MPI_FLAVOR}
+	- PR #691 Update Terminal to the latest version
+	- PR #687 Address regression issues reported on Darwin:
+	- PR #686 Enable clang-tidy mode on ccs-net machines.
+	- PR #685 Add extra checks for gcc-Debug builds
+	- PR #684 Mark some functions constexpr
+	- PR #683 Move export DRACO_ENV_DIR before use in path to alias
+	          script.
+	- PR #682 Provide a mechanism to colorize text.
+	- PR #681 HPC machines can't see new CDash so use old server.
+	- PR #680 Fix capitalization
+	- PR #679 Test new cdash server.
+	- PR #676 Two minor tweaks and some formatting fixes.
+	- PR #675 Minor cleanup of comments, decorators, spelling, etc.
+	- PR #674 Update algorithm for exporting target properties.
+	- PR #671 Update bash developer files.
+	- PR #670 Merge the Draco-7_3_0 release branch back to develop
+	- Feature #42 Demo cce/9 on capulin
+	- Feature #1444 Attempt to use clang on ATS-2 machines
+	- Feature #1682 Intel-19.0.4
+	- Feature #1708 Demo Certek's terminal class
+	- Feature #1729 Add '-Wconversion' for gcc Debug builds
+	- Feature #1761 Create a constexpr physical constants system
+	- Feature #1763 Add c4 wrapper for libquo (optional TPL)
+	- Task #1324 CDash 2.7 Released (install on ccsnet3?)
+	- Task #1385 Extend [xy]thi for ARM
+	- Task #1686 Create python script to query github info needed for
+	          releases
+	- Task #1740 Get clang-tidy working in Draco
+	- Task #1765 Teach Draco build system to install pdb files to
+	          support debugging.
+
+	* Known Defects
+
+	- Github issue #526 Fix autodoc issues in package viz
+	- Github issue #525 Fix autodoc issues in Parser
+	- Bug #1777 For trinitite cronjobs, try sourcing /etc/profile
+	- Bug #1716 Darwin: regressions: update logic to support nodes w/o
+	          IB network support
+	- Bug #1712 Fix Lib_rng so that include path for Random123 is
+	          provided transitively
+	- Bug #1550 release scripts break on rzansel
+	- Bug #1443 CDash integration with GitHub
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1148 perfbench time variation on snow
+	- Bug #59 cdi_eospac design flaw
+
+
+2019-09-11  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_3_0 and is tied to the release
+	of Jayenne-8_2_0 and Capsaicin-1_2_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  ---------------------------------------------------------------
+	  CTS-1              Intel 18.0.2    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ---------------------------------------------------------------
+	  ATS-1              Intel 18.0.2    Cray_MPICH2-7.7.4
+	  (TT/TR)            Intel 17.0.4    Cray_MPICH2-7.7.4
+	  ---------------------------------------------------------------
+	  LANL ARM           GCC 8.3.0       Cray_MPICH2-7.7.8
+	  TH/CP              CCE 9.0.1.80    Cray_MPICH2-7.7.8
+	  ---------------------------------------------------------------
+	  ATS-2              GCC 7.3.1       Spectrum MPI 2019.01.30
+	                                     Cuda-9.2
+	                     XL 2019.04      Spectrum MPI 2019.01.30
+                                             Cuda-9.2
+	  ---------------------------------------------------------------
+          Darwin - Power9    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - x86_64    GCC 7.3.0       OpenMPI-3.1.3, Cuda-10.1
+          Darwin - ARM       GCC 8.2.0       OpenMPI-3.1.3
+	  ---------------------------------------------------------------
+
+	* Information:
+
+	Draco-7_3_0, build date 2019/09/12;build type: Debug;DBC: 7;
+	DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+	Alex R. Long, James S. Warsa, Matt A. Cleveland, Kendra P. Long,
+	Tim Kelley, Jae H. Chang, Andrew T. Till, Seth D. Cook, Ben R. Ryan,
+	and David A. Dixon.
+
+	Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber, Rob B. Lowrie,
+	Paul W. Talbot, Katherine J. Wang, Peter Ahrens, Daniel Holladay,
+	Jeff D. Densmore, Massimiliano Rosa, Todd J. Urbatsch, Jeff Furnish,
+	John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning,
+	Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 125 files changed, added or removed in 46 commits.
+	- PR #665 Normalize Planck emission CDF
+	- PR #648 Move the regression scripts to their own repository.
+	- PR #649 Fix some Win32 issues related to CAFS.
+
+	* Corrected Defects
+
+	- PR #667 Wrap call to readlink in macro to avoid failure on OSX.
+	- PR #665 Normalize Planck emission CDF
+	- PR #663 Fix broken MSVC (CAFS) build.
+	- PR #657 cleanup ei-coupling comments about units
+	- PR #649 Fix some Win32 issues related to CAFS.
+	- PR #647 Relocate the installed cmake config directory.
+	- PR #638 Fix constexpr compilation error with intel 17
+	- Github issue #662 PR 661 broke MSVC builds due to CAFS incompatibility
+	- Bug #1514 cuda+mpi issues on darwin power9 and arm
+	- Bug #1551 Make Draco 7-2 release compatible with Intel 17
+	- Bug #1572 Release on ATS-2 with older MPI
+	- Bug #1573 Fix install location of draco-config.cmake
+	- Bug #1581 Provide csk-0.4.2 on trinitite (and knl)
+	- Bug #1582 rzansel: release scripts using mpiexec instead of jsrun.
+	- Bug #1607 autodoc target broken
+	- Bug #1651 Darwin: regressions broken after system failure
+	- Bug #1670 Provide a version file with -config.cmake files
+
+	* New Features
+
+	- PR #668 Enable Draco GPU tests
+	- PR #664 Provide draco-config-version.cmake when installing.
+	- PR #661 Make language standards target properties.
+	- PR #660 Environment updates for capulin.
+	- PR #659 More updates to support ATS-2 machines
+	- PR #658 Deprecate the old 2d Draco_Mesh constructor
+	- PR #656 WIP: Tweak environments for Capulin support.
+	- PR #654 Update docker image used by CI.
+	- PR #653 Shake
+	- PR #652 Another attempt to suppress MSVC warnings about .dbg files.
+	- PR #650 MSVC: Suppress link warning
+	- PR #648 Move the regression scripts to their own repository.
+	- PR #646 Performance tweaks for Planck and Rosseland integration
+	- PR #645 Move draco_setenv to systemcall.hh
+	- PR #644 Fix MSVC build warnings.
+	- PR #643 Skeleton
+	- PR #642 + python PR parsers
+	- PR #641 Add environment and release scripts to support Darwin
+	- PR #639 Tweak for Draco-7_2_0
+	- Feature #1459 Demo cce/9 on capulin
+	- Feature #1558 Add matplotlib to python/3.6 install on ccs-net
+	- Feature #1559 Snow: Ensure newtools regression is running
+	- Feature #1579 core -> cta
+	- Feature #1583 Extend Darwin regression system
+	- Feature #1584 Release on sierra with spectrum-mpi/2019.01.30
+	- Feature #1602 Darwin: Add intel builds to nightly regressions.
+	- Feature #1604 Move basic_dbs_setup macro into Jayenne
+	- Feature #1614 Begin supporting builds on capulin
+	- Feature #1622 Draco build system fails for cce-9.0.1
+	- Feature #1653 Darwin: create nightly regression for gcc (no gpu)
+	- Feature #1656 rzansel: no longer need to hop through rzgw
+	- Feature #1663 Thunder: Install user_contrib stack
+	- Feature #1667 draco-7_2_0 built with GNU missing CSK
+	- Feature #1668 Demo cdt/19.08 on trinitite
+	- Task #1400 Move 'regression' to its own repository
+	- Task #1439 Create ability to read/plot LLNL opacity data
+	- Task #1481 Activate rng cuda tests
+	- Task #1554 Update asc_spackages and spack with new recipies
+	- Task #1654 Deprecate old 2D Draco_Mesh constructor
+
+	* Known Defects
+
+	- Github issue #526 Fix autodoc issues in package viz
+	- Github issue #525 Fix autodoc issues in Parser
+	- Bug #1550 release scripts break on rzansel
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1605 Remove dependency C4 -> MPI_Fortran
+
+2019-06-13  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Overview
+
+	Draco has been updated to version 7_2_0 and is tied to the release
+	of Jayenne-8_1_0 and Capsaicin-1_1_0.  This release was completed
+	on the following platforms/toolsets:
+
+	* Platforms:
+	  CTS-1              Intel 18.0.2    OpenMPI-2.1.2
+	  (SN/GR/FI/IC/CY)   Intel 17.0.4    OpenMPI-2.1.2
+	                     GCC 7.4.0       OpenMPI-2.1.2
+	  ATS-1              Intel 18.0.2    Cray_MPICH2-7.7.4
+	  (TT/TR)            Intel 17.0.4    Cray_MPICH2-7.7.4
+	  TH/CP              -               -
+	  ATS-2              GCC 7.3.1       Spectrum MPI, Cuda 9.2
+	                     XL 2019.04      Spectrum MPI, Cuda 9.2
+
+	* Information:
+
+	Draco-7_2_20190613, build date 2019/06/13;build type: Debug;DBC: 7;
+	DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
+	Alex R. Long, James S. Warsa, Matt A. Cleveland, Kendra P. Long,
+	Tim Kelley, Jae H. Chang, Andrew T. Till, and David A. Dixon.
+
+	Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber, Rob B. Lowrie,
+	Paul W. Talbot, Katherine J. Wang, Peter Ahrens, Daniel Holladay,
+	Jeff D. Densmore, Massimiliano Rosa, Todd J. Urbatsch, Jeff Furnish,
+	John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning,
+	Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 192 files changed, added or removed in 121 commits.
+	- Github #590 Begin supporting rzansel and sierra (ATS-2) machines
+	              (power9 + volta).
+	- Gitlab #616, #623 Better support for some Darwin nodes (x86+volta,
+	              power9+volta, arm).
+	- Github #577 New Open Source License, Copyright record C19028
+	- Github #586 Add analytic electron-ion coupling coefficient support to
+	              CDI.
+	- Github #589, #604 Update device package and build system code to
+	              support newer CUDA (v9, v10).
+	- Github #592 Begin providing support for atomics.
+	- Github #620 Fix a "C++ static initialization fiasco" bug to fix broken
+	              static builds.
+	- Github #633 Enable 1D and 3D: mesh construction and X3D parsing
+	- Github #634 Provide a function to query env vars and provide access to
+	              SLURM info.
+
+	* Corrected Defects
+
+	- Github #585, #622 Update the IPCRESS reader for python3.
+	- Github #606 Don't force DBS settings on clients
+	- Github #618 Provide an implementation for Processor_Group when
+	              C4=SCALAR.
+	- Bug #1151 Occasional mpirun errors on snow
+	- Bug #1242 Support machines where mpiexec is at /usr/bin
+	- Bug #1268 memory: needs more tests
+	- Bug #1399 tt-fey: fix sync_repository module errors
+	- Bug #1405 trinitite: new issues
+	- Bug #1409 Building cuda test/library fails due to pthread flag
+	- Bug #1418 Darwin: ARM regression fails to build draco
+	- Bug #1424 Regressions: switch to gcc/7.4.0 for nightly (new production
+	            compiler)
+	- Bug #1436 Unregistered dependency
+	- Bug #1441 Archive (gitlab) darwin & rzansel spack configs
+	- Bug #1442 Fix build warnings for darwin volta-x86 nodes
+	- Bug #1447 Create asc_packages recipes for TRT codes.
+	- Bug #1448 xlf2008_r issues weird warnings about incorrect arguments
+	- Bug #1505 cdi_ipcress_tIpcress_Interpreter_twomats_ipcress is failing
+	            for Win32-Release builds
+	- Bug #1513 numdiff syntax error on Win32
+	- Bug #1516 trinitite: Random123 issues after recent DST
+
+	* New Features
+
+	- Github #579 Begin using CMake @include_guard@ and
+ 	              @cmake_host_system_information@
+	- Github #580 Introduce build system variable @SITENAME_FAMILY@ while
+	              improving perfbench regressions. Create a nightly regression
+	              that uses intel/19.0.1 and openmpi/3.1.2.
+	- Github #581 Update compiler flags used by IBM XL.
+	- Github #582 Update regression system for Darwin's volta-x86 nodes.
+	- Github #600 Add graphic dump reset time, to refine overwrite behavior
+	- Github #607 Begin supporting mpich.
+	- Github #612 Remove use of deprecated FindPythonInterp
+	- Github #619 Rename nGray_Analytic_MultigroupOpacity to
+	              Compound_Analytic_MultigroupOpacity
+	- Github #624 Provide a newer Docker container for CI testing
+	- Feature #1351 Regressions: activate newtools regression
+	- Feature #1410 update GPU_device to use modern cuda, print compute capability
+	- Feature #1420 Provide Electron-Ion coupling models through CDI
+	- Feature #1451 Specialize add_component_library macro to set separable
+	                compilation for CUDA files
+	- Task #1062 Prepare Darwin as sierra-proxy machine
+	- Task #1083 Darwin: demo power9+volta nodes
+	- Task #1149 setupMPI.cmake: use 'cmake_host_system_information'
+	- Task #1168 Demonstrate device singleton for GPUs on Darwin
+	- Task #1229 Port codes to ARM processors
+	- Task #1233 Attempt TPL build on power9 with xlc
+	- Task #1272 Work with FCI to obtain CC# for Draco-7 == Draco-6_25_0
+	- Task #1379 Add Draco and Branson spackages to spack
+	- Task #1411 Create nightly regression on Darwin
+	- Task #1419 LLNL: Provide needed TPLs at ucontrib
+	- Task #1503 Draco_Mesh constructor using face indexing
+	- Task #1534 Provide a slurm_info class
+
+	* Known Defects
+
+	- Bug #1514 cuda+mpi issues on darwin power9 and arm
+	- Bug #1459 Demo cce/9 on capulin
+	- Bug #1446 DBS: If exe/lib has cu files --> force static link
+	- Bug #1444 Attempt to use clang on ATS-2 machines
+	- Bug #1443 CDash integration with GitHub
+	- Bug #1266 cdi_analytic: Code coverage improvements
+	- Bug #1265 Quadrature:  Needs more unit tests
+	- Bug #1227 VS2017: tstSuperlu-dist not running?
+	- Bug #1148 perfbench time variation on snow
+	- Bug #59 cdi_eospac design flaw
+
 2019-02-22  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* "Release draco-7_1_0":https://rtt.lanl.gov/redmine/versions/65.
@@ -87,7 +476,7 @@ Prior Contributers: Gabriel M. Rockefeller, Allan B. Wollaber,
      Kris C. Garrett, Mike Buksas, Nick Myers, Paul Henning, Randy Roberts,
      Seth Johnson, Todd Adams, and Tom Evans.
 
-Copyright (C) 2016-2019 Triad National Security, LLC. (LA-CC-16-016)
+Copyright (C) 2016-2020 Triad National Security, LLC. (LA-CC-16-016)
 
 Code Coverage
 -------------

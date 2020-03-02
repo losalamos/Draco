@@ -1,34 +1,34 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/StackTrace.cc
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 10:15 am
  * \brief  Linux/X86 implementation of stack trace functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "StackTrace.hh"
 #include <iostream>
 #include <sstream>
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Stack trace feature is only available on Unix-based systems when
 // compiled with Intel or GNU C++.
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef UNIX
 
 #ifndef draco_isPGI
 #include <cxxabi.h> // abi::__cxa_demangle
 #endif
+#include <cstdio> // snprintf
+#include <cstdlib>
+#include <cstring>
 #include <execinfo.h> // backtrace
-#include <stdio.h>    // snprintf
-#include <stdlib.h>
-#include <string.h>
 #include <ucontext.h>
 #include <unistd.h> // readlink
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Helper functions
 std::string st_to_string(int const i) {
   std::ostringstream msg;
@@ -36,7 +36,7 @@ std::string st_to_string(int const i) {
   return msg.str();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // store/build the message here.  At the end of the function we return
@@ -46,16 +46,26 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // Get our PID and build the name of the link in /proc
   pid_t const pid = getpid();
 
+  // Now read the symbolic link (process name)
+  unsigned const buf_size(512);
+  char buf[buf_size];
+#ifdef APPLE
+  int ret = -1; // This scheme won't work on OSX: no /proc fs
+#else
   // Build linkname
   std::string const linkname =
       std::string("/proc/") + st_to_string(pid) + std::string("/exe");
 
-  // Now read the symbolic link (process name)
-  unsigned const buf_size(512);
-  char buf[buf_size];
   auto ret = readlink(linkname.c_str(), buf, buf_size);
-  buf[ret] = 0;
+#endif
+  if (ret >= 0) /* readlink succeeded */
+  {
+    buf[ret] = 0;
+  }
   std::string process_name(buf);
+  if (ret < 0) {
+    process_name = "UNAVAILABLE";
+  }
 
   // retrieve current stack addresses
   int const max_frames = 64;
@@ -82,7 +92,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
   // allocate string which will be filled with the demangled function name
   size_t funcnamesize = 256;
-  char *funcname = (char *)malloc(funcnamesize);
+  auto *funcname = (char *)malloc(funcnamesize);
 
   // msg << "\nRAW format:" << std::endl;
   // for( int i=0; i<stack_depth; ++i )
@@ -94,7 +104,9 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // iterate over the returned symbol lines. skip first two,
   // (addresses of this function and handler)
   for (int i = 0; i < stack_depth - 2; i++) {
-    char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
+    char *begin_name = nullptr;
+    char *begin_offset = nullptr;
+    char *end_offset = nullptr;
 
     // find parentheses and +address offset surrounding the mangled name:
     // ./module(function+0x15c) [0x8048a6d]
@@ -120,12 +132,12 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
       // __cxa_demangle():
 
       int status(1); // assume failure
-      char *ret = NULL;
+      char *ret01 = nullptr;
 #ifndef draco_isPGI
-      ret = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
+      ret01 = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
 #endif
       if (status == 0) {
-        funcname = ret; // use possibly realloc()-ed string
+        funcname = ret01; // use possibly realloc()-ed string
         msg << "  " << symbollist[i] << " : " << funcname << "()+"
             << begin_offset << location << "\n";
       } else {
@@ -161,13 +173,13 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // UNIX
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Stack trace feature is also available on Win32-based systems when
 // compiled with Visual Studio.
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef WIN32
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // store/build the message here.  At the end of the function we return
@@ -198,6 +210,6 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // WIN32
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/StackTrace.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

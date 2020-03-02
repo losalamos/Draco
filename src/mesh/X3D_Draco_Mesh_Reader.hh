@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   mesh/X3D_Draco_Mesh_Reader.cc
- * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Keady
+ * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
  * \date   Wednesday, Jul 11, 2018, 14:24 pm
  * \brief  X3D_Draco_Mesh_Reader header file.
- * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_X3D_Draco_Mesh_Reader_hh
 #define rtt_mesh_X3D_Draco_Mesh_Reader_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_mesh {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class X3D_Draco_Mesh_Reader
  *
@@ -28,7 +28,7 @@ namespace rtt_mesh {
  *
  * This class parses mesh data from an x3d file format and manipulates it into a
  * form that is compatible to the Draco_Mesh_Builder class.  The parsing of the
- * file stream to the map follows work by Kendra Keady on a parsing framework.
+ * file stream to the map follows work by Kendra Long on a parsing framework.
  *
  * For a description of the X3D mesh file layout, see:
  * https://xcp-confluence.lanl.gov/display/SIMC/Ingen->Flag+Data+Transfer
@@ -40,7 +40,7 @@ namespace rtt_mesh {
  * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge
  *        as an alternative.
  */
-//===========================================================================//
+//============================================================================//
 
 class X3D_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 public:
@@ -57,7 +57,7 @@ private:
   //! Boundary file names (optional data)
   const std::vector<std::string> bdy_filenames;
 
-  //! Boundary conditions per bdy file (optional data)
+  //! Boundary conditions per boundary file (optional data)
   const std::vector<unsigned> bdy_flags;
 
   //! Vector of all parsed key-value data pairs (includes valueless delimiters)
@@ -86,14 +86,13 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh
   X3D_Draco_Mesh_Reader(const std::string &filename_,
                         const std::vector<std::string> &bdy_filenames_ = {},
                         const std::vector<unsigned> &bdy_flags_ = {});
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh void read_mesh();
+  void read_mesh();
 
   // >>> ACCESSORS
 
@@ -109,7 +108,7 @@ public:
   size_t get_numcells() const { return x3d_header_map.at("elements")[0]; }
   size_t get_numnodes() const { return x3d_header_map.at("nodes")[0]; }
 
-  // coord data
+  // coordinate data
   std::vector<double> get_nodecoord(size_t node) const {
     Check(node + 1 < INT_MAX);
     return x3d_coord_map.at(static_cast<int>(node + 1));
@@ -118,6 +117,7 @@ public:
   // accessors with deferred implementations
   unsigned get_celltype(size_t cell) const;
   std::vector<unsigned> get_cellnodes(size_t cell) const;
+  std::vector<unsigned> get_cellfacenodes(size_t cell, size_t face) const;
 
   // data needed from x3d boundary file
   size_t get_numsides() const { return x3d_sidenode_map.size(); }
@@ -155,9 +155,9 @@ private:
   void read_bdy_files();
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // EXPLICIT SPECIALIZATIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <>
 DLL_PUBLIC_mesh std::string
 X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
@@ -169,6 +169,6 @@ X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
 
 #endif // rtt_mesh_X3D_Draco_Mesh_Reader_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of mesh/X3D_Draco_Mesh_Reader.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

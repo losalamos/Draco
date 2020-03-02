@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/global.hh
  * \author Thomas M. Evans
  * \date   Mon Mar 25 10:56:16 2002
  * \brief  C4 function declarations and class * definitions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * This file allows the client to include the message passing services
@@ -12,7 +12,7 @@
  * contained in the rtt_c4 namespace.  For backwards compatibility, the
  * old-style C4 functions and classes are declared in the C4 namespace.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_c4_global_hh
 #define rtt_c4_global_hh
@@ -21,6 +21,6 @@
 
 #endif // rtt_c4_global_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/global.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

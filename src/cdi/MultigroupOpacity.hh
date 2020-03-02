@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/MultigroupOpacity.hh
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  MultigroupOpacity class header file (an abstract class)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_MultigroupOpacity_hh__
-#define __cdi_MultigroupOpacity_hh__
+#ifndef rtt_cdi_MultigroupOpacity_hh
+#define rtt_cdi_MultigroupOpacity_hh
 
 #include "OpacityCommon.hh"
 #include "ds++/config.h"
@@ -29,7 +29,7 @@ namespace rtt_cdi {
  * functionality outlined in this routine.  This functionality includes
  * access to the data grid and the ability to return interpolated opacity
  * values.
- * 
+ *
  * \sa cdi/test/tDummyOpacity.cc
  * \sa cdi/test/tCDI.cc
  */
@@ -61,11 +61,11 @@ public:
   /*!
      * \brief Opacity accessor that returns a vector of opacities (a
      *     single opacity for each group) that correspond to the
-     *     provided temperature and density. 
+     *     provided temperature and density.
      *
      * \param targetTemperature The temperature value for which
      *     these opacity values are being requested (keV).
-     * \param targetDensity The density value for which these opacity 
+     * \param targetDensity The density value for which these opacity
      *     values are being requested (g/cm^3)
      * \return A vector of opacities (a single opacity for each group).
      */
@@ -80,7 +80,7 @@ public:
      * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested (keV).
      *
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested (g/cm^3).
      *
      * \return A vector of multigroup opacity vectors (cm^2/g).
@@ -94,7 +94,7 @@ public:
      *     opacity vectors that correspond to the provided vector of
      *     densities and a single temperature value.
      *
-     * \param targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested (keV).
      * \param targetDensity A vector of density values for which
      *     opacity values are being requested (g/cm^3).
@@ -128,8 +128,8 @@ public:
   /*!
      * \brief Returns a "plain English" description of the opacity
      *     data that this class references. (e.g. "Gray Rosseland
-     *     Scattering".) 
-	 
+     *     Scattering".)
+
     */
   virtual std::string getDataDescriptor() const = 0;
 
@@ -153,7 +153,7 @@ public:
   /*!
      * \brief Returns a vector of energy values (keV) that define the
      *     energy boundaries of the cached multigroup opacity data
-     *     table.  
+     *     table.
      */
   virtual std::vector<double> getGroupBoundaries() const = 0;
 
@@ -162,7 +162,7 @@ public:
      */
   virtual size_t getNumTemperatures() const = 0;
 
-  /*! 
+  /*!
      * \brief Returns the size of the density grid.
      */
   virtual size_t getNumDensities() const = 0;
@@ -174,7 +174,7 @@ public:
   virtual size_t getNumGroupBoundaries() const = 0;
 
   /*!
-     * \brief Returns the number of energy groups 
+     * \brief Returns the number of energy groups
      * ( getNumGroupBoundaries() - 1 ).
      */
   virtual size_t getNumGroups() const = 0;
@@ -199,8 +199,8 @@ public:
 
 } // end namespace rtt_cdi
 
-#endif // __cdi_MultigroupOpacity_hh__
+#endif // rtt_cdi_MultigroupOpacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/MultigroupOpacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

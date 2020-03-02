@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Implementation of class Expression
- * \note   Copyright 2016-2019 Triad National Security, LLC.
+ * \note   Copyright 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -942,6 +942,9 @@ static pE parse_primary(unsigned const number_of_variables,
           unit_map["pound"] = pound;
 
           unit_map["keV"] = keV;
+
+          unit_map["sh"] = sh;
+          unit_map["jerk"] = jerk;
         }
 
         map<string, Unit>::const_iterator ii = unit_map.find(variable.text());

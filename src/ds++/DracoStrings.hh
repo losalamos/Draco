@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/DracoStrings.hh
  * \author Kelly G. Thompson <kgt@lanl.gov
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
  * \brief  Encapsulates common string manipulations.
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoStrings_hh
 #define rtt_dsxx_DracoStrings_hh
@@ -14,6 +14,7 @@
 #include "ds++/config.h"
 #include <locale>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -24,13 +25,13 @@ namespace rtt_dsxx {
 /*!
  * \brief Convert a string to all lower case
  *
- * \param[in] string_in This string will be converted letter by letter to 
+ * \param[in] string_in This string will be converted letter by letter to
  *               lowercase.
  * \return A string that contains no uppercase letters.
  *
- * There are many complexities not considered here (e.g.: non-ASCI character 
- * sets) and many third party libraries like Boost provide a more complete 
- * solution. 
+ * There are many complexities not considered here (e.g.: non-ASCI character
+ * sets) and many third party libraries like Boost provide a more complete
+ * solution.
  */
 std::string string_tolower(std::string const &string_in);
 
@@ -38,7 +39,7 @@ std::string string_tolower(std::string const &string_in);
 /*!
  * \brief Convert a string to all upper case
  *
- * \param[in] string_in This string will be converted letter by letter to 
+ * \param[in] string_in This string will be converted letter by letter to
  *               uppercase.
  * \return A string that contains no lowercase letters.
  *
@@ -236,6 +237,31 @@ std::map<std::string, unsigned> get_word_count(std::ostringstream const &data,
 std::map<std::string, unsigned> get_word_count(std::string const &filename,
                                                bool verbose = false);
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Remove control characters from string that might produce color, etc.
+ *
+ * \param[in] colored_string A string with ANSI escape sequences that enable
+ *            color output (see DracoTerminal.hh)
+ * \return A string w/o ANSI escape sequences.
+ *
+ * As mentioned at
+ * https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream,
+ * another way to strip color is to pipe output through sed to remove the color
+ * codes...
+ * \code
+ * sed 's/\x1b\[[0-9;]*m//g'           # Remove color sequences only
+ * sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'    # Remove all escape sequences
+ * sed 's/\x1b\[[0-9;]*[mGKH]//g'      # Remove color and move sequences
+ * sed 's/\x1b\[[0-9;]*[mGKF]//g'      # Remove color and move sequences
+ * \endcode
+ */
+inline std::string remove_color(std::string const &colored_string) {
+  std::regex color_regex("\033["
+                         "[[:digit:]]+[m]");
+  return std::regex_replace(colored_string, color_regex, "");
+}
+
 } // namespace rtt_dsxx
 
 // Template functions
@@ -243,6 +269,6 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename,
 
 #endif // rtt_dsxx_DracoStrings_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of DracoStrings.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

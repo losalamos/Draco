@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/XGetopt.hh
  * \author Kelly Thompson, Katherine Wang
  * \date   Tuesday, Oct 27, 2016, 15:17 pm
  * \brief  Command line argument handling similar to getopt.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_XGetopt_hh
 #define rtt_dsxx_XGetopt_hh
@@ -15,11 +15,12 @@
 #include "ds++/config.h"
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace rtt_dsxx {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class XGetopt
  *
@@ -90,7 +91,7 @@ namespace rtt_dsxx {
  *
  * \example ds++/test/tstXGetopt.cc
  */
-//===========================================================================//
+//============================================================================//
 class XGetopt {
 public:
   // typedefs
@@ -112,21 +113,23 @@ public:
      *            display_help.
      */
   XGetopt(int const argc, char **&argv, std::string const &shortopts,
-          csmap const &helpstrings_ = csmap())
+          csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
         cmd_line_args(argv + 1, argv + argc), longopts(csmap()), // empty
         vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_shortopts(shortopts)), helpstrings(helpstrings_) {
+        vshortopts(decompose_shortopts(shortopts)),
+        helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
 
   // const argv version used by the unit test.
   XGetopt(int const argc, char const *const argv[],
-          std::string const &shortopts, csmap const &helpstrings_ = csmap())
+          std::string const &shortopts, csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
         cmd_line_args(argv + 1, argv + argc), longopts(csmap()), // empty
         vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_shortopts(shortopts)), helpstrings(helpstrings_) {
+        vshortopts(decompose_shortopts(shortopts)),
+        helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
 
@@ -148,30 +151,32 @@ public:
      *            display_help.
      */
   XGetopt(int const argc, char **&argv, csmap const &longopts_,
-          csmap const &helpstrings_ = csmap())
+          csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
         cmd_line_args(argv + 1, argv + argc),
         longopts(store_longopts(longopts_)),
         vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_longopts(longopts_)), helpstrings(helpstrings_) {
+        vshortopts(decompose_longopts(longopts_)),
+        helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
 
   // const argv version used by the unit test
   XGetopt(int const argc, char const *const argv[], csmap const &longopts_,
-          csmap const &helpstrings_ = csmap())
+          csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
         cmd_line_args(argv + 1, argv + argc),
         longopts(store_longopts(longopts_)),
         vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_longopts(longopts_)), helpstrings(helpstrings_) {
+        vshortopts(decompose_longopts(longopts_)),
+        helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
 
   /*! \brief This operator should be called from within a loop that iterates
      * through command line arguments (see class documentation).  It will return
      * the char value that matches registered options. */
-  int operator()(void) {
+  int operator()() {
     if (optind >= matched_arguments.size())
       return -1;
     if (matched_arguments_values.count(matched_arguments[optind]) > 0)
@@ -195,7 +200,7 @@ public:
   // void reset(void) { optind=0; optarg=std::string(""); return; }
 
   //! Print a help/usage message.
-  DLL_PUBLIC_dsxx std::string display_help(std::string const &appName) const;
+  std::string display_help(std::string const &appName) const;
 
 private:
   // >>> DATA
@@ -235,24 +240,23 @@ private:
   // >>> IMPLEMENTATION
 
   //! Convert a string into easy-to-parse vectors and strip colons.
-  DLL_PUBLIC_dsxx std::vector<char>
-  decompose_shortopts(std::string const &shortopts);
+  std::vector<char> decompose_shortopts(std::string const &shortopts);
 
   //! Convert a map<char,string> into easy-to-parse vectors and strip colons.
-  DLL_PUBLIC_dsxx std::vector<char> decompose_longopts(csmap const &longopts);
+  std::vector<char> decompose_longopts(csmap const &longopts);
 
   //! Cleanup and save the user-provided longoptions map. Colons are stripped.
-  DLL_PUBLIC_dsxx csmap store_longopts(csmap const &longopts_);
+  csmap store_longopts(csmap const &longopts_);
 
   /*! \brief Match provided command line arguments to registered options and
      *         record the results to class data. */
-  DLL_PUBLIC_dsxx void match_args_to_options(void);
+  void match_args_to_options();
 };
 
 } // end namespace rtt_dsxx
 
 #endif // rtt_dsxx_XGetopt_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of XGetOpt.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

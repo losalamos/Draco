@@ -1,21 +1,21 @@
-//----------------------------------*-C++-*----------------------------------//
-/*! 
+//----------------------------------*-C++-*-----------------------------------//
+/*!
  * \file   RTT_Format_Reader/NodeDataIDs.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/NodeDataIDs class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_NodeDataIDs_hh__
-#define __RTT_Format_Reader_NodeDataIDs_hh__
+#ifndef rtt_RTT_Format_Reader_NodeDataIDs_hh
+#define rtt_RTT_Format_Reader_NodeDataIDs_hh
 
 #include "Dims.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        node data ids block of the mesh file.
  */
 class NodeDataIDs {
@@ -67,8 +67,8 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_NodeDataIDs_hh__
+#endif // rtt_RTT_Format_Reader_NodeDataIDs_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/NodeDataIDs.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

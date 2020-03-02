@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstCheck_Strings.cc
  * \author John M. McGhee
  * \date   Sun Jan 30 14:57:09 2000
  * \brief  Test code for the Check_Strings utility functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Check_Strings.hh"
 #include "ds++/Release.hh"
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
 
   // Define a vector of strings for testing
@@ -32,7 +32,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     cout << "\"" << name << "\"\n";
   cout << endl;
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Test for illegal characters.
 
   cout << "Illegal character utility test:" << endl;
@@ -63,7 +63,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG("*** Illegal character function test: FAILED ***");
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Test for acceptable lengths.
 
   cout << "String length utility test:" << endl;
@@ -91,7 +91,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG("*** String length function test: FAILED ***");
 
-  //---------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------//
   // Test for unique names.
 
   cout << "Unique strings utility test:" << endl;
@@ -117,7 +117,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -126,6 +126,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstCheck_Strings.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

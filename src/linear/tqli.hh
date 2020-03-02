@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/tqli.hh
  * \author Kent Budge
  * \date   Thu Sep  2 15:00:32 2004
  * \brief  Find eigenvectors and eigenvalues of a symmetric matrix that
  *         has been reduced to tridiagonal form via a call to tred2.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef linear_tqli_hh
 #define linear_tqli_hh
@@ -26,6 +26,6 @@ void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z);
 
 #endif // linear_tqli_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of linear/tqli.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

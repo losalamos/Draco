@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/test/tstAnalytic_EoS.cc
  * \author Thomas M. Evans
  * \date   Thu Oct  4 11:45:19 2001
  * \brief  Analytic_EoS test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
 #include "cdi_analytic/Analytic_EoS.hh"
@@ -23,9 +23,9 @@ using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
@@ -245,7 +245,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void CDI_test(rtt_dsxx::UnitTest &ut) {
   typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -397,7 +397,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
   typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -453,7 +453,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -465,6 +465,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstAnalytic_EoS.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/test/tstOrdinate_Set_Mapper.cc
  * \author Allan Wollaber
  * \date   Mon Mar  7 16:21:45 EST 2016
  * \brief  Ordinate Set Mapper tests
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -21,9 +21,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_quadrature;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Unit tests
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 // -----------------------------------------------------------------------------
 // This is used in an STL algorithm below to count the number of zeros
@@ -293,9 +293,9 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test the mapper for 1-D problems using nearest neighbor interpolation
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   int N(4); // quadrature order
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
@@ -391,9 +391,9 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     ut.passes("1-D nearest-neighbor remapping tests all passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test the mapper for 3D problems with nearest neighbor interpolation
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   int N(4); // quadrature order
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
@@ -498,9 +498,9 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     ut.passes("3-D nearest-neighbor remapping tests all passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test the mapper for Spherical problems using nearest neighbor interpolation
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ordinate_set_1D_sph_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   int N(2); // quadrature order
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::SPHERICAL);
@@ -555,9 +555,9 @@ void ordinate_set_1D_sph_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Nearest-three ordinate set mapping tests; this one is 1-D
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   int N(8); // quadrature order
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
@@ -786,9 +786,9 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test the mapper for 3D problems with nearest three interpolation
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   int N(4); // quadrature order
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
@@ -893,7 +893,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     ut.passes("3-D nearest-three remapping tests all passed");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -911,6 +911,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstOrdinate_Set_Mapper.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

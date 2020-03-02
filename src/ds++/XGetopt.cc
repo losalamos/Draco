@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/XGetopt.cc
  * \author Kelly Thompson, Katherine Wang
  * \date   Tuesday, Oct 27, 2016, 15:17 pm
  * \brief  Command line argument handling similar to getopt.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "XGetopt.hh"
 #include <algorithm>
@@ -14,7 +14,7 @@
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Convert a string into easy-to-parse vectors and strip colons.
  * \param[in] shortopts A string of character and optional colons. Each
@@ -40,7 +40,7 @@ std::vector<char> XGetopt::decompose_shortopts(std::string const &shortopts) {
   return vso;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Convert a map<char,string> into easy-to-parse vectors and strip
  *        colons.
@@ -61,9 +61,9 @@ std::vector<char> XGetopt::decompose_shortopts(std::string const &shortopts) {
 XGetopt::csmap XGetopt::store_longopts(csmap const &longopts_) {
   Require(longopts_.size() > 0);
   csmap retValue;
-  for (auto it = longopts_.begin(); it != longopts_.end(); ++it) {
-    char const key = it->first;
-    std::string const value = it->second;
+  for (auto const &it : longopts_) {
+    char const key = it.first;
+    std::string const value = it.second;
     if (value[value.size() - 1] == ':')
       retValue[key] = value.substr(0, value.size() - 1);
     else
@@ -73,7 +73,7 @@ XGetopt::csmap XGetopt::store_longopts(csmap const &longopts_) {
   return retValue;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Convert long/short option map argument into state data for class.
  *
@@ -89,9 +89,9 @@ XGetopt::csmap XGetopt::store_longopts(csmap const &longopts_) {
 std::vector<char> XGetopt::decompose_longopts(csmap const &longopts_) {
   Require(longopts_.size() > 0);
   std::vector<char> vso;
-  for (auto it = longopts_.begin(); it != longopts_.end(); ++it) {
-    char const key = it->first;
-    std::string const value = it->second;
+  for (auto const &it : longopts_) {
+    char const key = it.first;
+    std::string const value = it.second;
     Insist(std::find(vso.begin(), vso.end(), key) == vso.end(),
            "You cannot use the same single character command line argument "
            "more than once.");
@@ -105,7 +105,7 @@ std::vector<char> XGetopt::decompose_longopts(csmap const &longopts_) {
   return vso;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Match provided command line arguments to registered options.
  *
@@ -147,9 +147,9 @@ void XGetopt::match_args_to_options() {
       char shortarg('\0');
 
       // Find long argument match and its associated shortarg key.
-      for (auto it = longopts.begin(); it != longopts.end(); ++it) {
-        if (it->second == longarg) {
-          shortarg = it->first;
+      for (auto const &it : longopts) {
+        if (it.second == longarg) {
+          shortarg = it.first;
 
           // Save the match and associated data.
           matched_arguments.push_back(shortarg);
@@ -164,8 +164,8 @@ void XGetopt::match_args_to_options() {
           break;
         }
       }
-      // if we get here, there was an argument that starts with '--' but
-      // does not match a registered option:
+      // if we get here, there was an argument that starts with '--' but does
+      // not match a registered option:
       if (shortarg == '\0')
         unmatched_arguments.push_back(cmd_line_args[iarg]);
     }
@@ -197,15 +197,15 @@ void XGetopt::match_args_to_options() {
 //     }
 // };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Construct a help/use message that can be printed by the main program.
  *
  * \param[in] appName A string that will be printed as the name of the program.
  * \return A string that prings the program name and all registered options.
  *
- * \todo When we move to C++11, occurances of map.find(it->first)->seconds
- * should be replaced with map.at(it->first).
+ * \todo When we move to C++11, occurances of map.find(it.first)->seconds
+ * should be replaced with map.at(it.first).
  */
 std::string XGetopt::display_help(std::string const &appName) const {
   Require(appName.size() > 0);
@@ -224,16 +224,16 @@ std::string XGetopt::display_help(std::string const &appName) const {
 
     // find the longest longopt string, excluding args with options:
     size_t max_len(0);
-    for (auto it = longopts.begin(); it != longopts.end(); ++it) {
-      bool hasarg = vshortopts_hasarg.find(it->first)->second;
-      if (!hasarg && it->second.length() > max_len)
-        max_len = it->second.length();
+    for (auto const &it : longopts) {
+      bool hasarg = vshortopts_hasarg.find(it.first)->second;
+      if (!hasarg && it.second.length() > max_len)
+        max_len = it.second.length();
     }
 
     // show options w/o arguments first
-    for (auto it = longopts.begin(); it != longopts.end(); ++it) {
-      char shortopt = it->first;
-      std::string longopt = it->second;
+    for (auto const &it : longopts) {
+      char shortopt = it.first;
+      std::string longopt = it.second;
       bool hasarg = vshortopts_hasarg.find(shortopt)->second;
       std::string helpmsg("");
 
@@ -251,17 +251,17 @@ std::string XGetopt::display_help(std::string const &appName) const {
 
     // find the longest longopt string, including args with options:
     max_len = 0;
-    for (auto it = longopts.begin(); it != longopts.end(); ++it) {
-      bool hasarg = vshortopts_hasarg.find(it->first)->second;
-      if (hasarg && it->second.length() > max_len)
-        max_len = it->second.length();
+    for (auto const &it : longopts) {
+      bool hasarg = vshortopts_hasarg.find(it.first)->second;
+      if (hasarg && it.second.length() > max_len)
+        max_len = it.second.length();
     }
 
     // show options that require arguments
     msg << "\nOptions requiring arguments:\n";
-    for (auto it = longopts.begin(); it != longopts.end(); ++it) {
-      char shortopt = it->first;
-      std::string longopt = it->second;
+    for (auto const &it : longopts) {
+      char shortopt = it.first;
+      std::string longopt = it.second;
       bool hasarg = vshortopts_hasarg.find(shortopt)->second;
       std::string helpmsg("");
 
@@ -269,8 +269,7 @@ std::string XGetopt::display_help(std::string const &appName) const {
         helpmsg = helpstrings.find(shortopt)->second;
 
       if (hasarg) {
-        // format the help string by replacing '\n' with
-        // '\n'+hanging_indent.
+        // format the help string by replacing '\n' with '\n'+hanging_indent.
         std::string hanging_indent(21 + max_len, ' ');
         std::string formatted_help_msg(helpmsg);
         size_t index(0);
@@ -281,8 +280,8 @@ std::string XGetopt::display_help(std::string const &appName) const {
             break;
           // add hanging indent.
           formatted_help_msg.insert(++index, hanging_indent);
-          // Advance index forward so the next iteration doesn't pick
-          // it up as well.
+          // Advance index forward so the next iteration doesn't pick it up as
+          // well.
           index += 21;
         }
 
@@ -294,31 +293,29 @@ std::string XGetopt::display_help(std::string const &appName) const {
   } else {
     // show options w/o arguments first
 
-    for (size_t i = 0; i < vshortopts.size(); ++i) {
-      if (vshortopts[i] == ':')
+    for (char shortopt : vshortopts) {
+      if (shortopt == ':')
         continue;
-      bool hasarg = vshortopts_hasarg.find(vshortopts[i])->second;
+      bool hasarg = vshortopts_hasarg.find(shortopt)->second;
       std::string helpmsg("");
-      if (helpstrings.count(vshortopts[i]) > 0)
-        helpmsg = helpstrings.find(vshortopts[i])->second;
+      if (helpstrings.count(shortopt) > 0)
+        helpmsg = helpstrings.find(shortopt)->second;
 
       if (!hasarg)
-        msg << "   -" << vshortopts[i] << " : " << helpmsg << "\n";
+        msg << "   -" << shortopt << " : " << helpmsg << "\n";
     }
 
     // show options that require arguments
 
     msg << "\nOptions requiring arguments:\n";
-    for (size_t i = 0; i < vshortopts.size(); ++i) {
-      char shortopt = vshortopts[i];
+    for (char shortopt : vshortopts) {
       bool hasarg = vshortopts_hasarg.find(shortopt)->second;
       std::string helpmsg("");
       if (helpstrings.count(shortopt) > 0)
         helpmsg = helpstrings.find(shortopt)->second;
 
       if (hasarg) {
-        // format the help string by replacing '\n' with
-        // '\n'+hanging_indent.
+        // format the help string by replacing '\n' with '\n'+hanging_indent.
         std::string hanging_indent(16, ' ');
         std::string formatted_help_msg(helpmsg);
         size_t index(0);
@@ -329,8 +326,8 @@ std::string XGetopt::display_help(std::string const &appName) const {
             break;
           // add hanging indent.
           formatted_help_msg.insert(++index, hanging_indent);
-          // Advance index forward so the next iteration doesn't pick
-          // it up as well.
+          // Advance index forward so the next iteration doesn't pick it up as
+          // well.
           index += hanging_indent.size();
         }
 
@@ -346,6 +343,6 @@ std::string XGetopt::display_help(std::string const &appName) const {
 
 } // end namespace rtt_dsxx
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of XGetopt.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

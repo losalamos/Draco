@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   roots/fdjac.hh
  * \author Kent Budge
  * \date   Wed Aug 11 08:07:04 2004
  * \brief  Compute the Jacobian of a nonlinear system of equations
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef roots_fdjac_hh
 #define roots_fdjac_hh
@@ -14,13 +14,14 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
+#include <cfloat>
 #include <cmath>
 #include <limits>
 #include <vector>
 
 namespace rtt_roots {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Calculate the Jacobian of a nonlinear system of equations.
  *
@@ -63,7 +64,7 @@ void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
   for (unsigned j = 0; j < n; j++) {
     Field temp = xt[j];
     Field h = EPS * abs(temp);
-    if (std::abs(h) < std::numeric_limits<float>::min())
+    if (std::abs(h) < static_cast<Field>(FLT_MIN))
       h = EPS;
     xt[j] = temp + h;
     h = xt[j] - temp;
@@ -79,6 +80,6 @@ void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
 
 #endif // roots_fdjac_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of roots/fdjac.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

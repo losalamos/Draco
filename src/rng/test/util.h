@@ -31,8 +31,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*----------------------------------------------------------------------------*/
-#ifndef UTIL_H__
-#define UTIL_H__
+#ifndef UTIL_H
+#define UTIL_H
 
 #include "rng/config.h"
 #include <assert.h>
@@ -324,7 +324,7 @@ double hextod(const char *cp) {
     fflush(fp);                                                                \
   } while (0)
 
-#endif /* UTIL_H__ */
+#endif /* UTIL_H */
 
 /*----------------------------------------------------------------------------*/
 /* End util.h */

@@ -12,7 +12,7 @@
 # import block
 ################################################################################
 import ipcress_reader as ip_reader
-
+import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 
@@ -94,6 +94,8 @@ name = selected_ID.get()
 print( \
   "-------------------- BEGIN DATA PRINT FOR {0} ---------------------"\
   .format(name))
+print("Group structure for {0} groups:".format(len(hnu_grid)-1))
+print(hnu_grid)
 # if valid, interpolate data at target rho and target T
 if (mgr_valid):
   mgr_interp = ip_reader.interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, mgr_grid, \

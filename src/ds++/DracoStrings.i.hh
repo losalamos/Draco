@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/DracoStrings.i.hh
  * \author Kelly G. Thompson <kgt@lanl.gov
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
  * \brief  Enscapulates common string manipulations (implicit template
  *         implementation).
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoStrings_i_hh
 #define rtt_dsxx_DracoStrings_i_hh
@@ -86,6 +86,6 @@ std::vector<T> string_to_numvec(std::string const &str,
 
 #endif // namespace rtt_dsxx_DracoStrings_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of DracoStrings.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,16 +1,16 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/F_eta_inv.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta_inv.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * The implementations here are derived from C implementations from Numerical
  * Recipes.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "F_eta_inv.hh"
 #include "F12inv.hh"
@@ -27,7 +27,7 @@ using namespace rtt_roots;
 // Parametrization of integrand and inverse functions
 static double lgamma, ln;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return residual of inversion of F_eta.
  *
@@ -37,7 +37,7 @@ static double lgamma, ln;
  */
 static double Feta_diff(double eta) { return F_eta(eta, lgamma) - ln; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * The relativistic Fermi-Dirac integral is defined as
  * \f[
@@ -94,6 +94,6 @@ double F_eta_inv(double const n, double const gamma) {
 
 } // end namespace rtt_sf
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of F_eta_inv.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

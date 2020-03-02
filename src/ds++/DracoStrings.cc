@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/DracoStrings.cc
  * \author Kelly G. Thompson <kgt@lanl.gov
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
  * \brief  Encapsulates common string manipulations (implementation).
- * \note   Copyright (C) 2017-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "DracoStrings.hh"
 #include "Assert.hh"
@@ -47,7 +47,7 @@ template <> auto parse_number_impl<int64_t>(std::string const &str) -> int64_t {
 }
 template <>
 auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t {
-  return std::stoul(str);
+  return static_cast<uint32_t>(std::stoul(str));
 }
 template <>
 auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t {
@@ -79,7 +79,7 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief trim whitespace (or other characters) from before and after main 
+ * \brief trim whitespace (or other characters) from before and after main
  *        text.
  *
  * \param[in] str The string that will be processed
@@ -139,10 +139,7 @@ std::vector<std::string> tokenize(std::string const &str,
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Parse msg to provide a list of words and the number of occurrences of
- *        each.
- */
+//! Parse msg to provide a list of words and the number of occurrences of each.
 std::map<std::string, unsigned> get_word_count(std::ostringstream const &msg,
                                                bool verbose) {
   using std::cout;
@@ -217,6 +214,6 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename,
 
 } // namespace rtt_dsxx
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of DracoStrings.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

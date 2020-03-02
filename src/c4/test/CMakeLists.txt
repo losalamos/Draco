@@ -77,6 +77,22 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
     )
 endif()
 
+# Tests that expect exactly 4 PE (omit for DRACO_C4=SCALAR builds):
+set( four_pe_tests ${PROJECT_SOURCE_DIR}/tstQuoWrapper.cc )
+list( REMOVE_ITEM test_sources ${four_pe_tests} )
+if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
+  add_parallel_tests(
+    SOURCES   "${four_pe_tests}"
+    DEPS      Lib_c4
+    PE_LIST   "4" )
+  if( NOT DEFINED MPI_MAX_NUMPROCS_PHYSICAL )
+    message(FATAL_ERROR "need max procs in c4/tests/CMakeLists.txt")
+  endif()
+  # Over-ride PROCESSORS propety.  Use 'mpirun -np 4 ...' but reserve all cores.
+  set_tests_properties( c4_tstQuoWrapper_4 PROPERTIES
+    PROCESSORS "${MPI_MAX_NUMPROCS_PHYSICAL}" )
+endif()
+
 # Exclude tstTime from valgrind checks.
 set( nomemcheck_tests
   ${PROJECT_SOURCE_DIR}/tstTime.cc
@@ -109,6 +125,7 @@ if( NOT APPLE )
   add_app_unit_test(
     DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstYthi.py
     APP       $<TARGET_FILE_DIR:Exe_ythi>/$<TARGET_FILE_NAME:Exe_ythi>
+    TEST_ARGS 2
     PE_LIST   "1;2" )
 endif()
 

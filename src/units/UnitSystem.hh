@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*! \file   UnitSystem.hh
  *  \author Kelly Thompson
  *  \brief  Provide a definition of a unit system (7 dimensions: length,
  *          mass, time, temperature, current, angle, quantity).
  *  \date   Fri Oct 24 15:07:43 2003
- *  \note   Copyright (C) 2016-2019 Triad National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *          All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_units_UnitSystem_hh
 #define rtt_units_UnitSystem_hh
@@ -20,18 +17,17 @@
 
 namespace rtt_units {
 
-//===========================================================================//
+//============================================================================//
 /*! \class UnitSystem
  *
- * \brief Provide a units system object for Draco. 
+ * \brief Provide a units system object for Draco.
  *
- * This unit system consists of 7 unit types (Length, Mass, time,
- * Temperature, Current, Angle and Quantity).  The class then provides simple
- * accessors that allow conversion between unit systems and unit label
- * names.  The general format for an accessor is u.L() or u.Lname().  L can
- * be replaced with M, t, T, I, A or Q to access the confersion factor for
- * different fundamental units.  The accessor Xname() returns the label name
- * for a unit.
+ * This unit system consists of 7 unit types (Length, Mass, time, Temperature,
+ * Current, Angle and Quantity).  The class then provides simple accessors that
+ * allow conversion between unit systems and unit label names.  The general
+ * format for an accessor is u.L() or u.Lname().  L can be replaced with M, t,
+ * T, I, A or Q to access the confersion factor for different fundamental units.
+ * The accessor Xname() returns the label name for a unit.
  *
  * \verbatim
  * SI units are:
@@ -46,16 +42,16 @@ namespace rtt_units {
  * Derived units are:
  *    area             :         L^2
  *    volume           :         L^3
- *    velocity (v)     :         L   / t           
+ *    velocity (v)     :         L   / t
  *    acceleration (a) :         L   / t^2
  *    density (rho)    :     M / L^3
  *    angular velocity : rad     / t
  *    force (f)        :     M * L   / t^2
- *    power (P)        :     M * L^2 / t^3 
+ *    power (P)        :     M * L^2 / t^3
  *    torque           :     M * L^2 / t^2
  *    pressure (p)     :     M / L   / t^2
- *    energy           :     M * L^2 / t^2 
- * 
+ *    energy           :     M * L^2 / t^2
+ *
  *    charge                (q) : I * t     (Coulombs = Amp * sec)
  *    electrical potential  (V) : P / I     (Volt = Watt/Amp)
  *    electrical resistance (R) : V / I     (Ohm  = Volt/Amp)
@@ -73,7 +69,7 @@ namespace rtt_units {
  *
  * \sa FundUnit
  * \sa PhysicalConstants
- *  
+ *
  * \example test/tstUnitSystemType.cc
  * \example test/tstUnitSystem.cc
  *
@@ -97,28 +93,17 @@ namespace rtt_units {
  *                                      .M( rtt_units::M_g  );
  * \endverbatim
  */
-//
-// revision history:
-// -----------------
-// 0) original
-//
-//===========================================================================//
+//============================================================================//
 
-class DLL_PUBLIC_units UnitSystem {
+class UnitSystem {
 public:
   // FRIENDS
 
-  //     //! Define the divisor operator for Units/Units.
-  //     friend UnitSystem operator/( UnitSystem const & op1,
-  // 				 UnitSystem const & op2 );
+  //! Define the equality operator for Units==Units.
+  friend bool operator==(UnitSystem const &op1, UnitSystem const &op2);
 
   //! Define the equality operator for Units==Units.
-  friend DLL_PUBLIC_units bool operator==(UnitSystem const &op1,
-                                          UnitSystem const &op2);
-
-  //! Define the equality operator for Units==Units.
-  friend DLL_PUBLIC_units bool operator!=(UnitSystem const &op1,
-                                          UnitSystem const &op2);
+  friend bool operator!=(UnitSystem const &op1, UnitSystem const &op2);
   // CREATORS
 
   //! Prefered constructor
@@ -203,6 +188,6 @@ private:
 
 #endif // rtt__units_UnitSystem_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of UnitSystem.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

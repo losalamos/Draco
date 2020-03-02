@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/SideFlags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/SideFlags class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_SideFlags_hh__
-#define __RTT_Format_Reader_SideFlags_hh__
+#ifndef rtt_RTT_Format_Reader_SideFlags_hh
+#define rtt_RTT_Format_Reader_SideFlags_hh
 
 #include "Dims.hh"
 #include "Flags.hh"
@@ -109,8 +109,8 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_SideFlags_hh__
+#endif // rtt_RTT_Format_Reader_SideFlags_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/SideFlags.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

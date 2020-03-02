@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of Parallel_File_Token_Stream methods.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -107,7 +107,7 @@ void Parallel_File_Token_Stream::open(string const &file_name) {
   Ensure(check_class_invariants());
   Ensure(location_() == file_name + ", line 1");
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Open file filestream for Parallel_File_Token_Stream.
  *
@@ -403,17 +403,17 @@ void Parallel_File_Token_Stream::letter::rewind() {
   Ensure(check_class_invariants());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Parallel_File_Token_Stream::check_class_invariants() const { return true; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Parallel_File_Token_Stream::letter::check_class_invariants() const {
   unsigned iocount = is_io_processor_;
   rtt_c4::global_sum(iocount);
   return iocount == 1;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param filename Name of file to be included at this point. On
  * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
@@ -425,7 +425,7 @@ void Parallel_File_Token_Stream::push_include(std::string &filename) {
   letter_ = make_shared<letter>(filename);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Parallel_File_Token_Stream::pop_include() {
   Require(!letters_.empty());
 

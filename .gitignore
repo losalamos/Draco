@@ -5,6 +5,7 @@
 build*/
 .*.sw[a-p]
 .nfs*
+CMakeSettings.json
 GPATH
 GRTAGS
 GTAGS

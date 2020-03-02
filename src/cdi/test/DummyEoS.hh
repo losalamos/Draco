@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/test/DummyEoS.hh
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:29:17 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_DummyEoS_hh__
-#define __cdi_DummyEoS_hh__
+#ifndef rtt_cdi_DummyEoS_hh
+#define rtt_cdi_DummyEoS_hh
 
 #include "cdi/EoS.hh"
 
@@ -29,7 +29,7 @@ namespace rtt_cdi_test {
  *     heat capacity   = temperature + density/1000
  *     num free electrons = temperature/100
  *     thermal conductivity = 1000*temperature + density
- * 
+ *
  * \sa cdi/test/tEoS.cc
  * \sa cdi/test/tCDI.cc
  */
@@ -260,8 +260,8 @@ public:
 
 } // end namespace rtt_cdi_test
 
-#endif // __cdi_DummyEoS_hh__
+#endif // rtt_cdi_DummyEoS_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/test/DummyEoS.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file Token_Equivalence.cc
  * \author Kelly G. Thompson
  * \date Thu Jul 20 9:27:29 MST 2006
  * \brief Provide services for ApplicationUnitTest framework.
- * \note Copyright (C) 2016-2019 Triad National Security, LLC
+ * \note Copyright (C) 2016-2020 Triad National Security, LLC
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Token_Equivalence.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -16,7 +16,7 @@
 
 namespace rtt_parser {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Search token stream for keyword and compare values.
  *
@@ -51,7 +51,7 @@ void check_token_keyword(String_Token_Stream &tokens,
   }
   return;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Search token stream for keyword and compare values.
  *
@@ -109,7 +109,7 @@ void check_token_keyword_value(String_Token_Stream &tokens,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Search token stream for keyword and compare values.
  *

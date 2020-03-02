@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building ds++/test level Makefile.
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( dsxx_test CXX )
@@ -46,15 +46,15 @@ add_scalar_tests(
 
 # (2013-11-13 KT):: tstdbc intentionally divides by zero (to test the isinfinity
 # function). PGI issues a warning for this case that we don't care about.  Since
-# PGI does not appear to use pragmas to supress warnings, I am turning off
+# PGI does not appear to use pragmas to suppress warnings, I am turning off
 # warnings for Ut_dsxx_tstdbc_exe when the compiler is PGI.
-if( draco_isPGI )
-   set_source_files_properties(
-      ${PROJECT_SOURCE_DIR}/tstdbc.cc
-      PROPERTIES
-        COMPILE_FLAGS --no_warnings
-   )
-endif()
+# if( draco_isPGI )
+#    set_source_files_properties(
+#       ${PROJECT_SOURCE_DIR}/tstdbc.cc
+#       PROPERTIES
+#         COMPILE_FLAGS --no_warnings
+#    )
+# endif()
 
 # tstData_Table.cc will fail for RelWithDebugInfo. Set extra CPP macros as a
 # work-around:
@@ -66,7 +66,8 @@ add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
 target_link_libraries( Exe_do_exception Lib_dsxx )
 set_target_properties( Exe_do_exception PROPERTIES
   FOLDER dsxx_test
-  OUTPUT_NAME do_exception )
+  OUTPUT_NAME do_exception
+  ${Draco_std_target_props_CXX})
 
 include( ApplicationUnitTest )
 add_app_unit_test(

@@ -1,19 +1,19 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   FortranChecks/fc_derived_type.cc
  * \author Allan Wollaber
  * \date   Tue Jul 10 12:48:13 MDT 2012
  * \brief  Test Fortran main calling C with a derived type
- * \note   Copyright (c) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (c) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/config.h"
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 
-/// Define the derived type as a C structure
+//! Define the derived type as a C structure
 struct my_informative_type {
   double some_double;
   int some_int;
@@ -23,9 +23,9 @@ struct my_informative_type {
   MG_Select some_enum;
 };
 
-// A simple function to test for valid values in a Fortran derived type
-extern "C" DLL_PUBLIC_FC_Derived_Type void
-rtt_test_derived_type(const my_informative_type &mit, int &error_code) {
+//! A simple function to test for valid values in a Fortran derived type
+extern "C" void rtt_test_derived_type(const my_informative_type &mit,
+                                      int &error_code) {
   std::cout << "In the C-interface, derived type has double = "
             << mit.some_double << std::endl
             << "int = " << mit.some_int << std::endl
@@ -55,6 +55,6 @@ rtt_test_derived_type(const my_informative_type &mit, int &error_code) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of fc_derived_type.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

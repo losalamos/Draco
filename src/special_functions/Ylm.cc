@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/Ylm.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of Ylm
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Ylm.hh"
 #include "Factorial.hh"
@@ -20,7 +20,7 @@ namespace rtt_sf {
 
 using rtt_units::PI;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the spherical harmonic coefficient multiplied by the
  *        Associated Legendre Polynomial 
@@ -64,7 +64,7 @@ double cPlk(unsigned const l, unsigned const k, double const mu) {
 
   return gsl_sf_legendre_sphPlm(l, k, mu);
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the spherical harmonic coefficient multiplied by the 
  *        Associated Legendre Polynomial as specified by Morel's Galerkin 
@@ -113,7 +113,7 @@ double cPlkGalerkin(unsigned const l, unsigned const k, double const mu,
 
   return coeff;
 }
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!\brief Compute the normalized spherical harmonic \f$ y_{l,k}(\theta,\phi)
  * \f$
  *
@@ -171,7 +171,7 @@ double normalizedYlk(unsigned const l, int const k, double const theta,
   return result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the real portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
  *
@@ -222,7 +222,7 @@ double realYlk(unsigned const l, int const k, double const theta,
   return sign * cP * std::cos(absk * phi);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the complex portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
  *
@@ -265,7 +265,7 @@ double complexYlk(unsigned const l, int const k, double const theta,
   return sign * cP * std::sin(absk * phi);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Compute the spherical harmonic as used by Morel's Galerkin Quadrature paper.
  *
@@ -347,6 +347,6 @@ double Ylm(unsigned const l, int const m, double const mu, double const phi,
 
 } // end namespace rtt_sf
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //                 end of Ylm.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

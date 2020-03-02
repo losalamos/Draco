@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/test/tstAbstract_Class_Parser.cc
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Parser template
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,9 +19,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
  * The following would typically be declared in a file associated with the
  * Parent class.
@@ -34,7 +34,7 @@ public:
   virtual string name() = 0;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 namespace rtt_parser {
 template <> class Class_Parse_Table<Parent> {
 public:
@@ -91,7 +91,7 @@ std::shared_ptr<Parent> Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
 Parse_Table Class_Parse_Table<Parent>::parse_table_;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
  * Specialization of the parse_class function for T=Parent
  */
@@ -101,7 +101,7 @@ template <> std::shared_ptr<Parent> parse_class<Parent>(Token_Stream &tokens) {
 
 } // namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
  * The following is what you would expect to find in a file associated with
  * the Son class.
@@ -179,19 +179,19 @@ private:
   static bool parse_table_is_initialized_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
 Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Son>>(tokens);
 }
 
 } // end namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
  * The following is what you would expect to find in a file associated with
  * the Daughter class.
@@ -273,7 +273,7 @@ Class_Parse_Table<Daughter> *Class_Parse_Table<Daughter>::current_;
 Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <>
 std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
@@ -306,7 +306,7 @@ std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens) {
   return parse_class<Daughter>(tokens);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* Test all the above */
 
 void test(UnitTest &ut) {
@@ -332,7 +332,7 @@ void test(UnitTest &ut) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -342,6 +342,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstAbstract_Class_Parser.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

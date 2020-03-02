@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_MultigroupOpacity.hh
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class definition.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_MultigroupOpacity_hh__
-#define __cdi_analytic_Analytic_MultigroupOpacity_hh__
+#ifndef rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
+#define rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_analytic {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Analytic_MultigroupOpacity
  *
@@ -42,7 +42,7 @@ namespace rtt_cdi_analytic {
  * \sa cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  * Example usage of Analytic_MultigroupOpacity.
  */
-//===========================================================================//
+//============================================================================//
 
 class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 public:
@@ -147,8 +147,8 @@ public:
 
 } // end namespace rtt_cdi_analytic
 
-#endif // __cdi_analytic_Analytic_MultigroupOpacity_hh__
+#endif // rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_MultigroupOpacity.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

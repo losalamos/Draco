@@ -1,16 +1,18 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Quadrature_Interface.cc
  * \author Jae Chang
  * \date   Tue Jan 27 08:51:19 2004
  * \brief  Quadrature interface definitions
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Quadrature_Interface.hh"
 #include "Ordinate_Set_Factory.hh"
 #include <iostream>
+
+using std::vector;
 
 //! An extern "C" interface to default constructor
 void init_quadrature(quadrature_data &quad) { quad = quadrature_data(); }
@@ -53,7 +55,7 @@ void check_quadrature_validity(const quadrature_data &quad) {
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void get_quadrature(quadrature_data &quad) {
   using namespace ::rtt_quadrature;
 

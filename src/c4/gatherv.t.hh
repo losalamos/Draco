@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/gatherv.t.hh
  * \author Thomas M. Evans, Kent Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_gatherv_t_hh
 #define c4_gatherv_t_hh
@@ -20,9 +20,9 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // GATHER
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void indeterminate_gatherv(std::string &outgoing_data,
                            std::vector<std::string> &incoming_data) {
@@ -52,7 +52,7 @@ void indeterminate_gatherv(std::string &outgoing_data,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 void indeterminate_gatherv(std::vector<T> &outgoing_data,
                            std::vector<std::vector<T>> &incoming_data) {
@@ -79,7 +79,7 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
         total_count_64 += counts[p];
       }
       // Require that total_count_64 can be expressed as a 32-bit integer.
-      Insist(total_count_64 < std::numeric_limits<int>::max(),
+      Insist(total_count_64 < UINT32_MAX,
              "The size of the array (nranks*vector.size()) exceeds "
              "32-bit unsigned integer limit.");
       unsigned total_count = static_cast<unsigned>(total_count_64);
@@ -120,7 +120,7 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 void determinate_gatherv(std::vector<T> &outgoing_data,
                          std::vector<std::vector<T>> &incoming_data) {
@@ -143,9 +143,9 @@ void determinate_gatherv(std::vector<T> &outgoing_data,
         total_count_64 += counts[p];
       }
       // Require that total_count_64 can be expressed as a 32-bit integer.
-      Insist(total_count_64 < std::numeric_limits<int>::max(),
-             "The size of the array (nranks*vector.size()) exceeds "
-             "32-bit unsigned integer limit.");
+      Insist(total_count_64 < UINT32_MAX,
+             "The size of the array (nranks*vector.size()) exceeds 32-bit uns"
+             "igned integer limit.");
       unsigned total_count = static_cast<unsigned>(total_count_64);
 
       std::vector<T> recbuf(total_count, 42);
@@ -181,6 +181,6 @@ void determinate_gatherv(std::vector<T> &outgoing_data,
 
 #endif // c4_gatherv_t_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/gatherv.t.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

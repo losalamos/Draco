@@ -75,7 +75,6 @@ Synopsis of Active Draco Packages
   input-streams.
 * shared_lib - Dynamically load/unload shared object libraries via dl load
 * special_functions - Specialized math functions like factorial and Dirac delta.
-* timestep - An object-oriented class that encapsulates a time step controller.
 * traits - A traits class used by viz.
 * units - Provides encapsulated unit systems, functions to convert between unit
   systems and physical constants.
@@ -90,7 +89,7 @@ Many thanks go to Draco's [contributors](https://github.com/lanl/Draco/graphs/co
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 
 > *CCS-2 Draco Team:* Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger,
->   James S. Warsa, Alex R. Long, Kendra P. Keady, Jae H. Chang,
+>   James S. Warsa, Alex R. Long, Kendra P. Long, Jae H. Chang,
 >   Matt A. Cleveland, Andrew T. Till, and Tim Kelley.
 
 > *Prior Contributers:* Gabriel M. Rockefeller, Allan B. Wollaber,
@@ -105,5 +104,3 @@ Release
 
 Draco is released under the BSD 3-Clause License. For more details see the
 [LICENSE file](https://github.com/lanl/Draco/blob/develop/LICENSE.md).
-
-LANL code designation: `LA-CC-16-016`

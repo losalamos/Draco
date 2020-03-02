@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*! \file   UnitSystem.cc
  *  \author Kelly Thompson
  *  \date   Thu Oct 24 15:10:32 2003
- *  \note   Copyright (C) 2003-2019 Triad National Security, LLC.
+ *  \note   Copyright (C) 2003-2020 Triad National Security, LLC.
  *          All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "UnitSystem.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -36,7 +36,7 @@ bool UnitSystem::validUnits() const {
   return true;
 } // end validUnits()
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return a new UnitSystem object whose data has the item-by-item ratio
  *        of two UnitSystem objects.
@@ -49,7 +49,7 @@ bool UnitSystem::validUnits() const {
 // 		  op1.temperatureConversion / op2.temperatureConversion );
 // }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return true if op1 and op2 are identical.
  *
@@ -81,6 +81,6 @@ bool operator!=(UnitSystem const &op1, UnitSystem const &op2) {
 
 } // end namespace rtt_units
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of UnitSystem.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   lapack_wrap/Blas_Prototypes.hh
  * \brief  Header declaring BLAS prototypes
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __lapack_wrap_Blas_Prototypes_hh__
-#define __lapack_wrap_Blas_Prototypes_hh__
+#ifndef rtt_lapack_wrap_Blas_Prototypes_hh
+#define rtt_lapack_wrap_Blas_Prototypes_hh
 
 #include <lapack_wrap/config.h>
 
@@ -36,8 +36,8 @@ double FC_GLOBAL(dnrm2, DNRM2)(int *, double *, int *);
 
 } // end of extern "C"
 
-#endif // __lapack_wrap_Blas_Prototypes_hh__
+#endif // rtt_lapack_wrap_Blas_Prototypes_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of lapack_wrap/Blas_Prototypes.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

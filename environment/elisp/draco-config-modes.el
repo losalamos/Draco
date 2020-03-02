@@ -1,7 +1,7 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
-;; Copyright (C) 2016-2019 Triad National Security, LLC
+;; Copyright (C) 2016-2020 Triad National Security, LLC
 ;;
 ;; Configure a variety of packages, upon request of user.
 ;;
@@ -83,7 +83,7 @@ auto-mode-alist."
 auto-mode-alist."
   (interactive)
       (progn
-      (autoload 'python-mode "python-mode" "Python editing mode." t)
+      (autoload 'python "python" "Python editing mode." t)
       (setq auto-mode-alist
 	    (cons '("\\.py$" . python-mode) auto-mode-alist))
       (defun draco-python-mode-hook ()
@@ -642,6 +642,8 @@ auto-mode-alist and set up some customizations for DRACO."
 		     (set-face-foreground 'modeline
 					  "black"   (current-buffer)))))
     (add-hook 'shell-mode-hook 'turn-on-draco-mode)
+    (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+    (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
     (add-hook 'shell-mode-hook 'turn-on-font-lock)))
 
 ;; ========================================
@@ -655,42 +657,42 @@ auto-mode-alist and set up some customizations for DRACO."
   (progn
 ;    (autoload 'cvs-examine "pcl-cvs" "CVS mode" t)
 ;    (require 'pcl-cvs)
-    (require 'psvn)
-    (setq svn-status-verbose nil)
+    ;; (require 'psvn)
+    ;; (setq svn-status-verbose nil)
 
-    (defun draco-menu-extras-cvs ()
-      "Submenu for inserting comments (context sensitive)."
-      (list "CVS extras..."
-	    ["CVS help" cvs-help t]))
+    ;; (defun draco-menu-extras-cvs ()
+    ;;   "Submenu for inserting comments (context sensitive)."
+    ;;   (list "CVS extras..."
+    ;;         ["CVS help" cvs-help t]))
 
-    (defun draco-cvs-edit-mode-hook ()
-      "Setup the PCL-CVS cvs-edit-mode with draco prefs."
-      (auto-fill-mode t)
-      (setq fill-prefix "  ")
-      (draco-mode-update-menu (draco-menu-extras-cvs)))
-    (add-hook 'cvs-mode-hook 'draco-cvs-edit-mode-hook)
-    (add-hook 'cvs-mode-hook 'turn-on-draco-mode)
-    (if draco-colorize-modeline
-	(add-hook 'cvs-mode-hook
-		  '(lambda () ;; M-x list-colors-display
-		     (set-face-background 'modeline
-					  "honeydew" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
-    (setq cvs-erase-input-buffer        nil
-	  cvs-inhibit-copyright-message t
-	  cvs-status-flags "-q"
-	  vc-dired-terse-display nil )
-    ; If this variable is set to any non-nil value
-    ; `cvs-mode-remove-handled' will be called every time you check in
-    ; files, after the check-in is ready. See section 5.11 Removing handled
-    ; entries.
-    (setq cvs-auto-remove-handled t)
+    ;; (defun draco-cvs-edit-mode-hook ()
+    ;;   "Setup the PCL-CVS cvs-edit-mode with draco prefs."
+    ;;   (auto-fill-mode t)
+    ;;   (setq fill-prefix "  ")
+    ;;   (draco-mode-update-menu (draco-menu-extras-cvs)))
+    ;; (add-hook 'cvs-mode-hook 'draco-cvs-edit-mode-hook)
+    ;; (add-hook 'cvs-mode-hook 'turn-on-draco-mode)
+    ;; (if draco-colorize-modeline
+    ;;     (add-hook 'cvs-mode-hook
+    ;;     	  '(lambda () ;; M-x list-colors-display
+    ;;     	     (set-face-background 'modeline
+    ;;     				  "honeydew" (current-buffer))
+    ;;     	     (set-face-foreground 'modeline
+    ;;     				  "black"   (current-buffer)))))
+    ;; (setq cvs-erase-input-buffer        nil
+    ;;       cvs-inhibit-copyright-message t
+    ;;       cvs-status-flags "-q"
+    ;;       vc-dired-terse-display nil )
+    ;; ; If this variable is set to any non-nil value
+    ;; ; `cvs-mode-remove-handled' will be called every time you check in
+    ;; ; files, after the check-in is ready. See section 5.11 Removing handled
+    ;; ; entries.
+    ;; (setq cvs-auto-remove-handled t)
 
-    ; If this variable is set to any non-nil value, directories that do not
-    ; contain any files to be checked in will not be listed in the `*cvs*'
-    ; buffer.
-    (setq cvs-auto-remove-handled-directories t)
+    ;; ; If this variable is set to any non-nil value, directories that do not
+    ;; ; contain any files to be checked in will not be listed in the `*cvs*'
+    ;; ; buffer.
+    ;; (setq cvs-auto-remove-handled-directories t)
     ))
 
 ;; ========================================
@@ -791,6 +793,7 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
     (autoload 'text-mode "text-mode" "Text Editing Mode" t)
+    (require 'ansi-color)
     (if draco-colorize-modeline
 	(add-hook 'text-mode-hook
 		  '(lambda ()
@@ -805,9 +808,21 @@ auto-mode-alist and set up some customizations for DRACO."
 	     ("\\.log$"  . text-mode)
 	     ("^README*" . text-mode)
 	     ) auto-mode-alist))
+    (defun ansi-color-apply-on-region-int (beg end)
+      "interactive version of func"
+      (interactive "r")
+      (ansi-color-apply-on-region beg end))
+
+    (defun draco-text-mode-hook ()
+      "Hooks added to text-mode."
+      (ansi-color-apply-on-region (point-min) (point-max))
+      )
+    (add-hook 'text-mode-hook 'draco-text-mode-hook)
+;    (add-hook 'text-mode-hook 'ansi-color-for-comint-mode-on)
     (add-hook 'text-mode-hook 'turn-on-draco-mode)
     (add-hook 'text-mode-hook 'turn-on-font-lock)
-    (add-hook 'text-mode-hook 'turn-on-auto-fill)))
+    (add-hook 'text-mode-hook 'turn-on-auto-fill)
+))
 
 ;; ========================================
 ;; Dired mode

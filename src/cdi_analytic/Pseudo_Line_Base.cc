@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Pseudo_Line_Base.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Pseudo_Line_Base.hh"
 #include "c4/C4_Functions.hh"
@@ -22,12 +22,12 @@ using namespace rtt_ode;
 using namespace rtt_dsxx;
 using namespace rtt_cdi;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 #ifdef _MSC_VER
 double expm1(double const &x) { return std::exp(x) - 1.0; }
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Pseudo_Line_Base::setup_(double emin, double emax) {
   srand(seed_);
 
@@ -67,7 +67,8 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
     if (nu0_ < 0) {
       size_t N = continuum_table_.size();
       if (N > 0) {
-        C = continuum_table_[static_cast<unsigned int>(edge_[i] * N / emax)];
+        C = continuum_table_[static_cast<unsigned int>(
+            edge_[i] * static_cast<double>(N) / emax)];
       } else {
         C = (*continuum_)(vector<double>(1, edge_[i]));
       }
@@ -82,7 +83,7 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
   sort(edge_.begin(), edge_.end());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Pseudo_Line_Base::Pseudo_Line_Base(
     std::shared_ptr<Expression const> const &continuum, int number_of_lines,
     double line_peak, double line_width, int number_of_edges, double edge_ratio,
@@ -172,7 +173,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(
 //   setup_(emin, emax);
 // }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Packing function for Pseudo_Line_Base objects.
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
@@ -209,7 +210,7 @@ vector<char> Pseudo_Line_Base::pack() const {
 #endif
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
   int const number_of_lines = number_of_lines_;
@@ -220,7 +221,8 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
   if (nu0_ < 0) {
     size_t N = continuum_table_.size();
     if (N > 0) {
-      Result = continuum_table_[static_cast<unsigned int>(x * N / emax_)];
+      Result = continuum_table_[static_cast<unsigned int>(
+          x * static_cast<double>(N) / emax_)];
     } else {
       Result = (*continuum_)(vector<double>(1, x));
     }
@@ -260,6 +262,6 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
 } // end namespace rtt_cdi_analytic
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Pseudo_Line_Base.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

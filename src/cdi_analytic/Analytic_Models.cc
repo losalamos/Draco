@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Models.cc
  * \author Thomas M. Evans
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
@@ -15,9 +15,9 @@
 
 namespace rtt_cdi_analytic {
 
-//===========================================================================//
+//============================================================================//
 // EOS_ANALYTIC_MODEL MEMBER DEFINITIONS
-//===========================================================================//
+//============================================================================//
 
 /*!
  * \brief Calculate the electron temperature given density and Electron internal
@@ -107,9 +107,9 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
   }
 }
 
-//===========================================================================//
+//============================================================================//
 // CONSTANT_ANALYTIC_MODEL MEMBER DEFINITIONS
-//===========================================================================//
+//============================================================================//
 // Unpacking constructor.
 
 Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
@@ -139,7 +139,7 @@ Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
@@ -170,7 +170,7 @@ Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Return the model parameters
 
 Analytic_Opacity_Model::sf_double
@@ -178,9 +178,9 @@ Constant_Analytic_Opacity_Model::get_parameters() const {
   return sf_double(1, sigma);
 }
 
-//===========================================================================//
+//============================================================================//
 // POLYNOMIAL_ANALYTIC_OPACITY_MODEL DEFINITIONS
-//===========================================================================//
+//============================================================================//
 // Unpacking constructor.
 
 Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
@@ -210,7 +210,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char
@@ -252,7 +252,7 @@ Polynomial_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Return the model parameters
 
 Analytic_Opacity_Model::sf_double
@@ -273,9 +273,9 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const {
   return p;
 }
 
-//===========================================================================//
+//============================================================================//
 // POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL DEFINITIONS
-//===========================================================================//
+//============================================================================//
 // Unpacking constructor.
 
 Polynomial_Specific_Heat_Analytic_EoS_Model::
@@ -305,8 +305,9 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//---------------------------------------------------------------------------//
-//! Packing function
+//----------------------------------------------------------------------------//
+// Packing function
+
 Analytic_Opacity_Model::sf_char
 Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   // get the registered indicator
@@ -341,8 +342,8 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   return pdata;
 }
 
-//---------------------------------------------------------------------------//
-//! Return the model parameters
+//----------------------------------------------------------------------------//
+// Return the model parameters
 Analytic_EoS_Model::sf_double
 Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   sf_double p(6);
@@ -352,11 +353,123 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   p[3] = d;
   p[4] = e;
   p[5] = f;
+
   return p;
+}
+
+//============================================================================//
+// CONSTANT_ANALYTIC_EI_COUPLING_MODEL MEMBER DEFINITIONS
+//============================================================================//
+// Unpacking constructor.
+
+Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(
+    const sf_char &packed)
+    : ei_coupling(0) {
+  // size of stream
+  int size(sizeof(int) + sizeof(double));
+
+  Require(packed.size() == static_cast<size_t>(size));
+
+  // make an unpacker
+  rtt_dsxx::Unpacker unpacker;
+
+  // set the unpacker
+  unpacker.set_buffer(size, &packed[0]);
+
+  // unpack the indicator
+  int indicator;
+  unpacker >> indicator;
+  Insist(indicator == CONSTANT_ANALYTIC_EICOUPLING_MODEL,
+         "Tried to unpack the wrong type in Constant_Analytic_Opacity_Model");
+
+  // unpack the data
+  unpacker >> ei_coupling;
+  Check(ei_coupling >= 0.0);
+
+  Ensure(unpacker.get_ptr() == unpacker.end());
+}
+
+//----------------------------------------------------------------------------//
+// Packing function
+
+Analytic_EICoupling_Model::sf_char
+Constant_Analytic_EICoupling_Model::pack() const {
+  // get the registered indicator
+  int indicator = CONSTANT_ANALYTIC_EICOUPLING_MODEL;
+
+  // caculate the size in bytes: indicator + 1 double
+  int size = sizeof(int) + sizeof(double);
+
+  // make a vector of the appropriate size
+  sf_char pdata(size);
+
+  // make a packer
+  rtt_dsxx::Packer packer;
+
+  // set the packer buffer
+  packer.set_buffer(size, &pdata[0]);
+
+  // pack the indicator
+  packer << indicator;
+
+  // pack the data
+  packer << ei_coupling;
+
+  // Check the size
+  Ensure(packer.get_ptr() == &pdata[0] + size);
+
+  return pdata;
+}
+
+//----------------------------------------------------------------------------//
+// Return the model parameters
+
+Analytic_EICoupling_Model::sf_double
+Constant_Analytic_EICoupling_Model::get_parameters() const {
+  return sf_double(1, ei_coupling);
+}
+
+//============================================================================//
+// ANALYTIC_KP_ALPHA_ELOSS_MODEL MEMBER DEFINITIONS
+//============================================================================//
+
+/*! \brief Calculate the eloss in units of shk^-1; T given in keV, rho in g/cc,
+ *         v0 in cm/shk
+ *
+ * The constants in this formula come directly from the fit in  Eq. (2) of
+ * Kirkpatrick, R. C. and Wheeler, J. A. (1981).
+ * ``The Physics of DT Ignition In Small Fusion Targets.'' 
+ * Nuclear Fusion, 21(3):389–401.
+ *
+ * These constants are ONLY valid for alpha energy loss in DT gas.
+ *
+ * \param T material temperature in keV
+ * \param rho material density in g/cm^3
+ * \param v incident particle speed in cm/shk
+ * \return eloss (vector of time coefficients) in shk^-1
+ * 
+ */
+double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
+                                                      const double rho,
+                                                      const double v) const {
+  Require(T >= 0.0);
+  Require(rho >= 0.0);
+  Require(v >= 0.0);
+
+  double range = 0.03 * T * (1.0 - 0.24 * std::log(1.0 + T)) *
+                 (1.0 + 0.37 * std::log((1.0 + rho) / (1.0 + 0.01 * T * T)));
+
+  // Exponent of energy deposition term, sans minus sign and delta_t:
+  double eloss = rho * v / range;
+
+  // This analytic model can return negative elosses in some rho-T regimes;
+  // catch these and simply return a large, positive number instead
+  // (equivlant to a very small, positive value of "range" in the above formula)
+  return (eloss >= 0.0) ? eloss : 1.0e25;
 }
 
 } // end namespace rtt_cdi_analytic
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Analytic_Models.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

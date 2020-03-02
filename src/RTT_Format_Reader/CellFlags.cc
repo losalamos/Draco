@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*--------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellFlags.cc
  * \author B.T. Adams
  * \date   Mon Jun 7 10:33:26 2000
- * \brief  Implementation file for RTT_Format_Reader/CellFlags clas
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \brief  Implementation file for RTT_Format_Reader/CellFlags class
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "CellFlags.hh"
 
@@ -96,6 +96,6 @@ int CellFlags::get_flag_type_index(string &desired_flag_type) const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellFlags.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

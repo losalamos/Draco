@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstXGetopt.cc
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/XGetopt.cc
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
@@ -14,7 +14,7 @@
 #include "ds++/XGetopt.hh"
 #include <sstream>
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 1: shortopts, no arguments
 void tst_shortopts_noargs(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 1..." << std::endl;
@@ -50,7 +50,7 @@ void tst_shortopts_noargs(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 2: shortopts, version argument.
 void tst_shortopts_args_v(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 2..." << std::endl;
@@ -89,7 +89,7 @@ void tst_shortopts_args_v(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 3: shortopts, unknown argument.
 void tst_shortopts_args_x(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 3..." << std::endl;
@@ -126,7 +126,7 @@ void tst_shortopts_args_x(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 4: shortopts, 2 args (known and unknown)
 void tst_shortopts_args_vx(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 4..." << std::endl;
@@ -169,7 +169,7 @@ void tst_shortopts_args_vx(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 5: shortopts, 2 args (one with value)
 void tst_shortopts_args_vc(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 5..." << std::endl;
@@ -222,7 +222,7 @@ void tst_shortopts_args_vc(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 6: shortopts, help message
 void tst_shortopts_args_h(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 6..." << std::endl;
@@ -277,7 +277,7 @@ void tst_shortopts_args_h(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 7: shortopts, double dash
 void tst_shortopts_args_doubledash(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 7..." << std::endl;
@@ -321,7 +321,7 @@ void tst_shortopts_args_doubledash(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 8: shorotps, missing argument
 void tst_shortopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 8..." << std::endl;
@@ -340,7 +340,7 @@ void tst_shortopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 9: shortopts, help message with help strings
 void tst_shortopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 9..." << std::endl;
@@ -404,7 +404,7 @@ void tst_shortopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 10: long options, no arguments
 void tst_lopts_noargs(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 10..." << std::endl;
@@ -453,7 +453,7 @@ void tst_lopts_noargs(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 11: longopts, version argument.
 void tst_lopts_args_v(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 11..." << std::endl;
@@ -502,7 +502,7 @@ void tst_lopts_args_v(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 12: lopts, version argument.
 void tst_lopts_args_version(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 12..." << std::endl;
@@ -551,7 +551,7 @@ void tst_lopts_args_version(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 13: lopts, unknown argument.
 void tst_lopts_args_xray(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 13..." << std::endl;
@@ -600,7 +600,7 @@ void tst_lopts_args_xray(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 14: lopts, 2 args (long and short)
 void tst_lopts_args_vhelp(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 14..." << std::endl;
@@ -657,7 +657,7 @@ void tst_lopts_args_vhelp(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 15: lopts, 2 args (one with value)
 void tst_lopts_args_versioncreate(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 15..." << std::endl;
@@ -723,7 +723,7 @@ void tst_lopts_args_versioncreate(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 16: lopts, help message
 void tst_lopts_args_help(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 16..." << std::endl;
@@ -789,7 +789,7 @@ void tst_lopts_args_help(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 17: lopts, double dash
 void tst_lopts_args_doubledash(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 17..." << std::endl;
@@ -844,7 +844,7 @@ void tst_lopts_args_doubledash(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 18: shorotps, missing argument
 void tst_lopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 18..." << std::endl;
@@ -874,7 +874,7 @@ void tst_lopts_args_missingarg(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Test 19: lopts, help message with help strings
 void tst_lopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 19..." << std::endl;
@@ -947,7 +947,7 @@ void tst_lopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -975,6 +975,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstXGetopt.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

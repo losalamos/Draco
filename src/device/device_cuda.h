@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   device/device_cuda.h
  * \author Kelly (KT) Thompson
  * \brief  Wrap the cuda.h header while preventing comiler warnings about
  *         vendor code.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef device_device_cuda_h
 #define device_device_cuda_h
@@ -27,6 +27,7 @@
 #endif
 
 #include <cuda.h>
+#include <cuda_runtime.h>
 
 #if defined __GNUC__
 #pragma GCC system_header
@@ -41,6 +42,6 @@
 
 #endif // device_device_cuda_h
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of device_cuda.h
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

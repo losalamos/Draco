@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/test/tstExpression.cc
  * \author Kent Budge
  * \date   Wed Jul 26 08:15:18 2006
  * \brief  Test the Expression class and expression parsing.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
@@ -18,9 +18,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void tstExpression(UnitTest &ut) {
   // Create an expression as a String_Token_Stream.
@@ -303,9 +303,21 @@ void tstExpression(UnitTest &ut) {
     else
       FAILMSG("units NOT correctly set");
   }
+
+  {
+    tokens = String_Token_Stream(
+        "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(jerk*sh)");
+
+    std::shared_ptr<Expression> lexpression =
+        Expression::parse(4, variable_map, tokens);
+
+    ut.check(soft_equiv((*lexpression)(xs),
+                        (cos(2.0) + exp(3.0) + sin(4.0)) / (1e9 * 1e-8)),
+             "parse of exotic units");
+  }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -314,6 +326,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstExpression.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

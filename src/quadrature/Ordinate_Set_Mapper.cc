@@ -1,13 +1,13 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Mapper.cc
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
  * \brief  Implementation file for the class
  *         rtt_quadrature::Ordinate_Set_Mapper.
- * \note   Copyright (C)  2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Ordinate_Set_Mapper.hh"
 #include <algorithm>
@@ -16,6 +16,7 @@
 #include <numeric>
 
 namespace {
+
 using namespace std;
 using namespace rtt_quadrature;
 
@@ -23,7 +24,7 @@ using namespace rtt_quadrature;
 
 #if DBC & 1
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_4(Ordinate const &ordinate) {
   // In 1-D spherical geometry, the ordinates must be confined to the first
   // two octants.
@@ -32,7 +33,7 @@ bool check_4(Ordinate const &ordinate) {
   return true;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_2(Ordinate const &ordinate) {
   // In 2-D geometry, the ordinates must be confined to the first
   // four octants
@@ -43,7 +44,7 @@ bool check_2(Ordinate const &ordinate) {
 
 #endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 typedef std::pair<double, size_t> dsp;
 bool bigger_pair(const dsp &d1, const dsp &d2) { return (d1.first > d2.first); }
 
@@ -51,12 +52,12 @@ bool bigger_pair(const dsp &d1, const dsp &d2) { return (d1.first > d2.first); }
 
 namespace rtt_quadrature {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Ordinate_Set_Mapper::check_class_invariants() const {
   return os_.check_class_invariants();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Primary service method to perform weight mapping
  *
@@ -69,15 +70,18 @@ bool Ordinate_Set_Mapper::check_class_invariants() const {
  */
 void Ordinate_Set_Mapper::map_angle_into_ordinates(
     const Ordinate &ord_in, const Interpolation_Type &interp_in,
-    vector<double> &weights) const {
+    std::vector<double> &weights) const {
+
   Require(os_.ordinates().size() == weights.size());
   Require(os_.dimension() == 2 ? check_2(ord_in) : true);
   Require(os_.dimension() == 1 ? check_4(ord_in) : true);
-  Require(os_.dimension() >= 2 ? // check norm == 1 in 2-D and 3-D
-              soft_equiv(dot_product_functor_3D(ord_in)(ord_in), 1.0)
-                               : true);
-  Require(os_.dimension() == 1 ? // check norm <= 1 in 1-D
-              dot_product_functor_1D(ord_in)(ord_in) <= 1.0
+  // check norm == 1 in 2-D and 3-D
+  Require(
+      os_.dimension() >= 2
+          ? rtt_dsxx::soft_equiv(dot_product_functor_3D(ord_in)(ord_in), 1.0)
+          : true);
+  // check norm <= 1 in 1-D
+  Require(os_.dimension() == 1 ? dot_product_functor_1D(ord_in)(ord_in) <= 1.0
                                : true);
 
   // Vector of all ordinates in the ordinate set
@@ -85,8 +89,8 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
 
   // Vector of dot products
   vector<double> dps(weights.size(), 0.0);
-  // Perform all of the dot products between the incoming ordinate
-  // and the ordinates in the Ordinate_Set
+  // Perform all of the dot products between the incoming ordinate and the
+  // ordinates in the Ordinate_Set
   if (os_.dimension() != 1) {
     dot_product_functor_3D dpf(ord_in);
     std::transform(ords.begin(), ords.end(), dps.begin(), dpf);
@@ -95,14 +99,14 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     std::transform(ords.begin(), ords.end(), dps.begin(), dpf);
   }
 
-  // Remove the "starting directions" as valid ordinates in the quadrature,
-  // if they exist
+  // Remove the "starting directions" as valid ordinates in the quadrature, if
+  // they exist
   if (os_.has_starting_directions()) {
     size_t i = 0;
     for (auto ord = ords.begin(); ord != ords.end(); ++ord, ++i) {
-      // If the ordinate weight is zero, we found a "starting direction"
-      // We remove it by saying its dot product is completely opposed
-      // to the ordinate we passed in (set to -1).
+      // If the ordinate weight is zero, we found a "starting direction". We
+      // remove it by saying its dot product is completely opposed to the
+      // ordinate we passed in (set to -1).
       if (ord->wt() <= 0.0)
         dps[i] = -1.0;
     }
@@ -121,7 +125,7 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     Require(dps.size() >= 3);
 
     // Vector of all ordinates in the ordinate set
-    const vector<Ordinate> &ord(os_.ordinates());
+    const std::vector<Ordinate> &ord(os_.ordinates());
 
     // Associate a container of indices with the dot products
     std::vector<std::pair<double, size_t>> dpsi(dps.size());
@@ -189,12 +193,12 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
     break;
   }
 
-  // Test for energy conservation by integrating over all angles
-  // i.e., summing the quadrature weights
-  Ensure(soft_equiv(zeroth_moment(weights), ord_in.wt()));
+  // Test for energy conservation by integrating over all angles i.e., summing
+  // the quadrature weights
+  Ensure(rtt_dsxx::soft_equiv(zeroth_moment(weights), ord_in.wt()));
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Simple private function to integrate the zeroth angular moment
  *
@@ -202,7 +206,8 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
  *
  * \return double value for the zeroth moment
  */
-double Ordinate_Set_Mapper::zeroth_moment(const vector<double> &weights) const {
+double
+Ordinate_Set_Mapper::zeroth_moment(const std::vector<double> &weights) const {
   Require(weights.size() == os_.ordinates().size());
 
   // Vector of all ordinates in the ordinate set
@@ -218,6 +223,6 @@ double Ordinate_Set_Mapper::zeroth_moment(const vector<double> &weights) const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Ordinate_Set_Mapper.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

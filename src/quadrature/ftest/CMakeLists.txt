@@ -7,7 +7,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( quadrature_ftest Fortran )
+project( quadrature_ftest C Fortran )
 
 # ---------------------------------------------------------------------------- #
 # Setup - For Generators other than "Unix Makefiles", this folder is
@@ -32,19 +32,23 @@ include( component_macros )
 # manually find these libraries.
 #
 # Note: A more complex example of CMakeAddFortranSubdirectory can be
-# found in jayenne/src/wedgehog/ftest.
+# found in jayenne/src/api/ftest.
 
 if(NOT TARGET Lib_dsxx)
   # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see
-  # wedgehog/CMakeLists.txt) by replacing triple underscores with a semicolon.
+  # api/CMakeLists.txt) by replacing triple underscores with a semicolon.
   # This must be done before calling find_package(draco)
   string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
     "${Draco_TPL_INCLUDE_DIRS}" )
 
   include(CMakeAddFortranSubdirectory)
-  get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
+
+  get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. 
+    ABSOLUTE )
   cafs_create_imported_targets( Lib_dsxx
     "rtt_ds++"       "${draco_BINARY_DIR}/src/ds++"       CXX )
+  cafs_create_imported_targets( Lib_c4 "rtt_c4"
+    "${draco_BINARY_DIR}/src/c4" CXX )
   cafs_create_imported_targets( Lib_quadrature
     "rtt_quadrature" "${draco_BINARY_DIR}/src/quadrature" CXX )
   cafs_create_imported_targets( Lib_quadrature_test

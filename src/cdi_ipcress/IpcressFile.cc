@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.cc
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Implementation file for IpcressFile class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressFile.t.hh"
@@ -15,31 +15,29 @@
 
 namespace rtt_cdi_ipcress {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief The standard IpcressFile constructor.
  *
  * 1. Set some defaults (bytes per word, number of fields in the TOC).
  * 2. Try to open the file
  * 3. Load the title keys to verify that this is an ipcress file.
- * 4. Load the TOC. 
+ * 4. Load the TOC.
  *
  * \param ipcressDataFilename Name of ipcress file
  */
 IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
     : dataFilename(locateIpcressFile(ipcressDataFilename)),
-      ipcress_word_size(8), // bytes per entry in file.
-      ipcressFileHandle(),
-      // num_table_records(24),
-      toc(24, 0), // 24 records in the table of contents
+      ipcress_word_size(8),            // bytes per entry in file.
+      ipcressFileHandle(), toc(24, 0), // 24 records in the table of contents
       matIDs(), dfo(), ds(), materialData() {
   //! \bug May need to determine if this machine uses IEEE floating point
   // numbers or Cray floating point format.
   Require(rtt_dsxx::has_ieee_float_representation());
   Require(rtt_dsxx::fileExists(dataFilename));
 
-  // Attempt to open the ipcress file.  Open at end of file (ate) so that we
-  // can know the size of the binary file.
+  // Attempt to open the ipcress file.  Open at end of file (ate) so that we can
+  // know the size of the binary file.
   ipcressFileHandle.open(dataFilename.c_str(),
                          std::ios::in | std::ios::binary | std::ios::ate);
   Insist(ipcressFileHandle.is_open(),
@@ -51,15 +49,13 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   //
   // Read the title (the first record of binary file).
   //
-  // The first record has 2 8-byte words.  The first word should be either
-  // the keyword 'nirvana' or possibly 'ipcress'.  The 2nd word is not used.
+  // The first record has 2 8-byte words.  The first word should be either the
+  // keyword 'nirvana' or possibly 'ipcress'.  The 2nd word is not used.
   size_t byte_offset(0);
   std::vector<std::string> title(2);
   read_strings(byte_offset, title);
-  Insist(
-      std::string(&(title[0])[0], &(title[0])[7]) == std::string("nirvana") ||
-          std::string(&(title[0])[0], &(title[0])[7]) == std::string("ipcress"),
-      "The specified file is not IPCRESS format.");
+  Insist(title[0] == "nirvana " || title[0] == "ipcress ",
+         "The specified file is not IPCRESS format.");
 
   //
   // Read the table records from the ipcress file. See the .hh file for a
@@ -67,7 +63,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   //
 
   // This data block starts with the 3rd word in the file (byte 16).
-  byte_offset = 2 * ipcress_word_size;
+  byte_offset = title.size() * ipcress_word_size;
   read_v(byte_offset, toc);
 
   // Checks for consistency
@@ -80,13 +76,11 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   Check(toc[2] == 24);
   Check(toc[4] == 2);
   Check(toc[5] == 0);
-  Check(toc[10] == toc[1] + max_num_records);
-
   Check(static_cast<size_t>(sizeOfFile) == ipcress_word_size * toc[21]);
 
   //
-  // Read the table of memory offsets for data (dfo) and the
-  // associated table of offset data sizes (ds).
+  // Read the table of memory offsets for data (dfo) and the associated table of
+  // offset data sizes (ds).
   //
 
   // There are TOC[14] data sets in these tables.
@@ -103,10 +97,9 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
 
   //
   // read a list of materials from the file:
-  //
   // - dfo[0] contains the number of materials.
-  // - the memory block {dfo[1] ... dfo[0]+ds[0]}
-  //   holds a list of material numbers.
+  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material
+  //   numbers.
   //
 
   byte_offset = ipcress_word_size * dfo[0];
@@ -114,8 +107,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   read_v(byte_offset, vdata);
   size_t nummat = vdata[0];
 
-  // Consistency check.  ds[0] is the total reserved space in the
-  // file for material IDs.
+  // Consistency check.  ds[0] is the total reserved space in the file for
+  // material IDs.
   Check(nummat < static_cast<size_t>(ds[0]));
 
   // Resize the list of material IDs.
@@ -126,27 +119,30 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   byte_offset = ipcress_word_size * (dfo[0] + 1);
   read_v(byte_offset, this->matIDs);
 
-  // Load the field data for each material and save to materialData[]
-  // vector.
+  // Load the field data for each material and save to materialData[] vector.
   this->loadFieldData();
 
   // Close the file
   ipcressFileHandle.close();
 }
 
-//---------------------------------------------------------------------------//
-//! Indicate if the requested material id is available in the data file.
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Indicate if the requested material id is available in the data file.
+ *
+ * \param[in] matid unsigned integer that specifies the material to be queried.
+ */
 bool IpcressFile::materialFound(size_t matid) const {
-  // Loop over all available materials.  If the requested material id matches
-  // on in the list then return true. If we reach the end of the list without
-  // a match return false.
+  // Loop over all available materials.  If the requested material id matches on
+  // in the list then return true. If we reach the end of the list without a
+  // match return false.
   for (size_t i = 0; i < matIDs.size(); ++i)
     if (matid == matIDs[i])
       return true;
   return false;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   std::string foundFile;
 
@@ -161,12 +157,12 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   return ipcressFile;
 }
 
-//---------------------------------------------------------------------------//
-/*! 
+//----------------------------------------------------------------------------//
+/*!
  * \brief Read 8 character strings from the binary file
- * 
+ *
  * \param[in]  byte_offset offset into the ipcress file where the data exists.
- * \param[out] vdata       return value 
+ * \param[out] vdata       return value
  */
 void IpcressFile::read_strings(size_t const byte_offset,
                                std::vector<std::string> &vdata) const {
@@ -190,8 +186,8 @@ void IpcressFile::read_strings(size_t const byte_offset,
   return;
 }
 
-//---------------------------------------------------------------------------//
-//! Poplulate the materialData member data container.
+//----------------------------------------------------------------------------//
+//! Populate the materialData member data container.
 void IpcressFile::loadFieldData(void) {
   // Attempt to open the ipcress file.
   Insist(ipcressFileHandle.is_open(), "getKeys: Unable to open ipcress file.");
@@ -205,8 +201,8 @@ void IpcressFile::loadFieldData(void) {
   std::vector<std::string> thirdofkey(3);
 
   for (size_t i = 1; i < numFields; ++i) {
-    // Note i=0 case is {'mats','fill',fill'}.  We skip this case by
-    // starting at i=1.
+    // Note i=0 case is {'mats','fill',fill'}.  We skip this case by starting at
+    // i=1.
 
     // read three 8-byte words.
     read_strings(byte_offset + 9 * i * ipcress_word_size, thirdofkey);
@@ -255,6 +251,6 @@ void IpcressFile::loadFieldData(void) {
 
 } // end namespace rtt_cdi_ipcress
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of IpcressFile.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

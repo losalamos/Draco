@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/test/TestRTTMeshReader.cc
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:41:12 2002
  * \brief  RTT_Mesh_Reader test.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
@@ -14,9 +14,9 @@
 #include "ds++/path.hh"
 #include <sstream>
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Enum definitions and forward declarations
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -31,13 +31,13 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 void runTest(rtt_dsxx::UnitTest &ut) {
   // Find the mesh file
-  string const inpPath = ut.getTestInputPath();
+  string const inpPath = ut.getTestSourcePath();
 
   // New meshes added to this test will have to be added to the enumeration
   // Meshes in the header file.
@@ -88,7 +88,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
                    Meshes const &meshtype) {
   // Save and reset at end of function
@@ -281,9 +281,9 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
   return false;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Main
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   try {
     ScalarUnitTest ut(argc, argv, release);
@@ -306,6 +306,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of TestRTTMeshReader.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

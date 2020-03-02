@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Release.hh
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_ds_Release_hh
 #define rtt_ds_Release_hh
@@ -20,8 +20,8 @@
 namespace rtt_dsxx {
 
 // Typedefs
-typedef std::multimap<int, std::string, std::greater<int>> mmdevs;
-typedef std::pair<int, std::string> fomdev;
+using mmdevs = std::multimap<int, std::string, std::greater<>>;
+using fomdev = std::pair<int, std::string>;
 
 //! Query package for the release number.
 const std::string release();
@@ -30,7 +30,7 @@ const std::string author_list(bool const use_doxygen_formatting = false);
 //! Return a list of Draco authors
 const std::string copyright();
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Format list of authors to do correct line breaks and ensures total
  *        line length is less than a specified maximum.
@@ -50,6 +50,6 @@ extern "C" void ec_release(char *release_string, size_t maxlen);
 
 #endif // rtt_ds_Release_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Release.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

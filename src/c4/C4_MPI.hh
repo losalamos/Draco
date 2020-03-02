@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/C4_MPI.hh
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:16 2002
  * \brief  C4 MPI function declarations.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_hh
 #define c4_C4_MPI_hh
@@ -22,16 +22,16 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // MPI Communicator
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 DLL_PUBLIC_c4 extern MPI_Comm communicator;
 extern bool initialized;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // SETUP FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename Comm> void inherit(const Comm &comm) {
   Remember(int result =) MPI_Comm_dup(comm, &communicator);
@@ -59,8 +59,7 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
  */
 
 // This signature must be exported since it is explicitly instantiated.
-template <typename T>
-DLL_PUBLIC_c4 int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
+template <typename T> int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
 
 // This signature is defined in the header so no export is required.
 template <typename ForwardIterator, typename OutputIterator>
@@ -114,6 +113,6 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 
 #endif // c4_C4_MPI_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/C4_MPI.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

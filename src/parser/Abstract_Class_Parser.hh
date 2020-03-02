@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Abstract_Class_Parser.hh
  * \author Kent Budge
  * \brief  Define class Abstract_Class_Parser
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef parser_Abstract_Class_Parser_hh
 #define parser_Abstract_Class_Parser_hh
@@ -19,7 +19,7 @@ using std::pointer_to_unary_function;
 using std::string;
 using std::vector;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \brief Closure class for wrapping context-dependent parse functions
  *
@@ -31,7 +31,7 @@ using std::vector;
  * See test/tstAbstract_Class_Contextual_Parser.cc for an example of how it is
  * used.
  */
-//===========================================================================//
+//============================================================================//
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 class Contextual_Parse_Functor {
@@ -45,7 +45,7 @@ private:
   std::shared_ptr<Abstract_Class> (*f_)(Token_Stream &, Context const &);
 };
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Abstract_Class_Parser
  * \brief Template for parser that produces a class object.
@@ -87,7 +87,7 @@ private:
  * solution to the problem of abstract class keywords other than those
  * specifying a child class.
  */
-//===========================================================================//
+//============================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Abstract_Class> &get_parsed_object(),
           typename Parse_Function = pointer_to_unary_function<
@@ -128,6 +128,6 @@ private:
 
 #endif // parser_Abstract_Class_Parser_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of parser/Abstract_Class_Parser.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

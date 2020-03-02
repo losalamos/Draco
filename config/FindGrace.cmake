@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2011 September 29
 # brief  Instructions for discovering the Grace vendor libraries.
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -75,10 +75,25 @@ endif()
 # If environment variables are not set (GRACE_INC_DIR), look for the binary and
 # try to guess appropriate location of library and headers.
 find_program( Grace_EXECUTABLE NAMES xmgrace ggrace)
-
 if( EXISTS ${Grace_EXECUTABLE} AND NOT IS_DIRECTORY "${GRACE_HOME}" )
   get_filename_component( GRACE_HOME ${Grace_EXECUTABLE} DIRECTORY )
   get_filename_component( GRACE_HOME "${GRACE_HOME}/.." REALPATH )
+endif()
+
+# plot2D also needs a working gracebat application
+find_program( Gracebat_EXECUTABLE NAMES gracebat)
+if( EXISTS ${Gracebat_EXECUTABLE} )
+  execute_process(
+    COMMAND ${Gracebat_EXECUTABLE} --version
+    OUTPUT_VARIABLE gracebat_ver_out
+    ERROR_VARIABLE gracebat_ver_err
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE )
+  if( "${gracebat_ver_out}${gracebat_ver_err}" MATCHES "Broken" )
+    set( Gracebat_EXECUTABLE "NOTFOUND" CACHE STRING "working gracebat found?"
+      FORCE)
+  endif()
+
 endif()
 
 #=============================================================================
@@ -144,12 +159,12 @@ endif()
 # handle the QUIETLY and REQUIRED arg
 find_package_handle_standard_args(Grace
   FOUND_VAR     Grace_FOUND
-  REQUIRED_VARS Grace_INCLUDE_DIR Grace_LIBRARY
+  REQUIRED_VARS Grace_INCLUDE_DIR Grace_LIBRARY Gracebat_EXECUTABLE
   VERSION_VAR   Grace_VERSION
   )
 
 mark_as_advanced( GRACE_HOME Grace_VERSION Grace_LIBRARY Grace_LIBRARY_DEBUG
-  Grace_INCLUDE_DIR Grace_EXECUTABLE)
+  Grace_INCLUDE_DIR Grace_EXECUTABLE Gracebat_EXECUTABLE)
 
 #=============================================================================
 # Register imported libraries:

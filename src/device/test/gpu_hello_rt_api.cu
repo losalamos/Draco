@@ -4,7 +4,7 @@
  * \author Kelly (KT) Thompson
  * \date   Thu Oct 25 15:28:48 2011
  * \brief  Simple test of the CUDA Runtime API.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -17,7 +17,9 @@
 #include <vector>
 
 // GPU kernels
-#include "device/test/vector_add.cu"
+#include "device/test/basic_kernels.hh"
+
+using namespace rtt_device_test;
 
 //----------------------------------------------------------------------------//
 // Tests

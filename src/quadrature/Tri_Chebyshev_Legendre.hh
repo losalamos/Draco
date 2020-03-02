@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Tri_Chebyshev_Legendre.hh
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef quadrature_Tri_Chebyshev_Legendre_hh
 #define quadrature_Tri_Chebyshev_Legendre_hh
@@ -15,12 +15,12 @@
 
 namespace rtt_quadrature {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Tri_Chebyshev_Legendre
  * \brief A class to encapsulate a triangular Chebyshev-Legendre quadrature set.
  */
-//===========================================================================//
+//============================================================================//
 
 class Tri_Chebyshev_Legendre : public Octant_Quadrature {
 public:
@@ -81,6 +81,6 @@ private:
 
 #endif // quadrature_Tri_Chebyshev_Legendre_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Tri_Chebyshev_Legendre.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -33,6 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
 #ifdef _MSC_FULL_VER
@@ -136,6 +143,11 @@ int main(int argc, char **argv) {
 
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
+#endif
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
 #endif
 
 #ifdef __GNUC__

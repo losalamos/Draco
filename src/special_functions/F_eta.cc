@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/F_eta.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.
  *
  * These routines are based on C routines from Numerical Recipes.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "F_eta.hh"
 #include "Factorial.hh"
@@ -27,7 +27,7 @@ using rtt_units::PI;
 // Parametrization of integrand and inverse functions
 // static double leta, lgamma;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Evaluate the relativistic Fermi-Dirac integral
  *
@@ -136,6 +136,6 @@ double F_eta(double const eta, double const gamma) {
 
 } // end namespace rtt_sf
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of F_eta.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Expression.hh
  * \author Kent Budge
  * \brief  Definition of class Expression
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef parser_Expression_hh
 #define parser_Expression_hh
@@ -24,7 +24,7 @@ using std::pair;
 using std::string;
 using std::vector;
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Expression
  * \brief Represents a mathematical expression, typically parsed from user
@@ -55,7 +55,7 @@ using std::vector;
  * std::string) to variable index and units. The map can specify any number of
  * variables.
  */
-//===========================================================================//
+//============================================================================//
 
 class Expression {
 public:
@@ -189,6 +189,6 @@ private:
 
 #endif // parser_Expression_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of parser/Expression.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

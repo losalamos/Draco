@@ -41,6 +41,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable : 4521 4244 4127)
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
 #include <Random123/features/compilerfeatures.h>
 #if !R123_USE_SSE
 #include <stdio.h>
@@ -131,16 +136,18 @@ int main(int, char **) {
   // in llvm.  However, if it shows up in other contexts, some
   // kind of #ifndef might be appropriate.  N.B.  There's a similar
   // exception test in ut_carray.cpp
+
+  bool b(false);
+#if ! ( defined(_MSC_VER) && ! defined(DEBUG) )
   rngRemember(bool caught);
   rngRemember(caught = false);
-  bool b(false);
   try {
     b = One < AnotherOne;
   } catch (std::runtime_error &) {
     rngRemember(caught = true);
   }
   assert(caught);
-
+  
   rngRemember(caught = false);
   try {
     b = One <= AnotherOne;
@@ -164,6 +171,7 @@ int main(int, char **) {
     rngRemember(caught = true);
   }
   assert(caught);
+#endif
 
   // assemble_from_u32<r123m128i>
 
@@ -171,6 +179,11 @@ int main(int, char **) {
   return 0;
 }
 
+#endif
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
 #endif
 
 #ifdef _MSC_FULL_VER

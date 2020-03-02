@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Intel C++
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -47,8 +47,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
     "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe -fno-omit-frame-pointer" )
 
-  set( CMAKE_CXX_FLAGS
-    "${CMAKE_C_FLAGS} -std=c++11" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS_DEBUG
     "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE

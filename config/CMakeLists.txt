@@ -6,8 +6,10 @@
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.14.0)
 project( config )
+
+include(CMakePackageConfigHelpers)
 
 file( GLOB CMake_src *.cmake )
 file( GLOB Python_src *.py )
@@ -43,21 +45,25 @@ if( CMAKE_CONFIGURATION_TYPES )
       CACHE STRING "Available multiconfig builds." )
 endif()
 
-# Process the config file
+# Process the config files
 configure_file( draco-config-install.cmake.in
-   ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
+  "${CMAKE_CURRENT_BINARY_DIR}/draco-config.cmake" @ONLY)
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/draco-config-version.cmake"
+  VERSION ${Draco_VERSION}
+  COMPATIBILITY AnyNewerVersion )
 
 # Install scripts and macros to make them available by other projects.
 set( file_list
   ${CMake_src}
   ${CMake_in}
   ${Python_src}
-  ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake
-  ${Draco_SOURCE_DIR}/autodoc/html/doxygen.css)
+  ${CMAKE_CURRENT_BINARY_DIR}/draco-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/draco-config-version.cmake
+  ${Draco_SOURCE_DIR}/autodoc/html/doxygen.css )
 
-install( FILES ${file_list}  DESTINATION cmake/draco )
-install( FILES ${CMake_AFSD}
-  DESTINATION cmake/draco/CMakeAddFortranSubdirectory )
+install( FILES ${file_list}  DESTINATION cmake )
+install( FILES ${CMake_AFSD} DESTINATION cmake/CMakeAddFortranSubdirectory )
 
 ##---------------------------------------------------------------------------##
 ## End of config/CMakeLists.txt

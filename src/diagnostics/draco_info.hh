@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   diagnostics/draco_info.hh
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_diagnostics_draco_info_hh
 #define rtt_diagnostics_draco_info_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_diagnostics {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class DracoInfo
  * \brief Store and present basic information about the current draco build.
@@ -34,7 +34,7 @@ Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
      Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
      Paul W. Talbot, and Katherine J. Wang.
 
-Copyright (C) 2016-2019 Triad National Security, LLC. (LA-CC-16-016)
+Copyright (C) 2016-2020 Triad National Security, LLC. (LA-CC-16-016)
 
 For information, send e-mail to draco@lanl.gov.
 
@@ -69,8 +69,8 @@ Build information:
 
  * \endverbatim
  */
-//===========================================================================//
-class DLL_PUBLIC_diagnostics DracoInfo {
+//============================================================================//
+class DracoInfo {
 public:
   // IMPLELEMENTATION
   // ================
@@ -121,6 +121,6 @@ private:
 
 #endif //  rtt_diagnostics_draco_info_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of draco_info.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

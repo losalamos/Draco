@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/Safe_Divide.hh
  * \author Mike Buksas
  * \date   Tue Jun 21 15:35:05 2005
  * \brief  Provide protected division functions.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef dsxx_Save_Divide_hh
 #define dsxx_Save_Divide_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_dsxx {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /**
  * \brief Provide a non-overflowing division routine
  * \arg dividend The number *being divided*
@@ -48,7 +48,7 @@ inline FT safe_pos_divide(const FT &dividend, const FT &divisor) {
   return (dividend < dividend_bound) ? dividend / divisor : limit;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /**
  * \brief Provide a non-overflowing division routine
  * \arg dividend The number *being divided*
@@ -76,6 +76,6 @@ inline FT safe_divide(const FT &dividend, const FT &divisor) {
 
 #endif // dsxx_Save_Divide_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ds++/Save_Divide.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

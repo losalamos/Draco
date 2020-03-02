@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   c4/scatterv.t.hh
  * \author Kent G. Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef c4_scatterv_t_hh
 #define c4_scatterv_t_hh
@@ -19,14 +19,14 @@ namespace rtt_c4 {
 using std::copy;
 using std::vector;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // SCATTER
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
-                                          vector<T> &incoming_data) {
+void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
+                            vector<T> &incoming_data) {
 #ifdef C4_MPI
   { // This block is a no-op for with-c4=scalar
 
@@ -81,10 +81,10 @@ DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void determinate_scatterv(vector<vector<T>> &outgoing_data,
-                                        vector<T> &incoming_data) {
+void determinate_scatterv(vector<vector<T>> &outgoing_data,
+                          vector<T> &incoming_data) {
   Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());
 
 #ifdef C4_MPI
@@ -134,6 +134,6 @@ DLL_PUBLIC_c4 void determinate_scatterv(vector<vector<T>> &outgoing_data,
 
 #endif // c4_scatterv_t_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/scatterv.t.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

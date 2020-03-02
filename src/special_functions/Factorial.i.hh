@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   special_functions/factorial.i.hh
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef sf_factorial_i_hh
 #define sf_factorial_i_hh
@@ -16,7 +16,7 @@
 
 namespace rtt_sf {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief factorial
  *
@@ -45,7 +45,7 @@ template <typename T> T factorial(T const k) {
     throw std::range_error("factorial out of range");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Fraction of factorials, \f$ (k!)/(l!) \f$
  *
@@ -58,10 +58,10 @@ template <typename T> double factorial_fraction(T const k, T const l) {
   double result(1.0);
   if (k > l)
     for (T i = l + 1; i <= k; ++i)
-      result *= i;
+      result *= static_cast<double>(i);
   if (k < l)
     for (T i = k + 1; i <= l; ++i)
-      result /= 1.0 * i;
+      result /= static_cast<double>(i);
   return result;
 }
 
@@ -69,6 +69,6 @@ template <typename T> double factorial_fraction(T const k, T const l) {
 
 #endif // sf_factorial_i_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of sf/factorial.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

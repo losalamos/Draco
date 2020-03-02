@@ -2,7 +2,7 @@
 # file   config/FindEOSPAC.cmake
 # date   2017 February 28
 # brief  Instructions for discovering the EOSPAC vendor libraries.
-# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -95,7 +95,7 @@ find_library(EOSPAC_LIBRARY
 # Do we also have debug versions?
 find_library( EOSPAC_LIBRARY_DEBUG
   NAMES ${EOSPAC_LIBRARY_NAME}
-  HINTS ${EOSPAC_ROOT_DIR}/lib 
+  HINTS ${EOSPAC_ROOT_DIR}/lib
   PATH_SUFFIXES Debug
 )
 set( EOSPAC_INCLUDE_DIRS ${EOSPAC_INCLUDE_DIR} )
@@ -153,10 +153,20 @@ mark_as_advanced( EOSPAC_ROOT_DIR EOSPAC_VERSION EOSPAC_LIBRARY
 
 # Look for dlls, or Release and Debug libraries.
 if(WIN32)
-  string( REPLACE ".lib" ".dll" EOSPAC_LIBRARY_DLL
+  string( REPLACE ".lib" ".dll" EOSPAC_LIBRARY_DLL_libdir
     "${EOSPAC_LIBRARY}" )
-  string( REPLACE ".lib" ".dll" EOSPAC_LIBRARY_DEBUG_DLL
+  string( REPLACE ".lib" ".dll" EOSPAC_LIBRARY_DEBUG_DLL_libdir
     "${EOSPAC_LIBRARY_DEBUG}" )
+  string( REPLACE "/lib" "/bin" EOSPAC_LIBRARY_DLL_bindir
+    "${EOSPAC_LIBRARY_DLL_libdir}" )
+  string( REPLACE "/lib" "/bin" EOSPAC_LIBRARY_DEBUG_DLL bindir
+    "${EOSPAC_LIBRARY_DEBUG_DLL_libdir}" )
+
+    if( EXISTS "${EOSPAC_LIBRARY_DLL_libdir}" )
+      set(EOSPAC_LIBRARY_DLL "${EOSPAC_LIBRARY_DLL_libdir}")
+    elseif( EXISTS "${EOSPAC_LIBRARY_DLL_bindir}")
+      set(EOSPAC_LIBRARY_DLL "${EOSPAC_LIBRARY_DLL_bindir}")
+    endif()
 endif()
 
 if( EOSPAC_FOUND AND NOT TARGET EOSPAC::eospac )
@@ -203,7 +213,7 @@ if( EOSPAC_FOUND AND NOT TARGET EOSPAC::eospac )
       endif()
 
     endif()
-    
+
   else()
 
     # For all other environments (ones without dll libraries), create the

@@ -1,4 +1,8 @@
 ;;; -*-emacs-lisp-*-
+
+;; [KT 2019-10-18] No longer updated?  Maybe look at
+;; https://emacs.stackexchange.com/questions/31392/syntax-highlight-doxygen-comments-in-c-c-c-doc-comment-style/36637#36637
+
 ;;; doxymacs.el --- ELisp package for making doxygen related stuff easier.
 ;;
 ;;
@@ -115,11 +119,11 @@
 
 ;; Change log:
 ;;
-;; 10/06/2007 - version 1.8.0 
+;; 10/06/2007 - version 1.8.0
 ;; 02/02/2007 - bug #1490021: Allow spaces in @param [in] documentation.
 ;;              bug #1496399: Allow for different ways of user-mail-address
 ;;              to be defined.
-;; 22/04/2006 - feature #1338245: Add tokens to filladapt to match 
+;; 22/04/2006 - feature #1338245: Add tokens to filladapt to match
 ;;              doxygen markup.
 ;;            - version 1.7.0
 ;; 04/06/2005 - version 1.6.0

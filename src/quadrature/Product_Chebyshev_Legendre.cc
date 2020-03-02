@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Product_Chebyshev_Legendre.cc
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Product_Chebyshev_Legendre.hh"
 #include "Gauss_Legendre.hh"
@@ -16,25 +16,25 @@
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::name() const {
   return "Product Chebyshev Legendre";
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::parse_name() const { return "product cl"; }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Quadrature_Class Product_Chebyshev_Legendre::quadrature_class() const {
   return OCTANT_QUADRATURE;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 unsigned Product_Chebyshev_Legendre::number_of_levels() const {
   return sn_order_;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::as_text(string const &indent) const {
   string Result = indent + "type = " + parse_name() + indent +
                   "  order = " + to_string(sn_order()) + " " +
@@ -44,7 +44,7 @@ string Product_Chebyshev_Legendre::as_text(string const &indent) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Product_Chebyshev_Legendre::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
@@ -92,6 +92,6 @@ void Product_Chebyshev_Legendre::create_octant_ordinates_(
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Product_Chebyshev_Legendre.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressInterpreter.cc
  * \author Allan Wollaber
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Basic reader to print info in IPCRESS files.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressGrayOpacity.hh"
@@ -32,7 +32,7 @@ using std::endl;
 using std::ios;
 using std::string;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Basic reader to print info in IPCRESS files.
  *
@@ -50,7 +50,7 @@ using std::string;
  *
  * Modification of this executable to make it more useful is encouraged.
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void ipcress_file_read(std::string const &op_data_file) {
   // Ipcress data filename (IPCRESS format required)
 
@@ -206,7 +206,7 @@ void ipcress_file_read(std::string const &op_data_file) {
   cout << "Ending session." << endl;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   // Process known command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
@@ -251,6 +251,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of IpcressInterpreter.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

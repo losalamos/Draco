@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   RTT_Format_Reader/Flags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Flags class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __RTT_Format_Reader_Flags_hh__
-#define __RTT_Format_Reader_Flags_hh__
+#ifndef rtt_RTT_Format_Reader_Flags_hh
+#define rtt_RTT_Format_Reader_Flags_hh
 
 #include <algorithm>
 #include <fstream>
@@ -50,11 +50,11 @@ public:
   /*!
    * \brief Validates the specified flag index.
    * \param flag Flag index.
-   * \return The existance of the flag.
+   * \return The existence of the flag.
    */
   bool allowed_flag(size_t flag) const {
-    return flag_nums.end() !=
-           std::find(flag_nums.begin(), flag_nums.end(), flag);
+    return flag_nums.end() != std::find(flag_nums.begin(), flag_nums.end(),
+                                        static_cast<int>(flag));
   }
 
   /*!
@@ -86,8 +86,8 @@ public:
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif // __RTT_Format_Reader_Flags_hh__
+#endif // rtt_RTT_Format_Reader_Flags_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Flags.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

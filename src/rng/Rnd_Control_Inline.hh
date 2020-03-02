@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   rng/Rnd_Control_Inline.hh
  * \author Paul Henning
  * \brief  Rnd_Control header file.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef rtt_rng_Rnd_Control_Inline_hh
 #define rtt_rng_Rnd_Control_Inline_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_rng {
 
-//===========================================================================//
+//============================================================================//
 /*!
  * \class Rnd_Control
  * \brief A stream number manager that can initialize RNGs.
@@ -24,7 +24,7 @@ namespace rtt_rng {
  * generators, and the next available stream number to be used when
  * constructing a new generator.
  */
-//===========================================================================//
+//============================================================================//
 class Rnd_Control {
 private:
   //! Seed for initialization of random number streams.
@@ -65,7 +65,7 @@ public:
   inline void initialize(Counter_RNG &);
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Update the stream number and initialize the Counter_RNG.
 inline void Rnd_Control::initialize(const uint64_t snum, Counter_RNG &cbrng) {
   Require(snum < d_max_streams);
@@ -77,7 +77,7 @@ inline void Rnd_Control::initialize(const uint64_t snum, Counter_RNG &cbrng) {
   initialize(cbrng);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Initialize the Counter_RNG with the next available stream number.
 inline void Rnd_Control::initialize(Counter_RNG &cbrng) {
   Require(d_streamnum < d_max_streams);
@@ -93,6 +93,6 @@ inline void Rnd_Control::initialize(Counter_RNG &cbrng) {
 
 #endif // rtt_rng_Rnd_Control_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of rng/Rnd_Control.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

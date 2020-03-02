@@ -1,12 +1,12 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   linear/ludcmp.i.hh
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  Implementation of methods of ludcmp.hh
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ludcmp.hh"
 #include "ds++/Assert.hh"
@@ -19,7 +19,7 @@ namespace rtt_linear {
 
 using std::vector;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief LU-decompose a nonsingular matrix.
  *
@@ -48,7 +48,7 @@ void ludcmp(FieldVector &a, IntVector &indx,
   for (unsigned i = 0; i < n; ++i) {
     Field big = 0.0;
     for (unsigned j = 0; j < n; ++j) {
-      Field const temp = rtt_dsxx::abs(a[i + n * j]);
+      Field const temp = std::abs(a[i + n * j]);
       if (temp > big) {
         big = temp;
       }
@@ -74,7 +74,7 @@ void ludcmp(FieldVector &a, IntVector &indx,
         sum -= a[i + n * k] * a[k + n * j];
       }
       a[i + n * j] = sum;
-      Field const dum = vv[i] * rtt_dsxx::abs(sum);
+      Field const dum = vv[i] * std::abs(sum);
       if (dum >= big) {
         big = dum;
         imax = i;
@@ -101,7 +101,7 @@ void ludcmp(FieldVector &a, IntVector &indx,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Solve the system \f$Ax=b\f$
  *
@@ -138,7 +138,7 @@ void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
       for (unsigned j = ii - 1; j < i; ++j)
         sum -= a[i + n * j] * b[j];
     } else {
-      if (fabs(sum) > mrv)
+      if (std::abs(sum) > mrv)
         ii = i + 1;
     }
     b[i] = sum;
@@ -153,6 +153,6 @@ void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
 
 } // end namespace rtt_linear
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of ludcmp.i.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

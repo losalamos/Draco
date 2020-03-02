@@ -4,9 +4,9 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideData class.
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "SideData.hh"
 
@@ -72,6 +72,6 @@ void SideData::readEndKeyword(ifstream &meshfile) {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of RTT_Format_Reader/SideData.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

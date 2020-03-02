@@ -1,15 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   cdi/EoS.hh
  * \author Kelly Thompson
  * \date   Fri Apr 13 16:15:59 2001
  * \brief  EoS class header file (an abstract class)
- * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef __cdi_EoS_hh__
-#define __cdi_EoS_hh__
+#ifndef rtt_cdi_EoS_hh
+#define rtt_cdi_EoS_hh
 
 #include "ds++/config.h"
 #include <vector>
@@ -61,7 +61,7 @@ public:
    *
    * \param temperature The temperature value for which an
    *     opacity value is being requested (keV).
-   * \param density The density value for which an opacity 
+   * \param density The density value for which an opacity
    *     value is being requested (g/cm^3).
    * \return A specific electron internal energy (kJ/g).
    */
@@ -71,7 +71,7 @@ public:
   /*!
    * \brief EoS accessor that returns a vector of specific
    *     electron internal energies that
-   *     correspond to the provided vectors of temperatures and 
+   *     correspond to the provided vectors of temperatures and
    *     densities. v
    *
    * \param vtemperature A vector of temperature values for
@@ -98,7 +98,7 @@ public:
   /*!
    * \brief Retrieve a set of electron based heat capacities for
    *        this material that correspond to the tuple list of
-   *        provided densities and temperatures. 
+   *        provided densities and temperatures.
    *
    * \param vtemperature Temperature of the material in keV.
    * \param vdensity Density of the material in g/cm^3
@@ -122,7 +122,7 @@ public:
   /*!
    * \brief Retrieve a set of specific ion internal energies for
    *        this material that correspond to the tuple list of
-   *        provided densities and temperatures. 
+   *        provided densities and temperatures.
    *
    * \param vdensity Density of the material in g/cm^3
    * \param vtemperature Temperature of the material in keV.
@@ -146,7 +146,7 @@ public:
   /*!
    * \brief Retrieve a set of ion based heat capacities for
    *        this material that correspond to the tuple list of
-   *        provided densities and temperatures. 
+   *        provided densities and temperatures.
    *
    * \param vdensity Density of the material in g/cm^3
    * \param vtemperature Temperature of the material in keV.
@@ -170,7 +170,7 @@ public:
   /*!
    * \brief Retrieve a set of free electrons per ion averages for
    *        this material that correspond to the tuple list of
-   *        provided densities and temperatures. 
+   *        provided densities and temperatures.
    *
    * \param vdensity Density of the material in g/cm^3
    * \param vtemperature Temperature of the material in keV.
@@ -194,7 +194,7 @@ public:
   /*!
    * \brief Retrieve a set of electron based thermal conductivities for
    *        this material that correspond to the tuple list of
-   *        provided densities and temperatures. 
+   *        provided densities and temperatures.
    *
    * \param vdensity Density of the material in g/cm^3
    * \param vtemperature Temperature of the material in keV.
@@ -207,7 +207,7 @@ public:
 
   /*!
    * \brief Retrieve an electron temperature associated with the provided
-   *        specific electron internal energy (kJ/g) and density (g/cm^3). 
+   *        specific electron internal energy (kJ/g) and density (g/cm^3).
    *
    * \param density Density of the material in g/cm^3
    * \param SpecificElectronInternalEnergy in kJ/g
@@ -246,8 +246,8 @@ public:
 
 } // end namespace rtt_cdi
 
-#endif // __cdi_EoS_hh__
+#endif // rtt_cdi_EoS_hh
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cdi/EoS.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

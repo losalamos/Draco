@@ -4,8 +4,6 @@
 // Kelly Thompson
 // Wednesday, Jun 13, 2012, 12:35 pm
 //---------------------------------------------------------------------------//
-// $Id: FortranChecks.dcc.in 6055 2011-08-03 15:58:35Z kellyt $
-//---------------------------------------------------------------------------//
 
 /*!
 
@@ -109,7 +107,7 @@ MODULE FTN_C_2
    INTERFACE
       INTEGER (C_INT) FUNCTION C_LIBRARY_FUNCTION &
          (SENDBUF, SENDCOUNT, RECVCOUNTS) &
-         BIND(C, NAME=â€™C_Library_Functionâ€™)
+         BIND(C, NAME=’C_Library_Function’)
       USE FTN_C_1
       IMPLICIT NONE
       TYPE (C_PTR), VALUE :: SENDBUF
@@ -138,6 +136,6 @@ CALL C_LIBRARY_FUNCTION(C_LOC(SEND), SENDCOUNT, C_LOC(RECVCOUNTS))
 
 */
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of FortranChecks.dcc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

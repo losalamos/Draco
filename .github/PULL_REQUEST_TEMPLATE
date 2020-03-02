@@ -18,7 +18,7 @@
   * [Pre-Merge Code Review](https://github.com/lanl/Draco/wiki/Style-Guide)
   * [CDash Status](https://rtt.lanl.gov/cdash/index.php?project=Draco&filtercount=1&showfilters=1&field1=buildname&compare1=63&value1=-pr)
 * Checks
-  * [ ] Travis CI checks pass
+  * [ ] Travis/Appveyor CI checks pass
   * [ ] Code coverage does not decrease
   * [ ] [Valgrind test passes](https://rtt.lanl.gov/CDash/index.php?project=Draco)
   * [ ] [Toss3 checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)

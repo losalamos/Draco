@@ -14,9 +14,9 @@ project( cdi_test CXX )
 
 set( test_lib_sources
    ${PROJECT_SOURCE_DIR}/DummyEoS.cc
+   ${PROJECT_SOURCE_DIR}/DummyEICoupling.cc
    ${PROJECT_SOURCE_DIR}/DummyGrayOpacity.cc
    ${PROJECT_SOURCE_DIR}/DummyMultigroupOpacity.cc
-   ${PROJECT_SOURCE_DIR}/DummyOdfmgOpacity.cc
 )
 file( GLOB test_sources *.cc )
 file( GLOB test_headers *.hh )
