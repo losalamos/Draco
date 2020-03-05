@@ -40,6 +40,8 @@ NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
   Require(library.length() > 0);
   Require(reaction.length() > 0);
 
+  std::string path_test = std::string(NDI_ROOT_DIR);
+
   mg_form_map.insert(mg_pair(MG_FORM::LANL4, "4_lanl"));
   mg_form_map.insert(
       mg_pair(MG_FORM::NOT_SET, "No multigroup representation set!"));
