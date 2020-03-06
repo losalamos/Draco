@@ -253,7 +253,7 @@ private:
   //! Electron volt
   static constexpr double d_electronVolt_SI = d_electronCharge_SI; // J
 
-  //! Atomic mass unit (CODATA 2018 value)
+  //! Atomic mass unit (CODATA 2010 value)
   static constexpr double d_atomicMassUnit_SI = 1.660538921e-27; // kg
 
   //! Dimensional values converted to templated unit system
