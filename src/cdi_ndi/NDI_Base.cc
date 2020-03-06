@@ -29,11 +29,12 @@ namespace rtt_cdi_ndi {
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_form_in name of multigroup energy discretization to use
  */
-NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in,
+NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in,
                    const std::string &reaction_in, const MG_FORM mg_form_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in),
-      reaction(reaction_in), mg_form(mg_form_in) {
+    : dataset(dataset_in), library(library_in), reaction(reaction_in),
+      mg_form(mg_form_in) {
+
+  gendir = std::string(NDI_ROOT_DIR) + "share/gendir.all";
 
   Require(gendir.length() > 0);
   Require(dataset.length() > 0);

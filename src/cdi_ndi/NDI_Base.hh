@@ -12,6 +12,7 @@
 #define cdi_ndi_NDI_Base_hh
 
 #include "ndi.h"
+#include "cdi_ndi/config.h"
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <limits>
@@ -52,7 +53,7 @@ protected:
 
 protected:
   //! Path to gendir file, which indexes an NDI dataset
-  const std::string gendir;
+  std::string gendir;
 
   //! Type of data to read (NDI supports multigroup_neutron, multigroup_photon,
   //! multigroup_multi, tn, tnreactions, and dosimetry_neutrons)
@@ -111,9 +112,8 @@ protected:
 
 protected:
   //! Constructor
-  NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-           const std::string &library_in, const std::string &reaction_in,
-           const MG_FORM mg_form_in);
+  NDI_Base(const std::string &dataset_in, const std::string &library_in,
+           const std::string &reaction_in, const MG_FORM mg_form_in);
 
   //! Default constructor
   NDI_Base() = delete;
@@ -122,6 +122,11 @@ protected:
   NDI_Base(const NDI_Base &) = delete;
 
 public:
+  //! Use a gendir.all file other than ${NDI_ROOT_DIR}/share/gendir.all
+  void override_gendir_path(const std::string new_gendir_path) {
+    gendir = new_gendir_path;
+  }
+
   //! Get the name of the gendir file
   inline std::string get_gendir() const & { return gendir; }
 

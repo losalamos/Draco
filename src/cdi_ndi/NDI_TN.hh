@@ -34,7 +34,11 @@ namespace rtt_cdi_ndi {
 class NDI_TN : public NDI_Base {
 
 public:
-  //! Constructor
+  //! Constructor (default gendir path)
+  NDI_TN(const std::string &library_in, const std::string &reaction_in,
+         const MG_FORM mg_form_in);
+
+  //! Constructor (overridden gendir path)
   NDI_TN(const std::string &gendir_in, const std::string &library_in,
          const std::string &reaction_in, const MG_FORM mg_form_in);
 
@@ -48,6 +52,10 @@ public:
   //! Return spectrum PDF at a given temperature
   std::vector<double> get_PDF(const int product_zaid,
                               const double temperature) const;
+
+private:
+  void load_ndi(const std::string &gendir_in, const std::string &library_in,
+                const std::string &reaction_in, const MG_FORM mg_form_in);
 };
 
 } // namespace rtt_cdi_ndi

@@ -17,11 +17,8 @@ namespace rtt_cdi_ndi {
 // CONSTRUCTORS
 //----------------------------------------------------------------------------//
 /*!
- * \brief Constructor for NDI reader specific to TN reaction data.
- *
- * This constructor opens an NDI file, navigates to the appropriate data, reads
- * the data into internal buffers, and closes the file. For more details on NDI,
- * see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
+ * \brief Constructor for NDI reader specific to TN reaction data with provided
+ *        path to gendir file.
  *
  * \param[in] gendir_in path to gendir file
  * \param[in] library_in name of requested NDI data library
@@ -30,7 +27,45 @@ namespace rtt_cdi_ndi {
  */
 NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
                const std::string &reaction_in, const MG_FORM mg_form_in)
-    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_form_in) {
+    : NDI_Base("tn", library_in, reaction_in, mg_form_in) {
+
+  override_gendir_path(gendir_in);
+  load_ndi(gendir, library, reaction, mg_form);
+}
+
+/*!
+ * \brief Constructor for NDI reader specific to TN reaction data using default
+ *        gendir file.
+ *
+ * \param[in] library_in name of requested NDI data library
+ * \param[in] reaction_in name of requested reaction
+ * \param[in] mg_form_in choice of multigroup discretization
+ */
+NDI_TN::NDI_TN(const std::string &library_in, const std::string &reaction_in,
+               const MG_FORM mg_form_in)
+    : NDI_Base("tn", library_in, reaction_in, mg_form_in) {
+
+  load_ndi(gendir, library, reaction, mg_form);
+}
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Load NDI dataset. Split off from constructor to allow for both
+ *        default and overridden gendir paths.
+ *
+ * This function opens an NDI file, navigates to the appropriate data, reads
+ * the data into internal buffers, and closes the file. For more details on NDI,
+ * see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
+ *
+ * \param[in] gendir_in path to gendir file
+ * \param[in] library_in name of requested NDI data library
+ * \param[in] reaction_in name of requested reaction
+ * \param[in] mg_form_in choice of multigroup discretization
+ */
+void NDI_TN::load_ndi(const std::string &gendir_in,
+                      const std::string &library_in,
+                      const std::string &reaction_in,
+                      const MG_FORM mg_form_in) {
   int gendir_handle = -1;
   int dataset_handle = -1;
   int ndi_error = -9999;
@@ -38,7 +73,7 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
   char c_str_buf[c_str_len];
 
   // Open gendir file (index of a complete NDI dataset)
-  ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
+  ndi_error = NDI2_open_gendir(&gendir_handle, gendir_in.c_str());
   Require(ndi_error == 0);
   Insist(gendir_handle != -1, "gendir_handle still has default value!");
 
@@ -49,7 +84,7 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
 
   //! Set library option by changing default value for this handle
   ndi_error = NDI2_set_option_gendir(gendir_handle, NDI_LIBRARY_DEFAULT,
-                                     library.c_str());
+                                     library_in.c_str());
   Require(ndi_error == 0);
 
   //! Get dataset handle
@@ -58,7 +93,7 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
   Insist(dataset_handle != -1, "dataset_handle still has default value!");
 
   //! Set reaction
-  ndi_error = NDI2_set_reaction(dataset_handle, reaction.c_str());
+  ndi_error = NDI2_set_reaction(dataset_handle, reaction_in.c_str());
   Require(ndi_error == 0);
 
   //! Store reaction name from NDI file
@@ -153,7 +188,7 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
 
   //! Specify multigroup option
   ndi_error = NDI2_set_option(dataset_handle, NDI_COLLAPSE,
-                              mg_form_map[mg_form].c_str());
+                              mg_form_map[mg_form_in].c_str());
   Require(ndi_error == 0);
 
   //! Get number of groups

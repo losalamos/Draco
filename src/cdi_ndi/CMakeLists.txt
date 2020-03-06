@@ -10,6 +10,11 @@ project( cdi_ndi CXX )
 if( NDI_FOUND AND NOT DEFINED ENV{TRAVIS} )
 
 # ---------------------------------------------------------------------------- #
+# Generate config.h (only occurs when cmake is run)
+# ---------------------------------------------------------------------------- #
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
+
+# ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
@@ -27,7 +32,8 @@ add_component_library(
    LIBRARY_NAME cdi_ndi
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
-target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR} )
+target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR}
+   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 #add_component_executable(
 #  TARGET      Exe_QueryNDI
