@@ -36,7 +36,7 @@ public:
   NDI_AMW(const std::string gendir_path_in);
 
   //! Retrieve atomic mass weight for isotope with given ZAID
-  double get_amw(int ZAID);
+  double get_amw(const int zaid) const;
 
 private:
   //! Path to gendir file

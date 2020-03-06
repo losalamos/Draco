@@ -43,7 +43,7 @@ NDI_AMW::NDI_AMW(const std::string gendir_path_in) {
  * \param[in] zaid ZAID of isotope for which to return the atomic mass.
  * \return mass of isotope in grams
  */
-double NDI_AMW::get_amw(const int zaid) {
+double NDI_AMW::get_amw(const int zaid) const {
   int gendir_handle = -1;
   int ndi_error = -9999;
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir_path.c_str());
