@@ -36,11 +36,11 @@ class NDI_TN : public NDI_Base {
 public:
   //! Constructor (default gendir path)
   NDI_TN(const std::string &library_in, const std::string &reaction_in,
-         const MG_FORM mg_form_in);
+         const std::vector<double> mg_e_bounds_in);
 
   //! Constructor (overridden gendir path)
   NDI_TN(const std::string &gendir_in, const std::string &library_in,
-         const std::string &reaction_in, const MG_FORM mg_form_in);
+         const std::string &reaction_in, const std::vector<double> mg_e_bounds_in);
 
   //! Disable default constructor
   NDI_TN() = delete;
@@ -55,7 +55,7 @@ public:
 
 private:
   void load_ndi(const std::string &gendir_in, const std::string &library_in,
-                const std::string &reaction_in, const MG_FORM mg_form_in);
+                const std::string &reaction_in, const std::vector<double> &mg_e_bounds_in);
 };
 
 } // namespace rtt_cdi_ndi

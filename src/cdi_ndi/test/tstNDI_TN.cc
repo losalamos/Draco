@@ -43,7 +43,8 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
   std::string library_in = "lanl04";
   std::string reaction_in = "n+be7->p+li7";
 
-  NDI_TN tn(gendir_path, library_in, reaction_in, rtt_cdi_ndi::MG_FORM::LANL4);
+  std::vector<double> mg_e_bounds = {17., 7.79, 2.232, 0.184, 1.67e-4};
+  NDI_TN tn(gendir_path, library_in, reaction_in, mg_e_bounds);
 
   // Check return values of getters
   FAIL_IF(tn.get_gendir().find(gendir_in) == std::string::npos);

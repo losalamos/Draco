@@ -23,11 +23,6 @@
 
 namespace rtt_cdi_ndi {
 
-enum class MG_FORM {
-  LANL4 = 0,  /*!< "lanl04" 4-group NDI representation */
-  NOT_SET = 1 /*!< Default value prior to user input */
-};
-
 //============================================================================//
 /*!
  * \class NDI_Base
@@ -48,10 +43,6 @@ enum class MG_FORM {
 class NDI_Base {
 
 protected:
-  // typedefs
-  typedef std::pair<MG_FORM, std::string> mg_pair;
-
-protected:
   //! Path to gendir file, which indexes an NDI dataset
   std::string gendir;
 
@@ -64,12 +55,6 @@ protected:
 
   //! Name of reaction to read
   const std::string reaction;
-
-  //! Multigroup energy discretization
-  MG_FORM mg_form = MG_FORM::NOT_SET;
-
-  //! Conversion from MG_FORM enum to NDI-readable string
-  std::map<MG_FORM, std::string> mg_form_map;
 
   //! Name of reaction as found in NDI data
   std::string reaction_name;
@@ -110,10 +95,14 @@ protected:
   //! Group average energies (keV)
   std::vector<double> group_energies;
 
+  //! Energy bounds of multigroup data (MeV)
+  std::vector<double> mg_e_bounds;
+
 protected:
   //! Constructor
-  NDI_Base(const std::string &dataset_in, const std::string &library_in,
-           const std::string &reaction_in, const MG_FORM mg_form_in);
+  NDI_Base(const std::string &dataset_in,
+           const std::string &library_in, const std::string &reaction_in,
+           const std::vector<double> mg_e_bounds_in);
 
   //! Default constructor
   NDI_Base() = delete;
@@ -138,9 +127,6 @@ public:
 
   //! Get the reaction
   inline std::string get_reaction() const & { return reaction; }
-
-  //! Get the multigroup representation
-  inline MG_FORM get_mg_form() const { return mg_form; }
 
   //! Get the name of the reaction from the NDI file
   inline std::string get_reaction_name() const & { return reaction_name; }

@@ -26,11 +26,11 @@ namespace rtt_cdi_ndi {
  * \param[in] mg_form_in choice of multigroup discretization
  */
 NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
-               const std::string &reaction_in, const MG_FORM mg_form_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_form_in) {
+               const std::string &reaction_in, const std::vector<double> mg_e_bounds_in)
+    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
 
   override_gendir_path(gendir_in);
-  load_ndi(gendir, library, reaction, mg_form);
+  load_ndi(gendir, library, reaction, mg_e_bounds);
 }
 
 /*!
@@ -42,10 +42,10 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
  * \param[in] mg_form_in choice of multigroup discretization
  */
 NDI_TN::NDI_TN(const std::string &library_in, const std::string &reaction_in,
-               const MG_FORM mg_form_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_form_in) {
+               const std::vector<double> mg_e_bounds_in)
+    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
 
-  load_ndi(gendir, library, reaction, mg_form);
+  load_ndi(gendir, library, reaction, mg_e_bounds);
 }
 
 //----------------------------------------------------------------------------//
@@ -62,10 +62,8 @@ NDI_TN::NDI_TN(const std::string &library_in, const std::string &reaction_in,
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_form_in choice of multigroup discretization
  */
-void NDI_TN::load_ndi(const std::string &gendir_in,
-                      const std::string &library_in,
-                      const std::string &reaction_in,
-                      const MG_FORM mg_form_in) {
+void NDI_TN::load_ndi(const std::string &gendir_in, const std::string &library_in,
+               const std::string &reaction_in, const std::vector<double> &mg_e_bounds_in) {
   int gendir_handle = -1;
   int dataset_handle = -1;
   int ndi_error = -9999;
@@ -187,8 +185,8 @@ void NDI_TN::load_ndi(const std::string &gendir_in,
   q_reaction *= 1000.; // MeV -> keV
 
   //! Specify multigroup option
-  ndi_error = NDI2_set_option(dataset_handle, NDI_COLLAPSE,
-                              mg_form_map[mg_form_in].c_str());
+  ndi_error = NDI2_set_float64_vec_option(dataset_handle, NDI_COLLAPSE,
+    mg_e_bounds.data(), mg_e_bounds.size());
   Require(ndi_error == 0);
 
   //! Get number of groups
