@@ -71,7 +71,9 @@ double NDI_AMW::get_amw(const int zaid) const {
   ndi_error = NDI2_close_gendir(gendir_handle);
   Require(ndi_error == 0);
 
-  return arr[0];
+  printf("mass: %28.18e g\n", arr[0]*pc.amu());
+
+  return arr[0]*pc.amu();
 }
 
 } // namespace rtt_cdi_ndi

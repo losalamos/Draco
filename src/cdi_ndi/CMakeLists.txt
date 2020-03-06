@@ -28,7 +28,7 @@ file( GLOB headers *.hh )
 
 add_component_library(
    TARGET       Lib_cdi_ndi
-   TARGET_DEPS  "Lib_cdi;Lib_rng;NDI::ndi"
+   TARGET_DEPS  "Lib_cdi;Lib_rng;Lib_units;NDI::ndi"
    LIBRARY_NAME cdi_ndi
    SOURCES      "${sources}"
    HEADERS      "${headers}" )

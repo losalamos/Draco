@@ -47,7 +47,7 @@ void amw_test(rtt_dsxx::UnitTest &ut) {
   int proton_zaid = 1001;
   double proton_amw = ndi_amw.get_amw(proton_zaid);
 
-  FAIL_IF_NOT(soft_equiv(proton_amw, 1.0078249887344399, 1.e-8));
+  FAIL_IF_NOT(soft_equiv(proton_amw, 1.673532619349924133e-24, 1.e-8));
 
   if (ut.numFails == 0) {
     PASSMSG("NDI_AMW test passes.");

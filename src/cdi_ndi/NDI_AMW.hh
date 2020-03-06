@@ -12,6 +12,7 @@
 #define cdi_ndi_NDI_AMW_hh
 
 #include <string>
+#include "units/PhysicalConstexprs.hh"
 
 namespace rtt_cdi_ndi {
 
@@ -41,6 +42,9 @@ public:
 private:
   //! Path to gendir file
   std::string gendir_path;
+
+  //! Unit system
+  rtt_units::PhysicalConstexprs<rtt_units::CGS> pc;
 };
 
 } // namespace rtt_cdi_ndi
