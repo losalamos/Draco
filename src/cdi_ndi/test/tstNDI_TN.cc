@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "cdi_ndi/NDI_TN.hh"
 #include "cdi/CDI.hh"
+#include "cdi_ndi/NDI_TN.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
@@ -43,7 +43,7 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
   std::string library_in = "lanl04";
   std::string reaction_in = "n+be7->p+li7";
 
-  std::vector<double> mg_e_bounds = {17., 7.79, 2.232, 0.184, 1.67e-4};
+  std::vector<double> mg_e_bounds = {17.e3, 7.79e3, 2.232e3, 0.184e3, 1.67e-1};
   NDI_TN tn(gendir_path, library_in, reaction_in, mg_e_bounds);
 
   // Check return values of getters
