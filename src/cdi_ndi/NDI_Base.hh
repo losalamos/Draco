@@ -22,11 +22,6 @@
 
 namespace rtt_cdi_ndi {
 
-enum class MG_FORM {
-  LANL4 = 0,  /*!< "lanl04" 4-group NDI representation */
-  NOT_SET = 1 /*!< Default value prior to user input */
-};
-
 //============================================================================//
 /*!
  * \class NDI_Base
@@ -113,7 +108,7 @@ protected:
   //! Constructor
   NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
            const std::string &library_in, const std::string &reaction_in,
-           const MG_FORM mg_form_in);
+           const std::vector<double> mg_e_bounds_in);
 
   //! Default constructor
   NDI_Base() = delete;

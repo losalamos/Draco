@@ -31,18 +31,21 @@ namespace rtt_cdi_ndi {
  */
 NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
                    const std::string &library_in,
-                   const std::string &reaction_in, const MG_FORM mg_form_in)
+                   const std::string &reaction_in, const std::vector<double> mg_e_bounds_in)
     : gendir(gendir_in), dataset(dataset_in), library(library_in),
-      reaction(reaction_in), mg_form(mg_form_in) {
+      reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
 
   Require(gendir.length() > 0);
   Require(dataset.length() > 0);
   Require(library.length() > 0);
   Require(reaction.length() > 0);
+  Require(mg_e_bounds.size() > 0);
 
-  mg_form_map.insert(mg_pair(MG_FORM::LANL4, "4_lanl"));
-  mg_form_map.insert(
-      mg_pair(MG_FORM::NOT_SET, "No multigroup representation set!"));
+  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
+  for (int i = 1; i < mg_e_bounds.size(); i++) {
+    Require(mg_e_bounds[i] < mg_e_bounds[i-1]);
+  }
+  Require(mg_e_bounds[mg_e_bounds.size() - 1] > 0);
 }
 
 } // namespace rtt_cdi_ndi
