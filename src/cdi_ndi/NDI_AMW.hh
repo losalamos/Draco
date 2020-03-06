@@ -11,8 +11,8 @@
 #ifndef cdi_ndi_NDI_AMW_hh
 #define cdi_ndi_NDI_AMW_hh
 
-#include <string>
 #include "units/PhysicalConstexprs.hh"
+#include <string>
 
 namespace rtt_cdi_ndi {
 
