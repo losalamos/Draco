@@ -20,6 +20,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
+list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 #list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryNDI.cc )
 
 # ---------------------------------------------------------------------------- #
