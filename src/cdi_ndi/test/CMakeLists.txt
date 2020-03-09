@@ -13,8 +13,8 @@ project( cdi_ndi_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_sources
-  tstNDI_AMW.cc
-  tstNDI_TN.cc )
+  tstNDI_AtomicMass.cc
+  tstNDI_TNReaction.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

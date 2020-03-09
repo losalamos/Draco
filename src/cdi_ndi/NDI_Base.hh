@@ -14,6 +14,7 @@
 #include "ndi.h"
 #include "cdi_ndi/config.h"
 #include "ds++/Assert.hh"
+#include "ds++/path.hh"
 #include <algorithm>
 #include <limits>
 #include <map>
@@ -104,6 +105,10 @@ protected:
            const std::string &reaction_in,
            const std::vector<double> mg_e_bounds_in);
 
+  NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
+           const std::string &library_in, const std::string &reaction_in,
+           const std::vector<double> mg_e_bounds_in);
+
   //! Default constructor
   NDI_Base() = delete;
 
@@ -111,11 +116,6 @@ protected:
   NDI_Base(const NDI_Base &) = delete;
 
 public:
-  //! Use a gendir.all file other than ${NDI_ROOT_DIR}/share/gendir.all
-  void override_gendir_path(const std::string new_gendir_path) {
-    gendir = new_gendir_path;
-  }
-
   //! Get the name of the gendir file
   inline std::string get_gendir() const & { return gendir; }
 

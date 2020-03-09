@@ -1,15 +1,15 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   cdi_ndi/test/tstNDI_TN.cc
+ * \file   cdi_ndi/test/tstNDI_TNReaction.cc
  * \author Ben R. Ryan
  * \date   2019 Nov 18
- * \brief  NDI_Base test
+ * \brief  NDI_TNReaction test
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
-#include "cdi_ndi/NDI_TN.hh"
+#include "cdi_ndi/NDI_TNReaction.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 
-using rtt_cdi_ndi::NDI_TN;
+using rtt_cdi_ndi::NDI_TNReaction;
 using rtt_dsxx::soft_equiv;
 
 //----------------------------------------------------------------------------//
@@ -44,7 +44,7 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
   std::string reaction_in = "n+be7->p+li7";
 
   std::vector<double> mg_e_bounds = {17.e3, 7.79e3, 2.232e3, 0.184e3, 1.67e-1};
-  NDI_TN tn(gendir_path, library_in, reaction_in, mg_e_bounds);
+  NDI_TNReaction tn(gendir_path, library_in, reaction_in, mg_e_bounds);
 
   // Check return values of getters
   FAIL_IF(tn.get_gendir().find(gendir_in) == std::string::npos);
@@ -110,10 +110,22 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
     }
   }
 
+  // Check that non-monotonically-decreasing multigroup bounds fail
+  try {
+    std::vector<double> increasing_mg_e_bounds = {1.e0, 1.e1, 1.e2};
+    NDI_TNReaction bad_tn(gendir_path, library_in, reaction_in,
+                          increasing_mg_e_bounds);
+    FAILMSG("Did not catch expected assertion for non-monotonically-decreasing "
+            "multigroup bounds");
+  } catch (...) {
+    PASSMSG("Expected assertion caught for non-monotonically-decreasing "
+            "multigroup bounds");
+  }
+
   if (ut.numFails == 0) {
-    PASSMSG("NDI_Base test passes.");
+    PASSMSG("NDI_TNReaction test passes.");
   } else {
-    FAILMSG("NDI_Base test fails.");
+    FAILMSG("NDI_TNReaction test fails.");
   }
 }
 
@@ -128,5 +140,5 @@ int main(int argc, char *argv[]) {
 }
 
 //----------------------------------------------------------------------------//
-// end of tstNDI_TN.cc
+// end of tstNDI_TNReaction.cc
 //----------------------------------------------------------------------------//

@@ -1,15 +1,15 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   cdi_ndi/test/tstNDI_AMW.cc
+ * \file   cdi_ndi/test/tstNDI_AtomicMass.cc
  * \author Ben R. Ryan
  * \date   2020 Mar 6
- * \brief  NDI_AMW test
+ * \brief  NDI_AtomicMass test
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
-#include "cdi_ndi/NDI_AMW.hh"
+#include "cdi_ndi/NDI_AtomicMass.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 
-using rtt_cdi_ndi::NDI_AMW;
+using rtt_cdi_ndi::NDI_AtomicMass;
 using rtt_dsxx::soft_equiv;
 
 //----------------------------------------------------------------------------//
@@ -42,17 +42,22 @@ void amw_test(rtt_dsxx::UnitTest &ut) {
       << "    aw=1.0078249887344399  awr=0.99916729999999998  end\n";
   gendir_tmp_file.close();
 
-  NDI_AMW ndi_amw(gendir_tmp_path);
+  NDI_AtomicMass ndi_amw(gendir_tmp_path);
 
   int proton_zaid = 1001;
   double proton_amw = ndi_amw.get_amw(proton_zaid);
 
   FAIL_IF_NOT(soft_equiv(proton_amw, 1.673532619349924133e-24, 1.e-8));
 
+  int electron_zaid = -1;
+  double electron_amw = ndi_amw.get_amw(electron_zaid);
+
+  FAIL_IF_NOT(soft_equiv(electron_amw, 9.109382909999999302e-28, 1.e-8));
+
   if (ut.numFails == 0) {
-    PASSMSG("NDI_AMW test passes.");
+    PASSMSG("NDI_AtomicMass test passes.");
   } else {
-    FAILMSG("NDI_AMW test fails.");
+    FAILMSG("NDI_AtomicMass test fails.");
   }
 }
 
@@ -67,5 +72,5 @@ int main(int argc, char *argv[]) {
 }
 
 //----------------------------------------------------------------------------//
-// end of tstNDI_AMW.cc
+// end of tstNDI_AtomicMass.cc
 //----------------------------------------------------------------------------//

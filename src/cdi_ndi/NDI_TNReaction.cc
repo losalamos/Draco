@@ -1,14 +1,14 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   cdi_ndi/NDI_TN.cc
+ * \file   cdi_ndi/NDI_TNReaction.cc
  * \author Ben R. Ryan
  * \date   2020 Feb 4
- * \brief  NDI_TN member definitions.
+ * \brief  NDI_TNReaction member definitions.
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "NDI_TN.hh"
+#include "NDI_TNReaction.hh"
 #include <cmath>
 
 namespace rtt_cdi_ndi {
@@ -25,12 +25,12 @@ namespace rtt_cdi_ndi {
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
-NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
-               const std::string &reaction_in,
-               const std::vector<double> mg_e_bounds_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
+NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in,
+                               const std::string &library_in,
+                               const std::string &reaction_in,
+                               const std::vector<double> mg_e_bounds_in)
+    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_e_bounds_in) {
 
-  override_gendir_path(gendir_in);
   load_ndi();
 }
 
@@ -42,8 +42,9 @@ NDI_TN::NDI_TN(const std::string &gendir_in, const std::string &library_in,
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
-NDI_TN::NDI_TN(const std::string &library_in, const std::string &reaction_in,
-               const std::vector<double> mg_e_bounds_in)
+NDI_TNReaction::NDI_TNReaction(const std::string &library_in,
+                               const std::string &reaction_in,
+                               const std::vector<double> mg_e_bounds_in)
     : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
 
   load_ndi();
@@ -58,7 +59,7 @@ NDI_TN::NDI_TN(const std::string &library_in, const std::string &reaction_in,
  * the data into internal buffers, and closes the file. For more details on NDI,
  * see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
  */
-void NDI_TN::load_ndi() {
+void NDI_TNReaction::load_ndi() {
   int gendir_handle = -1;
   int dataset_handle = -1;
   int ndi_error = -9999;
@@ -290,8 +291,8 @@ void NDI_TN::load_ndi() {
  * \param[in] temperature of plasma (keV)
  * \return Normalized PDF of reaction product energy
  */
-std::vector<double> NDI_TN::get_PDF(const int product_zaid,
-                                    const double temperature) const {
+std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
+                                            const double temperature) const {
   std::vector<double> pdf(num_groups);
 
   Require(std::count(products.begin(), products.end(), product_zaid) == 1);
@@ -329,5 +330,5 @@ std::vector<double> NDI_TN::get_PDF(const int product_zaid,
 } // namespace rtt_cdi_ndi
 
 //----------------------------------------------------------------------------//
-// End cdi_ndi/NDI_TN.cc
+// End cdi_ndi/NDI_TNReaction.cc
 //----------------------------------------------------------------------------//
