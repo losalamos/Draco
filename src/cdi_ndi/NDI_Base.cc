@@ -95,9 +95,9 @@ NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   for (size_t i = 1; i < mg_e_bounds.size(); i++) {
-    Require(mg_e_bounds[i] < mg_e_bounds[i - 1]);
+    Insist(mg_e_bounds[i] < mg_e_bounds[i - 1], "Non-monotonic mg bounds!");
   }
-  Require(mg_e_bounds[mg_e_bounds.size() - 1] > 0);
+  Insist(mg_e_bounds[mg_e_bounds.size() - 1] > 0, "Negative mg bounds!");
 }
 
 } // namespace rtt_cdi_ndi
