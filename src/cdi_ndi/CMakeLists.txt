@@ -9,6 +9,9 @@ project( cdi_ndi CXX )
 
 if( NDI_FOUND AND NOT DEFINED ENV{TRAVIS} )
 
+if( NOT DEFINED NDI_ROOT_DIR AND DEFINED $ENV{NDI_ROOT_DIR})
+  set(NDI_ROOT_DIR $ENV{NDI_ROOT_DIR})
+endif()
 if( NOT DEFINED NDI_ROOT_DIR )
   message(FATAL_ERROR "NDI_ROOT_DIR not set. cdi_ndi requires the variable \
           NDI_ROOT_DIR to be set in the environment or with the -DNDI_ROOT_DIR \

@@ -129,12 +129,27 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+void gendir_default_test(rtt_dsxx::UnitTest &ut) {
+  std::string library_in = "lanl04";
+  std::string reaction_in = "d+t->n+a";
+
+  std::vector<double> mg_e_bounds = {17.e3, 7.79e3, 2.232e3, 0.184e3, 1.67e-1};
+  NDI_TNReaction tn(library_in, reaction_in, mg_e_bounds);
+}
+
 //----------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     gendir_test(ut);
+    std::string gendir_default = rtt_dsxx::getFilenameComponent(
+        std::string(NDI_ROOT_DIR) + "share/gendir.all",
+        rtt_dsxx::FilenameComponent::FC_NATIVE);
+
+    if (rtt_dsxx::fileExists(gendir_default)) {
+      gendir_default_test(ut);
+    }
   }
   UT_EPILOG(ut);
 }
