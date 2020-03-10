@@ -11,6 +11,7 @@
 #define rtt_rng_Rnd_Control_Inline_hh
 
 #include "Counter_RNG.hh"
+#include "device/config.h"
 #include <limits>
 
 namespace rtt_rng {
@@ -61,12 +62,15 @@ public:
   //! Return the maximum number of streams allowed.
   uint64_t get_max_streams() const { return d_max_streams; }
 
+  GPU_HOST_DEVICE
   inline void initialize(const uint64_t snum, Counter_RNG &);
+  GPU_HOST_DEVICE
   inline void initialize(Counter_RNG &);
 };
 
 //----------------------------------------------------------------------------//
 //! Update the stream number and initialize the Counter_RNG.
+GPU_HOST_DEVICE
 inline void Rnd_Control::initialize(const uint64_t snum, Counter_RNG &cbrng) {
   Require(snum < d_max_streams);
 
@@ -79,6 +83,7 @@ inline void Rnd_Control::initialize(const uint64_t snum, Counter_RNG &cbrng) {
 
 //----------------------------------------------------------------------------//
 //! Initialize the Counter_RNG with the next available stream number.
+GPU_HOST_DEVICE
 inline void Rnd_Control::initialize(Counter_RNG &cbrng) {
   Require(d_streamnum < d_max_streams);
 

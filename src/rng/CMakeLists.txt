@@ -42,7 +42,7 @@ list(APPEND headers_glob ${PROJECT_BINARY_DIR}/rng/config.h ) # install these!
 
 add_component_library(
    TARGET       Lib_rng
-   TARGET_DEPS  "Lib_dsxx;GSL::gsl"
+   TARGET_DEPS  "Lib_dsxx;Lib_device;GSL::gsl"
    LIBRARY_NAME ${PROJECT_NAME}
    VENDOR_INCLUDE_DIRS "${RANDOM123_INCLUDE_DIR}" )
 target_sources( Lib_rng PUBLIC "${headers_public}" PRIVATE "${sources_glob}" )

@@ -11,6 +11,7 @@
 #ifndef Counter_RNG_hh
 #define Counter_RNG_hh
 
+#include "device/config.h"
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
@@ -107,7 +108,8 @@ namespace // anonymous
  * version of the RNG seed, stream number, and spawn indicator and then returns
  * the lower 64 bits of the result.
  */
-static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
+GPU_HOST_DEVICE
+inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
   CBRNG hash;
   const ctr_type ctr = {{data[3], data[2]}};
   const key_type key = {{data[1] >> 32, 0}};
@@ -121,7 +123,7 @@ static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
  * Given a pointer to RNG state data, this function returns a random double in
  * the open interval (0, 1)---i.e., excluding the endpoints.
  */
-static inline double _ran(ctr_type::value_type *const data) {
+GPU_HOST_DEVICE inline double _ran(ctr_type::value_type *const data) {
   CBRNG rng;
 
   // Assemble a counter from the first two elements in data.
@@ -163,6 +165,7 @@ static inline double _ran(ctr_type::value_type *const data) {
 class Counter_RNG_Ref {
 public:
   //! Constructor.  db and de specify the extents of an RNG state block.
+  GPU_HOST_DEVICE
   Counter_RNG_Ref(ctr_type::value_type *const db,
                   ctr_type::value_type *const de)
       : data(db, de) {
@@ -171,18 +174,22 @@ public:
   }
 
   //! Return a random double in the open interval (0, 1).
+  GPU_HOST_DEVICE
   double ran() const { return _ran(data.access()); }
 
   //! Spawn a new, independent generator from this reference.
   inline void spawn(Counter_RNG &new_gen) const;
 
   //! Return the stream number.
+  GPU_HOST_DEVICE
   uint64_t get_num() const { return data[2]; }
 
   //! Return a unique identifier for this generator.
+  GPU_HOST_DEVICE
   uint64_t get_unique_num() const { return _get_unique_num(data.access()); }
 
   //! Is this Counter_RNG_Ref a reference to rng?
+  GPU_HOST_DEVICE
   inline bool is_alias_for(Counter_RNG const &rng) const;
 
 private:
@@ -243,21 +250,26 @@ public:
   }
 
   //! Return a random double in the interval (0, 1).
+  GPU_HOST_DEVICE
   double ran() const { return _ran(data); }
 
   //! Spawn a new, independent generator from this one.
   void spawn(Counter_RNG &new_gen) const { new_gen._spawn(data); }
 
   //! Return the stream number.
+  GPU_HOST_DEVICE
   uint64_t get_num() const { return data[2]; }
 
   //! Return a unique identifier for this generator.
+  GPU_HOST_DEVICE
   uint64_t get_unique_num() const { return _get_unique_num(data); }
 
   //! Return an iterator to the beginning of the state block.
+  GPU_HOST_DEVICE
   const_iterator begin() const { return data; }
 
   //! Return an iterator to the end of the state block.
+  GPU_HOST_DEVICE
   const_iterator end() const { return data + size(); }
 
   //! Test for equality.
@@ -266,17 +278,21 @@ public:
   }
 
   //! Test for inequality.
+  GPU_HOST_DEVICE
   bool operator!=(Counter_RNG const &rhs) const {
     return !std::equal(begin(), end(), rhs.begin());
   }
 
   //! Return a Counter_RNG_Ref corresponding to this Counter_RNG.
+  GPU_HOST_DEVICE
   Counter_RNG_Ref ref() const { return Counter_RNG_Ref(data, data + size()); }
 
   //! Return the size of this Counter_RNG.
+  GPU_HOST_DEVICE
   size_t size() const { return size_bytes() / sizeof(ctr_type::value_type); }
 
   //! Return the size of this Counter_RNG in bytes.
+  GPU_HOST_DEVICE
   size_t size_bytes() const { return sizeof(data); }
 
 private:
@@ -289,6 +305,7 @@ private:
   Counter_RNG &operator=(const Counter_RNG &);
 
   //! Initialize internal state from a seed and stream number.
+  GPU_HOST_DEVICE
   inline void initialize(const uint32_t seed, const uint64_t streamnum);
 
   //! Spawn a new, independent generator from the provided state block.
@@ -312,6 +329,7 @@ inline bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng) const {
 
 //----------------------------------------------------------------------------//
 //! \brief Initialize internal state from a seed and stream number.
+GPU_HOST_DEVICE
 inline void Counter_RNG::initialize(const uint32_t seed,
                                     const uint64_t streamnum) {
   // Low bits of the counter.
