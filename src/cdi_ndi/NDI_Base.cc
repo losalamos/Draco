@@ -53,10 +53,6 @@ NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in,
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(),
                                                    mg_e_bounds.end()));
-  /* Forward_Iterator last);
-  for (size_t i = 1; i < mg_e_bounds.size(); i++) {
-    Require(mg_e_bounds[i] < mg_e_bounds[i - 1]);
-  }*/
   Require(mg_e_bounds.back() > 0);
 }
 
