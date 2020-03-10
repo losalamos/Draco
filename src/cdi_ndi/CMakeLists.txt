@@ -9,6 +9,12 @@ project( cdi_ndi CXX )
 
 if( NDI_FOUND AND NOT DEFINED ENV{TRAVIS} )
 
+if( NOT DEFINED NDI_ROOT_DIR )
+  message(FATAL_ERROR "NDI_ROOT_DIR not set. cdi_ndi requires the variable \
+          NDI_ROOT_DIR to be set in the environment or with the -DNDI_ROOT_DIR \
+          flag if the ndi library is found.")
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
@@ -21,7 +27,6 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
-#list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryNDI.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
@@ -35,12 +40,6 @@ add_component_library(
    HEADERS      "${headers}" )
 target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR}
    PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
-
-#add_component_executable(
-#  TARGET      Exe_QueryNDI
-#  TARGET_DEPS Lib_cdi_ndi
-#  SOURCES     ${PROJECT_SOURCE_DIR}/QueryNDI.cc
-#  PREFIX       Draco )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
