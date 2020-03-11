@@ -135,6 +135,12 @@ void gendir_default_test(rtt_dsxx::UnitTest &ut) {
 
   std::vector<double> mg_e_bounds = {17.e3, 7.79e3, 2.232e3, 0.184e3, 1.67e-1};
   NDI_TNReaction tn(library_in, reaction_in, mg_e_bounds);
+
+  if (ut.numFails == 0) {
+    PASSMSG("NDI_TNReaction (default gendir.all path) test passes.");
+  } else {
+    FAILMSG("NDI_TNReaction (default gendir.all path) test fails.");
+  }
 }
 
 //----------------------------------------------------------------------------//
