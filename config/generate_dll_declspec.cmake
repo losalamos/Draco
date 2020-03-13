@@ -58,8 +58,8 @@ set( dll_declspec_content
  */
 /*---------------------------------------------------------------------------*/
 
-#ifndef rtt_dsxx_config_h
-#error \"Do not call this file directly. Call ds++/config.h instead.\"
+#ifndef rtt_${safedir}_config_h
+#error \"Do not call this file directly. Call ${dir}/config.h instead.\"
 #endif
 
 #ifndef rtt_${safedir}_declspec_h

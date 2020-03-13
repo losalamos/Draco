@@ -103,17 +103,6 @@ set( EOSPAC_LIBRARIES ${EOSPAC_LIBRARY} )
 
 # Try to find the version.
 if( NOT EOSPAC_VERSION )
-#   if( EXISTS "${EOSPAC_INCLUDE_DIRS}/eospac.h" )
-#     file( STRINGS "${EOSPAC_INCLUDE_DIRS}/eospac.h" eospac_h_major
-#         REGEX "define EOSPAC_VER_MAJOR" )
-#     file( STRINGS "${EOSPAC_INCLUDE_DIRS}/eospac.h" eospac_h_minor
-#         REGEX "define EOSPAC_VER_MINOR" )
-#     file( STRINGS "${EOSPAC_INCLUDE_DIRS}/eospac.h" eospac_h_subminor
-#         REGEX "define EOSPAC_VER_SUBMINOR" )
-#     string( REGEX REPLACE ".*([0-9]+)" "\\1" EOSPAC_MAJOR ${eospac_h_major} )
-#     string( REGEX REPLACE ".*([0-9]+)" "\\1" EOSPAC_MINOR ${eospac_h_minor} )
-#     string( REGEX REPLACE ".*([0-9]+)" "\\1" EOSPAC_SUBMINOR ${eospac_h_subminor} )
-#   endif()
   # We might also try scraping the directory name for a regex match
   # "eospac-X.X.X"
   if( NOT EOSPAC_MAJOR )
@@ -191,6 +180,9 @@ if( EOSPAC_FOUND AND NOT TARGET EOSPAC::eospac )
         set_target_properties( EOSPAC::eospac PROPERTIES
           IMPORTED_LOCATION_DEBUG           "${EOSPAC_LIBRARY_DEBUG_DLL}"
           IMPORTED_IMPLIB_DEBUG             "${EOSPAC_LIBRARY_DEBUG}" )
+      else()
+         set_target_properties( EOSPAC::eospac PROPERTIES
+           IMPORTED_LOCATION "${EOSPAC_LIBRARY_DLL}" )
       endif()
 
     else()
