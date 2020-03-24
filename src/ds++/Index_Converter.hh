@@ -12,6 +12,7 @@
 #define dsxx_Index_Converter_hh
 
 #include "Index_Counter.hh"
+#include <array>
 
 namespace rtt_dsxx {
 
@@ -23,19 +24,18 @@ namespace rtt_dsxx {
  *
  * \sa Index_Converter.cc for detailed descriptions.
  *
- * \example ds++/test/tstIndex_Converter.cc 
+ * \example ds++/test/tstIndex_Converter.cc
  * Example use of Index_Converter
  */
 //============================================================================//
 template <unsigned D, int OFFSET>
 class Index_Converter : public Index_Set<D, OFFSET> {
 public:
-  typedef Index_Set<D, OFFSET> Base;
-  typedef Index_Counter<D, OFFSET> Counter;
+  using Base = Index_Set<D, OFFSET>;
+  using Counter = Index_Counter<D, OFFSET>;
 
   //! default constructor
-  Index_Converter(void) { /*empty*/
-  }
+  Index_Converter() = default;
 
   //! Construct with just a pointer to the sizes
   Index_Converter(const unsigned *dimensions) { set_size(dimensions); }
@@ -44,8 +44,7 @@ public:
   Index_Converter(const unsigned dimension) { set_size(dimension); }
 
   //! Destructor
-  ~Index_Converter() override { /*empty*/
-  }
+  ~Index_Converter() override = default;
 
   //! Re-assignment operator
   void set_size(const unsigned *dimensions);
@@ -87,7 +86,7 @@ private:
   // DATA
 
   //! Sizes of sub-grids of increasing dimension.
-  unsigned sub_sizes[D];
+  std::array<unsigned, D> sub_sizes;
 
   // IMPLEMENTATION
 
@@ -128,8 +127,8 @@ int Index_Converter<D, OFFSET>::get_index(IT indices) const {
 
   int one_index_value = 0;
   int dimension = 0;
-  for (IT index = indices; index != indices + D; ++index, ++dimension) {
-    one_index_value += (*index - OFFSET) * this->sub_sizes[dimension];
+  for (unsigned index = 0; index < D; ++index, ++dimension) {
+    one_index_value += (indices[index] - OFFSET) * this->sub_sizes[dimension];
   }
 
   one_index_value += OFFSET;
@@ -172,19 +171,19 @@ void Index_Converter<D, OFFSET>::get_indices(int index, IT iter) const {
  * This function dispatches to the write-in-place version of the function and
  * stores the result in a local int[] array. It then constructs the return
  * vector in the return statement in order to allow the compiler to perform
- * return value optimization (RVO). This can potentially eliminate the
- * creation of a temporary return object.
+ * return value optimization (RVO). This can potentially eliminate the creation
+ * of a temporary return object.
  */
 template <unsigned D, int OFFSET>
 std::vector<int> Index_Converter<D, OFFSET>::get_indices(int index) const {
   Check(Base::index_in_range(index));
 
-  static int indices[D];
+  static std::array<int, D> indices;
 
-  get_indices(index, indices);
+  get_indices(index, indices.data());
 
   // Construct in return statement for RVO.
-  return std::vector<int>(indices, indices + D);
+  return std::vector<int>(indices.begin(), indices.begin() + D);
 }
 
 //----------------------------------------------------------------------------//
@@ -278,12 +277,12 @@ void Index_Converter<D, OFFSET>::compute_sub_sizes() {
 
   sub_sizes[0] = 1;
 
-  unsigned const *const dimensions = Base::get_dimensions();
+  std::array<unsigned, D> const dimensions = Base::get_dimensions();
   Remember(unsigned *end =)
-      std::partial_sum(dimensions, dimensions + D - 1, sub_sizes + 1,
-                       std::multiplies<unsigned>());
+      std::partial_sum(dimensions.begin(), dimensions.begin() + D - 1,
+                       sub_sizes.data() + 1, std::multiplies<unsigned>());
 
-  Ensure(end == sub_sizes + D);
+  Ensure(end == sub_sizes.data() + D);
 }
 
 } // end namespace rtt_dsxx

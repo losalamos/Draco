@@ -11,6 +11,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <limits>
 #include <sstream>
 
@@ -21,21 +22,21 @@ using namespace rtt_dsxx;
 // TESTS
 //----------------------------------------------------------------------------//
 void test_char_data(ScalarUnitTest &ut) {
-  unsigned char data[] = {'a', 'b', 'c'};
+  array<unsigned char, 3> data = {'a', 'b', 'c'};
   unsigned int length = sizeof(data) / sizeof(unsigned char);
 
-  char_byte_swap(data, length);
+  char_byte_swap(data.data(), length);
 
   if ((data[0] != 'c') || (data[1] != 'b') || (data[2] != 'a'))
-    ut.failure("unsigned char_byte_swap function failed");
+    FAILMSG("unsigned char_byte_swap function failed");
 
-  /* plain */ char pdata[] = {'a', 'b', 'c'};
-  unsigned int plength = sizeof(pdata) / sizeof(/* plain */ char);
+  array<char, 3> pdata = {'a', 'b', 'c'};
+  unsigned int plength = sizeof(pdata) / sizeof(char);
 
-  char_byte_swap(pdata, plength);
+  char_byte_swap(pdata.data(), plength);
 
   if ((pdata[0] != 'c') || (pdata[1] != 'b') || (pdata[2] != 'a'))
-    ut.failure("plain char_byte_swap function failed");
+    FAILMSG("plain char_byte_swap function failed");
 }
 
 //----------------------------------------------------------------------------//
@@ -46,7 +47,7 @@ void test_integer(ScalarUnitTest &ut) {
   byte_swap(moo);
 
   if (static_cast<unsigned>(moo) != 0xEFBEADDE)
-    ut.failure("byte_swap failed for for integer type");
+    FAILMSG("byte_swap failed for for integer type");
 
   // Unsigned integer
   unsigned int u_moo = 0xDEADBEEF;
@@ -54,7 +55,7 @@ void test_integer(ScalarUnitTest &ut) {
   byte_swap(u_moo);
 
   if (u_moo != 0xEFBEADDE)
-    ut.failure("byte_swap failed for for unsigned integer type");
+    FAILMSG("byte_swap failed for for unsigned integer type");
 
   // uint32_t, to test the specialized version of byte_swap_copy
   uint32_t uint32_moo = 0xDEADBEEF;
@@ -62,7 +63,7 @@ void test_integer(ScalarUnitTest &ut) {
   uint32_t uint32_moo_swapped = byte_swap_copy(uint32_moo);
 
   if (uint32_moo_swapped != 0xEFBEADDE)
-    ut.failure("byte_swap_copy failed for for unsigned integer type");
+    FAILMSG("byte_swap_copy failed for for unsigned integer type");
 }
 
 //----------------------------------------------------------------------------//
@@ -73,7 +74,7 @@ void test_int64(ScalarUnitTest &ut) {
   byte_swap(moo);
 
   if (static_cast<uint64_t>(moo) != 0xADFBEEDBEADDDEFA)
-    ut.failure("byte_swap failed for for int64 type");
+    FAILMSG("byte_swap failed for for int64 type");
 
   // Unsigned integer
   uint64_t u_moo = 0xFADEDDEADBEEFBAD;
@@ -81,17 +82,17 @@ void test_int64(ScalarUnitTest &ut) {
   byte_swap(u_moo);
 
   if (u_moo != 0xADFBEEDBEADDDEFA)
-    ut.failure("byte_swap failed for for uint64 integer type");
+    FAILMSG("byte_swap failed for for uint64 integer type");
 
   byte_swap(u_moo);
   if (u_moo != 0xFADEDDEADBEEFBAD)
-    ut.failure("2x byte_swap failed for for uint64 integer type");
+    FAILMSG("2x byte_swap failed for for uint64 integer type");
 
   // Swap again, using byte_swap_copy
   uint64_t u_moo_swapped = byte_swap_copy(u_moo);
 
   if (u_moo_swapped != 0xADFBEEDBEADDDEFA)
-    ut.failure("byte_swap_copy failed for for uint64 integer type");
+    FAILMSG("byte_swap_copy failed for for uint64 integer type");
 }
 
 //----------------------------------------------------------------------------//
@@ -133,21 +134,21 @@ void test_ieee_float(ScalarUnitTest &ut) {
 
   // Endianess
   if (is_big_endian())
-    ut.passes("This machine uses big endian byte ordering.");
+    PASSMSG("This machine uses big endian byte ordering.");
   else
-    ut.passes("This machine uses little endian byte ordering.");
+    PASSMSG("This machine uses little endian byte ordering.");
 
   // IEEE floating point?
   if (has_ieee_float_representation()) {
     std::ostringstream msg;
     msg << "Looks like we are on a platform that supports IEEE "
         << "floating point representation.";
-    ut.passes(msg.str());
+    PASSMSG(msg.str());
   } else {
     std::ostringstream msg;
     msg << "This platform does not support IEEE floating point "
         << "representation.";
-    ut.passes(msg.str());
+    PASSMSG(msg.str());
   }
 }
 
@@ -192,7 +193,7 @@ int main(int argc, char *argv[]) {
     test_idempotence(ut);
     test_ieee_float(ut);
     test_externc(ut);
-    ut.passes("Just Because.");
+    PASSMSG("Just Because.");
   }
   UT_EPILOG(ut);
 }

@@ -59,17 +59,25 @@ function(echo_target tgt)
   # Convert command output into a CMake list
   string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
   string(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-
   list(REMOVE_DUPLICATES CMAKE_PROPERTY_LIST)
+
+  # Is this an INTERFACE_LIBRARY?  If so, most properties cannot be queried.
+  get_property(type TARGET ${tgt} PROPERTY TYPE)
+  if(NOT "${type}" STREQUAL "INTERFACE_LIBRARY")
 
   foreach(prop ${CMAKE_PROPERTY_LIST})
     # special cases first
 
     # Some targets aren't allowed:
     # Ref: https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR prop MATCHES "_LOCATION$")
+    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR 
+      prop MATCHES "_LOCATION$")
       continue()
     elseif( prop MATCHES "<LANG>" )
+      continue()
+    endif()
+
+    if(prop STREQUAL "DEBUG_OUTPUT_NAME")
       continue()
     endif()
 
@@ -84,6 +92,7 @@ function(echo_target tgt)
     # everything else
     echo_target_property("${tgt}" "${prop}")
   endforeach()
+  endif()
   message("")
 endfunction()
 

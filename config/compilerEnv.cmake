@@ -7,6 +7,7 @@
 
 include_guard(GLOBAL)
 include( FeatureSummary )
+include( string_manip )
 
 if( NOT DEFINED PLATFORM_CHECK_OPENMP_DONE OR
     NOT DEFINED CCACHE_CHECK_AVAIL_DONE )
@@ -124,16 +125,16 @@ macro(dbsSetupCompilers)
     message( STATUS "Code coverage build ... disabled (Compiler not GNU|Clang)")
   endif()
   if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    if( NOT CODE_COVERAGE_IGNORE_REGEX)
-      message( "Setting CODE_COVERAGE_IGNORE_REGEX...")
-      set(CODE_COVERAGE_IGNORE_REGEX
-        /usr/*
-        *test/*
-        */opt/spack/*
-        *terminal/*
-        *FortranChecks/*
-        CACHE STRING "List of regex that lcov will ignore")
-    endif()
+    list(APPEND CODE_COVERAGE_IGNORE_REGEX
+      /usr/*
+      *test/*
+      */opt/spack/*
+      *terminal/*
+      *FortranChecks/*)
+    list(REMOVE_DUPLICATES CODE_COVERAGE_IGNORE_REGEX)
+    set( CODE_COVERAGE_IGNORE_REGEX ${CODE_COVERAGE_IGNORE_REGEX}
+      CACHE STRING "List of regex that lcov will ignore" FORCE)
+
     if( CMAKE_BUILD_TYPE STREQUAL Debug )
       # Add required flags (GCC & LLVM/Clang)
       target_compile_options(coverage_config INTERFACE --coverage )
@@ -159,19 +160,22 @@ macro(dbsSetupCompilers)
           COMMAND ${CMAKE_COMMAND} -E echo \"==> View HTML coverage report with command: firefox cov-html/index.html\"
           COMMAND ${CMAKE_COMMAND} -E echo \"==> Repeat text coverage report with command: lcov --list coverage.info\"
           BYPRODUCTS "${PROJECT_BINARY_DIR}/coverage.info" )
-          message( STATUS "Code coverage build ... enabled ('make covrep' to "
-            "see a text and/or a html report)")
-        else()
-          message( STATUS "Code coverage build ... disabled (lcov and/or gcov "
-            "not found)" )
-        endif()
+        message( STATUS "Code coverage build ... enabled ('make covrep' to "
+          "see a text and/or a html report)")
+        message("CODE_COVERAGE_IGNORE_REGEX  = ${CODE_COVERAGE_IGNORE_REGEX}")
+        block_indent( 90 27
+          "CODE_COVERAGE_IGNORE_REGEX = ${CODE_COVERAGE_IGNORE_REGEX}")
       else()
-        message( STATUS "Code coverage build ... disabled (CMAKE_BUILD_TYPE "
-          "!= Debug" )
+        message( STATUS "Code coverage build ... disabled (lcov and/or gcov "
+          "not found)" )
       endif()
+    else()
+      message( STATUS "Code coverage build ... disabled (CMAKE_BUILD_TYPE "
+        "!= Debug" )
     endif()
+  endif()
 
-    endif() # dbsSetupCompilers_done
+  endif() # dbsSetupCompilers_done
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -399,9 +403,17 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro(dbsSetupStaticAnalyzers)
 
-  set( DRACO_STATIC_ANALYZER "none" CACHE STRING "Enable a static analysis tool" )
+  set( DRACO_STATIC_ANALYZER "none" CACHE STRING "Enable a static analysis tool"
+    )
   set_property( CACHE DRACO_STATIC_ANALYZER PROPERTY STRINGS
     "none" "clang-tidy" "iwyu" "cppcheck" "cpplint" "iwyl" )
+
+  # Sanity Checks
+  if( "${DRACO_STATIC_ANALYZER}" STREQUAL "clang-tidy" AND
+      NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+    message( FATAL_ERROR "When DRACO_STATIC_ANALYZER=clang-tidy, the CXX"
+      " compiler must be clang.")
+  endif()
 
   if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 
@@ -417,6 +429,7 @@ macro(dbsSetupStaticAnalyzers)
         string(CONCAT CLANG_TIDY_IPATH ${CT_BPATH} "/include/c++/v1")
         unset( CT_BPATH )
       endif()
+
       if( CMAKE_CXX_CLANG_TIDY )
         if( NOT CLANG_TIDY_OPTIONS )
           set( CLANG_TIDY_OPTIONS "-header-filter=.*[.]hh" )
@@ -427,7 +440,8 @@ macro(dbsSetupStaticAnalyzers)
         if( NOT CLANG_TIDY_CHECKS )
           # -checks=mpi-*,bugprone-*,performance-*,modernize-*
           # See full list: `clang-tidy -check=* -list-checks'
-          set( CLANG_TIDY_CHECKS "-checks=modernize-*" )
+          # Default: all modernize checks; except use-triling-return-type.
+          set( CLANG_TIDY_CHECKS "-checks=modernize-*,-modernize-use-trailing-return-type" )
         endif()
         set( CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS}" CACHE STRING
           "clang-tidy check options (eg: -checks=bugprone-*,mpi-*)" FORCE )

@@ -20,7 +20,7 @@ namespace rtt_dsxx {
  */
 //============================================================================//
 
-template <class ForwardIterator>
+template <typename ForwardIterator>
 bool isSorted(ForwardIterator first, ForwardIterator last) {
   if (first == last)
     return true;
@@ -41,13 +41,7 @@ bool isSorted(ForwardIterator first, ForwardIterator last) {
  * \fn isSorted
  * \brief Checks to see if elements of [first, last) are sorted, via "comp".
  */
-// revision history:
-// -----------------
-// 0) original
-//
-//============================================================================//
-
-template <class ForwardIterator, class StrictWeakOrdering>
+template <typename ForwardIterator, typename StrictWeakOrdering>
 bool isSorted(ForwardIterator first, ForwardIterator last,
               StrictWeakOrdering comp) {
   if (first == last)

@@ -229,7 +229,7 @@ int message_size_custom(C4_Status status, const T &mpi_type);
  *
  * \param[in,out] request C4_Req object that will hold MPI request
  * \param[in,out] buffer array of data of type T that has an MPI type
- * \param[in] size size of buffer
+ * \param[in] size buffer size
  * \param[in] destination rank that will receive this message
  * \param[in] tag message tag
  */
@@ -261,7 +261,7 @@ void receive_async(C4_Req &request, T *buffer, int size, int source,
  *
  * \param[in,out] request C4_Req object that will hold MPI request
  * \param[in,out] buffer array of data of type T that has a registered MPI type
- * \param[in] size size of buffer
+ * \param[in] size buffer size
  * \param[in] source remote rank sending message to this rank
  * \param[in] tag message tag
  */

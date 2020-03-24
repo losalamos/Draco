@@ -9,10 +9,12 @@ cmd="bsub $job_launch_options -nnodes 1 -W 4:00 \
 -J rel_${package:0:3}-${buildflavor: -12}-$rttversion -o $logfile -e $logfile"
 echo "$cmd $draco_script_dir/release.msub"
 jobid=`$cmd $draco_script_dir/release.msub`
-sleep 1m
+echo "jobid = $jobid"
+sleep 2m
 # trim extra whitespace from number
 jobid=`echo ${jobid//[^0-9]/}`
 export jobids="$jobid $jobids"
+echo "jobids = $jobids"
 
 ##---------------------------------------------------------------------------##
 ## End

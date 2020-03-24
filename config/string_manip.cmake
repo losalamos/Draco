@@ -22,6 +22,14 @@ include_guard(GLOBAL)
 #
 # hanging_indent( 80 5 ${mymsg} )
 #
+# output:
+#
+# Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+#      tempor incididunt ut labore et dolore magna aliqua. Ut sem nulla
+#      pharetra diam sit amet nisl suscipit adipiscing. Venenatis a condimentum
+#      vitae sapien pellentesque habitant. Urna porttitor rhoncus dolor
+#      purus
+#
 # See src/CMakeLists.txt for an other example.
 #------------------------------------------------------------------------------#
 function (hanging_indent width indent message)
@@ -44,6 +52,58 @@ function (hanging_indent width indent message)
     else()
       message("${line}")
       set(line "${padding}")
+    endif()
+  endforeach()
+  message("${line}")
+
+endfunction()
+
+#------------------------------------------------------------------------------#
+# Print the string ${message} formatted as a block indent. Text will be wrapped
+# at column ${width} and all lines will be indented ${indent} spaces.
+#
+# Example use:
+#
+# set( mymsg "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do \
+# eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut sem nulla \
+# pharetra diam sit amet nisl suscipit adipiscing. Venenatis a condimentum \
+# vitae sapien pellentesque habitant. Urna porttitor rhoncus dolor \
+# purus.")
+#
+# block_indent( 80 5 ${mymsg} )
+#
+# output:
+#
+#      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+#      tempor incididunt ut labore et dolore magna aliqua. Ut sem nulla
+#      pharetra diam sit amet nisl suscipit adipiscing. Venenatis a condimentum
+#      vitae sapien pellentesque habitant. Urna porttitor rhoncus dolor
+#      purus
+#
+#------------------------------------------------------------------------------#
+function (block_indent width indent message)
+
+  string(REPLACE ";" " " message "${message}")
+  foreach(idx RANGE 1 ${indent})
+    string(APPEND padding " ")
+  endforeach()
+  set(line "${padding}") # 1st line
+
+  string(REPLACE " " ";" msg_list "${message}" )
+
+  foreach(word ${msg_list} )
+    string(LENGTH "${word}" word_len)
+    string(LENGTH "${line}" line_len)
+    math( EXPR proposed_len "${word_len} + ${line_len}" )
+    if( ${word_len} GREATER ${width} )
+      message("${line}")
+      message("${padding}${word}")
+      set(line "${padding}")
+    elseif( ${proposed_len} LESS_EQUAL ${width} )
+      string(APPEND line "${word} ")
+    else()
+      message("${line}")
+      set(line "${padding}${word} ")
     endif()
   endforeach()
   message("${line}")

@@ -73,13 +73,11 @@ public:
 
 ListWithDerived::ListWithDerived() : next() { /*empty*/
 }
-ListWithDerived::~ListWithDerived() { /*empty*/
-}
+ListWithDerived::~ListWithDerived() = default;
 
 ListD::ListD() : ListWithDerived() { /*empty*/
 }
-ListD::~ListD() { /*empty*/
-}
+ListD::~ListD() = default;
 
 class Foo {
 private:
@@ -97,11 +95,10 @@ public:
 //----------------------------------------------------------------------------//
 
 class Bar : public Foo {
-private:
-  Bar(const Bar &) = delete;
-
 public:
   explicit Bar(int i) noexcept : Foo(i) { nbars++; }
+  Bar(const Bar &) = delete;
+
   ~Bar() override { nbars--; }
   int vf() override { return Foo::f() + 1; }
   int f() { return Foo::f() + 2; }
@@ -110,11 +107,9 @@ public:
 //----------------------------------------------------------------------------//
 
 class Baz : public Bar {
-private:
-  Baz(const Baz &) = delete;
-
 public:
   explicit Baz(int i) noexcept : Bar(i) { nbazs++; }
+  Baz(const Baz &) = delete;
   ~Baz() override { nbazs--; }
   int vf() override { return Bar::f() + 1; }
   int f() { return Bar::f() + 2; }
@@ -123,11 +118,9 @@ public:
 //----------------------------------------------------------------------------//
 
 class Wombat {
-private:
-  Wombat(const Wombat &) = delete;
-
 public:
   Wombat() noexcept { nbats++; }
+  Wombat(const Wombat &) = delete;
   virtual ~Wombat() { nbats--; }
 };
 

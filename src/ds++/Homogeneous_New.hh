@@ -83,26 +83,27 @@ namespace rtt_dsxx {
  */
 //============================================================================//
 
-class DLL_PUBLIC_dsxx Homogeneous_New {
+class Homogeneous_New {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
-  enum {
-
-#ifdef isLinux
-    DEFAULT_BLOCK_SIZE = 4096
-#else
-    DEFAULT_BLOCK_SIZE = 4096
-#endif
-
-  };
+  enum { DEFAULT_BLOCK_SIZE = 4096 };
 
   // CREATORS
 
-  //! Create an allocator for objects of the specified size, using the
-  //! specified block byte count (defaulting to a system-tuned value.)
+  //! Create an allocator for objects of the specified size, using the specified
+  //! block byte count (defaulting to a system-tuned value.)
   Homogeneous_New(unsigned object_size,
                   unsigned default_block_size = DEFAULT_BLOCK_SIZE);
+
+  //! Copy constructor: not implemented
+  Homogeneous_New(const Homogeneous_New &rhs) = delete;
+  //! Move constructor: not implemented
+  Homogeneous_New(const Homogeneous_New &&rhs) = delete;
+  //! Assignment copy operator for Homogeneous_New: not implemented.
+  Homogeneous_New &operator=(const Homogeneous_New &rhs) = delete;
+  //! Assignment move operator for Homogeneous_New: not implemented.
+  Homogeneous_New &operator=(const Homogeneous_New &&rhs) = delete;
 
   //! Destructor.
   ~Homogeneous_New();
@@ -126,12 +127,6 @@ private:
   // NESTED CLASSES AND TYPEDEFS
 
   // IMPLEMENTATION
-
-  //! Copy constructor: not implemented
-  Homogeneous_New(const Homogeneous_New &rhs) = delete;
-
-  //! Assignment operator for Homogeneous_New: not implemented.
-  Homogeneous_New &operator=(const Homogeneous_New &rhs) = delete;
 
   void allocate_block_(unsigned const block_size);
 

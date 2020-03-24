@@ -23,7 +23,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="gcc830 cce90180"
+environments="gcc830" #" cce90180"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -40,7 +40,7 @@ fi
 case $ddir in
 
   #------------------------------------------------------------------------------#
-  draco-7_3* | draco-7_4*)
+  draco-7_3* | draco-7_4* | draco-7_5* | draco-7_6*)
     function gcc830()
     {
       run "module load user_contrib friendly-testing"
@@ -54,15 +54,19 @@ case $ddir in
       run "module unload cce gcc"
       run "module unload papi perftools"
       run "module load PrgEnv-gnu"
-      run "module load cmake numdiff/5.9.0-gcc-8.3.0 gsl/2.5-gcc-8.3.0"
-      run "module load openblas/0.3.6-gcc-8.3.0 metis/5.1.0-gcc-8.3.0"
-      run "module load eospac/6.4.0-gcc-8.3.0 random123/1.09-gcc-8.3.0"
-      run "module load parmetis/4.0.3-gcc-8.3.0-mpt-7.7.8"
-      run "module load superlu-dist/5.4.0-gcc-8.3.0-mpt-7.7.8-openblas"
-      run "module load trilinos/12.14.1-gcc-8.3.0-mpt-7.7.8-openblas"
+      run "module load gcc/8.3.0"
+      cver="gcc-8.3.0"
+      mver="mpt-7.7.10"
+      run "module load cmake numdiff/5.9.0-${cver} gsl/2.5-${cver}"
+      run "module load openblas/0.3.6-${cver} metis/5.1.0-${cver}"
+      run "module load eospac/6.4.0-${cver} random123/1.09-${cver}"
+      run "module load parmetis/4.0.3-${cver}-${mver}"
+      run "module load superlu-dist/5.4.0-${cver}-${mver}-openblas"
+      run "module load trilinos/12.14.1-${cver}-${mver}-openblas"
       run "module load cray-python/3.6.5.6 qt"
       run "module use --append ${VENDOR_DIR}-ec/modulefiles-capulin"
-      run "module load csk/0.4.2-gcc-8.3.0"
+      run "module load csk/0.5.0-${cver} quo"
+      # ndi
       run "module list"
       export CC=`which cc`
       export CXX=`which CC`

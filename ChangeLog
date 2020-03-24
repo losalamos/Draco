@@ -1,3 +1,80 @@
+2020-03-17  Kelly Glen Thompson  <kgt@lanl.gov>
+
+	* Draco has been updated to version 7_6_0 and is tied to the
+	  release of Jayenne-8_4_0 and Capsaicin-1_4_0.
+	  - https://rtt.lanl.gov/redmine/projects/draco/wiki/Draco-7_6_0
+	  - https://github.com/lanl/Draco/releases/tag/Draco-7_6_0
+
+	Draco-7_6_0, build date 2020/03/17;
+	  build type: Debug;DBC: 7;DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+	  Ryan T. Wollaeger, Ben R. Ryan, Alex R. Long, Kendra P. Long,
+	  James S. Warsa, Matt A. Cleveland, Tim Kelley, Jae H. Chang,
+	  Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+	Prior Contributors: Gabriel M. Rockefeller,
+	  Allan B. Wollaber, Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang,
+	  Peter Ahrens, Daniel Holladay, Jeff D. Densmore, Massimiliano Rosa,
+	  Todd J. Urbatsch, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas,
+	  Nick Myers, Paul Henning, Randy Roberts, Seth Johnson, Todd Adams,
+	  Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes
+
+	- 63 files changed, added or removed in 12 commits.
+	- Allow QuoWrapper to work correctly when mpi_init called from F90.
+	- fix tstifpstream
+	- Add support for NDI atomic mass weights and custom gendir files
+
+2020-03-04  Kelly Glen Thompson  <kgt@lanl.gov>
+
+	* Draco has been updated to version 7_5_0 and is tied to the
+	  release of Jayenne-8_4_0 and Capsaicin-1_4_0.
+	  - https://rtt.lanl.gov/redmine/projects/draco/wiki/Draco-7_5_0
+	  - https://github.com/lanl/Draco/releases/tag/Draco-7_5_0
+
+	* Information
+
+	Draco-7_5_0, build date 2020/03/04;
+	   build type: Debug;DBC: 7;DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+	   Ryan T. Wollaeger, Alex R. Long, Ben R. Ryan, Kendra P. Long,
+	   James S. Warsa, Matt A. Cleveland, Tim Kelley, Jae H. Chang,
+	   Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+	Prior Contributors: Gabriel M. Rockefeller,
+	   Allan B. Wollaber, Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang,
+	   Peter Ahrens, Daniel Holladay, Jeff D. Densmore, Massimiliano Rosa,
+	   Todd J. Urbatsch, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas,
+	   Nick Myers, Paul Henning, Randy Roberts, Seth Johnson, Todd Adams,
+	   Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+For information, send e-mail to draco@lanl.gov.
+
+	* Summary of changes
+
+	- 978 files changed, added or removed in 58 commits.
+	- Two new components were added:
+	  - cdi_ndi - Wrapper around LANL's Nuclear Data Interface (NDI) library
+	              for accessing.
+	  - cdi_CPEloss - Stopping power models for charged particles.
+	- The timestep component was retired.
+	- Provide user and regression support for gcov/lcov coverage reporting.
+	- Introduce a new TPL dependency on NDI.
+	- Provide a new parallel file read capability in c4.
+	- Removed deprecated ODFMG interfaces and related code.
+	- Full support for CUDA as a first class compile language (device)
+	- Improved support for finding and using mpich and intel-mpi (c4)
+	- Provide C++2023 feature mdspan, impl. borrowed from Kokkos
+
 2019-12-16  Kelly Glen Thompson  <kgt@lanl.gov>
 
 	* Overview

@@ -40,9 +40,7 @@ public:
    */
   explicit Apple(std::vector<double> &&v_in)
       : v_(v_in) // regular vector copy ctor called b/c lvalue
-  {
-    /* empty */
-  }
+  {}
 
   // member data
   std::vector<double> v_;
@@ -62,9 +60,7 @@ struct Banana {
    */
   explicit Banana(std::vector<double> &&v_in)
       : v_(std::move(v_in)) /* move casts to rval, move ctor called */
-  {
-    /* empty */
-  }
+  {}
 
   // member data
   std::vector<double> v_;
@@ -104,14 +100,12 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   report_memory_locations(a.v_, "a.v_");
 
   // v1 remains unchanged! (not the behavior we want)
-  if (v1_loc != &v1)
-    ITFAILS;
+  FAIL_IF_NOT(v1_loc == &v1);
   if (v1_data_loc != &v1[0])
     ITFAILS;
   else
     PASSMSG("v1 remains unchanged! (but we want v1 to be empty).");
-  if (v1_loc == &a.v_)
-    ITFAILS;
+  FAIL_IF(v1_loc == &a.v_);
   if (v1_data_loc == &a.v_[0])
     ITFAILS;
   else
@@ -133,8 +127,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   report_memory_locations(a.v_, "a.v_");
 
   // a.v_ should be the memory location of v1's original data.
-  if (v1_data_loc != &a.v_[0])
-    ITFAILS;
+  FAIL_IF_NOT(v1_data_loc == &a.v_[0]);
 
   // The v1 vector's data store may have changed location when we used
   // 'push_back' above.
@@ -142,8 +135,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
 
   // location of v1 remains unchanged (even though it's underlying data
   // container may be new).
-  if (v1_loc != &v1)
-    ITFAILS;
+  FAIL_IF_NOT(v1_loc == &v1);
 
   // Case 2:
   // Create an object, attempt to transfer ownership from v1 to b.
@@ -156,14 +148,12 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   report_memory_locations(b.v_, "b.v_");
 
   // v1 remains unchanged! (not the behavior we want)
-  if (v1_loc != &v1)
-    ITFAILS;
+  FAIL_IF_NOT(v1_loc == &v1);
   if (v1.size() != 0)
     ITFAILS;
   else
     PASSMSG("v1 no longer has a data store (transfered to Banana)");
-  if (v1_loc == &b.v_)
-    ITFAILS;
+  FAIL_IF(v1_loc == &b.v_);
   // v1_data_loc was set before Banana was constructed
   if (v1_data_loc == &b.v_[0] && b.v_.size() > 0)
     PASSMSG("Object 'b' has member data taken from v1.");
@@ -183,8 +173,9 @@ void report_memory_locations(std::vector<double> const &v,
                              std::string const &name) {
   using namespace std;
   cout << name << " @ " << &v << ", " << name << " data @ ";
-  if (v.size() > 0)
-    cout << &v[0] << endl;
+  if (!v.empty())
+    cout << &v[0] << endl; // NOLINT - clang-tidy warns about possibly accessing
+                           // moved-from data location.
   else
     cout << "nullptr" << endl;
   cout << name << " = {";

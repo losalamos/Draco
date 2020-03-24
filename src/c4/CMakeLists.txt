@@ -62,9 +62,7 @@ target_include_directories( Lib_c4
   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # xthi, ythi binaries
-if( NOT APPLE )
-  add_subdirectory( bin )
-endif()
+add_subdirectory( bin )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

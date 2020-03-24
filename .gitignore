@@ -11,3 +11,6 @@ GRTAGS
 GTAGS
 TAGS
 .vs
+# Ignore IDE files
+*sublime-project
+*sublime-workspace

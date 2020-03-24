@@ -9,13 +9,27 @@ project( cdi_ndi CXX )
 
 if( NDI_FOUND AND NOT DEFINED ENV{TRAVIS} )
 
+if( NOT DEFINED NDI_ROOT_DIR AND DEFINED $ENV{NDI_ROOT_DIR})
+  set(NDI_ROOT_DIR $ENV{NDI_ROOT_DIR})
+endif()
+if( NOT DEFINED NDI_ROOT_DIR )
+  message(FATAL_ERROR "NDI_ROOT_DIR not set. cdi_ndi requires the variable \
+          NDI_ROOT_DIR to be set in the environment or with the -DNDI_ROOT_DIR \
+          flag if the ndi library is found.")
+endif()
+
+# ---------------------------------------------------------------------------- #
+# Generate config.h (only occurs when cmake is run)
+# ---------------------------------------------------------------------------- #
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
+
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
-#list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryNDI.cc )
+list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
@@ -23,17 +37,12 @@ file( GLOB headers *.hh )
 
 add_component_library(
    TARGET       Lib_cdi_ndi
-   TARGET_DEPS  "Lib_cdi;Lib_rng;NDI::ndi"
+   TARGET_DEPS  "Lib_cdi;Lib_rng;Lib_units;NDI::ndi"
    LIBRARY_NAME cdi_ndi
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
-target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR} )
-
-#add_component_executable(
-#  TARGET      Exe_QueryNDI
-#  TARGET_DEPS Lib_cdi_ndi
-#  SOURCES     ${PROJECT_SOURCE_DIR}/QueryNDI.cc
-#  PREFIX       Draco )
+target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR}
+   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

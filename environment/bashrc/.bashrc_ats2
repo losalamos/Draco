@@ -48,7 +48,7 @@ else
 
 # StdEnv
 
-  export dracomodules="python/3.7.2 gcc/7.3.1 spectrum-mpi/2019.06.24 cmake/3.14.5 git gsl numdiff random123 metis netlib-lapack eospac/6.4.0 parmetis superlu-dist trilinos csk ack htop"
+  export dracomodules="python/3.7.2 gcc/7.3.1 spectrum-mpi/2019.06.24 cmake/3.14.5 git gsl numdiff random123 metis netlib-lapack eospac/6.4.0 parmetis superlu-dist trilinos csk ack htop libquo"
 
 fi
 

@@ -20,6 +20,13 @@
 #include "c4_mpi.h"
 #include "ds++/Assert.hh"
 
+//----------------------------------------------------------------------------//
+// Prototypes
+//----------------------------------------------------------------------------//
+
+//! Set c4's initialzed variable to true (called from Fortran tests)
+extern "C" void setMpiInit();
+
 namespace rtt_c4 {
 
 //----------------------------------------------------------------------------//
@@ -27,7 +34,7 @@ namespace rtt_c4 {
 //----------------------------------------------------------------------------//
 
 DLL_PUBLIC_c4 extern MPI_Comm communicator;
-extern bool initialized;
+DLL_PUBLIC_c4 extern bool initialized;
 
 //----------------------------------------------------------------------------//
 // SETUP FUNCTIONS

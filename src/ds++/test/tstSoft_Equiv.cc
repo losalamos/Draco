@@ -83,26 +83,27 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
     ITFAILS;
 
   // Tests that compare 1D vector data to 1D array data.
-  double v[3];
+  array<double, 3> v;
   v[0] = reference[0];
   v[1] = reference[1];
   v[2] = reference[2];
 
-  if (soft_equiv(&v[0], &v[3], reference.begin(), reference.end()))
+  if (soft_equiv(v.begin(), v.end(), reference.begin(), reference.end()))
     PASSMSG("Passed vector-pointer equivalence test.");
   else
     ITFAILS;
 
-  if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
-    ITFAILS;
+  FAIL_IF_NOT(
+      soft_equiv(reference.begin(), reference.end(), v.begin(), v.end()));
 
   // Check incompatible size
-  if (soft_equiv(reference.begin(), reference.end(), &v[1], &v[3]))
-    ITFAILS;
+  FAIL_IF(
+      soft_equiv(reference.begin(), reference.end(), v.begin() + 1, v.end()));
 
   // modify one value (delta < tolerance )
   v[1] += 1.0e-13;
-  if (!soft_equiv(&v[0], v + 3, reference.begin(), reference.end(), 1.e-13))
+  if (!soft_equiv(v.begin(), v.end(), reference.begin(), reference.end(),
+                  1.e-13))
     PASSMSG("Passed vector-pointer equivalence precision test.");
   else
     ITFAILS;

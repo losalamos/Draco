@@ -165,6 +165,11 @@ public:
   //! see electronVolt()
   constexpr double eV() const { return electronVolt(); }
 
+  //! access the atomic mass unit
+  constexpr double atomicMassUnit() const { return d_atomicMassUnit; }
+  //! see atomicMassUnit()
+  constexpr double amu() const { return atomicMassUnit(); }
+
 private:
   //! Derived unit conversions
   static constexpr double Length = UNITS::Length;
@@ -248,6 +253,9 @@ private:
   //! Electron volt
   static constexpr double d_electronVolt_SI = d_electronCharge_SI; // J
 
+  //! Atomic mass unit (CODATA 2010 value)
+  static constexpr double d_atomicMassUnit_SI = 1.660538921e-27; // kg
+
   //! Dimensional values converted to templated unit system
   //! Planck constant value in unit system
   static constexpr double d_planck = d_planck_SI * Energy * Time;
@@ -304,6 +312,9 @@ private:
 
   //! Electron volt value in unit system
   static constexpr double d_electronVolt = d_electronVolt_SI * Energy;
+
+  //! Atomic mass unit value in unit system
+  static constexpr double d_atomicMassUnit = d_atomicMassUnit_SI * Mass;
 };
 } // namespace rtt_units
 

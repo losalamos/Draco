@@ -51,7 +51,7 @@ std::string const exeExtension("");
  *       where the corresponding value is equal to or greater than the stated
  *       minimum, but is unspecified.
  *
- * - The minumum POSIX guarantee is \c HOST_NAME_MAX = \c 256.
+ * - The minimum POSIX guarantee is \c HOST_NAME_MAX = \c 256.
  * - An alternate value used by some Unix systems is \c MAXHOSTNAMELEN as
  *   defined in \c \<sys/param.h\>
  * - On Windows, the variable \c MAX_COMPUTERNAME_LENGTH from \c \<windows.h\>
@@ -73,7 +73,7 @@ int draco_getpid();
 std::string draco_getcwd();
 
 //! Return the stat value for a file
-class DLL_PUBLIC_dsxx draco_getstat {
+class draco_getstat {
 private:
   int stat_return_code;
 #ifdef WIN32
@@ -108,8 +108,8 @@ void draco_mkdir(std::string const &path);
 /*!
  * \brief Remove file or directory (not recursive)
  *
- * For recursive directory delete, see path.hh's walk_directory_tree and
- * the functor wdtOpRemove.
+ * For recursive directory delete, see path.hh's walk_directory_tree and the
+ * functor wdtOpRemove.
  */
 void draco_remove(std::string const &path);
 

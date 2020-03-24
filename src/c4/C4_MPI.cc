@@ -58,8 +58,8 @@ int initialize(int &argc, char **&argv, int required) {
 //----------------------------------------------------------------------------//
 
 void finalize() {
-  // If Libquo is active, it must be torn-down before MPI_Finalize is
-  // called. Otherwise, this call is a no-op.
+  // If Libquo is active, it must be torn-down before MPI_Finalize is called.
+  // Otherwise, this call is a no-op.
   QuoWrapper::quo_free();
   MPI_Finalize();
   return;
@@ -114,18 +114,18 @@ void global_barrier() {
 // TIMING FUNCTIONS
 //----------------------------------------------------------------------------//
 
-// overloaded function (no args)
+// overloaded function (no arguments)
 double wall_clock_time() { return MPI_Wtime(); }
 // overloaded function (provide POSIX timer information).
 double wall_clock_time(DRACO_TIME_TYPE &now) {
-// obtain posix timer information and return it to the user via the reference
+// obtain POSIX timer information and return it to the user via the reference
 // value argument "now".
 #ifdef WIN32
   now = std::chrono::high_resolution_clock::now();
 #else
   times(&now);
 #endif
-  // This funtion will return the MPI wall-clock time.
+  // This function will return the MPI wall-clock time.
   return MPI_Wtime();
 }
 
@@ -199,12 +199,18 @@ int abort(int error) {
 }
 
 //----------------------------------------------------------------------------//
-// isScalar
+// Helpers
 //----------------------------------------------------------------------------//
 bool isScalar() { return !initialized; }
 bool isMpiInit() { return initialized; }
 
 } // end namespace rtt_c4
+
+//! Set c4's initialzed variable to true (called from Fortran tests)
+void setMpiInit() {
+  rtt_c4::initialized = true;
+  return;
+}
 
 #endif // C4_MPI
 

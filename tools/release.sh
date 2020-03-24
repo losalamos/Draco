@@ -150,7 +150,7 @@ for env in $environments; do
   echo "======================================="
   ${env}
 
-  buildflavor=`flavor`
+  export buildflavor=`flavor`
   # e.g.: buildflavor=snow-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"

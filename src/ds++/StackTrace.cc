@@ -9,6 +9,7 @@
 //----------------------------------------------------------------------------//
 
 #include "StackTrace.hh"
+#include <array>
 #include <iostream>
 #include <sstream>
 
@@ -47,8 +48,8 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   pid_t const pid = getpid();
 
   // Now read the symbolic link (process name)
-  unsigned const buf_size(512);
-  char buf[buf_size];
+  unsigned constexpr buf_size(512);
+  std::array<char, buf_size> buf;
 #ifdef APPLE
   int ret = -1; // This scheme won't work on OSX: no /proc fs
 #else
@@ -56,21 +57,19 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   std::string const linkname =
       std::string("/proc/") + st_to_string(pid) + std::string("/exe");
 
-  auto ret = readlink(linkname.c_str(), buf, buf_size);
+  auto ret = readlink(linkname.c_str(), buf.data(), buf_size);
 #endif
   if (ret >= 0) /* readlink succeeded */
-  {
     buf[ret] = 0;
-  }
-  std::string process_name(buf);
-  if (ret < 0) {
-    process_name = "UNAVAILABLE";
-  }
+  std::string const process_name =
+      ret < 0 ? "UNAVAILABLE" : std::string(buf.data());
 
   // retrieve current stack addresses
-  int const max_frames = 64;
-  void *addrlist[max_frames];
-  int stack_depth = backtrace(addrlist, sizeof(addrlist) / sizeof(void *));
+  int constexpr max_frames = 64;
+  std::array<void *, max_frames> addrlist;
+  uint32_t constexpr sizeofvoidptr = sizeof(void *);
+  int const stack_depth =
+      backtrace(addrlist.data(), sizeofvoidptr * addrlist.size());
 
   // Print a header for the stack trace
   msg << "\n"
@@ -88,7 +87,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
   // resolve addresses into strings containing "filename(function+address)",
   // this array must be free()-ed
-  char **symbollist = backtrace_symbols(addrlist, stack_depth);
+  char **symbollist = backtrace_symbols(addrlist.data(), stack_depth);
 
   // allocate string which will be filled with the demangled function name
   size_t funcnamesize = 256;

@@ -29,8 +29,8 @@ namespace rtt_dsxx {
  * In 'main', the variables argc and argv are the argument count and array of
  * strings, respectively, as passed into the application on program invocation.
  * XGetopt provides tools to store the command line, registered options,
- * processing of options that read a user provided value, and provides tools
- * for presenting a help string and information about unprocessed data.
+ * processing of options that read a user provided value, and provides tools for
+ * presenting a help string and information about unprocessed data.
  *
  * On construction, XGetopt records registered options and help strings.  These
  * are matched against provided command line arguments and accessor functions
@@ -95,23 +95,23 @@ namespace rtt_dsxx {
 class XGetopt {
 public:
   // typedefs
-  typedef std::map<char, std::string> csmap;
+  using csmap = std::map<char, std::string>;
 
   /*!
-     *\brief Xgetopt constructor that only supports single character command
-     *       line arguments.
-     *
-     * \param[in] argc The number of command line arguments
-     * \param[in] argv An array of C-style strings that represent the command
-     *            line.
-     * \param[in] shortopts A string of letters that represent known command
-     *            line arguments.  Any letter followed by a colon represents an
-     *            option that requires that an argument be provided.
-     * \param[in] helpstrings_ A map of strings whose keys must match values
-     *            proivded in shortopts and whose values are messages related to
-     *            each option that will be printed by the member function
-     *            display_help.
-     */
+   *\brief Xgetopt constructor that only supports single character command line
+   *       arguments.
+   *
+   * \param[in] argc The number of command line arguments
+   * \param[in] argv An array of C-style strings that represent the command
+   *            line.
+   * \param[in] shortopts A string of letters that represent known command line
+   *            arguments.  Any letter followed by a colon represents an option
+   *            that requires that an argument be provided.
+   * \param[in] helpstrings_ A map of strings whose keys must match values
+   *            proivded in shortopts and whose values are messages related to
+   *            each option that will be printed by the member function
+   *            display_help.
+   */
   XGetopt(int const argc, char **&argv, std::string const &shortopts,
           csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
@@ -123,8 +123,8 @@ public:
   }
 
   // const argv version used by the unit test.
-  XGetopt(int const argc, char const *const argv[],
-          std::string const &shortopts, csmap helpstrings_ = csmap())
+  XGetopt(int const argc, char const *const *argv, std::string const &shortopts,
+          csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
         cmd_line_args(argv + 1, argv + argc), longopts(csmap()), // empty
         vshortopts_hasarg(std::map<char, bool>()),
@@ -134,22 +134,22 @@ public:
   }
 
   /*!
-     * \brief Xgetopt constructor that requires a map that includes
-     * char-to-string names of options that are to be recognized.
-     *
-     * \param[in] argc The number of command line arguments
-     * \param[in] argv An array of C-style strings that represent the command
-     *            line.
-     * \param[in] longopts_ A map whose keys are letters that represent known
-     *            command line arguments.  Associated values are strings that
-     *            provide identical functionality.  These string values may be
-     *            followed by a colon represents an option that requires that an
-     *            additional argument be provided.
-     * \param[in] helpstrings_ A map of strings whose keys must match values
-     *            proivded in shortopts and whose values are messages related to
-     *            each option that will be printed by the member function
-     *            display_help.
-     */
+   * \brief Xgetopt constructor that requires a map that includes char-to-string
+   *        names of options that are to be recognized.
+   *
+   * \param[in] argc The number of command line arguments
+   * \param[in] argv An array of C-style strings that represent the command
+   *            line.
+   * \param[in] longopts_ A map whose keys are letters that represent known
+   *            command line arguments.  Associated values are strings that
+   *            provide identical functionality.  These string values may be
+   *            followed by a colon represents an option that requires that an
+   *            additional argument be provided.
+   * \param[in] helpstrings_ A map of strings whose keys must match values
+   *            proivded in shortopts and whose values are messages related to
+   *            each option that will be printed by the member function
+   *            display_help.
+   */
   XGetopt(int const argc, char **&argv, csmap const &longopts_,
           csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
@@ -162,7 +162,7 @@ public:
   }
 
   // const argv version used by the unit test
-  XGetopt(int const argc, char const *const argv[], csmap const &longopts_,
+  XGetopt(int const argc, char const *const *argv, csmap const &longopts_,
           csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
         cmd_line_args(argv + 1, argv + argc),
@@ -174,8 +174,8 @@ public:
   }
 
   /*! \brief This operator should be called from within a loop that iterates
-     * through command line arguments (see class documentation).  It will return
-     * the char value that matches registered options. */
+   * through command line arguments (see class documentation).  It will return
+   * the char value that matches registered options. */
   int operator()() {
     if (optind >= matched_arguments.size())
       return -1;
@@ -187,11 +187,12 @@ public:
   }
 
   /*! \brief fetch the value associated with current option. E.g.: for the
-     * option '-v foobar', return string 'foobar' associated with option 'v'. */
+   *         option '-v foobar', return string 'foobar' associated with option
+   *         'v'. */
   std::string get_option_value() const { return optarg; }
 
   /*! \brief Return a vector of strings that were provided on the command line
-     * but do not match any registered arguments. */
+   *         but do not match any registered arguments. */
   std::vector<std::string> get_unmatched_arguments() const {
     return unmatched_arguments;
   }
@@ -209,7 +210,7 @@ private:
   size_t optind;
 
   /*! \brief String provided as value for option. E.g.: for the option '-v
-      foobar', return string 'foobar' associated with option 'v'. */
+             foobar', return string 'foobar' associated with option 'v'. */
   std::string optarg;
 
   //! storage for command line arguments (copy of argv)
@@ -219,7 +220,7 @@ private:
   csmap const longopts;
 
   /*! \brief Vector of flags that specify if the current option requires that
-     * an value be provided on the command line. */
+   *         an value be provided on the command line. */
   std::map<char, bool> vshortopts_hasarg;
 
   //! A vector of characters that represent known options.
@@ -249,7 +250,7 @@ private:
   csmap store_longopts(csmap const &longopts_);
 
   /*! \brief Match provided command line arguments to registered options and
-     *         record the results to class data. */
+   *         record the results to class data. */
   void match_args_to_options();
 };
 

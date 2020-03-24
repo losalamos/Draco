@@ -21,11 +21,11 @@ namespace rtt_dsxx {
 /*!
  * \class Range_finder
  *
- * These functions locate a value in intervals described by an increasing
- * array. E.g. Let \c v[i] be an increasing array and \c r a value. These
- * functions look for \c i such that: \code v[i] < r < v[i+1] \endcode. The
- * different versions of the function have different behavior in the event that
- * \code r = v[i] \endcode for some \c i.
+ * These functions locate a value in intervals described by an increasing array.
+ * E.g. Let \c v[i] be an increasing array and \c r a value. These functions
+ * look for \c i such that: \code v[i] < r < v[i+1] \endcode. The different
+ * versions of the function have different behavior in the event that \code r =
+ * v[i] \endcode for some \c i.
  *
  * The 'left' versions assume the intervals are closed on the left, so that
  * \code v[i] <= r < v[i+1] \endcode. Likewise, the 'right' versions assume
@@ -44,16 +44,16 @@ namespace rtt_dsxx {
  * Values which are out of range will fail a DCB check, but pass silently if DBC
  * is off. You have been warned!
  *
- * This function uses the equal_range algorithm, which returns an iterator
- * pair. Both iterators will point to the first value _after_ \c r in \c v,
- * unless \c v[i]==r for some \c i, then the first iterator will point to \c
- * v[i] and the second to \c v[i+1]. This enables simple verification of out of
- * bound index detection and a simple compuation for the index which works
- * whrether or not equality is obtained.
+ * This function uses the equal_range algorithm, which returns an iterator pair.
+ * Both iterators will point to the first value _after_ \c r in \c v, unless \c
+ * v[i]==r for some \c i, then the first iterator will point to \c v[i] and the
+ * second to \c v[i+1]. This enables simple verification of out of bound index
+ * detection and a simple computation for the index which works whether or not
+ * equality is obtained.
  */
 //============================================================================//
 
-enum RANGE_DIRECTION { LEFT = 0, RIGHT = 1 };
+enum class RANGE_DIRECTION { LEFT = 0, RIGHT = 1 };
 
 namespace {
 
@@ -118,7 +118,7 @@ int Range_finder_right_catch_end(
   const std::pair<IT, IT> it = std::equal_range(begin, end, value);
   Require(validate(it, begin, end));
 
-  // Extract the coordintate index (0..n-1)
+  // Extract the coordinate index (0..n-1)
   const int index = static_cast<int>(it.first - begin) - 1;
 
   // If we got -1 here, then v=v[0] and we want to catch this end value:
@@ -138,11 +138,12 @@ template <typename IT>
 int Range_finder(IT begin, IT end,
                  typename std::iterator_traits<IT>::value_type value,
                  RANGE_DIRECTION direction_indicator) {
-  Check(direction_indicator == 0 || direction_indicator <= 1);
+  Check(direction_indicator == RANGE_DIRECTION::LEFT ||
+        direction_indicator == RANGE_DIRECTION::RIGHT);
 
-  if (direction_indicator == LEFT)
+  if (direction_indicator == RANGE_DIRECTION::LEFT)
     return Range_finder_left(begin, end, value);
-  else if (direction_indicator == RIGHT)
+  else if (direction_indicator == RANGE_DIRECTION::RIGHT)
     return Range_finder_right(begin, end, value);
   else
     Insist(0, "Invalid direction indicator in Range_finder");
@@ -155,11 +156,12 @@ template <typename IT>
 int Range_finder_catch_end(IT begin, IT end,
                            typename std::iterator_traits<IT>::value_type value,
                            RANGE_DIRECTION direction_indicator) {
-  Check(direction_indicator == 0 || direction_indicator <= 1);
+  Check(direction_indicator == RANGE_DIRECTION::LEFT ||
+        direction_indicator == RANGE_DIRECTION::RIGHT);
 
-  if (direction_indicator == LEFT)
+  if (direction_indicator == RANGE_DIRECTION::LEFT)
     return Range_finder_left_catch_end(begin, end, value);
-  else if (direction_indicator == RIGHT)
+  else if (direction_indicator == RANGE_DIRECTION::RIGHT)
     return Range_finder_right_catch_end(begin, end, value);
   else
     Insist(0, "Invalid direction indicator in Range_finder");

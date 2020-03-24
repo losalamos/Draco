@@ -1,5 +1,5 @@
 ========================================
-Tools
+tools
 ========================================
 
 
@@ -35,6 +35,16 @@ Usage:
    scripts/<family>-env.sh.
 3. Update Draco specific settings in draco-cmake-options.sh
 4. Update scripts/*-env.sh scripts to setup modulefiles and configure modes.
-5. Build and test the release
+5. Build and test the release (run this from the front-end -- except for darwin)
    scripts/release.sh &> logs/release-snow.log &
 6. Monitor progress as log files are created in the logs directory.
+
+
+Usage (Darwin):
+
+Same as above, except you must already have an allocation and be logged onto
+the back end before running the release script.
+
+salloc -N 1 -p power9
+cd /usr/projects/draco/draco-7_5_0
+source/tools/release.sh &> logs/release-darwin-power9.log &

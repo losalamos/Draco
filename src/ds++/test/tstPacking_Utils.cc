@@ -3,8 +3,7 @@
  * \file   ds++/test/tstPacking_Utils.cc
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:58:08 2001
- * \brief  Test the routines used for serializing and de-serializing C++
- *         objects.
+ * \brief  Test the routines used for serializing and de-serializing C++ objects
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved */
 //----------------------------------------------------------------------------//
@@ -13,6 +12,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <sstream>
 
 using namespace std;
@@ -42,9 +42,10 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
 
   vector<double> vd = {2.3432, 2.3432, 2.3432, 22.4, 2.3432};
   vector<int> vi = {7, 22, 6};
-  char const test_string[] = "test";
+  std::string const test_string = "test";
   size_t const total_size = vi.size() * sizeof(int) +
-                            vd.size() * sizeof(double) + sizeof(test_string);
+                            vd.size() * sizeof(double) + test_string.length() +
+                            1;
 
   // includes one padding byte
   Packer p;
@@ -53,9 +54,8 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
 
   p.compute_buffer_size_mode();
   do_some_packing(p, vd, vi); // computes the size
-
   p.pad(1);
-  p.accept(4, test_string);
+  p.accept(test_string.length(), test_string.data());
   FAIL_IF_NOT(total_size == p.size());
 
   Check(p.size() < UINT_MAX);
@@ -67,7 +67,7 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   do_some_packing(p, vd, vi); // actually does the packing
 
   p.pad(1);
-  p.accept(4, test_string);
+  p.accept(test_string.length(), test_string.data());
 
   FAIL_IF_NOT(static_cast<int>(total_size) == p.end() - p.begin());
 
@@ -110,9 +110,8 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
     Unpacker localUnpacker;
     localUnpacker.set_buffer(lbuffer.size(), &lbuffer[0]);
 
-    if (static_cast<int>(localUnpacker.size()) !=
-        localUnpacker.end() - localUnpacker.begin())
-      ITFAILS;
+    FAIL_IF_NOT(static_cast<int>(localUnpacker.size()) ==
+                localUnpacker.end() - localUnpacker.begin());
 
     for (double const val : vd) {
       double d(-42.42);
@@ -157,14 +156,12 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     p.pack(y);
     p.pack(iy);
 
-    if (p.get_ptr() != b1 + s1)
-      ITFAILS;
+    FAIL_IF_NOT(p.get_ptr() == b1 + s1);
 
     p.set_buffer(s2, b2);
     p << iz << z;
 
-    if (p.get_ptr() != b2 + s2)
-      ITFAILS;
+    FAIL_IF_NOT(p.get_ptr() == b2 + s2);
 
     // Catch a failure when excedding the buffer limit:
     if (ut.dbcOn() && !ut.dbcNothrow()) {
@@ -175,8 +172,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
         cout << "Good, caught the exception" << endl;
         caught = true;
       }
-      if (!caught)
-        ITFAILS;
+      FAIL_IF_NOT(caught);
     }
   }
 
@@ -189,20 +185,14 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
     u.set_buffer(s1, b1);
     u >> d >> i;
-    if (!soft_equiv(d, 102.45, eps))
-      ITFAILS;
-    if (i != 10)
-      ITFAILS;
+    FAIL_IF_NOT(soft_equiv(d, 102.45, eps));
+    FAIL_IF_NOT(i == 10);
 
     u.unpack(d);
     u.unpack(i);
-    if (!soft_equiv(d, 203.89, eps))
-      ITFAILS;
-    if (i != 11)
-      ITFAILS;
-
-    if (u.get_ptr() != s1 + b1)
-      ITFAILS;
+    FAIL_IF_NOT(soft_equiv(d, 203.89, eps));
+    FAIL_IF_NOT(i == 11);
+    FAIL_IF_NOT(u.get_ptr() == s1 + b1);
 
     // If DBC is off or if DBC nothrow is on, then this test is invalid.
     if (ut.dbcOn() && !ut.dbcNothrow()) {
@@ -214,19 +204,14 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
         cout << "Good, caught the exception" << endl;
         caught = true;
       }
-      if (!caught)
-        ITFAILS;
+      FAIL_IF_NOT(caught);
     }
 
     u.set_buffer(s2, b2);
     u >> i >> d;
-    if (i != 12)
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(d, 203.88))
-      ITFAILS;
-
-    if (u.get_ptr() != s2 + b2)
-      ITFAILS;
+    FAIL_IF_NOT(i == 12);
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(d, 203.88));
+    FAIL_IF_NOT(u.get_ptr() == s2 + b2);
   }
 
   delete[] b1;
@@ -238,8 +223,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
   vector<double> vx(100, 0.0);
   vector<double> ref(100, 0.0);
-
-  char c[4] = {'c', 'h', 'a', 'r'};
+  array<char, 4> c = {'c', 'h', 'a', 'r'};
 
   for (size_t i = 0; i < vx.size(); i++) {
     r = rand();
@@ -261,13 +245,12 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     for (char const val : c)
       p << val;
 
-    if (p.get_ptr() != buffer + size)
-      ITFAILS;
+    FAIL_IF_NOT(p.get_ptr() == buffer + size);
   }
 
   // unpack
   {
-    char cc[4];
+    array<char, 4> cc;
     vector<double> lx(100, 0.0);
 
     Unpacker u;
@@ -276,27 +259,20 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     for (double &val : lx)
       u >> val;
 
-    u.extract(4, cc);
+    u.extract(4, cc.data());
 
-    if (u.get_ptr() != buffer + size)
-      ITFAILS;
-
-    if (!rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()))
-      ITFAILS;
-
-    if (c[0] != 'c')
-      ITFAILS;
-    if (c[1] != 'h')
-      ITFAILS;
-    if (c[2] != 'a')
-      ITFAILS;
-    if (c[3] != 'r')
-      ITFAILS;
+    FAIL_IF_NOT(u.get_ptr() == buffer + size);
+    FAIL_IF_NOT(
+        rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()));
+    FAIL_IF_NOT(c[0] == 'c');
+    FAIL_IF_NOT(c[1] == 'h');
+    FAIL_IF_NOT(c[2] == 'a');
+    FAIL_IF_NOT(c[3] == 'r');
   }
 
   // Skip some data and unpack
   {
-    char cc[2];
+    array<char, 2> cc;
     vector<double> lx(100, 0.0);
 
     Unpacker u;
@@ -309,19 +285,15 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
     // Skip the first two chatacters
     u.skip(2);
-    u.extract(2, cc);
+    u.extract(2, cc.data());
 
     for (size_t i = 0; i < 50; ++i)
-      if (!rtt_dsxx::soft_equiv(lx[i], 0.0, mrv))
-        ITFAILS;
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(lx[i], 0.0, mrv));
     for (size_t i = 50; i < lx.size(); ++i)
-      if (!rtt_dsxx::soft_equiv(lx[i], ref[i], eps))
-        ITFAILS;
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(lx[i], ref[i], eps));
 
-    if (cc[0] != 'a')
-      ITFAILS;
-    if (cc[1] != 'r')
-      ITFAILS;
+    FAIL_IF_NOT(cc[0] == 'a');
+    FAIL_IF_NOT(cc[1] == 'r');
   }
 
   delete[] buffer;
@@ -361,14 +333,12 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
     p.pack(y);
     p.pack(iy);
 
-    if (p.get_ptr() != &b1[0] + s1)
-      ITFAILS;
+    FAIL_IF_NOT(p.get_ptr() == &b1[0] + s1);
 
     p.set_buffer(s2, &b2[0]);
     p << iz << z;
 
-    if (p.get_ptr() != &b2[0] + s2)
-      ITFAILS;
+    FAIL_IF_NOT(p.get_ptr() == &b2[0] + s2);
   }
 
   // unpack the data
@@ -381,30 +351,20 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
 
     u.set_buffer(s1, &b1[0]);
     u >> d >> i;
-    if (!rtt_dsxx::soft_equiv(d, x))
-      ITFAILS;
-    if (i != ix)
-      ITFAILS;
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(d, x));
+    FAIL_IF_NOT(i == ix);
 
     u.unpack(d);
     u.unpack(i64);
-    if (!rtt_dsxx::soft_equiv(d, y))
-      ITFAILS;
-    if (i64 != iy)
-      ITFAILS;
-
-    if (u.get_ptr() != s1 + &b1[0])
-      ITFAILS;
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(d, y));
+    FAIL_IF_NOT(i64 == iy);
+    FAIL_IF_NOT(u.get_ptr() == s1 + &b1[0]);
 
     u.set_buffer(s2, &b2[0]);
     u >> i >> d;
-    if (i != iz)
-      ITFAILS;
-    if (!rtt_dsxx::soft_equiv(d, z))
-      ITFAILS;
-
-    if (u.get_ptr() != s2 + &b2[0])
-      ITFAILS;
+    FAIL_IF_NOT(i == iz);
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(d, z));
+    FAIL_IF_NOT(u.get_ptr() == s2 + &b2[0]);
   }
 
   if (numFails == ut.numFails) // no new failures.
@@ -437,10 +397,8 @@ void std_string_test(rtt_dsxx::UnitTest &ut) {
     for (char &it : hw)
       packer << it;
 
-    if (packer.get_ptr() != &pack_string[0] + pack_string.size())
-      ITFAILS;
-    if (packer.get_ptr() != packer.begin() + pack_string.size())
-      ITFAILS;
+    FAIL_IF_NOT(packer.get_ptr() == &pack_string[0] + pack_string.size());
+    FAIL_IF_NOT(packer.get_ptr() == packer.begin() + pack_string.size());
   }
 
   // now unpack it
@@ -496,10 +454,8 @@ void packing_functions_test(rtt_dsxx::UnitTest &ut) {
   pack_data(x, packed_vector);
   pack_data(y, packed_string);
 
-  if (packed_vector.size() != 5 * sizeof(double) + sizeof(int))
-    ITFAILS;
-  if (packed_string.size() != y.size() + sizeof(int))
-    ITFAILS;
+  FAIL_IF_NOT(packed_vector.size() == 5 * sizeof(double) + sizeof(int));
+  FAIL_IF_NOT(packed_string.size() == y.size() + sizeof(int));
 
   /* We now pack the two packed datums (x and s) together by manually inserting
    * the data, including the size of the already packed arrays, into a new
@@ -582,8 +538,7 @@ void packing_functions_test(rtt_dsxx::UnitTest &ut) {
   vector<char> packed_string_new(size);
   u.extract(size, packed_string_new.begin());
 
-  if (u.get_ptr() != &total_packed[0] + total_packed.size())
-    ITFAILS;
+  FAIL_IF_NOT(u.get_ptr() == &total_packed[0] + total_packed.size());
 
   unpack_data(x_new, packed_vector_new);
   unpack_data(y_new, packed_string_new);
@@ -591,11 +546,8 @@ void packing_functions_test(rtt_dsxx::UnitTest &ut) {
   // Compare the results
   // -------------------
 
-  if (!soft_equiv(x_new.begin(), x_new.end(), x.begin(), x.end()))
-    ITFAILS;
-
-  if (y_new != y)
-    ITFAILS;
+  FAIL_IF_NOT(soft_equiv(x_new.begin(), x_new.end(), x.begin(), x.end()));
+  FAIL_IF_NOT(y_new == y);
 
   if (ut.numFails == 0)
     PASSMSG("pack_data and unpack_data work fine.");
@@ -610,43 +562,41 @@ void endian_conversion_test(rtt_dsxx::UnitTest &ut) {
   Unpacker up(true);
 
   // Test the int type.
-  const int moo = 0xDEADBEEF;
-  const int length = sizeof(int);
+  constexpr int moo = 0xDEADBEEF;
+  constexpr int length = sizeof(int);
 
   // Pack
-  char data[length];
-  p.set_buffer(length, data);
+  array<char, length> data;
+  p.set_buffer(length, data.data());
   p << moo;
 
   // Unpack
   int oom = 0;
-  up.set_buffer(length, data);
+  up.set_buffer(length, data.data());
   up >> oom;
 
   // Check
-  if (static_cast<unsigned>(oom) != 0xEFBEADDE)
-    ITFAILS;
+  FAIL_IF_NOT(static_cast<unsigned>(oom) == 0xEFBEADDE);
 
   // Verify that char data (being one byte) is unchanged.
-  const char letters[] = "abcdefg";
-  const int letter_length = sizeof(letters) / sizeof(char);
+  std::string const letters = "abcdefg";
+  uint32_t constexpr letter_length = 7;
 
   // Pack
-  char letter_data[letter_length];
-  p.set_buffer(letter_length, letter_data);
+  array<char, letter_length> letter_data;
+  p.set_buffer(letter_length, letter_data.data());
   for (char const letter : letters)
     p << letter;
 
   // Unpack
-  char unpacked_letters[letter_length];
-  up.set_buffer(letter_length, letter_data);
+  array<char, letter_length> unpacked_letters;
+  up.set_buffer(letter_length, letter_data.data());
   for (char &unpacked_letter : unpacked_letters)
     up >> unpacked_letter;
 
   // Check
-  for (int i = 0; i < letter_length; ++i)
-    FAIL_IF_NOT(unpacked_letters[i] == letters[i]);
-
+  FAIL_IF_NOT(std::string(unpacked_letters.begin(), unpacked_letters.end()) ==
+              letters);
   return;
 }
 
@@ -671,22 +621,15 @@ void packing_map_test(rtt_dsxx::UnitTest &ut) {
     rtt_dsxx::unpack_data(mymap_new, packed_mymap);
 
     // Check size
-    if (mymap.size() != mymap_new.size())
-      ITFAILS;
+    FAIL_IF_NOT(mymap.size() == mymap_new.size());
     // Check keys
-    if (mymap_new.count(3) != 1)
-      ITFAILS;
-    if (mymap_new.count(1) != 1)
-      ITFAILS;
-    if (mymap_new.count(4) != 1)
-      ITFAILS;
+    FAIL_IF_NOT(mymap_new.count(3) == 1);
+    FAIL_IF_NOT(mymap_new.count(1) == 1);
+    FAIL_IF_NOT(mymap_new.count(4) == 1);
     // Check data per key.
-    if (mymap_new[3] != mymap[3])
-      ITFAILS;
-    if (mymap_new[1] != mymap[1])
-      ITFAILS;
-    if (mymap_new[4] != mymap[4])
-      ITFAILS;
+    FAIL_IF_NOT(mymap_new[3] == mymap[3]);
+    FAIL_IF_NOT(mymap_new[1] == mymap[1]);
+    FAIL_IF_NOT(mymap_new[4] == mymap[4]);
 
     if (ut.numFails == numFails) // no new failures.
       PASSMSG("packing/unpacking std::map<T1,T2>");
@@ -711,22 +654,15 @@ void packing_map_test(rtt_dsxx::UnitTest &ut) {
     rtt_dsxx::unpack_data(mymap_new, packed_mymap);
 
     // Check size
-    if (mymap.size() != mymap_new.size())
-      ITFAILS;
+    FAIL_IF_NOT(mymap.size() == mymap_new.size());
     // Check keys
-    if (mymap_new.count(3) != 1)
-      ITFAILS;
-    if (mymap_new.count(1) != 1)
-      ITFAILS;
-    if (mymap_new.count(4) != 1)
-      ITFAILS;
+    FAIL_IF_NOT(mymap_new.count(3) == 1);
+    FAIL_IF_NOT(mymap_new.count(1) == 1);
+    FAIL_IF_NOT(mymap_new.count(4) == 1);
     // Check data per key.
-    if (mymap_new[3] != mymap[3])
-      ITFAILS;
-    if (mymap_new[1] != mymap[1])
-      ITFAILS;
-    if (mymap_new[4] != mymap[4])
-      ITFAILS;
+    FAIL_IF_NOT(mymap_new[3] == mymap[3]);
+    FAIL_IF_NOT(mymap_new[1] == mymap[1]);
+    FAIL_IF_NOT(mymap_new[4] == mymap[4]);
 
     if (ut.numFails == numFails) // no new failures.
       PASSMSG("packing/unpacking std::map<T1,std::vector<T2>>");

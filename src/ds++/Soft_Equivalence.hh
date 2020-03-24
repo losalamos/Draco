@@ -105,8 +105,7 @@ constexpr inline
 template <unsigned Depth, typename FPT = double> class soft_equiv_deep {
 public:
   // Constructor
-  soft_equiv_deep() { /* empty */
-  }
+  soft_equiv_deep() = default;
 
   /*!
    * \brief Compare two multi-level floating point fields for equivalence to a
@@ -146,8 +145,7 @@ public:
 template <typename FPT> class soft_equiv_deep<1, FPT> {
 public:
   // Constructor
-  soft_equiv_deep<1, FPT>() { /* empty */
-  }
+  soft_equiv_deep<1, FPT>() = default;
   template <typename Value_Iterator, typename Ref_Iterator>
   bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
              Ref_Iterator ref_end, FPT const precision = 1.0e-12) {

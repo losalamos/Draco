@@ -11,6 +11,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -47,10 +48,11 @@ void dbc_test(UnitTest &ut) {
   else
     PASSMSG("dim function template ok");
 
-  double sum_test_array[6] = {1., 4., 3., 2., 5., 6.};
+  array<double, 6> sum_test_array = {1., 4., 3., 2., 5., 6.};
 
-  if (is_monotonic_increasing(sum_test_array, sum_test_array + 6) ||
-      !is_monotonic_increasing(sum_test_array, sum_test_array + 2))
+  if (is_monotonic_increasing(sum_test_array.begin(), sum_test_array.end()) ||
+      !is_monotonic_increasing(sum_test_array.begin(),
+                               sum_test_array.begin() + 2))
     FAILMSG("is_monotonic_increasing function template FAILED");
   else
     PASSMSG("is_monotonic_increasing function template ok");
@@ -58,31 +60,37 @@ void dbc_test(UnitTest &ut) {
   // Ensure that the is_monotonic_increasing() function will return true if
   // there is only one data point.
 
-  if (!is_monotonic_increasing(sum_test_array, sum_test_array + 1))
+  if (!is_monotonic_increasing(sum_test_array.begin(),
+                               sum_test_array.begin() + 1))
     FAILMSG(string("is_monotonic_increasing function template ") +
             "incorrectly reported length=1 container non-monotonic.");
   else
     PASSMSG(string("is_monotonic_increasing function template worked for ") +
             string("length=1 test."));
 
-  if (is_strict_monotonic_increasing(sum_test_array, sum_test_array + 6) ||
-      !is_strict_monotonic_increasing(sum_test_array, sum_test_array + 2))
+  if (is_strict_monotonic_increasing(sum_test_array.begin(),
+                                     sum_test_array.end()) ||
+      !is_strict_monotonic_increasing(sum_test_array.begin(),
+                                      sum_test_array.begin() + 2))
     FAILMSG("is_strict_monotonic_increasing function template FAILED");
   else
     PASSMSG("is_strict_monotonic_increasing function template ok");
 
-  // Ensure that the is_strict_monotonic_increasing() function will return
-  // true if there is only one data point.
+  // Ensure that the is_strict_monotonic_increasing() function will return true
+  // if there is only one data point.
 
-  if (is_strict_monotonic_increasing(sum_test_array, sum_test_array + 1))
+  if (is_strict_monotonic_increasing(sum_test_array.begin(),
+                                     sum_test_array.begin() + 1))
     PASSMSG(string("is_strict_monotonic_increasing function template worked ") +
             string("for length=1 test."));
   else
     FAILMSG(string("is_strict_monotonic_increasing function template ") +
             string("incorrectly reported length=1 container non-monotonic."));
 
-  if (is_strict_monotonic_decreasing(sum_test_array + 1, sum_test_array + 3) &&
-      !is_strict_monotonic_decreasing(sum_test_array, sum_test_array + 6))
+  if (is_strict_monotonic_decreasing(sum_test_array.begin() + 1,
+                                     sum_test_array.begin() + 3) &&
+      !is_strict_monotonic_decreasing(sum_test_array.begin(),
+                                      sum_test_array.end()))
     PASSMSG("is_strict_monotonic_decreasing function template ok");
   else
     FAILMSG("is_strict_monotonic_decreasing function template FAILED");
@@ -90,15 +98,17 @@ void dbc_test(UnitTest &ut) {
   // Ensure that the is_strict_monotonic_decreasing() function will return
   // true if there is only one data point.
 
-  if (is_strict_monotonic_decreasing(sum_test_array, sum_test_array + 1))
+  if (is_strict_monotonic_decreasing(sum_test_array.begin(),
+                                     sum_test_array.begin() + 1))
     PASSMSG(string("is_strict_monotonic_decreasing function template ") +
             string("worked for length=1 test."));
   else
     FAILMSG(string("is_strict_monotonic_decreasing function template ") +
             string("incorrectly reported length=1 container monotonic."));
 
-  if (std::find_if(sum_test_array, sum_test_array + 6,
-                   [](double x) { return x > 2.0; }) != sum_test_array + 1)
+  if (std::find_if(sum_test_array.begin(), sum_test_array.end(), [](double x) {
+        return x > 2.0;
+      }) != sum_test_array.begin() + 1)
     FAILMSG("std::bind2nd or std::greater function templates FAILED");
   else
     PASSMSG("std::bind2nd or std::greater function templates ok");

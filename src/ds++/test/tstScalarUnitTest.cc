@@ -35,8 +35,8 @@ using namespace rtt_dsxx;
 // Helper
 //----------------------------------------------------------------------------//
 char *convert_string_to_char_ptr(std::string const &s) {
-  auto *pc = new char[s.size() + 1];
-  std::strcpy(pc, s.c_str());
+  auto *pc = new char[s.length() + 1];
+  std::strncpy(pc, s.c_str(), s.length() + 1);
   return pc;
 }
 
@@ -149,7 +149,7 @@ void tstGetWordCountFile(UnitTest &unitTest) {
 }
 
 //----------------------------------------------------------------------------//
-void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char *argv[]) {
+void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char **argv) {
   std::cout << "Testing Design-by-Contract setters and getters "
             << "for the UnitTest class..." << std::endl;
 

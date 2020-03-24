@@ -1,0 +1,23 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/*!
+ * \file   cdi_ndi/config.h
+ * \brief  CPP defines necessary for the cdi_ndi package.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ *         All rights reserved. */
+/*---------------------------------------------------------------------------*/
+
+#ifndef rtt_cdi_ndi_config_h
+#define rtt_cdi_ndi_config_h
+
+/*---------------------------------------------------------------------------*/
+/* Draco/Cmake build system variables */
+/*---------------------------------------------------------------------------*/
+
+/* NDI_ROOT_DIR location, for accessing gendir.all */
+#cmakedefine NDI_ROOT_DIR "@NDI_ROOT_DIR@"
+
+#endif // rtt_cdi_ndi_config_h
+
+/*---------------------------------------------------------------------------*/
+/* end of cdi_ndi/config.h */
+/*---------------------------------------------------------------------------*/

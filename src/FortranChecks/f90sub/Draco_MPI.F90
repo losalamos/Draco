@@ -28,6 +28,15 @@ module draco_mpi
   public f90_mpi_finalize
   public f90_mpi_barrier
 
+  interface
+
+     ! Set c4's global 'initialzied' boolean.
+     subroutine setMpiInit() bind(C, name="setMpiInit")
+       implicit none
+     end subroutine setMpiInit
+
+  end interface
+
 contains
 
   ! ---------------------------------------------------------------------------
@@ -62,6 +71,7 @@ contains
 #ifdef C4_MPI
     call mpi_init(ierr)
     call check_mpi_error(ierr)
+    call setMpiInit
 
     call mpi_comm_size(MPI_COMM_WORLD, f90_num_ranks, ierr)
     call check_mpi_error(ierr)

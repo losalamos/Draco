@@ -18,47 +18,31 @@ using namespace rtt_dsxx;
 // TESTS
 //----------------------------------------------------------------------------//
 void test_index_set(rtt_dsxx::UnitTest &ut) {
-  unsigned dimensions[] = {3, 4, 5};
-  Index_Set<3, 1> box(dimensions);
+  array<unsigned, 3> dimensions = {3, 4, 5};
+  Index_Set<3, 1> box(dimensions.data());
 
   // Check the sizes and ranges of each dimensions
-  if (box.get_size() != 60)
-    ITFAILS;
-  if (box.min_of_index() != 1)
-    ITFAILS;
-  if (box.max_of_index() != 60)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size() == 60);
+  FAIL_IF_NOT(box.min_of_index() == 1);
+  FAIL_IF_NOT(box.max_of_index() == 60);
 
-  if (box.get_size(0) != 3)
-    ITFAILS;
-  if (box.min_of_index(0) != 1)
-    ITFAILS;
-  if (box.max_of_index(0) != 3)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size(0) == 3);
+  FAIL_IF_NOT(box.min_of_index(0) == 1);
+  FAIL_IF_NOT(box.max_of_index(0) == 3);
 
-  if (box.get_size(1) != 4)
-    ITFAILS;
-  if (box.min_of_index(1) != 1)
-    ITFAILS;
-  if (box.max_of_index(1) != 4)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size(1) == 4);
+  FAIL_IF_NOT(box.min_of_index(1) == 1);
+  FAIL_IF_NOT(box.max_of_index(1) == 4);
 
-  if (box.get_size(2) != 5)
-    ITFAILS;
-  if (box.min_of_index(2) != 1)
-    ITFAILS;
-  if (box.max_of_index(2) != 5)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size(2) == 5);
+  FAIL_IF_NOT(box.min_of_index(2) == 1);
+  FAIL_IF_NOT(box.max_of_index(2) == 5);
 
-  if (box.limit_of_index(2, true) != 5)
-    ITFAILS;
-  if (box.limit_of_index(2, false) != 1)
-    ITFAILS;
-  if (box.limit_of_index(false) != 1)
-    ITFAILS;
+  FAIL_IF_NOT(box.limit_of_index(2, true) == 5);
+  FAIL_IF_NOT(box.limit_of_index(2, false) == 1);
+  FAIL_IF_NOT(box.limit_of_index(false) == 1);
 
-  // Test for indices in the total range and the range of each
-  // dimension.
+  // Test for indices in the total range and the range of each dimension.
   if (box.index_in_range(0))
     ITFAILS;
   if (!box.index_in_range(1))
@@ -86,7 +70,7 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
   if (box.index_in_range(4, 0))
     ITFAILS;
 
-  unsigned indices[] = {4, 5, 6};
+  array<unsigned, 3> indices = {4, 5, 6};
   if (box.indices_in_range(indices))
     ITFAILS;
 
@@ -113,17 +97,15 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
   // Make a uniform array 10x10x10
   box.set_size(10);
 
-  if (box.get_size() != 1000)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size() == 1000);
 
   dimensions[0] = 10;
   dimensions[1] = 2;
   dimensions[2] = 5;
 
-  box.set_size(dimensions);
+  box.set_size(dimensions.data());
 
-  if (box.get_size() != 100)
-    ITFAILS;
+  FAIL_IF_NOT(box.get_size() == 100);
 
   // Copy and comparison tests:
   // -------------------------
@@ -132,8 +114,7 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
   Index_Set<3, 1> box2(box);
 
   // Test for equality and not-inequality
-  if (box2 != box)
-    ITFAILS;
+  FAIL_IF_NOT(box2 == box);
   if (!(box2 == box))
     ITFAILS;
 
@@ -141,20 +122,15 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
   box2.set_size(3);
 
   // Test for inequality and not-equality
-  if (box2 == box)
-    ITFAILS;
-  if (!(box2 != box))
-    ITFAILS;
+  FAIL_IF(box2 == box);
+  FAIL_IF_NOT(box2 != box);
 
   Index_Set<2, 0> csquare(4);
 
   // Check the sizes and ranges of each dimensions
-  if (csquare.get_size() != 16)
-    ITFAILS;
-  if (csquare.min_of_index() != 0)
-    ITFAILS;
-  if (csquare.max_of_index() != 15)
-    ITFAILS;
+  FAIL_IF_NOT(csquare.get_size() == 16);
+  FAIL_IF_NOT(csquare.min_of_index() == 0);
+  FAIL_IF_NOT(csquare.max_of_index() == 15);
 
   if (ut.numFails == 0)
     PASSMSG("done with test_index_set().");
@@ -162,7 +138,6 @@ void test_index_set(rtt_dsxx::UnitTest &ut) {
 }
 
 //----------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

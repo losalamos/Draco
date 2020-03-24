@@ -11,6 +11,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Slice.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -121,8 +122,8 @@ void tstSlice(UnitTest &ut) {
   else
     FAILMSG("size of Slice is NOT correct");
 
-  double da[6];
-  Slice<double *> das(da, 2, 3);
+  array<double, 6> da;
+  Slice<double *> das(da.data(), 2, 3);
   if (das.size() == 2)
     PASSMSG("size of Slice is correct");
   else

@@ -25,7 +25,7 @@ void implement_do_unit_test(UnitTest &ut, First_Lambda const &first_lambda,
 }
 
 template <typename... Lambda, typename Release>
-int do_scalar_unit_test(int argc, char *argv[], Release release,
+int do_scalar_unit_test(int argc, char **argv, Release release,
                         Lambda const &... lambda) {
   ScalarUnitTest ut(argc, argv, release);
   try {

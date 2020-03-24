@@ -72,14 +72,17 @@ public:
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
+  //! The move constructor is disabled.
+  UnitTest(UnitTest const &&rhs) = delete;
+  //! The assignment copy operator is disabled.
+  UnitTest &operator=(UnitTest const &rhs) = delete;
+  //! The assignment move operator is disabled.
+  UnitTest &operator=(UnitTest const &&rhs) = delete;
 
   //! Destructor is virtual because this class will be inherited from.
-  virtual ~UnitTest(){/*empty*/};
+  virtual ~UnitTest() = default;
 
   // MANIPULATORS
-
-  //! The assignment operator is disabled.
-  UnitTest &operator=(UnitTest const &rhs) = delete;
 
   /*!
    * \brief Only special cases should use these (like the unit test

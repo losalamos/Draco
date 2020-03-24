@@ -67,7 +67,7 @@ public:
   //! constructor
   fpe_trap(bool const abortWithInsist_in = true)
       : abortWithInsist(abortWithInsist_in){/* emtpy */};
-  ~fpe_trap(){/* empty */};
+  ~fpe_trap() = default;
 
   //! Enable trapping of fpe signals.
   bool enable();

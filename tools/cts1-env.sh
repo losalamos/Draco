@@ -14,7 +14,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-export environments="intel1904env intel1802env intel1704env gcc740env"
+export environments="intel1904env gcc830env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -42,6 +42,36 @@ fi
 case $ddir in
 
   #------------------------------------------------------------------------------#
+  draco-7_5*|draco-7_6*)
+    function intel1904env
+    {
+      run "module purge"
+      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+      run "module load friendly-testing user_contrib"
+      run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
+      run "module load intel/19.0.4 openmpi/2.1.2"
+      run "unset MPI_ROOT"
+      run "module load random123 eospac/6.4.0 gsl"
+      run "module load mkl metis ndi csk qt quo"
+      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module list"
+    }
+    function gcc830env()
+    {
+      run "module purge"
+      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+      run "module load friendly-testing user_contrib"
+      run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
+      run "module load gcc/8.3.0 openmpi/2.1.2"
+      run "unset MPI_ROOT"
+      run "module load random123 eospac/6.4.0 gsl"
+      run "module load mkl metis ndi csk qt quo"
+      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module list"
+    }
+    export -f $environments
+    ;;
+
   draco-7_2* | draco-7_3* | draco-7_4*)
     function intel1904env
     {
@@ -96,50 +126,6 @@ case $ddir in
       run "module list"
     }
     export -f $environments
-    ;;
-
-
-  #------------------------------------------------------------------------------#
-  draco-6_25* | draco-7_0*| draco-7_1*)
-    function intel1802env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/18.0.2 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.3.0 gsl"
-      run "module load mkl metis ndi csk qt"
-      run "module load parmetis superlu-dist trilinos"
-      run "module list"
-    }
-    function intel1704env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/17.0.4 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.3.0 gsl"
-      run "module load mkl metis ndi csk qt"
-      run "module load parmetis superlu-dist trilinos"
-      run "module list"
-    }
-    function gcc640env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
-      run "module load gcc/6.4.0 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.3.0 gsl"
-      run "module load mkl metis ndi qt"
-      run "module load parmetis superlu-dist trilinos"
-      run "module list"
-    }
     ;;
 
 #------------------------------------------------------------------------------#

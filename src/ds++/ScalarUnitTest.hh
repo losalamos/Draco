@@ -82,7 +82,7 @@ public:
  */
 
 template <typename... Lambda, typename Release>
-int do_scalar_unit_test(int argc, char *argv[], Release release,
+int do_scalar_unit_test(int argc, char **argv, Release release,
                         Lambda const &... lambda);
 
 } // end namespace rtt_dsxx

@@ -54,7 +54,7 @@ using namespace std;
  * When run through via \c ctest, the output from these tests is captured in the
  * files \c do_exception_[0-9]+.out and \c do_exception_[0-9]+.err.
  */
-void run_test(int /*argc*/, char *argv[]) {
+void run_test(int /*argc*/, char **argv) {
 
   bool const abortWithInsist(true);
   rtt_dsxx::fpe_trap fpet(abortWithInsist);

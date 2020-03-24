@@ -9,6 +9,7 @@
 //----------------------------------------------------------------------------//
 
 #include "Endian.hh"
+#include <array>
 
 namespace rtt_dsxx {
 //----------------------------------------------------------------------------//
@@ -19,7 +20,7 @@ namespace rtt_dsxx {
 bool is_big_endian() {
   union {
     uint32_t i;
-    char c[4];
+    std::array<char, 4> c;
   } data = {0x01020304};
 
   return data.c[0] == 1;
@@ -41,15 +42,16 @@ bool has_ieee_float_representation() {
   // Create a double precision value that will be used to test bit
   // representations.
   double d_two(2.0);
-  size_t const size(sizeof(double));
+  size_t constexpr size(sizeof(double));
   // Generate a bit-by-bit view of the double precision value:
-  char char_two[size];
+  std::array<char, size> char_two;
   std::memcpy(&char_two, &d_two, size);
 
   // IEEE reference value:
-  char ieee64_two[size] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40};
+  std::array<char, size> ieee64_two = {0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x40};
   if (is_big_endian())
-    char_byte_swap(ieee64_two, size);
+    char_byte_swap(&ieee64_two[0], size);
 
   // Cray reference value:
   // Note The 5th value  of the actual Cray representation causes overflow

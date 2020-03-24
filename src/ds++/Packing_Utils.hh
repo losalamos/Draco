@@ -86,10 +86,7 @@ private:
 
 public:
   //! Constructor.
-  Packer()
-
-  { /*...*/
-  }
+  Packer() = default;
 
   // Sets the buffer and puts the packer into pack mode.
   inline void set_buffer(uint64_t, pointer);

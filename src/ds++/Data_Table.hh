@@ -49,7 +49,7 @@ public:
   //! begin iterator
   constexpr inline const_iterator begin() const { return d_begin; }
   //! end iterator
-  constexpr inline const_iterator end() const { return d_end; }
+  constexpr inline const_iterator end() const { return d_end - 1; }
   constexpr inline uint64_t size() const { return d_end - d_begin; }
   constexpr inline T const &front() const;
   constexpr inline T const &back() const;
@@ -59,7 +59,7 @@ public:
 
 private:
   const_iterator const d_begin;
-  const_iterator const d_end;
+  const_iterator const d_end; //!< one past the end of the container
 
   /*! We hold a copy of the scalar to prevent the problems that would arise if
    *  you took a pointer to a function-return temporary. */
@@ -85,9 +85,9 @@ template <typename T>
 constexpr Data_Table<T> &Data_Table<T>::operator=(Data_Table<T> const &rhs) {
   if (&rhs != this) {
     if (rhs.d_begin == &(rhs.d_value)) {
+      const_cast<T &>(d_value) = rhs.d_value;
       const_cast<const_iterator &>(d_begin) = &d_value;
       const_cast<const_iterator &>(d_end) = d_begin + 1;
-      const_cast<T &>(d_value) = rhs.d_value;
     } else {
       const_cast<const_iterator &>(d_begin) = rhs.d_begin;
       const_cast<const_iterator &>(d_end) = rhs.d_end;
@@ -100,7 +100,7 @@ constexpr Data_Table<T> &Data_Table<T>::operator=(Data_Table<T> const &rhs) {
 template <typename T>
 constexpr inline Data_Table<T>::Data_Table(const_iterator const begin,
                                            const_iterator const end)
-    : d_begin(begin), d_end(end), d_value() {
+    : d_begin(begin), d_end(end + 1), d_value() {
   Require(!(begin > end));
 }
 
@@ -120,7 +120,7 @@ constexpr inline Data_Table<T>::Data_Table()
 //----------------------------------------------------------------------------//
 template <typename T>
 constexpr inline T const &Data_Table<T>::operator[](unsigned const i) const {
-  Require(static_cast<int>(i) < (d_end - d_begin));
+  Require(i < size());
   return d_begin[i];
 }
 

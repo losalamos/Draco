@@ -11,6 +11,7 @@
 #define dsxx_Index_Counter_hh
 
 #include "Index_Set.hh"
+#include <array>
 #include <vector>
 
 namespace rtt_dsxx {
@@ -35,11 +36,10 @@ public:
   // CREATORS
 
   //! Default constructors.
-  Index_Counter(const Index_Set<D, OFFSET> &index_set);
+  explicit Index_Counter(const Index_Set<D, OFFSET> &index_set);
 
   //! Destructor.
-  ~Index_Counter() { /* ... */
-  }
+  ~Index_Counter() = default;
 
   // MANIPULATORS
 
@@ -67,11 +67,11 @@ public:
   }
 
   std::vector<int> get_indices() const {
-    return std::vector<int>(indices, indices + D);
+    return std::vector<int>(indices.begin(), indices.begin() + D);
   }
 
   template <typename IT> void get_indices(IT out) const {
-    std::copy(indices, indices + D, out);
+    std::copy(indices.begin(), indices.begin() + D, out);
   }
 
   bool is_in_range() const { return in_range; }
@@ -81,7 +81,7 @@ private:
 
   const Index_Set<D, OFFSET> &index_set;
 
-  int indices[D];
+  std::array<int, D> indices;
   int index;
   bool in_range;
 

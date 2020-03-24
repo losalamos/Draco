@@ -237,7 +237,7 @@ to anything else will generate errors."
    ;; DRACO Unit testing - One shot keywords that take no arguments
    (list
     ;; Match single keyword
-    "\\(FAILMSG\\|FAIL_IF\\|FAIL_IF_NOT\\|ITFAILS\\|PASSMSG\\)\\>"
+    "\\(FAILMSG\\|FAIL_IF\\|FAIL_IF_NOT\\|ITFAILS\\|PASSMSG\\|UT_MSG\\)\\>"
 ;;    "\\(FAILMSG\\|FAIL_IF\\|FAIL_IF_NOT\\|ITFAILS\\|PASSMSG\\)\\>"
     '(0 font-lock-preprocessor-face prepend))
 

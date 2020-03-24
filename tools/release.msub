@@ -11,8 +11,11 @@
 source $draco_script_dir/common.sh
 export buildflavor=`flavor`
 export build_pe=`npes_build`
-#export test_pe=`npes_test`
-export test_pe=1
+export test_pe=`npes_test`
+case `uname -n` in
+rzansel* | sierra* )  export test_pe=1 ;;
+esac
+
 
 ##---------------------------------------------------------------------------##
 ## Print a summary of this build

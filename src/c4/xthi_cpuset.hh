@@ -25,6 +25,12 @@
 #include <processthreadsapi.h> // requries SystemCall.hh to be loaded first.
 #endif
 
+/*! \bug Broken on OSX (sched_getaffinity, cpu_set_t, etc. not defined).
+ *
+ * Possible solution at
+ * https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
+ */
+
 namespace rtt_c4 {
 
 //----------------------------------------------------------------------------//
@@ -48,6 +54,61 @@ namespace rtt_c4 {
  *
  * \return A string of the form "0-8;16-32;" or "0-63"
  */
+#ifdef APPLE
+
+#include <sys/sysctl.h>
+#include <sys/types.h>
+
+/*
+ * I think this is the mac equivelent of CPU_SETSIZE
+ *
+ * example - https://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine
+ * documentation - https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/sysconf.3.html
+ *
+*/
+#ifndef CPU_SETSIZE
+#define CPU_SETSIZE _SC_NPROCESSORS_ONLN
+#endif
+
+/*! \bug Broken on OSX (sched_getaffinity, cpu_set_t, etc. not defined).
+ *
+ * Possible solution at
+ * https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
+ */
+
+#define SYSCTL_CORE_COUNT "machdep.cpu.core_count"
+
+typedef struct cpu_set {
+  uint64_t count;
+} cpu_set_t;
+
+static inline void CPU_ZERO(cpu_set_t *cs) { cs->count = 0; }
+
+static inline void CPU_SET(int num, cpu_set_t *cs) { cs->count |= (1 << num); }
+
+static inline bool CPU_ISSET(int num, cpu_set_t *cs) {
+  uint64_t teh_bit = 1ull << num;
+  return (cs->count & teh_bit) != 0;
+}
+
+int sched_getaffinity(pid_t pid, size_t cpu_size, cpu_set_t *cpu_set) {
+  int64_t core_count = 0;
+  size_t len = sizeof(core_count);
+  int ret = sysctlbyname(SYSCTL_CORE_COUNT, &core_count, &len, 0, 0);
+  if (ret) {
+    printf("error while get core count %d\n", ret);
+    return -1;
+  }
+  cpu_set->count = 0;
+  for (int i = 0; i < core_count; i++) {
+    cpu_set->count |= (1 << i);
+  }
+
+  return 0;
+}
+
+#endif
+
 #ifdef WIN32
 
 //! \param[in] num_cpu Number of CPU's per node.
@@ -100,6 +161,7 @@ std::string cpuset_to_string(unsigned const /*num_cpu*/) {
 
   // Convert the bitmask into something that is human readable.
   size_t entry_made = 0;
+
   for (int i = 0; i < CPU_SETSIZE; i++) {
     if (CPU_ISSET(i, &coremask)) {
       int run = 0;

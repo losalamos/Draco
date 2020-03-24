@@ -19,7 +19,7 @@ environments="p9gcc730env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3* | draco-7_4* )
+  draco-7_2* | draco-7_3* | draco-7_4* | draco-7_5* | draco-7_6*)
     function p9gcc730env()
     {
       export darwin_queue="-p power9-asc -A asc-priority"
@@ -32,14 +32,10 @@ case $ddir in
       mflavor="$cflavor-openmpi-3.1.3"
       lflavor="lapack-3.8.0"
       noflavor="git gcc/7.3.0 cuda/10.1"
-      compflavor="eospac/6.4.0-$cflavor cmake/3.14.2-$cflavor random123
-numdiff gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor
-openmpi/p9/3.1.3-gcc_7.3.0"
-      mpiflavor="parmetis/4.0.3-$mflavor
-superlu-dist/5.2.2-${mflavor}-$lflavor trilinos/12.14.1-cuda-10.1-${mflavor}-$lflavor"
+      compflavor="eospac/6.4.0-$cflavor cmake/3.16.4-$cflavor random123 numdiff/5.9.0-$cflavor gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor openmpi/p9/3.1.3-gcc_7.3.0"
+      mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-$lflavor trilinos/12.14.1-cuda-10.1-${mflavor}-$lflavor"
 
-      # These aren't built for power architectures?
-      # ec_mf="ndi eospac/6.3.0"
+      ec_mf="csk/0.5.0-$cflavor ndi"
 
       # work around for known openmpi issues:
       # https://rtt.lanl.gov/redmine/issues/1229

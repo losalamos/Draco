@@ -14,7 +14,7 @@
 cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
-project( Draco DESCRIPTION ${ddesc} VERSION 7.4 LANGUAGES CXX C)
+project( Draco DESCRIPTION ${ddesc} VERSION 7.6 LANGUAGES CXX C)
 
 # Do not look for Fortran/CUDA for
 # 1. XCode based Generators, or

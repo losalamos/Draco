@@ -23,7 +23,7 @@
 #include <process.h> // _getpid
 #include <sstream>
 #endif
-
+#include <array>
 #include <iostream>
 
 namespace rtt_dsxx {
@@ -50,21 +50,23 @@ namespace rtt_dsxx {
 std::string draco_gethostname() {
 // Windows: gethostname from <winsock2.h>
 #ifdef WIN32
-  char hostname[HOST_NAME_MAX];
-  int err = gethostname(hostname, sizeof(hostname));
+  std::array<char, HOST_NAME_MAX> hostname;
+  hostname.fill('x');
+  int err = gethostname(&hostname[0], sizeof(hostname));
   if (err)
-    strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
-  return std::string(hostname);
+    strncpy(&hostname[0], "gethostname() failed", HOST_NAME_MAX);
+  return std::string(hostname.data());
 
 #else
 
 // Linux: gethostname from <unistd.h>
 #ifdef HAVE_GETHOSTNAME
-  char hostname[HOST_NAME_MAX];
-  int err = gethostname(hostname, HOST_NAME_MAX);
+  std::array<char, HOST_NAME_MAX> hostname;
+  hostname.fill('y');
+  int err = gethostname(&hostname[0], HOST_NAME_MAX);
   if (err)
-    strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
-  return std::string(hostname);
+    strncpy(&hostname[0], "gethostname() failed", HOST_NAME_MAX);
+  return std::string(hostname.data());
 
 // Catamount systems do not have gethostname().
 #else
@@ -107,11 +109,11 @@ std::string draco_getcwd() {
   std::string cwd(buffer, buffer + strnlen(buffer, MAXPATHLEN));
   free(buffer);
 #else
-  char curr_path[MAXPATHLEN];
-  curr_path[0] = '\0';
-  Insist(getcwd(curr_path, MAXPATHLEN) != nullptr,
+  std::array<char, MAXPATHLEN> curr_path;
+  curr_path.fill('z');
+  Insist(getcwd(&curr_path[0], MAXPATHLEN) != nullptr,
          std::string("getcwd failed: " + std::string(strerror(errno))));
-  std::string cwd(curr_path);
+  std::string cwd(curr_path.data());
 #endif
 
   // Ensure that the last character is a directory separator.
@@ -129,13 +131,13 @@ std::string draco_getcwd() {
  * Linux
  *    http://en.wikipedia.org/wiki/Stat_%28system_call%29
  */
-draco_getstat::draco_getstat(std::string const &fqName)
-    : stat_return_code(0), buf() {
 #ifdef WIN32
+draco_getstat::draco_getstat(std::string const &fqName)
+    : stat_return_code(0), buf(), FileInformation({0}) {
   filefound = true;
-  /*! \note If path contains the location of a directory, it cannot
-     * contain a trailing backslash. If it does, -1 will be returned and
-     * errno will be set to ENOENT. */
+  /*! \note If path contains the location of a directory, it cannot contain a
+   * trailing backslash. If it does, -1 will be returned and errno will be set
+   * to ENOENT. */
   std::string clean_fqName;
   if (fqName[fqName.size() - 1] == rtt_dsxx::WinDirSep ||
       fqName[fqName.size() - 1] == rtt_dsxx::UnixDirSep)
@@ -166,11 +168,13 @@ draco_getstat::draco_getstat(std::string const &fqName)
     // Close handle
     ::FindClose(hFile);
   }
-
-#else
-  stat_return_code = stat(fqName.c_str(), &buf);
-#endif
 }
+#else
+draco_getstat::draco_getstat(std::string const &fqName)
+    : stat_return_code(0), buf() {
+  stat_return_code = stat(fqName.c_str(), &buf);
+}
+#endif
 
 //----------------------------------------------------------------------------//
 //! Is this a regular file?
@@ -218,16 +222,17 @@ bool draco_getstat::has_permission_bit(int mask) {
  * \brief Wrapper for system dependent realpath call.
  */
 std::string draco_getrealpath(std::string const &path) {
-  char buffer[MAXPATHLEN]; // _MAX_PATH
+  std::array<char, MAXPATHLEN> buffer; // _MAX_PATH
+  buffer.fill('a');
 #ifdef WIN32
   // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
-  Insist(_fullpath(buffer, path.c_str(), MAXPATHLEN) != nullptr,
+  Insist(_fullpath(&buffer[0], path.c_str(), MAXPATHLEN) != nullptr,
          "Invalid path.");
-  std::string retVal(buffer);
+  std::string retVal(buffer.data());
 #else
-  Insist((realpath(path.c_str(), buffer)) != nullptr, "Invalid path.");
+  Insist((realpath(path.c_str(), &buffer[0])) != nullptr, "Invalid path.");
   // realpath trims the trailing slash, append now.
-  std::string retVal(buffer);
+  std::string retVal(buffer.data());
   retVal += std::string(&dirSep, 1);
 #endif
   return retVal;
@@ -241,7 +246,6 @@ std::string draco_getrealpath(std::string const &path) {
  */
 void draco_mkdir(std::string const &path) {
 #ifdef WIN32
-
   draco_getstat dirInfo(path);
   if (!dirInfo.isdir()) {
     /*! \note If path contains the location of a directory, it cannot contain a
