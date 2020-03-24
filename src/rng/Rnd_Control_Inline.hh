@@ -11,7 +11,6 @@
 #define rtt_rng_Rnd_Control_Inline_hh
 
 #include "Counter_RNG.hh"
-#include "device/config.h"
 #include <limits>
 
 namespace rtt_rng {
