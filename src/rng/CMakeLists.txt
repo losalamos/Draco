@@ -40,14 +40,21 @@ list(APPEND headers_glob ${PROJECT_BINARY_DIR}/rng/config.h ) # install these!
 # Build package library
 # ---------------------------------------------------------------------------- #
 
+if( HAVE_CUDA AND USE_CUDA )
+  set(deps Lib_dsxx Lib_device GSL::gsl )
+else()
+  set(deps Lib_dsxx GSL::gsl )
+endif()
+
 add_component_library(
    TARGET       Lib_rng
-   TARGET_DEPS  "Lib_dsxx;Lib_device;GSL::gsl"
+   TARGET_DEPS  "${deps}"
    LIBRARY_NAME ${PROJECT_NAME}
    VENDOR_INCLUDE_DIRS "${RANDOM123_INCLUDE_DIR}" )
 target_sources( Lib_rng PUBLIC "${headers_public}" PRIVATE "${sources_glob}" )
 set_target_properties(Lib_rng PROPERTIES PUBLIC_HEADER "${headers_public}" )
 target_include_directories( Lib_rng PUBLIC
+  $<BUILD_INTERFACE:${draco_src_dir_BINARY_DIR}/device>
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   ${RANDOM123_INCLUDE_DIR} )
 
