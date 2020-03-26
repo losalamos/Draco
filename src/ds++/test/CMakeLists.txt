@@ -66,8 +66,8 @@ add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
 target_link_libraries( Exe_do_exception Lib_dsxx )
 set_target_properties( Exe_do_exception PROPERTIES
   FOLDER dsxx_test
-  OUTPUT_NAME do_exception
-  ${Draco_std_target_props_CXX})
+  OUTPUT_NAME do_exception )
+dbs_std_tgt_props( Exe_do_exception )
 
 include( ApplicationUnitTest )
 add_app_unit_test(
