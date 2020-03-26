@@ -35,8 +35,8 @@ set(Draco_std_target_props_CXX
 set(Draco_std_target_props_CUDA
   CUDA_STANDARD 14              # Force strict C++ 14 standard
   CUDA_EXTENSIONS OFF
-  CUDA_STANDARD_REQUIRED ON
-  CUDA_SEPARABLE_COMPILATION ON)
+  CUDA_STANDARD_REQUIRED ON)
+#  CUDA_SEPARABLE_COMPILATION ON)
 #  CUDA_RESOLVE_DEVICE_SYMBOLS ON )
 # target_include_directories (my lib
 #     PUBLIC $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}> )
@@ -652,9 +652,9 @@ endmacro()
 # -----------------------------------------------------------------------------#
 # copy_dll_link_libraries_to_build_dir( target )
 #
-# For Win32 with shared libraries, all dll dependencies must be located in the 
-# PATH or in the application directory.  This cmake function creates POST_BUILD 
-# rules for unit tests and applications to ensure that the most up-to-date 
+# For Win32 with shared libraries, all dll dependencies must be located in the
+# PATH or in the application directory.  This cmake function creates POST_BUILD
+# rules for unit tests and applications to ensure that the most up-to-date
 # versions of all dependencies are in the same directory as the application.
 #------------------------------------------------------------------------------#
 function( copy_dll_link_libraries_to_build_dir target )
@@ -730,7 +730,7 @@ function( copy_dll_link_libraries_to_build_dir target )
           message("lib = ${lib} is NOTFOUND --> remove it from the list")
         endif()
       elseif( "${lib}" MATCHES "[$]<")
-        # We have a generator expression.  This routine does not support this, 
+        # We have a generator expression.  This routine does not support this,
         # so drop it.
         list( REMOVE_ITEM link_libs ${lib} )
         if( lverbose )
@@ -810,7 +810,7 @@ function( copy_dll_link_libraries_to_build_dir target )
               "skip it.")
           endif()
           continue()
-        else()       
+        else()
           set(target_loc "$<TARGET_FILE:${lib}>")
         endif()
         get_target_property(target_gnutoms ${lib} GNUtoMS)
