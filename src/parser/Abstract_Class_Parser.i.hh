@@ -40,7 +40,7 @@ public:
   ~c_string_vector();
   c_string_vector(void) : data(0) { /* empty */
   }
-  vector<char *> data;
+  std::vector<char *> data;
 };
 DLL_PUBLIC_parser extern c_string_vector abstract_class_parser_keys;
 
@@ -56,7 +56,7 @@ DLL_PUBLIC_parser extern c_string_vector abstract_class_parser_keys;
  */
 template <typename Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
-vector<Parse_Function> Abstract_Class_Parser<
+std::vector<Parse_Function> Abstract_Class_Parser<
     Class, get_parse_table, get_parsed_object, Parse_Function>::map_;
 
 //----------------------------------------------------------------------------//

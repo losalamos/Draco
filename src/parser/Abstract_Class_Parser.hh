@@ -15,9 +15,6 @@
 #include <iostream>
 
 namespace rtt_parser {
-using std::pointer_to_unary_function;
-using std::string;
-using std::vector;
 
 //============================================================================//
 /*!
@@ -90,8 +87,8 @@ private:
 //============================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Abstract_Class> &get_parsed_object(),
-          typename Parse_Function = pointer_to_unary_function<
-              Token_Stream &, std::shared_ptr<Abstract_Class>>>
+          typename Parse_Function =
+	    std::function<std::shared_ptr<Abstract_Class>(Token_Stream &)>>
 class Abstract_Class_Parser {
 public:
   // TYPES
@@ -99,12 +96,12 @@ public:
   // STATIC members
 
   //! Register children of the abstract class
-  static void register_child(string const &keyword,
+  static void register_child(std::string const &keyword,
                              Parse_Function parse_function);
 
   //! Register children of the abstract class
   static void register_child(
-      string const &keyword,
+      std::string const &keyword,
       std::shared_ptr<Abstract_Class> parse_function(Token_Stream &));
 
   //! Check the class invariants
@@ -119,7 +116,7 @@ private:
   // DATA
 
   //! Map of child keywords to child creation functions
-  static vector<Parse_Function> map_;
+  static std::vector<Parse_Function> map_;
 };
 
 #include "Abstract_Class_Parser.i.hh"
