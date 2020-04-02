@@ -135,11 +135,11 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
 
   // scalar density/temperature + vector density/temperature
   vector<double> data_field(3, 2.0);
-  vector<vector<double>> sig_test = opacity.getOpacity(data_field, 3.0);
+  vector<vector<double>> sigma_total = opacity.getOpacity(data_field, 3.0);
   vector<vector<double>> sig_rho = opacity.getOpacity(2.0, data_field);
 
   for (int i = 0; i < 3; i++) {
-    vector<double> &test = sig_test[i];
+    vector<double> &test = sigma_total[i];
 
     if (soft_equiv(test.begin(), test.end(), ref.begin(), ref.end())) {
       ostringstream message;
