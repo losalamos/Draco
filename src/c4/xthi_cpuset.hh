@@ -91,7 +91,7 @@ static inline bool CPU_ISSET(int num, cpu_set_t *cs) {
   return (cs->count & teh_bit) != 0;
 }
 
-int sched_getaffinity(pid_t pid, size_t cpu_size, cpu_set_t *cpu_set) {
+int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/, cpu_set_t *cpu_set) {
   int64_t core_count = 0;
   size_t len = sizeof(core_count);
   int ret = sysctlbyname(SYSCTL_CORE_COUNT, &core_count, &len, 0, 0);
