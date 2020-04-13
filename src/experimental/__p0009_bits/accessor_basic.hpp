@@ -45,20 +45,22 @@
 
 #include "macros.hpp"
 
-#include <cstddef>
+#include <cstddef> // ptrdiff_t
 
 namespace std {
 namespace experimental {
 
-template <class ElementType> struct accessor_basic {
-
+template <class ElementType>
+struct accessor_basic {
+  
   using offset_policy = accessor_basic;
   using element_type = ElementType;
-  using reference = ElementType &;
-  using pointer = ElementType *;
+  using reference = ElementType&;
+  using pointer = ElementType*;
 
   MDSPAN_INLINE_FUNCTION
-  constexpr pointer offset(pointer p, ptrdiff_t i) const noexcept {
+  constexpr pointer
+  offset(pointer p, ptrdiff_t i) const noexcept {
     return p + i;
   }
 
@@ -68,7 +70,10 @@ template <class ElementType> struct accessor_basic {
   }
 
   MDSPAN_INLINE_FUNCTION
-  constexpr pointer decay(pointer p) const noexcept { return p; }
+  constexpr pointer decay(pointer p) const noexcept {
+    return p;
+  }
+
 };
 
 } // end namespace experimental
