@@ -48,8 +48,8 @@
 #include "trait_backports.hpp" // enable_if
 
 #include <array>
-#include <utility> // integer_sequence
 #include <cstddef>
+#include <utility> // integer_sequence
 
 namespace std {
 namespace experimental {
@@ -101,10 +101,12 @@ struct __standard_layout_psa<
                             __sentinal, integer_sequence<size_t, _Idxs...>>;
   using __base_t = __no_unique_address_emulation<__next_t>;
 
-  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __next_t &__next() noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __next_t &
+  __next() noexcept {
     return this->__base_t::__ref();
   }
-  MDSPAN_FORCE_INLINE_FUNCTION constexpr __next_t const &__next() const noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION constexpr __next_t const &__next() const
+      noexcept {
     return this->__base_t::__ref();
   }
 
@@ -114,10 +116,10 @@ struct __standard_layout_psa<
   // class that's private, even though __size_synamic is public in
   // it's definition.
   struct __msvc_workaround_tag {};
-  using __msvc_workaround_next_t = __standard_layout_psa<
-      __msvc_workaround_tag, _T,
-      integer_sequence<_T, __values_or_sentinals...>, __sentinal,
-      integer_sequence<size_t, _Idxs...>>;
+  using __msvc_workaround_next_t =
+      __standard_layout_psa<__msvc_workaround_tag, _T,
+                            integer_sequence<_T, __values_or_sentinals...>,
+                            __sentinal, integer_sequence<size_t, _Idxs...>>;
   static constexpr auto __size_dynamic =
       __msvc_workaround_next_t::__size_dynamic;
 #else
@@ -244,10 +246,12 @@ struct __standard_layout_psa<
 
   using __value_pair_t = __compressed_pair<_T, __next_t>;
   __value_pair_t __value_pair;
-  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __next_t &__next() noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __next_t &
+  __next() noexcept {
     return __value_pair.__second();
   }
-  MDSPAN_FORCE_INLINE_FUNCTION constexpr __next_t const &__next() const noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION constexpr __next_t const &__next() const
+      noexcept {
     return __value_pair.__second();
   }
 
@@ -372,12 +376,14 @@ struct __standard_layout_psa<_Tag, _T, integer_sequence<_T>, __sentinal,
 
   MDSPAN_INLINE_FUNCTION_DEFAULTED
   constexpr __standard_layout_psa() noexcept
-#if defined(__clang__) || defined(_MDSPAN_DEFAULTED_CONSTRUCTORS_INHERITANCE_WORKAROUND)
+#if defined(__clang__) ||                                                      \
+    defined(_MDSPAN_DEFAULTED_CONSTRUCTORS_INHERITANCE_WORKAROUND)
   // As far as I can tell, there appears to be a bug in clang that's causing
   // this to be non-constexpr when it's defaulted.
-  { }
+  {
+  }
 #else
-   = default;
+      = default;
 #endif
   MDSPAN_INLINE_FUNCTION_DEFAULTED
   constexpr __standard_layout_psa(__standard_layout_psa const &) noexcept =
@@ -414,7 +420,8 @@ struct __standard_layout_psa<_Tag, _T, integer_sequence<_T>, __sentinal,
   template <class _UTag, class _U, class _UValsSeq, _U __u_sentinal,
             class _UIdxsSeq>
   MDSPAN_INLINE_FUNCTION constexpr __standard_layout_psa(
-      __standard_layout_psa<_UTag, _U, _UValsSeq, __u_sentinal, _UIdxsSeq> const&) noexcept {}
+      __standard_layout_psa<_UTag, _U, _UValsSeq, __u_sentinal, _UIdxsSeq> const
+          &) noexcept {}
 
   // See comment in the previous partial specialization for why this is
   // necessary.  Or just trust me that it's messy.
@@ -443,9 +450,10 @@ struct __partially_static_sizes_tagged
   MDSPAN_INLINE_FUNCTION
   constexpr __partially_static_sizes_tagged() noexcept
 #ifdef _MDSPAN_DEFAULTED_CONSTRUCTORS_INHERITANCE_WORKAROUND
-    : __psa_impl_t() { }
+      : __psa_impl_t() {
+  }
 #else
-    = default;
+      = default;
 #endif
   MDSPAN_INLINE_FUNCTION_DEFAULTED
   constexpr __partially_static_sizes_tagged(
@@ -464,8 +472,9 @@ struct __partially_static_sizes_tagged
 
   template <class _UTag>
   MDSPAN_FORCE_INLINE_FUNCTION constexpr explicit __partially_static_sizes_tagged(
-    __partially_static_sizes_tagged<_UTag, __values_or_sentinals...> const& __vals
-  ) noexcept : __psa_impl_t(__vals.__enable_psa_conversion()) { }
+      __partially_static_sizes_tagged<_UTag, __values_or_sentinals...> const
+          &__vals) noexcept
+      : __psa_impl_t(__vals.__enable_psa_conversion()) {}
 };
 
 struct __no_tag {};
@@ -477,20 +486,23 @@ private:
       __partially_static_sizes_tagged<__no_tag, __values_or_sentinals...>;
   template <class _UTag>
   MDSPAN_FORCE_INLINE_FUNCTION constexpr __partially_static_sizes(
-    __partially_static_sizes_tagged<_UTag, __values_or_sentinals...>&& __vals
-  ) noexcept : __base_t(::std::move(__vals)) { }
+      __partially_static_sizes_tagged<_UTag, __values_or_sentinals...>
+          &&__vals) noexcept
+      : __base_t(::std::move(__vals)) {}
+
 public:
   using __base_t::__base_t;
 
 #ifdef _MDSPAN_DEFAULTED_CONSTRUCTORS_INHERITANCE_WORKAROUND
   MDSPAN_INLINE_FUNCTION
-  constexpr __partially_static_sizes() noexcept : __base_t() { }
+  constexpr __partially_static_sizes() noexcept : __base_t() {}
 #endif
   template <class _UTag>
   MDSPAN_FORCE_INLINE_FUNCTION constexpr __partially_static_sizes_tagged<
       _UTag, __values_or_sentinals...>
   __with_tag() const noexcept {
-    return __partially_static_sizes_tagged<_UTag, __values_or_sentinals...>(*this);
+    return __partially_static_sizes_tagged<_UTag, __values_or_sentinals...>(
+        *this);
   }
 };
 
