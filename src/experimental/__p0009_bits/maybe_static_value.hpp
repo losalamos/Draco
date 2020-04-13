@@ -57,7 +57,8 @@ namespace experimental {
 namespace detail {
 
 // static case
-template <class _T, _T __v, _T __is_dynamic_sentinal = dynamic_extent,
+template <class _T, _T __v,
+          _T __is_dynamic_sentinal = dynamic_extent,
           size_t __array_entry_index = 0>
 struct __maybe_static_value {
   static constexpr _T __static_value = __v;
@@ -65,8 +66,9 @@ struct __maybe_static_value {
     return __v;
   }
   template <class _U>
-  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __mdspan_enable_fold_comma
-  __set_value(_U &&__rhs) noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14
+  __mdspan_enable_fold_comma
+  __set_value(_U&& __rhs) noexcept {
     // Should we assert that the value matches the static value here?
     return {};
   }
@@ -76,25 +78,23 @@ struct __maybe_static_value {
   MDSPAN_INLINE_FUNCTION_DEFAULTED
   constexpr __maybe_static_value() noexcept = default;
   MDSPAN_INLINE_FUNCTION_DEFAULTED
-  constexpr __maybe_static_value(__maybe_static_value const &) noexcept =
-      default;
+  constexpr __maybe_static_value(__maybe_static_value const&) noexcept = default;
   MDSPAN_INLINE_FUNCTION_DEFAULTED
-  constexpr __maybe_static_value(__maybe_static_value &&) noexcept = default;
+  constexpr __maybe_static_value(__maybe_static_value&&) noexcept = default;
   MDSPAN_INLINE_FUNCTION_DEFAULTED
-  _MDSPAN_CONSTEXPR_14_DEFAULTED __maybe_static_value &
-  operator=(__maybe_static_value const &) noexcept = default;
+  _MDSPAN_CONSTEXPR_14_DEFAULTED __maybe_static_value& operator=(__maybe_static_value const&) noexcept = default;
   MDSPAN_INLINE_FUNCTION_DEFAULTED
-  _MDSPAN_CONSTEXPR_14_DEFAULTED __maybe_static_value &
-  operator=(__maybe_static_value &&) noexcept = default;
+  _MDSPAN_CONSTEXPR_14_DEFAULTED __maybe_static_value& operator=(__maybe_static_value&&) noexcept = default;
   MDSPAN_INLINE_FUNCTION_DEFAULTED
   ~__maybe_static_value() noexcept = default;
 
   MDSPAN_INLINE_FUNCTION
-  constexpr explicit __maybe_static_value(_T const &) noexcept {
+  constexpr explicit __maybe_static_value(_T const&) noexcept {
     // Should we assert that the value matches the static value here?
   }
 
   //--------------------------------------------------------------------------
+
 };
 
 // dynamic case
@@ -110,8 +110,9 @@ struct __maybe_static_value<_T, __is_dynamic_sentinal, __is_dynamic_sentinal,
     return this->__no_unique_address_emulation<_T>::__ref();
   }
   template <class _U>
-  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14 __mdspan_enable_fold_comma
-  __set_value(_U &&__rhs) noexcept {
+  MDSPAN_FORCE_INLINE_FUNCTION _MDSPAN_CONSTEXPR_14
+  __mdspan_enable_fold_comma
+  __set_value(_U&& __rhs) noexcept {
     this->__no_unique_address_emulation<_T>::__ref() = __rhs;
     return {};
   }

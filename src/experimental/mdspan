@@ -42,23 +42,6 @@
 */
 
 #pragma once
-#ifdef _MSC_FULL_VER
-// - 4348: redefinition of default parameter
-#pragma warning(push)
-#pragma warning(disable : 4348)
-#endif
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-#pragma clang diagnostic ignored "-Wreserved-id-macro"
-#endif
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Werror=undef"
-#endif
 
 #include "__p0009_bits/accessor_basic.hpp"
 #include "__p0009_bits/all_type.hpp"
@@ -72,16 +55,3 @@
 #include "__p0009_bits/macros.hpp"
 #include "__p0009_bits/static_array.hpp"
 #include "__p0009_bits/subspan.hpp"
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
-
-#ifdef __clang__
-// Restore clang diagnostics to previous state.
-#pragma clang diagnostic pop
-#endif
-
-#ifdef _MSC_FULL_VER
-#pragma warning(pop)
-#endif
