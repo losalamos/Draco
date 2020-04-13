@@ -12,6 +12,7 @@ project( config )
 include(CMakePackageConfigHelpers)
 
 file( GLOB CMake_src *.cmake )
+file( GLOB config_helper_sh *.sh )
 file( GLOB Python_src *.py )
 set( CMake_in
    cmake_uninstall.cmake.in
@@ -57,6 +58,7 @@ write_basic_package_version_file(
 set( file_list
   ${CMake_src}
   ${CMake_in}
+  ${config_helper_sh}
   ${Python_src}
   ${CMAKE_CURRENT_BINARY_DIR}/draco-config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/draco-config-version.cmake

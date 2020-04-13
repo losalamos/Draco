@@ -151,6 +151,11 @@ macro(dbsSetupCompilers)
         foreach( myregex ${CODE_COVERAGE_IGNORE_REGEX} )
           list(APPEND lcov_ignore '${myregex}')
         endforeach()
+        if( EXISTS "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
+          set( captureLcov "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
+        else()
+          set( captureLcov "${DRACO_DIR}/config/capture_lcov.sh" )
+        endif()
         add_custom_command(
           OUTPUT "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
           BYPRODUCTS
@@ -160,8 +165,9 @@ macro(dbsSetupCompilers)
           COMMAND ${LCOV} ${lcovopts2} --remove coverage.info ${lcov_ignore}
           COMMAND genhtml coverage.info --demangle-cpp --output-directory cov-html
           # COMMAND ${LCOV} ${lcovopts1} --list coverage.info
-          COMMAND "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" -g "${GCOV}" -l "${LCOV}"
+          COMMAND "${captureLcov}" -g "${GCOV}" -l "${LCOV}"
           )
+        unset( captureLcov )
         add_custom_target( covrep
           DEPENDS "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
           COMMENT "
