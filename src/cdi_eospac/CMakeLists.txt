@@ -35,6 +35,13 @@ add_component_executable(
   SOURCES     ${PROJECT_SOURCE_DIR}/QueryEospac.cc
   PREFIX       Draco )
 
+# Copy necessary dll files to the build directory
+if(WIN32)
+  add_custom_command( TARGET Lib_cdi_eospac POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:EOSPAC::eospac>
+            $<TARGET_FILE_DIR:Lib_cdi_eospac> )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
