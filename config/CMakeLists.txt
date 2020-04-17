@@ -58,7 +58,6 @@ write_basic_package_version_file(
 set( file_list
   ${CMake_src}
   ${CMake_in}
-  ${config_helper_sh}
   ${Python_src}
   ${CMAKE_CURRENT_BINARY_DIR}/draco-config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/draco-config-version.cmake
@@ -66,6 +65,7 @@ set( file_list
 
 install( FILES ${file_list}  DESTINATION cmake )
 install( FILES ${CMake_AFSD} DESTINATION cmake/CMakeAddFortranSubdirectory )
+install( PROGRAMS ${config_helper_sh} DESTINATION cmake )
 
 ##---------------------------------------------------------------------------##
 ## End of config/CMakeLists.txt
