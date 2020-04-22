@@ -53,12 +53,14 @@ void quo_hw_report(rtt_dsxx::UnitTest &ut) {
   // Generic checks.
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_nodes() > 0);
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_cores() > 0);
-  /*! \todo This check fails on ATS-2 (rzansel, sierra); need to investigate
-   *        See Redmine #1879.
-   *
-   * FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() ==
-   *             thread::hardware_concurrency());
-   */
+
+  // Qup will give the available system resources in the num_hw_threads call
+  // and std::thread::hardware_concurency  will give the total system resources
+  // (not respecting what has been reserved for the OS). Use std::thread as an
+  // upper bound check
+  FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() <=
+              thread::hardware_concurrency());
+
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_sockets_per_node() > 0);
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_numanodes_per_node() > 0);
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_mpi_ranks_per_node() > 0);
