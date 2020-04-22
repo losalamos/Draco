@@ -176,6 +176,10 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
     rzmanta* | rzansel* | sierra* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_ats2 ;;
 
+    # LAP Virtual Machine
+    vc*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_vm ;;
+
     # CCS-NET machines (insufficient space on ccscs5 for vendor+data).
     ccscs5*)
       echo "Draco developer environment not provided on this machine"
