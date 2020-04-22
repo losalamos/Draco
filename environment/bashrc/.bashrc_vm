@@ -1,22 +1,20 @@
-module purge
+#!/bin/bash
+##-*- Mode: bash -*-
+##---------------------------------------------------------------------------##
+## File  : environment/bashrc/.bashrc_vm
+## Date  :  April 22, 2020
+## Author: Jae Chang <jhchang@lanl.gov>
+## Note  : Copyright (C) 2020, Triad National Security, LLC.
+##         All rights are reserved.
+##
+##  Bash configuration file upon bash shell startup.  Used when working
+##  in the LAP virutal environment.
+##---------------------------------------------------------------------------##
 
-module load gcc
-module load cmake
-module load python
-module load openmpi
-module load intel-mkl
-module load trilinos
-module load superlu-dist
-module load metis
-module load numdiff
-module load numactl
-module load parmetis
-module load gsl
-module load random123
-module load eospac
-module load csk
-module load ndi
-module load libquo
+export dracomodules="gcc cmake python openmpi intel-mkl trilinos superlu-dist metis numdiff numactl parmetis gsl random123 eospac csk ndi libquo"
 
 
-module list
+##---------------------------------------------------------------------------##
+## end of .bashrc_vm
+##---------------------------------------------------------------------------##
+
