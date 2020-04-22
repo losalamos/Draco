@@ -1,0 +1,22 @@
+module purge
+
+module load gcc
+module load cmake
+module load python
+module load openmpi
+module load intel-mkl
+module load trilinos
+module load superlu-dist
+module load metis
+module load numdiff
+module load numactl
+module load parmetis
+module load gsl
+module load random123
+module load eospac
+module load csk
+module load ndi
+module load libquo
+
+
+module list
