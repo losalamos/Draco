@@ -59,9 +59,9 @@ else
   done
 
   # Provide a newer lcov that is compatible with gcc-8.
-  run "cp -r ${SOURCE_DIR}/tools/spack/lcov ${SPACK_ROOT}/var/spack/repos/builtin/packages/."
-  run "spack install lcov@1.14"
-  run "spack load lcov"
+  #run "cp -r ${SOURCE_DIR}/tools/spack/lcov ${SPACK_ROOT}/var/spack/repos/builtin/packages/."
+  #run "spack install lcov@1.14"
+  #run "spack load lcov"
 
   if [[ $GCCVER ]]; then
     export CXX=`which g++-${GCCVER}`

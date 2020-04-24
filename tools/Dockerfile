@@ -6,13 +6,19 @@ FROM ubuntu:latest
 # This image:
 # 1. cd /D f:\work\docker (copy Dockerfile and packages.yaml to this location).
 # 2. docker login -u kinetictheory (and password) # ref https://docs.docker.com/get-started/part2/
-# 3. docker build --rm --pull --tag draco-ci-2019june:latest . 
-#    OR: docker run -it kinetictheory/draco-ci-2019june /bin/bash -l
+# 3. docker build --rm --pull --tag draco-ci-2020april:latest . 
+#    OR: docker run -it -v /c/work:/work kinetictheory/draco-ci-2019aug /bin/bash -l
 #        apt-get install -y --no-install-recommends [ghostview]
+#        rm -rf /vendors/spack/var/spack/repos/builtin/cmake
+#        cp -r /work/kinetictheory/spack/var/spack/repos/builtin/cmake /vendors/spack/var/spack/repos/builtin/.
+#        spack install cmake@3.17.0
 #        exit
+#        docker ps -a
+#        docker commit -m "added cmake-3.17.0." kind_grothen kinetictheory/draco-ci-2020april:latest 
+#        docker push kinetictheory/draco-ci-2020april:latest
 # 4. docker image ls -a ==> find container name (or docker ps)
-# 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <hash> kinetictheory/draco-ci-2019june:latest # queues for upload
-# 6. docker push kinetictheory/draco-ci-2019june:latest
+# 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <hash> kinetictheory/draco-ci-2020april:latest # queues for upload
+# 6. docker push kinetictheory/draco-ci-2020april:latest
 # 7. docker system prune -a (remove old dangling data)
 
 MAINTAINER KineticTheory "https://github.com/KineticTheory"
@@ -27,7 +33,7 @@ MAINTAINER KineticTheory "https://github.com/KineticTheory"
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 ENV SPACK_ROOT=/vendors/spack
-ENV DRACO_TPL="cmake@3.14.4 gsl@2.5 numdiff@5.9.0 random123@1.09 openmpi@3.1.4 netlib-lapack@3.8.0 metis@5.1.0 parmetis@4.0.3 superlu-dist trilinos mscgen"
+ENV DRACO_TPL="cmake@3.17.0 gsl numdiff random123@1.09 openmpi netlib-lapack metis parmetis mscgen libquo eospac@6.4.0 lcov"
 ENV FORCE_UNSAFE_CONFIGURE=1
 ENV DISTRO=bionic
 ENV CLANG_FORMAT_VER=6.0
@@ -66,7 +72,7 @@ RUN if ! test -f /etc/profile.d/modules.sh; then \
 #    apt-get install -y clang-format-${CLANG_FORMAT_VER}; \
 #    export PATH=$PATH:/usr/bin
 RUN  apt-get install -y --no-install-recommends clang-format-${CLANG_FORMAT_VER}; \
-     ln -s /usr/bin/clang-format-6.0 /usr/bin/clang-format; \
+     ln -s /usr/bin/clang-format-${CLANG_FORMAT_VER} /usr/bin/clang-format; \
      export PATH=$PATH:/usr/bin
 
 ## code cov plugin...
@@ -86,11 +92,11 @@ RUN if ! test -d $SPACK_ROOT/opt/spack ; then \
 COPY packages.yaml $SPACK_ROOT/etc/spack/linux
 
 # metis/parmetis downloads are broken right now, use a mirror.
-COPY mirrors.yaml $SPACK_ROOT/etc/spack
-RUN mkdir -p $SPACK_ROOT/spack.mirror/metis
-RUN mkdir -p $SPACK_ROOT/spack.mirror/parmetis
-COPY metis-5.1.0.tar.gz $SPACK_ROOT/spack.mirror/metis
-COPY parmetis-4.0.3.tar.gz $SPACK_ROOT/spack.mirror/parmetis
+#COPY mirrors.yaml $SPACK_ROOT/etc/spack
+#RUN mkdir -p $SPACK_ROOT/spack.mirror/metis
+#RUN mkdir -p $SPACK_ROOT/spack.mirror/parmetis
+#COPY metis-5.1.0.tar.gz $SPACK_ROOT/spack.mirror/metis
+#COPY parmetis-4.0.3.tar.gz $SPACK_ROOT/spack.mirror/parmetis
 
 RUN if ! test -f /etc/profile.d/spack.sh; then \
       echo "source $SPACK_ROOT/share/spack/setup-env.sh" > /etc/profile.d/spack.sh; \

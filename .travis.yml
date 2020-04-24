@@ -90,7 +90,7 @@ install:
 
 script:
   - if [[ ${COVERAGE:-OFF} == "ON" ]]; then ci_env=`/bin/bash <(curl -s https://codecov.io/env)`; fi
-  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CI=${CI} -e TRAVIS=${TRAVIS} -e TRAVIS_BRANCH=${TRAVIS_BRANCH} -e GCCVER=${GCCVER} -e CI_MERGE_REQUEST_TARGET_BRANCH_NAME=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} kinetictheory/draco-ci-2019aug /bin/bash -l -c "${SOURCE_DIR}/tools/travis-run-tests.sh"
+  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CI=${CI} -e TRAVIS=${TRAVIS} -e TRAVIS_BRANCH=${TRAVIS_BRANCH} -e GCCVER=${GCCVER} -e CI_MERGE_REQUEST_TARGET_BRANCH_NAME=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} kinetictheory/draco-ci-2020april /bin/bash -l -c "${SOURCE_DIR}/tools/travis-run-tests.sh"
 
 #------------------------------------------------------------------------------#
 # See also:
