@@ -11,7 +11,7 @@
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/Common_Configure_Options
 
-cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
 set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
 project( Draco DESCRIPTION ${ddesc} VERSION 7.6 LANGUAGES CXX C)
