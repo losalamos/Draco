@@ -134,4 +134,4 @@ associated software packages may are listed below:
 
 10. experimental/mdspan - https://github.com/kokkos/mdspan
     Kokkos v. 2.0, Copyright (2019) Sandia Corporation, BSD-3 License
-    Git version hash: a7990884f090365787a90cdc12e689822d642c65
+    Git version hash: 0f076223d1b36690323e8410f4a82a7716b84875

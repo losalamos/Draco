@@ -1,45 +1,24 @@
-/*
-//@HEADER
-// ************************************************************************
-//
-//                        Kokkos v. 2.0
-//              Copyright (2019) Sandia Corporation
-//
-// Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-// the U.S. Government retains certain rights in this software.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-// 1. Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright
-// notice, this list of conditions and the following disclaimer in the
-// documentation and/or other materials provided with the distribution.
-//
-// 3. Neither the name of the Corporation nor the names of the
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
-//
-// ************************************************************************
-//@HEADER
-*/
+//----------------------------------*-C++-*-----------------------------------//
+/*!
+ * \file   experimental/mdspan
+ * \author Kelly Thompson <kgt@lanl.gov>
+ * \date   Tuesday, Apr 28, 2020, 15:39 pm
+ * \brief  Wrapper with Draco CPP macros for mdspan
+ * \note   Copyright (C) 2020 Triad National Security, LLC.
+ *         All rights reserved.
+ *
+ * Instructions:
+ *
+ * Download Kokkos' implementation of mdspan from
+ * https://github.com/kokkos/mdspan/archive/master.zip.  Copy the __p0009_bits
+ * directory to src/experimental/.  Move and rename <mdspan> to
+ * src/experimental/kokkos_mdspan.
+ *
+ * This file provides a wrapper around the original implementation so we can
+ * easily suppress compile warnings that we don't care about and we can disable
+ * clang-format formatting for these files.
+ */
+//----------------------------------------------------------------------------//
 
 #pragma once
 
@@ -56,19 +35,14 @@
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
-#include "__p0009_bits/accessor_basic.hpp"
-#include "__p0009_bits/all_type.hpp"
-#include "__p0009_bits/array_workaround.hpp"
-#include "__p0009_bits/basic_mdspan.hpp"
-#include "__p0009_bits/dynamic_extent.hpp"
-#include "__p0009_bits/extents.hpp"
-#include "__p0009_bits/fixed_layout_impl.hpp"
-#include "__p0009_bits/layout_left.hpp"
-#include "__p0009_bits/layout_right.hpp"
-#include "__p0009_bits/layout_stride.hpp"
-#include "__p0009_bits/macros.hpp"
-#include "__p0009_bits/mixed_size_storage.hpp"
-#include "__p0009_bits/subspan.hpp"
+//----------------------------------------------------------------------------//
+/* mdspan from https://github.com/kokkos/mdspan/ renamed to kokkos_mdspan so it
+ * can be wrapped */
+//----------------------------------------------------------------------------//
+
+#include <experimental/kokkos_mdspan>
+
+//----------------------------------------------------------------------------//
 
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
@@ -78,3 +52,7 @@
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
+
+//----------------------------------------------------------------------------//
+// end of experimental/mdspan
+//----------------------------------------------------------------------------//
