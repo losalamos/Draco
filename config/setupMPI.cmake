@@ -342,6 +342,8 @@ macro( setupCrayMPI )
   string(APPEND preflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_PREFLAGS ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS_PERFBENCH ${preflags} CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
   set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_PREFLAGS} -c ${MPI_CORES_PER_CPU}"
     CACHE STRING "extra mpirun flags (list)." FORCE)
