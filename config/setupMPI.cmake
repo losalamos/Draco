@@ -260,14 +260,12 @@ macro( setupOpenMPI )
   if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
     set(runasroot "--allow-run-as-root --oversubscribe")
   endif()
-
-  # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
-  # regress_funcs.py.
-
-  # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
-  # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
+  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
+  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
   set( MPIEXEC_PREFLAGS "-bind-to none ${runasroot}" CACHE STRING
     "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN ${runasroot}" CACHE
+    STRING "extra mpirun flags (list)." FORCE)
 
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
