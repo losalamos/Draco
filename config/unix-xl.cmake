@@ -26,17 +26,16 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # -F/projects/opt/ppc64le/ibm/xlc-16.1.1.2/xlC/16.1.1/etc/xlc.cfg.rhel.7.5.gcc.7.3.0.cuda.9.2
   # -qfloat=nomaf -qxlcompatmacros
   set( CMAKE_C_FLAGS                "-g --gcc-toolchain=/usr/tce/packages/gcc/gcc-8.3.1" ) # -qarch=auto
-  # Sequoia
-  if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0 )
-    string( APPEND CMAKE_C_FLAGS " -qinfo=all -qflags=i:w -qsuppress=1540-0072")
-    string( APPEND CMAKE_C_FLAGS " -qsuppress=1506-1197" )
-  endif()
   # 2019-04-03 IBM support asks that we not use '-qcheck' due to compiler issues.
   set( CMAKE_C_FLAGS_DEBUG          "-O0 -qsmp=omp:noopt -qfullpath -DDEBUG") # -qcheck -qoffload
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
     "-O3 -qhot=novector -qsmp=omp -qstrict=nans:operationprecision" ) # -qsimd=auto
   set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELWITHDEBINFO} -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
+
+  if( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+    string( APPEND CMAKE_C_FLAGS " -qarch=pwr9 -qtune=pwr9" )
+  endif()
 
    # Email from Roy Musselman <roymuss@us.ibm.com, 2019-03-21:
    # For C++14, add -qxflag=disable__cplusplusOverride
@@ -45,10 +44,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
-
-  if( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
-    string( APPEND CMAKE_C_FLAGS " -qarch=pwr9 -qtune=pwr9" )
-  endif()
 
 endif()
 

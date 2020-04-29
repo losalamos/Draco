@@ -86,7 +86,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   // error is less than 10% for this very short time interval.
   double const prec(20.0 * t.posix_err());
 #else
-  double const prec(2.0 * t.posix_err());
+  double const prec(4.0 * t.posix_err());
 #endif
   double begin(rtt_c4::wall_clock_time());
 
