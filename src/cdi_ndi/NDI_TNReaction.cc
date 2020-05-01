@@ -335,8 +335,9 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
 void NDI_TNReaction::load_ndi() {
   Insist(0, "load_ndi() only available when NDI library is found");
 }
-std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
-                                            const double temperature) const {
+std::vector<double>
+NDI_TNReaction::get_PDF(const int /*product_zaid*/,
+                        const double /*temperature*/) const {
   Insist(0, "get_PDF() only available when NDI library is found");
 }
 #endif // NDI_FOUND
