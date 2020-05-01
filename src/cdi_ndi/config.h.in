@@ -16,6 +16,12 @@
 /* NDI_ROOT_DIR location, for accessing gendir.all */
 #cmakedefine NDI_ROOT_DIR "@NDI_ROOT_DIR@"
 
+#cmakedefine NDI_FOUND
+
+#ifdef NDI_FOUND
+ #include "ndi.h"
+#endif
+
 #endif // rtt_cdi_ndi_config_h
 
 /*---------------------------------------------------------------------------*/

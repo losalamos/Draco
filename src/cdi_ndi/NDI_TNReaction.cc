@@ -8,6 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "cdi_ndi/config.h" // definition of NDI_FOUND
+
 #include "NDI_TNReaction.hh"
 #include <cmath>
 
@@ -50,6 +52,8 @@ NDI_TNReaction::NDI_TNReaction(const std::string &library_in,
   load_ndi();
 }
 
+// Protect actual NDI calls with NDI_FOUND macro:
+#ifdef NDI_FOUND
 //----------------------------------------------------------------------------//
 /*!
  * \brief Load NDI dataset. Split off from constructor to allow for both
@@ -326,7 +330,16 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
 
   return pdf;
 }
+#else
 
+void NDI_TNReaction::load_ndi() {
+  Insist(0, "load_ndi() only available when NDI library is found");
+}
+std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
+                                            const double temperature) const {
+  Insist(0, "get_PDF() only available when NDI library is found");
+}
+#endif // NDI_FOUND
 } // namespace rtt_cdi_ndi
 
 //----------------------------------------------------------------------------//

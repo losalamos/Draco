@@ -23,11 +23,14 @@ set( test_sources
 # Both tests read a local test data file, 'ndi_data'. To avoid resource issues,
 # tell ctest to avoid running these two test at the same time with the keyword
 # RESOURCE_LOCK.
+if(TARGET NDI::ndi)
+
 add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "Lib_cdi_ndi"
   RESOURCE_LOCK "ndi_data" )
 
+endif()
 #------------------------------------------------------------------------------#
 # End cdi_ndi/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

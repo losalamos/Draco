@@ -11,8 +11,8 @@
 #ifndef cdi_ndi_NDI_Base_hh
 #define cdi_ndi_NDI_Base_hh
 
-#include "ndi.h"
 #include "cdi_ndi/config.h"
+
 #include "ds++/Assert.hh"
 #include "ds++/path.hh"
 #include <algorithm>

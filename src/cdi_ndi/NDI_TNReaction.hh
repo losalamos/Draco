@@ -12,7 +12,6 @@
 #define cdi_ndi_NDI_TNReaction_hh
 
 #include "NDI_Base.hh"
-#include "ndi.h"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
