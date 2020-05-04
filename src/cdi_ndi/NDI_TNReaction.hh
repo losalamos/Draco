@@ -55,7 +55,10 @@ public:
                               const double temperature) const;
 
 private:
+// Only implemented if NDI is found
+#ifdef NDI_FOUND
   void load_ndi();
+#endif
 };
 
 } // namespace rtt_cdi_ndi
