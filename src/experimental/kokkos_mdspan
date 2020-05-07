@@ -43,16 +43,15 @@
 
 #pragma once
 
-#include "macros.hpp"
-
-#include <cstddef>
-
-namespace std {
-namespace experimental {
-
-_MDSPAN_INLINE_VARIABLE constexpr ptrdiff_t dynamic_extent = -1;
-
-} // end namespace experimental
-} // namespace std
-
-//==============================================================================================================
+#include "__p0009_bits/accessor_basic.hpp"
+#include "__p0009_bits/all_type.hpp"
+#include "__p0009_bits/basic_mdspan.hpp"
+#include "__p0009_bits/dynamic_extent.hpp"
+#include "__p0009_bits/extents.hpp"
+#include "__p0009_bits/fixed_layout_impl.hpp"
+#include "__p0009_bits/layout_left.hpp"
+#include "__p0009_bits/layout_right.hpp"
+#include "__p0009_bits/layout_stride.hpp"
+#include "__p0009_bits/macros.hpp"
+#include "__p0009_bits/static_array.hpp"
+#include "__p0009_bits/subspan.hpp"

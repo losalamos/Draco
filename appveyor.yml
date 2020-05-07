@@ -13,10 +13,7 @@ environment:
   PATH: c:\projects\win32-vs16-tools\bin;$(PATH);c:\msys64\mingw64\bin
   VCPKGDIR: C:\Tools\vcpkg
   GENERATOR: "Visual Studio 16 2019"
-  CMAKE_OPTIONS: "-DCMAKE_TOOLCHAIN_FILE=%VENDOR_DIR%\\vs2019-toolchain.cmake" 
-  #-DCMAKE_VERBOSE_MAKEFILE=ON"
-  #QTDIR: c:\Qt\5.14.0
-  #PATH+=c:\Qt\5.14.0\bin
+  CMAKE_OPTIONS: "-DCMAKE_TOOLCHAIN_FILE=%VENDOR_DIR%\\vs2019-toolchain.cmake -DCMAKE_VERBOSE_MAKEFILE=ON"
 
   matrix:
     - BUILD_TYPE: Debug
@@ -68,10 +65,10 @@ build_script:
 # no MPI installed so force scalar builds.
   - echo cmake -G "%GENERATOR%" -A x64 %CMAKE_OPTIONS% -DDRACO_C4=%C4_OPTS% %APPVEYOR_BUILD_FOLDER%
   - cmake -G "%GENERATOR%" -A x64 %CMAKE_OPTIONS% -DDRACO_C4=%C4_OPTS% %APPVEYOR_BUILD_FOLDER%
-  - echo cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
-  - cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
-  - echo ctest -C %BUILD_TYPE% -j 2 --output-on-failure
-  - ctest -C %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS% --output-on-failure
+  - echo cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS% --target Ut_experimental_tst_mdspan_exe
+  - cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS% --target Ut_experimental_tst_mdspan_exe
+#  - echo ctest -C %BUILD_TYPE% -j 2 --output-on-failure
+#  - ctest -C %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS% --output-on-failure
 
 #build:
 #  verbosity: minimal
