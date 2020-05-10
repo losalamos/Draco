@@ -36,7 +36,7 @@ add_component_executable(
   PREFIX       Draco )
 
 # Copy necessary dll files to the build directory
-if(WIN32)
+if( MSVC AND DRACO_LIBRARY_TYPE STREQUAL SHARED )
   add_custom_command( TARGET Lib_cdi_eospac POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:EOSPAC::eospac>
             $<TARGET_FILE_DIR:Lib_cdi_eospac> )
@@ -59,7 +59,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING AND NOT DEFINED ENV{APPVEYOR} )
   add_subdirectory( test )
 endif()
@@ -67,7 +66,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 endif() # EOSPAC_FOUND

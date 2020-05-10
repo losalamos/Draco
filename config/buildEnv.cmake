@@ -20,7 +20,8 @@ macro( dbsSetDefaults )
   # if undefined, force build_type to "release"
   if( NOT CMAKE_CONFIGURATION_TYPES )
      if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-        set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Release, Debug, RelWithDebInfo" FORCE )
+        set( CMAKE_BUILD_TYPE "Debug" CACHE STRING
+          "Release, Debug, RelWithDebInfo" FORCE )
      endif()
      # constrain pull down values in cmake-gui
      set_property( CACHE CMAKE_BUILD_TYPE
@@ -31,7 +32,8 @@ macro( dbsSetDefaults )
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )
      set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/../install" )
-     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE )
+     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+      ABSOLUTE )
      set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
         "Install path prefix, prepended onto install directories" FORCE)
   endif()
@@ -45,7 +47,8 @@ macro( dbsSetDefaults )
      if( CMAKE_CONFIGURATION_TYPES )
         set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR} )
      else() # nmake or mingw32-make
-        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY
+          ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
      endif()
   endif()
 
@@ -136,7 +139,8 @@ macro( dbsSetDefaults )
   set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
   # Enable parallel build for Eclipse:
-  cmake_host_system_information( RESULT logical_cores QUERY NUMBER_OF_LOGICAL_CORES )
+  cmake_host_system_information( RESULT logical_cores QUERY
+    NUMBER_OF_LOGICAL_CORES )
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${logical_cores}" )
 
   # Set RPATH for all libraries on Apple platform
@@ -181,7 +185,8 @@ macro( dbsInitExportTargets PREFIX )
    set( ${PREFIX}_TPL_LIST ""  CACHE INTERNAL
       "List of third party libraries known by this package" FORCE)
    set( ${PREFIX}_TPL_INCLUDE_DIRS ""  CACHE
-      INTERNAL "List of include paths used by this package to find thrid party vendor header files."
+      INTERNAL
+      "List of include paths used by this package to find TPL header files."
       FORCE)
    set( ${PREFIX}_TPL_LIBRARIES ""  CACHE INTERNAL
       "List of third party libraries used by this package." FORCE)
@@ -195,7 +200,7 @@ macro( dbsConfigInfo )
    set( DBS_OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
    set( DBS_OPERATING_SYSTEM_VER "${CMAKE_SYSTEM}")
 
-   # Suppliment with system commands as needed:
+   # Supplement with system commands as needed:
    if( UNIX )
 
       # Get some extra version information if this is RedHat.
@@ -225,18 +230,30 @@ macro( dbsConfigInfo )
    elseif() # WIN32
 
       # OS version information
-      # Windows XP
-      GET_FILENAME_COMPONENT( win_prod_name "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;ProductName]" NAME )
-      GET_FILENAME_COMPONENT( win_sp "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CSDVersion]" NAME )
-      get_filename_component( win_ver "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CurrentVersion]" NAME )
-      get_filename_component( win_build "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CurrentBuildNumber]" NAME )
-      get_filename_component( win_buildlab "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;BuildLab]" NAME )
+      # Windows
+      get_filename_component( win_prod_name
+        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;ProductName]"
+        NAME )
+      get_filename_component( win_sp
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CSDVersion]"
+      NAME )
+      get_filename_component( win_ver
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CurrentVersion]"
+      NAME )
+      get_filename_component( win_build
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;CurrentBuildNumber]"
+      NAME )
+      get_filename_component( win_buildlab
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion;BuildLab]"
+      NAME )
 
       set( DBS_OPERATING_SYSTEM "${win_prod_name}" )
-      set( DBS_OPERATING_SYSTEM_VER "${win_ver}.${win_build} (${win_buildlab})" )
+      set( DBS_OPERATING_SYSTEM_VER
+        "${win_ver}.${win_build} (${win_buildlab})" )
       if( EXISTS "C:/Program Files (x86)" )
          set( windows_bits "x64" )
-         set( DBS_OPERATING_SYSTEM "${win_prod_name} (${windows_bits}) ${win_sp}" )
+         set( DBS_OPERATING_SYSTEM
+          "${win_prod_name} (${windows_bits}) ${win_sp}" )
       else()
          set( DBS_OPERATING_SYSTEM "${win_prod_name} ${win_sp}" )
       endif()
@@ -261,7 +278,8 @@ macro( dbsConfigInfo )
          COMMAND "c:/windows/system32/ipconfig.exe" "/all"
          OUTPUT_VARIABLE windows_ip_configuration
          )
-      string( REGEX REPLACE ".*Host Name[.: ]+([A-z]+).*Primary.*" "\\1" DBS_TARGET "${windows_ip_configuration}" )
+      string( REGEX REPLACE ".*Host Name[.: ]+([A-z]+).*Primary.*" "\\1"
+        DBS_TARGET "${windows_ip_configuration}" )
 
    endif()
 

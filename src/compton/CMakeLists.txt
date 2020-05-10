@@ -39,8 +39,9 @@ if( TARGET COMPTON::compton )
   # generated include directive files (config.h)
   target_include_directories( Lib_compton
     PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
   # Copy necessary dll files to the build directory
-  if(WIN32)
+  if( MSVC AND DRACO_LIBRARY_TYPE STREQUAL SHARED )
     add_custom_command( TARGET Lib_compton POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different 
               $<TARGET_FILE:COMPTON::compton> $<TARGET_FILE_DIR:Lib_compton> )
