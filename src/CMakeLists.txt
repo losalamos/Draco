@@ -60,6 +60,7 @@ add_dir_if_exists( c4 )           # needs ds++
 if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( compton )      # needs ds++, CSK
+add_dir_if_exists( compton2 )     # needs ds++
 add_dir_if_exists( device )       # needs ds++
 if( USE_MDSPAN )
   add_dir_if_exists( experimental ) # only the tests need ds++
