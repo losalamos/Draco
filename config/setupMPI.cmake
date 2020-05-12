@@ -35,7 +35,8 @@ function( setMPIflavorVer )
   # (this ususally works for HPC or systems with modules)
   if( CRAY_PE )
     set( MPI_FLAVOR "cray" )
-  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi")
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi" OR
+      "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
     set( MPI_FLAVOR "openmpi" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mpich" OR
       "${MPI_C_HEADER_DIR}" MATCHES "mpich")

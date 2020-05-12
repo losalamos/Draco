@@ -1,6 +1,6 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-xlf.cmake
-# author Gabriel Rockefeller
+# author Gabriel Rockefeller, Kelly Thompson <kgt@lanl.gov>
 # date   2012 Nov 1
 # brief  Establish flags for Unix - IBM XL Fortran
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
@@ -11,18 +11,24 @@
 # this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "XL" )
 
+# -qsuppress=
+#   1501-210 (W) command option t contains an incorrect subargument
+#            This is related to '-pthread' showing up in the flags (a cmake bug)
+
 if( NOT Fortran_FLAGS_INITIALIZED )
    set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
    set( CMAKE_Fortran_FLAGS
-     "-qlanglvl=2008std -qinfo=all -qflag=i:w -qarch=auto" )
-   # IBM asked us to remove '-qcheck' due to compiler issues.
-   # -qsmp=noauto -qcheck
-   set( CMAKE_Fortran_FLAGS_DEBUG          "-O0 -qcheck" )
+     "-qlanglvl=2008std -qflag=i:w -qsuppress=1501-210" )
+   if( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+     string( APPEND CMAKE_Fortran_FLAGS " -qarch=pwr9 -qtune=pwr9" )
+   endif()
+
+   set( CMAKE_Fortran_FLAGS_DEBUG "-O0" )
    set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-     "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
+     "-O3 -qstrict=nans:operationprecision" )
    set( CMAKE_Fortran_FLAGS_RELEASE
      "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" )
-   set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
+   set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
 endif()
 
 ##---------------------------------------------------------------------------##
@@ -38,45 +44,6 @@ set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"
   CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}"
   CACHE STRING "compiler flags" FORCE )
-
-#
-# Toggle compiler flags for optional features
-#
-#toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
-#toggle_compiler_flag( OPENMP_FOUND "-qsmp=noauto" "Fortran" "" )
-
-# ----------------------------------------------------------------------------
-# Helper macro to fix the value of
-# CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES when compiling on SQ with
-# xlc/xlf.  For some reason CMake is adding xlomp_ser to the link line
-# when a C++ main is built by linking to F90 libraries.  This library
-# should not be on For some reason CMake is adding xlomp_ser to the
-# link line when a C++ main the link line and actually causes the link
-# to fail on SQ.
-# ----------------------------------------------------------------------------
-# macro( remove_lib_from_link lib_for_removal )
-
-#    set( tmp "" )
-#    foreach( lib ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES} )
-#       if( ${lib} MATCHES ${lib_for_removal} )
-#          message("Removing ${lib_for_removal} from CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES")
-#          # do not add ${lib_for_removal} to the list ${tmp}.
-#       else()
-#          # Add a libraries except for the above match to the new list.
-#          list( APPEND tmp ${lib} )
-#       endif()
-#    endforeach()
-
-#    # Ensure that the value is saved to CMakeCache.txt
-#    set( CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES "${tmp}" CACHE STRING
-#       "Extra Fortran libraries needed when linking to Fortral library from C++ target"
-#       FORCE )
-
-# endmacro()
-
-# When building on SQ with XLC/XLF90, ensure that libxlomp_ser is not
-# on the link line
-#remove_lib_from_link( "xlomp_ser" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-xlf.cmake

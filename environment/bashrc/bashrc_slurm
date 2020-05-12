@@ -191,9 +191,11 @@ case ${-} in
    target="`uname -n | sed -e s/[.].*//`"
    case $target in
      darwin-fe*)
-       alias salloc='module purge; salloc' ;;
+       alias salloc='module purge; salloc --x11' ;;
      tt*|tr*)
-       alias salloc='salloc --gres=craynetwork:0' ;;
+       alias salloc='salloc --gres=craynetwork:0 --x11' ;;
+     *)
+       alias salloc='salloc --x11' ;;
    esac
 
    if test -n "${verbose}"; then echo "done with draco/environment/bashrc/bashrc_slurm"; fi
