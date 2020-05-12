@@ -22,7 +22,7 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS             "-g" )
+  set( CMAKE_C_FLAGS             "-g -qflttrap")
   if( EXISTS /usr/gapps )
     # ATS-2
     string( APPEND CMAKE_C_FLAGS " --gcc-toolchain=/usr/tce/packages/gcc/gcc-8.3.1" )
