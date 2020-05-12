@@ -13,9 +13,7 @@
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 
-namespace rtt_compton2 {
-
-} // namespace rtt_compton2
+namespace rtt_compton2 {} // namespace rtt_compton2
 
 //----------------------------------------------------------------------------//
 // End compton2/Compton2.cc

@@ -13,23 +13,34 @@ project( compton2 CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( sources "${PROJECT_SOURCE_DIR}/Compton2.cc" )
+set( sources
+    ${PROJECT_SOURCE_DIR}/Compton2.cc
+)
+
 set( headers
-  ${PROJECT_SOURCE_DIR}/Compton2.hh )
+  ${PROJECT_SOURCE_DIR}/Compton2.hh
+)
 
 # -------------------------------------------------------------------------- #
 # Build package library
 # -------------------------------------------------------------------------- #
 
 add_component_library(
-TARGET       Lib_compton2
-TARGET_DEPS  "Lib_c4"
-LIBRARY_NAME compton2
-SOURCES      "${sources}"
-HEADERS      "${headers}" )
+  TARGET       Lib_compton2
+  TARGET_DEPS  "Lib_c4;Lib_units"
+  LIBRARY_NAME compton2
+  SOURCES      "${sources}"
+  HEADERS      "${headers}" )
+
 # generated include directive files (config.h)
-target_include_directories( Lib_compton2
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+#target_include_directories( Lib_compton2
+    #  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
+add_component_executable(
+  TARGET      Exe_CSKrw
+  TARGET_DEPS "Lib_units;Lib_compton2"
+  SOURCES     ${PROJECT_SOURCE_DIR}/cskrw.cc
+  PREFIX       Draco )
 
 # Copy necessary dll files to the build directory
 if( MSVC AND DRACO_LIBRARY_TYPE STREQUAL SHARED )
@@ -42,9 +53,12 @@ endif()
 # Installation instructions
 # -------------------------------------------------------------------------- #
 
+set( CMAKE_INSTALL_DO_STRIP NO ) # ??
 install( TARGETS Lib_compton2 EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton2 )
+install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION
+  ${DBSCFGDIR}bin )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
  install(FILES $<TARGET_PDB_FILE:Lib_compton2> DESTINATION ${DBSCFGDIR}lib
    OPTIONAL)

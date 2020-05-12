@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "c4/ParallelUnitTest.hh"
 #include "compton2/Compton2.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <fstream>
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // >>> UNIT TESTS
-      rtt_compton2_test::test(ut);
+    rtt_compton2_test::test(ut);
   }
   UT_EPILOG(ut);
 }

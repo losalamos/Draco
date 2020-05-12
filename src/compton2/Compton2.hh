@@ -40,12 +40,9 @@ namespace rtt_compton2 {
  * object, and exercises all routines for interpolation and data access.
 */
 
-
-class Compton2 {
-};
+class Compton2 {};
 
 } // namespace rtt_compton2
-
 
 #endif // rtt_compton2_Compton2_hh
 
