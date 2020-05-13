@@ -577,10 +577,10 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
 
     if (ordinate_set->ordinates().size() >= 2) {
       PASSMSG(string("Ordinate count is plausible. N = " +
-                     to_string(ordinate_set->ordinates().size()) ));
+                     to_string(ordinate_set->ordinates().size())));
     } else {
       FAILMSG(string("Ordinate count is NOT plausible. N = ") +
-              to_string(ordinate_set->ordinates().size()) );
+              to_string(ordinate_set->ordinates().size()));
     }
 
     if (soft_equiv(ordinate_set->norm(), 1.0)) {
