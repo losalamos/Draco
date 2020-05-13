@@ -4,7 +4,8 @@
 # author Andrew Till <till@lanl.gov>
 # date   14 May 2020
 # brief  This script has functions that parse an ULTRA file with Compton
-#        data and return a dense matrix and energy/temperature grids
+#        data and return a dense matrix and energy/temperature grids;
+#        If run as executable, saves grids and data with same base filename
 # note   Copyright (C) 2020, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
@@ -13,8 +14,11 @@
 # STDLIB
 import os
 import sys
+import shutil
 # TPL
 import numpy as np
+# FPL
+import common_compton as cc
 ################################################################################
 
 # These are the functions that are used to read data from the
@@ -24,6 +28,12 @@ import numpy as np
 def read_ultra_file(filePath, verbosity=False):
     '''Read LLNL-style ultra file and store as dictionary;
     Assume each data line is of format: 'x y' '''
+
+    # Get path and filePath without extension
+    fileroot = os.path.splitext(filePath)[0]
+
+    # Copy as a backup (do not try to preserve metadata)
+    shutil.copy(sys.argv[1], '{}.backup'.format(fileroot))
 
     # Read file
     if verbosity:
@@ -56,7 +66,7 @@ def read_ultra_file(filePath, verbosity=False):
             print(fields[field][1,:])
 
     # Return dict
-    return fields
+    return fileroot, fields
 ################################################################################
 
 ################################################################################
@@ -74,8 +84,67 @@ def extract_3D_grids(fields, verbosity=False):
     # grid stored in leftmost index of data array
     Etogrid = np.unique(np.concatenate([dat[0,:] for dat in fields.values()]))
 
+    # Make MG boundary grid
+    G = max(Efromgrid.size, Etogrid.size)
+    # because they're printed differently,
+    # no guarantee Efrom and Eto have the same grid
+    Eavg = Efromgrid if (G == Efromgrid.size) else Etogrid
+    #
+    # having no information about group bounds, try even spacing
+    reldE = (Eavg[1:] - Eavg[:-1]) / np.maximum(Eavg[1:], Eavg[:-1])
+    absdE = np.diff(Eavg)
+    relvar = np.sqrt(np.var(reldE) / (G-1))
+    absvar = np.sqrt(np.var(absdE) / (G-1)) / np.mean(absdE)
+    if relvar < 1e-4:
+        if verbosity:
+            print('Trying evenly-log-spaced grid')
+        reldEavg = 1.0 - np.power(Eavg[-1] / Eavg[0], -1.0/(G-1))
+        E0 = Eavg[0] * np.sqrt(1 - reldEavg)
+        EG = Eavg[-1] / np.sqrt(1 - reldEavg)
+        E0 = float('{:.1e}'.format(E0))
+        EG = float('{:.1e}'.format(EG))
+        Ebdrgrid = np.geomspace(E0, EG, G+1)
+        EavgCheck = np.sqrt(Ebdrgrid[1:] * Ebdrgrid[:-1])
+    elif absvar < 1e-2:
+        if verbosity:
+            print('Trying evenly-linearly-spaced grid')
+        absdEavg = (Eavg[-1] - Eavg[0]) / (G-1)
+        E0 = max(0, Eavg[0] - absdEavg/2)
+        EG = Eavg[-1] + absdEavg/2
+        E0 = float('{:.1e}'.format(E0))
+        EG = float('{:.1e}'.format(EG))
+        Ebdrgrid = np.linspace(E0, EG, G+1)
+        EavgCheck = 0.5 * (Ebdrgrid[1:] + Ebdrgrid[:-1])
+    else:
+        EavgCheck = np.zeros(G)
+    #
+    # If heuristic spacing is bad, fall back on more general spacing
+    reldiff = np.max(np.abs(Eavg - EavgCheck) / np.maximum(EavgCheck, 0.1))
+    absdiff = np.max(np.abs(Eavg - EavgCheck)) / np.mean(Eavg)
+    if verbosity:
+        print('Trying')
+        print(Ebdrgrid)
+        print('with errors {} and {}'.format(reldiff, absdiff))
+    if reldiff > 1e-3 or absdiff > 2e-3:
+        if verbosity:
+            print('Falling back on self-consistent grid')
+        d2 = np.diff(Eavg)/2
+        dE = np.zeros(G)
+        dE[1:] += d2
+        dE[:-1] += d2
+        d2[0] = min(Eavg[0], d2[0])
+        dE[0] += d2[0]
+        dE[-1] += d2[-1]
+        Ebdrgrid = np.zeros(G+1)
+        Ebdrgrid[0] = Eavg[0] - d2[0]
+        Ebdrgrid[1:] = dE
+        Ebdrgrid = np.cumsum(Ebdrgrid)
+
+    # Check self-consistency of grids
+    assert np.all(np.logical_and(Eavg < Ebdrgrid[1:], Eavg > Ebdrgrid[:-1]))
+
     # Make dictionary and handle corner case of length-1 grids
-    grids = {'T': Tgrid, 'Efrom': Efromgrid, 'Eto': Etogrid}
+    grids = {'T': Tgrid, 'Efrom': Efromgrid, 'Eto': Etogrid, 'Ebdr': Ebdrgrid}
     for key in grids:
         # Corner case
         try:
@@ -132,89 +201,18 @@ def convert_to_matrix(grids, fields, verbosity=False):
 ################################################################################
 
 ################################################################################
-def print_grids(grids, verbosity=False):
-    '''Print grids to files based on their names'''
-
-    # Save to files
-    for key in grids:
-        filename = 'grid_{}'.format(key)
-        if verbosity:
-            print('Saving {}'.format(filename))
-        np.savetxt(filename, grids[key])
-################################################################################
-
-################################################################################
-def print_mat(mat, verbosity=False):
-    '''Print mat to files, one for each temperature '''
-
-    for i in range(mat.shape[0]):
-        filename = 'mat_T{}'.format(i)
-        if verbosity:
-            print('Saving {}'.format(filename))
-        np.savetxt(filename, mat[i,:,:])
-################################################################################
-
-################################################################################
-def read_data(verbosity):
-    '''Read mat and grids data'''
-
-    # Read grids
-    keys = ['T', 'Efrom', 'Eto']
-    grids = {}
-    for key in keys:
-        # Read grid
-        filename = 'grid_{}'.format(key)
-        if verbosity:
-            print('Reading {}'.format(filename))
-        grids[key] = np.loadtxt(filename)
-
-        # Corner case: size-1 array
-        try:
-            # np defines a len method but it throws an exception
-            len(grids[key])
-        except:
-            grids[key] = grids[key] * np.ones(1)
-
-        # Print grid
-        if verbosity:
-            print(key)
-            print(grids[key])
-
-    # Read mat
-    numTs = len(grids['T'])
-    numEsfrom = len(grids['Efrom'])
-    numEsto = len(grids['Eto'])
-    mat = np.zeros((numTs, numEsto, numEsfrom))
-    for i in range(numTs):
-        # Read mat for one T
-        filename = 'mat_T{}'.format(i)
-        if verbosity:
-            print('Reading {}'.format(filename))
-        mat[i,:,:] = np.loadtxt(filename)
-
-        # Print mat for one T
-        if verbosity > 1:
-            print(mat[i,:,:])
-
-    # Return data
-    return grids, mat
-
-################################################################################
-
-
-################################################################################
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('Usage: ultra_reader.py <ultra_filename>')
+        print('Usage: ultra_reader.py <ultra_filePath>')
         exit(1)
     else:
-        verbosity = False
-        fields = read_ultra_file(sys.argv[1], verbosity)
+        verbosity = True
+        #
+        fileroot, fields = read_ultra_file(sys.argv[1], verbosity)
         grids = extract_3D_grids(fields, verbosity)
         mat = convert_to_matrix(grids, fields, verbosity)
-        print_grids(grids, verbosity)
-        print_mat(mat, verbosity)
-        grids, mat = read_data(verbosity)
-
+        cc.print_grids(grids, fileroot, verbosity)
+        cc.print_mat(mat, fileroot, verbosity)
+        grids, mat = cc.read_data(fileroot, verbosity)
 ################################################################################
