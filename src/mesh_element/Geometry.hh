@@ -13,11 +13,19 @@
 
 namespace rtt_mesh_element {
 
-//! Enumerates supported geometries.
+/*! Enumerates supported geometries.
+ *
+ * The order of enumerated values is not arbiterary. The corresponding integral
+ * value is the number of suppressed dimensions in the geometry, e.g., axisymmetric
+ * geometry looks 2-D but is actually 3-D (one suppressed dimension) while spherical
+ * geometry looks 1-D but is actually 3-D (two suppressed dimensions.) The number
+ * of suppressed dimensions is used in some formulas in a number of hydrodynamics
+ * codes, so it seems like a good idea for us to adopt this convention as well.
+ */
 enum Geometry {
+  CARTESIAN,    //!< 1D (slab) or 2D (XY) Cartesian geometry
   AXISYMMETRIC, //!< 2D (cylindrical) R-Z
   SPHERICAL,    //!< 1D SPHERICAL
-  CARTESIAN,    //!< 1D (slab) or 2D (XY) Cartesian geometry
   END_GEOMETRY  //!< Sentinel value
 };
 
