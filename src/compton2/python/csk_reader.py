@@ -25,37 +25,100 @@ import common_compton as cc
 # ASCII csk Compton files
 
 ################################################################################
-def read_csk_files(filePath, verbosity=False):
+def read_csk_files(filebase, verbosity=False):
     '''Read LANL-style csk file and store into fields and a matrix'''
 
     # Get path and filePath without extension
-    fileroot = filePath # todo: fix
+    endings = {'_in_lin', '_out_lin', '_in_nonlin', '_out_nonlin'}
+    fileroot = filebase
+    for ending in endings:
+        if filebase.endswith(ending):
+            fileroot = filebase[:filebase.find(ending)]
 
-    # Copy as a backup (do not try to preserve metadata)
-    #shutil.copy(sys.argv[1], '{}.backup'.format(fileroot))
+    if verbosity:
+        print('Root is', fileroot)
 
-    # normalization
+    # normalizations
     mec2 = 510.998 # keV
+    csk_norm = 0.037558 # currently approximate
 
     # Try to read all csk files
+    mats = {}
+    for ending in endings:
+        filePath = fileroot + ending
 
-    # Read file
-    if verbosity:
-        print('Reading file {}'.format(filePath))
+        if not os.path.exists(filePath):
+            continue
 
-    Tgrid = np.zeros(1)
-    Ebdrgrid = np.geomspace(1e-5, 1e3, 3)
+        # Read file
+        if verbosity:
+            print('Reading file {}'.format(filePath))
+
+        with open(filePath, 'r') as fid:
+            # Line 1: sizes
+            line = fid.readline()
+            t = line.strip().split()
+            numTs = int(t[1])
+            numGroups = int(t[2])
+            numLegMoments = int(t[3])
+
+            G = numGroups
+            L = numLegMoments
+            numEsfrom = G
+            numEsto = G
+
+            # Allocate
+            Tgrid = np.zeros(numTs)
+            Ebdrgrid = np.zeros(G+1)
+            Eavggrid = np.zeros(G)
+            mats[ending] = np.zeros((L,numTs, G, G))
+            submat = mats[ending] # aliased
+
+            # Skip line 2 (has temperature region boundaries)
+            line = fid.readline()
+
+            # Line 3: group boundaries
+            line = fid.readline()
+            Ebdrgrid[:] = mec2 * np.array([float(v) for v in line.strip().split()])
+
+            # Remaining lines:
+            # T
+            # group_from group_to val_L0 val_L1 ...
+            line = fid.readline()
+            iT = -1
+            while line:
+                if line != '\n':
+                    iT += 1
+                    # Read temperature
+                    Tgrid[iT] = mec2 * float(line.strip())
+
+                    # Read data
+                    line = fid.readline()
+                    while line and line != '\n':
+                        t = line.strip().split()
+                        gto = int(t[0]) - 1
+                        gfrom = int(t[1]) - 1
+                        for iL in range(L):
+                            val = csk_norm * float(t[iL+2])
+                            submat[iL, iT, gto, gfrom] = val
+                        line = fid.readline()
+
+                if line == '':
+                    break
+                line = fid.readline()
+
     Eavggrid = np.sqrt(Ebdrgrid[1:] * Ebdrgrid[:-1])
-
-    numTs = len(Tgrid)
-    G = len(Eavggrid)
-    numEsfrom = G
-    numEsto = G
-
     grids = {'T': Tgrid,
             'Ebdr': Ebdrgrid, 'Efrom': Eavggrid, 'Eto': Eavggrid}
-    mat = np.zeros((numTs,numEsto,numEsfrom))
-    return fileroot, grids, mat
+    return fileroot, grids, mats
+
+################################################################################
+def extract_zeroth_out(mats):
+    '''Extract the zeroth Legendre moment of the out_lin evaluation, if present'''
+
+    mat = mats['_out_lin'][0, :, :, :].copy()
+    return mat
+################################################################################
 
 ################################################################################
 # Allows this script to be run by the command line or imported into other python
@@ -66,7 +129,9 @@ if __name__ == '__main__':
     else:
         verbosity = True
         #
-        fileroot, grids, mat = read_csk_files(sys.argv[1], verbosity)
+        fileroot, grids, mats = read_csk_files(sys.argv[1], verbosity)
+        mat = extract_zeroth_out(mats)
+        #exit(0)
         cc.print_grids(grids, fileroot, verbosity)
         cc.print_mat(mat, fileroot, verbosity)
         grids, mat = cc.read_data(fileroot, verbosity)
