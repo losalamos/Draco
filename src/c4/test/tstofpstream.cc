@@ -24,7 +24,7 @@ using namespace rtt_c4;
 void tstofpstream(UnitTest &ut) {
 
   unsigned const pid = rtt_c4::node();
-  ofpstream out("tstofpstream.txt");
+  ofpstream out("tstofpstream_" + std::to_string(rtt_c4::nodes()) + ".txt");
 
   out << "MPI rank " << pid << " reporting ..." << endl;
   out.send();
@@ -48,9 +48,12 @@ void tstofpstream_bin(UnitTest &ut) {
 
   int pid = rtt_c4::node();
 
+  std::string filename("tstofpstream_" + std::to_string(rtt_c4::nodes()) +
+                       ".bin");
+
   // Binary write rank ids to file using ofpstream:
   {
-    ofpstream out("tstofpstream.bin", std::ofstream::binary);
+    ofpstream out(filename, std::ofstream::binary);
     out.write(reinterpret_cast<const char *>(&pid), sizeof(int));
     out.send();
     out.shrink_to_fit();
@@ -58,7 +61,7 @@ void tstofpstream_bin(UnitTest &ut) {
 
   // Read file on head rank, check for correct conversion and ordering
   if (pid == 0) {
-    ifstream in("tstofpstream.bin", std::ifstream::binary);
+    ifstream in(filename, std::ifstream::binary);
     int this_pid(-42);
     for (int a = 0; a < rtt_c4::nodes(); a++) {
       in.read(reinterpret_cast<char *>(&this_pid), sizeof(int));

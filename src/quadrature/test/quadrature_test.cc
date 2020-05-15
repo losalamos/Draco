@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <string>
 
 namespace rtt_quadrature {
 using namespace std;
@@ -575,15 +576,18 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
                                        Ordinate_Set::LEVEL_ORDERED);
 
     if (ordinate_set->ordinates().size() >= 2) {
-      PASSMSG("Ordinate count is plausible");
+      PASSMSG(string("Ordinate count is plausible. N = " +
+                     to_string(ordinate_set->ordinates().size())));
     } else {
-      FAILMSG("Ordinate count is NOT plausible");
+      FAILMSG(string("Ordinate count is NOT plausible. N = ") +
+              to_string(ordinate_set->ordinates().size()));
     }
 
     if (soft_equiv(ordinate_set->norm(), 1.0)) {
       PASSMSG("Ordinate norm is correct");
     } else {
-      FAILMSG("Ordinate norm is NOT correct");
+      FAILMSG(string("Ordinate norm is NOT correct.  Found norm = ") +
+              to_string(ordinate_set->norm()));
     }
 
     ordinate_set->display();

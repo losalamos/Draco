@@ -47,7 +47,7 @@ function( setMPIflavorVer )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mvapich2")
     set( MPI_FLAVOR "mvapich2" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
-      "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
+      "${MPIEXEC_EXECUTABLE}" MATCHES "lrun" )
     set( MPI_FLAVOR "spectrum")
   endif()
 
@@ -278,8 +278,6 @@ macro( setupOpenMPI )
     # -bind-to fails on OSX, See #691
     set( MPIEXEC_OMP_PREFLAGS
       "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
-    # "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket
-    # --report-bindings ${runasroot}"
   endif()
 
   set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
@@ -379,12 +377,15 @@ macro( setupSpectrumMPI )
   #                         total
   # - jsrun -a4 -c16 -g2 => 4 tasks, 16 cores, 2 gpus
 
+  set( MPIEXEC_PREFLAGS "--pack --threads=1 --bind=off -v")
+
   #
   # Setup for OMP plus MPI
   #
 
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS}" )
+#    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS}" )
+    set( MPIEXEC_OMP_PREFLAGS "--pack -c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
   endif()
 
   set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
@@ -431,7 +432,7 @@ macro( setupMPILibrariesUnix )
     elseif( DEFINED ENV{SYS_TYPE} AND
         "$ENV{SYS_TYPE}" MATCHES "ppc64le_ib_p9" ) # ATS-2
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
-        find_program( MPIEXEC_EXECUTABLE jsrun )
+        find_program( MPIEXEC_EXECUTABLE lrun )
       endif()
       set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
         "Program to execute MPI parallel programs." FORCE )
