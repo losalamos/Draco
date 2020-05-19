@@ -96,8 +96,8 @@ def read_csk_files(filebase, verbosity=False):
                     line = fid.readline()
                     while line and line != '\n':
                         t = line.strip().split()
-                        gto = int(t[0]) - 1
-                        gfrom = int(t[1]) - 1
+                        gfrom = int(t[0]) - 1
+                        gto = int(t[1]) - 1
                         for iL in range(L):
                             val = csk_norm * float(t[iL+2])
                             submat[iL, iT, gto, gfrom] = val
@@ -127,7 +127,9 @@ if __name__ == '__main__':
         print('Usage: csk_reader.py <csk_filePath>')
         exit(1)
     else:
+        #verbosity = False
         verbosity = True
+        #verbosity = 2
         #
         fileroot, grids, mats = read_csk_files(sys.argv[1], verbosity)
         mat = extract_zeroth_out(mats)

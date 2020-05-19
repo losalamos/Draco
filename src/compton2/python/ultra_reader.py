@@ -27,13 +27,14 @@ import common_compton as cc
 ################################################################################
 def read_ultra_file(filePath, verbosity=False):
     '''Read LLNL-style ultra file and store as dictionary;
-    Assume each data line is of format: 'x y' '''
+    Assume each data line is of format: 'x y'.
+    Return fileroot, fields'''
 
     # Get path and filePath without extension
     fileroot = os.path.splitext(filePath)[0]
 
     # Copy as a backup (do not try to preserve metadata)
-    shutil.copy(sys.argv[1], '{}.backup'.format(fileroot))
+    shutil.copy(filePath, '{}.backup'.format(fileroot))
 
     # Read file
     if verbosity:
@@ -73,7 +74,8 @@ def read_ultra_file(filePath, verbosity=False):
 def extract_3D_grids(fields, verbosity=False):
     '''Extract grids from ultra fields and data
     Assume fieldnames of a specific format
-    Assume constant grid for data with suppressed zeros'''
+    Assume constant grid for data with suppressed zeros.
+    Return grids'''
 
     # Extract first two grids from headers
     # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]"
@@ -162,7 +164,8 @@ def extract_3D_grids(fields, verbosity=False):
 
 ################################################################################
 def convert_to_matrix(grids, fields, verbosity=False):
-    '''Convert data in fields dict to matrix'''
+    '''Convert data in fields dict to matrix with ordering [T, Eto, Efrom]
+    Return mat(rix)'''
 
     # Allocate matrix
     numTs = len(grids['T'])
