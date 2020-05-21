@@ -86,7 +86,7 @@ jobs:
 #  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
-  - travis_retry timeout 540 docker pull kinetictheory/draco-ci-2019aug
+  - travis_retry timeout 540 docker pull kinetictheory/draco-ci-2020may
 
 script:
   - if [[ ${COVERAGE:-OFF} == "ON" ]]; then ci_env=`/bin/bash <(curl -s https://codecov.io/env)`; fi
