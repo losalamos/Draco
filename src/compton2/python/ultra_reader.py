@@ -71,6 +71,16 @@ def read_ultra_file(filePath, verbosity=False):
 ################################################################################
 
 ################################################################################
+def float_comma(s):
+    '''Returns float of string that may or may not have a comma at the end'''
+    try:
+        v = float(s)
+    except:
+        v = float(s[:-1])
+    return v
+################################################################################
+
+################################################################################
 def extract_3D_grids(fields, verbosity=False):
     '''Extract grids from ultra fields and data
     Assume fieldnames of a specific format
@@ -78,9 +88,9 @@ def extract_3D_grids(fields, verbosity=False):
     Return grids'''
 
     # Extract first two grids from headers
-    # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]"
-    Tgrid = np.unique([float(key.split()[0][3:]) for key in fields])
-    Efromgrid = np.unique([float(key.split()[1][3:-1]) for key in fields])
+    # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]" with comma optional
+    Tgrid = np.unique([float_comma(key.split()[0][3:]) for key in fields])
+    Efromgrid = np.unique([float_comma(key.split()[1][3:]) for key in fields])
 
     # Extract last grid from data
     # grid stored in leftmost index of data array
@@ -180,9 +190,9 @@ def convert_to_matrix(grids, fields, verbosity=False):
 
     # Fill matrix
     for key in fields:
-        # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]"
-        T = float(key.split()[0][3:])
-        Efrom = float(key.split()[1][3:-1])
+        # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]" with comma optional
+        T = float_comma(key.split()[0][3:])
+        Efrom = float_comma(key.split()[1][3:])
         Tloc = Tinv[T]
         Efromloc = Efrominv[Efrom]
 
