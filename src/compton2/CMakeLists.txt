@@ -14,10 +14,12 @@ project( compton2 CXX )
 # ---------------------------------------------------------------------------- #
 
 set( sources
+    ${PROJECT_SOURCE_DIR}/Sparse_Compton_Matrix.cc
     ${PROJECT_SOURCE_DIR}/Compton2.cc
 )
 
 set( headers
+  ${PROJECT_SOURCE_DIR}/Sparse_Compton_Matrix.hh
   ${PROJECT_SOURCE_DIR}/Compton2.hh
 )
 
