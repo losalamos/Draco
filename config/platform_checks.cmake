@@ -59,12 +59,10 @@ function(dbs_set_sitename)
 
 endfunction()
 
-if( NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
-  message("
+message("
 Platform Checks...
 ")
-  dbs_set_sitename()
-endif()
+dbs_set_sitename()
 
 #------------------------------------------------------------------------------#
 # Sanity checks for Cray Programming Environments
