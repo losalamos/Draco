@@ -38,7 +38,6 @@ set_package_properties( draco PROPERTIES
 
 set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
-set( CRAY_PE "@CRAY_PE@" )
 
 ## ---------------------------------------------------------------------------
 ## Set library specifications and paths
@@ -49,12 +48,6 @@ set(Draco_VERSION "@Draco_VERSION@")
 
 ## The project libraries.
 set(Draco_LIBRARIES "@Draco_LIBRARIES@" )
-
-## The project tpl include paths
-set(Draco_TPL_INCLUDE_DIRS "@Draco_TPL_INCLUDE_DIRS@" )
-
-## The project tpl libraries
-set(Draco_TPL_LIBRARIES "@Draco_TPL_LIBRARIES@" )
 
 ## The project's exported executables
 set( Draco_EXECUTABLES "@Draco_EXECUTABLES@" )
@@ -70,6 +63,7 @@ set(Draco_MPIEXEC_EXECUTABLE "@MPIEXEC_EXECUTABLE@")
 set(Draco_MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 set(Draco_MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
 set(Draco_MPI_C_WORKS "@MPI_C_WORKS@") # Used to help CAFS setup on Win32
+set(Draco_MPI_LANG_LIST "@Draco_MPI_LANG_LIST@")
 
 # CUDA
 option( HAVE_CUDA "Should we build Cuda parts of the project?" @HAVE_CUDA@ )

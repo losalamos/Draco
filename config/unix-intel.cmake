@@ -90,13 +90,9 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
 
 # If this is a Cray, the compile wrappers take care of any xHost flags that are
 # needed.
-if( NOT CRAY_PE )
-# include(CheckCCompilerFlag)
-# check_c_compiler_flag(-xHost HAS_XHOST)
- set( HAS_XHOST TRUE )
- toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX" "")
-#else()
- # -craype-verbose
+if( NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
+  set( HAS_XHOST TRUE )
+  toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX" "")
 endif()
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 

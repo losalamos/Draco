@@ -1,6 +1,6 @@
 !----------------------------------*-F90-*-------------------------------------
 !
-! \file   FortranChecks/f90sub/Draco_Test.f90
+! \file   c4/fc4/fc4_test.f90
 ! \author Allan Wollaber, Kelly Thompson
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions for the F90 Draco tests
@@ -9,7 +9,7 @@
 !
 ! This is a modified version of jayenne/src/api/ftest/API_Test.F90.
 !------------------------------------------------------------------------------
-module draco_test
+module fc4_test
   use iso_c_binding, only : c_double
   implicit none
 
@@ -57,8 +57,8 @@ contains
 
   end subroutine pass_msg
 
-end module draco_test
+end module fc4_test
 
 ! ---------------------------------------------------------------------------
-! End Draco_Test.F90
+! End fc4_test.f90
 ! ---------------------------------------------------------------------------

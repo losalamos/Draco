@@ -210,23 +210,6 @@ macro( dbsConfigInfo )
          set( DBS_OPERATING_SYSTEM_VER "${redhat_version} (${CMAKE_SYSTEM})" )
       endif( EXISTS "/etc/redhat-release" )
 
-      # How many local cores
-      if( EXISTS "/proc/cpuinfo" )
-         file( READ "/proc/cpuinfo" cpuinfo )
-         # string( STRIP "${cpuinfo}" cpuinfo )
-         # convert one big string into a set of strings, one per line
-         string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
-         set( proc_ids "" )
-         foreach( line ${cpuinfo} )
-            if( ${line} MATCHES "processor" )
-               list( APPEND proc_ids ${line} )
-            endif()
-         endforeach()
-         list( LENGTH proc_ids DRACO_NUM_CORES )
-         set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING
-            "Number of cores on the local machine." )
-      endif()
-
    elseif() # WIN32
 
       # OS version information

@@ -1,6 +1,6 @@
 !----------------------------------*-F90-*----------------------------------
 !
-! \file   FortranChecks/f90sub/Draco_MPI.F90
+! \file   c4/fc4/Draco_MPI.F90
 ! \author Allan Wollaber
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
@@ -14,7 +14,7 @@ module draco_mpi
   use iso_c_binding, only : c_double, c_intptr_t
   implicit none
 
-  integer, public, save :: f90_rank, f90_num_ranks
+  integer, public, save :: fc4_rank, fc4_num_ranks
 
   ! Don't pollute the global namespace with the MPI stuff
   private
@@ -24,13 +24,13 @@ module draco_mpi
 
   ! Make all the subroutines defined below public, though
   public check_mpi_error
-  public f90_mpi_init
-  public f90_mpi_finalize
-  public f90_mpi_barrier
+  public fc4_mpi_init
+  public fc4_mpi_finalize
+  public fc4_mpi_barrier
 
   interface
 
-     ! Set c4's global 'initialzied' boolean.
+     ! Set c4's global 'initialized' boolean.
      subroutine setMpiInit() bind(C, name="setMpiInit")
        implicit none
      end subroutine setMpiInit
@@ -61,52 +61,52 @@ contains
   ! ---------------------------------------------------------------------------
   ! A simple MPI initialization function that also sets rank/num_ranks info.
   ! ---------------------------------------------------------------------------
-  subroutine f90_mpi_init(ierr)
+  subroutine fc4_mpi_init(ierr)
     implicit none
     integer, intent(out) :: ierr
 
     ierr = 0
-    f90_rank = 0
-    f90_num_ranks = 1
+    fc4_rank = 0
+    fc4_num_ranks = 1
 #ifdef C4_MPI
     call mpi_init(ierr)
     call check_mpi_error(ierr)
     call setMpiInit
 
-    call mpi_comm_size(MPI_COMM_WORLD, f90_num_ranks, ierr)
+    call mpi_comm_size(MPI_COMM_WORLD, fc4_num_ranks, ierr)
     call check_mpi_error(ierr)
 
-    call mpi_comm_rank(MPI_COMM_WORLD, f90_rank, ierr)
+    call mpi_comm_rank(MPI_COMM_WORLD, fc4_rank, ierr)
     call check_mpi_error(ierr)
 #endif
-  end subroutine f90_mpi_init
+  end subroutine fc4_mpi_init
 
   ! ---------------------------------------------------------------------------
-  ! A simple MPI finalize function to wrap the MPI depencencies
+  ! A simple MPI finalize function to wrap the MPI dependencies
   ! ---------------------------------------------------------------------------
-  subroutine f90_mpi_finalize(ierr)
+  subroutine fc4_mpi_finalize(ierr)
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
-  end subroutine f90_mpi_finalize
+  end subroutine fc4_mpi_finalize
 
   ! ---------------------------------------------------------------------------
   ! Global barrier
   ! ---------------------------------------------------------------------------
-  subroutine f90_mpi_barrier(ierr)
+  subroutine fc4_mpi_barrier(ierr)
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
     call mpi_barrier(MPI_COMM_WORLD,ierr)
     call check_mpi_error(ierr)
 #endif
-  end subroutine f90_mpi_barrier
+  end subroutine fc4_mpi_barrier
 
 end module draco_mpi
 
 !-----------------------------------------------------------------------------!
-! End Draco_MPI.F90
+! End c4/fc4/Draco_MPI.F90
 !-----------------------------------------------------------------------------!

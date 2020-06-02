@@ -57,7 +57,8 @@ if( NOT "${CMAKE_CXX_COMPILER_VERSION}x" STREQUAL "x" )
 endif()
 
 # Is this a KNL
-if( CRAY_PE AND "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
+if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv AND
+    "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
   set( draco_isKNL ON )
 endif()
 

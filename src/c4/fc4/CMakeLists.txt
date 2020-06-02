@@ -1,27 +1,26 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   FortranChecks/f90sub/CMakeLists.txt
+# file   c4/fc4/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2013 June 24
+# date   2020 April 20
 # brief  Generate build project files for Fortran.
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
-project( FortranChecks_f90sub C Fortran )
+project( fc4 C Fortran )
 
 #------------------------------------------------------------------------------#
 # If this directory is built via CAFS (ie. MSVC or XCode), then we need to do
 # some extra setup.  When build via CAFS, target Lib_dsxx won't be defined yet.
 #------------------------------------------------------------------------------#
+set(target_deps Lib_c4 Lib_dsxx )
 if(NOT TARGET Lib_dsxx)
   include(CMakeAddFortranSubdirectory)
   CAFS_Fortran_dir_boilerplate_setup()
-
-  # CAFS setup unique to this directory.
-
-  cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
-    "${draco_BINARY_DIR}/src/FortranChecks" CXX )
-  # Vendor discovery is not needed for this package
+  CAFS_Fortran_dir_MPI_setup() # returns CAFS_MPI_DEPS
+elseif("${DRACO_C4}" STREQUAL "MPI")
+  list(APPEND target_deps MPI::MPI_Fortran)
+  add_definitions( -DC4_MPI )
 endif()
 
 # ---------------------------------------------------------------------------- #
@@ -30,20 +29,34 @@ endif()
 file( GLOB f90sources *.f90 *.F90 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
+# Build library
 # ---------------------------------------------------------------------------- #
-
-# Xcode: Since cafs_create_imported_targets does not set all of the dependencies
-# between the imported libraries, we need to list them explicitly.
-set(target_deps Lib_FC_Derived_Type;Lib_dsxx)
 add_component_library(
-  TARGET       Lib_FC_f90sub
-  LIBRARY_NAME FC_f90sub
+  TARGET       Lib_c4_fc4
+  LIBRARY_NAME fc4
   SOURCES      "${f90sources}"
-  LINK_LANGUAGE "Fortran"
-  TARGET_DEPS   "${target_deps}"
-  NOEXPORT )
+  LINK_LANGUAGE Fortran
+  TARGET_DEPS   "${target_deps}")
+target_include_directories( Lib_c4_fc4 PUBLIC
+    $<INSTALL_INTERFACE:${DBSCFG_IMPORT_PREFIX}/fc4> )
+if( WIN32 )
+  # The library must be installed in the master project's RUNTIME_OUTPUT_DIR
+  set_target_properties( Lib_c4_fc4 PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+endif()
+
+# ---------------------------------------------------------------------------- #
+# Install
+# ---------------------------------------------------------------------------- #
+install( TARGETS Lib_c4_fc4 EXPORT draco-targets
+  LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
+  ARCHIVE DESTINATION "${DBSCFGDIR}lib"
+  RUNTIME DESTINATION "${DBSCFGDIR}bin"
+  PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/fc4" )
+install( DIRECTORY ${fc4_BINARY_DIR}
+  DESTINATION "${DBSCFGDIR}include"
+  FILES_MATCHING PATTERN "*.mod" )
 
 #------------------------------------------------------------------------------#
-# End f90sub/CMakeLists.txt
+# End c4/fc4/CMakeLists.txt
 #------------------------------------------------------------------------------#

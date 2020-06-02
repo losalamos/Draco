@@ -68,134 +68,138 @@ endmacro()
 macro(dbsSetupCompilers)
 
   if( NOT dbsSetupCompilers_done )
-  set(dbsSetupCompilers_done "ON")
+    set(dbsSetupCompilers_done "ON")
 
-  # Bad platform
-  if( NOT WIN32 AND NOT UNIX)
-    message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
-  endif()
-
-  # Defaults for 1st pass:
-
-  # shared or static libraries?
-  if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-    set( DRACO_SHARED_LIBS 0 )
-  elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-    # This CPP symbol is used by config.h to signal if we are need to add
-    # declspec(dllimport) or declspec(dllexport) for MSVC.
-    set( DRACO_SHARED_LIBS 1 )
-    mark_as_advanced(DRACO_SHARED_LIBS)
-  else()
-    message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or "
-    "SHARED.")
-  endif()
-  set( DRACO_SHARED_LIBS "${DRACO_SHARED_LIBS}" CACHE BOOL
-    "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
-
-  #----------------------------------------------------------------------------#
-  # Setup common options for targets
-  #----------------------------------------------------------------------------#
-
-  # Control the use of interprocedural optimization. This used to be set by
-  # editing compiler flags directly, but now that CMake has a universal toggle,
-  # we use it. This value is used in component_macros.cmake when properties are
-  # assigned to individual targets.
-
-  #  See https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
-  if( WIN32 )
-    set( USE_IPO OFF CACHE BOOL
-      "Enable Interprocedural Optimization for Release builds." FORCE )
-  else()
-    include(CheckIPOSupported)
-    check_ipo_supported(RESULT USE_IPO)
-  endif()
-
-  #----------------------------------------------------------------------------#
-  # Special build mode for Coverage (gcov+lcov+genthml)
-  # https://github.com/codecov/example-cpp11-cmake
-  #----------------------------------------------------------------------------#
-  option(CODE_COVERAGE "Enable coverage reporting" OFF)
-  if( NOT TARGET coverage_config )
-    add_library(coverage_config INTERFACE)
-  endif()
-  if( NOT CODE_COVERAGE )
-    message( STATUS "Code coverage build ... disabled (CODE_COVERAGE=OFF)" )
-  endif()
-  if( CODE_COVERAGE AND NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    message( STATUS "Code coverage build ... disabled (Compiler not GNU|Clang)")
-  endif()
-  if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    list(APPEND CODE_COVERAGE_IGNORE_REGEX
-      /usr/*
-      *test/*
-      */opt/spack/*
-      *terminal/*
-      *FortranChecks/*)
-    list(REMOVE_DUPLICATES CODE_COVERAGE_IGNORE_REGEX)
-    set( CODE_COVERAGE_IGNORE_REGEX ${CODE_COVERAGE_IGNORE_REGEX}
-      CACHE STRING "List of regex that lcov will ignore" FORCE)
-
-    if( CMAKE_BUILD_TYPE STREQUAL Debug )
-      # Add required flags (GCC & LLVM/Clang)
-      target_compile_options(coverage_config INTERFACE --coverage )
-      target_link_options(coverage_config INTERFACE --coverage)
-
-      # If env variable is set use it, otherwise search for default name.
-      find_program( LCOV NAMES "$ENV{LCOV}" lcov )
-      find_program( GCOV NAMES "$ENV{GCOV}" gcov )
-      if( EXISTS "${LCOV}" AND EXISTS "${GCOV}" )
-        # Add a custom target that prints the coverage report
-        set(lcovopts1 --gcov-tool ${GCOV} --quiet)
-        set(lcovopts2 ${lcovopts1} --output-file coverage.info)
-        unset(lcov_ignore)
-        foreach( myregex ${CODE_COVERAGE_IGNORE_REGEX} )
-          list(APPEND lcov_ignore '${myregex}')
-        endforeach()
-        if( EXISTS "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
-          set( captureLcov "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
-        elseif( EXISTS "${DRACO_DIR}/cmake/capture_lcov.sh" )
-          set( captureLcov "${DRACO_DIR}/cmake/capture_lcov.sh" )
-        else()
-          message( FATAL_ERROR "CODE_COVERAGE=ON, but required helper script "
-            "capture_lcov.sh not found.  Looked at "
-            "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh and "
-            "${DRACO_DIR}/cmake/capture_lcov.sh" )
-        endif()
-        add_custom_command(
-          OUTPUT "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
-          BYPRODUCTS
-            "${PROJECT_BINARY_DIR}/coverage.info"
-            "${PROJECT_BINARY_DIR}/coverage.txt"
-          COMMAND ${LCOV} ${lcovopts2} --capture --directory .
-          COMMAND ${LCOV} ${lcovopts2} --remove coverage.info ${lcov_ignore}
-          COMMAND genhtml coverage.info --demangle-cpp --output-directory cov-html
-          # COMMAND ${LCOV} ${lcovopts1} --list coverage.info
-          COMMAND "${captureLcov}" -g "${GCOV}" -l "${LCOV}"
-          )
-        unset( captureLcov )
-        add_custom_target( covrep
-          DEPENDS "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
-          COMMENT "
-==> View text coverage report in file coverage.txt.
-==> View HTML coverage report with command: firefox cov-html/index.html
-==> Repeat text coverage report with command: lcov --list coverage.info
-" )
-        message( STATUS "Code coverage build ... enabled ('make covrep' to "
-          "see a text and/or a html report)")
-        message("CODE_COVERAGE_IGNORE_REGEX  = ${CODE_COVERAGE_IGNORE_REGEX}")
-        block_indent( 90 27
-          "CODE_COVERAGE_IGNORE_REGEX = ${CODE_COVERAGE_IGNORE_REGEX}")
-      else()
-        message( STATUS "Code coverage build ... disabled (lcov and/or gcov "
-          "not found)" )
-      endif()
-    else()
-      message( STATUS "Code coverage build ... disabled (CMAKE_BUILD_TYPE "
-        "!= Debug" )
+    # Bad platform
+    if( NOT WIN32 AND NOT UNIX)
+      message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
     endif()
-  endif()
 
-  endif() # dbsSetupCompilers_done
+    # Defaults for 1st pass:
+
+    # shared or static libraries?
+    if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
+      set( DRACO_SHARED_LIBS 0 )
+    elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
+      # This CPP symbol is used by config.h to signal if we are need to add
+      # declspec(dllimport) or declspec(dllexport) for MSVC.
+      set( DRACO_SHARED_LIBS 1 )
+      mark_as_advanced(DRACO_SHARED_LIBS)
+    else()
+      message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or "
+      "SHARED.")
+    endif()
+    set( DRACO_SHARED_LIBS "${DRACO_SHARED_LIBS}" CACHE BOOL
+      "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
+
+    #--------------------------------------------------------------------------#
+    # Setup common options for targets
+    #--------------------------------------------------------------------------#
+
+    # Control the use of interprocedural optimization. This used to be set by
+    # editing compiler flags directly, but now that CMake has a universal
+    # toggle, we use it. This value is used in component_macros.cmake when
+    # properties are assigned to individual targets.
+
+    #  See https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
+    if( WIN32 )
+      set( USE_IPO OFF CACHE BOOL
+        "Enable Interprocedural Optimization for Release builds." FORCE )
+    else()
+      include(CheckIPOSupported)
+      check_ipo_supported(RESULT USE_IPO)
+    endif()
+
+    #--------------------------------------------------------------------------#
+    # Special build mode for Coverage (gcov+lcov+genthml)
+    # https://github.com/codecov/example-cpp11-cmake
+    #--------------------------------------------------------------------------#
+    if( NOT TARGET coverage_config )
+      add_library(coverage_config INTERFACE)
+    endif()
+    if( UNIX )
+      option(CODE_COVERAGE "Enable coverage reporting" OFF)
+      if( NOT CODE_COVERAGE )
+        message( STATUS "Code coverage build ... disabled (CODE_COVERAGE=OFF)" )
+      endif()
+      if( CODE_COVERAGE AND NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message( STATUS "Code coverage build ... disabled (Compiler not "
+          "GNU|Clang)")
+      endif()
+      if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+
+        list(APPEND CODE_COVERAGE_IGNORE_REGEX
+          /usr/*
+          *test/*
+          */opt/spack/*
+          *terminal/*
+          *FortranChecks/*)
+        list(REMOVE_DUPLICATES CODE_COVERAGE_IGNORE_REGEX)
+        set( CODE_COVERAGE_IGNORE_REGEX ${CODE_COVERAGE_IGNORE_REGEX}
+          CACHE STRING "List of regex that lcov will ignore" FORCE)
+
+        if( CMAKE_BUILD_TYPE STREQUAL Debug )
+          # Add required flags (GCC & LLVM/Clang)
+          target_compile_options(coverage_config INTERFACE --coverage )
+          target_link_options(coverage_config INTERFACE --coverage)
+
+          # If env variable is set use it, otherwise search for default name.
+          find_program( LCOV NAMES "$ENV{LCOV}" lcov )
+          find_program( GCOV NAMES "$ENV{GCOV}" gcov )
+          if( EXISTS "${LCOV}" AND EXISTS "${GCOV}" )
+            # Add a custom target that prints the coverage report
+            set(lcovopts1 --gcov-tool ${GCOV} --quiet)
+            set(lcovopts2 ${lcovopts1} --output-file coverage.info)
+            unset(lcov_ignore)
+            foreach( myregex ${CODE_COVERAGE_IGNORE_REGEX} )
+              list(APPEND lcov_ignore '${myregex}')
+            endforeach()
+            if( EXISTS "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
+              set( captureLcov "${PROJECT_SOURCE_DIR}/config/capture_lcov.sh" )
+            elseif( EXISTS "${DRACO_DIR}/cmake/capture_lcov.sh" )
+              set( captureLcov "${DRACO_DIR}/cmake/capture_lcov.sh" )
+            else()
+              message( FATAL_ERROR "CODE_COVERAGE=ON, but required helper"
+                " script capture_lcov.sh not found.  Looked at"
+                " ${PROJECT_SOURCE_DIR}/config/capture_lcov.sh and"
+                " ${DRACO_DIR}/cmake/capture_lcov.sh" )
+            endif()
+            add_custom_command(
+              OUTPUT "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
+              BYPRODUCTS
+                "${PROJECT_BINARY_DIR}/coverage.info"
+                "${PROJECT_BINARY_DIR}/coverage.txt"
+              COMMAND ${LCOV} ${lcovopts2} --capture --directory .
+              COMMAND ${LCOV} ${lcovopts2} --remove coverage.info ${lcov_ignore}
+              COMMAND genhtml coverage.info --demangle-cpp --output-directory cov-html
+              COMMAND "${captureLcov}" -g "${GCOV}" -l "${LCOV}"
+            )
+            unset( captureLcov )
+            add_custom_target( covrep
+              DEPENDS "${PROJECT_BINARY_DIR}/covrep_target_aways_out_of_date.txt"
+              COMMENT "
+  ==> View text coverage report in file coverage.txt.
+  ==> View HTML coverage report with command: firefox cov-html/index.html
+  ==> Repeat text coverage report with command: lcov --list coverage.info
+  " )
+            message( STATUS "Code coverage build ... enabled ('make covrep' to "
+              "see a text and/or a html report)")
+            block_indent( 90 27
+              "CODE_COVERAGE_IGNORE_REGEX = ${CODE_COVERAGE_IGNORE_REGEX}")
+          else() # EXISTS "${LCOV}" AND EXISTS "${GCOV}"
+            message( STATUS "Code coverage build ... disabled (lcov and/or"
+            " gcov not found)" )
+          endif() # EXISTS "${LCOV}" AND EXISTS "${GCOV}"
+
+        else() #  CMAKE_BUILD_TYPE STREQUAL Debug
+          message( STATUS "Code coverage build ... disabled (CMAKE_BUILD_TYPE "
+            "!= Debug" )
+        endif() #  CMAKE_BUILD_TYPE STREQUAL Debug
+      endif() # CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"
+    endif(UNIX)
+
+  endif( NOT dbsSetupCompilers_done )
+
 endmacro()
 
 #------------------------------------------------------------------------------#

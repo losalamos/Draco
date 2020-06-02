@@ -17,6 +17,7 @@ ulimit -s unlimited
 # Where is the vendor directory
 export PATH=${VENDOR_DIR:=/usr/gapps/jayenne/vendors}/bin:$PATH
 export VENDOR_DIR
+export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
 
 #
 # MODULES

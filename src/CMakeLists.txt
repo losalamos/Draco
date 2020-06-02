@@ -172,7 +172,7 @@ endif()
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 ")
 
-if( CRAY_PE AND ENV{CRAYPE_VERSION} )
+if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
   message("Cray system detected: CC -craype-verbose -V|--version:
 ")
   if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" OR

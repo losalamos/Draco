@@ -6,19 +6,19 @@ FROM ubuntu:latest
 # This image:
 # 1. cd /D f:\work\docker (copy Dockerfile and packages.yaml to this location).
 # 2. docker login -u kinetictheory (and password) # ref https://docs.docker.com/get-started/part2/
-# 3. docker build --rm --pull --tag draco-ci-2020april:latest . 
-#    OR: docker run -it -v /c/work:/work kinetictheory/draco-ci-2019aug /bin/bash -l
+# 3. docker build --rm --pull --tag draco-ci-2020may:latest . 
+#    OR: docker run -it -v /c/work:/work kinetictheory/draco-ci-2020may /bin/bash -l
 #        apt-get install -y --no-install-recommends [ghostview]
 #        rm -rf /vendors/spack/var/spack/repos/builtin/cmake
 #        cp -r /work/kinetictheory/spack/var/spack/repos/builtin/cmake /vendors/spack/var/spack/repos/builtin/.
 #        spack install cmake@3.17.0
 #        exit
 #        docker ps -a
-#        docker commit -m "added cmake-3.17.0." kind_grothen kinetictheory/draco-ci-2020april:latest 
-#        docker push kinetictheory/draco-ci-2020april:latest
+#        docker commit -m "added cmake-3.17.0." kind_grothen kinetictheory/draco-ci-2020may:latest 
+#        docker push kinetictheory/draco-ci-2020may:latest
 # 4. docker image ls -a ==> find container name (or docker ps)
-# 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <hash> kinetictheory/draco-ci-2020april:latest # queues for upload
-# 6. docker push kinetictheory/draco-ci-2020april:latest
+# 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <hash> kinetictheory/draco-ci-2020may:latest # queues for upload
+# 6. docker push kinetictheory/draco-ci-2020may:latest
 # 7. docker system prune -a (remove old dangling data)
 
 MAINTAINER KineticTheory "https://github.com/KineticTheory"
@@ -33,7 +33,7 @@ MAINTAINER KineticTheory "https://github.com/KineticTheory"
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 ENV SPACK_ROOT=/vendors/spack
-ENV DRACO_TPL="cmake@3.17.0 gsl numdiff random123@1.09 openmpi netlib-lapack metis parmetis mscgen libquo eospac@6.4.0 lcov"
+ENV DRACO_TPL="cmake@3.17.0 gsl numdiff random123@1.09 openmpi netlib-lapack metis parmetis mscgen libquo eospac@6.4.0 lcov doxygen@1.8.14"
 ENV FORCE_UNSAFE_CONFIGURE=1
 ENV DISTRO=bionic
 ENV CLANG_FORMAT_VER=6.0

@@ -32,10 +32,10 @@ if( NOT Fortran_FLAGS_INITIALIZED )
 
    set( CMAKE_Fortran_FLAGS "-ffree-line-length-none -cpp" )
    set( CMAKE_Fortran_FLAGS_DEBUG
-      "-g -gdwarf-3 -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+      "-g -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
    set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG" )
    set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
-   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -gdwarf-3 ${CMAKE_Fortran_FLAGS_RELEASE}")
+   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g ${CMAKE_Fortran_FLAGS_RELEASE}")
 
    if (NOT APPLE AND HAS_MARCH_NATIVE)
       set( CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS} -march=native" )

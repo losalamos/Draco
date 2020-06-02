@@ -72,7 +72,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
     string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined -Wnarrowing" )
   endif()
-  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
+  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
   # Ref: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
   # -Wfloat-equal       # Warn when if-statement compares floats directly
   # -Werror             # Promote all warnings to 'error' status
@@ -85,7 +85,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   #                       c++-style cast.
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # See https://gcc.gnu.org/gcc-5/changes.html
@@ -140,14 +140,12 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
   endif()
 
-  # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox
-  # Systems running CRAY_PE use commpile wrappers to specify this option.
+  # Systems running CrayPE use compile wrappers to specify this option.
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
   if (HAS_MARCH_NATIVE AND
       NOT APPLE AND
-      NOT CRAY_PE AND
-      NOT "${sitename}" MATCHES "toolbox")
+      NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     string( APPEND CMAKE_C_FLAGS " -march=native" )
   elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
     string( APPEND CMAKE_C_FLAGS " -mcpu=powerpc64le -mtune=powerpc64le" )

@@ -33,7 +33,7 @@ function( setMPIflavorVer )
 
   # First attempt to determine MPI flavor -- scape flavor from full path
   # (this ususally works for HPC or systems with modules)
-  if( CRAY_PE )
+  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     set( MPI_FLAVOR "cray" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi" OR
       "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
@@ -51,7 +51,7 @@ function( setMPIflavorVer )
     set( MPI_FLAVOR "spectrum")
   endif()
 
-  if( CRAY_PE )
+  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     if( DEFINED ENV{CRAY_MPICH2_VER} )
       set( MPI_VERSION $ENV{CRAY_MPICH2_VER} )
     endif()
@@ -377,7 +377,11 @@ macro( setupSpectrumMPI )
   #                         total
   # - jsrun -a4 -c16 -g2 => 4 tasks, 16 cores, 2 gpus
 
-  set( MPIEXEC_PREFLAGS "--pack --threads=1 --bind=off -v")
+  set( MPIEXEC_PREFLAGS "--threads=1 --bind=off -v")
+  # --pack ==> -c 1 -g 0.  This is actually bad for us. Disable
+  # lrun -n 2 -c 10 --threads=10 --bind=off ==>
+  # jsrun --np 1 --nrs 1 -c ALL_CPUS -g ALL_GPUS -d plane:1 -b rs -X 1
+  # consider: jsrun --np 2 --nrs 1 -c 10 -g 0 -bind none
 
   #
   # Setup for OMP plus MPI
@@ -385,7 +389,7 @@ macro( setupSpectrumMPI )
 
   if( DEFINED ENV{OMP_NUM_THREADS} )
 #    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS}" )
-    set( MPIEXEC_OMP_PREFLAGS "--pack -c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
+    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
   endif()
 
   set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
@@ -421,7 +425,7 @@ macro( setupMPILibrariesUnix )
     # If this is a Cray system and the Cray MPI compile wrappers are used, then
     # do some special setup:
 
-    if( CRAY_PE )
+    if(  CMAKE_CXX_COMPILER_WRAPPER MATCHES CrayPrgEnv )
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
         find_program( MPIEXEC_EXECUTABLE srun )
       endif()
@@ -461,9 +465,9 @@ macro( setupMPILibrariesUnix )
     else()
       message( FATAL_ERROR "
 The Draco build system doesn't know how to configure the build for
-  MPIEXEC_EXECUTABLE     = ${MPIEXEC_EXECUTABLE}
-  DBS_MPI_VER = ${DBS_MPI_VER}
-  CRAY_PE     = ${CRAY_PE}")
+  MPIEXEC_EXECUTABLE         = ${MPIEXEC_EXECUTABLE}
+  DBS_MPI_VER                = ${DBS_MPI_VER}
+  CMAKE_CXX_COMPILER_WRAPPER = ${CMAKE_CXX_COMPILER_WRAPPER}")
     endif()
 
     # Mark some of the variables created by the above logic as 'advanced' so
@@ -762,6 +766,17 @@ macro( setupMPILibrariesWindows )
   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_PREFLAGS MPI_LIBRARIES )
 
 endmacro( setupMPILibrariesWindows )
+
+#----------------------------------------------------------------------#
+# Helper
+#----------------------------------------------------------------------#
+macro(setupMPILibraries)
+  if ( UNIX )
+    setupMPILibrariesUnix()
+  elseif( WIN32 )
+    setupMPILibrariesWindows()
+  endif()
+endmacro()
 
 #----------------------------------------------------------------------#
 # End setupMPI.cmake

@@ -753,12 +753,11 @@ macro( setupVendorLibraries )
     setupLAPACKLibraries()
   endif()
 
+  setupMPILibraries()
   # System specific settings
   if ( UNIX )
-    setupMPILibrariesUnix()
     setupVendorLibrariesUnix()
   elseif( WIN32 )
-    setupMPILibrariesWindows()
     setupVendorLibrariesWindows()
   else()
     message( FATAL_ERROR "
@@ -767,9 +766,10 @@ WIN32=0; UNIX=0; CMAKE_SYSTEM=${CMAKE_SYSTEM};
 CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}" )
   endif()
 
-  # Add commands to draco-config.cmake (which is installed for use by othe
+  # Add commands to draco-config.cmake (which is installed for use by other
   # projects), to setup Draco's vendors
-  set( Draco_EXPORT_TARGET_PROPERTIES "${Draco_EXPORT_TARGET_PROPERTIES}
+  string( APPEND Draco_EXPORT_TARGET_PROPERTIES "
+
 macro( dbs_basic_setup )
 
   message(\"

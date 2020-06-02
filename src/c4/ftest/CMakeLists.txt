@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   FortranChecks/f90sub/CMakeLists.txt
+# file   c4/ftest/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 June 24
 # brief  Generate build project files for Fortran.
@@ -7,7 +7,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
-project( FortranChecks_f90sub C Fortran )
+project( c4_ftest C Fortran )
 
 #------------------------------------------------------------------------------#
 # If this directory is built via CAFS (ie. MSVC or XCode), then we need to do
@@ -16,34 +16,38 @@ project( FortranChecks_f90sub C Fortran )
 if(NOT TARGET Lib_dsxx)
   include(CMakeAddFortranSubdirectory)
   CAFS_Fortran_dir_boilerplate_setup()
+  CAFS_Fortran_dir_MPI_setup()
 
   # CAFS setup unique to this directory.
-
-  cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
-    "${draco_BINARY_DIR}/src/FortranChecks" CXX )
-  # Vendor discovery is not needed for this package
+  # 1. create import targets that we will link against.
+  if( NOT fc4_BINARY_DIR )
+    set( fc4_BINARY_DIR "${draco_BINARY_DIR}/src/c4/fc4" )
+  endif()
+  cafs_create_imported_targets(Lib_c4_fc4 "librtt_fc4" "${fc4_BINARY_DIR}" CXX)
 endif()
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-file( GLOB f90sources *.f90 *.F90 )
+set( f90sources
+  ${PROJECT_SOURCE_DIR}/fc4_test.f90
+  ${PROJECT_SOURCE_DIR}/mpi_hw_ftest.f90 )
 
 # ---------------------------------------------------------------------------- #
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
-
-# Xcode: Since cafs_create_imported_targets does not set all of the dependencies
-# between the imported libraries, we need to list them explicitly.
-set(target_deps Lib_FC_Derived_Type;Lib_dsxx)
+set(target_deps Lib_c4_fc4 Lib_c4 Lib_dsxx )
 add_component_library(
-  TARGET       Lib_FC_f90sub
-  LIBRARY_NAME FC_f90sub
-  SOURCES      "${f90sources}"
-  LINK_LANGUAGE "Fortran"
+  TARGET        Lib_c4_ftest
+  LIBRARY_NAME  c4_ftest
+  SOURCES       "${f90sources}"
+  LINK_LANGUAGE Fortran
   TARGET_DEPS   "${target_deps}"
   NOEXPORT )
+target_include_directories( Lib_c4_ftest PUBLIC
+  "$<BUILD_INTERFACE:${c4_ftest_BINARY_DIR}>"
+  "$<BUILD_INTERFACE:${fc4_BINARY_DIR}>")
 
 #------------------------------------------------------------------------------#
-# End f90sub/CMakeLists.txt
+# End c4/ftest/CMakeLists.txt
 #------------------------------------------------------------------------------#

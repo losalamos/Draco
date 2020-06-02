@@ -13,6 +13,10 @@ project( c4_test CXX )
 # ---------------------------------------------------------------------------- #
 file( GLOB test_sources *.cc )
 
+# Remove some tests from the generic list. These will be process individually 
+# with custom build options
+list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/tstfc4_hw.cc )
+
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
@@ -106,18 +110,30 @@ add_parallel_tests(
 # Python based test runners
 #------------------------------------------------------------------------------#
 include( ApplicationUnitTest )
-if(OPENMP_FOUND)
+if(OPENMP_FOUND AND TARGET Exe_xthi)
   # xthi depends on OpenMP.  If OpenMP is not found, xthi will not be compiled.
   add_app_unit_test(
     DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
     APP       $<TARGET_FILE_DIR:Exe_xthi>/$<TARGET_FILE_NAME:Exe_xthi>
     PE_LIST   "1;2" )
 endif()
-add_app_unit_test(
-  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstYthi.py
-  APP       $<TARGET_FILE_DIR:Exe_ythi>/$<TARGET_FILE_NAME:Exe_ythi>
-  TEST_ARGS 2
-  PE_LIST   "1;2" )
+if( TARGET Exe_ythi)
+  add_app_unit_test(
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstYthi.py
+    APP       $<TARGET_FILE_DIR:Exe_ythi>/$<TARGET_FILE_NAME:Exe_ythi>
+    TEST_ARGS 2
+    PE_LIST   "1;2" )
+endif()
+  
+#------------------------------------------------------------------------------#
+# Wrap f90 tests
+#------------------------------------------------------------------------------#
+if( HAVE_Fortran AND DRACO_C4 STREQUAL MPI )
+  add_parallel_tests(
+    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tstfc4_hw.cc"
+    DEPS    "Lib_c4_ftest;Lib_c4_fc4;Lib_c4;Lib_dsxx" 
+    PE_LIST "1;2")
+endif()
 
 #------------------------------------------------------------------------------#
 # End src/c4/test/CMakeLists.txt

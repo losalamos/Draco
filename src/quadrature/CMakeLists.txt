@@ -60,45 +60,12 @@ if( BUILD_TESTING )
     # an ExternalProject will be created that uses an alternate gfortran via
     # Makefiles to generate the library external to the main project.
     include(CMakeAddFortranSubdirectory)
-
-    # CMake does not support storing a list of lists when sending data to a
-    # macro.  Because Draco_TPL_INCLUDE_DIRS is a list and we want to stuff it
-    # into the list build_system_state, recode Draco_TPL_INCLUDE_DIRS by
-    # replacing semicolons with triple underscores.  The list will be
-    # reconstructed in the subdirectory's CMakeLists.txt.
-    string( REGEX REPLACE ";" "___" tmp
-      "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
-
-    # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
-    # will need some of the current build system parameters:
-    set( draco_DIR ${Draco_SOURCE_DIR}/config )
-    set( build_system_state
-      "-DDRACO_C4=${DRACO_C4}"
-      "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
-      "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
-      "-Ddraco_DIR=${draco_DIR}")
-    if( ${DRACO_C4} MATCHES "MPI" )
-      list( APPEND build_system_state
-      "-DMPI_C_LIBRARIES=${MPI_C_LIBRARIES}"
-      "-DMPI_C_INCLUDE_DIRS=${MPI_C_INCLUDE_DIRS}" )
-    endif()
-    if( WIN32 )
-      # For Win32 builds, DLL and applications are built in the directory
-      # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
-      list( APPEND build_system_state
-        "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
-      if(CMAKE_TOOLCHAIN_FILE)
-        list( APPEND build_system_state
-          "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
-      endif()
-    else()
-      list( APPEND build_system_state "-DHAVE_CUDA=${HAVE_CUDA}" )
-    endif()
+    init_build_system_state() # returns ${build_system_state} used below.
 
     cmake_add_fortran_subdirectory(
-      ftest                        # directory name
-      PROJECT quadrature_ftest  # project name in top level CMakeLists.txt
-      # Creates target named 'quadrature_ftest_build'
+      ftest                       # directory name
+      PROJECT quadrature_ftest    # project name in top level CMakeLists.txt
+                                  # Creates target named 'quadrature_ftest_build'
       ARCHIVE_DIR  ftest          # .lib location relative to root binary tree
       RUNTIME_DIR  ftest          # .dll location relative to root binary tree
       LIBRARIES    rtt_quadrature_ftest # new library will have this name.

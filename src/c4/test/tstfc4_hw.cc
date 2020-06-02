@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   FortranChecks/test/mpi_hw.cc
+ * \file   c4/test/tstfc4_hw.cc
  * \author Kelly Thompson
  * \date   Thursday, Nov 12, 2015, 10:35 am
  * \brief  Test C++ main linking a Fortran library that uses MPI
@@ -20,7 +20,7 @@ extern "C" void tst_mpi_hw(size_t *numFail);
 void test_mpi_hw(rtt_dsxx::UnitTest &ut) {
   // size_t np(ut.numPasses);
   size_t nf(ut.numFails);
-  // Call fortran subroutine
+  // Call Fortran subroutine
   tst_mpi_hw(&nf);
   ut.numPasses = 1;
   ut.numFails = static_cast<unsigned>(nf);
@@ -37,5 +37,5 @@ int main(int argc, char *argv[]) {
 }
 
 //----------------------------------------------------------------------------//
-// end of cppmain.cc
+// end of c4/test/tstfc4_hw.cc
 //----------------------------------------------------------------------------//
