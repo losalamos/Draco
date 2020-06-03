@@ -12,7 +12,10 @@
 #define cdi_ndi_NDI_CP_Eloss_hh
 
 #include "NDI_Base.hh"
-#include "rtt_cdi/CPEloss.hh"
+#include "cdi/CPCommon.hh"
+#include "cdi/CPEloss.hh"
+#include "ds++/Assert.hh"
+#include "units/PhysicalConstexprs.hh"
 
 namespace rtt_cdi_ndi {
 
@@ -55,6 +58,9 @@ public:
   //! Query to see if data is in tabular or functional form (true)
   static constexpr bool is_data_in_tabular_form() { return true; }
 
+  //! Get the name of the associated data file
+  inline std::string getDataFilename() const { return std::string(); }
+
   //! Get the material temperature grid.
   sf_double getTemperatureGrid() const { return temperatures; }
 
@@ -73,6 +79,11 @@ public:
   //! Get the number of projectile energy grid points.
   size_t getNumEnergies() const { return n_energy; }
 
+  //! Get the general eloss model type
+  rtt_cdi::CPModelType getModelType() const {
+    return rtt_cdi::CPModelType::TABULAR_ETYPE;
+  }
+
 private:
 // Only implemented if NDI is found
 #ifdef NDI_FOUND
@@ -82,6 +93,7 @@ private:
 private:
   rtt_units::PhysicalConstexprs<rtt_units::CGS> pc; //!< Units
 
+  uint32_t n_energy;          //!< Number of gridpoints in projectile energy
   uint32_t n_density;         //!< Number of gridpoints in target density
   uint32_t n_temperature;     //!< Number of gridpoints in target temperature
   double d_log_energy;        //!< Log spacing of projectile energy gridpoints
@@ -109,7 +121,7 @@ private:
 
   //! Name of library in which to find data
   const std::string library;
-}
+};
 
 } // namespace rtt_cdi_ndi
 

@@ -31,10 +31,10 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in,
                                const std::string &library_in,
                                rtt_cdi::CParticle target_in,
                                rtt_cdi::CParticle projectile_in)
-    : NDI_Base(gendir_in, "dedx", library_in, std::string(), std::vector<double>()),
-      rtt_cdi::CPEloss(target_in,
+    : rtt_cdi::CPEloss(target_in,
       projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
-      rtt_cdi::CPModelAngleCutoff::NONE) {
+      rtt_cdi::CPModelAngleCutoff::NONE),
+      NDI_Base(gendir_in, "dedx", library_in, std::string(), std::vector<double>()) {
   // Set angle cutoff by parsing library_in
 
   load_ndi();
@@ -50,10 +50,10 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in,
 NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in,
                                rtt_cdi::CParticle target_in,
                                rtt_cdi::CParticle projectile_in)
-    : NDI_Base("dedx", library_in, std::string(), std::vector<double>()),
-      rtt_cdi::CPEloss(target_in,
+    : rtt_cdi::CPEloss(target_in,
       projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
-      rtt_cdi::CPModelAngleCutoff::NONE) {
+      rtt_cdi::CPModelAngleCutoff::NONE),
+      NDI_Base("dedx", library_in, std::string(), std::vector<double>()) {
   // Set angle cutoff by parsing library_in
 
   load_ndi();
@@ -69,6 +69,19 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in,
 void NDI_CP_Eloss::load_ndi() {
   printf("[%s : %i] not implemented!\n", __FILE__, __LINE__);
   exit(-1);
+}
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate the tabulated stopping power for a given material and
+ *        projectile state.
+ * \param[in] temperature Material temperature [keV]
+ * \param[in] density Material density [g cm^-3]
+ * \param[in] partSpeed Particle speed [cm shk^-1]
+ */
+double NDI_CP_Eloss::getEloss(const double temperature,
+                                  const double density,
+                                  const double partSpeed) const {
+                                    return 0.;
 }
 #endif // NDI_FOUND
 } // namespace rtt_cdi_ndi
