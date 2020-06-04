@@ -55,9 +55,6 @@ protected:
   //! Name of library in which to find reaction
   const std::string library;
 
-  //! Name of reaction to read
-  const std::string reaction;
-
   //! Name of reaction as found in NDI data
   std::string reaction_name;
 
@@ -97,18 +94,12 @@ protected:
   //! Group average energies (keV)
   std::vector<double> group_energies;
 
-  //! Energy bounds of multigroup data (MeV) to be passed to NDI
-  std::vector<double> mg_e_bounds;
-
 protected:
   //! Constructor
-  NDI_Base(const std::string &dataset_in, const std::string &library_in,
-           const std::string &reaction_in,
-           const std::vector<double> mg_e_bounds_in);
+  NDI_Base(const std::string &dataset_in, const std::string &library_in);
 
   NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-           const std::string &library_in, const std::string &reaction_in,
-           const std::vector<double> mg_e_bounds_in);
+           const std::string &library_in);
 
   //! Default constructor
   NDI_Base() = delete;
@@ -125,9 +116,6 @@ public:
 
   //! Get the library
   inline std::string get_library() const & { return library; }
-
-  //! Get the reaction
-  inline std::string get_reaction() const & { return reaction; }
 
   //! Get the name of the reaction from the NDI file
   inline std::string get_reaction_name() const & { return reaction_name; }

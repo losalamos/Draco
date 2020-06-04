@@ -27,10 +27,25 @@ using rtt_dsxx::soft_equiv;
 
 void gendir_test(rtt_dsxx::UnitTest &ut) {
   rtt_cdi::CParticle target(1001, 0.);
-  rtt_cdi CParticle projectile(2004, 0.);
+  rtt_cdi::CParticle projectile(2004, 0.);
 
   // Write a custom gendir file to deal with NDI-required absolute path to data
-  NDI_CP_Eloss eloss("gendir path", "dedx", target, projectile);o
+  std::string gendir_in = "gendir_tmp.dedx";
+  std::string gendir_tmp_path = ut.getTestInputPath() + gendir_in;
+  std::string data_path = ut.getTestSourcePath() + "dedx_he4_example";
+  std::ofstream gendir_tmp_file;
+  gendir_tmp_file.open(gendir_tmp_path);
+  gendir_tmp_file << "dedx\n";
+  gendir_tmp_file << "  z=2004.000dx  d=2020-06-03  l=dedx\n";
+  gendir_tmp_file << "    f=" << data_path << "\n";
+  gendir_tmp_file << "    ng=4   aw=4.001510E+00  awr=3.96713510838 end\n";
+  gendir_tmp_file << "end\n";
+  gendir_tmp_file.close();
+
+  std::string gendir_path = gendir_tmp_path;
+  std::string library_in = "dedx";
+
+  NDI_CP_Eloss eloss(gendir_path, library_in, target, projectile);
 
   if (ut.numFails == 0) {
     PASSMSG("NDI_CP_Eloss test passes.");

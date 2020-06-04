@@ -115,12 +115,6 @@ private:
 
   //! Storage for tabulated data
   sf_double stopping_data_1d;
-
-  //! Path to gendir file, which indexes an NDI dataset
-  std::string gendir;
-
-  //! Name of library in which to find data
-  const std::string library;
 };
 
 } // namespace rtt_cdi_ndi
