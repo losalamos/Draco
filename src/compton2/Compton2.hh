@@ -71,7 +71,7 @@ class Compton2 {
                                 bool zeroth_moment_only = false) const;
 
     // Interpolate in temperature and return sparse in-scattering
-    // inscat := diag(leftscale) * inscat(Te_keV) * diag(rightscale)
+    // inscat := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale)
     void interp_sparse_inscat(Sparse_Compton_Matrix & inscat,
                               const std::vector<double> & leftscale,
                               const std::vector<double> & rightscale,
@@ -79,15 +79,14 @@ class Compton2 {
                               bool zeroth_moment_only = false) const;
 
     // Interpolate in temperature and return dense in-scattering
-    // inscat := diag(leftscale) * inscat(Te_keV) * diag(rightscale)
-    // TODO: Check order!
+    // inscat := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale)
+    // TODO: Check ordering of 1D array!
     // ordering of inscat is 1D array [moment, group-from, group-to]
     void interp_dense_inscat(std::vector<double> & inscat,
                               const std::vector<double> & leftscale,
                               const std::vector<double> & rightscale,
                               double Te_keV,
                               bool zeroth_moment_only = false) const;
-
 
     // Interpolate in temperature and return (linear) outscattering vector
     // outscat := onesT * diag(leftscale) * csk[out_lin](Te_keV) * diag(rightscale)
@@ -161,12 +160,12 @@ class Compton2 {
     std::vector<size_t> indexes_;
 
     // csk data
-    // TODO: Check order!
+    // TODO: Check ordering of 1D array!
     // 1D array of [eval, moment, temperature, group-from, group-to]
     std::vector<double> data_;
 
     // temperature derivatives of csk data
-    // TODO: Check order!
+    // TODO: Check order of 1D array!
     // 1D array of [eval, moment, temperature, group-from, group-to]
     std::vector<double> derivs_;
 
