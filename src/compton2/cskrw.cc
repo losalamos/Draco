@@ -15,7 +15,7 @@
 #include "units/PhysicalConstants.hh"
 #include "units/UnitSystem.hh"
 #include "cdi/CDI.hh" //planck integral
-//#include <cmath>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -108,16 +108,15 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename, bool is
     //const FP csk_xs_conv = 1. / rtt_units::AVOGADRO;
     //Ensure(soft_equiv(2 * 0.2003102 * csk_xs_conv, 6.6524587e-25, 1e-4));
 
+    // VALUES USED IN CSK'S PHYSICAL_CONSTANTS.HH
+    // Normalization for energy and nonlinear terms
+    const FP mec2 = 510.998;
+    const FP hplanck = 8.6173303e-8;
+    const FP cspeed = 299.79245800;
+
     // set effective renorm base multipliers
     const FP basescale = csk_opac_norm; // cm^2/mole
-    const FP nlbase = 2 * rtt_units::PI;
-
-    // Normalization for T and E (keV; value used by CSK)
-    const FP mec2 = 510.9989461;
-
-    // nonlinear scale is ~ 1.545956458889162e+26, but temperature-dependent
-
-
+    const FP nlbase = (4.0/9.0) * 2.0 / (hplanck * hplanck * hplanck * cspeed * cspeed) * (mec2 * mec2 * mec2);
 
     // Line 1: sizes
     UINT numTbreakpoints = 0;
@@ -152,11 +151,11 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename, bool is
     for (UINT iT=0; iT < numTs; ++iT)
     {
         f >> Ts[iT];
-        const FP T4 = Ts[iT] * Ts[iT] * Ts[iT] * Ts[iT];
         // scale to keV
         Ts[iT] *= mec2;
+        const FP T4 = Ts[iT] * Ts[iT] * Ts[iT] * Ts[iT];
 
-        const FP linscale = isnonlin ? nlbase / T4 : 1.0;
+        const FP linscale = isnonlin ? nlbase * T4: 1.0;
         const FP renorm = basescale * linscale;
 
         UINT gfrom = 0U;
@@ -226,7 +225,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision)
     {
         std::cout << '\n';
         std::cout << "Group boundaries (keV):\n";
-        for (UINT g=0; g < numGroups; ++g)
+        for (UINT g=0; g < numGroups+1U; ++g)
         {
             if (g > 0)
                 std::cout << ' ';
@@ -359,7 +358,9 @@ void read_csk_files(std::string const &basename, int verbosity) {
     // Check detailed balance
     if (dat.numEvals == 5)
     {
-        std::cout << "Detailed balance check\n";
+        std::cout << "Detailed balance check...\n";
+        if (verbosity <= 0)
+            std::cout << "T lindiff/nonlindiff\n";
 
         // Planck MG integral
         std::vector<FP> bg(dat.numGroups, 0.0);
@@ -367,20 +368,25 @@ void read_csk_files(std::string const &basename, int verbosity) {
         // indexes for the evaluations
         // I for inscattering, O for outscattering, f for difference
         // L for linear, N for nonlinear
+        std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin", "out_nonlin", "nldiff"};
         const UINT i_IL = 0;
         const UINT i_OL = 1;
         const UINT i_IN = 2;
         const UINT i_ON = 3;
-        const UINT i_fN = 4;
+        //const UINT i_fN = 4;
+        // 0th Legendre moment
+        const UINT iL = 0;
 
         if (verbosity > 0)
             std::cout << '\n';
         for (UINT iT = 0; iT < dat.numTs; ++iT)
         {
+            // Get T
             const FP T = dat.Ts[iT];
             if (verbosity > 0)
-                std::cout << "Temperature (keV): " << T << '\n';
+                std::cout << "Temperature (keV): " << std::setprecision(precision) << T << '\n';
 
+            // Compute bg[T]
             if (verbosity > 1)
                 std::cout << "Planck spectrum: ";
             FP bgsum = 0.0;
@@ -397,13 +403,47 @@ void read_csk_files(std::string const &basename, int verbosity) {
             if (verbosity > 1)
                 std::cout << '\n';
             if (verbosity > 0)
-                std::cout << "bgsum: " << std::setprecision(16) << bgsum;
+                std::cout << "bgsum: " << std::setprecision(16) << bgsum << '\n';
 
+            // Compute sums for each eval in equilibrium (I=B)
+            std::array<FP,4> sums = {0.0, 0.0, 0.0, 0.0};
+            for (UINT eval = 0; eval < 4; ++eval)
+            {
+                for (UINT gfrom = 0; gfrom < dat.numGroups; ++gfrom)
+                {
+                    FP subsum = 0.0;
+                    for (UINT gto = 0; gto < dat.numGroups; ++gto)
+                    {
+                        // for linear terms, no induced planck[energy_to]
+                        const FP bgto = (eval >= 2) ? bg[gto] : 1.0;
+                        const FP bgfrom = bg[gfrom];
+                        const UINT loc = gto + dat.numGroups * (gfrom + dat.numGroups * (iT + dat.numTs * (iL + dat.numLegMoments * eval)));
+                        const FP val = dat.data[loc];
+                        subsum += bgto * val * bgfrom;
+                    }
+                    sums[eval] += subsum;
+                }
+                if (verbosity > 0)
+                    std::cout << evalNames[eval] << " sum: " << sums[eval] << '\n';
+            }
+
+            // Print detailed-balance differences
+            const FP lindiff = (sums[i_IL] - sums[i_OL]) * 0.75e4 / T;
+            const FP nonlindiff = (sums[i_ON] - sums[i_IN]) * 0.75e4 / T;
+            const FP ratio = lindiff / nonlindiff;
+            if (verbosity > 0)
+            {
+                std::cout << "lindiff nonlindiff: " << std::setprecision(6) << lindiff << ' ' << nonlindiff << '\n';
+                std::cout << "lindiff / nonlindiff: " << ratio << '\n';
+            }
+            else
+                std::cout << T << ' ' << ratio << '\n';
 
             if (verbosity > 0)
                 std::cout << '\n';
 
         }
+        std::cout << "...detailed balance check done\n";
     }
 }
 
@@ -442,7 +482,7 @@ int main(int argc, char *argv[]) {
     try {
         int verbosity = 0;
         verbosity = 1;
-        verbosity = 2;
+        //verbosity = 2;
         //verbosity = 3;
         read_csk_files(filename, verbosity);
     } catch (rtt_dsxx::assertion &excpt) {
