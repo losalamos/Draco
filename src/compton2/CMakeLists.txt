@@ -29,7 +29,7 @@ set( headers
 
 add_component_library(
   TARGET       Lib_compton2
-  TARGET_DEPS  "Lib_c4;Lib_units"
+  TARGET_DEPS  "Lib_c4;Lib_units;Lib_cdi_analytic"
   LIBRARY_NAME compton2
   SOURCES      "${sources}"
   HEADERS      "${headers}" )

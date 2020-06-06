@@ -11,6 +11,7 @@
 // headers provided in draco:
 #include "compton2/Compton2.hh"
 #include "c4/global.hh"
+#include "c4/C4_Functions.hh" //node()
 #include "ds++/Assert.hh"
 
 #include<iostream>
@@ -38,7 +39,7 @@ Compton2::Compton2(std::string filename):
     std::cout << "Constructor\n";
 
     // TODO: get rank
-    int rank = 0;
+    int rank = rtt_c4::node();
     if (rank == 0)
     {
         read_binary(filename);
