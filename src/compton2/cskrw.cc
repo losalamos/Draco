@@ -49,7 +49,14 @@ struct Dense_Compton_Data
 
     void resize(UINT numfiles, std::string filename);
     void read_from_file(UINT eval, std::string filename, bool isnonlin);
+    void compute_nonlinear_difference();
+    void compute_temperature_derivatives();
+    void write_sparse_binary(std::string fileout);
     void print_contents(int verbosity, int precision);
+
+private:
+    void copy_to_sparse(/* ADD */);
+    void write_binary(std::string fileout /* ADD */);
 };
 
 // resize data and set sizes
@@ -204,6 +211,156 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename, bool is
     f.close();
 }
 
+// use 4 evaluations to determine nonlinear difference
+// implicit at low E/T; explicit at high E/T
+void Dense_Compton_Data::compute_nonlinear_difference()
+{
+    Require(numEvals == 5);
+
+    // Physically, ON - IN.T == IL.T B^-1 - B^-1 OL.
+    // Due to quadrature choice and finite-precision arithmetic,
+    // the above equality does NOT discretely hold.
+    // The RHS suffers from small differences of large numbers at low E/T.
+    // The RHS suffers from the same problem when E/T is large and so B is small.
+    // To mitigate numerical error and avoid dividing by a B of 0.,
+    // we use the RHS at low E/T and use the LHS at high E/T.
+
+    // Determine the cutoff between low and high energies (Ecutoff = N * T)
+    // Based on the wgt fxn CSK uses in its MG avg, N <= 25.0
+    // Using 25.0 is better for equilibrium stimulated scat
+    // Using N>=9.0 is better for non-equil stimulated scat
+    const FP Ncutoff = 9.0;
+
+    // Planck MG integral
+    std::vector<FP> bg(numGroups, 0.0);
+
+    // indexes for the evaluations
+    // I for inscattering, O for outscattering, f for difference
+    // L for linear, N for nonlinear
+    const UINT e_IL = 0;
+    const UINT e_OL = 1;
+    const UINT e_IN = 2;
+    const UINT e_ON = 3;
+    const UINT e_fN = 4;
+    // 0th Legendre moment
+    const UINT iL = 0;
+
+    for (UINT iT = 0; iT < numTs; ++iT)
+    {
+        const FP T = Ts[iT];
+        const FP Ecutoff = Ncutoff * T;
+
+        // Compute bg[T]
+        FP bgsum = 0.0;
+        for (UINT g = 0; g < numGroups; ++g)
+        {
+            const FP Elow = groupBdrs[g];
+            const FP Ehigh = groupBdrs[g+1];
+            bg[g] = rtt_cdi::CDI::integratePlanckSpectrum(Elow, Ehigh, T);
+            bgsum += bg[g];
+        }
+        // First pass on nldiff
+        FP sumlin = 0.0;
+        FP sumnonlin = 0.0;
+        for (UINT gfrom = 0; gfrom < numGroups; ++gfrom)
+        {
+            for (UINT gto = 0; gto < numGroups; ++gto)
+            {
+                // Look at right side of group bounds
+                const FP Eto = groupBdrs[gto+1];
+                const FP Efrom = groupBdrs[gfrom+1];
+                const bool lowE = Eto <= Ecutoff && Efrom <= Ecutoff;
+
+                // Planck is equilibrium distribution
+                const FP bgto = bg[gto];
+                const FP bgfrom = bg[gfrom];
+
+                std::array<FP,4> vals;
+                // use scattering matrix (no transpose) for outscattering
+                for (UINT eval: {e_OL, e_ON})
+                {
+                    const UINT loc = gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                    vals[eval] = data[loc];
+                }
+                // use transpose of scattering matrix for inscattering
+                for (UINT eval: {e_IL, e_IN})
+                {
+                    const UINT loc = gfrom + numGroups * (gto + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                    vals[eval] = data[loc];
+                }
+
+                // Avoid dividing by zero
+                const FP eps = 100 * std::numeric_limits<FP>::min();
+                const bool bzero = bgto <= eps || bgfrom <= eps;
+
+                // Take differences of spontaneous and induced rates at equilibrium
+                const FP impldiff = (bzero) ? 0.0 : vals[e_IL] / bgfrom - vals[e_OL] / bgto;
+                const FP expldiff = vals[e_ON] - vals[e_IN];
+
+                // For low E/T, store impldiff; for high E/T, store expldiff
+                const UINT loc_fN = gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
+                data[loc_fN] = (lowE) ? impldiff : expldiff;
+
+                // Keep sums of rates for later ratio
+                sumlin += bgto * impldiff * bgfrom;
+                sumnonlin += bgto * data[loc_fN] * bgfrom;
+            }
+        }
+
+        // Rescale the nonlin diff to get exact detailed balance at equilibrium
+        const FP scalenl = sumlin / sumnonlin;
+        // we hope scalenl is within a percent or less of 1
+        Check(scalenl < 1.2 && scalenl > 0.8);
+        for (UINT gfrom = 0; gfrom < numGroups; ++gfrom)
+        {
+            for (UINT gto = 0; gto < numGroups; ++gto)
+            {
+                const UINT loc_fN = gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
+                data[loc_fN] *= scalenl;
+            }
+        }
+
+    }
+
+}
+
+// Compute and limit temperature derivatives of data
+void Dense_Compton_Data::compute_temperature_derivatives()
+{
+    std::cout << "Temperature derivatives not yet implemented.\n";
+}
+
+// Sparsify data and print to binary
+void Dense_Compton_Data::write_sparse_binary(std::string fileout)
+{
+    std::cout << "Sparse and binary not yet implemented.\n";
+    copy_to_sparse();
+    write_binary(fileout);
+}
+
+// Sparsify data
+void Dense_Compton_Data::copy_to_sparse()
+{
+    // RM
+    std::cout << "  to sparse\n";
+}
+
+// Write to binary
+void Dense_Compton_Data::write_binary(std::string fileout)
+{
+    // RM
+    std::cout << "  write binary\n";
+
+    auto fout = std::ofstream(fileout, std::ios::out | std::ios::binary);
+
+    // binary type
+    char filetype[] = " csk ";
+    fout.write(&filetype[0], sizeof(filetype));
+
+
+    fout.close();
+}
+
 // print contents of struct
 void Dense_Compton_Data::print_contents(int verbosity, int precision)
 {
@@ -350,6 +507,18 @@ void read_csk_files(std::string const &basename, int verbosity) {
         }
     }
 
+    // Use filled data to compute derived data
+    if (dat.numEvals == 5)
+    {
+        dat.compute_nonlinear_difference();
+    }
+    dat.compute_temperature_derivatives();
+
+    // Save to binary
+    std::string fileout = basename + "_b";
+    std::cout << "Writing file: " << fileout << '\n';
+    dat.write_sparse_binary(fileout);
+
     // Print
     int precision = 3;
     //precision = 16;
@@ -369,11 +538,11 @@ void read_csk_files(std::string const &basename, int verbosity) {
         // I for inscattering, O for outscattering, f for difference
         // L for linear, N for nonlinear
         std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin", "out_nonlin", "nldiff"};
-        const UINT i_IL = 0;
-        const UINT i_OL = 1;
-        const UINT i_IN = 2;
-        const UINT i_ON = 3;
-        //const UINT i_fN = 4;
+        const UINT e_IL = 0;
+        const UINT e_OL = 1;
+        const UINT e_IN = 2;
+        const UINT e_ON = 3;
+        const UINT e_fN = 4;
         // 0th Legendre moment
         const UINT iL = 0;
 
@@ -406,8 +575,8 @@ void read_csk_files(std::string const &basename, int verbosity) {
                 std::cout << "bgsum: " << std::setprecision(16) << bgsum << '\n';
 
             // Compute sums for each eval in equilibrium (I=B)
-            std::array<FP,4> sums = {0.0, 0.0, 0.0, 0.0};
-            for (UINT eval = 0; eval < 4; ++eval)
+            std::array<FP,5> sums = {0.0, 0.0, 0.0, 0.0, 0.0};
+            for (UINT eval = 0; eval < sums.size(); ++eval)
             {
                 for (UINT gfrom = 0; gfrom < dat.numGroups; ++gfrom)
                 {
@@ -423,25 +592,29 @@ void read_csk_files(std::string const &basename, int verbosity) {
                     }
                     sums[eval] += subsum;
                 }
-                if (verbosity > 0)
+                if (verbosity > 1)
                     std::cout << evalNames[eval] << " sum: " << sums[eval] << '\n';
             }
 
             // Print detailed-balance differences
-            const FP lindiff = (sums[i_IL] - sums[i_OL]) * 0.75e4 / T;
-            const FP nonlindiff = (sums[i_ON] - sums[i_IN]) * 0.75e4 / T;
-            const FP ratio = lindiff / nonlindiff;
+            const FP scale = 0.75e4 / T;
+            const FP lindiff = (sums[e_IL] - sums[e_OL]) * scale;
+            const FP nonlindiff_raw = (sums[e_ON] - sums[e_IN]) * scale;
+            const FP nonlindiff_use = sums[e_fN] * scale;
+            const FP ratio_raw = lindiff / nonlindiff_raw;
+            const FP ratio_use = lindiff / nonlindiff_use;
+            if (verbosity > 1)
+                std::cout << "lindiff nonlindiff-RAW nonlindiff-USE: " << std::setprecision(6) << lindiff << ' ' << nonlindiff_raw << ' ' << nonlindiff_use << '\n';
             if (verbosity > 0)
             {
-                std::cout << "lindiff nonlindiff: " << std::setprecision(6) << lindiff << ' ' << nonlindiff << '\n';
-                std::cout << "lindiff / nonlindiff: " << ratio << '\n';
+                std::cout << "lindiff / nonlindiff_raw: " << ratio_raw << '\n';
+                std::cout << "lindiff / nonlindiff_use: " << ratio_use << '\n';
             }
             else
-                std::cout << T << ' ' << ratio << '\n';
+                std::cout << T << ' ' << ratio_use << '\n';
 
             if (verbosity > 0)
                 std::cout << '\n';
-
         }
         std::cout << "...detailed balance check done\n";
     }
@@ -482,8 +655,8 @@ int main(int argc, char *argv[]) {
     try {
         int verbosity = 0;
         verbosity = 1;
-        //verbosity = 2;
-        //verbosity = 3;
+        verbosity = 2;
+        verbosity = 3;
         read_csk_files(filename, verbosity);
     } catch (rtt_dsxx::assertion &excpt) {
         cout << "While attempting to read csk file, " << excpt.what() << endl;
