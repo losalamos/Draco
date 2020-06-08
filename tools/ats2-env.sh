@@ -21,7 +21,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="gcc731env xl20191223"
+environments="gcc831env xl20200318env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -47,6 +47,52 @@ if ! [[ $ddir ]] ;then
 fi
 
 case $ddir in
+
+  #------------------------------------------------------------------------------#
+  draco-7_7*)
+    function gcc831env()
+    {
+      run "module purge"
+      run "module use /usr/gapps/user_contrib/spack.20200402/share/spack/lmod/linux-rhel7-ppc64le/Core"
+      run "module load StdEnv"
+      run "module unload cuda spectrum-mpi xl"
+      unset CMAKE_PREFIX_PATH
+      unset CPATH
+      unset LD_LIBRARY_PATH
+      unset LIBRARY_PATH
+      run "module load gcc/8.3.1 spectrum-mpi/2019.06.24 cuda"
+      run "module load python/3.7.2 cmake/3.17.0 git gsl numdiff random123 metis netlib-lapack"
+      run "module load parmetis superlu-dist trilinos csk"
+      run "module load eospac/6.4.0 libquo/1.3.1 ndi"
+      run "module list"
+      run "module avail"
+      unset MPI_ROOT
+      CXX=`which g++`
+      CC=`which gcc`
+      FC=`which gfortran`
+    }
+    function xl20200318env()
+    {
+      run "module purge"
+      run "module use /usr/gapps/user_contrib/spack.20200402/share/spack/lmod/linux-rhel7-ppc64le/Core"
+      run "module load StdEnv"
+      run "module unload cuda spectrum-mpi xl"
+      unset CMAKE_PREFIX_PATH
+      unset CPATH
+      unset LD_LIBRARY_PATH
+      unset LIBRARY_PATH
+      run "module load xl/2020.03.18 spectrum-mpi/2019.06.24"
+      run "module load python/3.7.2 cmake/3.17.0 git gsl numdiff random123 metis netlib-lapack"
+      run "module load parmetis superlu-dist trilinos csk"
+      run "module load eospac/6.4.0 libquo/1.3.1 ndi"
+      # trilinos possible non-spack solution at:
+      # /usr/gapps/jayenne/vendors/trilinos-12.18.1/xl-2019.12.23-spectrum-mpi-2019.06.24
+      # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/usr/gapps/jayenne/vendors/trilinos-12.18.1/xl-2019.12.23-spectrum-mpi-2019.06.24
+      run "module list"
+      run "module avail"
+      unset MPI_ROOT
+    }
+    ;;
 
   #------------------------------------------------------------------------------#
   draco-7_4* | draco-7_5* | draco-7_6*)
