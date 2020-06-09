@@ -28,6 +28,12 @@ endif()
 # ---------------------------------------------------------------------------- #
 file( GLOB f90sources *.f90 *.F90 )
 
+# gfortran-10 needs to be told to allow 'invalid' initialization value.
+if( CMAKE_Fortran_COMPILER_ID STREQUAL GNU AND CMAKE_Fortran_COMPILER_VERSION
+  VERSION_GREATER_EQUAL "10.0" )
+  set_source_files_properties( Draco_MPI.F90 PROPERTIES COMPILE_FLAGS "-fallow-invalid-boz" )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Build library
 # ---------------------------------------------------------------------------- #
