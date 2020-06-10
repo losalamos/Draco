@@ -35,6 +35,8 @@ void check_set_get(UnitTest &ut) {
   set_omp_num_threads(init_n);
   int const final_n{get_omp_num_threads()};
   FAIL_IF_NOT(final_n == init_n);
+  int const thread_num{get_omp_thread_num()};
+  FAIL_IF(thread_num >= final_n || thread_num < 0);
   return;
 } // check_set_get
 

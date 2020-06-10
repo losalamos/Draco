@@ -38,6 +38,11 @@ int get_omp_num_threads() { return omp_get_num_threads(); }
  */
 int get_omp_max_threads() { return omp_get_max_threads(); }
 
+/*! Get the thread number for this thread
+ *\return the thread number [0..N)
+ */
+int get_omp_thread_num() { return omp_get_thread_num(); }
+
 #else
 
 /*! Bypass setting the number of OpenMP threads */
@@ -52,6 +57,11 @@ int get_omp_num_threads() { return 1; }
  *\return: 1 (always)
  */
 int get_omp_max_threads() { return 1; }
+
+/*! Bypass getting the thread number for this thread
+ *\return 0 (always)
+ */
+int get_omp_thread_num() { return 0; }
 
 #endif
 

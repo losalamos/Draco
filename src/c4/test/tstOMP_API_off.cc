@@ -47,6 +47,8 @@ void check_set_get(UnitTest &ut) {
   FAIL_IF_NOT(1 == new_n);
   int const new_max = get_omp_max_threads();
   FAIL_IF_NOT(1 == new_max);
+  int const thread_num = get_omp_thread_num();
+  FAIL_IF_NOT(0 == thread_num);
 
 #ifdef ORIG_OPENMP_FOUND
   // Even if OpenMP is available, the preceding should have changed nothing
