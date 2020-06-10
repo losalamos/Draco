@@ -34,7 +34,7 @@ using rtt_dsxx::UnitTest;
 #include <omp.h>
 #endif
 
-void check_set_get(UnitTest &ut){
+void check_set_get(UnitTest &ut) {
   int const init_n = get_omp_num_threads();
   FAIL_IF_NOT(1 == init_n);
 
@@ -53,7 +53,7 @@ void check_set_get(UnitTest &ut){
   int const true_new_n = omp_get_max_threads();
   FAIL_IF_NOT(true_new_n == true_init_n);
   // If we did make a mess, clean it up
-  if(true_new_n != true_init_n){
+  if (true_new_n != true_init_n) {
     omp_set_num_threads(true_init_n);
   }
 #endif
