@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   c4/test/tstOMP_API.cc
+ * \file   c4/test/tstOMP_API_on.cc
  * \author Timothy Kelley
  * \date   Tue Jun  9 15:03:08 2020
  * \brief  Demonstrate basic OMP API with OpenMP present
@@ -70,5 +70,5 @@ int main(int argc, char **argv) {
 #endif // OPENMP_FOUND
 
 //----------------------------------------------------------------------------//
-// end of tstOMP_API.cc
+// end of tstOMP_API_on.cc
 //----------------------------------------------------------------------------//
