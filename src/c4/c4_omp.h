@@ -26,42 +26,42 @@ namespace rtt_c4 {
 /*! Set the number of OpenMP threads
  *\param n: desired number of threads
  */
-void set_omp_num_threads(int n) { omp_set_num_threads(n); }
+inline void set_omp_num_threads(int n) { omp_set_num_threads(n); }
 
 /*! Get the number of OpenMP threads in current section
  *\return: current number of threads
  */
-int get_omp_num_threads() { return omp_get_num_threads(); }
+inline int get_omp_num_threads() { return omp_get_num_threads(); }
 
 /*! Get the maximum number of OpenMP threads
  *\return: maximum number of threads
  */
-int get_omp_max_threads() { return omp_get_max_threads(); }
+inline int get_omp_max_threads() { return omp_get_max_threads(); }
 
 /*! Get the thread number for this thread
  *\return the thread number [0..N)
  */
-int get_omp_thread_num() { return omp_get_thread_num(); }
+inline int get_omp_thread_num() { return omp_get_thread_num(); }
 
 #else
 
 /*! Bypass setting the number of OpenMP threads */
-void set_omp_num_threads(int /*n*/) { return; }
+inline void set_omp_num_threads(int /*n*/) { return; }
 
 /*! Bypass getting the current number of OpenMP threads
  *\return: 1 (always)
  */
-int get_omp_num_threads() { return 1; }
+inline int get_omp_num_threads() { return 1; }
 
 /*! Bypass getting the maximum number of OpenMP threads
  *\return: 1 (always)
  */
-int get_omp_max_threads() { return 1; }
+inline int get_omp_max_threads() { return 1; }
 
 /*! Bypass getting the thread number for this thread
  *\return 0 (always)
  */
-int get_omp_thread_num() { return 0; }
+inline int get_omp_thread_num() { return 0; }
 
 #endif
 
