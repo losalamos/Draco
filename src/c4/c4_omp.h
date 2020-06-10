@@ -40,9 +40,7 @@ int get_omp_max_threads() { return omp_get_max_threads(); }
 
 #else
 
-/*! Bypass setting the number of OpenMP threads
- *\param n (ignored): desired number of threads
- */
+/*! Bypass setting the number of OpenMP threads */
 void set_omp_num_threads(int /*n*/) { return; }
 
 /*! Bypass getting the current number of OpenMP threads
