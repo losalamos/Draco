@@ -63,7 +63,10 @@ int main(int argc, char **argv) {
 
 /* No OpenMP case handled in tstOMP_API_off */
 int main(int argc, char **argv) {
-  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_jayenne::release);
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  try {
+    PASSMSG("OpenMP disabled. No testing will be done.");
+  }
   UT_EPILOG(ut);
 }
 
