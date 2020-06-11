@@ -614,7 +614,7 @@ macro( SetupVendorLibrariesUnix )
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
-  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen )
   set_package_properties( Doxygen PROPERTIES
     URL "http://www.stack.nl/~dimitri/doxygen"
     DESCRIPTION "Doxygen autodoc generator"
@@ -646,7 +646,7 @@ macro( SetupVendorLibrariesWindows )
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
-  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen )
   set_package_properties( Doxygen PROPERTIES
     URL "http://www.stack.nl/~dimitri/doxygen"
     DESCRIPTION "Doxygen autodoc generator"
