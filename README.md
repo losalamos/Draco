@@ -19,15 +19,15 @@ To clone draco:
     $ git clone https://github.com/lanl/Draco.git
 
 To get started, please see [Development - Quick Start Guide](https://github.com/lanl/Draco/wiki/Development---Quick-Start)
-in the wiki. Pull requestes must satisfy the requirements listed in
+in the wiki. Pull requests must satisfy the requirements listed in
 the [Style Guide](https://github.com/lanl/Draco/wiki/Style-Guide).
 
 Synopsis of Active Draco Packages
 ---------------------------------
 
 * c4 - A communications library for message passing interfaces (MPI).
-  * For builds without MPI, all communication commnds will be no-op
-    functions (`DRACO_C4={MPI;SCALAR}`). Also proivdes a wrapper to
+  * For builds without MPI, all communication commands will be no-op
+    functions (`DRACO_C4={MPI;SCALAR}`). Also provides a wrapper to
     [libquo](https://github.com/lanl/libquo)
 * cdi - Access to material data. The Common Data Interface (CDI) specifies a
   common abstraction for objects and libraries that return material data
@@ -62,7 +62,7 @@ Synopsis of Active Draco Packages
 * fpe_trap - Catch IEEE floating point exceptions
 * FortranCheck - Test Fortran compatibility and interoperability
   * The examples in this component will demonstrate if the Fortran compiler is
-    working; if Fortran/C interlanguage linking/running is working and sample
+    working; if Fortran/C inter-language linking/running is working and sample
     `ISO_C_BINDING` calls.
 * lapack_wrap - C++ wrapper for BLAS and LAPACK.
 * linear - direct solvers for small linear systems of equations.
