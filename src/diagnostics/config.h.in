@@ -17,6 +17,9 @@
 /* USE PROCMON - snapshot in time memory reporting via getrusage */
 #cmakedefine USE_PROCMON @USE_PROCMON@
 
+/* Is the Caliper library available? */
+#cmakedefine DRACO_CALIPER @DRACO_CALIPER@
+
 #endif /* rtt_diagnostics_config_h */
 
 /*---------------------------------------------------------------------------*/
