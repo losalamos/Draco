@@ -34,10 +34,13 @@ set_doxygen_image_path() # --> DOXYGEN_IMAGE_PATH
 set_doxygen_dot_num_threads() # --> DOXYGEN_DOT_NUM_THREADS
                               # --> DOXYGEN_HTML_DYNAMIC_MENUS (v 1.8.14+)
                               # --> DOXYGEN_WARN_AS_ERROR
+                              # --> PERL_PATH
 
 set( DOXYGEN_HTML_OUTPUT draco )
 set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
 string( REPLACE " " "___" project_brief ${project_brief} )
+string( REPLACE " " "___" DOXYGEN_HTML_DYNAMIC_MENUS "${DOXYGEN_HTML_DYNAMIC_MENUS}" )
+string( REPLACE " " "___" PERL_PATH "${PERL_PATH}" )
 
 # doxygen_config.in needs the following symbols:
 add_custom_command(

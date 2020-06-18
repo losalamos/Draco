@@ -34,11 +34,7 @@ enum FilenameComponent {
 };
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Get a specific component of a full filename.
- * \param fqName a fully qualified pathname
- * \param fc Enum type FilenameComponent that specifies the action.
- */
+//! Get a specific component of a full filename.
 std::string getFilenameComponent(std::string const &fqName,
                                  FilenameComponent fc);
 

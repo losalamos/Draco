@@ -19,12 +19,18 @@ namespace rtt_cdi_ipcress {
 /*!
  * \brief The standard IpcressFile constructor.
  *
+ * This is the standard IpcressFile constructor.  This object is typically
+ * instantiated as a smart pointer.
+ *
+ * \param[in] ipcressDataFilename A string that contains the name of the Ipcress
+ *     data file in IPCRESS format.  The f77 Ipcress vendor library expects a
+ *     name with 80 characters or less. If the filename is longer than 80
+ *     characters the library will not be able to open the file.
+ *
  * 1. Set some defaults (bytes per word, number of fields in the TOC).
  * 2. Try to open the file
  * 3. Load the title keys to verify that this is an ipcress file.
  * 4. Load the TOC.
- *
- * \param ipcressDataFilename Name of ipcress file
  */
 IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
     : dataFilename(locateIpcressFile(ipcressDataFilename)),

@@ -159,15 +159,7 @@ public:
   // Constructors //
   // ------------ //
 
-  /*!
-   * \brief The constructor for Eospac.
-   *
-   * \sa The definition of rtt_cdi_eospac::SesameTables.
-   *
-   * \param[in] in_SesTabs A rtt_cdi_eospac::SesameTables object that defines
-   *           what data tables will be available for queries from the Eospac
-   *           object.
-   */
+  //! The constructor for Eospac.
   explicit Eospac(SesameTables const &in_SesTabs);
 
   //! Create an Eospac by unpacking a vector<char> stream.

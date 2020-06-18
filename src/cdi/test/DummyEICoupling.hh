@@ -15,7 +15,7 @@
 
 namespace rtt_cdi_test {
 
-//========================================================================
+//============================================================================//
 /*!
  * \class DummyEICoupling
  *
@@ -31,7 +31,7 @@ namespace rtt_cdi_test {
  * \sa cdi/test/tEICoupling.cc
  * \sa cdi/test/tCDI.cc
  */
-//========================================================================
+//============================================================================//
 
 class DLL_PUBLIC_cdi_test DummyEICoupling : public rtt_cdi::EICoupling {
 public:
@@ -50,8 +50,8 @@ public:
   /*!
    * \brief Default DummyEICoupling() destructor.
    *
-   * This is required to correctly release memory when a DummyEICoupling object is
-   * destroyed.
+   * This is required to correctly release memory when a DummyEICoupling object
+   * is destroyed.
    */
   ~DummyEICoupling();
 
@@ -59,46 +59,12 @@ public:
   // Accessors //
   // --------- //
 
-  /*!
-   * \brief EICoupling accessor that returns a single electron-ion coupling
-   * given an electron and ion temperature, the material density, and the
-   * electron and ion screening coeffiecients..
-   *
-   *    dummy_ei_coupling = etemperature + 10*itemperature + 100*density +
-   *    1000*w_e + 10000*w_i
-   *
-   * \param[in] etemperature The electron temperature value for which an opacity
-   *        value is being requested (Kelvin).
-   * \param[in] itemperature The ion temperature value for which an opacity
-   *        value is being requested (Kelvin).
-   * \param[in] density The density value for which an opacity value is being
-   *        requested (g/cm^3).
-   * \param[in] w_e the electron screening coeffiecent [1/s]
-   * \param[in] w_i the ion screening coeffiecent [1/s]
-   * \return An electron-ion coupling coeffient [kJ/g/K/s].
-   */
+  //! EICoupling accessor.
   double getElectronIonCoupling(const double etemperature,
                                 const double itemperature, const double density,
                                 const double w_e, const double w_i) const;
 
-  /*!
-   * \brief EICoupling accessor that returns a vector of electron-ion coupling
-   * given an electron and ion temperature, the material density, and the
-   * electron and ion screening coeffiecients..
-   *
-   *    dummy_ei_coupling = etemperature + 10*itemperature + 100*density +
-   *    1000*w_e + 10000*w_i
-   *
-   * \param[in] etemperature The electron temperature vector for which an opacity
-   *        value is being requested (Kelvin).
-   * \param[in] itemperature The ion temperature vector for which an opacity
-   *        value is being requested (Kelvin).
-   * \param[in] density The density vector for which an opacity value is being
-   *        requested (g/cm^3).
-   * \param[in] w_e the electron screening coeffiecent vector [1/s]
-   * \param[in] w_i the ion screening coeffiecent vector [1/s]
-   * \return An electron-ion coupling coeffient vector [kJ/g/K/s].
-   */
+  //! EICoupling accessor.
   std::vector<double>
   getElectronIonCoupling(const std::vector<double> &etemperature,
                          const std::vector<double> &itemperature,

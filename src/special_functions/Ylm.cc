@@ -23,11 +23,11 @@ using rtt_units::PI;
 //----------------------------------------------------------------------------//
 /*!
  * \brief Compute the spherical harmonic coefficient multiplied by the
- *        Associated Legendre Polynomial 
- * 
+ *        Associated Legendre Polynomial
+ *
  * \f[
- * {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} 
- * P_l^m (\cos \theta )}. 
+ * {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}}
+ * P_l^m (\cos \theta )}.
  * \f]
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
@@ -37,17 +37,17 @@ using rtt_units::PI;
  *         Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
  *
  * For details on what is being computed by this routine see the Draco
- * documentation on \ref sf_sph.
+ * documentation on sf_sph.
  *
  * This function simply wraps the GSL function \c gsl_sf_legendre_sphPlm
  * computes the value of \f$ {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l -
  * m)!}}{{(l + m)!}}} P_l^m ( \mu )} \f$.
  *
- * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this
- * definition of \f$ P_{l,k} \f$. 
+ * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this definition of
+ * \f$ P_{l,k} \f$.
  *
  * \sa <a href="http://mathworld.wolfram.com/Condon-ShortleyPhase.html">
- * Condon-Shortley Phase</a> 
+ * Condon-Shortley Phase</a>
  *
  * \pre \f$ l \ge 0 \f$
  * \pre \f$ l \ge k \f$
@@ -66,8 +66,8 @@ double cPlk(unsigned const l, unsigned const k, double const mu) {
 }
 //----------------------------------------------------------------------------//
 /*!
- * \brief Compute the spherical harmonic coefficient multiplied by the 
- *        Associated Legendre Polynomial as specified by Morel's Galerkin 
+ * \brief Compute the spherical harmonic coefficient multiplied by the
+ *        Associated Legendre Polynomial as specified by Morel's Galerkin
  *        Quadrature paper.
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
@@ -83,16 +83,16 @@ double cPlk(unsigned const l, unsigned const k, double const mu) {
  * (\cos \theta ) \f$
  *
  * For details on what is being computed by this routine see the Draco
- * documentation on \ref sf_sph.
+ * documentation on sf_sph.
  *
- * This function uses the GSL function \c gsl_sf_legendre_Plm to
- * compute the value of \f$ P_l^k ( \mu ) \f$.
+ * This function uses the GSL function \c gsl_sf_legendre_Plm to compute the
+ * value of \f$ P_l^k ( \mu ) \f$.
  *
- * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this
- * definition of \f$ P_{l,k} \f$. 
+ * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this definition of
+ * \f$ P_{l,k} \f$.
  *
  * \sa <a href="http://mathworld.wolfram.com/Condon-ShortleyPhase.html">
- * Condon-Shortley Phase</a> 
+ * Condon-Shortley Phase</a>
  *
  * \pre \f$ l \ge 0 \f$
  * \pre \f$ l \ge k \f$
@@ -130,7 +130,7 @@ double cPlkGalerkin(unsigned const l, unsigned const k, double const mu,
  * \return The normalized spherical harmonic value, \f$ y_l^m(\theta,\phi) \f$.
  *
  * For details on what is being computed by this routine see the Draco
- * documentation on \ref sf_sph.
+ * documentation on sf_sph.
  *
  * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
  * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
@@ -141,10 +141,10 @@ double cPlkGalerkin(unsigned const l, unsigned const k, double const mu,
  * \pre \f$ \theta \in [0,\pi] \f$
  * \pre \f$ \phi \in [0, 2\pi] \f$
  *
- *  \warning We cannot correct for sum of quadrature weights not equal to 4
- *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
- *  quadrature.  This adjustment will need to be done if the quadrature
- *  packages uses Ylm.
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4 PI,
+ *  \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature packages
+ *  uses Ylm.
  */
 double normalizedYlk(unsigned const l, int const k, double const theta,
                      double const phi) {
@@ -173,16 +173,18 @@ double normalizedYlk(unsigned const l, int const k, double const theta,
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief Compute the real portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
+ * \brief Compute the real portion of the spherical harmonic
+ *        \f$ Y_{l,k}(\theta,\phi) \f$
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
- * \return The real portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
+ * \return The real portion of the spherical harmonic value,
+ *         \f$ Y_l^m(\theta,\phi) \f$.
  *
  * For details on what is being computed by this routine see the Draco
- * documentation on \ref sf_sph.
+ * documentation on sf_sph.
  *
  * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
  * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
@@ -198,10 +200,10 @@ double normalizedYlk(unsigned const l, int const k, double const theta,
  * \pre \f$ \theta \in [0,\pi] \f$
  * \pre \f$ \phi \in [0, 2\pi] \f$
  *
- *  \warning We cannot correct for sum of quadrature weights not equal to 4
- *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
- *  quadrature.  This adjustment will need to be done if the quadrature
- *  packages uses Ylm.
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4 PI,
+ *  \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature packages
+ *  uses Ylm.
  */
 double realYlk(unsigned const l, int const k, double const theta,
                double const phi) {
@@ -224,7 +226,8 @@ double realYlk(unsigned const l, int const k, double const theta,
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief Compute the complex portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
+ * \brief Compute the complex portion of the spherical harmonic
+ *        \f$ Y_{l,k}(\theta,\phi) \f$
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
@@ -233,7 +236,7 @@ double realYlk(unsigned const l, int const k, double const theta,
  * \return The complex portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
  *
  * For details on what is being computed by this routine see the Draco
- * documentation on \ref sf_sph.
+ * documentation on sf_sph.
  *
  * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
  * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
@@ -244,10 +247,10 @@ double realYlk(unsigned const l, int const k, double const theta,
  * \pre \f$ \theta \in [0,\pi] \f$
  * \pre \f$ \phi \in [0, 2\pi] \f$
  *
- *  \warning We cannot correct for sum of quadrature weights not equal to 4
- *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
- *  quadrature.  This adjustment will need to be done if the quadrature
- *  packages uses Ylm.
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4 PI,
+ *  \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature packages
+ *  uses Ylm.
  */
 double complexYlk(unsigned const l, int const k, double const theta,
                   double const phi) {
@@ -267,39 +270,39 @@ double complexYlk(unsigned const l, int const k, double const theta,
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief Compute the spherical harmonic as used by Morel's Galerkin Quadrature paper.
+ * \brief Compute the spherical harmonic as used by Morel's Galerkin Quadrature
+ *        paper.
  *
  * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param k Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
  * \param mu The cosine of the polar (colatitudinal) coordinate in (-1,1).
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
  * \param sumwt normalizing coefficient
- * \return The spherical harmonic value as specified in the detailed documentation.
+ * \return The spherical harmonic value as specified in the detailed
+ *         documentation.
  *
- We use a special form of spherical harmonics for creating the
- moment-to-discrete and discrete-to-moment matrixes.  Morel describes
- the functional form in his paper \e A \e Hybrid \e
- Collocation-Galerkin-Sn \e Method \e for \e Solving \e the \e
- Boltzmann \e Transport \e Equation," Nuclear Science and Engineering,
- \b 101, 72-87, 1989.
-
-The principal difference is that the \f$ \frac{2\ell+1}{4\pi} \f$
-coefficient does not appear inside of a square root.  This change from
-the normal spherical harmonic coefficient is required in order to
-provide the correct magnitude for the quadrature weights.  Morel's
-formulation is
-
-\f[
-\begin{array}{l}
- k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \\
- k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \\
- k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\
- \end{array}
-\f]
-
-Morel's scheme only includes specific order and moment combinations.
-Please see the reference for a full description.
-
+ * We use a special form of spherical harmonics for creating the
+ * moment-to-discrete and discrete-to-moment matrixes.  Morel describes the
+ * functional form in his paper \e A \e Hybrid \e Collocation-Galerkin-Sn \e
+ * Method \e for \e Solving \e the \e Boltzmann \e Transport \e Equation,"
+ * Nuclear Science and Engineering, \b 101, 72-87, 1989.
+ *
+ * The principal difference is that the \f$ \frac{2\ell+1}{4\pi} \f$ coefficient
+ * does not appear inside of a square root.  This change from the normal
+ * spherical harmonic coefficient is required in order to provide the correct
+ * magnitude for the quadrature weights.  Morel's formulation is
+ *
+ * \f[
+ * \begin{array}{l}
+ *  k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \ \
+ *  k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \ \
+ *  k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \ \
+ *  \end{array}
+ * \f]
+ *
+ * Morel's scheme only includes specific order and moment combinations.  Please
+ * see the reference for a full description.
+ *
  * \pre \f$ l \ge 0 \f$
  * \pre \f$\left|m\right| \le l\f$
  * \pre \f$ \theta \in [0,\pi] \f$
@@ -322,7 +325,7 @@ double galerkinYlk(unsigned const l, int const k, double const mu,
   return Ylk;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 double Ylm(unsigned const l, int const m, double const mu, double const phi,
            double const sumwt) {
   int const absm(std::abs(m));
@@ -348,5 +351,5 @@ double Ylm(unsigned const l, int const m, double const mu, double const phi,
 } // end namespace rtt_sf
 
 //----------------------------------------------------------------------------//
-//                 end of Ylm.cc
+// end of Ylm.cc
 //----------------------------------------------------------------------------//

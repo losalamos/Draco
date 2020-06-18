@@ -28,8 +28,8 @@ namespace rtt_cdi_eospac {
  *
  * \sa The definition of rtt_cdi_eospac::SesameTables.
  *
- * \param in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what data
- * tables will be available for queries from the Eospac object.
+ * \param[in] in_SesTabs A rtt_cdi_eospac::SesameTables object that defines what
+ *        data tables will be available for queries from the Eospac object.
  */
 Eospac::Eospac(SesameTables const &in_SesTabs)
     : SesTabs(in_SesTabs), matIDs(), returnTypes(), tableHandles(),
@@ -353,7 +353,7 @@ std::vector<char> Eospac::pack() const { return SesTabs.pack(); }
 // -------------- //
 
 //----------------------------------------------------------------------------//
-/*! \brief Retrieves the EoS data associated with the returnType specified 
+/*! \brief Retrieves the EoS data associated with the returnType specified
  *         and the given (density, temperature) tuples.
  */
 std::vector<double> Eospac::getF(std::vector<double> const &vdensity,

@@ -59,11 +59,11 @@ add_dir_if_exists( c4 )           # needs ds++
 
 if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi )          # needs ds++
-add_dir_if_exists( compton )      # needs ds++, CSK
 add_dir_if_exists( device )       # needs ds++
 if( USE_MDSPAN )
   add_dir_if_exists( experimental ) # only the tests need ds++
 endif()
+add_dir_if_exists( FortranChecks ) # needs ds++
 add_dir_if_exists( lapack_wrap )  # needs ds++
 add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( memory )       # needs ds++
@@ -77,13 +77,13 @@ add_dir_if_exists( viz )          # needs ds++
 message(" ")
 message( STATUS "Configuring Level 3 packages --" )
 if( USE_MDSPAN )
-  add_dir_if_exists( cdi_CPEloss )  # needs cdi, units
+  add_dir_if_exists( cdi_CPEloss )  # needs cdi, units, experimental
 endif()
+add_dir_if_exists( cdi_eospac )   # needs parser, ode, cdi
 add_dir_if_exists( cdi_ipcress )  # needs cdi
-add_dir_if_exists( cdi_ndi )      # needs ds++, rng, cdi
+add_dir_if_exists( compton )      # needs c4, CSK
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
-add_dir_if_exists( FortranChecks ) # needs c4
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
@@ -96,7 +96,7 @@ add_dir_if_exists( rng )          # needs ds++, device
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
-add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
+add_dir_if_exists( cdi_ndi )      # needs ds++, rng, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 add_dir_if_exists( special_functions ) # needs roots, units, GSL
 
