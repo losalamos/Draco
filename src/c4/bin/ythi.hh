@@ -15,7 +15,7 @@
 #define rtt_c4_bin_ythi_hh
 
 #include "c4/C4_Functions.hh"
-#include "c4/QueryEnv.hh"
+#include "c4/SLURM_Task_Info.hh"
 #include "c4/xthi_cpuset.hh"
 #include <atomic>
 #include <iomanip>
