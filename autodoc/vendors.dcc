@@ -16,7 +16,7 @@ information about these third parties and how to obtian or build them.
 The vendors used by Draco and associated projects are maintained by the Draco
 core team.  Vendor software is typically built per platform (Roadrunner, CCS-2
 Linux64, etc.) and stored in either the \c /ccs/codes/radtran/vendors or \c
-/usr/projects/dracy/vendors directory.
+/usr/projects/draco/vendors directory.
 
 Draco uses the compilers and MPI files provided by the systems team for each
 platform.  Each MPI installation requires a custom installation to correctly
