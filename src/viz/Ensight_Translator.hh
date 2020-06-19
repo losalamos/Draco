@@ -13,6 +13,7 @@
 
 #include "Ensight_Stream.hh"
 #include "Viz_Traits.hh"
+#include "c4/C4_Functions.hh"
 #include <memory>
 #include <set>
 
@@ -194,6 +195,9 @@ private:
   // Vertex-data streams.
   vec_stream d_vertex_out;
 
+  // Domain Decomposed flag
+  const bool d_decomposed;
+
 private:
   // >>> PRIVATE IMPLEMENTATION
 
@@ -230,6 +234,7 @@ public:
                      const SSF &vdata_names, const SSF &cdata_names,
                      const bool overwrite = false,
                      const bool static_geom = false, const bool binary = false,
+                     const bool decomposed = false,
                      const double reset_time = -1.0);
 
   // Do an Ensight_Dump.

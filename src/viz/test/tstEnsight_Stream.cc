@@ -8,9 +8,9 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "viz/Ensight_Stream.hh"
 
@@ -64,7 +64,8 @@ void readit(ifstream &stream, const bool binary, string &s) {
 // TESTS
 //----------------------------------------------------------------------------//
 
-void test_simple(rtt_dsxx::UnitTest &ut, bool const binary) {
+void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
+                 bool const decomposed) {
   // Dump a few values into the stream
 
   const int i(20323);
@@ -73,11 +74,12 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary) {
   const string file("ensight_stream.out");
 
   {
-    Ensight_Stream f(file, binary);
+    Ensight_Stream f(file, binary, geom, decomposed);
 
     f << i << rtt_viz::endl;
     f << d << rtt_viz::endl;
     f << s << rtt_viz::endl;
+    f.flush();
   }
 
   // Read the file back in and check the values.
@@ -91,6 +93,14 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary) {
     cout << "Testing ascii mode." << endl;
 
   ifstream in(file.c_str(), mode);
+  //read out the "C Binary" data
+  // this doesn't work quite right can someone help with this?
+  if (binary && geom) {
+    char buf[8];
+    in.read(buf, sizeof(char) * 8);
+    if (!strcmp(buf, "C Binary"))
+      ITFAILS;
+  }
 
   int i_in;
   readit(in, binary, i_in);
@@ -119,11 +129,18 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary) {
 
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {                     // >>> UNIT TESTS
-    test_simple(ut, true);  // test binary
-    test_simple(ut, false); // test ascii
-    test_simple(ut, true);  // test binary again
+    // serial/replicated use test
+    if (rtt_c4::node() == 0) {
+      test_simple(ut, true, false, false);  // test binary
+      test_simple(ut, false, false, false); // test ascii
+      test_simple(ut, true, false, false);  // test binary with geom flag
+    }
+    // parallel/decomposition tests in decomposition moded
+    test_simple(ut, true, false, true);  // test binary
+    test_simple(ut, false, false, true); // test ascii
+    test_simple(ut, true, false, true);  // test binary with geom flag
   }
   UT_EPILOG(ut);
 }

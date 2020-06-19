@@ -49,19 +49,23 @@ template <typename SSF>
 Ensight_Translator::Ensight_Translator(
     const std_string &prefix, const std_string &gd_wpath,
     const SSF &vdata_names, const SSF &cdata_names, const bool overwrite,
-    const bool static_geom, const bool binary, const double reset_time)
+    const bool static_geom, const bool binary, const bool decomposed,
+    const double reset_time)
     : d_static_geom(static_geom), d_binary(binary), d_dump_dir(gd_wpath),
       d_num_cell_types(0), d_cell_names(), d_vrtx_cnt(0), d_cell_type_index(),
       d_dump_times(), d_prefix(), d_vdata_names(vdata_names),
       d_cdata_names(cdata_names), d_case_filename(), d_geo_dir(),
       d_vdata_dirs(), d_cdata_dirs(), d_geom_out(), d_cell_out(),
-      d_vertex_out() {
+      d_vertex_out(), d_decomposed(decomposed) {
+  // Insist(!d_static_geom,
+  //        "We no longer support static geometry (only one geometry file "
+  //        "created per time step) just set this to false");
   Require(d_dump_times.empty());
   create_filenames(prefix);
 
   bool graphics_continue = false; // default behavior
 
-  if (!overwrite) {
+  if (!overwrite && rtt_c4::node() == 0) {
     // then try to parse the case file.  Case files are always ascii.
 
     std::ifstream casefile(d_case_filename.c_str());
@@ -276,15 +280,33 @@ void Ensight_Translator::ensight_dump(
   // index, in this case.
   sf_int g_cell_indices(ncells);
   sf_int g_vrtx_indices(nvertices);
+  sf_int node_cells(rtt_c4::nodes(), 0);
+  sf_int node_verts(rtt_c4::nodes(), 0);
+  node_cells[rtt_c4::node()] = ncells;
+  node_verts[rtt_c4::node()] = nvertices;
+
+  // set parallel offset for cell and vertices numbers
+  if (d_decomposed) {
+    rtt_c4::global_sum<int>(&node_cells[0], rtt_c4::nodes());
+    rtt_c4::global_sum<int>(&node_verts[0], rtt_c4::nodes());
+  }
+  int local_cell_offset = 0;
+  int local_vert_offset = 0;
+  for (auto n = 0; n < rtt_c4::nodes(); n++) {
+    if (n < rtt_c4::node()) {
+      local_cell_offset += node_cells[n];
+      local_vert_offset += node_verts[n];
+    }
+  }
 
   for (size_t i = 0; i < ncells; ++i) {
-    Check(i < INT_MAX);
-    g_cell_indices[i] = static_cast<int>(i);
+    Check(i + local_cell_offset < INT_MAX);
+    g_cell_indices[i] = static_cast<int>(i + local_cell_offset);
   }
 
   for (size_t i = 0; i < nvertices; ++i) {
-    Check(i < INT_MAX);
-    g_vrtx_indices[i] = static_cast<int>(i);
+    Check(i + local_vert_offset < INT_MAX);
+    g_vrtx_indices[i] = static_cast<int>(i + local_vert_offset);
   }
 
   // >>> WRITE OUT DATA TO DIRECTORIES
@@ -434,51 +456,85 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
 
   size_t ndim = pt_coor.ncols(0);
   size_t nvertices = vertices.size();
+  size_t g_nvertices = nvertices;
+  if (d_decomposed)
+    rtt_c4::global_sum(g_nvertices);
 
   // output part number and names
-  d_geom_out << "part" << endl;
-  d_geom_out << part_num << endl;
-  d_geom_out << part_name << endl;
-  d_geom_out << "coordinates" << endl;
-  d_geom_out << int(nvertices) << endl; // #vertices in this part
+  if (rtt_c4::node() == 0) {
+    d_geom_out << "part" << endl;
+    d_geom_out << part_num << endl;
+    d_geom_out << part_name << endl;
+    d_geom_out << "coordinates" << endl;
+    d_geom_out << int(g_nvertices) << endl; // #vertices in this part
+  }
+  d_geom_out.flush();
 
   // output the global vertex indices and form ens_vertex.  Enight demands that
   // vertices be numbered from 1 to the number of vertices *for this part*
   // (nvertices).  Argghhh.  ens_vertex maps our local vertex index to a vertex
   // in [1,nvertices].
 
+  // Form global cell and vertex indices.  These are the same as their local
+  // index, in this case.
+  sf_int node_verts(rtt_c4::nodes(), 0);
+  node_verts[rtt_c4::node()] = nvertices;
+
+  // set parallel offset for cell and vertices numbers
+  if (d_decomposed)
+    rtt_c4::global_sum<int>(&node_verts[0], rtt_c4::nodes());
+  int local_cell_offset = 0;
+  int local_vert_offset = 0;
+  for (auto n = 0; n < rtt_c4::nodes(); n++) {
+    if (n < rtt_c4::node()) {
+      local_vert_offset += node_verts[n];
+    }
+  }
+
   std::map<int, int> ens_vertex;
   for (size_t i = 0; i < nvertices; ++i) {
     d_geom_out << g_vrtx_indices[vertices[i]] << endl;
 
     // add 1 because ipar and Ensight demand indices that start at 1.
-    Check(i + 1 < INT_MAX);
-    ens_vertex[vertices[i] + 1] = static_cast<int>(i + 1);
+    Check(i + 1 + local_vert_offset < INT_MAX);
+    ens_vertex[vertices[i] + 1] = static_cast<int>(i + 1 + local_vert_offset);
   }
+  d_geom_out.flush();
 
   // output the coordinates
-  for (size_t idim = 0; idim < ndim; idim++)
+  for (size_t idim = 0; idim < ndim; idim++) {
     for (size_t i = 0; i < nvertices; ++i)
       d_geom_out << pt_coor(vertices[i], idim) << endl;
+    d_geom_out.flush();
+  }
 
   // ensight expects coordinates for three dimensions, so fill any remaining
   // dimensions with zeroes
   double zero = 0.0;
-  for (size_t idim = ndim; idim < 3; idim++)
+  for (size_t idim = ndim; idim < 3; idim++) {
     for (size_t i = 0; i < nvertices; ++i)
       d_geom_out << zero << endl;
+    d_geom_out.flush();
+  }
 
   // for each cell type, dump the local vertex indices for each cell.
   for (unsigned type = 0; type < d_num_cell_types; type++) {
     const sf_int &c = cells_of_type[type];
     const size_t num_elem = c.size();
+    size_t g_num_elem = num_elem;
+    if (d_decomposed)
+      rtt_c4::global_sum(g_num_elem);
 
-    if (num_elem > 0) {
-      d_geom_out << d_cell_names[type] << endl;
-      d_geom_out << int(num_elem) << endl;
+    if (g_num_elem > 0) {
+      if (rtt_c4::node() == 0) {
+        d_geom_out << d_cell_names[type] << endl;
+        d_geom_out << int(g_num_elem) << endl;
+      }
+      d_geom_out.flush();
 
       for (size_t i = 0; i < num_elem; ++i)
         d_geom_out << g_cell_indices[c[i]] << endl;
+      d_geom_out.flush();
 
       // for n-sided polygons, Ensight requires number of nodes per cell
       if (d_cell_names[type] == "nsided") {
@@ -486,6 +542,7 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
           d_geom_out << static_cast<int>(ipar.ncols(c[i])) << endl;
         }
       }
+      d_geom_out.flush();
 
       for (size_t i = 0; i < num_elem; ++i) {
         Check(d_vrtx_cnt[type] > 0
@@ -495,8 +552,10 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
           d_geom_out << ens_vertex[ipar(c[i], j)];
         d_geom_out << endl;
       }
+      d_geom_out.flush();
     }
   } // done looping over cell types
+  d_geom_out.flush();
 }
 
 //----------------------------------------------------------------------------//
@@ -519,14 +578,16 @@ void Ensight_Translator::write_vrtx_data(
   for (size_t nvd = 0; nvd < ndata; nvd++) {
     Ensight_Stream &vout = *d_vertex_out[nvd];
 
-    Insist(vout.is_open(), err.c_str());
-
-    vout << "part" << endl;
-    vout << part_num << endl;
-    vout << "coordinates" << endl;
+    if (rtt_c4::node() == 0) {
+      vout << "part" << endl;
+      vout << part_num << endl;
+      vout << "coordinates" << endl;
+    }
+    vout.flush();
 
     for (size_t i = 0; i < nvertices; ++i)
       vout << vrtx_data(vertices[i], nvd) << endl;
+    vout.flush();
   }
 }
 
@@ -550,10 +611,11 @@ void Ensight_Translator::write_cell_data(
   for (size_t ncd = 0; ncd < ndata; ncd++) {
     Ensight_Stream &cellout = *d_cell_out[ncd];
 
-    Insist(cellout.is_open(), err.c_str());
-
-    cellout << "part" << endl;
-    cellout << part_num << endl;
+    if (rtt_c4::node() == 0) {
+      cellout << "part" << endl;
+      cellout << part_num << endl;
+    }
+    cellout.flush();
 
     // loop over ensight cell types
     for (unsigned type = 0; type < d_num_cell_types; type++) {
@@ -571,6 +633,7 @@ void Ensight_Translator::write_cell_data(
           cellout << cell_data(c[i], ncd) << endl;
       }
     }
+    cellout.flush();
   }
 }
 

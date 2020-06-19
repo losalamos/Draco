@@ -24,7 +24,7 @@ list( REMOVE_ITEM headers ${template_implementations} )
 
 add_component_library(
    TARGET       Lib_viz
-   TARGET_DEPS  Lib_dsxx
+   TARGET_DEPS  Lib_c4
    LIBRARY_NAME ${PROJECT_NAME}
    HEADERS      "${headers}"
    SOURCES      "${sources}" )
