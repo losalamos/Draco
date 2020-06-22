@@ -39,13 +39,12 @@ if( HAVE_PAPI )
     "Provide PAPI hardware counters if available." )
 endif()
 
-##---------------------------------------------------------------------------##
-## Query OpenMP availability
-##
-## This feature is usually compiler specific and a compile flag must be added.
-## For this to work the <platform>-<compiler>.cmake files (eg.  unix-g++.cmake)
-## call this macro.
-## ---------------------------------------------------------------------------##
+#-------------------------------------------------------------------------------------------------#
+# Query OpenMP availability
+#
+# This feature is usually compiler specific and a compile flag must be added. For this to work the
+# <platform>-<compiler>.cmake files (e.g.:  unix-g++.cmake) call this macro.
+#-------------------------------------------------------------------------------------------------#
 macro( query_openmp_availability )
   if( NOT PLATFORM_CHECK_OPENMP_DONE )
     set( PLATFORM_CHECK_OPENMP_DONE TRUE CACHE BOOL "Is check for OpenMP done?")
@@ -53,9 +52,15 @@ macro( query_openmp_availability )
     message( STATUS "Looking for OpenMP...")
     find_package(OpenMP QUIET)
     if( OPENMP_FOUND )
-      message( STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS}")
-      set( OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "Is OpenMP availalable?"
-        FORCE )
+        message( STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS} (supporting the "
+          "${OpenMP_C_VERSION} standard)")
+      if( OpenMP_C_VERSION VERSION_LESS 3.0 )
+        message( STATUS "OpenMP standard support is too old (< 3.0). Disabling OpenMP build "
+          "features.")
+        set(OPENMP_FOUND FALSE)
+        set(OpenMP_C_FLAGS "" CACHE BOOL "OpenMP disabled (too old)." FORCE)
+      endif()
+      set( OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "Is OpenMP available?" FORCE )
     else()
       message(STATUS "Looking for OpenMP... not found")
     endif()

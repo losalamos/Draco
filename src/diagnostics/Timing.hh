@@ -215,9 +215,9 @@ private:
 
 #define TIMER(timer)
 
-#define TIMER_START(timer)
+#define TIMER_START(name, timer)
 
-#define TIMER_STOP(timer)
+#define TIMER_STOP(name, timer)
 
 #define TIMER_RECORD(name, timer)
 
@@ -225,6 +225,7 @@ private:
 
 #endif
 
+#ifndef DRACO_CALIPER
 //----------------------------------------------------------------------------//
 /*
  * Turn on basic timing operations.
@@ -244,7 +245,7 @@ private:
 #define TIMER_RECORD(name, timer)                                              \
   rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
 
-#endif
+#endif // DRACO_TIMING > 0
 
 //----------------------------------------------------------------------------//
 /*
@@ -261,11 +262,34 @@ private:
           << " seconds.\n"                                                     \
           << std::flush
 
-#else
+#else // DRACO_TIMING > 1
 
 #define TIMER_REPORT(timer, ostream, comment)
 
-#endif
+#endif // DRACO_TIMING > 1
+
+#else // Caliper is available
+#include <caliper/cali.h>
+
+#if DRACO_TIMING > 0
+
+#include "c4/Timer.hh"
+
+#define DRACO_TIMING_ON
+
+#define TIMER(timer)
+
+#define TIMER_START(name, timer) CALI_MARK_BEGIN(name)
+
+#define TIMER_STOP(name, timer) CALI_MARK_END(name)
+
+#define TIMER_RECORD(name, timer)
+
+#define TIMER_REPORT(timer, ostream, comment)
+
+#endif // DRACO_TIMING > 0
+
+#endif // DRACO_CALIPER
 
 #endif // diagnostics_Timing_hh
 

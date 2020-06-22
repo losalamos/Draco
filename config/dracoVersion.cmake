@@ -84,6 +84,8 @@ macro( set_ccs2_software_version PROJNAME )
       "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
       )
   endif()
+  set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME}_VERSION_PATCH} CACHE STRING
+    "version info" FORCE )
 
   set( ${PROJNAME}_VERSION "${${PROJNAME}_VERSION_MAJOR}.${${PROJNAME}_VERSION_MINOR}"
     CACHE STRING "${PROJNAME} version information" FORCE)

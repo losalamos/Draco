@@ -1,3 +1,40 @@
+2020-05-29  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Draco has been updated to version 7_7_0 and is tied to the
+	  release of Jayenne-8_5_0 and Capsaicin-1_5_0.
+	  - https://rtt.lanl.gov/redmine/versions/86
+	  - https://rtt.lanl.gov/redmine/versions/85
+	  - https://rtt.lanl.gov/redmine/versions/89
+
+	Draco-7_7_0, build date 2020/05/29;
+	  build type: Debug;DBC: 7;DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+	  Ryan T. Wollaeger, Ben R. Ryan, Alex R. Long, Kendra P. Long,
+	  James S. Warsa, Matt A. Cleveland, Tim Kelley, Jae H. Chang,
+	  Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+	Prior Contributors: Gabriel M. Rockefeller,
+	  Allan B. Wollaber, Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang,
+	  Peter Ahrens, Daniel Holladay, Jeff D. Densmore, Massimiliano Rosa,
+	  Todd J. Urbatsch, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas,
+	  Nick Myers, Paul Henning, Randy Roberts, Seth Johnson, Todd Adams,
+	  Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 163 files changed, added or removed in 74 commits.
+	- PR #655 Fortran portion and dependencies of c4 split into new library, fc4
+	- PR #807 Lib_rng's dependency on Random123 headers should transitive
+	- PR #799 Another tweak to help lcov reporting work for client projects.
+	- PR #773 Fix variable name MPIEXEC_PREFLAGS
+	- PR #827 Spectrum-MPI on Darwin works the same as OpenMPI
+	- PR #826 Begin supporting IBM XL builds on Darwin
+	- PR #790 Remove SuperLU_DIST from Draco
+
 2020-03-17  Kelly Glen Thompson  <kgt@lanl.gov>
 
 	* Draco has been updated to version 7_6_0 and is tied to the

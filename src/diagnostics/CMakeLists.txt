@@ -10,6 +10,16 @@ cmake_minimum_required(VERSION 3.9.0)
 project( diagnostics CXX )
 
 ##---------------------------------------------------------------------------##
+# Is Caliper available? If so, let's use it
+##---------------------------------------------------------------------------##
+if(TARGET caliper)
+  set( DRACO_CALIPER "1")
+else()
+  set( DRACO_CALIPER "0")
+endif()
+
+
+##---------------------------------------------------------------------------##
 # Special options for this component
 ##---------------------------------------------------------------------------##
 
@@ -78,6 +88,15 @@ add_component_executable(
 
 if( Qt5Core_DIR AND NOT "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
   add_subdirectory( qt )
+endif()
+
+if(TARGET caliper)
+  target_include_directories( Lib_diagnostics
+    PUBLIC ${caliper_INCLUDE_DIR}
+    )
+  target_link_libraries(Lib_diagnostics
+    caliper
+    )
 endif()
 
 # ---------------------------------------------------------------------------- #

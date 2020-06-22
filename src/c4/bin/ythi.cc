@@ -26,7 +26,6 @@
 
 #include "c4/bin/ythi.hh"
 #include "c4/C4_Functions.hh"
-#include "c4/QueryEnv.hh"
 #include "c4/xthi_cpuset.hh"
 #include <atomic>
 #include <iomanip>

@@ -9,8 +9,8 @@
 //----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
-#include "c4/QueryEnv.hh"
 #include "c4/QuoWrapper.hh"
+#include "c4/SLURM_Task_Info.hh"
 #include "c4/bin/ythi.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"

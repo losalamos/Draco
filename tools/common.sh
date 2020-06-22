@@ -189,19 +189,30 @@ function flavor
       ;;
     darwin*)
       platform=$os # e.g.: darwin-power9
-      if [[ $MPIARCH ]]; then
+      if [[ `which mpirun` =~ openmpi ]]; then
         if [[ $MPIRUN ]]; then
           LMPIVER=`echo $MPIRUN | sed -r 's%.*/([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3%'`
         else
-          LMPIVER=''
+          LMPIVER='unknown'
         fi
-        mpiflavor=$MPIARCH-$LMPIVER
+        mpiflavor=openmpi-$LMPIVER
+      elif [[ `which mpirun` =~ smpi ]]; then
+        if [[ $MPIRUN ]]; then
+          LMPIVER=` echo $MPIRUN | sed -r 's%.*-([0-9]+)[.]([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3.\4%'`
+        else
+          LMPIVER='unknown'
+        fi
+        mpiflavor=spectrum-mpi-$LMPIVER
       else
         mpiflavor="unknown"
       fi
       if [[ $CC ]]; then
         if [[ $CC =~ "gcc" ]]; then
           compilerflavor=gnu-`$CC --version | head -n 1 | sed -r 's%.* %%'`
+        elif [[ $CC =~ "IBM" ]] || [[ $CC =~ "xlc" ]]; then
+          compilerflavor=xl-`$CC --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g'`
+        else
+          compilerflavor="unknown"
         fi
       else
         compilerflavor="unknown"

@@ -1170,6 +1170,21 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   if (xlong_prefix_sum != long_answer)
     ITFAILS;
 
+  // test long long
+  long long xllong = rtt_c4::node() + 1000l;
+  long long xllong_prefix_sum = prefix_sum(xllong);
+
+  long long llong_answer = 0;
+  for (auto i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      llong_answer += i + 1000l;
+  }
+
+  std::cout << "long long: Prefix sum on this node: " << xllong_prefix_sum;
+  std::cout << " Answer: " << llong_answer << std::endl;
+
+  FAIL_IF_NOT(xllong_prefix_sum == llong_answer);
+
   // test unsigned longs (start at max of unsigned int)
   uint64_t xulong = rtt_c4::node();
   if (rtt_c4::node() == 0)

@@ -1,13 +1,13 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   c4/test/tstQueryEnv.cc
+ * \file   c4/test/tstSLURM_Task_Info.cc
  * \author Tim Kelley
  * \date   Fri Jun 7 08:06:53 2019
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "c4/QueryEnv.hh"
+#include "c4/SLURM_Task_Info.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/SystemCall.hh"
@@ -36,7 +36,7 @@ env_store_t clean_env() {
     constexpr int a_large_int = 0x0FFFFFFC;
     bool k_defined{false};
     int ival;
-    std::tie(k_defined, ival) = rtt_c4::get_env_val<int>(k, a_large_int);
+    std::tie(k_defined, ival) = rtt_dsxx::get_env_val<int>(k, a_large_int);
     if (k_defined) {
       std::stringstream storestr;
       storestr << ival;
@@ -168,5 +168,5 @@ int main(int argc, char *argv[]) {
 }
 
 //----------------------------------------------------------------------------//
-// end of c4/test/tstQueryEnv.cc
+// end of c4/test/tstSLURM_Task_Info.cc
 //----------------------------------------------------------------------------//
