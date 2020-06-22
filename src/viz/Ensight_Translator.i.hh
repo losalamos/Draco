@@ -282,8 +282,8 @@ void Ensight_Translator::ensight_dump(
   sf_int g_vrtx_indices(nvertices);
   sf_int node_cells(rtt_c4::nodes(), 0);
   sf_int node_verts(rtt_c4::nodes(), 0);
-  node_cells[rtt_c4::node()] = ncells;
-  node_verts[rtt_c4::node()] = nvertices;
+  node_cells[rtt_c4::node()] = static_cast<int>(ncells);
+  node_verts[rtt_c4::node()] = static_cast<int>(nvertices);
 
   // set parallel offset for cell and vertices numbers
   if (d_decomposed) {
@@ -478,12 +478,11 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
   // Form global cell and vertex indices.  These are the same as their local
   // index, in this case.
   sf_int node_verts(rtt_c4::nodes(), 0);
-  node_verts[rtt_c4::node()] = nvertices;
+  node_verts[rtt_c4::node()] = static_cast<int>(nvertices);
 
   // set parallel offset for cell and vertices numbers
   if (d_decomposed)
     rtt_c4::global_sum<int>(&node_verts[0], rtt_c4::nodes());
-  int local_cell_offset = 0;
   int local_vert_offset = 0;
   for (auto n = 0; n < rtt_c4::nodes(); n++) {
     if (n < rtt_c4::node()) {

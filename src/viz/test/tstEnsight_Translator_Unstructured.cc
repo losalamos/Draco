@@ -41,7 +41,6 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   int icycle = 1;
   double time = .01;
   double dt = .01;
-  const bool static_geom = false;
 
   std::string const gd_wpath = rtt_dsxx::getFilenameComponent(
       ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
@@ -107,7 +106,7 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
   Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, static_geom, binary, decomposed);
+                                true, geom, binary, decomposed);
 
   translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                           vrtx_data, cell_data, rgn_data, rgn_name);
