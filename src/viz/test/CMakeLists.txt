@@ -21,7 +21,7 @@ file( GLOB test_sources
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( NOT APPLE )
+if( NOT APPLE AND DRACO_C4 STREQUAL MPI )
   # numdiff/ndselect crashes when run on OS/X so don't try to run the tests.
 
   add_parallel_tests(
