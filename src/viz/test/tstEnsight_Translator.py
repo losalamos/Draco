@@ -60,7 +60,7 @@ try:
     # part_testproblem_parallel_#_ensight directory
     tEnsight_Translator.diff_two_files("PROJECT_BINARY_DIR", \
       "part_testproblem_parallel_{0}_ensight/{1}/data.0001".format(numpe,var), \
-      "PROJECT_SOURCE_DIR", "bench_serial/{1}.0001".format(numpe,var))
+      "PROJECT_SOURCE_DIR", "bench_serial/{0}.0001".format(var))
 
   # diff binary files if on little endian system
   if tEnsight_Translator.is_little_endian():
@@ -91,7 +91,7 @@ try:
       # part_testproblem_parallel_#_binary_ensight directory
       tEnsight_Translator.diff_two_files("PROJECT_BINARY_DIR", \
         "part_testproblem_parallel_{0}_binary_ensight/{1}/data.0001".format(numpe,var), \
-        "PROJECT_SOURCE_DIR", "bench_serial/{1}.bin.0001".format(numpe,var), \
+        "PROJECT_SOURCE_DIR", "bench_serial/{0}.bin.0001".format(var), \
         diff_name=diff_prog)
 
   ##--------------------------------------------------------------------------##
