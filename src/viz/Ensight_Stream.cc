@@ -125,6 +125,7 @@ void Ensight_Stream::close() {
   if (d_serial_stream) {
     d_serial_stream->close();
   }
+  d_stream = NULL;
 }
 
 //----------------------------------------------------------------------------//
