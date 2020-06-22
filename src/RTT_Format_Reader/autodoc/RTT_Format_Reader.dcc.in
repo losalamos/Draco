@@ -270,7 +270,7 @@ General comments:
 
 \page rtt_stdcell RTT Format ICEM/DDN Cell Definitions
 
-The RTT_Formatt_Reader side set numbering output by ICEM/DDN is depicted on this
+The RTT_Format_Reader side set numbering output by ICEM/DDN is depicted on this
 page. Note that the "right hand rule" is used to return the direction of the
 outward-directed normal when the nodes are traversed in the order that is
 specified in the side set node ordering. The RTT_Format cell definitions do not
