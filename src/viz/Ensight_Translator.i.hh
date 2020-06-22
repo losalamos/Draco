@@ -38,6 +38,7 @@ namespace rtt_viz {
  *           across all calls to Ensight_Translator::ensight_dump.
  * \param binary If true, geometry and variable data files are output in binary
  *           format.
+ * \param decomposed If true, geometry is decomposed overall all ranks
  * \param reset_time time after which to rewrite dumps, if overwrite=false
  *
  * NOTE: If appending data (\a overwrite is false), then \a binary must be the

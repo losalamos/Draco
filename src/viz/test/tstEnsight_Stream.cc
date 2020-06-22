@@ -82,42 +82,44 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
     f.flush();
   }
 
-  // Read the file back in and check the values.
+  // Read the file back in using rank 0 and check the values.
+  if (rtt_c4::node() == 0) {
 
-  std::ios::openmode mode = std::ios::in;
+    std::ios::openmode mode = std::ios::in;
 
-  if (binary) {
-    cout << "Testing binary mode." << endl;
-    mode = mode | std::ios::binary;
-  } else
-    cout << "Testing ascii mode." << endl;
+    if (binary) {
+      cout << "Testing binary mode." << endl;
+      mode = mode | std::ios::binary;
+    } else
+      cout << "Testing ascii mode." << endl;
 
-  ifstream in(file.c_str(), mode);
-  //read out the "C Binary" data
-  // this doesn't work quite right can someone help with this?
-  if (binary && geom) {
-    char buf[8];
-    in.read(buf, sizeof(char) * 8);
-    if (!strcmp(buf, "C Binary"))
+    ifstream in(file.c_str(), mode);
+    //read out the "C Binary" data
+    // this doesn't work quite right can someone help with this?
+    if (binary && geom) {
+      char buf[8];
+      in.read(buf, sizeof(char) * 8);
+      if (!strcmp(buf, "C Binary"))
+        ITFAILS;
+    }
+
+    int i_in;
+    readit(in, binary, i_in);
+    if (i != i_in)
       ITFAILS;
+
+    double d_in;
+    readit(in, binary, d_in);
+    // floats are inaccurate
+    if (!rtt_dsxx::soft_equiv(d, d_in, 0.01))
+      ITFAILS;
+
+    string s_in;
+    readit(in, binary, s_in);
+    for (size_t k = 0; k < s.size(); ++k)
+      if (s[k] != s_in[k])
+        ITFAILS;
   }
-
-  int i_in;
-  readit(in, binary, i_in);
-  if (i != i_in)
-    ITFAILS;
-
-  double d_in;
-  readit(in, binary, d_in);
-  // floats are inaccurate
-  if (!rtt_dsxx::soft_equiv(d, d_in, 0.01))
-    ITFAILS;
-
-  string s_in;
-  readit(in, binary, s_in);
-  for (size_t k = 0; k < s.size(); ++k)
-    if (s[k] != s_in[k])
-      ITFAILS;
 
   if (ut.numFails == 0)
     PASSMSG("test_simple() completed successfully.");
