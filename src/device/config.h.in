@@ -19,7 +19,7 @@
 /*----------------------------------------------------------------------------*/
 /* Mark functions for compilation on host and device */
 
-#if defined HAVE_CUDA && defined USE_CUDA
+#if defined __NVCC__ && defined USE_CUDA
 #define HOST_AND_DEVICE_FUNCTION __host__ __device__
 #define GPU_HOST_DEVICE __host__ __device__
 #define GPU_KERNEL __global__

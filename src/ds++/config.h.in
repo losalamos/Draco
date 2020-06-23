@@ -69,7 +69,7 @@
 #cmakedefine draco_is64bit
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
-/* #cmakedefine USE_CUDA @USE_CUDA@ */
+#cmakedefine USE_CUDA @USE_CUDA@
 /* Eg: project(foo CXX ${CUDA_DBS_STRING}) */
 #cmakedefine CUDA_DBS_STRING @CUDA_DBS_STRING@
 #cmakedefine APPLE @APPLE@

@@ -198,7 +198,7 @@ void show_cookies(std::string const &cond, std::string const &file,
 [[noreturn]] void insist_ptr(char const *const cond, char const *const msg,
                              char const *const file, int const line);
 
-#if defined HAVE_CUDA && defined USE_CUDA
+#if defined __NVCC__ && defined USE_CUDA
 
 /*! \brief A special version of insist that does not throw.  Useful for GPU
  *         code. \sa device/config.h.in */
@@ -286,8 +286,8 @@ std::string verbose_error(std::string const &message);
  *
  * Special code for CUDA.
  *
- * If HAVE_CUDA=ON and USE_CUDA=ON, then alter the behavior of the DbC macros
- * because cuda code cannot throw.
+ * If __NVCC__  (processing with nvcc) and USE_CUDA=ON, then alter the behavior
+ * of the DbC macros because cuda code cannot throw.
  */
 /*!
  * \def Require(condition)
@@ -337,16 +337,16 @@ std::string verbose_error(std::string const &message);
  * disable DBC.
  */
 //----------------------------------------------------------------------------//
-#if ( DBC & 8 ) || ( defined HAVE_CUDA && defined USE_CUDA )
+#if ( DBC & 8 ) || ( defined __NVCC__ && defined USE_CUDA )
 
-#if ( DBC & 1 ) && !( defined HAVE_CUDA && defined USE_CUDA )
+#if ( DBC & 1 ) && !( defined __NVCC__ && defined USE_CUDA )
 #define REQUIRE_ON
 #define Require(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c)
 #endif
 
-#if ( DBC & 2 ) && !( defined HAVE_CUDA && defined USE_CUDA )
+#if ( DBC & 2 ) && !( defined __NVCC__ && defined USE_CUDA )
 #define CHECK_ON
 #define Check(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #define Assert(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
@@ -355,7 +355,7 @@ std::string verbose_error(std::string const &message);
 #define Assert(c)
 #endif
 
-#if ( DBC & 4 ) && !( defined HAVE_CUDA && defined USE_CUDA )
+#if ( DBC & 4 ) && !( defined __NVCC__ && defined USE_CUDA )
 #define ENSURE_ON
 #define Ensure(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
@@ -365,7 +365,7 @@ std::string verbose_error(std::string const &message);
 //----------------------------------------------------------------------------//
 // Always on
 //----------------------------------------------------------------------------//
-#if ( defined HAVE_CUDA && defined USE_CUDA )
+#if ( defined __NVCC__  && defined USE_CUDA )
 #define Insist(c, m) if(!(c)) rtt_dsxx::no_exception_insist( #c, m, __FILE__, __LINE__)
 #else
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
@@ -459,7 +459,7 @@ std::string verbose_error(std::string const &message);
 // If any of DBC is on, then make the remember macro active and the NOEXCEPT
 // inactive.
 //----------------------------------------------------------------------------//
-#if DBC && !( defined HAVE_CUDA && defined USE_CUDA )
+#if DBC && !( defined USE_CUDA && defined __NVCC__ )
 #define REMEMBER_ON
 #define Remember(c) c
 #define NOEXCEPT

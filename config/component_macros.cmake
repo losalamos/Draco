@@ -319,10 +319,6 @@ macro( add_component_library )
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
     WINDOWS_EXPORT_ALL_SYMBOLS ON )
- if("${acl_LINK_LANGUAGE}" STREQUAL "CUDA")
-   set_property( TARGET ${acl_TARGET} APPEND PROPERTY
-     COMPILE_DEFINITIONS "USE_CUDA=ON" )
- endif()
   if( DEFINED DRACO_LINK_OPTIONS AND NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
     set_property( TARGET ${acl_TARGET} APPEND PROPERTY
       LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
@@ -605,10 +601,6 @@ macro( add_scalar_tests test_sources )
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"" )
     set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
       COMPILE_DEFINITIONS "PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
-    if("${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA")
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-        COMPILE_DEFINITIONS "USE_CUDA=ON" )
-    endif()
     if( DEFINED DRACO_LINK_OPTIONS AND
         NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
       set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
