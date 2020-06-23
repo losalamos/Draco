@@ -2,7 +2,7 @@
 ###########################
 ###########################
 ## Linter GitHub Actions ##
-## github.com/github/super-linter 
+## github.com/github/super-linter
 ###########################
 ###########################
 name: Lint Code Base
@@ -21,6 +21,9 @@ on:
     branches-ignore:
       - 'master'
       - 'develop'
+
+env:
+  PYTHONPATH: /home/runner/work/Draco/Draco/config
 
 ###############
 # Set the Job #
