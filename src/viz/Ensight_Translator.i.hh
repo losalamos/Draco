@@ -613,14 +613,16 @@ void Ensight_Translator::write_cell_data(
       // print out data if there are cells of this type
       if (num_elem > 0) {
         // printout cell-type name
-        cellout << d_cell_names[type] << endl;
+        if (rtt_c4::node() == 0)
+          cellout << d_cell_names[type] << endl;
+        cellout.flush();
 
         // print out data
         for (size_t i = 0; i < num_elem; ++i)
           cellout << cell_data(c[i], ncd) << endl;
       }
+      cellout.flush();
     }
-    cellout.flush();
   }
 }
 
