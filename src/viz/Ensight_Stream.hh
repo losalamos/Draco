@@ -55,16 +55,16 @@ private:
 
   // DATA
 
-  // An optional parallel stream for domain decomposed geometry
+  //! An optional parallel stream for domain decomposed geometry
   std::unique_ptr<rtt_c4::ofpstream> d_decomposed_stream;
 
-  // An optional serial stream for replicated domain geometry
+  //! An optional serial stream for replicated domain geometry
   std::unique_ptr<std::ofstream> d_serial_stream;
 
-  // The standard stream for writing
+  //! The standard stream for writing
   std::ostream *d_stream;
 
-  // If true, in binary mode.  Otherwise, ascii mode.
+  //! If true, in binary mode.  Otherwise, ascii mode.
   bool d_binary;
 
 public:
