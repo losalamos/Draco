@@ -48,9 +48,9 @@ Ensight_Stream &endl(Ensight_Stream &s) {
  */
 Ensight_Stream::Ensight_Stream(const std::string &file_name, const bool binary,
                                const bool geom_file, const bool decomposed)
-    : d_decomposed_stream(), d_serial_stream(), d_stream(), d_binary(false) {
+    : d_decomposed_stream(), d_serial_stream(), d_stream(), d_binary(binary) {
   if (!file_name.empty())
-    open(file_name, binary, geom_file, decomposed);
+    open(file_name, d_binary, geom_file, decomposed);
 }
 
 //----------------------------------------------------------------------------//
@@ -91,8 +91,9 @@ void Ensight_Stream::open(const std::string &file_name, const bool binary,
     // set to a generic ostream
     d_stream = &*d_decomposed_stream;
   } else {
-    Insist(rtt_c4::node() == 0, "Ensight_Stream, called by nonzero rank with "
-                                "the domain decomposed flag");
+    Insist(rtt_c4::node() == 0,
+           "Ensight_Stream, called by nonzero rank without "
+           "the domain decomposed flag");
     if (binary)
       d_serial_stream.reset(new std::ofstream(file_name, std::ios::binary));
     else

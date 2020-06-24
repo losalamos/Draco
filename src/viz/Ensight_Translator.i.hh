@@ -58,9 +58,6 @@ Ensight_Translator::Ensight_Translator(
       d_cdata_names(cdata_names), d_case_filename(), d_geo_dir(),
       d_vdata_dirs(), d_cdata_dirs(), d_geom_out(), d_cell_out(),
       d_vertex_out(), d_decomposed(decomposed) {
-  // Insist(!d_static_geom,
-  //        "We no longer support static geometry (only one geometry file "
-  //        "created per time step) just set this to false");
   Require(d_dump_times.empty());
   create_filenames(prefix);
 
@@ -281,23 +278,17 @@ void Ensight_Translator::ensight_dump(
   // index, in this case.
   sf_int g_cell_indices(ncells);
   sf_int g_vrtx_indices(nvertices);
-  sf_int node_cells(rtt_c4::nodes(), 0);
-  sf_int node_verts(rtt_c4::nodes(), 0);
-  node_cells[rtt_c4::node()] = static_cast<int>(ncells);
-  node_verts[rtt_c4::node()] = static_cast<int>(nvertices);
 
-  // set parallel offset for cell and vertices numbers
-  if (d_decomposed) {
-    rtt_c4::global_sum<int>(&node_cells[0], rtt_c4::nodes());
-    rtt_c4::global_sum<int>(&node_verts[0], rtt_c4::nodes());
-  }
   int local_cell_offset = 0;
   int local_vert_offset = 0;
-  for (auto n = 0; n < rtt_c4::nodes(); n++) {
-    if (n < rtt_c4::node()) {
-      local_cell_offset += node_cells[n];
-      local_vert_offset += node_verts[n];
-    }
+
+  if (d_decomposed) {
+    local_cell_offset = static_cast<int>(ncells);
+    local_vert_offset = static_cast<int>(nvertices);
+    local_cell_offset =
+        rtt_c4::prefix_sum(local_cell_offset) - local_cell_offset;
+    local_vert_offset =
+        rtt_c4::prefix_sum(local_vert_offset) - local_vert_offset;
   }
 
   for (size_t i = 0; i < ncells; ++i) {
@@ -478,17 +469,13 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
 
   // Form global cell and vertex indices.  These are the same as their local
   // index, in this case.
-  sf_int node_verts(rtt_c4::nodes(), 0);
-  node_verts[rtt_c4::node()] = static_cast<int>(nvertices);
 
   // set parallel offset for cell and vertices numbers
-  if (d_decomposed)
-    rtt_c4::global_sum<int>(&node_verts[0], rtt_c4::nodes());
   int local_vert_offset = 0;
-  for (auto n = 0; n < rtt_c4::nodes(); n++) {
-    if (n < rtt_c4::node()) {
-      local_vert_offset += node_verts[n];
-    }
+  if (d_decomposed) {
+    local_vert_offset = static_cast<int>(nvertices);
+    local_vert_offset =
+        rtt_c4::prefix_sum(local_vert_offset) - local_vert_offset;
   }
 
   std::map<int, int> ens_vertex;
