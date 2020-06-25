@@ -610,7 +610,10 @@ void Ensight_Translator::write_cell_data(
 
       size_t num_elem = c.size();
       // if one processor has this type all must call the flush statements
-      size_t global_num_elem = rtt_c4::global_sum(num_elem);
+      size_t global_num_elem = num_elem;
+
+      if (d_decomposed)
+        rtt_c4::global_sum(global_num_elem);
 
       // print out data if there are cells of this type
       if (global_num_elem > 0) {

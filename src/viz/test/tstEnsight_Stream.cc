@@ -124,7 +124,7 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
   if (ut.numFails == 0)
     PASSMSG("test_simple() completed successfully.");
   else
-    FAILMSG("test_simple() did not complet successfully.");
+    FAILMSG("test_simple() did not complete successfully.");
 
   return;
 }
