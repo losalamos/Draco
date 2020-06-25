@@ -609,9 +609,11 @@ void Ensight_Translator::write_cell_data(
       const sf_int &c = cells_of_type[type];
 
       size_t num_elem = c.size();
+      // if one processor has this type all must call the flush statements
+      size_t global_num_elem = rtt_c4::global_sum(num_elem);
 
       // print out data if there are cells of this type
-      if (num_elem > 0) {
+      if (global_num_elem > 0) {
         // printout cell-type name
         if (rtt_c4::node() == 0)
           cellout << d_cell_names[type] << endl;
@@ -620,8 +622,8 @@ void Ensight_Translator::write_cell_data(
         // print out data
         for (size_t i = 0; i < num_elem; ++i)
           cellout << cell_data(c[i], ncd) << endl;
+        cellout.flush();
       }
-      cellout.flush();
     }
   }
 }
