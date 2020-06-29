@@ -71,7 +71,8 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
   const int i(20323);
   const string s("dog");
   const double d(112.3);
-  const string file("ensight_stream.out");
+  const string file("ensight_stream_" + std::to_string(rtt_c4::nodes()) +
+                    ".out");
 
   {
     Ensight_Stream f(file, binary, geom, decomposed);
@@ -132,14 +133,18 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-  try {                     // >>> UNIT TESTS
+  try { // >>> UNIT TESTS
     // serial/replicated use test
     if (rtt_c4::node() == 0) {
       test_simple(ut, true, false, false);  // test binary
       test_simple(ut, false, false, false); // test ascii
       test_simple(ut, true, false, false);  // test binary with geom flag
     }
-    // parallel/decomposition tests in decomposition moded
+
+    // Wait for rank 0 to finish serial testing before proceeding:
+    rtt_c4::global_barrier();
+
+    // parallel/decomposition tests in decomposition mode
     test_simple(ut, true, false, true);  // test binary
     test_simple(ut, false, false, true); // test ascii
     test_simple(ut, true, false, true);  // test binary with geom flag
