@@ -116,6 +116,12 @@ void wait_all(unsigned /*count*/, C4_Req * /*requests*/) {
   return;
 }
 
+std::vector<int> wait_all_with_source(unsigned /*count*/,
+                                      C4_Req * /*requests*/) {
+  // Insist(false, "no messages expected in serial programs!");
+  return std::vector<int>();
+}
+
 unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {
   Insist(false, "no messages expected in serial programs!");
   return 0;

@@ -170,6 +170,8 @@ private:
   template <typename T>
   friend void send_is(C4_Req &r, const T *buf, int nels, int dest, int tag);
   friend void wait_all(unsigned count, C4_Req *requests);
+  friend std::vector<int> wait_all_with_source(unsigned count,
+                                               C4_Req *requests);
   friend unsigned wait_any(unsigned count, C4_Req *requests);
   template <typename T>
   friend void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);

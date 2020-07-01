@@ -146,7 +146,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
                       right);
 
       // wait for all communication to finish
-      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+      vector<int> sources = rtt_c4::wait_all_with_source(
+          static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // Check that the source IDs were returned correctly:
+      FAIL_IF_NOT(sources.size() == 2);
+      // First comm is receive from rank "left":
+      FAIL_IF_NOT(sources[0] == left);
+      // Second comm is send to rank pid:
+      FAIL_IF_NOT(sources[1] == pid);
 
       // expected results
       vector<int> expected(bsize);

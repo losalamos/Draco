@@ -433,6 +433,20 @@ void wait_all(unsigned count, C4_Req *requests);
 
 //----------------------------------------------------------------------------//
 /*!
+ * \brief Wait until every one of a set of posted sends/receives is complete.
+ *
+ * This version returns source rank information.
+ *
+ * \param count
+ * Size of the set of requests to wait on.
+ * \param requests
+ * Set of requests to wait on.
+ * \return A vector containing the source rank IDs for all messages.
+ */
+std::vector<int> wait_all_with_source(unsigned count, C4_Req *requests);
+
+//----------------------------------------------------------------------------//
+/*!
  * \brief Wait until one of a set of posted sends/receives is complete.
  *
  * \param count
