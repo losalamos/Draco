@@ -99,8 +99,17 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 
 @Draco_EXPORT_TARGET_PROPERTIES@
 
+#------------------------------------------------------------------------------#
+# Ensure imported targets required by Draco are defined
+# - Optionally we could use 'include(CMakeFindDependencyMacro)'
+#------------------------------------------------------------------------------#
+
+# CMake macros to query the availability of TPLs.
+include( vendor_libraries )
+
+# If DRACO_CALIPER is 1, then this build of Draco requires the CALIPER::caliper
+# target. If the CALIPER::caliper target is not defined, then create it.
 set( DRACO_CALIPER @DRACO_CALIPER@ )
-if( DRACO_CALIPER )
-  include(CMakeFindDependencyMacro)
+if( DRACO_CALIPER AND NOT TARGET CALIPER::caliper)
   setupCaliper()
 endif()
