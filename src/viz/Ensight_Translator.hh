@@ -13,6 +13,7 @@
 
 #include "Ensight_Stream.hh"
 #include "Viz_Traits.hh"
+#include "c4/C4_Functions.hh"
 #include <memory>
 #include <set>
 
@@ -140,59 +141,62 @@ public:
 private:
   // >>> DATA
 
-  // if true, geometry is static
+  //! if true, geometry is static
   bool d_static_geom;
 
-  // if true, output geometry and varible data files in binary format.
+  //! if true, output geometry and varible data files in binary format.
   bool d_binary;
 
-  // Name of the directory where this will write files
+  //! Name of the directory where this will write files
   std_string d_dump_dir;
 
-  // Number of Ensight cell types.
+  //! Number of Ensight cell types.
   unsigned d_num_cell_types;
 
-  // Ensight cell names.
+  //! Ensight cell names.
   sf_string d_cell_names;
 
-  // Number of vertices for a given Ensight cell type.
+  //! Number of vertices for a given Ensight cell type.
   sf_int d_vrtx_cnt;
 
-  // Cell types.
+  //! Cell types.
   sf_int d_cell_type_index;
 
-  // Vector of dump_times.
+  //! Vector of dump_times.
   sf_double d_dump_times;
 
-  // Ensight file prefixes.
+  //! Ensight file prefixes.
   std_string d_prefix;
 
-  // Names of vertex data.
+  //! Names of vertex data.
   sf_string d_vdata_names;
 
-  // Names of cell data.
+  //! Names of cell data.
   sf_string d_cdata_names;
 
-  // Name of case file.
+  //! Name of case file.
   std_string d_case_filename;
 
-  // Name of geometry directory.
+  //! Name of geometry directory.
   std_string d_geo_dir;
 
-  // Names of vdata directories.
+  //! Names of vdata directories.
   sf_string d_vdata_dirs;
 
-  // Names of cdata directories.
+  //! Names of cdata directories.
   sf_string d_cdata_dirs;
 
-  // Geometry file stream.
+  //! Geometry file stream.
   Ensight_Stream d_geom_out;
 
-  // Cell-data streams.
+  //! Cell-data streams.
   vec_stream d_cell_out;
 
-  // Vertex-data streams.
+  //! Vertex-data streams.
   vec_stream d_vertex_out;
+
+  //! Domain Decomposed flag
+  const bool d_decomposed;
 
 private:
   // >>> PRIVATE IMPLEMENTATION
@@ -230,6 +234,7 @@ public:
                      const SSF &vdata_names, const SSF &cdata_names,
                      const bool overwrite = false,
                      const bool static_geom = false, const bool binary = false,
+                     const bool decomposed = false,
                      const double reset_time = -1.0);
 
   // Do an Ensight_Dump.

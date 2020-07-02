@@ -12,12 +12,13 @@ project( diagnostics CXX )
 ##---------------------------------------------------------------------------##
 # Is Caliper available? If so, let's use it
 ##---------------------------------------------------------------------------##
-if(TARGET caliper)
+if(TARGET CALIPER::caliper)
   set( DRACO_CALIPER "1")
 else()
   set( DRACO_CALIPER "0")
 endif()
-
+set( DRACO_CALIPER ${DRACO_CALIPER} CACHE BOOL
+  "Does Draco require the Caliper library?" FORCE)
 
 ##---------------------------------------------------------------------------##
 # Special options for this component
@@ -46,13 +47,11 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
@@ -66,9 +65,14 @@ endif()
 # Build package library
 # ---------------------------------------------------------------------------- #
 
+set(deps Lib_c4)
+if(TARGET CALIPER::caliper)
+  list(APPEND deps CALIPER::caliper)
+endif()
+
 add_component_library(
   TARGET       Lib_diagnostics
-  TARGET_DEPS  "Lib_c4"
+  TARGET_DEPS  "${deps}"
   LIBRARY_NAME ${PROJECT_NAME}
   SOURCES      "${sources}"
   HEADERS      "${headers}"
@@ -90,14 +94,6 @@ if( Qt5Core_DIR AND NOT "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
   add_subdirectory( qt )
 endif()
 
-if(TARGET caliper)
-  target_include_directories( Lib_diagnostics
-    PUBLIC ${caliper_INCLUDE_DIR}
-    )
-  target_link_libraries(Lib_diagnostics
-    caliper
-    )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

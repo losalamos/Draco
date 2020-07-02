@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include "viz/Ensight_Translator.hh"
@@ -17,7 +17,9 @@
 using rtt_viz::Ensight_Translator;
 
 template <typename IT>
-void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
+void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
+                               bool const binary, bool const geom,
+                               bool const decomposed) {
 
   // short-cuts
   typedef std::vector<std::string> vec_s;
@@ -33,14 +35,12 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   // >>> SET SCALAR ENSIGHT CTOR ARGS
 
-  std::string prefix = "unstr2d_testproblem";
   if (binary)
     prefix += "_binary";
 
   int icycle = 1;
   double time = .01;
   double dt = .01;
-  const bool static_geom = false;
 
   std::string const gd_wpath = rtt_dsxx::getFilenameComponent(
       ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
@@ -106,7 +106,7 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
   Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, static_geom, binary);
+                                true, geom, binary, decomposed);
 
   translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                           vrtx_data, cell_data, rgn_data, rgn_name);
@@ -126,19 +126,39 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
 
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // ASCII dumps
     bool binary(false);
-    ensight_dump_test_unstr2d<int>(ut, binary);
+    bool geom{false};
+    if (rtt_c4::node() == 0) {
+      // check serial writes
+      bool decomposed{false};
+      std::string prefix =
+          "unstr2d_testproblem_serial_" + std::to_string(rtt_c4::nodes());
+      ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
+
+      // Binary dumps
+      binary = true;
+      ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
+
+      // ASCII dumps with unsigned integer data
+      binary = false;
+      ensight_dump_test_unstr2d<uint32_t>(ut, prefix, binary, geom, decomposed);
+    }
+    // check decomposed writes
+    bool decomposed{true};
+    std::string prefix =
+        "unstr2d_testproblem_parallel_" + std::to_string(rtt_c4::nodes());
+    ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
     // Binary dumps
     binary = true;
-    ensight_dump_test_unstr2d<int>(ut, binary);
+    ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
     // ASCII dumps with unsigned integer data
     binary = false;
-    ensight_dump_test_unstr2d<uint32_t>(ut, binary);
+    ensight_dump_test_unstr2d<uint32_t>(ut, prefix, binary, geom, decomposed);
   }
   UT_EPILOG(ut);
 }

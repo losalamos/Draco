@@ -9,6 +9,7 @@
 //----------------------------------------------------------------------------//
 
 #include "Ensight_Stream.hh"
+#include "c4/C4_Functions.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 #include <iomanip>
@@ -23,12 +24,12 @@ namespace rtt_viz {
  * function of Ensight_Stream.
  */
 Ensight_Stream &endl(Ensight_Stream &s) {
-  Require(s.d_stream.is_open());
+  Require(s.d_stream);
 
   if (!s.d_binary)
-    s.d_stream << '\n';
+    *s.d_stream << '\n';
 
-  Require(s.d_stream.good());
+  Require(s.d_stream->good());
 
   return s;
 }
@@ -43,12 +44,13 @@ Ensight_Stream &endl(Ensight_Stream &s) {
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
+ * \param decomposed If true, input is domain decomposed. Otherwise domain replicated.
  */
 Ensight_Stream::Ensight_Stream(const std::string &file_name, const bool binary,
-                               const bool geom_file)
-    : d_stream(), d_binary(false) {
+                               const bool geom_file, const bool decomposed)
+    : d_decomposed_stream(), d_serial_stream(), d_stream(), d_binary(binary) {
   if (!file_name.empty())
-    open(file_name, binary, geom_file);
+    open(file_name, d_binary, geom_file, decomposed);
 }
 
 //----------------------------------------------------------------------------//
@@ -71,19 +73,34 @@ Ensight_Stream::~Ensight_Stream(void) { close(); }
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
+ * \param decomposed If true, input is domain decomposed. Otherwise domain replicated.
  */
 void Ensight_Stream::open(const std::string &file_name, const bool binary,
-                          const bool geom_file) {
+                          const bool geom_file, const bool decomposed) {
   Require(!file_name.empty());
 
   d_binary = binary;
 
   // Open the stream.
-  if (binary)
-    d_stream.open(file_name.c_str(), std::ios::binary);
-  else
-    d_stream.open(file_name.c_str());
-
+  if (decomposed) {
+    if (binary)
+      d_decomposed_stream.reset(
+          new rtt_c4::ofpstream(file_name, std::ios::binary));
+    else
+      d_decomposed_stream.reset(new rtt_c4::ofpstream(file_name));
+    // set to a generic ostream
+    d_stream = &*d_decomposed_stream;
+  } else {
+    Insist(rtt_c4::node() == 0,
+           "Ensight_Stream, called by nonzero rank without "
+           "the domain decomposed flag");
+    if (binary)
+      d_serial_stream.reset(new std::ofstream(file_name, std::ios::binary));
+    else
+      d_serial_stream.reset(new std::ofstream(file_name));
+    // set to a generic ostream
+    d_stream = &*d_serial_stream;
+  }
   Check(d_stream);
 
   // Set up the file.
@@ -93,32 +110,36 @@ void Ensight_Stream::open(const std::string &file_name, const bool binary,
       *this << "C Binary";
   } else {
     // set precision for ascii mode
-    d_stream.precision(5);
-    d_stream.setf(std::ios::scientific, std::ios::floatfield);
+    d_stream->precision(5);
+    d_stream->setf(std::ios::scientific, std::ios::floatfield);
   }
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 }
 
 //----------------------------------------------------------------------------//
 //! Closes the stream.
 void Ensight_Stream::close() {
-  if (d_stream.is_open()) {
-    d_stream.close();
+  flush();
+  if (d_decomposed_stream)
+    d_decomposed_stream.reset();
+  if (d_serial_stream) {
+    d_serial_stream->close();
   }
+  d_stream = NULL;
 }
 
 //----------------------------------------------------------------------------//
 //! Output for ints.
 Ensight_Stream &Ensight_Stream::operator<<(const int32_t i) {
-  Require(d_stream.is_open());
+  Require(d_stream);
 
   if (d_binary)
     binary_write(i);
   else
-    d_stream << std::setw(10) << i;
+    *d_stream << std::setw(10) << i;
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 
   return *this;
 }
@@ -185,14 +206,14 @@ Ensight_Stream &Ensight_Stream::operator<<(const double d) {
   unsigned old_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
-  Require(d_stream.is_open());
+  Require(d_stream);
 
   if (d_binary)
     binary_write(float(d));
   else
-    d_stream << std::setw(12) << d;
+    *d_stream << std::setw(12) << d;
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 
 #if defined(MSVC) && MSVC_VERSION < 1900
   // Disable two-digit exponent format
@@ -205,17 +226,17 @@ Ensight_Stream &Ensight_Stream::operator<<(const double d) {
 //----------------------------------------------------------------------------//
 //! Output for strings.
 Ensight_Stream &Ensight_Stream::operator<<(const std::string &s) {
-  Require(d_stream.is_open());
+  Require(d_stream);
 
   if (d_binary) {
     // Ensight demands all character strings be 80 chars.  Make it so.
     std::string sc(s);
     sc.resize(80);
-    d_stream.write(sc.c_str(), 80);
+    d_stream->write(sc.c_str(), 80);
   } else
-    d_stream << s;
+    *d_stream << s;
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 
   return *this;
 }
@@ -223,13 +244,13 @@ Ensight_Stream &Ensight_Stream::operator<<(const std::string &s) {
 //----------------------------------------------------------------------------//
 //! Output for function pointers.
 Ensight_Stream &Ensight_Stream::operator<<(FP f) {
-  Require(d_stream.is_open());
+  Require(d_stream);
 
   Require(f);
 
   f(*this);
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 
   return *this;
 }
@@ -248,7 +269,7 @@ Ensight_Stream &Ensight_Stream::operator<<(FP f) {
  * this translation unit should be calling this function.
  */
 template <typename T> void Ensight_Stream::binary_write(const T v) {
-  Require(d_stream.is_open());
+  Require(d_stream);
 
   char *vc = new char[sizeof(T)];
 
@@ -256,10 +277,10 @@ template <typename T> void Ensight_Stream::binary_write(const T v) {
   p.set_buffer(sizeof(T), vc);
   p.pack(v);
 
-  d_stream.write(vc, sizeof(T));
+  d_stream->write(vc, sizeof(T));
   delete[] vc;
 
-  Ensure(d_stream.good());
+  Ensure(d_stream->good());
 }
 
 } // namespace rtt_viz

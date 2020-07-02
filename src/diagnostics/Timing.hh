@@ -105,6 +105,11 @@ private:
  * to set DRACO_TIMING == 0. They use the draco rtt_c4::Timer and
  * rtt_diagnostics::Timing_Diagnostics classes.
  *
+ * As of June 2020, the macros can be implemented in two different ways. One
+ * may use the Caliper library if that is found through the Draco build system;
+ * or one may continue to use the Draco timing diagnostics. The Caliper
+ * approach will probably be more useful in the long term.
+ *
  * The build system sets DRACO_TIMING through the configure option \c
  * --with-clubimc-timing.  The following settings apply:
  * - 0 turns off all TIMER macros
@@ -118,11 +123,11 @@ private:
  * #include "diagnostics/Timing.hh"
  *
  * TIMER( foo);
- * TIMER_START( foo);
+ * TIMER_START("Snippet", foo);
  * // ...
  * // code interval to time
  * // ...
- * TIMER_STOP( foo);
+ * TIMER_STOP("Snippet", foo);
  * TIMER_RECORD( "Snippet", foo);
  * TIMER_REPORT( foo, std::cout, "interval 42");
  * \endcode
@@ -156,29 +161,47 @@ private:
  */
 
 /*!
- * \def TIMER_START( timer_name)
+ * \def TIMER_START(segment_name, timer_name)
  *
- * If DRACO_TIMING > 0 TIMER_START( timer_name) expands to:
+ * If DRACO_TIMING > 0 and DRACO_CALIPER is false
+ * TIMER_START(segment_name, timer_name) expands to:
  * \code
  *     timer_name.start()
  * \endcode
- * Otherwise it is empty.
+ * (Note that the segment_name is ignored.)
+ * If DRACO_TIMING > 0 and DRACO_CALIPER is true, then
+ * TIMER_START(segment_name, timer_name) expands to:
+ * \code
+ *     CALI_MARK_BEGIN(segment_name)
+ * \endcode
+ * (Note that the timer_name is ignored.). Otherwise the macro
+ * expansion is empty.
  */
 
 /*!
- * \def TIMER_STOP( timer_name)
+ * \def TIMER_STOP(segment_name, timer_name)
  *
- * If DRACO_TIMING_ON > 0, TIMER_STOP( timer_name) expands to:
+ * If DRACO_TIMING_ON > 0, and DRACO_CALIPER is false, then
+ * TIMER_STOP(segment_name, timer_name) expands to:
  * \code
  *     timer_name.stop()
  * \endcode
+ * (Note that the segment_name is ignored.)
+ * If DRACO_TIMING > 0 and DRACO_CALIPER is true, then
+ * TIMER_STOP(segment_name, timer_name) expands to:
+ * \code
+ *     CALI_MARK_END(segment_name)
+ * \endcode
+ * (Note that the timer_name is ignored.). Otherwise the macro
+ * expansion is empty.
  * Otherwise it is empty.
  */
 
 /*!
  * \def TIMER_RECORD( name, timer)
  *
- * If DRACO_TIMING_ON > 0, TIMER_RECORD( name, timer) expands to:
+ * If DRACO_TIMING_ON > 0, and DRACO_CALIPER is false
+ * TIMER_RECORD( name, timer) expands to:
  * \code
  *     rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
  * \endcode
@@ -188,7 +211,8 @@ private:
 /*!
  * \def TIMER_REPORT( timer_name, ostream, comment)
  *
- * If DRACO_TIMING > 1, TIMER_REPORT( timer_name, ostream,
+ * If DRACO_TIMING > 1, , and DRACO_CALIPER is false
+ * TIMER_REPORT( timer_name, ostream,
  * comment) expands to:
  * \code
  *     ostream << __FILE__ << " " << __LINE__ << ": " << comment      \
@@ -238,9 +262,9 @@ private:
 
 #define TIMER(timer) rtt_c4::Timer timer
 
-#define TIMER_START(timer) timer.start()
+#define TIMER_START(name, timer) timer.start()
 
-#define TIMER_STOP(timer) timer.stop()
+#define TIMER_STOP(name, timer) timer.stop()
 
 #define TIMER_RECORD(name, timer)                                              \
   rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())

@@ -21,12 +21,13 @@ file( GLOB test_sources
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( NOT APPLE )
+if( NOT APPLE AND DRACO_C4 STREQUAL MPI )
   # numdiff/ndselect crashes when run on OS/X so don't try to run the tests.
 
-  add_scalar_tests(
+  add_parallel_tests(
     SOURCES "${test_sources}"
-    DEPS    "Lib_viz" )
+    DEPS    "Lib_viz" 
+    PE_LIST   "1;2;4")
 
   # for Ut_viz_tstEnsight_Translator_exe, check the generated viz files using
   # numdiff from a cmake script instead of trying to use the system() command.
@@ -52,12 +53,14 @@ if( NOT APPLE )
     DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.py
     APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_exe>
     BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
+    PE_LIST "1;2;4"
     )
 
   add_app_unit_test(
     DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator_Unstructured.py
     APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_Unstructured_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_Unstructured_exe>
     BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
+    PE_LIST "1;2;4"
     )
 
 endif()

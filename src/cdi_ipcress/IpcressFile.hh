@@ -127,17 +127,7 @@ class IpcressFile {
 public:
   // CREATORS
 
-  /*!
-   * \brief Standard IpcressFile constructor.
-   *
-   * This is the standard IpcressFile constructor.  This object is typically
-   * instantiated as a smart pointer.
-   *
-   * \param[in] ipcressDataFilename A string that contains the name of the
-   *     Ipcress data file in IPCRESS format.  The f77 Ipcress vendor library
-   *     expects a name with 80 characters or less. If the filename is longer
-   *     than 80 characters the library will not be able to open the file.
-   */
+  //! Standard IpcressFile constructor.
   explicit IpcressFile(std::string const &ipcressDataFilename);
 
   // ACCESSORS

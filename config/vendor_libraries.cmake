@@ -501,36 +501,22 @@ macro( setupLIBQUO )
 
 endmacro()
 
-
 #------------------------------------------------------------------------------
 # Setup Caliper (https://github.com/LLNL/Caliper)
 #------------------------------------------------------------------------------
 macro( setupCaliper)
 
-  if( NOT TARGET caliper )
+  if( NOT TARGET CALIPER::caliper )
     message( STATUS "Looking for Caliper...")
-
-    find_package( caliper QUIET
-      HINTS $ENV{CALIPER_ROOT_DIR}/share/cmake
-      )
-
-    if(caliper_FOUND)
-      message(STATUS "Looking for Caliper...found")
+    find_package( Caliper QUIET )
+    if(CALIPER_FOUND)
+      message(STATUS "Looking for Caliper...${CALIPER_LIBRARY}")
     else()
       message(STATUS "Looking for Caliper...not found")
     endif()
-
-    if( DEFINED caliper_INCLUDE_DIR )
-      message(STATUS "caliper_INCLUDE_DIR ... defined: ${caliper_INCLUDE_DIR}")
-    else()
-      message(STATUS "caliper_INCLUDE_DIR ... not defined")
-    endif()
-
   endif()
 
 endmacro()
-
-
 
 #------------------------------------------------------------------------------
 # Setup Eospac (https://laws.lanl.gov/projects/data/eos.html)

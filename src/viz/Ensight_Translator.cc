@@ -68,12 +68,13 @@ void Ensight_Translator::open(const int icycle, const double time,
   string postfix = postfix_build.str();
 
   // announce the graphics dump
-  std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle
-            << " time= " << time << " dt= " << dt << "\ndir= " << d_prefix
-            << ", dump_number= " << igrdump_num << std::endl;
-
-  // write case file
-  write_case();
+  if (rtt_c4::node() == 0) {
+    std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle
+              << " time= " << time << " dt= " << dt << "\ndir= " << d_prefix
+              << ", dump_number= " << igrdump_num << std::endl;
+    // write case file
+    write_case();
+  }
 
   // >>> Open the geometry file.
   if ((!d_static_geom) || (d_dump_times.size() == 1)) {
@@ -84,17 +85,21 @@ void Ensight_Translator::open(const int icycle, const double time,
     else
       filename += postfix;
 
-    d_geom_out.open(filename, d_binary, true);
+    const bool geom{true};
+    d_geom_out.open(filename, d_binary, geom, d_decomposed);
 
     // write the header
-    d_geom_out << "Description line 1" << endl;
+    if (rtt_c4::node() == 0) {
+      d_geom_out << "Description line 1" << endl;
 
-    ostringstream s;
-    s << "probtime " << time << " cycleno " << icycle;
-    d_geom_out << s.str() << endl;
+      ostringstream s;
+      s << "probtime " << time << " cycleno " << icycle;
+      d_geom_out << s.str() << endl;
 
-    d_geom_out << "node id given" << endl;
-    d_geom_out << "element id given" << endl;
+      d_geom_out << "node id given" << endl;
+      d_geom_out << "element id given" << endl;
+    }
+    d_geom_out.flush();
   }
 
   // >>> Open the vertex data files.
@@ -104,9 +109,14 @@ void Ensight_Translator::open(const int icycle, const double time,
   for (size_t nvd = 0; nvd < d_vdata_names.size(); nvd++) {
     // open file for this data
     std::string filename = d_vdata_dirs[nvd] + "/" + postfix;
-    d_vertex_out[nvd].reset(new Ensight_Stream(filename, d_binary));
+    const bool geom{false};
+    d_vertex_out[nvd].reset(
+        new Ensight_Stream(filename, d_binary, geom, d_decomposed));
 
-    *d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
+    if (rtt_c4::node() == 0) {
+      *d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
+    }
+    d_vertex_out[nvd]->flush();
   }
 
   // >>> Open the cell data files.
@@ -116,9 +126,14 @@ void Ensight_Translator::open(const int icycle, const double time,
   for (size_t ncd = 0; ncd < d_cdata_names.size(); ncd++) {
     // open file for this data
     std::string filename = d_cdata_dirs[ncd] + "/" + postfix;
-    d_cell_out[ncd].reset(new Ensight_Stream(filename, d_binary));
+    const bool geom{false};
+    d_cell_out[ncd].reset(
+        new Ensight_Stream(filename, d_binary, geom, d_decomposed));
 
-    *d_cell_out[ncd] << d_cdata_names[ncd] << endl;
+    if (rtt_c4::node() == 0) {
+      *d_cell_out[ncd] << d_cdata_names[ncd] << endl;
+    }
+    d_cell_out[ncd]->flush();
   }
 }
 
@@ -208,45 +223,47 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
                        unstructured};
   Check(d_cell_type_index.size() == d_num_cell_types);
 
-  // Check d_dump_dir
-  rtt_dsxx::draco_getstat dumpDirStat(d_dump_dir);
-  if (!dumpDirStat.isdir()) {
-    std::ostringstream dir_error;
-    dir_error << "Error opening dump directory \"" << d_dump_dir
-              << "\": " << strerror(errno);
-    Insist(dumpDirStat.isdir(), dir_error.str());
-  }
-
-  // try to create d_prefix
-  rtt_dsxx::draco_mkdir(d_prefix);
-  rtt_dsxx::draco_getstat prefixDirStat(d_prefix);
-  if (!prefixDirStat.isdir()) {
-    std::ostringstream dir_error;
-    dir_error << "Unable to create EnSight directory \"" << d_prefix
-              << "\": " << strerror(errno);
-    Insist(dumpDirStat.isdir(), dir_error.str());
-  }
-
-  // See if the case file exists
-  struct stat sbuf;
-  int stat_ret = stat(d_case_filename.c_str(), &sbuf);
-
-  // build the ensight directory if this is not a continuation
-  if (!graphics_continue) {
-    // We have guaranteed that our prefix directory exists at this point.  Now,
-    // wipe out files that we might have created in there...
-    if (!stat_ret) {
-      rtt_dsxx::draco_remove_dir(d_prefix);
-      rtt_dsxx::draco_mkdir(d_prefix);
-    }
-  } else {
-    // We were asked for a continuation.  Complain if we don't have a
-    // case file.
-    if (stat_ret) {
+  if (rtt_c4::node() == 0) {
+    // Check d_dump_dir
+    rtt_dsxx::draco_getstat dumpDirStat(d_dump_dir);
+    if (!dumpDirStat.isdir()) {
       std::ostringstream dir_error;
-      dir_error << "EnSight directory \"" << d_prefix
-                << "\" doesn't contain a case file!";
-      Insist(0, dir_error.str().c_str());
+      dir_error << "Error opening dump directory \"" << d_dump_dir
+                << "\": " << strerror(errno);
+      Insist(dumpDirStat.isdir(), dir_error.str());
+    }
+
+    // try to create d_prefix
+    rtt_dsxx::draco_mkdir(d_prefix);
+    rtt_dsxx::draco_getstat prefixDirStat(d_prefix);
+    if (!prefixDirStat.isdir()) {
+      std::ostringstream dir_error;
+      dir_error << "Unable to create EnSight directory \"" << d_prefix
+                << "\": " << strerror(errno);
+      Insist(dumpDirStat.isdir(), dir_error.str());
+    }
+
+    // See if the case file exists
+    struct stat sbuf;
+    int stat_ret = stat(d_case_filename.c_str(), &sbuf);
+
+    // build the ensight directory if this is not a continuation
+    if (!graphics_continue) {
+      // We have guaranteed that our prefix directory exists at this point.  Now,
+      // wipe out files that we might have created in there...
+      if (!stat_ret) {
+        rtt_dsxx::draco_remove_dir(d_prefix);
+        rtt_dsxx::draco_mkdir(d_prefix);
+      }
+    } else {
+      // We were asked for a continuation.  Complain if we don't have a
+      // case file.
+      if (stat_ret) {
+        std::ostringstream dir_error;
+        dir_error << "EnSight directory \"" << d_prefix
+                  << "\" doesn't contain a case file!";
+        Insist(0, dir_error.str().c_str());
+      }
     }
   }
 
@@ -314,7 +331,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
 
   // calculate and make the geometry directory if this is not a continuation
   d_geo_dir = d_prefix + "/geo";
-  if (!graphics_continue)
+  if (!graphics_continue && rtt_c4::node() == 0)
     rtt_dsxx::draco_mkdir(d_geo_dir);
 
   // make data directory names and directories
@@ -324,7 +341,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
     d_vdata_dirs[i] = d_prefix + rtt_dsxx::dirSep + d_vdata_names[i];
 
     // if this is not a continuation make the directory
-    if (!graphics_continue)
+    if (!graphics_continue && rtt_c4::node() == 0)
       rtt_dsxx::draco_mkdir(d_vdata_dirs[i]);
   }
   for (size_t i = 0; i < d_cdata_names.size(); i++) {
@@ -332,7 +349,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
 
     // if this is not a continuation make the directory (Mat_Erg, Mat_Temp,
     // Rad_Temp, etc.)
-    if (!graphics_continue)
+    if (!graphics_continue && rtt_c4::node() == 0)
       rtt_dsxx::draco_mkdir(d_cdata_dirs[i]);
   }
 }

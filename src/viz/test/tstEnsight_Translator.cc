@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include "viz/Ensight_Translator.hh"
@@ -19,7 +19,8 @@ using rtt_viz::Ensight_Translator;
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
+void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
+                       bool const geom, bool const decomposed) {
   if (binary)
     cout << "\nGenerating binary files...\n" << endl;
   else
@@ -65,7 +66,6 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   vdata_names[1] = "Densities";
   cdata_names[1] = "Pressure";
 
-  string prefix = "testproblem";
   if (binary)
     prefix += "_binary";
 
@@ -105,8 +105,6 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   for (size_t i = 0; i < ipar.size(); i++)
     for (size_t j = 0; j < ipar[i].size(); j++)
       input >> ipar[i][j];
-
-  const bool static_geom = false;
 
   // Find global indices for write_part() version.
 
@@ -167,7 +165,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
   Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, static_geom, binary);
+                                true, geom, binary, decomposed);
 
   translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                           vrtx_data, cell_data, rgn_data, rgn_name);
@@ -181,7 +179,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   // build another ensight translator; this should overwrite the existing
   // directories
   Ensight_Translator translator2(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, static_geom, binary);
+                                 false, geom, binary, decomposed);
 
   translator2.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
@@ -190,7 +188,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   // thus we will not overwrite the existing directories
 
   Ensight_Translator translator3(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, static_geom, binary);
+                                 false, geom, binary, decomposed);
 
   // now add another dump to the existing data
   translator3.ensight_dump(2, .05, dt, ipar, iel_type, rgn_index, pt_coor,
@@ -198,28 +196,30 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
 
   // make yet a fourth translator that will append from the reset time
   Ensight_Translator translator4(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, static_geom, binary, .05);
+                                 false, geom, binary, decomposed, .05);
 
   // add yet another dump to the existing data
   translator4.ensight_dump(3, .10, dt, ipar, iel_type, rgn_index, pt_coor,
                            vrtx_data, cell_data, rgn_data, rgn_name);
 
   // build an Ensight_Translator and do the per-part dump.
-  string p_prefix = "part_" + prefix;
-  Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names, cdata_names,
-                                 true, static_geom, binary);
+  if (rtt_c4::node() == 0) {
+    string p_prefix = "part_" + prefix;
+    Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names, cdata_names,
+                                   true, geom, binary);
 
-  translator5.open(icycle, time, dt);
+    translator5.open(icycle, time, dt);
 
-  for (size_t i = 0; i < nrgn; i++) {
-    Check(i + 1 < INT_MAX);
-    translator5.write_part(static_cast<int>(i + 1), rgn_name[i], p_ipar[i],
-                           p_iel_type[i], p_pt_coor[i], p_vrtx_data[i],
-                           p_cell_data[i], g_vrtx_indices[i],
-                           g_cell_indices[i]);
+    for (size_t i = 0; i < nrgn; i++) {
+      Check(i + 1 < INT_MAX);
+      translator5.write_part(static_cast<int>(i + 1), rgn_name[i], p_ipar[i],
+                             p_iel_type[i], p_pt_coor[i], p_vrtx_data[i],
+                             p_cell_data[i], g_vrtx_indices[i],
+                             g_cell_indices[i]);
+    }
+    translator5.close();
   }
 
-  translator5.close();
   if (ut.numFails == 0)
     PASSMSG("ensight_dump_test finished successfully.");
   else
@@ -229,19 +229,39 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
 
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // ASCII dumps
-    bool binary(false);
-    ensight_dump_test<int>(ut, binary);
+    bool binary{false};
+    bool geom{false};
+    if (rtt_c4::node() == 0) {
+      // check serial writes
+      bool decomposed{false};
+      string prefix = "testproblem_serial_" + std::to_string(rtt_c4::nodes());
+      ensight_dump_test<int>(ut, prefix, binary, geom, decomposed);
+
+      // Binary dumps
+      binary = true;
+      ensight_dump_test<int>(ut, prefix, binary, geom, decomposed);
+
+      // ASCII dumps with unsigned integer data
+      binary = false;
+      ensight_dump_test<uint32_t>(ut, prefix, binary, geom, decomposed);
+    }
+    rtt_c4::global_barrier();
+
+    // check decomposed writes
+    bool decomposed{true};
+    string prefix = "testproblem_parallel_" + std::to_string(rtt_c4::nodes());
+    ensight_dump_test<int>(ut, prefix, binary, geom, decomposed);
 
     // Binary dumps
     binary = true;
-    ensight_dump_test<int>(ut, binary);
+    ensight_dump_test<int>(ut, prefix, binary, geom, decomposed);
 
     // ASCII dumps with unsigned integer data
     binary = false;
-    ensight_dump_test<uint32_t>(ut, binary);
+    ensight_dump_test<uint32_t>(ut, prefix, binary, geom, decomposed);
   }
   UT_EPILOG(ut);
 }

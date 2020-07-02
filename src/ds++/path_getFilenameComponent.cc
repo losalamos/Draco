@@ -15,7 +15,9 @@ namespace rtt_dsxx {
 //----------------------------------------------------------------------------//
 /*!
  * \brief Helper function to extract path information from a filename.
- * \param fqName A fully qualified filename (/path/to/the/unit/test)
+ *
+ * \param[in] fqName A fully qualified filename (/path/to/the/unit/test)
+ * \param fc Enum type FilenameComponent that specifies the action.
  * \return filename only, or path to file only.
  *
  * This function expects a fully qualified name of a unit test (e.g.: argv[0]).

@@ -341,6 +341,7 @@ macro( setupCrayMPI )
   string(APPEND preflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_PREFLAGS ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
+  # consider adding '-m=cyclic'
   set( MPIEXEC_PREFLAGS_PERFBENCH ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
 

@@ -35,7 +35,7 @@
  *
  * Here, \f$ Q(\mathbf{r},\mathbf{\Omega},E) \f$ represents external and
  * fission sources.  Now, approximate the integral over angles (the
- * scattering term) using a \ref sf_sph "spherical harmonics treatment" (see
+ * scattering term) using a sf_sph "spherical harmonics treatment" (see
  * the doxygen web page for rtt_sf, special_functions).
  *
  * \f[
@@ -48,8 +48,8 @@
  * \f]
  *
  * We have defined the moment based scattering cross section and the flux
- * moments in terms of \ref sf_assoc_leg_poly "Legendre polynomials" and \ref
- * sf_sph "spherical harmonics",
+ * moments in terms of sf_assoc_leg_poly "Legendre polynomials" and sf_sph
+ * "spherical harmonics",
  *
  * \f[
  * \sigma_{sk}(\mathbf{r},E'\rightarrow E) = \int\limits_{-1}^1{d\mu_0
@@ -66,7 +66,7 @@
  * \f$ c_{\ell,k} \f$ is a normalization factor that depends on the index
  * pair \f$ (\ell, k) \f$ and the normalization chosen for the definition of
  * \f$ Y_{\ell,k}(\mathbf\Omega) \f$.  The analytic scattering source
- * expanded with \ref sf_sph "spherical harmonics" can be expressed as,
+ * expanded with sf_sph "spherical harmonics" can be expressed as,
  *
  * \f[
  * S(\mathbf{r},\mathbf\Omega,E) =
@@ -76,7 +76,7 @@
  * c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega')\psi(\mathbf{r},\mathbf\Omega',E')}}}}
  * \f]
  *
- * In this equation, we have also truncated the \ref sf_sph "spherical
+ * In this equation, we have also truncated the sf_sph "spherical
  * harmonics" expansion at L, the order of the scattering matrix.  We can
  * formulate a discrete scattering source by using the discrete ordinate
  * approximation,
@@ -137,7 +137,7 @@
  * Morel does not place the term \f$ \frac{\ell+1}{4\pi} \f$ inside the square
  * root.  For his application, this is okay because the factors will
  * eventually cancel.  However, to strictly preserve all of the properties of
- * \ref sf_sph "spherical harmonics" we have chosen to put this factor inside
+ * sf_sph "spherical harmonics" we have chosen to put this factor inside
  * of the square root.
  *
  * In Morel's Galerkin treatment, specific \f$ (\ell, k) \f$ moments are

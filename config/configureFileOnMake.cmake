@@ -56,7 +56,8 @@ endif()
 
 # Decode "---" as " " for variables passed to this function
 string( REPLACE "___" " " project_brief "${project_brief}" )
-string( REPLACE "___" " " DOXYGEN_HTML_DYNAMIC_MENUS ${DOXYGEN_D ../HTML_DYNAMIC_MENUS} )
+string( REPLACE "___" " " DOXYGEN_HTML_DYNAMIC_MENUS "${DOXYGEN_HTML_DYNAMIC_MENUS}" )
+string( REPLACE "___" " " PERL_PATH "${PERL_PATH}" )
 
 # Ensure we use native path styles
 file( TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}" PROJECT_SOURCE_DIR )

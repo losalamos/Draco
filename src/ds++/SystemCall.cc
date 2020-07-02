@@ -46,6 +46,8 @@ namespace rtt_dsxx {
  *
  * Mac OSX:
  *     \c HOST_NAME_MAX set to \c _POSIX_HOST_NAME_MAX in config.h
+ *
+ * \sa sec_HOST_NAME_MAX
  */
 std::string draco_gethostname() {
 // Windows: gethostname from <winsock2.h>

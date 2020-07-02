@@ -20,10 +20,9 @@ namespace rtt_cdi_test {
 //----------------------------------------------------------------------------//
 /*!
  * \brief Constructor for DummyEICoupling object.
- * 
- * The constructor assigns fixed values for all of the member
- * data.  Every instance of this object has the same member
- * data. 
+ *
+ * The constructor assigns fixed values for all of the member data.  Every
+ * instance of this object has the same member data.
  */
 DummyEICoupling::DummyEICoupling() {
   // empty
