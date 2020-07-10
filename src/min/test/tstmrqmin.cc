@@ -447,7 +447,7 @@ void tstmrqmin(UnitTest &ut) {
        << endl;
 
   Check(y.size() < UINT_MAX);
-  unsigned const N = static_cast<unsigned>(y.size());
+  auto const N = static_cast<unsigned>(y.size());
   vector<double> xx(4);
   vector<double> dyda(9);
   double maxerr = 0;

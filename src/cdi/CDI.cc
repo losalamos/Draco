@@ -14,6 +14,7 @@
 #include <iostream>
 #include <limits>
 #include <numeric>
+#include <utility>
 
 namespace rtt_cdi {
 
@@ -36,20 +37,20 @@ namespace rtt_cdi {
  *
  * \param[in] id string material id descriptor, this is defaulted to null
  */
-CDI::CDI(const std_string &id)
+CDI::CDI(std_string id)
     : grayOpacities(constants::num_Models,
                     SF_GrayOpacity(constants::num_Reactions)),
       multigroupOpacities(constants::num_Models,
                           SF_MultigroupOpacity(constants::num_Reactions)),
-      CPElosses(), spEoS(SP_EoS()), spEICoupling(SP_EICoupling()), matID(id) {
+      CPElosses(), spEoS(SP_EoS()), spEICoupling(SP_EICoupling()),
+      matID(std::move(id)) {
   Ensure(grayOpacities.size() == constants::num_Models);
   Ensure(multigroupOpacities.size() == constants::num_Models);
 }
 
 //----------------------------------------------------------------------------//
 
-CDI::~CDI() { /* empty */
-}
+CDI::~CDI() = default;
 
 //----------------------------------------------------------------------------//
 // STATIC DATA
@@ -885,7 +886,7 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  */
 CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
                            int32_t tz) const {
-  map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
+  auto const entry = CPEloss_map.find(std::make_pair(pz, tz));
   Insist(entry != CPEloss_map.end(), "Undefined CPEloss!");
   // Be sure model type is what the user expected.
   Require(CPElosses[entry->second]->getModelAngleCutoff() == mAC);
@@ -999,7 +1000,7 @@ bool CDI::isMultigroupOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 bool CDI::isCPElossSet(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz,
                        int32_t tz) const {
   // Look up this particle / target zaid pair in the stored map:
-  map_it entry = CPEloss_map.find(std::make_pair(pz, tz));
+  auto const entry = CPEloss_map.find(std::make_pair(pz, tz));
 
   // return true if particle/target pair is in map, and model matches input:
   return (entry != CPEloss_map.end() &&

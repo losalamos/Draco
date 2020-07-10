@@ -34,7 +34,8 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<EICoupling> spEICoupling;
 
   // The actual instatniate is specific (dummyEoS).
-  if ((spEICoupling.reset(new rtt_cdi_test::DummyEICoupling())), spEICoupling) {
+  if ((spEICoupling = std::make_shared<rtt_cdi_test::DummyEICoupling>()),
+      spEICoupling) {
     // If we get here then the object was successfully instantiated.
     PASSMSG("Smart Pointer to new EICoupling object created.");
   } else {

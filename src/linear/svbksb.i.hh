@@ -59,7 +59,7 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
   Require(b.size() == m);
   Require(v.size() == n * n);
 
-  typedef typename RandomContainer::value_type value_type;
+  using value_type = typename RandomContainer::value_type;
   // minimum representable value
   double const mrv = std::numeric_limits<value_type>::min();
   std::vector<value_type> tmp(n);

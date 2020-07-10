@@ -46,10 +46,10 @@ public:
   /*!
    * \brief Default EoS() destructor.
    *
-   * This is required to correctly release memory when any object derived
-   * from EICoupling is destroyed.
+   * This is required to correctly release memory when any object derived from
+   * EICoupling is destroyed.
    */
-  virtual ~EICoupling(){/*empty*/};
+  virtual ~EICoupling() = default;
 
   // --------- //
   // Accessors //

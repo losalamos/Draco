@@ -77,20 +77,20 @@ public:
 
   // Constructors
   // ------------
-  DracoInfo(void);
+  DracoInfo();
 
   // Actions
   // -------
 
   /*! \brief Construct an information message that includes Draco's version,
    *         copyright and basic build parameters. */
-  std::string fullReport(void) const;
+  std::string fullReport() const;
 
   //! Version and Copyright only
-  std::string briefReport(void) const;
+  std::string briefReport() const;
 
   //! Version only
-  std::string versionReport(void) const;
+  std::string versionReport() const;
 
 private:
   // DATA
@@ -103,12 +103,12 @@ private:
   std::string library_type;
   std::string system_type;
   std::string site_name;
-  bool cuda;
-  bool mpi;
+  bool cuda = {false};
+  bool mpi = {false};
   std::string mpirun_cmd;
-  bool openmp;
+  bool openmp = {false};
   std::string diagnostics_level;
-  bool diagnostics_timing;
+  bool diagnostics_timing = {false};
   std::string cxx;
   std::string cxx_flags;
   std::string cc;

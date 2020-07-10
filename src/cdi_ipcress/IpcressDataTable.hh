@@ -94,7 +94,7 @@ public:
   // CREATORS
 
   //! Standard IpcressDataTable constructor.
-  IpcressDataTable(std::string const &in_opacityEnergyDescriptor,
+  IpcressDataTable(std::string in_opacityEnergyDescriptor,
                    rtt_cdi::Model in_opacityModel,
                    rtt_cdi::Reaction in_opacityReaction,
                    std::vector<std::string> const &in_fieldNames,

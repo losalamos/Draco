@@ -33,7 +33,7 @@ public:
 
   double operator()(double const x) const {
     Check(p.size() < UINT_MAX);
-    unsigned const n = static_cast<unsigned>(p.size());
+    auto n = static_cast<unsigned>(p.size());
     std::vector<double> xt(n);
     for (unsigned i = 0; i < n; ++i) {
       xt[i] = p[i] + x * xi[i];
@@ -71,7 +71,7 @@ void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
   double const TOL = sqrt(numeric_limits<double>::epsilon());
 
   Check(p.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(p.size());
+  auto const n = static_cast<unsigned>(p.size());
 
   // Initial guess for brackets
   double ax = 0.0;

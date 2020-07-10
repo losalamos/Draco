@@ -36,13 +36,13 @@ using std::string;
 /*!
  * \brief Basic reader to print info in IPCRESS files.
  *
- * Information about the IPCRESS IPCRESS Interface Library may be
- * found on X-Division's Physical Data Team web site:
+ * Information about the IPCRESS IPCRESS Interface Library may be found on
+ * X-Division's Physical Data Team web site:
  *
  * http://velvet.lanl.gov/PROJECTS/DATA/atomic/ipcress/intro.lasso
  *
- * We have a slightly modified copy of the ipcress libraries
- * (explicitly added compiler libraries) located at:
+ * We have a slightly modified copy of the ipcress libraries (explicitly added
+ * compiler libraries) located at:
  *
  * /radtran/vendors/ipcress
  *
@@ -56,7 +56,7 @@ void ipcress_file_read(std::string const &op_data_file) {
 
   std::shared_ptr<IpcressFile> spGF;
   try {
-    spGF.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGF = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const & /*excpt*/) {
     std::cerr << "Error: Can't open file " << op_data_file << ". Aborting"
               << endl;
@@ -85,9 +85,9 @@ void ipcress_file_read(std::string const &op_data_file) {
 
 #if defined(MSVC) && MSVC_VERSION < 1900
   // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
-  // because numeric_limits<double>::max() has a 3-digit exponent.)
-  // Enable two-digit exponent format to stay consistent with GNU and
-  // Intel on Linux.(requires <stdio.h>).
+  // because numeric_limits<double>::max() has a 3-digit exponent.)  Enable
+  // two-digit exponent format to stay consistent with GNU and Intel on
+  // Linux.(requires <stdio.h>).
   unsigned old_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
@@ -126,19 +126,15 @@ void ipcress_file_read(std::string const &op_data_file) {
     cout << "Please enter a density from " << dens[0] << " to "
          << dens[dens.size() - 1] << endl;
     std::cin >> density;
-    if (density <= 0.0) {
-      keepGoing = 0;
+    if (density <= 0.0)
       break;
-    }
 
     double temperature(0.0);
     cout << "Please select a temperature from " << temps[0] << " to "
          << temps[temps.size() - 1] << endl;
     std::cin >> temperature;
-    if (temperature <= 0.0) {
-      keepGoing = 0;
+    if (temperature <= 0.0)
       break;
-    }
 
     cout << "Choose your opacity type:\n"
          << "1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)\n"

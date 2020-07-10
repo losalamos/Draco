@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         break;
 
       default: // same as option 'h':
-        known_arg = true;
+        // known_arg = true;
         cout << program_options.display_help("draco_info") << endl;
         return 0;
         break;

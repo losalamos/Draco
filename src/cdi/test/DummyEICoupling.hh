@@ -53,7 +53,7 @@ public:
    * This is required to correctly release memory when a DummyEICoupling object
    * is destroyed.
    */
-  ~DummyEICoupling();
+  ~DummyEICoupling() override;
 
   // --------- //
   // Accessors //
@@ -62,7 +62,8 @@ public:
   //! EICoupling accessor.
   double getElectronIonCoupling(const double etemperature,
                                 const double itemperature, const double density,
-                                const double w_e, const double w_i) const;
+                                const double w_e,
+                                const double w_i) const override;
 
   //! EICoupling accessor.
   std::vector<double>
@@ -70,10 +71,10 @@ public:
                          const std::vector<double> &itemperature,
                          const std::vector<double> &density,
                          const std::vector<double> &w_e,
-                         const std::vector<double> &w_i) const;
+                         const std::vector<double> &w_i) const override;
 
   // Dummy pack function.
-  std::vector<char> pack() const { return std::vector<char>(); }
+  std::vector<char> pack() const override { return std::vector<char>(); }
 
 }; // end of class DummyEICoupling
 

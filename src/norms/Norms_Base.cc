@@ -15,14 +15,9 @@ using namespace rtt_norms;
 
 //----------------------------------------------------------------------------//
 //! Default constructor.
-Norms_Base::Norms_Base(void)
+Norms_Base::Norms_Base()
     : d_sum_L1(-42.0), d_sum_L2(-42.0), d_Linf(-42.0), d_sum_weights(-42.0) {
-  reset();
-}
-
-//----------------------------------------------------------------------------//
-//! Destructor.
-Norms_Base::~Norms_Base() { /* empty */
+  Norms_Base::reset();
 }
 
 //----------------------------------------------------------------------------//

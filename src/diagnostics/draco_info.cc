@@ -23,15 +23,14 @@ namespace rtt_diagnostics {
 
 //----------------------------------------------------------------------------//
 //! Constructor
-DracoInfo::DracoInfo(void)
+DracoInfo::DracoInfo()
     : release(rtt_dsxx::release()), copyright(rtt_dsxx::copyright()),
       contact("For information, send e-mail to draco@lanl.gov."),
       build_type(rtt_dsxx::string_toupper(CMAKE_BUILD_TYPE)),
       library_type("static"), system_type("Unknown"), site_name("Unknown"),
-      cuda(false), mpi(false), mpirun_cmd(""), openmp(false),
-      diagnostics_level("disabled"), diagnostics_timing(false),
-      cxx(CMAKE_CXX_COMPILER), cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER),
-      cc_flags(CMAKE_C_FLAGS), fc("none"), fc_flags("none") {
+      mpirun_cmd(""), diagnostics_level("disabled"), cxx(CMAKE_CXX_COMPILER),
+      cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER), cc_flags(CMAKE_C_FLAGS),
+      fc("none"), fc_flags("none") {
 #ifdef DRACO_SHARED_LIBS
   library_type = "Shared";
 #endif
@@ -105,7 +104,7 @@ void print_text_with_word_wrap(std::string const &longstring,
 }
 
 //----------------------------------------------------------------------------//
-std::string DracoInfo::fullReport(void) const {
+std::string DracoInfo::fullReport() const {
   using std::cout;
   using std::endl;
 
@@ -113,21 +112,21 @@ std::string DracoInfo::fullReport(void) const {
 
   // Create a list of features for DbC
   std::vector<std::string> dbc_info;
-  dbc_info.push_back("Insist");
+  dbc_info.emplace_back("Insist");
 #ifdef REQUIRE_ON
-  dbc_info.push_back("Require");
+  dbc_info.emplace_back("Require");
 #endif
 #ifdef CHECK_ON
-  dbc_info.push_back("Check");
+  dbc_info.emplace_back("Check");
 #endif
 #ifdef ENSURE_ON
-  dbc_info.push_back("Ensure");
+  dbc_info.emplace_back("Ensure");
 #endif
 #if DBC & 8
-  dbc_info.push_back("no-throw version");
+  dbc_info.emplace_back("no-throw version");
 #endif
 #if DBC & 16
-  dbc_info.push_back("check-deferred version");
+  dbc_info.emplace_back("check-deferred version");
 #endif
 
   // Print version and copyright information to the screen:
@@ -180,7 +179,7 @@ std::string DracoInfo::fullReport(void) const {
 }
 
 //----------------------------------------------------------------------------//
-std::string DracoInfo::briefReport(void) const {
+std::string DracoInfo::briefReport() const {
   std::ostringstream infoMessage;
 
   // Print version and copyright information to the screen:
@@ -192,7 +191,7 @@ std::string DracoInfo::briefReport(void) const {
 
 //----------------------------------------------------------------------------//
 //! extract the single-line version info from release and return it
-std::string DracoInfo::versionReport(void) const {
+std::string DracoInfo::versionReport() const {
   std::ostringstream infoMessage;
   print_text_with_word_wrap(release, 5, 80, infoMessage, ";");
   infoMessage << "\n" << std::endl;

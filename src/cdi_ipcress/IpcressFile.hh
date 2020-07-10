@@ -183,7 +183,7 @@ private:
    * \brief Load the list of field data names and the associated data arrays for
    *        the requested material from the Ipcress file and save them into the
    *        IpcressMaterial container. */
-  void loadFieldData(void);
+  void loadFieldData();
 
   //! Read an array of integers or doubles from the ipcress file.
   template <typename T>

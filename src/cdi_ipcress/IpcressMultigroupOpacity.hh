@@ -80,8 +80,7 @@ class IpcressDataTable;
  */
 //============================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity
-    : public rtt_cdi::MultigroupOpacity {
+class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 
   // DATA
 
@@ -181,19 +180,19 @@ public:
    * attained through the pack function.
    *
    * \param packed vector<char> of packed IpcressMultigroupOpacity state; the
-   * packed state is attained by calling pack()
+   *     packed state is attained by calling pack()
    */
   explicit IpcressMultigroupOpacity(std::vector<char> const &packed);
 
   /*!
    * \brief Default IpcressOpacity() destructor.
    *
-   *     This is required to correctly release memory when a
-   *     IpcressMultigroupOpacity is destroyed.  This constructor's definition
-   *     must be declared in the implementation file so that * we can avoid
-   *     including too many header files
+   * This is required to correctly release memory when a
+   * IpcressMultigroupOpacity is destroyed.  This constructor's definition must
+   * be declared in the implementation file so that * we can avoid including too
+   * many header files
    */
-  ~IpcressMultigroupOpacity(void){/* empty */};
+  ~IpcressMultigroupOpacity() override = default;
 
   // --------- //
   // Accessors //
@@ -292,7 +291,7 @@ public:
    * \return A vector of opacities.
    */
   std::vector<double> getOpacity(double targetTemperature,
-                                 double targetDensity) const;
+                                 double targetDensity) const override;
 
   /*!
    * \brief Opacity accessor that returns a vector of vectors of opacities that
@@ -307,7 +306,7 @@ public:
    */
   std::vector<std::vector<double>>
   getOpacity(std::vector<double> const &targetTemperature,
-             double targetDensity) const;
+             double targetDensity) const override;
 
   /*!
    * \brief Opacity accessor that returns a vector of vectors of opacities that
@@ -322,22 +321,22 @@ public:
    */
   std::vector<std::vector<double>>
   getOpacity(double targetTemperature,
-             std::vector<double> const &targetDensity) const;
+             std::vector<double> const &targetDensity) const override;
 
   //! Query whether the data is in tables or functional form.
-  bool data_in_tabular_form() const { return true; }
+  bool data_in_tabular_form() const override { return true; }
 
   //! Query to determine the reaction model.
-  rtt_cdi::Reaction getReactionType() const { return opacityReaction; }
+  rtt_cdi::Reaction getReactionType() const override { return opacityReaction; }
 
   //! Query to determine the physics model.
-  rtt_cdi::Model getModelType() const { return opacityModel; }
+  rtt_cdi::Model getModelType() const override { return opacityModel; }
 
   /*!
    * \brief Returns a string that describes the templated EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
    */
-  std::string getEnergyPolicyDescriptor() const {
+  std::string getEnergyPolicyDescriptor() const override {
     return energyPolicyDescriptor;
   };
 
@@ -348,7 +347,7 @@ public:
    *     The definition of this function is not included here to prevent the
    *     inclusion of the IpcressFile.hh definitions within this header file.
    */
-  std::string getDataDescriptor() const {
+  std::string getDataDescriptor() const override {
     return spIpcressDataTable->getDataDescriptor();
   }
 
@@ -358,7 +357,7 @@ public:
    *     The definition of this function is not included here to prevent the
    *     inclusion of the IpcressFile.hh definitions within this header file.
    */
-  std::string getDataFilename() const { return ipcressFilename; }
+  std::string getDataFilename() const override { return ipcressFilename; }
 
   /*!
    * \brief Returns a vector of temperatures that define the cached opacity data
@@ -367,7 +366,7 @@ public:
    *     We do not return a const reference because this function must construct
    *     this information from more fundamental tables.
    */
-  std::vector<double> getTemperatureGrid() const {
+  std::vector<double> getTemperatureGrid() const override {
     return spIpcressDataTable->getTemperatures();
   }
 
@@ -378,7 +377,7 @@ public:
    * We do not return a const reference because this function must construct
    *     this information from more fundamental tables.
    */
-  std::vector<double> getDensityGrid() const {
+  std::vector<double> getDensityGrid() const override {
     return spIpcressDataTable->getDensities();
   }
 
@@ -386,17 +385,17 @@ public:
    * \brief Returns a vector of energy values (keV) that define the energy
    *     boundaries of the cached multigroup opacity data table.
    */
-  std::vector<double> getGroupBoundaries() const {
+  std::vector<double> getGroupBoundaries() const override {
     return spIpcressDataTable->getGroupBoundaries();
   }
 
   //! Returns the size of the temperature grid.
-  size_t getNumTemperatures() const {
+  size_t getNumTemperatures() const override {
     return spIpcressDataTable->getNumTemperatures();
   }
 
   //! Returns the size of the density grid.
-  size_t getNumDensities() const {
+  size_t getNumDensities() const override {
     return spIpcressDataTable->getNumDensities();
   }
 
@@ -404,7 +403,7 @@ public:
    * \brief Returns the number of group boundaries found in the current
    *     multigroup data set.
    */
-  size_t getNumGroupBoundaries() const {
+  size_t getNumGroupBoundaries() const override {
     return spIpcressDataTable->getNumGroupBoundaries();
   }
 
@@ -412,21 +411,21 @@ public:
    * \brief Returns the number of gruops found in the current multigroup data
    *     set.
    */
-  size_t getNumGroups() const { return getNumGroupBoundaries() - 1; };
+  size_t getNumGroups() const override { return getNumGroupBoundaries() - 1; };
 
   /*!
    * \brief Pack a IpcressMulitgroupOpacity object.
    *
    * \return packed state in a vector<char>
    */
-  std::vector<char> pack() const;
+  std::vector<char> pack() const override;
 
   /*!
    * \brief Returns the general opacity model type, defined in OpacityCommon.hh
    *
    * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
    */
-  rtt_cdi::OpacityModelType getOpacityModelType() const {
+  rtt_cdi::OpacityModelType getOpacityModelType() const override {
     return rtt_cdi::IPCRESS_TYPE;
   }
 

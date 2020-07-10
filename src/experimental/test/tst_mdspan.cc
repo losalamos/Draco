@@ -9,9 +9,9 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "experimental/mdspan"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "experimental/mdspan"
 
 //----------------------------------------------------------------------------//
 // Helper Classes.
@@ -67,11 +67,14 @@ void t1(rtt_dsxx::UnitTest &ut) {
       int, stdex::extents<stdex::dynamic_extent, stdex::dynamic_extent>,
       stdex::layout_left>;
 
-  auto data_a = std::make_unique<int[]>(rows * cols);
-  auto data_b = std::make_unique<int[]>(rows * cols);
+  // auto data_a = std::make_unique<int*>(rows * cols);
+  // auto data_b = std::make_unique<int*>(rows * cols);
 
-  auto a = span_2d_dynamic(data_a.get(), rows, cols);
-  auto b = span_2d_dynamic_left(data_b.get(), rows, cols);
+  std::array<int, rows * cols> data_a;
+  std::array<int, rows * cols> data_b;
+
+  auto a = span_2d_dynamic(data_a.data(), rows, cols);
+  auto b = span_2d_dynamic_left(data_b.data(), rows, cols);
   fill_in_order(a);
   fill_in_order(b);
 
@@ -94,11 +97,11 @@ void t2(rtt_dsxx::UnitTest &ut) {
   using span_2d_10_10_left =
       stdex::basic_mdspan<int, stdex::extents<rows, cols>, stdex::layout_right>;
 
-  auto data_a = std::make_unique<int[]>(100);
-  auto data_b = std::make_unique<int[]>(100);
+  std::array<int, 100> data_a;
+  std::array<int, 100> data_b;
 
-  auto a = span_2d_10_10(data_a.get());
-  auto b = span_2d_10_10_left(data_b.get());
+  auto a = span_2d_10_10(data_a.data());
+  auto b = span_2d_10_10_left(data_b.data());
   fill_in_order(a);
   fill_in_order(b);
 

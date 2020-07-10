@@ -24,20 +24,16 @@ namespace rtt_cdi_test {
  * The constructor assigns fixed values for all of the member data.  Every
  * instance of this object has the same member data.
  */
-DummyEICoupling::DummyEICoupling() {
-  // empty
-}
+DummyEICoupling::DummyEICoupling() = default;
 
 //----------------------------------------------------------------------------//
 /*!
  * \brief Default DummyEICoupling() destructor.
  *
- * This is required to correctly release memory when a
- * DummyEICoupling object is destroyed.
+ * This is required to correctly release memory when a DummyEICoupling object is
+ * destroyed.
  */
-DummyEICoupling::~DummyEICoupling() {
-  // empty
-}
+DummyEICoupling::~DummyEICoupling() = default;
 
 // --------- //
 // Accessors //
@@ -45,9 +41,9 @@ DummyEICoupling::~DummyEICoupling() {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief EICoupling accessor that returns a single electron-ion coupling
- * given an electron and ion temperature, the material density, and the
- * electron and ion screening coeffiecients..
+ * \brief EICoupling accessor that returns a single electron-ion coupling given
+ *        an electron and ion temperature, the material density, and the
+ *        electron and ion screening coeffiecients..
  *
  *    dummy_ei_coupling = etemperature + 10*itemperature + 100*density +
  *    1000*w_e + 10000*w_i
@@ -74,8 +70,8 @@ double DummyEICoupling::getElectronIonCoupling(const double etemperature,
 //----------------------------------------------------------------------------//
 /*!
  * \brief EICoupling accessor that returns a vector of electron-ion coupling
- * given an electron and ion temperature, the material density, and the
- * electron and ion screening coeffiecients..
+ *        given an electron and ion temperature, the material density, and the
+ *        electron and ion screening coeffiecients..
  *
  *    dummy_ei_coupling = etemperature + 10*itemperature + 100*density +
  *    1000*w_e + 10000*w_i

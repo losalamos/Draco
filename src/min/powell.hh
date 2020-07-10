@@ -46,7 +46,7 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
   double const TINY = 1.0e-25;
 
   Check(p.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(p.size());
+  auto const n = static_cast<unsigned>(p.size());
   vector<double> pt(n), ptt(n), xit(n);
 
   fret = func(p);

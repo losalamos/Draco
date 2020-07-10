@@ -122,8 +122,10 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
   node_sets.insert(resultT::value_type("Interior", stmp));
 
   // Check the results
-
-  Ensure(invariant());
+  // [2020-07-06 KT] I am removing this check due to a clang-analyze warning:
+  // "Call to virtual method 'Hex_Mesh_Reader::invariant' during construction
+  // bypasses virtual dispatch [clang-analyzer-optin.cplusplus.VirtualCall]"
+  // Ensure(invariant());
 }
 
 //----------------------------------------------------------------------------//
@@ -152,10 +154,10 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
 //----------------------------------------------------------------------------//
 /*!
  * Returns an element type for each element in the mesh. Will always be one of
- * rtt_mesh_element::Element_Definition::NODE,
- * rtt_mesh_element::Element_Definition::BAR_2,
- * rtt_mesh_element::Element_Definition::QUAD_4, or
- * rtt_mesh_element::Element_Definition::HEXA_8.
+ * - rtt_mesh_element::Element_Definition::NODE,
+ * - rtt_mesh_element::Element_Definition::BAR_2,
+ * - rtt_mesh_element::Element_Definition::QUAD_4, or
+ * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
 std::vector<Element_Definition::Element_Type>
 Hex_Mesh_Reader::get_element_types() const {
@@ -187,10 +189,10 @@ Hex_Mesh_Reader::get_element_types() const {
 //----------------------------------------------------------------------------//
 /*!
  * Returns the unique element types defined in the mesh. Will always be one of
- * rtt_mesh_element::Element_Definition::NODE,
- * rtt_mesh_element::Element_Definition::BAR_2,
- * rtt_mesh_element::Element_Definition::QUAD_4, or
- * rtt_mesh_element::Element_Definition::HEXA_8.
+ * - rtt_mesh_element::Element_Definition::NODE,
+ * - rtt_mesh_element::Element_Definition::BAR_2,
+ * - rtt_mesh_element::Element_Definition::QUAD_4, or
+ * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
 std::vector<Element_Definition::Element_Type>
 Hex_Mesh_Reader::get_unique_element_types() const {
@@ -217,23 +219,19 @@ Hex_Mesh_Reader::get_unique_element_types() const {
 /*!
  * There is no provision for naming element sets in the Hex format. The
  * following default names are provided for the sets found on the mesh file:
- * <ul>
- *   <li> "Interior" -- All the ndim-dimensional cells in the problem.
- *   <li> "Interior_Region_x" - Interior cells with integer flag "x".
- *   <li> "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary
-*         faces.
- *   <li> "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with
- *        flag integer "x"
- *   <li> "Reflective_Boundary" -- All the (ndim-1) dimensional reflective
- *        boundary faces.
- * </ul>
+ * - "Interior" -- All the ndim-dimensional cells in the problem.
+ * - "Interior_Region_x" - Interior cells with integer flag "x".
+ * - "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary faces.
+ * - "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with flag integer "x"
+ * - "Reflective_Boundary" -- All the (ndim-1) dimensional reflective boundary
+ *   faces.
  */
 std::map<std::string, std::set<unsigned>>
 Hex_Mesh_Reader::get_element_sets() const {
   // Alternatively, the private data of the class could be changed so that the
-  // work done here is done in the constructor. This would be more efficient
-  // if this is going to be used repetively.
-  typedef std::map<std::string, std::set<unsigned>> resultT;
+  // work done here is done in the constructor. This would be more efficient if
+  // this is going to be used repetively.
+  using resultT = std::map<std::string, std::set<unsigned>>;
   resultT result;
   std::vector<int> tmp;
   std::set<int> rgn_index;
@@ -250,13 +248,16 @@ Hex_Mesh_Reader::get_element_sets() const {
   // efficiently in one loop? Note that this depends on the elements being
   // stored in a specific order.
   rgn_index = std::set<int>(imat_index.begin(), imat_index.end());
-  for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
-       i++) {
+  // for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
+  //      i++) {
+  for( auto const & iregion : rgn_index ) {
     std::ostringstream os_chdum("");
-    os_chdum << "Interior_Region_" << *i;
+    // os_chdum << "Interior_Region_" << *i;
+    os_chdum << "Interior_Region_" << iregion;
     stmp.clear();
     for (unsigned j = 0; j < ncells; j++)
-      if (imat_index[j] == *i)
+//      if (imat_index[j] == *i)
+      if (imat_index[j] == iregion)
         stmp.insert(j);
     result.insert(resultT::value_type(os_chdum.str(), stmp));
   }
@@ -274,15 +275,15 @@ Hex_Mesh_Reader::get_element_sets() const {
     // efficiently in one loop? Note that this depends on the elements being
     // stored in a specific order.
     rgn_index = std::set<int>(irgn_vb_index.begin(), irgn_vb_index.end());
-    for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
-         i++) {
-
+    // for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
+    //      i++) {
+    for (auto const & iregion : rgn_index ) {
       std::ostringstream os_chdum("");
-      os_chdum << "Vacuum_Boundary_Region_" << *i;
+      os_chdum << "Vacuum_Boundary_Region_" << iregion;
       stmp.clear();
       Check(nvb_faces < UINT_MAX);
       for (size_t j = 0; j < nvb_faces; j++) {
-        if (irgn_vb_index[j] == *i)
+        if (irgn_vb_index[j] == iregion)
           stmp.insert(static_cast<unsigned>(j) + ncells);
       }
       if (stmp.size() != 0)

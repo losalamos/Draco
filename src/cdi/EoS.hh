@@ -46,18 +46,18 @@ public:
   /*!
    * \brief Default EoS() destructor.
    *
-   * This is required to correctly release memory when any object derived
-   * from EoS is destroyed.
+   * This is required to correctly release memory when any object derived from
+   * EoS is destroyed.
    */
-  virtual ~EoS(){/*empty*/};
+  virtual ~EoS() = default;
 
   // --------- //
   // Accessors //
   // --------- //
 
   /*!
-   * \brief EoS accessor that returns a single specific electron internal
-   *        energy that corresponds to the provided temperature and density.
+   * \brief EoS accessor that returns a single specific electron internal energy
+   *        that corresponds to the provided temperature and density.
    *
    * \param temperature The temperature value for which an
    *     opacity value is being requested (keV).

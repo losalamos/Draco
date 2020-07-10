@@ -35,8 +35,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // ----------------------------------------------- //
 
   // -----------------------------------------------------------------
-  // The Opacities in this file are computed from the following
-  // analytic formula:
+  // The Opacities in this file are computed from the following analytic
+  // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
   //
@@ -59,7 +59,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the object.
   try {
-    spGFAnalytic.reset(new const IpcressFile(op_data_file));
+    spGFAnalytic = std::make_shared<const IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const &excpt) {
     FAILMSG(excpt.what());
     ostringstream message;
@@ -85,8 +85,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the opacity object.
   try {
-    spOp_Analytic_ragray.reset(new const IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ragray = std::make_shared<const IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message
@@ -110,7 +110,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // ----------------- //
 
   shared_ptr<CDI> spCDI_Analytic;
-  if ((spCDI_Analytic.reset(new CDI())), spCDI_Analytic) {
+  if ((spCDI_Analytic = std::make_shared<CDI>()), spCDI_Analytic) {
     ostringstream message;
     message << "shared_ptr to CDI object created successfully (GrayOpacity).";
     PASSMSG(message.str());
@@ -187,8 +187,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the opacity object.
   try {
-    spOp_Analytic_ramg.reset(new const IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ramg = std::make_shared<const IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressMultigroupOpacity "
