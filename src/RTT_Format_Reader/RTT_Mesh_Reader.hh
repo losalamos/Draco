@@ -32,8 +32,7 @@ namespace rtt_RTT_Format_Reader {
  */
 //============================================================================//
 
-class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
-    : public rtt_meshReaders::Mesh_Reader {
+class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::string string;
   typedef std::set<int> set_int;
@@ -62,14 +61,14 @@ public:
    * \brief Constructs an RTT_Mesh_Reader class object.
    * \param RTT_File Mesh file name.
    */
-  RTT_Mesh_Reader(const string &RTT_File)
-      : rttMesh(new RTT_Format_Reader(RTT_File)), element_defs(),
+  explicit RTT_Mesh_Reader(string RTT_File)
+      : rttMesh(new RTT_Format_Reader(std::move(RTT_File))), element_defs(),
         element_types(), unique_element_types() {
     transform2CGNS();
   }
 
   //! Destroys an RTT_Mesh_Reader class object
-  ~RTT_Mesh_Reader() {}
+  ~RTT_Mesh_Reader() = default;
 
   // ACCESSORS
 

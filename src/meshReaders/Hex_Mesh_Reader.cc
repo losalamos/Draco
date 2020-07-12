@@ -248,15 +248,12 @@ Hex_Mesh_Reader::get_element_sets() const {
   // efficiently in one loop? Note that this depends on the elements being
   // stored in a specific order.
   rgn_index = std::set<int>(imat_index.begin(), imat_index.end());
-  // for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
-  //      i++) {
-  for( auto const & iregion : rgn_index ) {
+  for (auto const &iregion : rgn_index) {
     std::ostringstream os_chdum("");
     // os_chdum << "Interior_Region_" << *i;
     os_chdum << "Interior_Region_" << iregion;
     stmp.clear();
     for (unsigned j = 0; j < ncells; j++)
-//      if (imat_index[j] == *i)
       if (imat_index[j] == iregion)
         stmp.insert(j);
     result.insert(resultT::value_type(os_chdum.str(), stmp));
@@ -277,7 +274,7 @@ Hex_Mesh_Reader::get_element_sets() const {
     rgn_index = std::set<int>(irgn_vb_index.begin(), irgn_vb_index.end());
     // for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
     //      i++) {
-    for (auto const & iregion : rgn_index ) {
+    for (auto const &iregion : rgn_index) {
       std::ostringstream os_chdum("");
       os_chdum << "Vacuum_Boundary_Region_" << iregion;
       stmp.clear();

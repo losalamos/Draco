@@ -17,7 +17,6 @@
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
 #include <cmath>
-#include <cmath>
 
 namespace rtt_min {
 

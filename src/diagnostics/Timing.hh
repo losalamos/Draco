@@ -54,7 +54,7 @@ private:
   // >>> PRIVATE DATA MEMBERS
 
   //! Map of timers.
-  static std::map<std::string, double> timers;
+  DLL_PUBLIC_diagnostics static std::map<std::string, double> timers;
 
 public:
   // >>> FUNCTIONAL INTERFACE

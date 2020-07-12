@@ -17,12 +17,12 @@ namespace rtt_RTT_Format_Reader {
  * \brief Constructs an RTT_Format_Reader object and parses the mesh data.
  * \param RTT_File Mesh file name.
  */
-RTT_Format_Reader::RTT_Format_Reader(string const &RTT_File)
+RTT_Format_Reader::RTT_Format_Reader(string RTT_File)
     : header(), dims(), spNodeFlags(), spSideFlags(), spCellFlags(),
       spNodeDataIds(), spSideDataIds(), spCellDataIds(), spCellDefs(),
       spNodes(), spSides(), spCells(), spNodeData(), spSideData(),
       spCellData() {
-  readMesh(RTT_File);
+  readMesh(std::move(RTT_File));
 }
 /*!
  * \brief Parses the mesh file data via calls to the member data class objects

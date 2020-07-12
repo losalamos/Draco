@@ -16,7 +16,7 @@ namespace rtt_norms {
 //----------------------------------------------------------------------------//
 //! Constructor.
 Index_Labeled::Index_Labeled(const size_t index_, std::string label_)
-  : index(index_), processor(rtt_c4::node()), label(std::move(label_)) {}
+    : index(index_), processor(rtt_c4::node()), label(std::move(label_)) {}
 
 //----------------------------------------------------------------------------//
 //! Equality operator.

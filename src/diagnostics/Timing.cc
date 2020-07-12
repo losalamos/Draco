@@ -62,7 +62,7 @@ void Timing_Diagnostics::reset_timer(const std::string &key) {
 //! Reset all timers in the map of timers to zero.
 void Timing_Diagnostics::reset_timers() {
   // reset each timer
-  for (auto & m : timers)
+  for (auto &m : timers)
     m.second = 0.0;
 }
 

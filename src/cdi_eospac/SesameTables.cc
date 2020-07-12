@@ -303,12 +303,12 @@ std::vector<char> SesameTables::pack() const {
 
   // pack the matMap (size+data)
   packer << packed_matmap.size();
-  for (char & c : packed_matmap)
+  for (char &c : packed_matmap)
     packer << c;
 
   // pack the rtMap(data)
   packer << packed_rtmap.size();
-  for (char & c : packed_matmap)
+  for (char &c : packed_matmap)
     packer << c;
 
   Ensure(packer.get_ptr() == &packed[0] + packed_SesameTable_size);

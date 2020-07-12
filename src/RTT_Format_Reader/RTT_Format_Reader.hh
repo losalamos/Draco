@@ -23,19 +23,17 @@ namespace rtt_RTT_Format_Reader {
 
 //============================================================================//
 /*!
- * class RTT_Format_Reader
- *
  * \brief  A generalized input routine to parse an RTT Format mesh file.
  *
  *\sa The RTT_Format_Reader class constructor automatically instantiates and
  *    executes the readMesh member function used to parse the mesh data.
- *    Accessor functions are provided for all of the remaining member classes
- *    to allow data retrieval. The \ref overview_rtt_format_reader page presents
- *    a summary of the capabilities provided by the class.
+ *    Accessor functions are provided for all of the remaining member classes to
+ *    allow data retrieval. The \ref overview_rtt_format_reader page presents a
+ *    summary of the capabilities provided by the class.
  */
 //============================================================================//
 
-class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
+class RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::ifstream ifstream;
   typedef std::string string;
@@ -67,11 +65,10 @@ private:
 
 public:
   //! Constructor
-  explicit RTT_Format_Reader(const string &RTT_File);
+  explicit RTT_Format_Reader(string RTT_File);
 
   //! Destructor
-  ~RTT_Format_Reader() { /*empty*/
-  }
+  ~RTT_Format_Reader() = default;
 
   // ACCESSORS
 

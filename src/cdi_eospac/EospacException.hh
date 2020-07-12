@@ -58,7 +58,7 @@ public:
    *        This string is used in the construction of std::exception.
    */
   explicit EospacException(std::string const &msg) noexcept
-    : std::logic_error(msg) { /* empty */
+      : std::logic_error(msg) { /* empty */
   }
 
   /*!
@@ -79,7 +79,7 @@ public:
 class EospacUnknownDataType : public EospacException {
 public:
   EospacUnknownDataType(std::string const &msg) noexcept
-    : EospacException(msg){/* empty */};
+      : EospacException(msg){/* empty */};
   ~EospacUnknownDataType() noexcept override = default;
 };
 

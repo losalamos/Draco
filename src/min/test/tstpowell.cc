@@ -57,7 +57,7 @@ void tstpowell(UnitTest &ut) {
 
   cout << "Maximum error: " << fret << endl;
 
-  std::array<double,2> tmp = {1.34601, 4.19265e-09};
+  std::array<double, 2> tmp = {1.34601, 4.19265e-09};
   vector<double> expectedSolution(tmp.begin(), tmp.end());
   if (rtt_dsxx::soft_equiv(p.begin(), p.end(), expectedSolution.begin(),
                            expectedSolution.end(), tolerance)) {

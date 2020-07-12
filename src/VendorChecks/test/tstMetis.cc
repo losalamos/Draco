@@ -9,8 +9,8 @@
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include <metis.h>
 #include <array>
+#include <metis.h>
 #include <vector>
 
 // Original provided by Erik Zenker
@@ -33,9 +33,9 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
   //  3 /       \ 9
 
   // Indexes of starting points in adjacent array
-  std::array<idx_t,11> xadj = {0, 1, 2, 3, 4, 9, 14, 15, 16, 17, 18};
+  std::array<idx_t, 11> xadj = {0, 1, 2, 3, 4, 9, 14, 15, 16, 17, 18};
 
-  // Adjacent vertices in consecutive index ordera
+  // Adjacent vertices in consecutive index order
   // conn. for:     0, 1, 2, 3, 4            , 5,            ,6, 7, 8, 9
   // index:         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, 14,15,16,17
   std::array<idx_t, 18> adjncy = {4, 4, 4, 4, 0, 1, 2, 3, 5,
@@ -62,8 +62,8 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG("Call to METIS_PartGraphKway() failed.");
 
-  std::array<int,10> expectedResult = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
-  std::array<int,10> mirrorExpectedResult = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
+  std::array<int, 10> expectedResult = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
+  std::array<int, 10> mirrorExpectedResult = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
   std::vector<idx_t> vExpectedResult(expectedResult.begin(),
                                      expectedResult.end());
   std::vector<idx_t> vMirrorExpectedResult(mirrorExpectedResult.begin(),

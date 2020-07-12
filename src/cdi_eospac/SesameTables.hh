@@ -182,7 +182,7 @@ public:
   //! SesameTables object.
   std::vector<unsigned> matList() const {
     std::vector<unsigned> mlist;
-    for (auto const & it : rtMap )
+    for (auto const &it : rtMap)
       mlist.push_back(it.first);
     return mlist;
   }

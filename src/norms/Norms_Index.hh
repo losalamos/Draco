@@ -43,8 +43,7 @@ namespace rtt_norms {
   \param Index_t The index type for labeling the location of the Linf norm.
 */
 //============================================================================//
-template <typename Index_t>
-class Norms_Index : public Norms_Base {
+template <typename Index_t> class Norms_Index : public Norms_Base {
 public:
   //! Expose the template parameter
   using Index = Index_t;
