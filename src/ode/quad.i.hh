@@ -5,10 +5,7 @@
  * \date   Mon Sep 20 15:30:05 2004
  * \brief  Adaptive quadrature of a function over a specified interval.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #ifndef ode_quad_i_hh
@@ -17,19 +14,17 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-
-//#include "quad.hh"
 #include "ds++/Assert.hh"
 
 namespace rtt_ode {
 //----------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Adaptive quadrature of a function over a specified interval.
- * 
+ *
  * \arg \a Function Function type representing the function to be integrated.
  * \arg \a Rule Function type representing the rule for performing the
- * quadrature. This function type must be compatible with the signature of
- * rtt_ode::rkqs.
+ *         quadrature. This function type must be compatible with the signature
+ *         of rtt_ode::rkqs.
  *
  * \param[in] func
  * Function to be integrated
@@ -38,8 +33,8 @@ namespace rtt_ode {
  * \param[in,out] eps On entry, contains the desired accuracy.  On return,
  * contains the accuracy actually achieved.
  * \param[in] rule
- * Ordinary differential equation solver to use to integrate the function,
- * such as \c bsstep or \c rkqs.
+ * Ordinary differential equation solver to use to integrate the function, such
+ * as \c bsstep or \c rkqs.
  *
  * \return Definite integral of the function over the specified interval.
  *
@@ -58,7 +53,7 @@ quad(Function func, double x1, double x2, double &eps, Rule rule) {
 
   Quad_To_ODE<Function> derivs(func);
 
-  typedef typename Function_Traits<Function>::return_type Field;
+  using Field = typename Function_Traits<Function>::return_type;
 
   double x = x1;
   double h = x2 - x1;

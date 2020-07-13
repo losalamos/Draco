@@ -41,9 +41,8 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
 
   set_memory_checking(true);
 
-  double *array = new double[20];
-
-  double *array2 = new double[30];
+  auto *array = new double[20];
+  auto *array2 = new double[30];
 
 #if DRACO_DIAGNOSTICS & 2
   if (total_allocation() == 50 * sizeof(double)) {

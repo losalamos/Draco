@@ -4,16 +4,14 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "linear/svdcmp.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -36,13 +34,13 @@ void tstsvdcmp(UnitTest &ut) {
 
   // Compute U*W*Tr(V) to verify
 
-  double WV[9];
+  array<double, 9> WV;
   WV[0 + 2 * 0] = W[0] * V[0 + 2 * 0];
   WV[0 + 2 * 1] = W[0] * V[1 + 2 * 0];
   WV[1 + 2 * 0] = W[1] * V[0 + 2 * 1];
   WV[1 + 2 * 1] = W[1] * V[1 + 2 * 1];
 
-  double UWV[6];
+  array<double, 6> UWV;
   UWV[0 + 3 * 0] = U[0 + 3 * 0] * WV[0 + 2 * 0] + U[0 + 3 * 1] * WV[1 + 2 * 0];
   UWV[0 + 3 * 1] = U[0 + 3 * 0] * WV[0 + 2 * 1] + U[0 + 3 * 1] * WV[1 + 2 * 1];
   UWV[1 + 3 * 0] = U[1 + 3 * 0] * WV[0 + 2 * 0] + U[1 + 3 * 1] * WV[1 + 2 * 0];

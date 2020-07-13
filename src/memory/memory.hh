@@ -30,7 +30,7 @@ uint64_t largest_allocation();
 void report_leaks(std::ostream &);
 
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
-void out_of_memory_handler(void);
+void out_of_memory_handler();
 
 } // namespace rtt_memory
 

@@ -9,50 +9,20 @@
 //----------------------------------------------------------------------------//
 
 #include "NDI_AtomicMass.hh"
-#include "cdi_ndi/config.h" // definition of NDI_FOUND
 #include "ds++/SystemCall.hh"
 #include <array>
 
 namespace rtt_cdi_ndi {
-
-//============================================================================//
-// Stubbed implementation when NDI is unavailable.
-//============================================================================//
-
-#ifndef NDI_FOUND
-
-//! When NDI is not available, this constructor throws an assertion.
-NDI_AtomicMass::NDI_AtomicMass() {
-  Insist(0, "NDI lib must be available to use default gendir path.");
-}
-
-//! When NDI is not available, this method throws an assertion.
-double NDI_AtomicMass::get_amw(const int /*zaid*/) const {
-  Insist(0, "NDI lib must be available to retrieve amw.");
-}
-
-#else
-
-//============================================================================//
-// Normal implementation
-//============================================================================//
-
-/*!
- * \brief Constructor for NDI atomic mass weight reader, using default path to
- *        NDI gendir file.
- */
-NDI_AtomicMass::NDI_AtomicMass()
-    : gendir_path(rtt_dsxx::getFilenameComponent(
-          std::string(NDI_DATA_DIR) + rtt_dsxx::dirSep + "gendir",
-          rtt_dsxx::FilenameComponent::FC_NATIVE)) {
-  Require(rtt_dsxx::fileExists(gendir_path));
-}
 
 //----------------------------------------------------------------------------//
 /*!
  * \brief Get atomic mass weight of an isotope with given ZAID. Use method due
  *        to T. Saller that invokes multigroup_neutron dataset which includes
  *        atomic weights.
+ *
+ * \pre This function requires gendir_path to be valid.  If it isn't valid this
+ *      NDI_atomicMass object will fail to contruct at run time.
+ *
  * \param[in] zaid ZAID of isotope for which to return the atomic mass.
  * \return mass of isotope in grams
  */
@@ -62,6 +32,7 @@ double NDI_AtomicMass::get_amw(const int zaid) const {
     return pc.electronMass();
   }
 
+#ifdef NDI_FOUND
   int gendir_handle = -1;
   int ndi_error = -9999;
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir_path.c_str());
@@ -92,9 +63,14 @@ double NDI_AtomicMass::get_amw(const int zaid) const {
   Require(ndi_error == 0);
 
   return arr[0] * pc.amu();
-}
-
+#else
+  // NDI gendir not available.
+  Insist(rtt_dsxx::fileExists(gendir_path),
+         "Specified NDI library is not available. gendir_path = " +
+             gendir_path);
+  return 0.0;
 #endif
+}
 
 } // namespace rtt_cdi_ndi
 

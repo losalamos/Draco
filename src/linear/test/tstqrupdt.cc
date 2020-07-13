@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -16,6 +13,7 @@
 #include "linear/qr_unpack.hh"
 #include "linear/qrdcmp.hh"
 #include "linear/qrupdt.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -57,7 +55,7 @@ void tstqrupdt(UnitTest &ut) {
 
   // Check the update
 
-  double QR[2 * 2];
+  std::array<double, 2 * 2> QR;
   QR[0 + 2 * 0] = QT[0 + 2 * 0] * A[0 + 2 * 0] + QT[0 + 2 * 1] * A[1 + 2 * 0];
   QR[0 + 2 * 1] = QT[0 + 2 * 0] * A[0 + 2 * 1] + QT[0 + 2 * 1] * A[1 + 2 * 1];
   QR[1 + 2 * 0] = QT[1 + 2 * 0] * A[0 + 2 * 0] + QT[1 + 2 * 1] * A[1 + 2 * 0];

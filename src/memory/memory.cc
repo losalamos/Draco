@@ -282,7 +282,7 @@ void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
  *
  * \bug untested
  */
-void rtt_memory::out_of_memory_handler(void) {
+void rtt_memory::out_of_memory_handler() {
   std::set_new_handler(nullptr);
   std::cerr << "Unable to allocate requested memory.\n"
             << rtt_dsxx::print_stacktrace("bad_alloc");

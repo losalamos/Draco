@@ -11,6 +11,7 @@
 #ifndef cdi_ndi_NDI_AtomicMass_hh
 #define cdi_ndi_NDI_AtomicMass_hh
 
+#include "cdi_ndi/config.h" // definition of NDI_FOUND
 #include "ds++/Assert.hh"
 #include "ds++/path.hh"
 #include "units/PhysicalConstexprs.hh"
@@ -31,19 +32,20 @@ namespace rtt_cdi_ndi {
  */
 //============================================================================//
 class NDI_AtomicMass {
-
 public:
-  //! Constructor (default gendir path)
-  NDI_AtomicMass();
-
   /*!
    * \brief Constructor for NDI atomic mass weight reader, using custom path to
    *        NDI gendir file.
    * \param[in] gendir_path_in path to gendir file
    */
-  NDI_AtomicMass(const std::string &gendir_path_in)
-      : gendir_path(gendir_path_in) {
-    Require(rtt_dsxx::fileExists(gendir_path));
+  explicit NDI_AtomicMass(
+      std::string gendir_path_in = rtt_dsxx::getFilenameComponent(
+          std::string(NDI_DATA_DIR) + rtt_dsxx::dirSep + "gendir",
+          rtt_dsxx::FilenameComponent::FC_NATIVE))
+      : gendir_path(std::move(gendir_path_in)), pc() {
+    Insist(rtt_dsxx::fileExists(gendir_path),
+           "Specified NDI library is not available. gendir_path = " +
+               gendir_path);
   }
 
   //! Retrieve atomic mass weight for isotope with given ZAID
@@ -51,10 +53,10 @@ public:
 
 private:
   //! Path to gendir file
-  std::string gendir_path;
+  std::string const gendir_path;
 
   //! Unit system
-  const rtt_units::PhysicalConstexprs<rtt_units::CGS> pc;
+  rtt_units::PhysicalConstexprs<rtt_units::CGS> const pc;
 };
 
 } // namespace rtt_cdi_ndi

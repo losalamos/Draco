@@ -43,15 +43,14 @@ namespace rtt_linear {
  * \post \c d.size()==n
  * \post \c e.size()==n
  */
-template <class FieldVector1, class FieldVector2, class FieldVector3>
+template <typename FieldVector1, typename FieldVector2, typename FieldVector3>
 void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
   Require(a.size() == n * n);
   // O(N*N)    Require(is_symmetric_matrix(a,n));
   Require(n > 0);
 
   using namespace rtt_dsxx;
-
-  typedef typename FieldVector1::value_type Field;
+  using Field = typename FieldVector1::value_type;
 
   // minimum representable value
   double const mrv = std::numeric_limits<Field>::min();

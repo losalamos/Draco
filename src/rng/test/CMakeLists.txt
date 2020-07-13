@@ -61,7 +61,7 @@ add_scalar_tests(
 target_include_directories( Ut_rng_ut_uniform_exe
   PRIVATE $<BUILD_INTERFACE:${rng_SOURCE_DIR}> )
 
- if( USE_CUDA )
+ if( USE_CUDA AND NOT CMAKE_CXX_COMPILER_ID MATCHES XL )
 
   set( test_sources_cuda
      ${PROJECT_SOURCE_DIR}/kat_cuda.cu)

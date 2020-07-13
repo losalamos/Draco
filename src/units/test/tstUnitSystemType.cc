@@ -57,8 +57,8 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
     FAILMSG(msg.str());
   }
 
-  // Establish a fundamental unit for the length, mass and Temperature
-  // portions of UnitSystemType...
+  // Establish a fundamental unit for the length, mass and Temperature portions
+  // of UnitSystemType...
   ust.L(rtt_units::L_m).M(rtt_units::M_kg).T(rtt_units::T_K);
 
   // Check that the object was updated...
@@ -131,7 +131,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
   ust.Q(rtt_units::Q_mol)
       .A(rtt_units::A_rad)
       .I(rtt_units::I_amp)
-      .t(rtt_units::t_sh, rtt_units::t_cf, rtt_units::t_long_labels);
+      .t(rtt_units::t_sh, rtt_units::t_cf.data(), rtt_units::t_long_labels);
 
   //---------------------------------------------------------------------//
 
@@ -159,8 +159,9 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
-        << "Q().label() == \"mol\".  Instead the value returned was: \""
+        << R"(Q().label() == "mol".  Instead the value returned was: ")"
         << ust.Q().label() << "\"" << endl;
+    // " fix emacs font-lock issue with odd number of quotes.
     FAILMSG(msg.str());
   }
   //---------------------------------------------------------------------//
@@ -255,7 +256,6 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------//
-
 void test_qualified_ctor(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::UnitSystemType;

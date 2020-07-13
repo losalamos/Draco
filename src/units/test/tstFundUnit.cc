@@ -30,7 +30,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   using std::ostringstream;
   using std::string;
 
-  FundUnit<Ltype> myLength(L_null, L_cf, L_labels);
+  FundUnit<Ltype> myLength(L_null, L_cf.data(), L_labels);
 
   // Is the enum value correct?
   if (myLength.enumVal() == L_null) {
@@ -58,7 +58,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "Unit label was not set correctly "
-        << "(\"" << myLength.label() << "\" != \"NA\")" << endl;
+        << "(\"" << myLength.label() << R"(" != "NA"))" << endl; // " fix emacs
     FAILMSG(msg.str());
   }
 
@@ -66,7 +66,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
 
   // Use "long labels" string...
 
-  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf,
+  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf.data(),
                             rtt_units::L_long_labels);
 
   // Is the label correct?

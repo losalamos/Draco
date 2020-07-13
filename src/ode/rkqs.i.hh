@@ -63,7 +63,7 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
                       dc6 = c6 - 0.25;
 
   Check(y.size() < UINT_MAX);
-  const unsigned n = static_cast<unsigned>(y.size());
+  const auto n = static_cast<unsigned>(y.size());
 
   yout.resize(n);
   yerr.resize(n);
@@ -155,7 +155,7 @@ void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
   using std::vector;
 
   Check(y.size() < UINT_MAX);
-  const unsigned n = static_cast<unsigned>(y.size());
+  const auto n = static_cast<unsigned>(y.size());
 
   double const SAFETY = 0.9;
   double const PSHRNK = -0.25;

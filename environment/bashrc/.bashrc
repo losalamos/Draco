@@ -129,7 +129,7 @@ if [[ ${INTERACTIVE} == true ]]; then
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
     export HTTPS_PROXY=$http_proxy
-    export no_proxy=lanl.gov
+    export no_proxy=".lanl.gov,127.0.0.1,localhost"
     export NO_PROXY=$no_proxy
   fi
 

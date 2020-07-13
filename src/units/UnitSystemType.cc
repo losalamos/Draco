@@ -14,25 +14,25 @@ namespace rtt_units {
 
 //! default constructor
 UnitSystemType::UnitSystemType()
-    : d_L(FundUnit<Ltype>(L_null, L_cf, L_labels)),
-      d_M(FundUnit<Mtype>(M_null, M_cf, M_labels)),
-      d_t(FundUnit<ttype>(t_null, t_cf, t_labels)),
-      d_T(FundUnit<Ttype>(T_null, T_cf, T_labels)),
-      d_I(FundUnit<Itype>(I_null, I_cf, I_labels)),
-      d_A(FundUnit<Atype>(A_null, A_cf, A_labels)),
-      d_Q(FundUnit<Qtype>(Q_null, Q_cf, Q_labels)) { /* empty */
+    : d_L(FundUnit<Ltype>(L_null, L_cf.data(), L_labels)),
+      d_M(FundUnit<Mtype>(M_null, M_cf.data(), M_labels)),
+      d_t(FundUnit<ttype>(t_null, t_cf.data(), t_labels)),
+      d_T(FundUnit<Ttype>(T_null, T_cf.data(), T_labels)),
+      d_I(FundUnit<Itype>(I_null, I_cf.data(), I_labels)),
+      d_A(FundUnit<Atype>(A_null, A_cf.data(), A_labels)),
+      d_Q(FundUnit<Qtype>(Q_null, Q_cf.data(), Q_labels)) { /* empty */
 }
 
 //! fully qualified constructor
 UnitSystemType::UnitSystemType(Ltype myL, Mtype myM, ttype myt, Ttype myT,
                                Itype myI, Atype myA, Qtype myQ)
-    : d_L(FundUnit<Ltype>(myL, L_cf, L_labels)),
-      d_M(FundUnit<Mtype>(myM, M_cf, M_labels)),
-      d_t(FundUnit<ttype>(myt, t_cf, t_labels)),
-      d_T(FundUnit<Ttype>(myT, T_cf, T_labels)),
-      d_I(FundUnit<Itype>(myI, I_cf, I_labels)),
-      d_A(FundUnit<Atype>(myA, A_cf, A_labels)),
-      d_Q(FundUnit<Qtype>(myQ, Q_cf, Q_labels)) { /* empty */
+    : d_L(FundUnit<Ltype>(myL, L_cf.data(), L_labels)),
+      d_M(FundUnit<Mtype>(myM, M_cf.data(), M_labels)),
+      d_t(FundUnit<ttype>(myt, t_cf.data(), t_labels)),
+      d_T(FundUnit<Ttype>(myT, T_cf.data(), T_labels)),
+      d_I(FundUnit<Itype>(myI, I_cf.data(), I_labels)),
+      d_A(FundUnit<Atype>(myA, A_cf.data(), A_labels)),
+      d_Q(FundUnit<Qtype>(myQ, Q_cf.data(), Q_labels)) { /* empty */
 }
 
 //! Copy constructor

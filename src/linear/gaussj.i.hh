@@ -28,7 +28,7 @@ using std::sqrt;
 template <class DoubleRandomContainer>
 bool is_square(DoubleRandomContainer const &A) {
   Check(A.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(A.size());
+  auto const n = static_cast<unsigned>(A.size());
   for (unsigned i = 0; i < n; ++i) {
     if (A[i].size() != n)
       return false;
@@ -146,7 +146,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   double const mrv =
       std::numeric_limits<typename RandomContainer::value_type>::min();
   Check(A.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(A.size());
+  auto const n = static_cast<unsigned>(A.size());
 
   vector<int> indxc(n);
   vector<int> indxr(n);

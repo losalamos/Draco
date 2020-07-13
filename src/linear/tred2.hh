@@ -14,7 +14,7 @@
 namespace rtt_linear {
 
 //! Householder-reduce a symmetric matrix
-template <class FieldVector1, class FieldVector2, class FieldVector3>
+template <typename FieldVector1, typename FieldVector2, typename FieldVector3>
 void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e);
 
 } // end namespace rtt_linear

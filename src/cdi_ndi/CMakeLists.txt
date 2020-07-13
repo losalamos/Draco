@@ -44,7 +44,8 @@ if(TARGET NDI::ndi)
   endif()
   set( NDI_DATA_DIR "${NDI_DATA_DIR}" CACHE PATH
     "Location of NDI gendir file." )
-
+else()
+  set(NDI_DATA_DIR "notfound")
 endif()
 
 # ---------------------------------------------------------------------------- #

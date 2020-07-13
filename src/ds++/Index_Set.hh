@@ -34,14 +34,10 @@ public:
   Index_Set() = default;
 
   //! Construct with pointer to sizes
-  explicit Index_Set(unsigned const *const dimensions) : m_array_size(0) {
-    set_size(dimensions);
-  }
+  explicit Index_Set(unsigned const *const dimensions) { set_size(dimensions); }
 
   //! Construct with all dimensions equal
-  explicit Index_Set(const unsigned dimension) : m_array_size(0) {
-    set_size(dimension);
-  }
+  explicit Index_Set(const unsigned dimension) { set_size(dimension); }
 
   //! Destructor
   virtual ~Index_Set() = default;

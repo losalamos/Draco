@@ -14,14 +14,11 @@
 
 namespace rtt_linear {
 
-using std::vector;
-
 //----------------------------------------------------------------------------//
 // T1=T2=T3=vector<double>
 //----------------------------------------------------------------------------//
-
-template DLL_PUBLIC_linear void tred2(vector<double> &a, unsigned n,
-                                      vector<double> &d, vector<double> &e);
+template void tred2(std::vector<double> &a, unsigned n, std::vector<double> &d,
+                    std::vector<double> &e);
 
 } // end namespace rtt_linear
 

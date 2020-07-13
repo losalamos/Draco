@@ -50,12 +50,19 @@ message(" ")
 message( STATUS "Configuring Level 1 packages --" )
 add_dir_if_exists( ds++ )
 
-# Only test ds++ if CI_CLANG_TIDY is running
+# Only test selected componenets if CI_CLANG_TIDY is running
 
 # Level 2
 message(" ")
 message( STATUS "Configuring Level 2 packages --" )
-add_dir_if_exists( c4 )           # needs ds++
+add_dir_if_exists( c4 )            # needs ds++
+add_dir_if_exists( FortranChecks ) # needs ds++
+add_dir_if_exists( lapack_wrap )   # needs ds++
+add_dir_if_exists( linear )        # needs ds++
+add_dir_if_exists( memory )        # needs ds++
+add_dir_if_exists( mesh_element  ) # needs ds++
+add_dir_if_exists( ode )           # needs ds++
+add_dir_if_exists( units )         # needs ds++
 
 if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi )          # needs ds++
@@ -63,14 +70,7 @@ add_dir_if_exists( device )       # needs ds++
 if( USE_MDSPAN )
   add_dir_if_exists( experimental ) # only the tests need ds++
 endif()
-add_dir_if_exists( FortranChecks ) # needs ds++
-add_dir_if_exists( lapack_wrap )  # needs ds++
-add_dir_if_exists( linear )       # needs ds++
-add_dir_if_exists( memory )       # needs ds++
-add_dir_if_exists( mesh_element ) # needs ds++
-add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( plot2D )
-add_dir_if_exists( units )        # needs ds++
 
 # Level 3
 message(" ")

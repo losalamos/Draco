@@ -64,8 +64,6 @@ struct CGSH {
 //==============================================================================
 template <typename UNITS> class PhysicalConstexprs {
 public:
-  //! Default constructor
-  constexpr PhysicalConstexprs() {}
 
   //! accesses Avogadro's number
   constexpr double avogadro() const { return d_avogadro; }

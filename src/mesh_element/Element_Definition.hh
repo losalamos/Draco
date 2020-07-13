@@ -275,8 +275,7 @@ public:
    * This destructor is virtual, implying that Element_Definition is extensible
    * by inheritance.
    */
-  virtual ~Element_Definition(void) { /*empty*/
-  }
+  virtual ~Element_Definition() = default;
 
   // ACCESSORS
 
@@ -284,26 +283,26 @@ public:
    * \brief Returns the name of an element.
    * \return Returns the element name as a string.
    */
-  std::string get_name(void) const { return name; }
+  std::string get_name() const { return name; }
 
   /*!
    * \brief Returns the type of an element.
    * \return Returns the element type.
    */
-  Element_Type get_type(void) const { return type; }
+  Element_Type get_type() const { return type; }
 
   /*!
    * \brief Returns the total number of nodes in an element.
    * \return Total number of nodes in an element.
    */
-  unsigned get_number_of_nodes(void) const { return number_of_nodes; }
+  unsigned get_number_of_nodes() const { return number_of_nodes; }
   /*!
    * \brief Returns the dimension of an element. i.e. nodes return 0, lines
    *        return 1, quads return 2, hexahedra return 3.
    *
    * \return The element dimension (0, 1, 2, or 3).
    */
-  unsigned get_dimension(void) const { return dimension; }
+  unsigned get_dimension() const { return dimension; }
   /*!
    * \brief Returns the number of sides on an element.
    *
@@ -311,7 +310,7 @@ public:
    *         dimensional element. i.e. nodes return 0, lines return 2, quads
    *         return 4, hexahedra return 6.
    */
-  unsigned get_number_of_sides(void) const { return number_of_sides; }
+  unsigned get_number_of_sides() const { return number_of_sides; }
 
   /*!
    * \brief Returns the type (i.e. quad, tri, etc.) of a specified element side.
