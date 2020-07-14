@@ -175,7 +175,12 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     }
     // Check assertion flag and size of wait_all_with_source result:
     FAIL_IF(nullreq_failed);
+    // Result will be size zero in the scalar build:
+#ifdef C4_SCALAR
+    FAIL_IF_NOT(result.size() == 0);
+#else
     FAIL_IF_NOT(result.size() == 2);
+#endif
   }
 }
 
