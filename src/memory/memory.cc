@@ -37,7 +37,7 @@ uint64_t largest;
 uint64_t check_peak = numeric_limits<uint64_t>::max();
 // normally set in debugger to trigger a breakpoint
 
-uint64_t check_large = numeric_limits<uint64_t>::max();
+uint64_t check_large = 176160768UL; // numeric_limits<uint64_t>::max();
 // normally set in debugger to trigger a breakpoint
 
 uint64_t check_select_size = 504U;
@@ -45,6 +45,9 @@ uint64_t check_select_size = 504U;
 
 uint64_t check_select_count = 0U;
 // normally set in debugger to trigger a breakpoint
+
+unsigned dump_count = 0;
+// indicates whether to dump the first few largest allocations and exit
 
 bool is_active = false;
 
@@ -135,6 +138,16 @@ void report_leaks(ostream &out) {
   }
 }
 
+//----------------------------------------------------------------------------------------//
+uint64_t set_check_peak(uint64_t new_peak) {
+  uint64_t Result = check_peak;
+  check_peak = new_peak;
+  return Result;
+}
+
+//----------------------------------------------------------------------------------------//
+void set_dump_and_exit(unsigned new_dump_count) { dump_count = new_dump_count; }
+
 } // end namespace rtt_memory
 
 using namespace rtt_memory;
@@ -182,6 +195,28 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
         // pause execution when total memory exceeds the check_peak value (which
         // the programmer typically also sets in the debugger).
         cout << "Reached check peak value" << endl;
+        if (dump_count > 0) {
+          map<size_t, size_t> alloc_sizes;
+          for (auto v : st.alloc_map) {
+            if (alloc_sizes.find(v.second.size) == alloc_sizes.end()) {
+              alloc_sizes[v.second.size] = 1;
+            } else {
+              alloc_sizes[v.second.size]++;
+            }
+          }
+          auto iter = alloc_sizes.rbegin();
+          if (alloc_sizes.find(n) == alloc_sizes.end()) {
+            alloc_sizes[n] = 1;
+          } else {
+            alloc_sizes[n]++;
+          }
+
+          for (unsigned i = 0; i < dump_count; ++i) {
+            cout << (*iter).first << ' ' << (*iter).second << endl;
+            ++iter;
+          }
+          exit(EXIT_SUCCESS);
+        }
       }
     }
     if (n >= check_large) {

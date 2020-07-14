@@ -32,6 +32,10 @@ void report_leaks(std::ostream &);
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
 void out_of_memory_handler(void);
 
+// To set the peak at which to break
+uint64_t set_check_peak(uint64_t);
+void set_dump_and_exit(unsigned);
+
 } // namespace rtt_memory
 
 #endif
