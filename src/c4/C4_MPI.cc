@@ -167,7 +167,7 @@ void blocking_probe(int source, int tag, int &message_size) {
 }
 
 //----------------------------------------------------------------------------//
-void wait_all(unsigned count, C4_Req *requests) {
+void wait_all(const unsigned count, C4_Req *const requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)
@@ -187,7 +187,8 @@ void wait_all(unsigned count, C4_Req *requests) {
 }
 
 //----------------------------------------------------------------------------//
-std::vector<int> wait_all_with_source(unsigned count, C4_Req *requests) {
+std::vector<int> wait_all_with_source(const unsigned count,
+                                      C4_Req *const requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)
