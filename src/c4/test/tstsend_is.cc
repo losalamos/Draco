@@ -105,6 +105,86 @@ MPI_Datatype Custom::MPI_Type = MPI_Datatype();
 #endif
 
 //----------------------------------------------------------------------------//
+void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
+
+  using namespace std;
+  int const pid = rtt_c4::node();
+
+  if (pid == 0)
+    cout << "Test wait_all() corner cases..." << endl;
+
+  // Zero count case:
+  {
+    // C4_Req communication handles.
+    rtt_c4::C4_Req *const comm(nullptr);
+    const unsigned count(0);
+
+    // No actual messages to send -- verify that wait_all
+    // and wait_all_with_source correctly return.
+    bool zerocount_failed = false;
+
+    // result output from source version of wait_all:
+    std::vector<int> result;
+
+    try {
+      wait_all(count, comm);
+    } catch (...) {
+      zerocount_failed = true;
+    }
+    // Check assertion flag and size of wait_all_with_source result:
+    FAIL_IF(zerocount_failed);
+
+    // wait_all_with_source version:
+    zerocount_failed = false;
+    try {
+      result = wait_all_with_source(count, comm);
+    } catch (...) {
+      zerocount_failed = true;
+    }
+    // Check assertion flag and size of wait_all_with_source result:
+    FAIL_IF(zerocount_failed);
+    FAIL_IF_NOT(result.size() == 0);
+  }
+
+  // Inactive request case:
+  {
+    // C4_Req communication handles.
+    std::array<rtt_c4::C4_Req, 2> comm;
+
+    // Result from wait_all_with_source call
+    std::vector<int> result;
+
+    // Test a null op -- I didn't actually send anything, so the
+    // MPI requests should be set to MPI_REQUEST_NULL and the wait_all
+    // should return immediately,
+    bool nullreq_failed = false;
+    try {
+      wait_all(comm.size(), &comm[0]);
+    } catch (...) {
+      nullreq_failed = true;
+    }
+    // Check assertion flag:
+    FAIL_IF(nullreq_failed);
+
+    // wait_all_with_source version:
+    nullreq_failed = false;
+    try {
+      result = wait_all_with_source(comm.size(), &comm[0]);
+    } catch (...) {
+      nullreq_failed = true;
+    }
+    // Check assertion flag and size of wait_all_with_source result:
+    FAIL_IF(nullreq_failed);
+    // Result will be size zero in the scalar build:
+#ifdef C4_SCALAR
+    FAIL_IF_NOT(result.size() == 0);
+#else
+    FAIL_IF_NOT(result.size() == 2);
+#endif
+  }
+}
+
+//----------------------------------------------------------------------------//
 void test_simple(rtt_dsxx::UnitTest &ut) {
   // borrowed from http://mpi.deino.net/mpi_functions/MPI_Issend.html.
   using namespace std;
@@ -146,7 +226,16 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
                       right);
 
       // wait for all communication to finish
-      rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
+      vector<int> sources = rtt_c4::wait_all_with_source(
+          static_cast<unsigned>(comm.size()), &comm[0]);
+
+      // Check that the source IDs were returned correctly:
+      FAIL_IF_NOT(sources.size() == 2);
+      // First comm is receive from rank "left":
+      FAIL_IF_NOT(sources[0] == left);
+      // NOTE: KPL: the value of MPI_SOURCE for a send
+      // operation does not appear to be set in all implementations, so we don't check
+      // the value for the send operation.
 
       // expected results
       vector<int> expected(bsize);
@@ -1094,6 +1183,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
+    test_zerocount_and_inactive(ut);
     test_simple(ut);
     test_send_custom(ut);
   }

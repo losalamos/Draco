@@ -17,8 +17,6 @@
 
 namespace rtt_linear {
 
-using std::vector;
-
 //----------------------------------------------------------------------------//
 /*!
  * \brief LU-decompose a nonsingular matrix.
@@ -37,12 +35,12 @@ void ludcmp(FieldVector &a, IntVector &indx,
             typename FieldVector::value_type &d) {
   Require(a.size() == indx.size() * indx.size());
 
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   Check(indx.size() < UINT_MAX);
   auto const n = static_cast<unsigned>(indx.size());
 
-  vector<Field> vv(n);
+  std::vector<Field> vv(n);
 
   d = 1.0;
   for (unsigned i = 0; i < n; ++i) {

@@ -202,10 +202,10 @@ void show_cookies(std::string const &cond, std::string const &file,
 
 /*! \brief A special version of insist that does not throw.  Useful for GPU
  *         code. \sa device/config.h.in */
-__host__ __device__ constexpr void no_exception_insist(char const *const cond,
-                                                       char const *const msg,
-                                                       char const *const file,
-                                                       int const line) {
+__host__ __device__ inline void no_exception_insist(char const *const cond,
+                                                    char const *const msg,
+                                                    char const *const file,
+                                                    int const line) {
   printf("Insist: %s, failed in %s, line %d.\n", cond, file, line);
   printf("The following message was provided: \"%s\"", msg);
   return;

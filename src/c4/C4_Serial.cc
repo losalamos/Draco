@@ -111,9 +111,11 @@ void blocking_probe(int /* source */, int /* tag */, int & /* message_size */) {
   Insist(false, "no messages expected in serial programs!");
 }
 
-void wait_all(unsigned /*count*/, C4_Req * /*requests*/) {
-  // Insist(false, "no messages expected in serial programs!");
-  return;
+void wait_all(unsigned /*count*/, C4_Req *const /*requests*/) { return; }
+
+std::vector<int> wait_all_with_source(unsigned /*count*/,
+                                      C4_Req *const /*requests*/) {
+  return std::vector<int>();
 }
 
 unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {

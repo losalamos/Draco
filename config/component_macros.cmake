@@ -542,7 +542,7 @@ macro( add_scalar_tests test_sources )
   separate_arguments(MPIEXEC_PREFLAGS)
   if( "${MPIEXEC_EXECUTABLE}" MATCHES "srun" OR
       "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
-    set( RUN_CMD ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} -n 1 )
+    set( RUN_CMD ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1 )
   else()
     unset( RUN_CMD )
   endif()

@@ -167,7 +167,7 @@ void blocking_probe(int source, int tag, int &message_size) {
 }
 
 //----------------------------------------------------------------------------//
-void wait_all(unsigned count, C4_Req *requests) {
+void wait_all(const unsigned count, C4_Req *const requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)
@@ -184,6 +184,37 @@ void wait_all(unsigned count, C4_Req *requests) {
       MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
   Check(check == MPI_SUCCESS);
   return;
+}
+
+//----------------------------------------------------------------------------//
+std::vector<int> wait_all_with_source(const unsigned count,
+                                      C4_Req *const requests) {
+
+  // Nothing to do if count is zero.
+  if (count == 0)
+    return std::vector<int>();
+
+  // Return value -- rank IDs for all message sources.
+  std::vector<int> msg_sources(count);
+
+  std::vector<MPI_Request> array_of_requests(count);
+  // This is needed to obtain the source rank for each message:
+  std::vector<MPI_Status> array_of_statuses(count);
+  for (unsigned i = 0; i < count; ++i) {
+    if (requests[i].inuse())
+      array_of_requests[i] = requests[i].r();
+    else
+      array_of_requests[i] = MPI_REQUEST_NULL;
+  }
+  Remember(int check =)
+      MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
+  Check(check == MPI_SUCCESS);
+
+  for (unsigned p = 0; p < count; p++) {
+    msg_sources[p] = array_of_statuses[p].MPI_SOURCE;
+  }
+
+  return msg_sources;
 }
 
 //----------------------------------------------------------------------------//

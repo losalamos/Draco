@@ -50,7 +50,7 @@ namespace rtt_linear {
  * \post \c x.size()==n
  * \post \c x satisfies \f$UWVx=b\f$
  */
-template <class RandomContainer>
+template <typename RandomContainer>
 void svbksb(const RandomContainer &u, const RandomContainer &w,
             const RandomContainer &v, const unsigned m, const unsigned n,
             const RandomContainer &b, RandomContainer &x) {

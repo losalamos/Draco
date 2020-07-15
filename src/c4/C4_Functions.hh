@@ -429,7 +429,27 @@ void blocking_probe(int source, int tag, int &message_size);
  * \param requests
  * Set of requests to wait on.
  */
-void wait_all(unsigned count, C4_Req *requests);
+void wait_all(const unsigned count, C4_Req *const requests);
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Wait until every one of a set of posted sends/receives is complete.
+ *
+ * This version returns source rank information for RECEIVE REQUESTS ONLY
+ * WARNING: If you call this function with send requests, the source rank ID
+ * might not be set in MPI_STATUS. REPEAT: THE RETURN VALUE IS VALID FOR
+ * RECEIVE REQUESTS ONLY!!!! 
+ *
+ * \pre All requests passed to this function must be receive requests
+ *
+ * \param count
+ * Size of the set of requests to wait on.
+ * \param requests
+ * Set of requests to wait on.
+ * \return A vector containing the source rank IDs for received messages.
+ */
+std::vector<int> wait_all_with_source(const unsigned count,
+                                      C4_Req *const requests);
 
 //----------------------------------------------------------------------------//
 /*!
