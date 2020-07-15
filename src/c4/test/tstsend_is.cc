@@ -119,8 +119,8 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     rtt_c4::C4_Req *const comm(nullptr);
     const unsigned count(0);
 
-    // No actual messages to send -- verify that wait_all
-    // and wait_all_with_source correctly return.
+    // No actual messages to send -- verify that wait_all and
+    // wait_all_with_source correctly return.
     bool zerocount_failed = false;
 
     // result output from source version of wait_all:
@@ -154,12 +154,12 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     // Result from wait_all_with_source call
     std::vector<int> result;
 
-    // Test a null op -- I didn't actually send anything, so the
-    // MPI requests should be set to MPI_REQUEST_NULL and the wait_all
-    // should return immediately,
+    // Test a null op -- I didn't actually send anything, so the MPI requests
+    // should be set to MPI_REQUEST_NULL and the wait_all should return
+    // immediately,
     bool nullreq_failed = false;
     try {
-      wait_all(comm.size(), &comm[0]);
+      wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
     } catch (...) {
       nullreq_failed = true;
     }
@@ -169,7 +169,8 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     // wait_all_with_source version:
     nullreq_failed = false;
     try {
-      result = wait_all_with_source(comm.size(), &comm[0]);
+      result =
+          wait_all_with_source(static_cast<unsigned>(comm.size()), &comm[0]);
     } catch (...) {
       nullreq_failed = true;
     }

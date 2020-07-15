@@ -106,7 +106,9 @@
 /* restrict is valid keyword in C99 but not in C++11.  Protect this define so
  * that it is set only for C++ */
 #ifdef __cplusplus
+#if ! defined(MSVC) || MSVC_VERSION < 1927
 #define restrict @RESTRICT_KEYWORD@
+#endif
 #endif /* __cplusplus */
 
 /* Platform checks for various functions */
@@ -175,10 +177,10 @@
  * \page diagnostics Diagnostics Levels
  *
  * The diagnostics can be turned on in three different levels based on logical
- * bit comparisions.  The following shows the levels:
+ * bit comparisons.  The following shows the levels:
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
  * - Bit 1, (010), activates Level 2 (some performance impact and possible
- *                                    intrusive output, rtt_memory trackin is
+ *                                    intrusive output, rtt_memory tracking is
  *                                    activated.)
  *                 and a stack trace will be added to DbC messages.
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
@@ -197,7 +199,7 @@
  * levels.  The default setting is 0.
  *
  * The intent is to use Level 1 for high-level, low cost diagnostics that are
- * always active (ie. User "Education").  Levels 2 and 3 are for low-level
+ * always active (i.e. User "Education").  Levels 2 and 3 are for low-level
  * diagnostics that could incur a performance penalty.  However, all of these
  * usages are up to the client.
  *
@@ -290,7 +292,7 @@
 /* When using GCC, provide a CPP macro that tells the compiler to
    expect (and not warn) if a variable is defined but not used.
    This warning can be suppressed by marking the variable with a
-   speciall attribute.  See jayenne/src/mc/Constants.hh. */
+   special attribute.  See jayenne/src/mc/Constants.hh. */
 #ifdef __GNUC__
 #define VARIABLE_IS_NOT_USED __attribute__ ((unused))
 #else
