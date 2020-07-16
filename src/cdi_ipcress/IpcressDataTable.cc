@@ -28,8 +28,8 @@ double unary_log(double x) { return std::log(x); }
  * \brief IpcressData Table constructor.
  *
  * The constructor requires that the data state be completely defined.  With
- * this information the DataTypeKey is set, then the data table sizes are
- * loaded and finally the table data is loaded.
+ * this information the DataTypeKey is set, then the data table sizes are loaded
+ * and finally the table data is loaded.
  *
  * \param[in] in_opacityEnergyDescriptor This string variable specifies the
  *     energy model { "gray" or "mg" } for the opacity data contained in this
@@ -59,10 +59,9 @@ IpcressDataTable::IpcressDataTable(
     : ipcressDataTypeKey(""), dataDescriptor(""),
       opacityEnergyDescriptor(std::move(in_opacityEnergyDescriptor)),
       opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
-      fieldNames(in_fieldNames), matID(in_matID),
-      // numOpacities( 0 ),
-      logTemperatures(), temperatures(), logDensities(), densities(),
-      groupBoundaries(), logOpacities() {
+      fieldNames(in_fieldNames), matID(in_matID), logTemperatures(),
+      temperatures(), logDensities(), densities(), groupBoundaries(),
+      logOpacities() {
   // Obtain the Ipcress keyword for the opacity data type specified by the
   // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords are:
   // {ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray} This function also
@@ -204,15 +203,14 @@ void IpcressDataTable::loadDataTable(
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief This function returns "true" if "key" is found in the list of
- *        "keys". This is a static member function.
+ * \brief This function returns "true" if "key" is found in the list of "keys".
+ *        This is a static member function.
  */
 template <typename T>
 bool IpcressDataTable::key_available(T const &key,
                                      std::vector<T> const &keys) const {
-  // Loop over all available keys.  If the requested key matches one in the
-  // list return true.  If we reach the end of the list without a match return
-  // false.
+  // Loop over all available keys.  If the requested key matches one in the list
+  // return true.  If we reach the end of the list without a match return false.
   for (size_t i = 0; i < keys.size(); ++i)
     if (key == keys[i])
       return true;
