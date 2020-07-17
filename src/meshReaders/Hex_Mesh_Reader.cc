@@ -140,7 +140,7 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
 
   // Alternatively, the private data of the class could be changed so that the
   // work done here is done in the constructor.  This would be more efficient if
-  // this is going to be used repetively.
+  // this is going to be used repetitively.
   std::vector<std::vector<unsigned>> result;
   for (unsigned i = 0; i < ncells; i++)
     result.push_back(ipar[i]);

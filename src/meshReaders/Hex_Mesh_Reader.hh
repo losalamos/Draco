@@ -118,7 +118,7 @@ private:
 /*!
  * \page rtt_meshreaders_hexformat The CIC-19 Hex Mesh File Format
  *
- * <h3> Introduction </h3>
+ * **Introduction**
 
  * The CIC-19 Hex Format was developed primarily for small-scale testing and
  * development purposes. It's chief virtue is its simplicity.  A Hex mesh format
@@ -137,7 +137,8 @@ private:
  * Support for reading this file format is provided by the
  * rtt_meshReaders::Hex_Mesh_Reader class.
 
- * <h3> Format Details </h3>
+ * **Format Details**
+ *
  * Node and element numbering is one-based on the
  * file. The format is as follows:
  * - Line 1 -- "cic19_hex_mesh" The keyword to ID the file.
