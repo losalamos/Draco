@@ -11,10 +11,10 @@
 #include "utilities.hh"
 #include "units/PhysicalConstants.hh"
 #include "units/PhysicalConstantsSI.hh"
-#include <ctype.h>
-#include <errno.h>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
 #include <sstream>
-#include <stdlib.h>
 
 namespace // anonymous
 {
@@ -142,7 +142,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens) {
                              errno != ERANGE,
                          "integer value overflows");
 
-  Check(endptr != NULL);
+  Check(endptr != nullptr);
   // Check(Result<UINT32_MAX);
   return static_cast<unsigned>(Result);
 }
@@ -185,7 +185,7 @@ int parse_integer(Token_Stream &tokens) {
     if (Result != static_cast<int>(Result) || errno == ERANGE) {
       tokens.report_semantic_error("integer value overflows");
     }
-    Check(endptr != NULL && *endptr == '\0');
+    Check(endptr != nullptr && *endptr == '\0');
     // Check(std::abs(Result)<INT32_MAX);
     return static_cast<int>(Result);
   } else {
@@ -241,7 +241,7 @@ double parse_real(Token_Stream &tokens) {
         tokens.report("note: real value underflows: " + text);
       }
     }
-    Check(endptr != NULL && *endptr == '\0');
+    Check(endptr != nullptr && *endptr == '\0');
     return sign * Result;
   } else {
     tokens.report_syntax_error(token, "expected a real number");
@@ -285,10 +285,10 @@ double parse_nonnegative_real(Token_Stream &tokens) {
 /*!
  * \param tokens Token stream from which to parse the quantity.
  * \param x On return, contains the parsed vector components.
- * \pre \c x!=NULL
+ * \pre \c x!=nullptr
  */
-void parse_vector(Token_Stream &tokens, double x[]) {
-  Require(x != NULL);
+void parse_vector(Token_Stream &tokens, double *x) {
+  Require(x != nullptr);
 
   // At least one component must be present.
   x[0] = parse_real(tokens);
@@ -312,10 +312,10 @@ void parse_vector(Token_Stream &tokens, double x[]) {
  * \param x On return, contains the parsed vector components.
  * \param size size of parameter x.
  *
- * \pre \c x!=NULL
+ * \pre \c x!=nullptr
  */
-void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
-  Require(x != NULL);
+void parse_unsigned_vector(Token_Stream &tokens, unsigned *x, unsigned size) {
+  Require(x != nullptr);
 
   for (unsigned i = 0; i < size; ++i) {
     if (at_real(tokens)) {

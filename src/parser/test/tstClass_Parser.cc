@@ -49,7 +49,7 @@ public:
 protected:
   // DATA
 
-  double parsed_insouciance;
+  double parsed_insouciance{-1.0};
   bool context;
 
 private:
@@ -92,12 +92,12 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
 
 //----------------------------------------------------------------------------//
 Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const context_in)
-    : parsed_insouciance(-1.0), context(context_in) // sentinel value
+    : context(context_in) // sentinel value
 {
-  Keyword const keywords[] = {
-      {"insouciance", parse_insouciance_, 0, ""},
-  };
-  initialize(keywords, sizeof(keywords));
+  std::array<Keyword, 1> const keywords{
+      Keyword{"insouciance", parse_insouciance_, 0, ""}};
+  // std::cout << "kt ==> sizeof(keywords) " << sizeof(keywords) << std::endl;
+  initialize(keywords.data(), sizeof(keywords));
 }
 
 //----------------------------------------------------------------------------//

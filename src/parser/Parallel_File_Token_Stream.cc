@@ -20,8 +20,9 @@ using namespace std;
 using namespace rtt_dsxx;
 
 //-------------------------------------------------------------------------//
-Parallel_File_Token_Stream::letter::letter(string const &file_name)
-    : filename_(file_name), infile_(), is_io_processor_(rtt_c4::node() == 0),
+Parallel_File_Token_Stream::letter::letter(string file_name)
+    : filename_(std::move(file_name)), infile_(),
+      is_io_processor_(rtt_c4::node() == 0),
       // The current implementation always designates processor 0 as the I/O
       // processor.
       at_eof_(false), at_error_(false) {
@@ -31,13 +32,11 @@ Parallel_File_Token_Stream::letter::letter(string const &file_name)
 } // namespace rtt_parser
 
 //-------------------------------------------------------------------------//
-/*!
- * \brief Construct an empty Parallel_File_Token_Stream..
- */
+//! Construct an empty Parallel_File_Token_Stream..
 Parallel_File_Token_Stream::Parallel_File_Token_Stream()
     : Text_Token_Stream(), letters_(), letter_(nullptr) {
   Ensure(check_class_invariants());
-  Ensure(location_() == "\"\", line 0");
+  Ensure(Parallel_File_Token_Stream::location_() == "\"\", line 0");
 }
 
 //----------------------------------------------------------------------------//
@@ -57,7 +56,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream()
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
     : Text_Token_Stream(), letters_(), letter_(make_shared<letter>(file_name)) {
   Ensure(check_class_invariants());
-  Ensure(location_() == file_name + ", line 1");
+  Ensure(Parallel_File_Token_Stream::location_() == file_name + ", line 1");
 }
 
 //----------------------------------------------------------------------------//
@@ -81,7 +80,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
     : Text_Token_Stream(ws), letters_(),
       letter_(make_shared<letter>(file_name)) {
   Ensure(check_class_invariants());
-  Ensure(location_() == file_name + ", line 1");
+  Ensure(Parallel_File_Token_Stream::location_() == file_name + ", line 1");
   Ensure(whitespace() == ws);
 }
 
@@ -195,55 +194,51 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
   if (comm_buffer[0] == '\0' || comm_buffer[0] == static_cast<char>(-1)) {
     character_push_back_('\0');
   } else {
-    // Set i to point to the end of the valid sequence of characters in
-    // the communications buffer.
+    // Set i to point to the end of the valid sequence of characters in the
+    // communications buffer.
     unsigned i = 1 + comm_buffer[0];
 
-    // Make sure this is not past the end of the buffer. This should not
-    // be possible unless the data has somewhow become corrupted during
+    // Make sure this is not past the end of the buffer. This should not be
+    // possible unless the data has somewhow become corrupted during
     // transmission.
     if (i > static_cast<unsigned>(numeric_limits<signed char>::max() + 1)) {
       throw runtime_error("interprocessor communications corrupted");
     }
 
     // Copy the transmitted characters into the local character buffer.
+    auto first = comm_buffer.begin();
+    auto last = first + i;
 
-    vector<char>::iterator first = comm_buffer.begin();
-    vector<char>::iterator last = first + i;
-
-    for (vector<char>::iterator iter = first + 1; iter != last; ++iter) {
+    for (auto iter = first + 1; iter != last; ++iter) {
       character_push_back_(*iter);
     }
   }
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- *
  * Only the I/O processor actually reads from the file.  Up to
  * numeric_limits<signed char>::max() characters are read by this processor.
- * The I/O processor then broadcasts a message consisting of a status
- * character and the characters that were read. If the I/O processor has
- * reached the end of the file, the status character is 0. If the I/O
- * processor has encountered some kind of stream error, the status character
- * is set to \c static_cast<char>(-1).  Otherwise the status character is the
- * number of characters to be transmitted.
+ * The I/O processor then broadcasts a message consisting of a status character
+ * and the characters that were read. If the I/O processor has reached the end
+ * of the file, the status character is 0. If the I/O processor has encountered
+ * some kind of stream error, the status character is set to \c
+ * static_cast<char>(-1).  Otherwise the status character is the number of
+ * characters to be transmitted.
  *
  * \return The next character in the text stream.
  *
- * \throw rtt_dsxx::assert If a received message has a length greater than
- * the maximum expected.
+ * \throw rtt_dsxx::assert If a received message has a length greater than the
+ * maximum expected.
  */
-
 void Parallel_File_Token_Stream::letter::fill_character_buffer_(
     vector<char> &comm_buffer) {
   using rtt_c4::broadcast;
 
-  // The first value in the communications buffer will be a status code,
-  // which if positive is the number of valid characters ini the
-  // buffer. This dictates the maximum size needed for the buffer to be the
-  // maximum positive character value, plus one (for the status code
-  // itself).
+  // The first value in the communications buffer will be a status code, which
+  // if positive is the number of valid characters ini the buffer. This dictates
+  // the maximum size needed for the buffer to be the maximum positive character
+  // value, plus one (for the status code itself).
 
   // i points to the current position in the communications buffer. We
   // initialize it to 1 to reserve the first character for the status code.
@@ -275,8 +270,8 @@ void Parallel_File_Token_Stream::letter::fill_character_buffer_(
     }
   }
 
-  vector<char>::iterator first = comm_buffer.begin();
-  vector<char>::iterator last = first + i;
+  auto first = comm_buffer.begin();
+  auto last = first + i;
 
   rtt_c4::broadcast(first, last, first);
 
@@ -296,25 +291,23 @@ void Parallel_File_Token_Stream::letter::fill_character_buffer_(
  *
  * \return \c true if an error has occured; \c false otherwise.
  */
-
 bool Parallel_File_Token_Stream::error_() const {
   return letter_ != nullptr ? letter_->at_error_ : false;
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
- * This function may be used to check whether the end of the text file has
- * been reached.
+ * This function may be used to check whether the end of the text file has been
+ * reached.
  *
  * \return \c true if the end of the text file has been reached; \c false
  *         otherwise.
  */
-
 bool Parallel_File_Token_Stream::end_() const {
   return letter_ != nullptr ? letter_->at_eof_ : true;
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  * Only processor 0 writes the message, to avoid many (possibly thousands) of
@@ -387,11 +380,10 @@ void Parallel_File_Token_Stream::rewind() {
 //-------------------------------------------------------------------------//
 /*!
  *
- * This function rewinds the file stream associated with the file token
- * stream and flushes its internal buffers, so that scanning resumes at
- * the beginning of the file stream.
+ * This function rewinds the file stream associated with the file token stream
+ * and flushes its internal buffers, so that scanning resumes at the beginning
+ * of the file stream.
  */
-
 void Parallel_File_Token_Stream::letter::rewind() {
   if (is_io_processor_) {
     infile_.clear(); // Must clear the error/end flag bits.
@@ -415,9 +407,9 @@ bool Parallel_File_Token_Stream::letter::check_class_invariants() const {
 
 //----------------------------------------------------------------------------//
 /*!
- * \param filename Name of file to be included at this point. On
- * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
- * relative path did not exist.
+ * \param filename Name of file to be included at this point. On return,
+ * replaced with an absolute path based on DRACO_INCLUDE_PATH if the relative
+ * path did not exist.
  */
 void Parallel_File_Token_Stream::push_include(std::string &filename) {
   Text_Token_Stream::push_include(filename);

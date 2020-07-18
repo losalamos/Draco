@@ -25,9 +25,6 @@ void write_c(Unit const &units, ostream &out);
  * This is the only concrete type of Expression that is currently available to
  * clients. The need has never arisen to make any other concrete type of
  * Expression directly available.
- *
- * If you need access to another type of concrete Expression, contact the
- * Capsaicin team.
  */
 //============================================================================//
 class Constant_Expression : public Expression {
@@ -57,17 +54,15 @@ public:
 
   // ACCESSORS
 
-  /*virtual*/ bool is_constant() const override { return true; }
+  bool is_constant() const override { return true; }
 
 private:
   // IMPLEMENTATION
 
-  /*virtual*/ double evaluate_(double const *const) const override {
-    return units().conv;
-  }
+  double evaluate_(double const *const) const override { return units().conv; }
 
-  virtual void write_(Precedence const, vector<string> const &,
-                      ostream &out) const override {
+  void write_(Precedence const, vector<string> const &,
+              ostream &out) const override {
     if (is_compatible(units(), dimensionless)) {
       out << units().conv;
     } else {

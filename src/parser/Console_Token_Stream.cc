@@ -18,7 +18,7 @@ using namespace std;
 //! Use the default Text_Token_Stream user-defined whitespace characters.
 Console_Token_Stream::Console_Token_Stream() {
   Ensure(check_class_invariants());
-  Ensure(location_() == "input");
+  Ensure(Console_Token_Stream::location_() == "input");
 }
 
 //----------------------------------------------------------------------------//
@@ -33,7 +33,7 @@ Console_Token_Stream::Console_Token_Stream(set<char> const &ws,
                                            bool const no_nonbreaking_ws)
     : Text_Token_Stream(ws, no_nonbreaking_ws) {
   Ensure(check_class_invariants());
-  Ensure(location_() == "input");
+  Ensure(Console_Token_Stream::location_() == "input");
   Ensure(whitespace() == ws);
   Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }

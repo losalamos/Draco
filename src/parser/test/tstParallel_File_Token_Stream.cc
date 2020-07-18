@@ -5,10 +5,7 @@
  * \date   Fri Apr  4 09:34:28 2003
  * \brief  Unit tests for class Parallel_File_Token_Stream
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -113,137 +110,106 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     }
     FAIL_IF_NOT(caught);
 
-    if (tokens.error_count() != 1)
-      ITFAILS;
+    FAIL_IF(tokens.error_count() != 1);
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "COLOR")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "COLOR");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "=")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "=");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "BLACK")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "BLACK");
 
     token = tokens.shift();
-    if (token.type() != END)
-      ITFAILS;
+    FAIL_IF(token.type() != END);
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "-")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "-");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != ".563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != ".563e+3");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != ".")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != ".");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "-")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "-");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.e3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.e3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1e3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1e3");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "19090")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "19090");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "01723")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "01723");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0x1111a")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0x1111a");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "8123")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "8123");
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest string\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING || token.text() != "\"manifest string\"");
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING ||
+            token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "@")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "@");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "1")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "1");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "e")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "e");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "x")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "x");
 
     token = tokens.shift();
-    if (token.type() != EXIT)
-      ITFAILS;
+    FAIL_IF(token.type() != EXIT);
+
     token = tokens.shift();
-    if (token.type() != EXIT)
-      ITFAILS;
+    FAIL_IF(token.type() != EXIT);
 
     tokens.rewind();
     token = tokens.lookahead();
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "BLUE")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "BLUE");
 
     // Check invariance even when --with-dbc=0.
-    if (!tokens.check_class_invariants())
-      ITFAILS;
+    FAIL_IF(!tokens.check_class_invariants());
   }
 
   {
@@ -383,7 +349,6 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 }
 
 //----------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

@@ -19,7 +19,7 @@ c_string_vector abstract_class_parser_keys;
 //----------------------------------------------------------------------------//
 c_string_vector::~c_string_vector() {
   Check(data.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(data.size());
+  auto const n = static_cast<unsigned>(data.size());
   for (unsigned i = 0; i < n; ++i) {
     delete[] data[i];
   }

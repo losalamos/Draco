@@ -5,10 +5,7 @@
  * \date   Fri Jul 21 09:10:49 2006
  * \brief  Unit test for functions in Token_Equivalence.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -58,7 +55,6 @@ void tstOne(UnitTest &ut) {
 }
 
 //----------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

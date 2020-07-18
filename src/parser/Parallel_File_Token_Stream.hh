@@ -19,20 +19,18 @@ using std::ifstream;
 using std::set;
 using std::string;
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Parallel file-based token stream
  *
- * \c Parallel_File_Token_Stream is similar to \c File_Token_Stream. However,
- * it assumes an SPMD (Single Program, Multiple Data) run environment. Only
- * the designated I/O processor (normally processor 0) actually reads the
- * file. The characters read are then broadcast to the other processors. The
- * advantage of parallelism at this level is that it avoids the I/O cost of
- * many processors reading one file while communicating data that is still
- * very flat.
+ * \c Parallel_File_Token_Stream is similar to \c File_Token_Stream. However, it
+ * assumes an SPMD (Single Program, Multiple Data) run environment. Only the
+ * designated I/O processor (normally processor 0) actually reads the file. The
+ * characters read are then broadcast to the other processors. The advantage of
+ * parallelism at this level is that it avoids the I/O cost of many processors
+ * reading one file while communicating data that is still very flat.
  */
-
-class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream {
+class Parallel_File_Token_Stream : public Text_Token_Stream {
 public:
   // CREATORS
 
@@ -51,16 +49,16 @@ public:
   void open(string const &filename);
 
   //! Rewind the Parallel_File_Token_Stream.
-  virtual void rewind();
+  void rewind() override;
 
   //! Report a condition.
-  virtual void report(Token const &token, string const &message);
+  void report(Token const &token, string const &message) override;
 
   //! Report a condition.
-  virtual void report(string const &message);
+  void report(string const &message) override;
 
   //! Report a comment.
-  virtual void comment(std::string const &message);
+  void comment(std::string const &message) override;
 
   // ACCESSORS
 
@@ -70,15 +68,15 @@ public:
 protected:
   // IMPLEMENTATION
 
-  virtual string location_() const;
+  string location_() const override;
 
-  virtual void fill_character_buffer_();
+  void fill_character_buffer_() override;
 
-  virtual bool error_() const;
-  virtual bool end_() const;
+  bool error_() const override;
+  bool end_() const override;
 
-  virtual void push_include(std::string &include_file_name);
-  virtual void pop_include();
+  void push_include(std::string &include_file_name) override;
+  void pop_include() override;
 
 private:
   // NESTED TYPES
@@ -87,7 +85,7 @@ private:
     // IMPLEMENTATION
 
     //! Constructor
-    letter(string const &file_name);
+    letter(string file_name);
 
     bool check_class_invariants() const;
 

@@ -45,7 +45,7 @@ void lower(ostream &out, char const *const label, double const power,
       out << '*';
     }
     first = false;
-    unsigned ipower = static_cast<unsigned>(-power);
+    auto ipower = static_cast<unsigned>(-power);
     out << "pow(" << label << "," << ipower << ")";
   }
 }
