@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace rtt_parser {
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Structure to describe a parser keyword.
  *
@@ -34,12 +34,12 @@ struct Keyword {
   /*! \brief The keyword moniker.
    *
    * The moniker should be a sequence of valid C++ identifiers separated by a
-   * single space.  For example, <CODE>"WORD"</CODE>, <CODE>"First_Word
-   * Second_Word"</CODE>, and <CODE>"B1 T2 T3"</CODE> are all valid Keyword
-   * monikers.  Identifiers beginning with an underscore are permitted but may
-   * be reserved for internal use by frameworks that uses the Parse_Table
-   * services. A Parse_Table attempts to match input to the monikers in its
-   * Keyword table according to a set of rules stored in the Parse_Table (q.v.)
+   * single space.  For example, \c "WORD", <tt>"First_Word Second_Word"</tt>,
+   * and <tt>"B1 T2 T3"</tt> are all valid Keyword monikers.  Identifiers
+   * beginning with an underscore are permitted but may be reserved for internal
+   * use by frameworks that uses the Parse_Table services. A Parse_Table
+   * attempts to match input to the monikers in its Keyword table according to a
+   * set of rules stored in the Parse_Table (q.v.)
    */
   char const *moniker = {nullptr};
 
@@ -76,11 +76,10 @@ struct Keyword {
    * This member is significant only if certain options are set in the
    * Parse_Table.  It is used to support parsing in frameworks that support
    * self-registering modules.  Such modules often need to add keywords to
-   * existing Parse_Tables, and the <CODE>module</CODE> member is useful for
-   * identifying the module from which a particular keyword in a table
-   * originated.  This is particularly important for diagnosing keyword clashes,
-   * where two modules have registered keywords with the same moniker in the
-   * same Parse_Table.
+   * existing Parse_Tables, and the \c module member is useful for identifying
+   * the module from which a particular keyword in a table originated.  This is
+   * particularly important for diagnosing keyword clashes, where two modules
+   * have registered keywords with the same moniker in the same Parse_Table.
    */
   char const *module = {nullptr};
 
@@ -102,7 +101,7 @@ struct Keyword {
         description(description_in) {}
 };
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Simple keyword-matching parse table
  *
@@ -148,7 +147,6 @@ struct Keyword {
  * will never see such a token.  A console stream can choose to convert an
  * endline or other terminator to a semicolon token to force processing.
  */
-
 class Parse_Table {
 public:
   // TYPEDEFS AND ENUMERATIONS
@@ -163,7 +161,7 @@ public:
   // CREATORS
 
   //! Create an empty Parse_Table.
-  Parse_Table() = default;
+  Parse_Table() : vec(0), flags_(0) {} // NOLINT
 
   //! Construct a parse table with the specified keywords.
   Parse_Table(Keyword const *table, size_t count, unsigned flags = 0);
@@ -210,14 +208,13 @@ public:
 private:
   // TYPEDEFS AND ENUMERATIONS
 
-  //-----------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   /*!
    * \brief Ordering functor for Keyword
    *
    * Provides an ordering for Keyword compatible with STL sort and search
    * routines.
    */
-
   class Keyword_Compare_ {
   public:
     Keyword_Compare_(unsigned char flags);
@@ -262,7 +259,6 @@ private:
  *      a.index == b.index &&
  *	a.module == b.module </code>
  */
-
 inline bool operator==(Keyword const &a, Keyword const &b) {
   return strcmp(a.moniker, b.moniker) == 0 && a.func == b.func &&
          a.index == b.index && strcmp(a.module, b.module) == 0;
@@ -270,7 +266,6 @@ inline bool operator==(Keyword const &a, Keyword const &b) {
 
 //----------------------------------------------------------------------------//
 //! Check whether a keyword is well-formed.
-
 bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // namespace rtt_parser
