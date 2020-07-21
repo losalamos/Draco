@@ -41,7 +41,7 @@ void tstzbrent(UnitTest &ut) {
   //    zbrac<double (*)(double)>(log, x1, x2);
 
   // Help out the compiler by defining function pointer signature.
-  typedef double (*fpdd)(double);
+  using fpdd = double (*)(double);
   fpdd log_fpdd = &foo;
   zbrac<fpdd>(log_fpdd, x1, x2);
 

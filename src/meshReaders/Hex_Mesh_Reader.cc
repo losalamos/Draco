@@ -118,7 +118,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
   std::set<unsigned> stmp;
   for (unsigned i = 0; i < npoints; ++i)
     stmp.insert(i);
-  typedef std::map<std::string, std::set<unsigned>> resultT;
+  using resultT = std::map<std::string, std::set<unsigned>>;
   node_sets.insert(resultT::value_type("Interior", stmp));
 
   // Check the results

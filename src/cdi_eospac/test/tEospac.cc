@@ -107,8 +107,8 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   // Try to instantiate the new Eospac object.  Simultaneously, we are
   // assigned material IDs to more SesameTable values.
 
-  spEospac.reset(
-      new rtt_cdi_eospac::Eospac(AlSt.Ue_DT(Al3717).Zfc_DT(Al23714)));
+  spEospac = std::make_shared<rtt_cdi_eospac::Eospac>(
+      AlSt.Ue_DT(Al3717).Zfc_DT(Al23714));
 
   if (spEospac) {
     PASSMSG("shared_ptr to new Eospac object created.");

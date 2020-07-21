@@ -30,7 +30,7 @@ void tstExpression(UnitTest &ut) {
 
   String_Token_Stream tokens(expression_text);
 
-  typedef pair<unsigned, Unit> vd;
+  using vd = pair<unsigned, Unit>;
   map<string, vd> variable_map;
 
   variable_map["r"] = vd(0, m);

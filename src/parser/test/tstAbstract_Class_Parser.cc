@@ -39,7 +39,7 @@ template <> class Class_Parse_Table<Parent> {
 public:
   // TYPEDEFS
 
-  typedef Parent Return_Class;
+  using Return_Class = Parent;
 
   // MANAGEMENT
 
@@ -102,8 +102,8 @@ template <> std::shared_ptr<Parent> parse_class<Parent>(Token_Stream &tokens) {
 
 //----------------------------------------------------------------------------//
 /*
- * The following is what you would expect to find in a file associated with
- * the Son class.
+ * The following is what you would expect to find in a file associated with the
+ * Son class.
  */
 class Son : public Parent {
 public:
@@ -188,8 +188,8 @@ template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens) {
 
 //----------------------------------------------------------------------------//
 /*
- * The following is what you would expect to find in a file associated with
- * the Daughter class.
+ * The following is what you would expect to find in a file associated with the
+ * Daughter class.
  */
 class Daughter : public Parent {
 public:

@@ -238,7 +238,7 @@ private:
   // DATA
 
   std::vector<Keyword> vec;
-  unsigned char flags_; //!< Option flags for this parse table.
+  unsigned char flags_{0}; //!< Option flags for this parse table.
 };
 
 //----------------------------------------------------------------------------//

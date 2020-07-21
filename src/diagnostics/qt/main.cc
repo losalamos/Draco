@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   app.setApplicationName("draco_info-gui");
   app.setOrganizationName("LANL CCS-2");
-  MainWindow *mainWin = new MainWindow;
+  auto *mainWin = new MainWindow;
   mainWin->show();
   return app.exec();
 }

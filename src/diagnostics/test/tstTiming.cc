@@ -17,7 +17,7 @@
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
-typedef rtt_diagnostics::Timing_Diagnostics D;
+using D = rtt_diagnostics::Timing_Diagnostics;
 
 //----------------------------------------------------------------------------//
 // TEST HELPERS

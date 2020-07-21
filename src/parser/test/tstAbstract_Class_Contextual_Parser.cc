@@ -56,7 +56,7 @@ template <> class Class_Parse_Table<Parent> {
 public:
   // TYPEDEFS
 
-  typedef Parent Return_Class;
+  using Return_Class = Parent;
 
   // MANAGEMENT
 
