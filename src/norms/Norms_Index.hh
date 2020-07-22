@@ -43,11 +43,10 @@ namespace rtt_norms {
   \param Index_t The index type for labeling the location of the Linf norm.
 */
 //============================================================================//
-template <typename Index_t>
-class DLL_PUBLIC_norms Norms_Index : public Norms_Base {
+template <typename Index_t> class Norms_Index : public Norms_Base {
 public:
   //! Expose the template parameter
-  typedef Index_t Index;
+  using Index = Index_t;
 
 private:
   // DATA
@@ -69,9 +68,6 @@ public:
 
   // Accumulates results to processor \a n.
   void comm(const size_t n = 0);
-
-  // Re-initializes the norm values.
-  // void reset();
 
   // Equality operator.
   bool operator==(const Norms_Index &n) const;

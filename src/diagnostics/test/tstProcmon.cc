@@ -55,7 +55,7 @@ void tst_procmon_basic(rtt_dsxx::UnitTest &ut) {
 
   // Allocate some memory, so we can show that VmRSS increases:
   size_t const N(100000000);
-  double *vdbl = new double[N];
+  auto *vdbl = new double[N];
   for (size_t i = 0; i < N; ++i)
     vdbl[i] = 3.1415;
 

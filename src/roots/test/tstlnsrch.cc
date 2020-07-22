@@ -49,8 +49,8 @@ void tstlnsrch(UnitTest &ut) {
     PASSMSG("lnsrch bombed gracefully");
   }
 
-  for (unsigned i = 0; i < p.size(); ++i)
-    p[i] = -p[i];
+  for (double &pvalue : p)
+    pvalue = -pvalue;
   lnsrch(xold, fold, g, p, x, f, check, fvec, &func, 0.01, 0.0);
 
   if (check || f > 1.0e-10) {

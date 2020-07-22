@@ -41,7 +41,7 @@ bool parse_bool(Token_Stream &);
 
 Unit parse_unit(Token_Stream &);
 
-void parse_vector(Token_Stream &, double[]);
+void parse_vector(Token_Stream &, double *);
 
 //! parser a quote-delimited string, stripping the quotes.
 std::string parse_manifest_string(Token_Stream &tokens);
@@ -49,7 +49,7 @@ std::string parse_manifest_string(Token_Stream &tokens);
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry);
 
-void parse_unsigned_vector(Token_Stream &, unsigned[], unsigned);
+void parse_unsigned_vector(Token_Stream &, unsigned *, unsigned);
 void set_internal_unit_system(rtt_units::UnitSystem const &units);
 void set_unit_expressions_are_required(bool);
 rtt_units::UnitSystem const &get_internal_unit_system();

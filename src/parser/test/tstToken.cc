@@ -81,7 +81,7 @@ void token_test(UnitTest &ut) {
     ut.failure(__LINE__);
   if (Is_String_Text("This is a test"))
     ut.failure(__LINE__);
-  if (!Is_String_Text("\"Backslash \\ test\""))
+  if (!Is_String_Text(R"("Backslash \ test")"))
     ut.failure(__LINE__);
   if (Is_String_Text("\"Backslash \\"))
     ut.failure(__LINE__);

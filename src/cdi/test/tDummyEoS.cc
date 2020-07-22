@@ -34,7 +34,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<EoS> spEoS;
 
   // The actual instatniate is specific (dummyEoS).
-  if ((spEoS.reset(new rtt_cdi_test::DummyEoS())), spEoS) {
+  if ((spEoS = std::make_shared<rtt_cdi_test::DummyEoS>()), spEoS) {
     // If we get here then the object was successfully instantiated.
     PASSMSG("Smart Pointer to new EoS object created.");
   } else {
@@ -64,8 +64,8 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  // try using a vectors of temps. and densities
-  // vtemperature.size() == vdensity.size()
+  // try using a vectors of temps. and densities vtemperature.size() ==
+  // vdensity.size()
 
   std::vector<double> vtemperature(3);
   vtemperature[0] = 5000.0; // Kelvin

@@ -88,7 +88,7 @@ public:
   // CREATORS
 
   //! Destructor.
-  virtual ~Expression() {}
+  virtual ~Expression() = default;
 
   // MANIPULATORS
 

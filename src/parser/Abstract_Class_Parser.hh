@@ -58,13 +58,13 @@ private:
  * \arg \a get_parse_table A function that returns a reference to the parse
  * table for the abstract class.
  *
- * \arg \a get_parsed_object A function that returns a reference to a
- * storage location for a pointer to the abstract class.
+ * \arg \a get_parsed_object A function that returns a reference to a storage
+ * location for a pointer to the abstract class.
  *
  * The key to this class is the register_child function, which is called for
- * each child class prior to attempting any parsing. It specifies a keyword
- * for selecting each child class and a function that does the actual parsing
- * of the class specification. This assumes an input grammar of the form
+ * each child class prior to attempting any parsing. It specifies a keyword for
+ * selecting each child class and a function that does the actual parsing of the
+ * class specification. This assumes an input grammar of the form
  *
  * \code
  * abstract class keyword
@@ -88,7 +88,7 @@ private:
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Abstract_Class> &get_parsed_object(),
           typename Parse_Function =
-	    std::function<std::shared_ptr<Abstract_Class>(Token_Stream &)>>
+              std::function<std::shared_ptr<Abstract_Class>(Token_Stream &)>>
 class Abstract_Class_Parser {
 public:
   // TYPES

@@ -38,7 +38,7 @@ operator()(Token_Stream &tokens) const {
 class c_string_vector {
 public:
   ~c_string_vector();
-  c_string_vector(void) : data(0) { /* empty */
+  c_string_vector() : data(0) { /* empty */
   }
   std::vector<char *> data;
 };
@@ -67,7 +67,7 @@ std::vector<Parse_Function> Abstract_Class_Parser<
  * \param keyword Keyword associated with the child class
  *
  * \param parsefunction Parse function that reads a specification from a
- * Token_Stream and returns a corresponding object of the child class.
+ *           Token_Stream and returns a corresponding object of the child class.
  */
 template <typename Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
@@ -78,7 +78,7 @@ void Abstract_Class_Parser<
   using namespace rtt_parser;
 
   char *cptr = new char[keyword.size() + 1];
-  std::strcpy(cptr, keyword.c_str());
+  std::strncpy(cptr, keyword.c_str(), keyword.size() + 1);
   abstract_class_parser_keys.data.push_back(cptr);
 
   int const Num = static_cast<int>(map_.size());
@@ -100,7 +100,7 @@ void Abstract_Class_Parser<
  * \param keyword Keyword associated with the child class
  *
  * \param parsefunction Parse function that reads a specification from a
- * Token_Stream and returns a corresponding object of the child class.
+ *           Token_Stream and returns a corresponding object of the child class.
  */
 template <typename Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
@@ -112,7 +112,7 @@ void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
   using namespace rtt_parser;
 
   char *cptr = new char[keyword.size() + 1];
-  std::strcpy(cptr, keyword.c_str());
+  std::strncpy(cptr, keyword.c_str(), keyword.size() + 1);
   abstract_class_parser_keys.data.push_back(cptr);
 
   int const Num = static_cast<int>(map_.size());

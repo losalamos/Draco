@@ -95,9 +95,9 @@ subroutine drelf90(nf) bind(c, name="drelf90")
      nf = nf + 1
   endif
   ! note: integers must be signed in F90 (i.e.: we cannot use Z'DEADBEEF')
-  idata = Z'00112233'
+  idata = 1122867 ! 1122867 = z'00112233'
   call dsxx_byte_swap(idata)
-  if( idata /= Z'33221100' )then
+  if( idata /=  857870592 )then ! 857870592 = z'33221100'
      print '(a)', "Test: failed"
      print '(a)', "     dsxx_byte_swap(int) returned an unexpected value."
      nf = nf+1

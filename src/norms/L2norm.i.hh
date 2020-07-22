@@ -46,7 +46,7 @@ template <typename In> double L2norm(In const &x) {
   rtt_c4::global_sum(norm);
 
   Check(x.size() < UINT_MAX);
-  unsigned xlength(static_cast<unsigned>(x.size()));
+  auto xlength(static_cast<unsigned>(x.size()));
 
   rtt_c4::global_sum(xlength);
   Require(xlength > 0);
@@ -90,7 +90,7 @@ double L2norm_diff(In1 const &x, In2 const &y) {
   rtt_c4::global_sum(norm);
 
   Check(x.size() < UINT_MAX);
-  unsigned xlength(static_cast<unsigned>(x.size()));
+  auto xlength(static_cast<unsigned>(x.size()));
 
   rtt_c4::global_sum(xlength);
   Require(xlength > 0);

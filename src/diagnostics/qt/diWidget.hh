@@ -20,8 +20,8 @@ class diWidget : public QWidget {
   Q_OBJECT
 
 public:
-  explicit diWidget(QWidget *parent = 0);
-  ~diWidget() = default;
+  explicit diWidget(QWidget *parent = nullptr);
+  ~diWidget() override = default;
 
   // disable copy/move construction
   diWidget(diWidget const &rhs) = delete;
@@ -38,7 +38,7 @@ private slots:
 
 private:
   QGridLayout *layout;
-  QLabel *label1;
+  QLabel *label1{nullptr};
   QPushButton *pushbutton1;
 };
 

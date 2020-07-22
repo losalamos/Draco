@@ -27,32 +27,32 @@ using std::vector;
  * \arg \a RandomContainer A random access container type
  *
  * \arg \a Functor A functor type taking a double value and a reference to a
- * RandomContainer that stores the values of the basis functions for the
- * double value in the RandomContainer.
+ * RandomContainer that stores the values of the basis functions for the double
+ * value in the RandomContainer.
  *
  * \param x Ordinates of data set. For multivariable fits, one can let the
- * ordinates be an index into a table containing the full vector of
- * independent variables for each data point.
+ * ordinates be an index into a table containing the full vector of independent
+ * variables for each data point.
  *
  * \param y Abscissae of data set.
  *
  * \param sig Uncertainty in the data. Where unknown or not applicable, one
- * can set all values to 1.
+ *      can set all values to 1.
  *
  * \param a On entry, must be sized to the number of basis functions. On exit,
- * contains the coefficients of the fit.
+ *      contains the coefficients of the fit.
  *
  * \param u On exit, contains the upper matrix of the singular value
- * decomposition of the fit.
+ *      decomposition of the fit.
  *
  * \param v On exit, containts the diagonal matrix of the singular value
- * decomposition of the fit, e.g., the singular values.
+ *      decomposition of the fit, e.g., the singular values.
  *
  * \param w On exit, containts the lower matrix of the singular value
- * decomposition of the fit.
+ *      decomposition of the fit.
  *
  * \param chisq On return, contains the chi square of the fit (meaasure of
- * goodness of fit.)
+ *      goodness of fit.)
  *
  * \param funcs Functor to calculate the basis functions for a given argument.
  * \param[in] TOL reset denormalized w-values below TOL*max(w) to a hard-zero.
@@ -72,8 +72,8 @@ void svdfit(RandomContainer const &x, RandomContainer const &y,
 
   Check(x.size() < UINT_MAX);
   Check(a.size() < UINT_MAX);
-  unsigned const ndata = static_cast<unsigned>(x.size());
-  unsigned const ma = static_cast<unsigned>(a.size());
+  auto const ndata = static_cast<unsigned>(x.size());
+  auto const ma = static_cast<unsigned>(a.size());
 
   vector<double> b(ndata), afunc(ma);
 

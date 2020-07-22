@@ -9,8 +9,8 @@
 
 #include "Text_Token_Stream.hh"
 #include "ds++/path.hh"
+#include <cctype>
 #include <cstring>
-#include <ctype.h>
 #include <string>
 
 #if defined(MSVC)
@@ -30,10 +30,7 @@ static string give(string &source) {
 }
 
 //----------------------------------------------------------------------------//
-char const default_ws_string[] = "=:;,";
-
-set<char> const Text_Token_Stream::default_whitespace(
-    default_ws_string, default_ws_string + sizeof(default_ws_string));
+set<char> const Text_Token_Stream::default_whitespace = {'=', ':', ';', ','};
 
 //----------------------------------------------------------------------------//
 /*!
@@ -69,8 +66,7 @@ set<char> const Text_Token_Stream::default_whitespace(
  */
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
                                      bool const no_nonbreaking_ws)
-    : buffer_(), whitespace_(ws), line_(1),
-      no_nonbreaking_ws_(no_nonbreaking_ws) {
+    : buffer_(), whitespace_(ws), no_nonbreaking_ws_(no_nonbreaking_ws) {
   Ensure(check_class_invariants());
   Ensure(ws == whitespace());
   Ensure(line() == 1);
@@ -86,9 +82,8 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
  * The default whitespace characters are contained in the set
  * \c Text_Token_Stream::default_whitespace.
  */
-Text_Token_Stream::Text_Token_Stream(void)
-    : buffer_(), whitespace_(default_whitespace), line_(1),
-      no_nonbreaking_ws_(false) {
+Text_Token_Stream::Text_Token_Stream()
+    : buffer_(), whitespace_(default_whitespace) {
   Ensure(check_class_invariants());
   Ensure(whitespace() == default_whitespace);
   Ensure(line() == 1);
@@ -557,11 +552,8 @@ void Text_Token_Stream::eat_whitespace_() {
  * \param c Character to be pushed onto the back of the character queue.
  */
 void Text_Token_Stream::character_push_back_(char const c) {
-  Remember(unsigned const old_buffer__size =
-               static_cast<unsigned>(buffer_.size()));
-
+  Remember(auto const old_buffer__size = static_cast<unsigned>(buffer_.size()));
   buffer_.push_back(c);
-
   Ensure(check_class_invariants());
   Ensure(buffer_.size() == old_buffer__size + 1);
   Ensure(buffer_.back() == c);
@@ -649,10 +641,10 @@ Token Text_Token_Stream::scan_keyword() {
   Require(isalpha(peek_()) || peek_() == '_');
 
   string token_location = location_();
-  char c = peek_();
+  /*char c =*/peek_();
   unsigned cc = 1;
   unsigned ci = 1;
-  c = peek_(ci);
+  char c = peek_(ci);
   do {
     // Scan a C identifier.
     while (isalnum(c) || c == '_') {

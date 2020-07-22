@@ -5,15 +5,7 @@
  * \date   Feb 18 2003
  * \brief  Unit tests for the Parse_Table class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- *
- * revision history:
- * 0) original revision
- * 1) kgbudge (03/08/10):
- *    Solo inspection of documentation, assertions, and tests.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -21,7 +13,8 @@
 #include "parser/File_Token_Stream.hh"
 #include "parser/Parse_Table.hh"
 #include "parser/String_Token_Stream.hh"
-#include <string.h>
+#include <array>
+#include <cstring>
 
 #ifdef _MSC_VER
 #undef ERROR
@@ -35,8 +28,8 @@ using namespace rtt_dsxx;
 // TESTS
 //----------------------------------------------------------------------------//
 
-static const char *color[3] = {"BLACK", "BLUE", "BLUE GREEN"};
-bool color_set[3];
+static std::array<const char *, 3> const color{"BLACK", "BLUE", "BLUE GREEN"};
+std::array<bool, 3> color_set;
 
 static void Parse_Color(Token_Stream &, int i) {
   cout << "You have requested " << color[i] << endl;
@@ -55,62 +48,59 @@ static void Parse_Any_Color(Token_Stream &tokens, int) {
   tokens.report_syntax_error(token, "expected a color");
 }
 
-const Keyword raw_table[] = {
-    {"BLUE", Parse_Color, 1, "main"},
-    {"BLACK", Parse_Color, 0, "main"},
-    {"BLUE GREEN", Parse_Color, 2, "main"},
-    {"BLUISH GREEN", Parse_Color, 2, "main"},
-    {"lower blue", Parse_Color, 2, "main", "keyword to test case sensitivity"},
-    {"COLOR", Parse_Any_Color, 0, "main"},
-};
-const size_t raw_table_size = sizeof(raw_table) / sizeof(Keyword);
+std::array<Keyword, 6> const raw_table{
+    Keyword{"BLUE", Parse_Color, 1, "main"},
+    Keyword{"BLACK", Parse_Color, 0, "main"},
+    Keyword{"BLUE GREEN", Parse_Color, 2, "main"},
+    Keyword{"BLUISH GREEN", Parse_Color, 2, "main"},
+    Keyword{"lower blue", Parse_Color, 2, "main",
+            "keyword to test case sensitivity"},
+    Keyword{"COLOR", Parse_Any_Color, 0, "main"}};
 
-const Keyword raw_table_2[] = {
-    {"BLUE", Parse_Color, 1, "main"},
-    {"BLACK", Parse_Color, 0, "main"},
-};
-const size_t raw_table_2_size = sizeof(raw_table_2) / sizeof(Keyword);
+std::array<Keyword, 2> const raw_table_2{
+    Keyword{"BLUE", Parse_Color, 1, "main"},
+    Keyword{"BLACK", Parse_Color, 0, "main"}};
 
 class Error_Token_Stream : public Token_Stream {
 public:
-  void rewind() {}
+  void rewind() override {}
 
-  void comment(string const & /*err*/) {
+  void comment(string const & /*err*/) override {
     cout << "comment reported to Error_Token_Stream" << endl;
   }
 
 protected:
-  void report(Token const &, string const & /*err*/) {
+  void report(Token const &, string const & /*err*/) override {
     cout << "error reported to Error_Token_Stream" << endl;
   }
 
-  void report(string const & /*err*/) {
+  void report(string const & /*err*/) override {
     cout << "error reported to Error_Token_Stream" << endl;
   }
 
-  Token fill_() { return Token(rtt_parser::ERROR, "error"); }
+  Token fill_() override { return Token(rtt_parser::ERROR, "error"); }
 };
 
 class Colon_Token_Stream : public Token_Stream {
 public:
-  Colon_Token_Stream() : count_(0) {}
+  Colon_Token_Stream() = default;
 
-  void rewind() {}
+  void rewind() override {}
 
-  void comment(string const & /*err*/) {
+  void comment(string const & /*err*/) override {
     cout << "comment reported to Colon_Token_Stream" << endl;
   }
 
 protected:
-  void report(Token const &, string const & /*err*/) {
+  void report(Token const &, string const & /*err*/) override {
     cout << "error reported to Colon_Token_Stream" << endl;
   }
 
-  void report(string const & /*err*/) {
+  void report(string const & /*err*/) override {
     cout << "error reported to Colon_Token_Stream" << endl;
   }
 
-  Token fill_() {
+  Token fill_() override {
     switch (count_++) {
     case 0:
       return Token(';', "");
@@ -125,7 +115,7 @@ protected:
   }
 
 private:
-  unsigned count_;
+  unsigned count_{0};
 };
 
 //----------------------------------------------------------------------------//
@@ -163,12 +153,12 @@ void tstKeyword(UnitTest &ut) {
   }
 
   {
-    Keyword key = {0, Parse_Color, 1, "main"};
+    Keyword key = {nullptr, Parse_Color, 1, "main"};
     if (Is_Well_Formed_Keyword(key))
       FAILMSG("null keyword detect FAILED");
   }
   {
-    Keyword key = {"BLUE", 0, 1, "main"};
+    Keyword key = {"BLUE", nullptr, 1, "main"};
     if (Is_Well_Formed_Keyword(key))
       FAILMSG("null func detect FAILED");
   }
@@ -193,11 +183,10 @@ void tstKeyword(UnitTest &ut) {
 void tstParse_Table(UnitTest &ut) {
   Parse_Table table;
 
-  table.reserve(raw_table_size);
-  table.add(raw_table, raw_table_size);
+  table.reserve(raw_table.size());
+  table.add(raw_table.data(), raw_table.size());
 
-  if (table.size() != raw_table_size)
-    FAILMSG("test FAILS");
+  UT_MSG(table.size() == raw_table.size(), "Found expected table size");
 
   // Build path for the input file "parser_test.inp"
   string const ptInputFile(ut.getTestSourcePath() +
@@ -207,23 +196,18 @@ void tstParse_Table(UnitTest &ut) {
 
   table.parse(token_stream);
 
-  if (!color_set[1])
-    FAILMSG("test FAILS");
-
-  if (token_stream.error_count() != 5)
-    FAILMSG("test FAILS");
+  FAIL_IF(!color_set[1]);
+  FAIL_IF(token_stream.error_count() != 5);
 
   token_stream.rewind();
 
   table.set_flags(Parse_Table::CASE_INSENSITIVE);
 
-  color_set[0] = color_set[1] = 0;
+  color_set[0] = color_set[1] = false;
   table.parse(token_stream);
 
-  if (!color_set[1])
-    FAILMSG("test FAILS");
-  if (token_stream.error_count() != 4)
-    FAILMSG("test FAILS");
+  FAIL_IF(!color_set[1]);
+  FAIL_IF(token_stream.error_count() != 4);
 
   {
     String_Token_Stream tokens("BLUE green");
@@ -255,23 +239,19 @@ void tstParse_Table(UnitTest &ut) {
   table.set_flags(Parse_Table::CASE_INSENSITIVE |
                   Parse_Table::PARTIAL_IDENTIFIER_MATCH);
 
-  color_set[0] = color_set[1] = 0;
+  color_set[0] = color_set[1] = false;
   table.parse(token_stream);
 
-  if (!color_set[1])
-    FAILMSG("test FAILS");
-  if (token_stream.error_count() != 3)
-    FAILMSG("test FAILS");
+  FAIL_IF(!color_set[1]);
+  FAIL_IF(token_stream.error_count() != 3);
 
   // Test the Get_Flags() function, even if this test is built with the flag
   // --with-dbc=0.
-  if (table.get_flags() != 3)
-    FAILMSG("test FAILS");
+  FAIL_IF(table.get_flags() != 3);
 
   // Test the check_class_invariants() function, even if this test is built
   // with the flag --with-dbc=0.
-  if (!table.check_class_invariants())
-    FAILMSG("test FAILS");
+  FAIL_IF(!table.check_class_invariants());
 
   // Check variations on partial match
   {
@@ -360,9 +340,9 @@ void tstParse_Table(UnitTest &ut) {
     }
   }
 
-  Parse_Table table_2(raw_table, raw_table_size);
+  Parse_Table table_2(raw_table.data(), raw_table.size());
 
-  if (table_2.size() != raw_table_size)
+  if (table_2.size() != raw_table.size())
     FAILMSG("test FAILS");
 
   token_stream.rewind();
@@ -375,19 +355,21 @@ void tstParse_Table(UnitTest &ut) {
   if (token_stream.error_count() != 5)
     FAILMSG("error count FAILS");
 
-  Keyword test_key = {"THIS SHOULD WORK", Parse_Color, 0, 0};
+  Keyword test_key = {"THIS SHOULD WORK", Parse_Color, 0, nullptr};
   if (!Is_Well_Formed_Keyword(test_key))
     FAILMSG("test FAILS");
 
-  Keyword benign_ambiguous_table[] = {{"KEY", Parse_Color, 0, 0},
-                                      {"KEY", Parse_Color, 0, 0}};
-  table_2.add(benign_ambiguous_table, 2);
+  std::array<Keyword, 2> benign_ambiguous_table{
+      Keyword{"KEY", Parse_Color, 0, nullptr},
+      Keyword{"KEY", Parse_Color, 0, nullptr}};
+  table_2.add(benign_ambiguous_table.data(), benign_ambiguous_table.size());
   token_stream.rewind();
   table_2.parse(token_stream);
 
-  Keyword malign_ambiguous_table[] = {{"KEY", Parse_Color, 1, 0}};
+  std::array<Keyword, 1> malign_ambiguous_table{
+      Keyword{"KEY", Parse_Color, 1, nullptr}};
   try {
-    table_2.add(malign_ambiguous_table, 1);
+    table_2.add(malign_ambiguous_table.data(), malign_ambiguous_table.size());
     token_stream.rewind();
     table_2.parse(token_stream);
     FAILMSG("did NOT catch ambiguous keyword");
@@ -406,10 +388,11 @@ void tstParse_Table(UnitTest &ut) {
     FAILMSG("test FAILS");
 
   Parse_Table table_3;
-  Keyword case_ambiguous_table[] = {{"key", Parse_Color, 0, 0},
-                                    {"Key", Parse_Color, 1, 0}};
+  std::array<Keyword, 2> case_ambiguous_table{
+      Keyword{"key", Parse_Color, 0, nullptr},
+      Keyword{"Key", Parse_Color, 1, nullptr}};
   try {
-    table_3.add(case_ambiguous_table, 2);
+    table_3.add(case_ambiguous_table.data(), case_ambiguous_table.size());
     table_3.parse(token_stream);
     table_3.set_flags(Parse_Table::CASE_INSENSITIVE);
     token_stream.rewind();
@@ -421,10 +404,11 @@ void tstParse_Table(UnitTest &ut) {
   }
 
   Parse_Table table_3a;
-  Keyword casea_ambiguous_table[] = {{"key", Parse_Color, 0, 0},
-                                     {"Key", Parse_Any_Color, 0, 0}};
+  std::array<Keyword, 2> casea_ambiguous_table{
+      Keyword{"key", Parse_Color, 0, nullptr},
+      Keyword{"Key", Parse_Any_Color, 0, nullptr}};
   try {
-    table_3a.add(casea_ambiguous_table, 2);
+    table_3a.add(casea_ambiguous_table.data(), casea_ambiguous_table.size());
     table_3a.parse(token_stream);
     table_3a.set_flags(Parse_Table::CASE_INSENSITIVE);
     token_stream.rewind();
@@ -457,10 +441,10 @@ void tstParse_Table(UnitTest &ut) {
 
     Parse_Table ptable;
 
-    ptable.reserve(raw_table_2_size);
-    ptable.add(raw_table_2, raw_table_2_size);
+    ptable.reserve(raw_table_2.size());
+    ptable.add(raw_table_2.data(), raw_table_2.size());
 
-    if (ptable.size() != raw_table_2_size)
+    if (ptable.size() != raw_table_2.size())
       FAILMSG("test FAILS");
 
     File_Token_Stream ltoken_stream(ptInputFile);
@@ -486,7 +470,6 @@ void tstParse_Table(UnitTest &ut) {
 }
 
 //----------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

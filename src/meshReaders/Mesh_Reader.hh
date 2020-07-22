@@ -31,24 +31,11 @@ namespace rtt_meshReaders {
  */
 //============================================================================//
 
-class DLL_PUBLIC_meshReaders Mesh_Reader {
-  // NESTED CLASSES AND TYPEDEFS
-
-  // DATA
-
+class Mesh_Reader {
 public:
   // CREATORS
 
-  //Defaulted: Mesh_Reader();
-  //Defaulted: Mesh_Reader(const Mesh_Reader &rhs);
-
-  virtual ~Mesh_Reader() {
-    //Empty
-  }
-
-  // MANIPULATORS
-
-  //Defaulted: Mesh_Reader& operator=(const Mesh_Reader &rhs);
+  virtual ~Mesh_Reader() = default;
 
   // ACCESSORS
 

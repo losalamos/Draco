@@ -92,8 +92,8 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
     size_t const matid(10001);
     vector<string> fieldNames = spGF->listDataFieldNames(matid);
     cout << "\nMaterial 0 (10001) provides the following fields:\n";
-    for (size_t i = 0; i < fieldNames.size(); ++i)
-      cout << "   " << fieldNames[i] << "\n";
+    for (auto &fieldName : fieldNames)
+      cout << "   " << fieldName << "\n";
     cout << endl;
 
     if (fieldNames[0] == string("tgrid"))

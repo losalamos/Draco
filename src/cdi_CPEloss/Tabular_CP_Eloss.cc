@@ -10,6 +10,7 @@
 
 #include "Tabular_CP_Eloss.hh"
 #include "ds++/DracoStrings.hh"
+#include <utility>
 
 namespace rtt_cdi_cpeloss {
 
@@ -88,25 +89,25 @@ linear_interpolate_3(double const x0, double const x1, double const y0,
  * This constructor builds an eloss model defined by the
  * rtt_cdi_cpeloss::Tabular_Eloss_Model derived class argument.
  *
- * The path to an eloss datafile is passed to the constructor,
- * which opens and parses the file. The file format is the usual
- * LANL format for stopping powers.
+ * The path to an eloss datafile is passed to the constructor, which opens and
+ * parses the file. The file format is the usual LANL format for stopping
+ * powers.
  *
  * \param[in] filename_in path to eloss file
  * \param[in] target_in target particle zaid
  * \param[in] projectile_in transporting particle zaid
  * \param[in] model_angle_cutoff_in rtt_cdi::CPModelAngleCutoff the angle
- *                 separating the stopping power approximation from analog 
+ *                 separating the stopping power approximation from analog
  *                 scattering
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(
-    const std::string &filename_in, rtt_cdi::CParticle target_in,
+    std::string filename_in, rtt_cdi::CParticle target_in,
     rtt_cdi::CParticle projectile_in,
     rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
     : rtt_cdi::CPEloss(target_in, projectile_in,
                        rtt_cdi::CPModelType::TABULAR_ETYPE,
                        model_angle_cutoff_in),
-      filename(filename_in) {
+      filename(std::move(filename_in)) {
   using std::stod;
   using std::stoi;
 

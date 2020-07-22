@@ -74,7 +74,7 @@ String_Token_Stream::String_Token_Stream(string const &text,
 //----------------------------------------------------------------------------//
 /*!
  * This function constructs and returns a string of the form "near \<text\>"
- * where \<text\> reproduces the region of text where the last token was 
+ * where \<text\> reproduces the region of text where the last token was
  * parsed. This is useful for error reporting in parsers.
  *
  * \return A string of the form "near <text>"
@@ -90,7 +90,7 @@ string String_Token_Stream::location_() const {
     }
   }
   Check(text_.size() < UINT_MAX);
-  unsigned const end = static_cast<unsigned>(text_.size());
+  auto const end = static_cast<unsigned>(text_.size());
   unsigned i;
   for (i = begin; i < end; ++i) {
     char const c = text_[i];

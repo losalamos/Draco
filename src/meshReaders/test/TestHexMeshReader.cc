@@ -316,7 +316,7 @@ bool check_invariant(UnitTest &ut,
 bool check_element_sets(UnitTest &ut,
                         const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                         const std::string &testid) {
-  typedef std::map<std::string, std::set<unsigned>> mt;
+  using mt = std::map<std::string, std::set<unsigned>>;
   bool pass_es = true;
   const mt elmsets = mesh.get_element_sets();
   if (testid == "slab") {
@@ -369,7 +369,7 @@ bool check_element_types(UnitTest &ut,
                          const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                          const std::string &testid) {
   // Check Element Types.
-  typedef rtt_mesh_element::Element_Definition et;
+  using et = rtt_mesh_element::Element_Definition;
   bool pass_et = true;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> etypes =
       mesh.get_element_types();
@@ -406,7 +406,7 @@ bool check_unique_element_types(UnitTest &ut,
                                 const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                                 const std::string &testid) {
   // Check Unique Element Types.
-  typedef rtt_mesh_element::Element_Definition et;
+  using et = rtt_mesh_element::Element_Definition;
   bool pass_et = true;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> etypes =
       mesh.get_unique_element_types();
@@ -441,13 +441,12 @@ bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets,
                const std::string &name, const unsigned &begin,
                const unsigned &end) {
   bool pass = true;
-  typedef std::map<std::string, std::set<unsigned>> mt;
-  mt::const_iterator iter = elmsets.find(name);
+  auto const iter = elmsets.find(name);
   if (iter != elmsets.end()) {
     const std::set<unsigned> &elem_subset = (*iter).second;
     if (elem_subset.size() == static_cast<size_t>(end - begin)) {
       for (unsigned i = begin; i < end; ++i) {
-        std::set<unsigned>::const_iterator siter = elem_subset.find(i);
+        auto const siter = elem_subset.find(i);
         pass = pass && (siter != elem_subset.end());
       }
     } else

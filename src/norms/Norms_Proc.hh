@@ -5,10 +5,7 @@
   \date   Fri Jan 14 13:00:32 2005
   \brief  Header file for Norms_Proc.
   \note   Copyright (C) 2016-2020 Triad National Security, LLC.
-          All rights reserved.
-*/
-//----------------------------------------------------------------------------//
-
+          All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #ifndef rtt_norms_Norms_Proc_hh
@@ -20,7 +17,7 @@
 namespace rtt_norms {
 
 //! Convenience definition for Norms_Index<Index_Proc>.
-typedef Norms_Index<Index_Proc> Norms_Proc;
+using Norms_Proc = Norms_Index<Index_Proc>;
 
 } // namespace rtt_norms
 

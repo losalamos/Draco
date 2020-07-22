@@ -30,7 +30,7 @@ void tstExpression(UnitTest &ut) {
 
   String_Token_Stream tokens(expression_text);
 
-  typedef pair<unsigned, Unit> vd;
+  using vd = pair<unsigned, Unit>;
   map<string, vd> variable_map;
 
   variable_map["r"] = vd(0, m);
@@ -116,9 +116,11 @@ void tstExpression(UnitTest &ut) {
 #pragma clang diagnostic ignored "-Wliteral-conversion"
 #endif
 
-  if (soft_equiv((*expression)(xs), (((1 && 1.3) || !(y < -1)) / 5. +
-                                     (2 > 1) * r * square(2.7 - 1.1 * z)) *
-                                        t)) {
+  if (soft_equiv((*expression)(xs),
+                 (((1 && 1.3) || !(y < -1)) / 5. +       //NOLINT
+                  (2 > 1) * r * square(2.7 - 1.1 * z)) * //NOLINT
+                     t))                                 // NOLINT
+  {
     PASSMSG("expression successfully evaluated");
   } else {
     FAILMSG("expression NOT successfully evaluated");

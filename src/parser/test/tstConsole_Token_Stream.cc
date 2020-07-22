@@ -185,8 +185,8 @@ void tstConsole_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING ||
+            token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
     if (token.type() != OTHER || token.text() != "@")

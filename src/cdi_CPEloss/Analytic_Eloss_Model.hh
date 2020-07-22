@@ -17,6 +17,7 @@
 #include <vector>
 
 namespace rtt_cdi_cpeloss {
+
 //============================================================================//
 /*!
  * \class Analytic_Eloss_Model
@@ -38,8 +39,7 @@ namespace rtt_cdi_cpeloss {
 class Analytic_Eloss_Model {
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_Eloss_Model() { /*...*/
-  }
+  virtual ~Analytic_Eloss_Model() = default;
 
   //! Interface for derived analytic eloss models.
   virtual double calculate_eloss(const double T, const double rho,

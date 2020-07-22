@@ -35,27 +35,26 @@ namespace rtt_diagnostics {
  *   // stop timer
  *   rtt_diagnostics::Timing_Diagnostics::update_timer("Solver", time);
  * \endcode
- * There is no need to "add" the timer entry for "Solver" before an update.
- * If the key "Solver" does not exist it is added with value 0.0 before
- * applying the value.
+ * There is no need to "add" the timer entry for "Solver" before an update.  If
+ * the key "Solver" does not exist it is added with value 0.0 before applying
+ * the value.
  *
  * The easiest way to use this class is through the TIMER macros.
- */
-/*!
+ *
  * \example diagnostics/test/tstTiming.cc
  */
 //============================================================================//
 
-class DLL_PUBLIC_diagnostics Timing_Diagnostics {
+class Timing_Diagnostics {
 public:
   // Useful typedef.
-  typedef std::vector<std::string> Vec_Keys;
+  using Vec_Keys = std::vector<std::string>;
 
 private:
   // >>> PRIVATE DATA MEMBERS
 
   //! Map of timers.
-  static std::map<std::string, double> timers;
+  DLL_PUBLIC_diagnostics static std::map<std::string, double> timers;
 
 public:
   // >>> FUNCTIONAL INTERFACE
@@ -84,14 +83,13 @@ public:
   // Delete all timers from the map of timers.
   static void delete_timers();
 
-private:
   // >>> IMPLEMENTATION
 
-  // This class is never constructed.
-  Timing_Diagnostics();
+  // Disable default ctor
+  Timing_Diagnostics() = delete;
 
-  // This class is also never destructed.
-  ~Timing_Diagnostics();
+  // Disable default dtor
+  ~Timing_Diagnostics() = delete;
 };
 
 } // end namespace rtt_diagnostics
@@ -100,18 +98,17 @@ private:
 /*!
  * \page diagnostics_timing Macros for timing
  *
- * Four macros are defined here; these macros insert timer calls into code if
- * a global definition, DRACO_TIMING, is greater then 0.  The default value is
- * to set DRACO_TIMING == 0. They use the draco rtt_c4::Timer and
+ * Four macros are defined here; these macros insert timer calls into code if a
+ * global definition, DRACO_TIMING, is greater then 0.  The default value is to
+ * set DRACO_TIMING == 0. They use the draco rtt_c4::Timer and
  * rtt_diagnostics::Timing_Diagnostics classes.
  *
- * As of June 2020, the macros can be implemented in two different ways. One
- * may use the Caliper library if that is found through the Draco build system;
- * or one may continue to use the Draco timing diagnostics. The Caliper
- * approach will probably be more useful in the long term.
+ * As of June 2020, the macros can be implemented in two different ways. One may
+ * use the Caliper library if that is found through the Draco build system; or
+ * one may continue to use the Draco timing diagnostics. The Caliper approach
+ * will probably be more useful in the long term.
  *
- * The build system sets DRACO_TIMING through the configure option \c
- * --with-clubimc-timing.  The following settings apply:
+ * The build system sets DRACO_TIMING. The following settings apply:
  * - 0 turns off all TIMER macros
  * - 1 turns on TIMER, TIMER_START, TIMER_STOP, and TIMER_RECORD
  * - 2 turns on all TIMER macros (include TIMER_REPORT)
@@ -151,7 +148,7 @@ private:
  */
 
 /*!
- * \def TIMER( timer_name)
+ * \def TIMER(timer_name)
  *
  * If DRACO_TIMING_ON is defined, TIMER( timer_name) expands to:
  * \code

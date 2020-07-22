@@ -746,6 +746,16 @@ macro(dbsSetupCuda)
     # User option to disable Cuda, even when it is available.
     option(USE_CUDA "Use Cuda?" ON)
 
+  endif()
+
+  # Save the results
+  set( HAVE_CUDA ${HAVE_CUDA} CACHE BOOL
+    "Should we build CUDA portions of this project?" FORCE )
+  if( HAVE_CUDA AND USE_CUDA )
+    # Use this string in 'project(foo ${CUDA_DBS_STRING})' commands to enable
+    # cuda per project.
+    set( CUDA_DBS_STRING "CUDA" CACHE STRING
+      "If CUDA is available, this variable is 'CUDA'")
     # Use this string as a toggle when calling add_component_library or
     # add_scalar_tests to force compiling with nvcc.
     set( COMPILE_WITH_CUDA LINK_LANGUAGE CUDA )
@@ -757,14 +767,7 @@ macro(dbsSetupCuda)
       message(FATAL_ERROR "Build system does not support "
         "CUDACXX=${CMAKE_CUDA_COMPILER}")
     endif()
-  endif()
 
-  # Save the results
-  set( HAVE_CUDA ${HAVE_CUDA} CACHE BOOL
-    "Should we build CUDA portions of this project?" FORCE )
-  if( ${HAVE_CUDA} )
-    set( CUDA_DBS_STRING "CUDA" CACHE STRING
-      "If CUDA is available, this variable is 'CUDA'")
   endif()
 
 endmacro()

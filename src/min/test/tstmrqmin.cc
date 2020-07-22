@@ -22,7 +22,7 @@ using namespace rtt_min;
 // TESTS
 //----------------------------------------------------------------------------//
 
-typedef void Model(vector<double> const &x, vector<double> const &a, double &y,
+using Model = void(vector<double> const &x, vector<double> const &a, double &y,
                    vector<double> &dyda);
 
 void model(vector<double> const &x, vector<double> const &a, double &y,
@@ -447,7 +447,7 @@ void tstmrqmin(UnitTest &ut) {
        << endl;
 
   Check(y.size() < UINT_MAX);
-  unsigned const N = static_cast<unsigned>(y.size());
+  auto const N = static_cast<unsigned>(y.size());
   vector<double> xx(4);
   vector<double> dyda(9);
   double maxerr = 0;

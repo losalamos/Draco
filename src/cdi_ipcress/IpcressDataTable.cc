@@ -28,14 +28,14 @@ double unary_log(double x) { return std::log(x); }
  * \brief IpcressData Table constructor.
  *
  * The constructor requires that the data state be completely defined.  With
- * this information the DataTypeKey is set, then the data table sizes are
- * loaded and finally the table data is loaded.
+ * this information the DataTypeKey is set, then the data table sizes are loaded
+ * and finally the table data is loaded.
  *
- * \param[in] in_opacityEnergyDescriptor This string variable specifies the energy
- *     model { "gray" or "mg" } for the opacity data contained in this
+ * \param[in] in_opacityEnergyDescriptor This string variable specifies the
+ *     energy model { "gray" or "mg" } for the opacity data contained in this
  *     IpcressDataTable object.
- * \param in_opacityModel This enumerated value specifies the physics model {
- *     Rosseland or Planck } for the opacity data contained in this object.
+ * \param in_opacityModel This enumerated value specifies the physics model
+ *     {Rosseland or Planck} for the opacity data contained in this object.
  *     The enumeration is defined in IpcressOpacity.hh
  * \param in_opacityReaction This enumerated value specifies the interaction
  *     model { total, scattering, absorption " for the opacity data contained
@@ -52,20 +52,19 @@ double unary_log(double x) { return std::log(x); }
  *     same IpcressFile object.
  */
 IpcressDataTable::IpcressDataTable(
-    std::string const &in_opacityEnergyDescriptor,
-    rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction,
+    std::string in_opacityEnergyDescriptor, rtt_cdi::Model in_opacityModel,
+    rtt_cdi::Reaction in_opacityReaction,
     std::vector<std::string> const &in_fieldNames, size_t in_matID,
     std::shared_ptr<const IpcressFile> const &spIpcressFile)
     : ipcressDataTypeKey(""), dataDescriptor(""),
-      opacityEnergyDescriptor(in_opacityEnergyDescriptor),
+      opacityEnergyDescriptor(std::move(in_opacityEnergyDescriptor)),
       opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
-      fieldNames(in_fieldNames), matID(in_matID),
-      // numOpacities( 0 ),
-      logTemperatures(), temperatures(), logDensities(), densities(),
-      groupBoundaries(), logOpacities() {
+      fieldNames(in_fieldNames), matID(in_matID), logTemperatures(),
+      temperatures(), logDensities(), densities(), groupBoundaries(),
+      logOpacities() {
   // Obtain the Ipcress keyword for the opacity data type specified by the
-  // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords are: {
-  // ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray } This function also
+  // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords are:
+  // {ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray} This function also
   // ensures that the requested data type is available in the IPCRESS file.
   setIpcressDataTypeKey();
 
@@ -107,13 +106,6 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
         ipcressDataTypeKey = "ragray";
         dataDescriptor = "Gray Rosseland Absorption";
         break;
-      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
-      /*
-        case (rtt_cdi::SCATTERING):
-          ipcressDataTypeKey = "rsgray";
-          dataDescriptor = "Gray Rosseland Scattering";
-          break;
-       */
       default:
         Assert(false);
         break;
@@ -123,24 +115,10 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
     case (rtt_cdi::PLANCK):
 
       switch (opacityReaction) {
-      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
-      /*
-        case (rtt_cdi::TOTAL):
-          ipcressDataTypeKey = "ptgray";
-          dataDescriptor = "Gray Planck Total";
-          break; 
-       */
       case (rtt_cdi::ABSORPTION):
         ipcressDataTypeKey = "pgray";
         dataDescriptor = "Gray Planck Absorption";
         break;
-      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
-      /*
-        case (rtt_cdi::SCATTERING):
-          ipcressDataTypeKey = "psgray";
-          dataDescriptor = "Gray Planck Scattering";
-          break;
-       */
       default:
         Assert(false);
         break;
@@ -178,24 +156,10 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
     case (rtt_cdi::PLANCK):
 
       switch (opacityReaction) {
-      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
-      /*
-      case (rtt_cdi::TOTAL):
-        ipcressDataTypeKey = "ptmg";
-        dataDescriptor = "Multigroup Planck Total";
-        break;
-       */
       case (rtt_cdi::ABSORPTION):
         ipcressDataTypeKey = "pmg";
         dataDescriptor = "Multigroup Planck Absorption";
         break;
-      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
-      /*
-        case (rtt_cdi::SCATTERING):
-          ipcressDataTypeKey = "psmg";
-          dataDescriptor = "Multigroup Planck Scattering";
-          break;
-       */
       default:
         Assert(false);
         break;
@@ -239,15 +203,14 @@ void IpcressDataTable::loadDataTable(
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief This function returns "true" if "key" is found in the list of 
- *        "keys". This is a static member function.
+ * \brief This function returns "true" if "key" is found in the list of "keys".
+ *        This is a static member function.
  */
 template <typename T>
 bool IpcressDataTable::key_available(T const &key,
                                      std::vector<T> const &keys) const {
-  // Loop over all available keys.  If the requested key matches one in the
-  // list return true.  If we reach the end of the list without a match return
-  // false.
+  // Loop over all available keys.  If the requested key matches one in the list
+  // return true.  If we reach the end of the list without a match return false.
   for (size_t i = 0; i < keys.size(); ++i)
     if (key == keys[i])
       return true;
@@ -258,8 +221,8 @@ bool IpcressDataTable::key_available(T const &key,
 /*!
  * \brief Calculate and return an interpolated opacity value.
  *
- * \param[in] targetTemperature 
- * \param[in] targetDensity 
+ * \param[in] targetTemperature
+ * \param[in] targetDensity
  * \param[in] group Group index
  * \return An interpolated opacity value.
  *

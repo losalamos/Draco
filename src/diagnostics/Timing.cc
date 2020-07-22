@@ -32,22 +32,13 @@ void Timing_Diagnostics::update_timer(const std::string &key, double value) {
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Return a vector of timer keys.
- */
+//! Return a vector of timer keys.
 Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys() {
-  using std::map;
-  using std::string;
-
-  // keys
-  Vec_Keys keys(timers.size());
-
-  // iterators
-  Vec_Keys::iterator v = keys.begin();
-  map<string, double>::iterator m = timers.begin();
+  Vec_Keys keys(timers.size()); // keys
+  auto v = keys.begin();        // iterators
 
   // add keys to the vector
-  for (; m != timers.end(); m++, v++) {
+  for (auto m = timers.begin(); m != timers.end(); m++, v++) {
     Check(v != keys.end());
     *v = m->first;
   }
@@ -68,31 +59,22 @@ void Timing_Diagnostics::reset_timer(const std::string &key) {
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Reset all timers in the map of timers to zero.
- */
+//! Reset all timers in the map of timers to zero.
 void Timing_Diagnostics::reset_timers() {
-  // iterator to timers
-  std::map<std::string, double>::iterator m = timers.begin();
-
   // reset each timer
-  for (; m != timers.end(); m++)
-    m->second = 0.0;
+  for (auto &m : timers)
+    m.second = 0.0;
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Removes a timer with name key from the map of timers.
- */
+//! Removes a timer with name key from the map of timers.
 void Timing_Diagnostics::delete_timer(const std::string &key) {
   timers.erase(key);
   Ensure(timers.count(key) == 0);
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief Delete all timers from the map.
- */
+//! Delete all timers from the map.
 void Timing_Diagnostics::delete_timers() {
   // null map
   std::map<std::string, double> null;

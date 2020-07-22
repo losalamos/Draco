@@ -34,7 +34,7 @@ namespace rtt_cdi_cpeloss {
  *                 scattering
  */
 Analytic_CP_Eloss::Analytic_CP_Eloss(
-    SP_Analytic_Model model_in, rtt_cdi::CParticle target_in,
+    SP_Analytic_Model model_in, rtt_cdi::CParticle target_in, // NOLINT
     rtt_cdi::CParticle projectile_in,
     rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
     : rtt_cdi::CPEloss(target_in, projectile_in,

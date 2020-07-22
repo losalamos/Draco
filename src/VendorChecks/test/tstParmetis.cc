@@ -32,12 +32,12 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
 
   // Needed by parmetis
 
-  // These store the (local) adjacency structure of the graph at each
-  // processor.
+  // These store the (local) adjacency structure of the graph at each processor.
   std::vector<idx_t> xadj(6);
   std::vector<idx_t> adjncy;
   // These store the weights of the vertices and edges.
-  idx_t *vwgt = NULL, *adjwgt = NULL;
+  idx_t *vwgt = nullptr;
+  idx_t *adjwgt = nullptr;
   // This is used to indicate if the graph is weighted. (0 == no weights)
   idx_t wgtflag = 0;
   // C-style numbering that starts from 0.
@@ -58,7 +58,7 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   // An array of size ncon that is used to specify the imbalance tolerance for
   // each vertex weight, with 1 being perfect balance and nparts being perfect
   // imbalance. A value of 1.05 for each of the ncon weights is recommended.
-  real_t ubvec(static_cast<real_t>(1.05));
+  auto ubvec(static_cast<real_t>(1.05));
   // This is an array of integers that is used to pass additional parameters
   // for the routine.
   std::vector<idx_t> options(4, 0);

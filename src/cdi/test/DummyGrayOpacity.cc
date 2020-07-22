@@ -29,9 +29,8 @@ namespace rtt_cdi_test {
 DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
                                    rtt_cdi::Model model)
     : dataFilename("none"), dataDescriptor("DummyGrayOpacity"),
-      energyPolicyDescriptor("Gray"), numTemperatures(3), numDensities(2),
-      temperatureGrid(), densityGrid(), reaction_type(reaction),
-      model_type(model) {
+      energyPolicyDescriptor("Gray"), temperatureGrid(), densityGrid(),
+      reaction_type(reaction), model_type(model) {
   // Set up the temperature and density grid.
   temperatureGrid.resize(numTemperatures);
   densityGrid.resize(numDensities);

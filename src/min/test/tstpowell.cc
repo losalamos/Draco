@@ -21,19 +21,21 @@ using rtt_units::PI;
 // TESTS
 //----------------------------------------------------------------------------//
 
-unsigned const NP = 2;
+unsigned constexpr NP = 2;
 
-static double xf(double const x, vector<double> const &a) {
+double xf(double const x, vector<double> const &a) {
   double const xh = sqrt(x);
   double Result = (sqrt(8.0) + a[0] * xh + a[1] * x + x * xh) * x * xh;
   Result = fabs(Result / cube(sqrt(x * x + 2 * x)) - 1);
   return Result;
 }
 
-static double func(vector<double> const &a) {
+double func(vector<double> const &a) {
   double Result = 0.0;
-  for (double x = 1.0e-5; x < 1000.0; x *= 1.1) {
+  double x(1.0e-5);
+  while (x < 1000.0) {
     Result = max(Result, xf(x, a));
+    x *= 1.1;
   }
   return Result;
 }
@@ -55,8 +57,8 @@ void tstpowell(UnitTest &ut) {
 
   cout << "Maximum error: " << fret << endl;
 
-  double tmp[2] = {1.34601, 4.19265e-09};
-  vector<double> expectedSolution(tmp, tmp + 2);
+  std::array<double, 2> tmp = {1.34601, 4.19265e-09};
+  vector<double> expectedSolution(tmp.begin(), tmp.end());
   if (rtt_dsxx::soft_equiv(p.begin(), p.end(), expectedSolution.begin(),
                            expectedSolution.end(), tolerance)) {
     ut.passes("Found expected solution.");
@@ -67,7 +69,6 @@ void tstpowell(UnitTest &ut) {
 }
 
 //----------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

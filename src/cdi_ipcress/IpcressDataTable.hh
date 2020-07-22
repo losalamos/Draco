@@ -19,20 +19,21 @@ namespace rtt_cdi_ipcress {
 
 //============================================================================//
 /*!
- * \class IpcressDataTable
- * \brief Encapsulates all of the data associated with a
- *        specific opacity type (e.g.: total, plank, multigroup) for a single
- *        single material.
+ * \brief Encapsulates all of the data associated with a specific opacity type
+ *        (e.g.: total, plank, multigroup) for a single single material.
  *
- * When the user instantiates a IpcressOpacity object a IpcressDataTable
- * object is also created.  There is a one-to-one correspondence between these
- * two objects.  The IpcressDataTable object will load a single opacity table
- * from the IPCRESS file specified by the associated IpcressFile object.  The
- * table that is loaded is specified by the combination of { opacityModel,
+ * When the user instantiates a IpcressOpacity object a IpcressDataTable object
+ * is also created.  There is a one-to-one correspondence between these two
+ * objects.  The IpcressDataTable object will load a single opacity table from
+ * the IPCRESS file specified by the associated IpcressFile object.  The table
+ * that is loaded is specified by the combination of { opacityModel,
  * opacityReaction and the opacityEnergyDescriptor }.
+ *
+ * Additional data about keywords and the IPCRESS format is available in
+ * - Judd, B., Fontes, C.J., and Zhang, H.L. Gandolf : Interface Routines for
+ *   IPCRESS Files," Los Alamos Technical Report LA-UR-01-5543, 2001.
  */
 //============================================================================//
-
 class IpcressDataTable {
 
   // NESTED CLASSES AND TYPEDEFS
@@ -51,18 +52,18 @@ class IpcressDataTable {
   std::string mutable dataDescriptor;
 
   /*!
-   * \brief A string that specifies the energy model for the data being
-   *     stored.  Possible values are "mg" or "gray". */
+   * \brief A string that specifies the energy model for the data being stored.
+   *     Possible values are "mg" or "gray". */
   std::string const opacityEnergyDescriptor;
 
   /*!
-   * \brief An enumerated value defined in IpcressOpacity.hh that specifies
-   *     the data model.  Possible values are "Rosseland" or "Plank". */
+   * \brief An enumerated value defined in IpcressOpacity.hh that specifies the
+   *     data model.  Possible values are "Rosseland" or "Plank". */
   rtt_cdi::Model const opacityModel;
 
   /*!
-   * \brief An enumerated valued defined in IpcressOpacity.hh that specifies
-   *     the reaction model.  Possible values are "Total", "Absorption" or
+   * \brief An enumerated valued defined in IpcressOpacity.hh that specifies the
+   *     reaction model.  Possible values are "Total", "Absorption" or
    *     "Scattering". */
   rtt_cdi::Reaction const opacityReaction;
 
@@ -94,7 +95,7 @@ public:
   // CREATORS
 
   //! Standard IpcressDataTable constructor.
-  IpcressDataTable(std::string const &in_opacityEnergyDescriptor,
+  IpcressDataTable(std::string in_opacityEnergyDescriptor,
                    rtt_cdi::Model in_opacityModel,
                    rtt_cdi::Reaction in_opacityReaction,
                    std::vector<std::string> const &in_fieldNames,
@@ -132,16 +133,16 @@ public:
 
 private:
   /*!
-   * \brief This function sets both "ipcressDataTypeKey" and
-   *     "dataDescriptor" based on the values given for
-   *     opacityEnergyDescriptor, opacityModel and opacityReaction.
+   * \brief This function sets both "ipcressDataTypeKey" and "dataDescriptor"
+   *     based on the values given for opacityEnergyDescriptor, opacityModel and
+   *     opacityReaction.
    */
   void setIpcressDataTypeKey() const;
 
   /*!
-   * \brief Load the temperature, density, energy boundary and opacity
-   *     opacity tables from the IPCRESS file.  Convert all tables (except
-   *     energy boundaries) to log values.
+   * \brief Load the temperature, density, energy boundary and opacity opacity
+   *     tables from the IPCRESS file.  Convert all tables (except energy
+   *     boundaries) to log values.
    */
   void loadDataTable(std::shared_ptr<const IpcressFile> const &spIpcressFile);
 

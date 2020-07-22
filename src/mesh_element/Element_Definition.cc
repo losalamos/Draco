@@ -101,7 +101,7 @@ Element_Definition::Element_Definition(
       dimension(dimension_), number_of_nodes(number_of_nodes_),
       number_of_sides(number_of_sides_), elem_defs(elem_defs_),
       side_type(side_type_), side_nodes(side_nodes_) {
-
+  //--------------------------------------------------------------------------//
   // Check input first, before any modifications
   Require(number_of_nodes_ > 0);
 

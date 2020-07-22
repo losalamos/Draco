@@ -19,21 +19,20 @@
 namespace rtt_parser {
 using std::string;
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Token types recognized by a Token_Stream.
  */
-
 enum Token_Type {
   END,
-  /*!< The identifier <CODE>end</CODE>, denoting that the Parse_Table
-   *   should return control to its client.  Can be used to implement
-   *   nested parse tables.*/
+  /*!< The identifier <CODE>end</CODE>, denoting that the Parse_Table should
+   *   return control to its client.  Can be used to implement nested parse
+   *   tables.*/
 
   EXIT,
-  /*!< Denotes that the end of the Token_Stream has been reached.
-   *   The Token_Stream will continue to return EXIT indefinitely
-   *   once its end has been reached. */
+  /*!< Denotes that the end of the Token_Stream has been reached.  The
+   *   Token_Stream will continue to return EXIT indefinitely once its end has
+   *   been reached. */
 
   KEYWORD,
   /*!< A sequence of one or more C++ identifiers separated by whitespace. */
@@ -48,25 +47,24 @@ enum Token_Type {
   /*!< A valid C++ string constant. */
 
   ERROR,
-  /*!< The error token, indicating something wrong with the token stream.
-   *   For example, a file-based token stream would return this token if
-   *   the file failed to open. */
+  /*!< The error token, indicating something wrong with the token stream.  For
+   *   example, a file-based token stream would return this token if the file
+   *   failed to open. */
 
   OTHER
-  /*! A single character or sequence of characters (such as "==") that does
-   *  not belong to one of the regular token types described above.
+  /*! A single character or sequence of characters (such as "==") that does not
+   *  belong to one of the regular token types described above.
    */
 };
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Description of a token.
  *
- * This class represents a lexical token, for use in simple parsing systems
- * for analysis codes.  The token is characterized by its type, value, and
- * location.
+ * This class represents a lexical token, for use in simple parsing systems for
+ * analysis codes.  The token is characterized by its type, value, and location.
  */
-class DLL_PUBLIC_parser Token {
+class Token {
 public:
   // CREATORS
 
@@ -83,8 +81,7 @@ public:
   inline Token(Token_Type type, string &&text, string &&location);
 
   //! Default constructor
-  inline Token(/*empty*/) : type_(END), text_(), location_() { /* empty */
-  }
+  inline Token() : text_(), location_(){};
 
   // ACCESSORS
 
@@ -109,23 +106,23 @@ public:
   }
 
 private:
-  Token_Type type_; //!< Type of this token
-  string text_;     //!< Text of this token
-  string location_; //!< Location information (such as file and line)
+  Token_Type type_ = {END}; //!< Type of this token
+  string text_;             //!< Text of this token
+  string location_;         //!< Location information (such as file and line)
 };
 
 // For checking of assertions
-DLL_PUBLIC_parser bool Is_Text_Token(Token_Type type);
-DLL_PUBLIC_parser bool Is_Integer_Text(char const *string);
-DLL_PUBLIC_parser bool Is_Keyword_Text(char const *string);
-DLL_PUBLIC_parser bool Is_Real_Text(char const *string);
-DLL_PUBLIC_parser bool Is_String_Text(char const *string);
-DLL_PUBLIC_parser bool Is_Other_Text(char const *string);
+bool Is_Text_Token(Token_Type type);
+bool Is_Integer_Text(char const *string);
+bool Is_Keyword_Text(char const *string);
+bool Is_Real_Text(char const *string);
+bool Is_String_Text(char const *string);
+bool Is_Other_Text(char const *string);
 
 //! Test equality of two Tokens
-DLL_PUBLIC_parser bool operator==(Token const &, Token const &);
+bool operator==(Token const &, Token const &);
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param type Type of the Token.
  * \param text Text of the Token.
@@ -147,7 +144,7 @@ inline Token::Token(Token_Type const type, string const &text,
   Ensure(this->location() == location);
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * Move version of previous constructor.
  *
@@ -170,7 +167,7 @@ inline Token::Token(Token_Type const type, string &&text, string &&location)
   Ensure(this->location() == location);
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param c The token text (a single character)
  * \param location The token location.
@@ -185,7 +182,7 @@ inline Token::Token(char const c, string const &location)
   Ensure(this->location() == location);
 }
 
-//-------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param type Token type to create; must be one of END, EXIT, or ERROR.
  * \param location The token location
@@ -206,6 +203,6 @@ inline Token::Token(Token_Type const type, string const &location)
 
 #endif // rtt_Token_HH
 
-//--------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Token.hh
-//--------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

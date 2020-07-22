@@ -33,10 +33,10 @@ public:
                           const rtt_cdi::CParticle &projectile)
       : Analytic_Eloss_Model(target, projectile) {}
 
-  //! Calculate the eloss rate in units of shk^-1;
-  //! T given in keV, rho in g/cc, v0 in cm/shk
+  //! Calculate the eloss rate in units of shk^-1; T given in keV, rho in g/cc,
+  //! v0 in cm/shk
   double calculate_eloss(const double T, const double rho,
-                         const double v0) const;
+                         const double v0) const override;
 };
 
 } // namespace rtt_cdi_cpeloss

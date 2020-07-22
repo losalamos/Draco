@@ -48,7 +48,7 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Attempt to instantiate the object.
     try {
-      spIF.reset(new IpcressFile(op_data_file));
+      spIF = std::make_shared<IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       cout << "While testing tIpcressOpacity, " << error.what() << endl;
       return;
@@ -97,8 +97,8 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
 
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_twomat_rgt.reset(new IpcressGrayOpacity(
-        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
+    spOp_twomat_rgt = std::make_shared<IpcressGrayOpacity>(
+        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
     // spIF goes out of scope
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
@@ -176,8 +176,8 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   // Try to instantiate the Opacity object.
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_twomat_rtmg.reset(new IpcressMultigroupOpacity(
-        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
+    spOp_twomat_rtmg = std::make_shared<IpcressMultigroupOpacity>(
+        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -269,7 +269,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the object.
   try {
-    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const &error) {
     FAILMSG(error.what());
     FAILMSG("Aborting tests.");
@@ -315,8 +315,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_ragray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ragray = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error)
   // Alternatively, we could use:
   // catch ( rtt_cdi_ipcress::gkeysException GandError )
@@ -361,8 +361,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_ramg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ramg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -417,8 +417,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_pgray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pgray = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -458,8 +458,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pmg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -720,7 +720,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the object.
   try {
-    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     FAILMSG(error.what());
@@ -745,8 +745,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // try to instantiate the Opacity object.
   try {
-    spGGOp_Analytic_ra.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spGGOp_Analytic_ra = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressGrayOpacity object "
@@ -916,8 +916,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // try to instantiate the Opacity object.
   try {
-    spGMGOp_Analytic_ra.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spGMGOp_Analytic_ra = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressGrayOpacity "
@@ -1086,7 +1086,8 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Try to instantiate the object.
     try {
-      spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+      spGFAnalytic =
+          std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       ostringstream message;
       FAILMSG(error.what());
@@ -1100,8 +1101,8 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
     // material ID
     int const matid = 10001;
 
-    spOp_Analytic_ragray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ragray = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
 
     // pack up the opacity
     packed = spOp_Analytic_ragray->pack();
@@ -1112,7 +1113,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    unpacked_opacity.reset(new IpcressGrayOpacity(packed));
+    unpacked_opacity = std::make_shared<IpcressGrayOpacity>(packed);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to unpacked IpcressOpacity object "
@@ -1182,7 +1183,8 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Try to instantiate the object.
     try {
-      spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+      spGFAnalytic =
+          std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       ostringstream message;
       FAILMSG(error.what());
@@ -1200,8 +1202,8 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
     // Create a smart pointer to an Opacity object.
     shared_ptr<MultigroupOpacity> spOp_Analytic_pmg;
 
-    spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pmg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
 
     packed = spOp_Analytic_pmg->pack();
   }
@@ -1211,7 +1213,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    unpacked_opacity.reset(new IpcressMultigroupOpacity(packed));
+    unpacked_opacity = std::make_shared<IpcressMultigroupOpacity>(packed);
   } catch (rtt_dsxx::assertion const &error)
   // Alternatively, we could use:
   // catch ( rtt_cdi_ipcress::gkeysException GandError )

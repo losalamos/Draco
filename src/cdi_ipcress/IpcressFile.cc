@@ -139,13 +139,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
  * \param[in] matid unsigned integer that specifies the material to be queried.
  */
 bool IpcressFile::materialFound(size_t matid) const {
-  // Loop over all available materials.  If the requested material id matches on
-  // in the list then return true. If we reach the end of the list without a
-  // match return false.
-  for (size_t i = 0; i < matIDs.size(); ++i)
-    if (matid == matIDs[i])
-      return true;
-  return false;
+  return std::find(matIDs.begin(), matIDs.end(), matid) != matIDs.end();
 }
 
 //----------------------------------------------------------------------------//
@@ -194,7 +188,7 @@ void IpcressFile::read_strings(size_t const byte_offset,
 
 //----------------------------------------------------------------------------//
 //! Populate the materialData member data container.
-void IpcressFile::loadFieldData(void) {
+void IpcressFile::loadFieldData() {
   // Attempt to open the ipcress file.
   Insist(ipcressFileHandle.is_open(), "getKeys: Unable to open ipcress file.");
 

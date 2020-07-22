@@ -71,7 +71,7 @@ public:
   // CREATORS
 
   //! Default constructor
-  SesameTables(void)
+  SesameTables()
       : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
         matMap(), rtMap(), tableName(initializeTableNames(numReturnTypes)),
         tableDescription(
@@ -180,12 +180,10 @@ public:
 
   //! Return a list of table/material identifiers associated with this
   //! SesameTables object.
-  std::vector<unsigned> matList(void) const {
+  std::vector<unsigned> matList() const {
     std::vector<unsigned> mlist;
-    for (std::map<unsigned, std::vector<EOS_INTEGER>>::const_iterator it =
-             rtMap.begin();
-         it != rtMap.end(); ++it)
-      mlist.push_back((*it).first);
+    for (auto const &it : rtMap)
+      mlist.push_back(it.first);
     return mlist;
   }
 

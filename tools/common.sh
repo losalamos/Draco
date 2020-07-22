@@ -209,11 +209,11 @@ function flavor
       if [[ $CC ]]; then
         if [[ $CC =~ "gcc" ]]; then
           compilerflavor=gnu-`$CC --version | head -n 1 | sed -r 's%.* %%'`
+        elif [[ $CC =~ "icc" ]]; then
+          compilerflavor=intel-`$CC --version | head -n 1 | awk '{ print $3 }' | sed -r 's%([0-9]+).([0-9]+).([0-9]+).*%\1.\2.\3%'`
         elif [[ $CC =~ "IBM" ]] || [[ $CC =~ "xlc" ]]; then
           compilerflavor=xl-`$CC --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g'`
-        else
-          compilerflavor="unknown"
-        fi
+       fi
       else
         compilerflavor="unknown"
       fi

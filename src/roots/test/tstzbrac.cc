@@ -5,10 +5,7 @@
  * \date   Tue Aug 17 15:24:48 2004
  * \brief  Test the zbrac function template
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -47,7 +44,7 @@ void tstzbrac(UnitTest &ut) {
   double x1 = 0.1, x2 = 10.0;
 
   // Help out the compiler by defining function pointer signature.
-  typedef double (*fpdd)(double);
+  using fpdd = double (*)(double);
   fpdd log_fpdd = &foo;
 
   zbrac<fpdd>(log_fpdd, x1, x2);
