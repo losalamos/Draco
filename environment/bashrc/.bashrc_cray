@@ -67,6 +67,12 @@ elif [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
   export NRANKS_PER_NODE=68
 fi
 
+# Support building cassio with ccsrad shared deployment repository.
+if [[ -d /usr/projects/eap/users/ccsrad/Cassio.deployment ]]; then
+  export TF_DEPLOYMENT_CLONES=/usr/projects/eap/users/ccsrad/Cassio.deployment
+  export TF_SPACK_INSTANCES=/usr/projects/eap/users/ccsrad/spack_instances
+fi
+
 #
 # MODULES
 #
