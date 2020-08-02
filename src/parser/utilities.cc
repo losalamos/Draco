@@ -405,6 +405,9 @@ bool at_unit_term(Token_Stream &tokens, unsigned position) {
     case 'i':
       return (token.text() == "inch");
 
+    case 'j':
+      return (token.text() == "jerk");
+
     case 'k':
       return (token.text() == "kg" || token.text() == "keV");
 
@@ -424,7 +427,8 @@ bool at_unit_term(Token_Stream &tokens, unsigned position) {
       return (token.text() == "rad");
 
     case 's':
-      return (u.size() == 1 || token.text() == "sr");
+      return (u.size() == 1 || token.text() == "sr" || token.text() == "sh" ||
+              token.text() == "shake");
 
     default:
       return false;
@@ -589,6 +593,13 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         tokens.report_syntax_error("expected a unit");
       break;
 
+    case 'j':
+      if (token.text() == "jerk")
+        retval = J * 1e9;
+      else
+        tokens.report_syntax_error("expected a unit");
+      break;
+
     case 'k':
       if (token.text() == "kg")
         retval = kg;
@@ -642,6 +653,8 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         retval = s;
       else if (token.text() == "sr")
         retval = sr;
+      else if (token.text() == "sh" || token.text() == "shake")
+        retval = 1.0e-8 * s;
       else
         tokens.report_syntax_error("expected a unit");
       break;

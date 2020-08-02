@@ -19,6 +19,12 @@ export PATH=${VENDOR_DIR:=/usr/gapps/jayenne/vendors}/bin:$PATH
 export VENDOR_DIR
 export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
 
+# Support building cassio with ccsrad shared deployment repository.
+if [[ -d /usr/workspace/eapdev/eap/users/ccsrad/Cassio.deployment ]]; then
+  export TF_DEPLOYMENT_CLONES=/usr/workspace/eapdev/eap/users/ccsrad/Cassio.deployment
+  export TF_SPACK_INSTANCES=/usr/workspace/eapdev/eap/users/ccsrad/spack_instances
+fi
+
 #
 # MODULES
 #
