@@ -43,6 +43,24 @@ set(Draco_std_target_props_CUDA
 set(Draco_std_target_props
   INTERPROCEDURAL_OPTIMIZATION_RELEASE ${USE_IPO}
   POSITION_INDEPENDENT_CODE ON )
+# Throttle use of GPU. We don't want too many test sharing the same GPU.
+if( NOT DEFINED MAX_TESTS_PER_GPU )
+  set( MAX_TESTS_PER_GPU 10 CACHE STRING "max concurrent gpu tests" FORCE)
+endif()
+set( GPU_INDEX 0 CACHE INTERNAL "counter used for GPU resource locking")
+
+#------------------------------------------------------------------------------#
+# Set "GPU_$i" as a resource lock
+#------------------------------------------------------------------------------#
+macro( add_gpu_resource_lock rlprefix)
+  message("==> ${compname}_${testname}_${numPE} -- RESOURCE_LOCK GPU_${GPU_INDEX}")
+  string(APPEND ${rlprefix}_RESOURCE_LOCK "GPU_${GPU_INDEX}")
+  math(EXPR GPU_INDEX "${GPU_INDEX} + 1" )
+  if( GPU_INDEX STREQUAL MAX_TESTS_PER_GPU )
+    set(GPU_INDEX "0")
+  endif()
+  set(GPU_INDEX ${GPU_INDEX} CACHE INTERNAL "counter used for GPU resource locking" FORCE)
+endmacro()
 
 #------------------------------------------------------------------------------#
 # Set properties that are common across all packages.  Including the required
@@ -509,7 +527,7 @@ macro( add_scalar_tests test_sources )
   # These become variables of the form ${addscalartests_SOURCES}, etc.
   cmake_parse_arguments(
     addscalartest
-    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
+    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE;GPU_ENABLED"
     "LABEL;LINK_LANGUAGE"
     "DEPS;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV} )
@@ -570,7 +588,8 @@ macro( add_scalar_tests test_sources )
   endif()
 
   # Format resource lock command
-  if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
+  if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none"  OR
+      addscalartest_GPU_ENABLED )
     set( addscalartest_RESOURCE_LOCK
       "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
   endif()
@@ -622,12 +641,18 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
+      if(addscalartest_GPU_ENABLED)
+        add_gpu_resource_lock("addscalartest")
+      endif()
       register_scalar_test( ${compname}_${testname}
         "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
     else()
       set( iarg "0" )
       foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
+        if(addscalartest_GPU_ENABLED)
+          add_gpu_resource_lock("addscalartest")
+        endif()
         register_scalar_test( ${compname}_${testname}_arg${iarg}
           "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
       endforeach()
@@ -680,7 +705,7 @@ macro( add_parallel_tests )
 
   cmake_parse_arguments(
     addparalleltest
-    "MPI_PLUS_OMP;LINK_WITH_FORTRAN"
+    "MPI_PLUS_OMP;LINK_WITH_FORTRAN;GPU_ENABLED"
     "LABEL"
     "DEPS;FAIL_REGEX;MPIFLAGS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV}
@@ -696,7 +721,6 @@ macro( add_parallel_tests )
     message( FATAL_ERROR "You must provide the keyword PE_LIST and a list containing the number of cores used to execute this test (e.g. \"PE_LIST  \"1;2;4\"\").  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )
   endif()
 
-
   # Pass/Fail criteria
   if( "${addparalleltest_PASS_REGEX}none" STREQUAL "none" )
     set( addparalleltest_PASS_REGEX ".*[Tt]est: PASSED" )
@@ -708,7 +732,8 @@ macro( add_parallel_tests )
   endif()
 
   # Format resource lock command
-  if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+  if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" OR
+      addparalleltest_GPU_ENABLED )
     set( addparalleltest_RESOURCE_LOCK
       "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
   endif()
@@ -785,6 +810,9 @@ macro( add_parallel_tests )
       foreach( numPE ${addparalleltest_PE_LIST} )
         set( iarg 0 )
         if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
+          if(addparalleltest_GPU_ENABLED)
+            add_gpu_resource_lock("addparalleltest")
+          endif()
           register_parallel_test(
             ${compname}_${testname}_${numPE}
             ${numPE}
@@ -793,6 +821,9 @@ macro( add_parallel_tests )
         else()
           foreach( cmdarg ${addparalleltest_TEST_ARGS} )
             math( EXPR iarg "${iarg} + 1" )
+            if(addparalleltest_GPU_ENABLED)
+              add_gpu_resource_lock("addparalleltest")
+            endif()
             register_parallel_test(
               ${compname}_${testname}_${numPE}_arg${iarg}
               ${numPE}
@@ -810,7 +841,6 @@ macro( add_parallel_tests )
 
       set( addscalartest_PASS_REGEX "${addparalleltest_PASS_REGEX}" )
       set( addscalartest_FAIL_REGEX "${addparalleltest_FAIL_REGEX}" )
-      set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
       set( addscalartest_RUN_AFTER "${addparalleltest_RUN_AFTER}" )
 
       if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
@@ -818,6 +848,10 @@ macro( add_parallel_tests )
           message("   register_scalar_test( ${compname}_${testname}
           \"${RUN_CMD}\" $<TARGET_FILE:Ut_${compname}_${testname}_exe> \"\" )")
         endif()
+        if(GPU_ENABLED)
+          add_gpu_resource_lock("addparalleltest")
+        endif()
+        set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
         register_scalar_test( ${compname}_${testname}
           "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
       else()
@@ -827,7 +861,11 @@ macro( add_parallel_tests )
           if( lverbose )
             message("   register_scalar_test( ${compname}_${testname}_arg${iarg}
             \"${RUN_CMD}\" ${testname} \"${cmdarg}\" ) ")
-            endif()
+          endif()
+          if(GPU_ENABLED)
+            add_gpu_resource_lock("addparalleltest")
+          endif()
+          set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
           register_scalar_test( ${compname}_${testname}_arg${iarg}
             "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
         endforeach()
@@ -846,7 +884,7 @@ endmacro()
 # Call this macro from a package CMakeLists.txt to instruct the build system
 # that some files should be copied from the source directory into the build
 # directory.
-# ------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 macro( provide_aux_files )
 
   cmake_parse_arguments(

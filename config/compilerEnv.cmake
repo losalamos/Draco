@@ -759,6 +759,9 @@ macro(dbsSetupCuda)
     # Use this string as a toggle when calling add_component_library or
     # add_scalar_tests to force compiling with nvcc.
     set( COMPILE_WITH_CUDA LINK_LANGUAGE CUDA )
+    # Limit the number of tests that can access the GPU concurrently.  See
+    # component_macros.cmake for more details
+    set( GPU_RESOURCE_LOCK GPU_ENABLED )
 
     # setup flags
     if( "${CMAKE_CUDA_COMPILER_ID}" MATCHES "NVIDIA" )
