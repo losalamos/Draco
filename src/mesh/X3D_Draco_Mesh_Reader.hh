@@ -75,6 +75,10 @@ private:
   //! Cell-to-face map
   std::map<int, std::vector<int>> x3d_cellface_map;
 
+  //! Matid map
+  // As the x3d manual notes, matids are a little weird.
+  std::vector<std::string> x3d_matids;
+
   //! Side-to-node map (0-based indices, unlike other maps)
   std::map<int, std::vector<unsigned>> x3d_sidenode_map;
 
@@ -112,6 +116,12 @@ public:
   std::vector<double> get_nodecoord(size_t node) const {
     Check(node + 1 < INT_MAX);
     return x3d_coord_map.at(static_cast<int>(node + 1));
+  }
+
+  // matid data
+  std::string get_matid(size_t cell) const {
+    Check(cell + 1 < INT_MAX);
+    return x3d_matids.at(cell);
   }
 
   // accessors with deferred implementations
