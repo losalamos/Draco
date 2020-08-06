@@ -144,7 +144,7 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
   // As the X3D manual notes, matid is a little weird.
   x3d_matids.resize(get_numcells());
   unsigned i = 0;
-  do {
+  while (i < x3d_matids.size()) {
     if (dist > parsed_pairs.size()) {
       throw std::invalid_argument("wrong number of matids in x3d file " +
                                   filename);
@@ -155,7 +155,7 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
     for (auto const &id : matids) {
       x3d_matids[i++] = id;
     }
-  } while (i < x3d_matids.size());
+  }
 
   // STEP 6: parse side node indices and map to faces
 
