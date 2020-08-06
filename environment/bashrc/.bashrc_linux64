@@ -43,6 +43,7 @@ case $target in
       export MODULEPATH=/etc/modulefiles:/usr/share/modulefiles:/ccs/opt/modulefiles
     fi
     module load user_contrib
+    module unuse /etc/modulefiles
     if [[ -d $HOME/privatemodules ]]; then
       module use --append $HOME/privatemodules
     fi

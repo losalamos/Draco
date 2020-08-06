@@ -399,7 +399,7 @@ macro( setupSpectrumMPI )
     # 1 resource set; 1 thread; no gpu; no binding --nrs 1
     set( MPIEXEC_PREFLAGS "-c 1 -g 0 --bind none")
   elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
-    set( MPIEXEC_PREFLAGS "--threads=1 --bind=off -v")
+    set( MPIEXEC_PREFLAGS "--pack --threads=1 -v") # --bind=off
   endif()
   # --pack ==> -c 1 -g 0.  This is actually bad for us. Disable
   # lrun -n 2 -c 10 --threads=10 --bind=off ==>
@@ -415,7 +415,12 @@ macro( setupSpectrumMPI )
       # 1 resource set; OMP_NUM_THREADS tasks; no gpu; no binding
       set( MPIEXEC_OMP_PREFLAGS "--nrs 1 -c $ENV{OMP_NUM_THREADS} -g 0 --bind none")
     elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
-      set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
+      if( DEFINED ENV{OMP_NUM_THREADS} )
+        # --bind=off
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=$ENV{OMP_NUM_THREADS} -c$ENV{OMP_NUM_THREADS} -v" )
+      else()
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=4 -c 4 -v" )
+      endif()
     endif()
   endif()
 
@@ -463,7 +468,7 @@ macro( setupMPILibrariesUnix )
     elseif( DEFINED ENV{SYS_TYPE} AND
         "$ENV{SYS_TYPE}" MATCHES "ppc64le_ib_p9" ) # ATS-2
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
-        find_program( MPIEXEC_EXECUTABLE jsrun )
+        find_program( MPIEXEC_EXECUTABLE lrun )
       endif()
       set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
         "Program to execute MPI parallel programs." FORCE )

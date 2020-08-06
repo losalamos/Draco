@@ -25,12 +25,12 @@ using rtt_dsxx::UnitTest;
 //----------------------------------------------------------------------------//
 void check_set_get(UnitTest &ut) {
   int const init_n = get_omp_num_threads();
-  set_omp_num_threads(51);
+  set_omp_num_threads(39);
   // use the direct OMP interface to check number of threads was set correctly
   int const new_max{omp_get_max_threads()};
-  FAIL_IF_NOT(51 == new_max);
+  FAIL_IF_NOT(39 == new_max);
   int const new_max_us(get_omp_max_threads());
-  FAIL_IF_NOT(51 == new_max_us);
+  FAIL_IF_NOT(39 == new_max_us);
   // now reset to the previous number of threads
   set_omp_num_threads(init_n);
   int const final_n{get_omp_num_threads()};

@@ -59,7 +59,7 @@ if( NOT CUDA_FLAGS_INITIALIZED )
     endif()
   endif()
   set( CMAKE_CUDA_FLAGS_DEBUG          "-G -O0 -Xcudafe --display_error_number -Xcudafe --diag_suppress=1427")
-  set( CMAKE_CUDA_FLAGS_RELEASE        "-O2")
+  set( CMAKE_CUDA_FLAGS_RELEASE        "-O2") # -dipo
   set( CMAKE_CUDA_FLAGS_MINSIZEREL     "-O2")
   set( CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O2 --generate-line-info")
 
