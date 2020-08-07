@@ -262,6 +262,18 @@ void tstutilities(UnitTest &ut) {
   else
     PASSMSG("sr definition checks out");
 
+  left = parse_unit(tokens);
+  if (left != W * 1e17)
+    FAILMSG("jerk and shake definitions did NOT check out");
+  else
+    PASSMSG("jerk and shake definition checks out");
+
+  left = parse_unit(tokens);
+  if (left != s * 1e-8)
+    FAILMSG("sh definitions did NOT check out");
+  else
+    PASSMSG("sh definition checks out");
+
   // Now see if we catch a bogus unit expression.
   try {
     left = parse_unit(tokens);

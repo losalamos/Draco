@@ -255,34 +255,49 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
-  # MPIEXEC_PREFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
-  # . --oversubscribe is only available for openmpi version >= 3.0
-  # . -H localhost,localhost,localhost,localhost might work for older versions.
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
-    set(runasroot "--allow-run-as-root --oversubscribe")
-  endif()
-  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
-  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
-  set( MPIEXEC_PREFLAGS "-bind-to none ${runasroot}" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN ${runasroot}" CACHE
-    STRING "extra mpirun flags (list)." FORCE)
-
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
-  #
+  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
+  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
+  set( MPIEXEC_PREFLAGS "-bind-to none")
+  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
   # Setup for OMP plus MPI
-  #
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
     set( MPIEXEC_OMP_PREFLAGS
-      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
+      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
   endif()
 
-  set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
-    CACHE STRING "extra mpirun flags (list)." FORCE )
+  # Special settings for CI
+  # . --oversubscribe is only available for openmpi version >= 3.0
+  # . -H localhost,localhost,localhost,localhost might work for older versions.
+  # . --allow-run-as-root is required for CI builds.
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
+    set(runasroot "--allow-run-as-root --oversubscribe")
+    string(APPEND MPIEXEC_PREFLAGS           " ${runasroot}")
+    string(APPEND MPIEXEC_PREFLAGS_PERFBENCH " ${runasroot}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS       " ${runasroot}")
+    unset(runasroot)
+  endif()
+
+  # Spectrum-MPI on darwin
+  # Limit communication to on-node via '-intra sm' or 'intra vader'
+  # https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
+  if( "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
+    set(smpi-sm-only "-intra sm -aff off --report-bindings")
+    string(APPEND MPIEXEC_PREFLAGS     " ${smpi-sm-only}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS " ${smpi-sm-only}")
+    unset(smpi-sm-only)
+  endif()
+
+  # Cache the result
+  set( MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS_PERFBENCH}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_OMP_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
   mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
     MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
@@ -353,6 +368,7 @@ endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
+## - https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
 ##---------------------------------------------------------------------------##
 macro( setupSpectrumMPI )
 
@@ -383,7 +399,7 @@ macro( setupSpectrumMPI )
     # 1 resource set; 1 thread; no gpu; no binding --nrs 1
     set( MPIEXEC_PREFLAGS "-c 1 -g 0 --bind none")
   elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
-    set( MPIEXEC_PREFLAGS "--threads=1 --bind=off -v")
+    set( MPIEXEC_PREFLAGS "--pack --threads=1 -v") # --bind=off
   endif()
   # --pack ==> -c 1 -g 0.  This is actually bad for us. Disable
   # lrun -n 2 -c 10 --threads=10 --bind=off ==>
@@ -399,7 +415,12 @@ macro( setupSpectrumMPI )
       # 1 resource set; OMP_NUM_THREADS tasks; no gpu; no binding
       set( MPIEXEC_OMP_PREFLAGS "--nrs 1 -c $ENV{OMP_NUM_THREADS} -g 0 --bind none")
     elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
-      set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
+      if( DEFINED ENV{OMP_NUM_THREADS} )
+        # --bind=off
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=$ENV{OMP_NUM_THREADS} -c$ENV{OMP_NUM_THREADS} -v" )
+      else()
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=4 -c 4 -v" )
+      endif()
     endif()
   endif()
 
@@ -447,7 +468,7 @@ macro( setupMPILibrariesUnix )
     elseif( DEFINED ENV{SYS_TYPE} AND
         "$ENV{SYS_TYPE}" MATCHES "ppc64le_ib_p9" ) # ATS-2
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
-        find_program( MPIEXEC_EXECUTABLE jsrun )
+        find_program( MPIEXEC_EXECUTABLE lrun )
       endif()
       set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
         "Program to execute MPI parallel programs." FORCE )
