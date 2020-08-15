@@ -52,8 +52,8 @@ public:
   // CREATORS
 
   //! Default constructors.
-  ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
-                 std::ostream &out_ = std::cout, bool verbose_ = true);
+  ScalarUnitTest(int &argc, char **&argv, string_fp_void release_, std::ostream &out_ = std::cout,
+                 bool verbose_ = true);
 
   //! The copy constructor is disabled.
   ScalarUnitTest(const ScalarUnitTest &rhs) = delete;
@@ -82,8 +82,7 @@ public:
  */
 
 template <typename... Lambda, typename Release>
-int do_scalar_unit_test(int argc, char **argv, Release release,
-                        Lambda const &... lambda);
+int do_scalar_unit_test(int argc, char **argv, Release release, Lambda const &... lambda);
 
 } // end namespace rtt_dsxx
 

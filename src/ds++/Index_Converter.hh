@@ -28,8 +28,7 @@ namespace rtt_dsxx {
  * Example use of Index_Converter
  */
 //============================================================================//
-template <unsigned D, int OFFSET>
-class Index_Converter : public Index_Set<D, OFFSET> {
+template <unsigned D, int OFFSET> class Index_Converter : public Index_Set<D, OFFSET> {
 public:
   using Base = Index_Set<D, OFFSET>;
   using Counter = Index_Counter<D, OFFSET>;
@@ -53,9 +52,7 @@ public:
   void set_size(unsigned size);
 
   //! Re-implement base function.
-  int limit_of_index(unsigned d, bool pos) const {
-    return Base::limit_of_index(d, pos);
-  }
+  int limit_of_index(unsigned d, bool pos) const { return Base::limit_of_index(d, pos); }
 
   // ACCESSORS
 
@@ -75,9 +72,8 @@ public:
   int get_next_index(int index, int direction) const;
 
   //! Get the next index from an Index_Counter and direction
-  int get_next_index(
-      const typename Index_Converter<D, OFFSET>::Counter &counter,
-      int direction) const;
+  int get_next_index(const typename Index_Converter<D, OFFSET>::Counter &counter,
+                     int direction) const;
 
   //! Create an iterator over the index set
   Counter counter() const { return Counter(*this); }
@@ -194,8 +190,7 @@ std::vector<int> Index_Converter<D, OFFSET>::get_indices(int index) const {
  * \arg dimension The desired index dimension
  */
 template <unsigned D, int OFFSET>
-int Index_Converter<D, OFFSET>::get_single_index(int index,
-                                                 unsigned dimension) const {
+int Index_Converter<D, OFFSET>::get_single_index(int index, unsigned dimension) const {
 
   Check(Base::index_in_range(index));
   Check(Base::dimension_okay(dimension));
@@ -244,8 +239,7 @@ int Index_Converter<D, OFFSET>::get_next_index(int index, int direction) const {
  */
 template <unsigned D, int OFFSET>
 int Index_Converter<D, OFFSET>::get_next_index(
-    const typename Index_Converter<D, OFFSET>::Counter &counter,
-    int direction) const {
+    const typename Index_Converter<D, OFFSET>::Counter &counter, int direction) const {
   --direction;
 
   unsigned dimension = direction / 2;
@@ -270,17 +264,15 @@ int Index_Converter<D, OFFSET>::get_next_index(
  *
  * Used once the dimensions array has been filled.
  */
-template <unsigned D, int OFFSET>
-void Index_Converter<D, OFFSET>::compute_sub_sizes() {
+template <unsigned D, int OFFSET> void Index_Converter<D, OFFSET>::compute_sub_sizes() {
 
   Require(Base::sizes_okay());
 
   sub_sizes[0] = 1;
 
   std::array<unsigned, D> const dimensions = Base::get_dimensions();
-  Remember(unsigned *end =)
-      std::partial_sum(dimensions.begin(), dimensions.begin() + D - 1,
-                       sub_sizes.data() + 1, std::multiplies<unsigned>());
+  Remember(unsigned *end =) std::partial_sum(dimensions.begin(), dimensions.begin() + D - 1,
+                                             sub_sizes.data() + 1, std::multiplies<unsigned>());
 
   Ensure(end == sub_sizes.data() + D);
 }

@@ -78,16 +78,14 @@ public:
  *
  * \arg \a Field A field type
  */
-template <class Field>
-inline typename Field_Traits<Field>::unlabeled_type &value(Field &x) {
+template <class Field> inline typename Field_Traits<Field>::unlabeled_type &value(Field &x) {
   return x;
 }
 
 //----------------------------------------------------------------------------//
 //! A version of the value function template for const arguments.
 template <class Field>
-inline typename Field_Traits<Field>::unlabeled_type const &
-value(Field const &x) {
+inline typename Field_Traits<Field>::unlabeled_type const &value(Field const &x) {
   return x;
 }
 

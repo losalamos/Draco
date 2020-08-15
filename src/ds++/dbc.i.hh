@@ -80,8 +80,7 @@ bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last) {
  * \c false otherwise.
  */
 template <typename Forward_Iterator>
-bool is_strict_monotonic_increasing(Forward_Iterator first,
-                                    Forward_Iterator last) {
+bool is_strict_monotonic_increasing(Forward_Iterator first, Forward_Iterator last) {
   Forward_Iterator prev = first;
   while (++first != last) {
     if (!(*prev < *first))
@@ -115,8 +114,7 @@ bool is_strict_monotonic_increasing(Forward_Iterator first,
  * \c false otherwise.
  */
 template <typename Forward_Iterator>
-bool is_strict_monotonic_decreasing(Forward_Iterator first,
-                                    Forward_Iterator last) {
+bool is_strict_monotonic_decreasing(Forward_Iterator first, Forward_Iterator last) {
   Require(first < last);
   Forward_Iterator prev = first;
   while (++first != last) {

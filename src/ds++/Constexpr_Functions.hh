@@ -26,8 +26,7 @@ double constexpr ce_fabs(double const x) {
 
 //----------------------------------------------------------------------------//
 //! Simple recursive Newtwon Raphson used in square root
-double constexpr sqrtNewtonRaphson(double const x, double const curr,
-                                   double const prev) {
+double constexpr sqrtNewtonRaphson(double const x, double const curr, double const prev) {
   return (ce_fabs((curr - prev) / curr) < 1.0e-15)
              ? curr
              : sqrtNewtonRaphson(x, 0.5 * (curr + x / curr), curr);

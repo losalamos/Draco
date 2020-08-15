@@ -27,8 +27,7 @@ namespace rtt_dsxx {
  * atomic operations on 'a' can be moved before or after this one.
  */
 template <class FpT>
-FpT fetch_add(std::atomic<FpT> &a, FpT arg,
-              std::memory_order m_o = std::memory_order_relaxed) {
+FpT fetch_add(std::atomic<FpT> &a, FpT arg, std::memory_order m_o = std::memory_order_relaxed) {
   static_assert(std::is_floating_point<FpT>::value,
                 "Template parameter ought to be floating point, use C++11 std "
                 "for integral types");
@@ -52,8 +51,7 @@ FpT fetch_add(std::atomic<FpT> &a, FpT arg,
  * atomic operations on 'a' can be moved before or after this one.
  */
 template <class FpT>
-FpT fetch_sub(std::atomic<FpT> &a, FpT arg,
-              std::memory_order m_o = std::memory_order_relaxed) {
+FpT fetch_sub(std::atomic<FpT> &a, FpT arg, std::memory_order m_o = std::memory_order_relaxed) {
   static_assert(std::is_floating_point<FpT>::value,
                 "Template parameter ought to be floating point, use C++11 std "
                 "for integral types");

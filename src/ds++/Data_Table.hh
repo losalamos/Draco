@@ -38,8 +38,7 @@ public:
   //! Constructor
   constexpr inline explicit Data_Table(std::vector<T> const &v);
   //! Constructor
-  constexpr inline Data_Table(const_iterator const begin,
-                              const_iterator const end);
+  constexpr inline Data_Table(const_iterator const begin, const_iterator const end);
   //! Constructor
   constexpr inline explicit Data_Table(T const &value);
   //! Default constructor
@@ -81,8 +80,7 @@ constexpr Data_Table<T>::Data_Table(Data_Table<T> const &rhs)
 }
 
 //----------------------------------------------------------------------------//
-template <typename T>
-constexpr Data_Table<T> &Data_Table<T>::operator=(Data_Table<T> const &rhs) {
+template <typename T> constexpr Data_Table<T> &Data_Table<T>::operator=(Data_Table<T> const &rhs) {
   if (&rhs != this) {
     if (rhs.d_begin == &(rhs.d_value)) {
       const_cast<T &>(d_value) = rhs.d_value;
@@ -98,8 +96,7 @@ constexpr Data_Table<T> &Data_Table<T>::operator=(Data_Table<T> const &rhs) {
 
 //----------------------------------------------------------------------------//
 template <typename T>
-constexpr inline Data_Table<T>::Data_Table(const_iterator const begin,
-                                           const_iterator const end)
+constexpr inline Data_Table<T>::Data_Table(const_iterator const begin, const_iterator const end)
     : d_begin(begin), d_end(end + 1), d_value() {
   Require(!(begin > end));
 }
@@ -114,12 +111,10 @@ constexpr inline Data_Table<T>::Data_Table(T const &value)
 
 //----------------------------------------------------------------------------//
 template <typename T>
-constexpr inline Data_Table<T>::Data_Table()
-    : d_begin(nullptr), d_end(nullptr), d_value() {}
+constexpr inline Data_Table<T>::Data_Table() : d_begin(nullptr), d_end(nullptr), d_value() {}
 
 //----------------------------------------------------------------------------//
-template <typename T>
-constexpr inline T const &Data_Table<T>::operator[](unsigned const i) const {
+template <typename T> constexpr inline T const &Data_Table<T>::operator[](unsigned const i) const {
   Require(i < size());
   return d_begin[i];
 }

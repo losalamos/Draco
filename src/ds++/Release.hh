@@ -40,8 +40,7 @@ const std::string copyright();
  * \arg[in] list of developers
  * \return A formatted message.
  */
-std::string print_devs(size_t const maxlinelen, std::string const &line_name,
-                       mmdevs const &devs);
+std::string print_devs(size_t const maxlinelen, std::string const &line_name, mmdevs const &devs);
 
 } // namespace rtt_dsxx
 

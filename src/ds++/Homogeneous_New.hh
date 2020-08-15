@@ -93,8 +93,7 @@ public:
 
   //! Create an allocator for objects of the specified size, using the specified
   //! block byte count (defaulting to a system-tuned value.)
-  Homogeneous_New(unsigned object_size,
-                  unsigned default_block_size = DEFAULT_BLOCK_SIZE);
+  Homogeneous_New(unsigned object_size, unsigned default_block_size = DEFAULT_BLOCK_SIZE);
 
   //! Copy constructor: not implemented
   Homogeneous_New(const Homogeneous_New &rhs) = delete;

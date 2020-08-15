@@ -61,8 +61,7 @@ std::string string_toupper(std::string const &string_in);
  *
  * \sa http://public.research.att.com/~bs/bs_faq2.html
  */
-template <typename T>
-std::string to_string(T const num, unsigned int const precision = 23) {
+template <typename T> std::string to_string(T const num, unsigned int const precision = 23) {
   std::ostringstream s;
   s.precision(precision);
   s << num;
@@ -83,8 +82,7 @@ std::string trim(std::string const &str, std::string const &whitespace = " \t");
  * \return A new, possibly shortened, string that does not contain the unwanted
  *         characters.
  */
-std::string prune(std::string const &orig_str,
-                  std::string const &chars_to_remove);
+std::string prune(std::string const &orig_str, std::string const &chars_to_remove);
 
 //----------------------------------------------------------------------------//
 /*!
@@ -97,8 +95,7 @@ std::string prune(std::string const &orig_str,
  *                 (default: false)
  * \return a vector of strings. The delimiter is always removed.
  */
-std::vector<std::string> tokenize(std::string const &str,
-                                  std::string const &delimiters = " ",
+std::vector<std::string> tokenize(std::string const &str, std::string const &delimiters = " ",
                                   bool keepEmptyStrings = false);
 
 //----------------------------------------------------------------------------//
@@ -116,10 +113,8 @@ template <typename T> auto parse_number_impl(std::string const &str) -> T;
 // specializations for these types are defined in DracoStrings.cc
 template <> auto parse_number_impl<int32_t>(std::string const &str) -> int32_t;
 template <> auto parse_number_impl<int64_t>(std::string const &str) -> int64_t;
-template <>
-auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t;
-template <>
-auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
+template <> auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t;
+template <> auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
 
 // I'm having trouble finding a generic solution for an issue where some
 // compilers require separate specialization for 'long' and 'int64_t'
@@ -135,8 +130,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
 #if defined(WIN32) || defined(APPLE)
 
 template <> auto parse_number_impl<long>(std::string const &str) -> long;
-template <>
-auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
+template <> auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
 
 #endif
 
@@ -186,8 +180,7 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double;
   }
  * \endcode
  */
-template <typename T>
-auto parse_number(std::string const &str, bool verbose = true) -> T;
+template <typename T> auto parse_number(std::string const &str, bool verbose = true) -> T;
 
 //----------------------------------------------------------------------------//
 /*!
@@ -208,8 +201,7 @@ auto parse_number(std::string const &str, bool verbose = true) -> T;
  * std::vector<double> bar = { 1.0, 2.0, 3.0 }
  */
 template <typename T>
-std::vector<T> string_to_numvec(std::string const &str,
-                                std::string const &range_symbols = "{}",
+std::vector<T> string_to_numvec(std::string const &str, std::string const &range_symbols = "{}",
                                 std::string const &delimiters = ",");
 
 //----------------------------------------------------------------------------//
@@ -234,8 +226,7 @@ std::map<std::string, unsigned> get_word_count(std::ostringstream const &data,
  *                 (default: false).
  * \return a map<string,uint> that contains [word]:[num_occurances]
  */
-std::map<std::string, unsigned> get_word_count(std::string const &filename,
-                                               bool verbose = false);
+std::map<std::string, unsigned> get_word_count(std::string const &filename, bool verbose = false);
 
 //----------------------------------------------------------------------------//
 /*!

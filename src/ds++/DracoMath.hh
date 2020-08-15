@@ -77,9 +77,7 @@ template <> inline std::complex<double> conj(const std::complex<double> &arg) {
  * \c Semigroup is a type representing an algebraic structure closed under
  * multiplication such as the integers or the reals.
  */
-template <typename Semigroup> inline Semigroup cube(Semigroup const &x) {
-  return x * x * x;
-}
+template <typename Semigroup> inline Semigroup cube(Semigroup const &x) { return x * x * x; }
 
 //----------------------------------------------------------------------------//
 /*!
@@ -97,8 +95,7 @@ template <typename Semigroup> inline Semigroup cube(Semigroup const &x) {
  * \deprecated A FORTRAN relic that should disappear eventually.
  */
 template <typename Ordered_Group_Element>
-inline Ordered_Group_Element dim(Ordered_Group_Element a,
-                                 Ordered_Group_Element b) {
+inline Ordered_Group_Element dim(Ordered_Group_Element a, Ordered_Group_Element b) {
   if (a < b)
     return Ordered_Group_Element(0);
   else
@@ -115,9 +112,7 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
  * \param[in] x Value to be squared.
  * \return \f$x^2\f$
  */
-template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
-  return x * x;
-}
+template <typename Semigroup> inline Semigroup square(const Semigroup &x) { return x * x; }
 
 //----------------------------------------------------------------------------//
 /*!
@@ -162,8 +157,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
  * \param b Argument supplying sign of result.
  * \return \f$|a|sgn(b)\f$
  */
-template <typename Ordered_Group>
-inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
+template <typename Ordered_Group> inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
   using std::abs; // just to be clear
 
   if (b < 0)
@@ -194,9 +188,8 @@ inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
  * \pre  x in (x1,x2), extrapolation is not allowed.
  * \post y in (y1,y2), extrapolation is not allowed.
  */
-constexpr inline double linear_interpolate(double const x1, double const x2,
-                                           double const y1, double const y2,
-                                           double const x) {
+constexpr inline double linear_interpolate(double const x1, double const x2, double const y1,
+                                           double const y2, double const x) {
   Require(ce_fabs(x2 - x1) > std::numeric_limits<double>::epsilon());
   Require(((x >= x1) && (x <= x2)) || ((x >= x2) && (x <= x1)));
 

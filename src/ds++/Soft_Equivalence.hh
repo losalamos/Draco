@@ -49,10 +49,8 @@ namespace rtt_dsxx {
  * \sa http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
  */
 template <typename T>
-constexpr inline
-    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
-    soft_equiv(const T &value, const T &reference,
-               const T precision = static_cast<T>(1.0e-12f)) {
+constexpr inline typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+soft_equiv(const T &value, const T &reference, const T precision = static_cast<T>(1.0e-12f)) {
   using std::fabs;
   bool passed = false;
 
@@ -68,8 +66,7 @@ constexpr inline
       passed = true;
 
   // Return false if the result is subnormal
-  passed =
-      passed || (std::abs(value - reference) < std::numeric_limits<T>::min());
+  passed = passed || (std::abs(value - reference) < std::numeric_limits<T>::min());
 
   return passed;
 }
@@ -121,8 +118,8 @@ public:
    *        precision and the fields are the same size, false if otherwise
    */
   template <typename Value_Iterator, typename Ref_Iterator>
-  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
-             Ref_Iterator ref_end, FPT const precision = 1.0e-12) {
+  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref, Ref_Iterator ref_end,
+             FPT const precision = 1.0e-12) {
     // first check that the sizes are equivalent
     if (std::distance(value, value_end) != std::distance(ref, ref_end))
       return false;
@@ -130,9 +127,8 @@ public:
     // if the sizes are the same, loop through and check each element
     bool passed = true;
     while (value != value_end && passed == true) {
-      passed = soft_equiv_deep<Depth - 1, FPT>().equiv(
-          (*value).begin(), (*value).end(), (*ref).begin(), (*ref).end(),
-          precision);
+      passed = soft_equiv_deep<Depth - 1, FPT>().equiv((*value).begin(), (*value).end(),
+                                                       (*ref).begin(), (*ref).end(), precision);
       value++;
       ref++;
     }
@@ -147,8 +143,8 @@ public:
   // Constructor
   soft_equiv_deep<1, FPT>() = default;
   template <typename Value_Iterator, typename Ref_Iterator>
-  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
-             Ref_Iterator ref_end, FPT const precision = 1.0e-12) {
+  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref, Ref_Iterator ref_end,
+             FPT const precision = 1.0e-12) {
     // first check that the sizes are equivalent
     if (std::distance(value, value_end) != std::distance(ref, ref_end))
       return false;
@@ -186,14 +182,11 @@ public:
  * of both fields must be the same or a compile-time error will result.
  */
 template <typename Value_Iterator, typename Ref_Iterator>
-inline bool soft_equiv(
-    Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
-    Ref_Iterator ref_end,
-    typename std::iterator_traits<Value_Iterator>::value_type const precision =
-        1.0e-12) {
+inline bool
+soft_equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref, Ref_Iterator ref_end,
+           typename std::iterator_traits<Value_Iterator>::value_type const precision = 1.0e-12) {
   using FPT = typename std::iterator_traits<Value_Iterator>::value_type;
-  return soft_equiv_deep<1, FPT>().equiv(value, value_end, ref, ref_end,
-                                         precision);
+  return soft_equiv_deep<1, FPT>().equiv(value, value_end, ref, ref_end, precision);
 }
 
 //----------------------------------------------------------------------------//
@@ -220,11 +213,10 @@ inline bool soft_equiv(
 //----------------------------------------------------------------------------//
 // Specialiations for vector<double>
 //----------------------------------------------------------------------------//
-inline bool soft_equiv(const std::vector<double> &value,
-                       const std::vector<double> &ref,
+inline bool soft_equiv(const std::vector<double> &value, const std::vector<double> &ref,
                        const double precision = 1.0e-12) {
-  return soft_equiv_deep<1, double>().equiv(value.begin(), value.end(),
-                                            ref.begin(), ref.end(), precision);
+  return soft_equiv_deep<1, double>().equiv(value.begin(), value.end(), ref.begin(), ref.end(),
+                                            precision);
 }
 //----------------------------------------------------------------------------//
 // Specialiation for vector<vector<T>>
@@ -232,18 +224,17 @@ inline bool soft_equiv(const std::vector<double> &value,
 inline bool soft_equiv(const std::vector<std::vector<double>> &value,
                        const std::vector<std::vector<double>> &ref,
                        const double precision = 1.0e-12) {
-  return soft_equiv_deep<2, double>().equiv(value.begin(), value.end(),
-                                            ref.begin(), ref.end(), precision);
+  return soft_equiv_deep<2, double>().equiv(value.begin(), value.end(), ref.begin(), ref.end(),
+                                            precision);
 }
 //----------------------------------------------------------------------------//
 // Specialiation for vector<vector<vector<T>>>
 //----------------------------------------------------------------------------//
-inline bool
-soft_equiv(const std::vector<std::vector<std::vector<double>>> &value,
-           const std::vector<std::vector<std::vector<double>>> &ref,
-           const double precision = 1.0e-12) {
-  return soft_equiv_deep<3, double>().equiv(value.begin(), value.end(),
-                                            ref.begin(), ref.end(), precision);
+inline bool soft_equiv(const std::vector<std::vector<std::vector<double>>> &value,
+                       const std::vector<std::vector<std::vector<double>>> &ref,
+                       const double precision = 1.0e-12) {
+  return soft_equiv_deep<3, double>().equiv(value.begin(), value.end(), ref.begin(), ref.end(),
+                                            precision);
 }
 
 } // end namespace rtt_dsxx

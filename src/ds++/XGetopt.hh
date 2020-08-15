@@ -112,12 +112,10 @@ public:
    *            each option that will be printed by the member function
    *            display_help.
    */
-  XGetopt(int const argc, char **&argv, std::string const &shortopts,
-          csmap helpstrings_ = csmap())
+  XGetopt(int const argc, char **&argv, std::string const &shortopts, csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
         cmd_line_args(argv + 1, argv + argc), longopts(csmap()), // empty
-        vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_shortopts(shortopts)),
+        vshortopts_hasarg(std::map<char, bool>()), vshortopts(decompose_shortopts(shortopts)),
         helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
@@ -127,8 +125,7 @@ public:
           csmap helpstrings_ = csmap())
       : optind(0), optarg(),                                     // empty string
         cmd_line_args(argv + 1, argv + argc), longopts(csmap()), // empty
-        vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_shortopts(shortopts)),
+        vshortopts_hasarg(std::map<char, bool>()), vshortopts(decompose_shortopts(shortopts)),
         helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
@@ -150,13 +147,10 @@ public:
    *            each option that will be printed by the member function
    *            display_help.
    */
-  XGetopt(int const argc, char **&argv, csmap const &longopts_,
-          csmap helpstrings_ = csmap())
+  XGetopt(int const argc, char **&argv, csmap const &longopts_, csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
-        cmd_line_args(argv + 1, argv + argc),
-        longopts(store_longopts(longopts_)),
-        vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_longopts(longopts_)),
+        cmd_line_args(argv + 1, argv + argc), longopts(store_longopts(longopts_)),
+        vshortopts_hasarg(std::map<char, bool>()), vshortopts(decompose_longopts(longopts_)),
         helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
@@ -165,10 +159,8 @@ public:
   XGetopt(int const argc, char const *const *argv, csmap const &longopts_,
           csmap helpstrings_ = csmap())
       : optind(0), optarg(), // empty string
-        cmd_line_args(argv + 1, argv + argc),
-        longopts(store_longopts(longopts_)),
-        vshortopts_hasarg(std::map<char, bool>()),
-        vshortopts(decompose_longopts(longopts_)),
+        cmd_line_args(argv + 1, argv + argc), longopts(store_longopts(longopts_)),
+        vshortopts_hasarg(std::map<char, bool>()), vshortopts(decompose_longopts(longopts_)),
         helpstrings(std::move(helpstrings_)) {
     match_args_to_options();
   }
@@ -193,9 +185,7 @@ public:
 
   /*! \brief Return a vector of strings that were provided on the command line
    *         but do not match any registered arguments. */
-  std::vector<std::string> get_unmatched_arguments() const {
-    return unmatched_arguments;
-  }
+  std::vector<std::string> get_unmatched_arguments() const { return unmatched_arguments; }
 
   //! reset the global counters
   // void reset(void) { optind=0; optarg=std::string(""); return; }

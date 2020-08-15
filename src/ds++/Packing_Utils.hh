@@ -529,8 +529,7 @@ template <typename T> inline Unpacker &operator>>(Unpacker &u, T &value) {
  * \param field container or string
  * \param packed vector<char> that is empty; data will be packed into it
  */
-template <typename FT>
-void pack_data(FT const &field, std::vector<char> &packed) {
+template <typename FT> void pack_data(FT const &field, std::vector<char> &packed) {
   Require(packed.empty());
 
   // determine the size of the field
@@ -539,8 +538,7 @@ void pack_data(FT const &field, std::vector<char> &packed) {
 
   // determine the number of bytes in the field
   Check(field_size * sizeof(typename FT::value_type) + sizeof(int) < INT32_MAX);
-  auto const size = static_cast<int>(
-      field_size * sizeof(typename FT::value_type) + sizeof(int));
+  auto const size = static_cast<int>(field_size * sizeof(typename FT::value_type) + sizeof(int));
 
   // make a vector<char> large enough to hold the packed field
   packed.resize(size);
@@ -596,8 +594,7 @@ void pack_data(std::map<keyT, dataT> const &map, std::vector<char> &packed) {
 
 //----------------------------------------------------------------------------//
 template <typename keyT, typename dataT>
-void pack_data(std::map<keyT, std::vector<dataT>> const &map,
-               std::vector<char> &packed) {
+void pack_data(std::map<keyT, std::vector<dataT>> const &map, std::vector<char> &packed) {
   Require(packed.empty());
 
   // determine the size of the field
@@ -683,8 +680,7 @@ void pack_data(std::map<keyT, std::vector<dataT>> const &map,
  * \param packed vector<char> created by pack_data function (or in a manner
  * analogous)
  */
-template <typename FT>
-void unpack_data(FT &field, std::vector<char> const &packed) {
+template <typename FT> void unpack_data(FT &field, std::vector<char> const &packed) {
   Require(field.empty());
   Require(packed.size() >= sizeof(int));
 
@@ -709,8 +705,7 @@ void unpack_data(FT &field, std::vector<char> const &packed) {
 
 //----------------------------------------------------------------------------//
 template <typename keyT, typename dataT>
-void unpack_data(std::map<keyT, dataT> &unpacked_map,
-                 std::vector<char> const &packed) {
+void unpack_data(std::map<keyT, dataT> &unpacked_map, std::vector<char> const &packed) {
   Require(unpacked_map.empty());
   Require(packed.size() >= sizeof(int));
 
@@ -781,8 +776,8 @@ void unpack_data(std::map<keyT, std::vector<dataT>> &unpacked_map,
  * \param[in]  num_elements
  * \param[in]  byte_swap (default: false)
  */
-inline void pack_vec_double(double const *start, char *dest,
-                            uint32_t num_elements, bool byte_swap = false) {
+inline void pack_vec_double(double const *start, char *dest, uint32_t num_elements,
+                            bool byte_swap = false) {
   rtt_dsxx::Packer packer;
   packer.set_buffer(num_elements * sizeof(double), dest);
 

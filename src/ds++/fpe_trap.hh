@@ -65,8 +65,7 @@ namespace rtt_dsxx {
 class DLL_PUBLIC_dsxx fpe_trap {
 public:
   //! constructor
-  fpe_trap(bool const abortWithInsist_in = true)
-      : abortWithInsist(abortWithInsist_in){/* emtpy */};
+  fpe_trap(bool const abortWithInsist_in = true) : abortWithInsist(abortWithInsist_in){/* emtpy */};
   ~fpe_trap() = default;
 
   //! Enable trapping of fpe signals.
@@ -130,12 +129,10 @@ public:
   void SetThreadExceptionHandlers();
 
   //! Collects current process state.
-  static void GetExceptionPointers(DWORD dwExceptionCode,
-                                   EXCEPTION_POINTERS **pExceptionPointers);
+  static void GetExceptionPointers(DWORD dwExceptionCode, EXCEPTION_POINTERS **pExceptionPointers);
 
   //! Action to perform when an exception is found.
-  static void ActionOnException(std::string const &message,
-                                EXCEPTION_POINTERS *pExcPtrs);
+  static void ActionOnException(std::string const &message, EXCEPTION_POINTERS *pExcPtrs);
 
   /*!
    * \brief This method creates minidump of the process
@@ -155,10 +152,8 @@ public:
 
   static void __cdecl PureCallHandler();
 
-  static void __cdecl InvalidParameterHandler(const wchar_t *expression,
-                                              const wchar_t *function,
-                                              const wchar_t *file,
-                                              unsigned int line,
+  static void __cdecl InvalidParameterHandler(const wchar_t *expression, const wchar_t *function,
+                                              const wchar_t *file, unsigned int line,
                                               uintptr_t pReserved);
 
   static int __cdecl NewHandler(size_t);

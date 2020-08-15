@@ -93,8 +93,7 @@ private:
 
 public:
   // Constructor.
-  explicit File_Output(const std::string &filename = "",
-                       const bool binary = false);
+  explicit File_Output(const std::string &filename = "", const bool binary = false);
 
   // Disable other creators
   File_Output(const File_Output &) = delete;

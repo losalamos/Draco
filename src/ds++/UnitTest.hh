@@ -67,8 +67,8 @@ public:
   // CREATORS
 
   //! Default constructors.
-  UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
-           std::ostream &out_, bool const verbose_ = true);
+  UnitTest(int & /* argc */, char **&argv, string_fp_void release_, std::ostream &out_,
+           bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
@@ -107,8 +107,7 @@ public:
   bool failure(std::string const &failmsg);
   bool passes(std::string const &passmsg);
   bool check(bool, std::string const &checkmsg, bool fatal = false);
-  virtual bool check_all(bool good, std::string const &checkmsg,
-                         bool fatal = false) {
+  virtual bool check_all(bool good, std::string const &checkmsg, bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
 
@@ -149,8 +148,7 @@ public:
    */
   static inline std::string getTestInputPath() {
 #ifdef PROJECT_BINARY_DIR
-    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR,
-                                                          rtt_dsxx::FC_NATIVE));
+    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR, rtt_dsxx::FC_NATIVE));
     // if absent, append path separator.
     if (sourcePath[sourcePath.size() - 1] != rtt_dsxx::WinDirSep &&
         sourcePath[sourcePath.size() - 1] != rtt_dsxx::UnixDirSep)
@@ -177,8 +175,7 @@ public:
    */
   static inline std::string getTestSourcePath() {
 #ifdef PROJECT_SOURCE_DIR
-    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR,
-                                                          rtt_dsxx::FC_NATIVE));
+    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR, rtt_dsxx::FC_NATIVE));
     // if absent, append path separator.
     if (sourcePath[sourcePath.size() - 1] != rtt_dsxx::WinDirSep &&
         sourcePath[sourcePath.size() - 1] != rtt_dsxx::UnixDirSep)
@@ -239,49 +236,49 @@ protected:
 #define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
-#define FAIL_IF_NOT(c)                                                         \
-  if (!(c))                                                                    \
+#define FAIL_IF_NOT(c)                                                                             \
+  if (!(c))                                                                                        \
   ITFAILS
-#define FAIL_IF(c)                                                             \
-  if ((c))                                                                     \
+#define FAIL_IF(c)                                                                                 \
+  if ((c))                                                                                         \
   ITFAILS
-#define UT_EPILOG(foo)                                                         \
-  catch (rtt_dsxx::assertion & err) {                                          \
-    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (std::exception & err) {                                               \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (...) {                                                                \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "An unknown exception was thrown on processor " << std::endl; \
-    foo.numFails++;                                                            \
-  };                                                                           \
+#define UT_EPILOG(foo)                                                                             \
+  catch (rtt_dsxx::assertion & err) {                                                              \
+    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "                        \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (std::exception & err) {                                                                   \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (...) {                                                                                    \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "An unknown exception was thrown on processor " << std::endl;                     \
+    foo.numFails++;                                                                                \
+  };                                                                                               \
   return foo.numFails;
-#define UT_EPILOG2(foo, bar)                                                   \
-  catch (rtt_dsxx::assertion & err) {                                          \
-    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (std::exception & err) {                                               \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (...) {                                                                \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "An unknown exception was thrown on processor " << std::endl; \
-    foo.numFails++;                                                            \
-  };                                                                           \
+#define UT_EPILOG2(foo, bar)                                                                       \
+  catch (rtt_dsxx::assertion & err) {                                                              \
+    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "                        \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (std::exception & err) {                                                                   \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (...) {                                                                                    \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "An unknown exception was thrown on processor " << std::endl;                     \
+    foo.numFails++;                                                                                \
+  };                                                                                               \
   return foo.numFails + bar.numFails;
 
 #endif // dsxx_UnitTest_hh

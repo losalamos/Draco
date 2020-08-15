@@ -58,8 +58,7 @@ enum class RANGE_DIRECTION { LEFT = 0, RIGHT = 1 };
 namespace {
 
 // Return false if the iterator pair indicate an out of range result.
-template <typename IT>
-bool validate(const std::pair<IT, IT> &it, IT begin, IT end) {
+template <typename IT> bool validate(const std::pair<IT, IT> &it, IT begin, IT end) {
   return !(it.first == end ||   // v > *(end-1)
            it.second == begin); // v < *begin
 }
@@ -67,8 +66,7 @@ bool validate(const std::pair<IT, IT> &it, IT begin, IT end) {
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_left(IT begin, IT end,
-                      typename std::iterator_traits<IT>::value_type value) {
+int Range_finder_left(IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
   const std::pair<IT, IT> it = std::equal_range(begin, end, value);
   Require(validate(it, begin, end));
 
@@ -81,8 +79,7 @@ int Range_finder_left(IT begin, IT end,
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_right(IT begin, IT end,
-                       typename std::iterator_traits<IT>::value_type value) {
+int Range_finder_right(IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
   const std::pair<IT, IT> it = std::equal_range(begin, end, value);
   Require(validate(it, begin, end));
 
@@ -95,8 +92,8 @@ int Range_finder_right(IT begin, IT end,
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_left_catch_end(
-    IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
+int Range_finder_left_catch_end(IT begin, IT end,
+                                typename std::iterator_traits<IT>::value_type value) {
   const std::pair<IT, IT> it = std::equal_range(begin, end, value);
   Require(validate(it, begin, end));
 
@@ -113,8 +110,8 @@ int Range_finder_left_catch_end(
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_right_catch_end(
-    IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
+int Range_finder_right_catch_end(IT begin, IT end,
+                                 typename std::iterator_traits<IT>::value_type value) {
   const std::pair<IT, IT> it = std::equal_range(begin, end, value);
   Require(validate(it, begin, end));
 
@@ -135,8 +132,7 @@ int Range_finder_right_catch_end(
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder(IT begin, IT end,
-                 typename std::iterator_traits<IT>::value_type value,
+int Range_finder(IT begin, IT end, typename std::iterator_traits<IT>::value_type value,
                  RANGE_DIRECTION direction_indicator) {
   Check(direction_indicator == RANGE_DIRECTION::LEFT ||
         direction_indicator == RANGE_DIRECTION::RIGHT);
@@ -153,8 +149,7 @@ int Range_finder(IT begin, IT end,
 
 //----------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_catch_end(IT begin, IT end,
-                           typename std::iterator_traits<IT>::value_type value,
+int Range_finder_catch_end(IT begin, IT end, typename std::iterator_traits<IT>::value_type value,
                            RANGE_DIRECTION direction_indicator) {
   Check(direction_indicator == RANGE_DIRECTION::LEFT ||
         direction_indicator == RANGE_DIRECTION::RIGHT);

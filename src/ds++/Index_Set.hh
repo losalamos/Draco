@@ -55,8 +55,7 @@ public:
   void set_size(const unsigned size);
 
   bool index_in_range(int index) const {
-    return (index >= OFFSET) &&
-           (index < static_cast<int>(m_array_size) + OFFSET);
+    return (index >= OFFSET) && (index < static_cast<int>(m_array_size) + OFFSET);
   }
   bool index_in_range(int index, unsigned dimension) const;
 

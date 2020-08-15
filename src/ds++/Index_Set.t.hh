@@ -33,8 +33,7 @@ void Index_Set<D, OFFSET>::set_size(unsigned const *const dimensions_) {
  *        size information
  * \arg dimension The uniform dimension of the index set.
  */
-template <unsigned D, int OFFSET>
-void Index_Set<D, OFFSET>::set_size(const unsigned dimension) {
+template <unsigned D, int OFFSET> void Index_Set<D, OFFSET>::set_size(const unsigned dimension) {
   for (unsigned dim = 0; dim < D; ++dim)
     m_dimensions[dim] = dimension;
   compute_size();
@@ -49,8 +48,7 @@ template <unsigned D, int OFFSET>
 inline bool Index_Set<D, OFFSET>::operator==(const Index_Set &rhs) const {
   if (m_array_size != rhs.m_array_size)
     return false;
-  return std::equal(m_dimensions.begin(), m_dimensions.begin() + D,
-                    rhs.m_dimensions.begin());
+  return std::equal(m_dimensions.begin(), m_dimensions.begin() + D, rhs.m_dimensions.begin());
 }
 
 //----------------------------------------------------------------------------//
@@ -79,22 +77,18 @@ bool Index_Set<D, OFFSET>::indices_in_range(IT indices) const {
  * \arg dimension The dimension of the index
  */
 template <unsigned D, int OFFSET>
-inline bool Index_Set<D, OFFSET>::index_in_range(int index,
-                                                 unsigned dimension) const {
+inline bool Index_Set<D, OFFSET>::index_in_range(int index, unsigned dimension) const {
   Check(dimension_okay(dimension));
 
-  return ((index >= OFFSET) &&
-          (index < static_cast<int>(m_dimensions[dimension]) + OFFSET));
+  return ((index >= OFFSET) && (index < static_cast<int>(m_dimensions[dimension]) + OFFSET));
 }
 
 //----------------------------------------------------------------------------//
 // IMPLEMENTAION
 //----------------------------------------------------------------------------//
-template <unsigned D, int OFFSET>
-inline void Index_Set<D, OFFSET>::compute_size() {
+template <unsigned D, int OFFSET> inline void Index_Set<D, OFFSET>::compute_size() {
 
-  m_array_size = std::accumulate(m_dimensions.begin(), m_dimensions.end(), 1u,
-                                 std::multiplies<>());
+  m_array_size = std::accumulate(m_dimensions.begin(), m_dimensions.end(), 1u, std::multiplies<>());
   Ensure(m_array_size > 0);
 }
 

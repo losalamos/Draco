@@ -68,9 +68,7 @@ public:
 
     reference operator*() const { return first_[offset_]; }
 
-    reference operator[](difference_type i) const {
-      return first_[offset_ + i];
-    }
+    reference operator[](difference_type i) const { return first_[offset_ + i]; }
 
     iterator operator+(difference_type i) const {
       return iterator(first_, offset_ + i * stride_, stride_);
@@ -86,8 +84,7 @@ public:
   private:
     friend class Slice;
 
-    iterator(Ran const first, difference_type const offset,
-             unsigned const stride)
+    iterator(Ran const first, difference_type const offset, unsigned const stride)
         : first_(first), offset_(offset), stride_(stride) {
       Require(stride > 0);
     }
@@ -129,9 +126,7 @@ public:
 
     value_type const &operator*() const { return first_[offset_]; }
 
-    value_type const &operator[](difference_type i) const {
-      return first_[offset_ + i];
-    }
+    value_type const &operator[](difference_type i) const { return first_[offset_ + i]; }
 
     const_iterator operator+(difference_type i) const {
       return const_iterator(first_, offset_ + i * stride_, stride_);
@@ -150,8 +145,7 @@ public:
   private:
     friend class Slice;
 
-    const_iterator(Ran const first, difference_type const offset,
-                   unsigned const stride)
+    const_iterator(Ran const first, difference_type const offset, unsigned const stride)
         : first_(first), offset_(offset), stride_(stride) {
       Require(stride > 0);
     }
@@ -203,8 +197,7 @@ public:
    * \param length_in Length of the constructed Slice.
    * \param stride_in Stride to apply to the sequence.
    */
-  Slice(Ran const first_in, unsigned const length_in,
-        unsigned const stride_in = 1)
+  Slice(Ran const first_in, unsigned const length_in, unsigned const stride_in = 1)
       : first(first_in), length(length_in), stride(stride_in) {
     Require(stride_in > 0);
   }
@@ -216,9 +209,7 @@ public:
   iterator begin() { return iterator(first, 0, stride); }
   const_iterator begin() const { return const_iterator(first, 0, stride); }
   iterator end() { return iterator(first, length * stride, stride); }
-  const_iterator end() const {
-    return const_iterator(first, length * stride, stride);
-  }
+  const_iterator end() const { return const_iterator(first, length * stride, stride); }
 
   reverse_iterator rbegin();
   const_reverse_iterator rbegin() const;
@@ -274,8 +265,7 @@ private:
  * \return The desired Slice.
  */
 template <typename Ran>
-inline Slice<Ran> slice(Ran const first, unsigned const length,
-                        unsigned const stride = 1) {
+inline Slice<Ran> slice(Ran const first, unsigned const length, unsigned const stride = 1) {
   Require(stride > 0);
 
   return Slice<Ran>(first, length, stride);

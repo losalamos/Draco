@@ -78,7 +78,7 @@
  '(compilation-auto-jump-to-first-error nil)
  '(compilation-scroll-output (quote first-error))
  '(cua-mode t nil (cua-base))
- '(draco-code-comment-width 80)
+ '(draco-code-comment-width 100)
  '(draco-elisp-dir (concat my-draco-env-dir "elisp/"))
  '(draco-env-dir my-draco-env-dir)
 ; '(ecb-layout-window-sizes (quote (("ecb-layout-kt" (0.25 . 0.25) (0.15 . 0.25) (0.4 . 0.45) (0.4 . 0.3)))))

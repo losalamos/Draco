@@ -126,8 +126,8 @@ std::vector<IT> check_string_chars(IT const &first, IT const &last,
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_strings_unique.
  */
 template <class IT>
-std::vector<IT> check_string_lengths(IT const &first, IT const &last,
-                                     int const low, int const high) {
+std::vector<IT> check_string_lengths(IT const &first, IT const &last, int const low,
+                                     int const high) {
   std::vector<IT> result_vector;
   if (first == last)
     return result_vector;
@@ -164,8 +164,7 @@ std::vector<IT> check_string_lengths(IT const &first, IT const &last,
  * \sa Other string checking utilities are available in
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_string_lengths.
  */
-template <class IT>
-std::vector<IT> check_strings_unique(IT first, IT const &last) {
+template <class IT> std::vector<IT> check_strings_unique(IT first, IT const &last) {
   std::vector<IT> result_vector;
   if (first == last)
     return result_vector;

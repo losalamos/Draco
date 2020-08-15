@@ -97,29 +97,25 @@ namespace rtt_dsxx {
  * - Return the 'accurate' result.
  */
 template <typename T> // float, double, long double
-inline T fma_with_diagnostics(T const a, T const b, T const c,
-                              std::string const &file, uint32_t const line,
-                              bool const abort_on_fail) {
+inline T fma_with_diagnostics(T const a, T const b, T const c, std::string const &file,
+                              uint32_t const line, bool const abort_on_fail) {
   T const accurate = fma(a, b, c);
   T const fast = ((a) * (b) + c);
   // For T=double, tol = 1.e+7 * 1.e-19 = 1.e-12
-  T const tol = std::pow(10, (std::numeric_limits<T>::max_digits10 / 3)) *
-                std::numeric_limits<T>::epsilon();
+  T const tol =
+      std::pow(10, (std::numeric_limits<T>::max_digits10 / 3)) * std::numeric_limits<T>::epsilon();
   std::ostringstream msg;
   msg << "FMA accuracy error in " << file << " (" << line << ") "
-      << std::setprecision(std::numeric_limits<T>::max_digits10)
-      << "\n  accurate = " << accurate << "\n  fast = " << fast
-      << "\n  diff = " << fabs(accurate - fast);
+      << std::setprecision(std::numeric_limits<T>::max_digits10) << "\n  accurate = " << accurate
+      << "\n  fast = " << fast << "\n  diff = " << fabs(accurate - fast);
   if (std::fabs(accurate + fast) < std::numeric_limits<T>::epsilon()) {
     // solution is zero, rdiff is meaningless
     msg << "\n  rdiff = NA";
   } else {
     msg << "\n  rdiff = "
-        << 2.0 * fabs(accurate - fast) /
-               fabs(accurate + fast + std::numeric_limits<T>::epsilon());
+        << 2.0 * fabs(accurate - fast) / fabs(accurate + fast + std::numeric_limits<T>::epsilon());
   }
-  msg << "\n  a   = " << a << "\n  b   = " << b << "\n  c   = " << c
-      << std::endl;
+  msg << "\n  a   = " << a << "\n  b   = " << b << "\n  c   = " << c << std::endl;
   if (abort_on_fail) {
     Insist(rtt_dsxx::soft_equiv(accurate, fast, tol), msg.str().c_str());
   } else {
@@ -140,9 +136,8 @@ inline T fma_with_diagnostics(T const a, T const b, T const c,
  * result is significantly different, throw an exception.  This is useful for
  * finding operations that are sensitive to roundoff.
  */
-#define FMA(a, b, c)                                                           \
-  rtt_dsxx::fma_with_diagnostics((a), (b), (c), __FILE__, __LINE__, true)
-#define FMA_ACCURATE(a, b, c)                                                  \
+#define FMA(a, b, c) rtt_dsxx::fma_with_diagnostics((a), (b), (c), __FILE__, __LINE__, true)
+#define FMA_ACCURATE(a, b, c)                                                                      \
   rtt_dsxx::fma_with_diagnostics((a), (b), (c), __FILE__, __LINE__, false)
 #else
 

@@ -119,8 +119,7 @@ private:
     CompareProxy(const COMP &comp_) : comp(comp_) { /* empty */
     }
     template <typename IT> CompareProxy &operator=(CompareProxy const &comp_);
-    template <typename IT>
-    bool operator()(const Proxy<IT> &p1, const Proxy<IT> &p2) const {
+    template <typename IT> bool operator()(const Proxy<IT> &p1, const Proxy<IT> &p2) const {
       return comp(p1.value(), p2.value());
     }
   };
@@ -136,15 +135,13 @@ public:
 
   template <typename IT, class COMP>
   SortPermutation(IT first, IT last, const COMP &comp)
-      : indexTable_m(std::distance(first, last)),
-        rankTable_m(indexTable_m.size()) {
+      : indexTable_m(std::distance(first, last)), rankTable_m(indexTable_m.size()) {
     createPermutation(first, last, comp);
   }
 
   template <typename IT>
   SortPermutation(IT first, IT last)
-      : indexTable_m(std::distance(first, last)),
-        rankTable_m(indexTable_m.size()) {
+      : indexTable_m(std::distance(first, last)), rankTable_m(indexTable_m.size()) {
     typedef typename std::iterator_traits<IT>::value_type vtype; // NOLINT
     createPermutation(first, last, std::less<vtype>());
   }
@@ -203,8 +200,7 @@ public:
 private:
   // IMPLEMENTATION
 
-  template <typename IT, class COMP>
-  void createPermutation(IT first, IT last, const COMP &comp) {
+  template <typename IT, class COMP> void createPermutation(IT first, IT last, const COMP &comp) {
     std::vector<IT> iters;
     iters.reserve(size());
     IT it = first;
@@ -216,8 +212,7 @@ private:
   }
 
 #ifdef ENSURE_ON
-  template <typename IT, class COMP>
-  bool isPermutationSorted(IT first, IT last, const COMP &comp) {
+  template <typename IT, class COMP> bool isPermutationSorted(IT first, IT last, const COMP &comp) {
     typedef typename std::iterator_traits<IT>::value_type vtype; // NOLINT
     std::vector<vtype> vv(first, last);
 
@@ -230,8 +225,8 @@ private:
 #endif
 
   template <typename IT, class COMP>
-  void doCreatePermutation(IT Remember(first), IT Remember(last),
-                           const COMP &comp, const std::vector<IT> &iters) {
+  void doCreatePermutation(IT Remember(first), IT Remember(last), const COMP &comp,
+                           const std::vector<IT> &iters) {
     std::vector<Proxy<IT>> proxies;
     proxies.reserve(size());
 

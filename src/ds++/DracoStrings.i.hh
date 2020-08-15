@@ -20,20 +20,18 @@ namespace rtt_dsxx {
 
 //----------------------------------------------------------------------------//
 //! Convert a string into a numeric-type type with error checking.
-template <typename T>
-auto parse_number(std::string const &str, bool verbose) -> T {
+template <typename T> auto parse_number(std::string const &str, bool verbose) -> T {
   T retval(0);
   try {
     retval = parse_number_impl<T>(str);
   } catch (std::invalid_argument &e) {
     // if no conversion could be performed
     if (verbose)
-      std::cerr
-          << "\n==ERROR==\nrtt_dsxx::parse_number:: "
-          << "No valid conversion from string to a numeric value could be "
-          << "found.\n"
-          << "\tstring = \"" << str << "\"\n"
-          << std::endl;
+      std::cerr << "\n==ERROR==\nrtt_dsxx::parse_number:: "
+                << "No valid conversion from string to a numeric value could be "
+                << "found.\n"
+                << "\tstring = \"" << str << "\"\n"
+                << std::endl;
     throw e;
   } catch (std::out_of_range & /*error*/) {
     // if the converted value would fall out of the range of the result type
@@ -56,17 +54,15 @@ auto parse_number(std::string const &str, bool verbose) -> T {
 //----------------------------------------------------------------------------//
 //! Convert a string into a vector of floating-point or an integral values.
 template <typename T>
-std::vector<T> string_to_numvec(std::string const &str,
-                                std::string const &range_symbols,
+std::vector<T> string_to_numvec(std::string const &str, std::string const &range_symbols,
                                 std::string const &delimiters) {
 
   // for vector data, first and last char might be some delimiter character.
   // For example "[1,2,3)" or "{3.3, 4.4}"
-  Insist(
-      range_symbols.length() == 0 ||
-          (range_symbols.length() == 2 && str[0] == range_symbols[0] &&
-           str[str.length() - 1] == range_symbols[range_symbols.length() - 1]),
-      "String data is malformed. It is missing { or }.");
+  Insist(range_symbols.length() == 0 ||
+             (range_symbols.length() == 2 && str[0] == range_symbols[0] &&
+              str[str.length() - 1] == range_symbols[range_symbols.length() - 1]),
+         "String data is malformed. It is missing { or }.");
 
   // remove beginning and ending braces and any extra whitespace.
   std::string const tstr = trim(str, range_symbols + " \t");

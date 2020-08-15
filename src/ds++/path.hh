@@ -35,8 +35,7 @@ enum FilenameComponent {
 
 //----------------------------------------------------------------------------//
 //! Get a specific component of a full filename.
-std::string getFilenameComponent(std::string const &fqName,
-                                 FilenameComponent fc);
+std::string getFilenameComponent(std::string const &fqName, FilenameComponent fc);
 
 //----------------------------------------------------------------------------//
 //! Does the file exist?
@@ -47,9 +46,7 @@ bool isDirectory(std::string const &path);
 //! Functor for printing all items in a directory tree
 class wdtOpPrint {
 public:
-  void operator()(std::string const &dirpath) const {
-    std::cout << dirpath << std::endl;
-  }
+  void operator()(std::string const &dirpath) const { std::cout << dirpath << std::endl; }
 };
 
 //----------------------------------------------------------------------------//
@@ -101,12 +98,10 @@ public:
  * \endcode
  */
 template <typename T>
-void draco_walk_directory_tree(std::string const &dirname,
-                               T const &myOperator) {
+void draco_walk_directory_tree(std::string const &dirname, T const &myOperator) {
   // If file does not exist, report and continue.
   if (!fileExists(dirname)) {
-    std::cout << "File/directory \"" << dirname
-              << "\"does not exist.  Continuing..." << std::endl;
+    std::cout << "File/directory \"" << dirname << "\"does not exist.  Continuing..." << std::endl;
     return;
   }
 
