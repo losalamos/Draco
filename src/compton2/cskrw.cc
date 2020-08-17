@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+//#include <numeric>
 #include <string>
 //#include <memory>
 //#include <sstream>
@@ -34,6 +35,33 @@ using rtt_dsxx::soft_equiv;
 
 using UINT = uint64_t;
 using FP = double;
+
+// Passed around internally in Dense_Compton_Data; limited metadata
+struct Sparse_Compton_Data {
+
+  // Construct with zeros and known sizes
+  Sparse_Compton_Data(UINT num_groups, UINT num_temperatures, UINT data_len);
+
+  // first group-to with nonzero value
+  // index with T and gfrom; applies to all points
+  std::vector<UINT> first_groups;
+
+  // cumulative sum of row offsets into data and derivs
+  // index with T and gfrom; applies to all points
+  std::vector<UINT> indexes;
+
+  // sparse version of Dense_Compton_Data's data and derivs
+  // [point, T, gfrom, gto]
+  std::vector<FP> data;
+  std::vector<FP> derivs;
+};
+
+Sparse_Compton_Data::Sparse_Compton_Data(UINT num_groups_in,
+                                         UINT num_temperatures_in,
+                                         UINT data_len_in)
+    : first_groups(num_groups_in * num_temperatures_in, 0U),
+      indexes(num_groups_in * num_temperatures_in + 1U, 0U),
+      data(data_len_in, 0.0), derivs(data_len_in, 0.0) {}
 
 struct Dense_Compton_Data {
   UINT numEvals;
@@ -55,8 +83,8 @@ struct Dense_Compton_Data {
   void print_contents(int verbosity, int precision);
 
 private:
-  void copy_to_sparse(/* ADD */);
-  void write_binary(std::string fileout /* ADD */);
+  Sparse_Compton_Data copy_to_sparse();
+  void write_binary(std::string fileout, Sparse_Compton_Data &sd);
 };
 
 // resize data and set sizes
@@ -453,26 +481,114 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
 // Sparsify data and print to binary
 void Dense_Compton_Data::write_sparse_binary(std::string fileout) {
   std::cout << "Sparse and binary not yet implemented.\n";
-  copy_to_sparse();
-  write_binary(fileout);
+  Sparse_Compton_Data sd = copy_to_sparse();
+  write_binary(fileout, sd);
 }
 
 // Sparsify data
-void Dense_Compton_Data::copy_to_sparse() {
+Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
   // RM
   std::cout << "  to sparse\n";
+
+  // Determine the number of non-zero entries per col
+  const UINT fg_sz = numGroups * numTs;
+  std::vector<UINT> first_groups(fg_sz, 0U);
+  std::vector<UINT> end_groups(fg_sz, 0U);
+
+  for (UINT eval = 0; eval < numEvals; ++eval) {
+    for (UINT iL = 0; iL < numLegMoments; ++iL) {
+      for (UINT iT = 0; iT < numTs; ++iT) {
+        for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+          for (UINT gto = 0; gto < numGroups; ++gto) {
+          }
+        }
+      }
+    }
+  }
+
+  // Determine sizes and use to compute offsets
+  const UINT i_sz = numGroups * numTs + 1U;
+  // TODO: FIGURE OUT SIZE FOR INDEXES
+  std::vector<UINT> indexes(i_sz, 0U);
+  for (UINT i = 0; i < fg_sz; ++i) {
+    const UINT di = end_groups[i] - first_groups[i];
+    indexes[i + 1U] = indexes[i] + di;
+  }
+
+  const UINT numNonZeros =
+      numGroups * (numEvals + numLegMoments - 1U) * numTs; // HACK
+  Sparse_Compton_Data sd(numGroups, numTs, numNonZeros);
+
+  // HACK
+  {
+    for (UINT iT = 0; iT < numTs; ++iT) {
+      for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+        const UINT loc = gfrom + numGroups * iT;
+        sd.first_groups[loc] = loc;
+        sd.indexes[loc + 1U] = loc;
+      }
+    }
+    for (UINT i = 0; i < numNonZeros; ++i) {
+      sd.data[i] = FP(i);
+      sd.derivs[i] = -FP(i);
+    }
+  }
+
+  return sd;
 }
 
 // Write to binary
-void Dense_Compton_Data::write_binary(std::string fileout) {
-  // RM
-  std::cout << "  write binary\n";
-
+void Dense_Compton_Data::write_binary(std::string fileout,
+                                      Sparse_Compton_Data &sd) {
   auto fout = std::ofstream(fileout, std::ios::out | std::ios::binary);
 
   // binary type
   char filetype[] = " csk ";
   fout.write(&filetype[0], sizeof(filetype));
+
+  UINT version_major = 1;
+  UINT version_minor = 0;
+  // ordering: 0 means leg inside; 1 means leg outside
+  UINT binary_ordering = 1;
+
+  fout.write(reinterpret_cast<char *>(&version_major), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&version_minor), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&binary_ordering), sizeof(UINT));
+
+  UINT numBinaryEvals = (numEvals > 1U) ? 3U : 1U;
+
+  UINT tsz = Ts.size();
+  UINT egsz = groupBdrs.size();
+  UINT fgsz = sd.first_groups.size();
+  UINT isz = sd.indexes.size();
+  UINT dsz = sd.data.size();
+
+  Check(tsz == numTs);
+  Check(egsz == (numGroups + 1U));
+  Check(fgsz == (numGroups * numTs));
+  Check(isz == (numGroups * numTs + 1U));
+  Check(dsz == sd.derivs.size());
+
+  std::cout << "DBG binary file v" << version_major << '.' << version_minor
+            << " ordering " << binary_ordering << '\n';
+
+  // sizes
+  fout.write(reinterpret_cast<char *>(&numTs), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&numGroups), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&numLegMoments), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&numBinaryEvals), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&fgsz), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&isz), sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&dsz), sizeof(UINT));
+
+  // data
+  fout.write(reinterpret_cast<char *>(&Ts[0]), tsz * sizeof(FP));
+  fout.write(reinterpret_cast<char *>(&groupBdrs[0]), egsz * sizeof(FP));
+  fout.write(reinterpret_cast<char *>(&sd.first_groups[0]),
+             fgsz * sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&sd.indexes[0]), isz * sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&sd.data[0]), dsz * sizeof(FP));
+  fout.write(reinterpret_cast<char *>(&sd.derivs[0]), dsz * sizeof(FP));
 
   fout.close();
 }
@@ -585,9 +701,9 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
 void read_csk_files(std::string const &basename, int verbosity) {
   // csk data base filename (csk ASCII format required)
 
-#if 0
-    std::array<std::string, 2> inouts = {"in", "out"};
-    std::array<std::string, 2> lins = {"lin", "nonlin"};
+#if 1
+  std::array<std::string, 2> inouts = {"in", "out"};
+  std::array<std::string, 2> lins = {"lin", "nonlin"};
 #else
   std::array<std::string, 1> inouts = {"in"};
   std::array<std::string, 1> lins = {"lin"};
