@@ -121,7 +121,7 @@ def merge(fileRoot1, fileRoot2, fileRootNew):
 
 ################################################################################
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 4 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
         print('Usage: ./merge_csk.py fileRoot1 fileRoot2 fileRootNew')
         print('(if fileRootNew is fileRoot1 or fileRoot2, it will be overwritten)')
         exit(1)

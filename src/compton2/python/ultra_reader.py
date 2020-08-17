@@ -216,7 +216,7 @@ def convert_to_matrix(grids, fields, verbosity=False):
 ################################################################################
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
         print('Usage: ultra_reader.py <ultra_filePath>')
         exit(1)
     else:

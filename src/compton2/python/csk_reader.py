@@ -123,7 +123,7 @@ def extract_zeroth_out(mats):
 ################################################################################
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
         print('Usage: csk_reader.py <csk_filePath>')
         exit(1)
     else:
