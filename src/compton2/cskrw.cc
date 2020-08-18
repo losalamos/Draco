@@ -40,7 +40,7 @@ using FP = double;
 struct Sparse_Compton_Data {
 
   // Construct with zeros and known sizes
-  Sparse_Compton_Data(UINT num_groups, UINT num_temperatures, UINT data_len);
+  Sparse_Compton_Data();
 
   // first group-to with nonzero value
   // index with T and gfrom; applies to all points
@@ -56,12 +56,8 @@ struct Sparse_Compton_Data {
   std::vector<FP> derivs;
 };
 
-Sparse_Compton_Data::Sparse_Compton_Data(UINT num_groups_in,
-                                         UINT num_temperatures_in,
-                                         UINT data_len_in)
-    : first_groups(num_groups_in * num_temperatures_in, 0U),
-      indexes(num_groups_in * num_temperatures_in + 1U, 0U),
-      data(data_len_in, 0.0), derivs(data_len_in, 0.0) {}
+Sparse_Compton_Data::Sparse_Compton_Data()
+    : first_groups(), indexes(), data(), derivs() {}
 
 struct Dense_Compton_Data {
   UINT numEvals;
@@ -84,6 +80,7 @@ struct Dense_Compton_Data {
 
 private:
   Sparse_Compton_Data copy_to_sparse();
+  void print_sparse(const Sparse_Compton_Data &sd);
   void write_binary(std::string fileout, Sparse_Compton_Data &sd);
 };
 
@@ -334,7 +331,9 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
       }
     }
 
-    // TODO: Add in `a (c?) T^4` rescaling for fN, ON, and IN
+    // Caveat Emptor: fN, ON, and IN are scaled to a bg that sums to unity!
+    // If a downstream data consumer uses a phi or bg that sums to a T_r^4,
+    // then fN, ON, and/or IN should be rescaled by 1/(a * T_e^4)
 
     // Rescale the nonlin diff to get exact detailed balance at equilibrium
     const FP scalenl = sumlin / sumnonlin;
@@ -480,26 +479,60 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
 
 // Sparsify data and print to binary
 void Dense_Compton_Data::write_sparse_binary(std::string fileout) {
-  std::cout << "Sparse and binary not yet implemented.\n";
   Sparse_Compton_Data sd = copy_to_sparse();
+  print_sparse(sd);
   write_binary(fileout, sd);
 }
 
 // Sparsify data
 Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
-  // RM
-  std::cout << "  to sparse\n";
 
-  // Determine the number of non-zero entries per col
+  // Size of smallest non-zero value
+  //const FP cutoff = 1e5 * std::numeric_limits<FP>::min();
+  const FP cutoff = 1e-210;
+
+  // Determine the number of non-zero entries per col (brute-force loop)
   const UINT fg_sz = numGroups * numTs;
-  std::vector<UINT> first_groups(fg_sz, 0U);
+  std::vector<UINT> first_groups(fg_sz, numGroups);
   std::vector<UINT> end_groups(fg_sz, 0U);
+  // first_groups is inclusive, end_groups is exclusive
 
   for (UINT eval = 0; eval < numEvals; ++eval) {
     for (UINT iL = 0; iL < numLegMoments; ++iL) {
       for (UINT iT = 0; iT < numTs; ++iT) {
         for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+
+          // Ensure diagonal is included
+          const UINT loc_fg = gfrom + numGroups * iT;
+          first_groups[loc_fg] = gfrom;
+          end_groups[loc_fg] = gfrom + 1U;
+
           for (UINT gto = 0; gto < numGroups; ++gto) {
+            const UINT iT_m = iT > 0 ? iT - 1U : 0;
+            const UINT iT_p = iT < (numTs - 1U) ? iT + 1U : numTs - 1U;
+            const UINT loc_m =
+                gto +
+                numGroups *
+                    (gfrom +
+                     numGroups * (iT_m + numTs * (iL + numLegMoments * eval)));
+            const UINT loc =
+                gto +
+                numGroups *
+                    (gfrom +
+                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+            const UINT loc_p =
+                gto +
+                numGroups *
+                    (gfrom +
+                     numGroups * (iT_p + numTs * (iL + numLegMoments * eval)));
+            const FP val_m = std::fabs(data[loc_m]);
+            const FP val = std::fabs(data[loc]);
+            const FP val_p = std::fabs(data[loc_p]);
+            // If datapoint is nonzero at current or bounding temperatures, include in sparse dataset
+            if (val_m > cutoff || val > cutoff || val_p > cutoff) {
+              first_groups[loc_fg] = std::min(gto, first_groups[loc_fg]);
+              end_groups[loc_fg] = std::max(gto + 1U, end_groups[loc_fg]);
+            }
           }
         }
       }
@@ -508,33 +541,145 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
 
   // Determine sizes and use to compute offsets
   const UINT i_sz = numGroups * numTs + 1U;
-  // TODO: FIGURE OUT SIZE FOR INDEXES
   std::vector<UINT> indexes(i_sz, 0U);
   for (UINT i = 0; i < fg_sz; ++i) {
     const UINT di = end_groups[i] - first_groups[i];
     indexes[i + 1U] = indexes[i] + di;
   }
 
-  const UINT numNonZeros =
-      numGroups * (numEvals + numLegMoments - 1U) * numTs; // HACK
-  Sparse_Compton_Data sd(numGroups, numTs, numNonZeros);
+  // Save all Legendre moments for first (in_lin) eval and 0th Legendre moment for other (out_lin, nldiff) evals
+  const UINT numBinaryEvals = (numEvals > 1U) ? 3U : 1U;
+  const UINT numPoints = (numLegMoments + numBinaryEvals - 1U);
+  const UINT numPerPoint = indexes[i_sz - 1U];
+  const UINT numNonZeros = numPerPoint * numPoints;
+  std::vector<FP> sparse_data(numNonZeros, 0.0);
+  std::vector<FP> sparse_derivs(numNonZeros, 0.0);
 
-  // HACK
-  {
-    for (UINT iT = 0; iT < numTs; ++iT) {
-      for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
-        const UINT loc = gfrom + numGroups * iT;
-        sd.first_groups[loc] = loc;
-        sd.indexes[loc + 1U] = loc;
+  const std::array<UINT, 3> evalsToUse = {0, 1, 4};
+  for (UINT iuse = 0; iuse < numBinaryEvals; ++iuse) {
+    const UINT eval = evalsToUse[iuse];
+    const UINT numLegUse = (eval > 0) ? 1U : numLegMoments;
+    for (UINT iL = 0; iL < numLegUse; ++iL) {
+      const UINT point = (eval > 0) ? numLegMoments + iuse - 1U : iL;
+      for (UINT iT = 0; iT < numTs; ++iT) {
+        for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+          const UINT loc_fg = gfrom + numGroups * iT;
+          const UINT first = first_groups[loc_fg];
+          const UINT offset = indexes[loc_fg] + point * numPerPoint;
+          const UINT sz = indexes[loc_fg + 1U] - indexes[loc_fg];
+          for (UINT dg = 0; dg < sz; ++dg) {
+            // d for dense; s for sparse
+            const UINT gto = dg + first;
+            const UINT loc_d =
+                gto +
+                numGroups *
+                    (gfrom +
+                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+            const UINT loc_s = dg + offset;
+            sparse_data[loc_s] = data[loc_d];
+            sparse_derivs[loc_s] = derivs[loc_d];
+          }
+        }
       }
-    }
-    for (UINT i = 0; i < numNonZeros; ++i) {
-      sd.data[i] = FP(i);
-      sd.derivs[i] = -FP(i);
     }
   }
 
+  // Create sparse data structure
+  Sparse_Compton_Data sd;
+  std::swap(sd.first_groups, first_groups);
+  std::swap(sd.indexes, indexes);
+  std::swap(sd.data, sparse_data);
+  std::swap(sd.derivs, sparse_derivs);
+
   return sd;
+}
+
+// Debug print sparse data
+void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
+  std::cout << "sparse sizes : " << sd.first_groups.size() << ' '
+            << sd.indexes.size() << ' ' << sd.data.size() << ' '
+            << sd.derivs.size() << '\n';
+
+  if (false) {
+    std::cout << "PRINT CONTENTS\n";
+    for (UINT iT = 0; iT < numTs; ++iT) {
+      for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+        UINT loc = gfrom + numGroups * iT;
+        UINT fg = sd.first_groups[loc];
+        UINT strt = sd.indexes[loc];
+        UINT endd = sd.indexes[loc + 1];
+        for (UINT ii = strt; ii < endd; ++ii) {
+          UINT gto = (ii - strt) + fg;
+          std::cout << iT << ' ' << gfrom << ' ' << gto << ' '
+                    << std::setprecision(2) << sd.data[ii] << ' '
+                    << std::setprecision(2) << sd.derivs[ii] << '\n';
+        }
+      }
+    }
+  }
+
+  UINT counter = 0;
+  UINT line = 8;
+  if (false) {
+    std::cout << '\n';
+    std::cout << "first_groups:\n";
+    counter = 0;
+    for (const UINT fg : sd.first_groups) {
+      std::cout << fg << ' ';
+      if (++counter % line == 0)
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+
+    std::cout << '\n';
+    std::cout << "last_groups (exclusive):\n";
+    counter = 0;
+    for (UINT i = 0; i < sd.first_groups.size(); ++i) {
+      UINT fg = sd.first_groups[i];
+      UINT sz = sd.indexes[i + 1] - sd.indexes[i];
+      UINT lg = fg + sz;
+      std::cout << lg << ' ';
+      if (++counter % line == 0)
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+  }
+
+  if (false) {
+    std::cout << '\n';
+    std::cout << "indexes:\n";
+    counter = 0;
+    for (const UINT i : sd.indexes) {
+      std::cout << i << ' ';
+      if (++counter % line == 0)
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+  }
+
+  if (false) {
+    std::cout << '\n';
+    std::cout << "sparse data:\n";
+    counter = 0;
+    for (const FP d : sd.data) {
+      std::cout << std::setprecision(4) << d << ' ';
+      if (++counter % line == 0)
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+  }
+
+  if (false) {
+    std::cout << '\n';
+    std::cout << "sparse derivs:\n";
+    counter = 0;
+    for (const FP d : sd.derivs) {
+      std::cout << std::setprecision(4) << d << ' ';
+      if (++counter % line == 0)
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+  }
 }
 
 // Write to binary
@@ -642,8 +787,8 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
 
           std::cout << "Data (matrix; cm^2/mole):\n";
           for (UINT gto = 0; gto < numGroups; ++gto) {
-            if (gto > 0)
-              continue; // HACK!
+            if (verbosity <= 3 && gto > 0)
+              continue;
             for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
               if (gfrom > 0)
                 std::cout << ' ';
@@ -659,8 +804,8 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
 
           std::cout << "Derivative in T (matrix; cm^2/mole-keV):\n";
           for (UINT gto = 0; gto < numGroups; ++gto) {
-            if (gto > 0)
-              continue; // HACK!
+            if (verbosity <= 3 && gto > 0)
+              continue;
             for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
               if (gfrom > 0)
                 std::cout << ' ';
@@ -755,7 +900,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
   dat.print_contents(verbosity, precision);
 
   // RM!
-  return;
+  //return;
 
   // Check detailed balance
   if (dat.numEvals == 5) {
@@ -890,7 +1035,8 @@ int main(int argc, char *argv[]) {
     int verbosity = 0;
     verbosity = 1;
     verbosity = 2;
-    verbosity = 3;
+    //verbosity = 3;
+    //verbosity = 4;
     read_csk_files(filename, verbosity);
   } catch (rtt_dsxx::assertion &excpt) {
     cout << "While attempting to read csk file, " << excpt.what() << endl;
