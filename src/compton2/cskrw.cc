@@ -245,6 +245,10 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
   // To mitigate numerical error and avoid dividing by a B of 0.,
   // we use the RHS at low E/T and use the LHS at high E/T.
 
+  // Caveat Emptor: fN, ON, and IN are scaled to a bg that sums to unity!
+  // If a downstream data consumer uses a phi or bg that sums to a T_r^4,
+  // then fN, ON, and/or IN should be rescaled by 1/(a * T_e^4)
+
   // Determine the cutoff between low and high energies (Ecutoff = N * T)
   // Based on the wgt fxn CSK uses in its MG avg, N <= 25.0
   // Using 25.0 is better for equilibrium stimulated scat
@@ -263,7 +267,6 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
   const UINT e_ON = 3;
   const UINT e_fN = 4;
   // 0th Legendre moment
-  const UINT iL = 0;
 
   for (UINT iT = 0; iT < numTs; ++iT) {
     const FP T = Ts[iT];
@@ -280,72 +283,76 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
     // First pass on nldiff
     FP sumlin = 0.0;
     FP sumnonlin = 0.0;
-    for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
-      for (UINT gto = 0; gto < numGroups; ++gto) {
-        // Look at left side of group bounds (use less implicit)
-        const FP Eto = groupBdrs[gto];
-        const FP Efrom = groupBdrs[gfrom];
-        const bool lowE = Eto <= Ecutoff && Efrom <= Ecutoff;
+    for (UINT iL = 0; iL < numLegMoments; ++iL) {
+      for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+        for (UINT gto = 0; gto < numGroups; ++gto) {
+          // Look at left side of group bounds (use less implicit)
+          const FP Eto = groupBdrs[gto];
+          const FP Efrom = groupBdrs[gfrom];
+          const bool lowE = Eto <= Ecutoff && Efrom <= Ecutoff;
 
-        // Planck is equilibrium distribution
-        const FP bgto = bg[gto];
-        const FP bgfrom = bg[gfrom];
+          // Planck is equilibrium distribution
+          const FP bgto = bg[gto];
+          const FP bgfrom = bg[gfrom];
 
-        std::array<FP, 4> vals;
-        // use scattering matrix (no transpose) for outscattering
-        for (UINT eval : {e_OL, e_ON}) {
-          const UINT loc =
+          std::array<FP, 4> vals;
+          // use scattering matrix (no transpose) for outscattering
+          for (UINT eval : {e_OL, e_ON}) {
+            const UINT loc =
+                gto +
+                numGroups *
+                    (gfrom +
+                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+            vals[eval] = data[loc];
+          }
+          // use transpose of scattering matrix for inscattering
+          for (UINT eval : {e_IL, e_IN}) {
+            const UINT loc =
+                gfrom +
+                numGroups *
+                    (gto +
+                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+            vals[eval] = data[loc];
+          }
+
+          // Avoid dividing by zero
+          const FP eps = 100 * std::numeric_limits<FP>::min();
+          const bool bzero = bgto <= eps || bgfrom <= eps;
+
+          // Take differences of spontaneous and induced rates at equilibrium
+          const FP impldiff =
+              (bzero) ? 0.0 : vals[e_IL] / bgfrom - vals[e_OL] / bgto;
+          const FP expldiff = vals[e_ON] - vals[e_IN];
+
+          // For low E/T, store impldiff; for high E/T, store expldiff
+          const UINT loc_fN =
               gto + numGroups *
                         (gfrom + numGroups * (iT + numTs * (iL + numLegMoments *
-                                                                     eval)));
-          vals[eval] = data[loc];
+                                                                     e_fN)));
+          data[loc_fN] = (lowE) ? impldiff : expldiff;
+
+          // Keep sums of 0th moment rates for later ratio
+          if (iL == 0U) {
+            sumlin += bgto * impldiff * bgfrom;
+            sumnonlin += bgto * data[loc_fN] * bgfrom;
+          }
         }
-        // use transpose of scattering matrix for inscattering
-        for (UINT eval : {e_IL, e_IN}) {
-          const UINT loc =
-              gfrom +
-              numGroups * (gto + numGroups * (iT + numTs * (iL + numLegMoments *
-                                                                     eval)));
-          vals[eval] = data[loc];
-        }
-
-        // Avoid dividing by zero
-        const FP eps = 100 * std::numeric_limits<FP>::min();
-        const bool bzero = bgto <= eps || bgfrom <= eps;
-
-        // Take differences of spontaneous and induced rates at equilibrium
-        const FP impldiff =
-            (bzero) ? 0.0 : vals[e_IL] / bgfrom - vals[e_OL] / bgto;
-        const FP expldiff = vals[e_ON] - vals[e_IN];
-
-        // For low E/T, store impldiff; for high E/T, store expldiff
-        const UINT loc_fN =
-            gto + numGroups *
-                      (gfrom +
-                       numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
-        data[loc_fN] = (lowE) ? impldiff : expldiff;
-
-        // Keep sums of rates for later ratio
-        sumlin += bgto * impldiff * bgfrom;
-        sumnonlin += bgto * data[loc_fN] * bgfrom;
       }
     }
-
-    // Caveat Emptor: fN, ON, and IN are scaled to a bg that sums to unity!
-    // If a downstream data consumer uses a phi or bg that sums to a T_r^4,
-    // then fN, ON, and/or IN should be rescaled by 1/(a * T_e^4)
 
     // Rescale the nonlin diff to get exact detailed balance at equilibrium
     const FP scalenl = sumlin / sumnonlin;
     // we hope scalenl is within a percent or less of 1
     Check(scalenl < 1.2 && scalenl > 0.8);
-    for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
-      for (UINT gto = 0; gto < numGroups; ++gto) {
-        const UINT loc_fN =
-            gto + numGroups *
-                      (gfrom +
-                       numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
-        data[loc_fN] *= scalenl;
+    for (UINT iL = 0; iL < numLegMoments; ++iL) {
+      for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+        for (UINT gto = 0; gto < numGroups; ++gto) {
+          const UINT loc_fN =
+              gto + numGroups *
+                        (gfrom + numGroups * (iT + numTs * (iL + numLegMoments *
+                                                                     e_fN)));
+          data[loc_fN] *= scalenl;
+        }
       }
     }
   }
@@ -495,18 +502,21 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
   const UINT fg_sz = numGroups * numTs;
   std::vector<UINT> first_groups(fg_sz, numGroups);
   std::vector<UINT> end_groups(fg_sz, 0U);
-  // first_groups is inclusive, end_groups is exclusive
+
+  // Ensure diagonal is included
+  for (UINT iT = 0; iT < numTs; ++iT) {
+    for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
+      const UINT loc_fg = gfrom + numGroups * iT;
+      // first_groups is inclusive, end_groups is exclusive
+      first_groups[loc_fg] = gfrom;
+      end_groups[loc_fg] = gfrom + 1U;
+    }
+  }
 
   for (UINT eval = 0; eval < numEvals; ++eval) {
     for (UINT iL = 0; iL < numLegMoments; ++iL) {
       for (UINT iT = 0; iT < numTs; ++iT) {
         for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
-
-          // Ensure diagonal is included
-          const UINT loc_fg = gfrom + numGroups * iT;
-          first_groups[loc_fg] = gfrom;
-          end_groups[loc_fg] = gfrom + 1U;
-
           for (UINT gto = 0; gto < numGroups; ++gto) {
             const UINT iT_m = iT > 0 ? iT - 1U : 0;
             const UINT iT_p = iT < (numTs - 1U) ? iT + 1U : numTs - 1U;
@@ -530,6 +540,7 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
             const FP val_p = std::fabs(data[loc_p]);
             // If datapoint is nonzero at current or bounding temperatures, include in sparse dataset
             if (val_m > cutoff || val > cutoff || val_p > cutoff) {
+              const UINT loc_fg = gfrom + numGroups * iT;
               first_groups[loc_fg] = std::min(gto, first_groups[loc_fg]);
               end_groups[loc_fg] = std::max(gto + 1U, end_groups[loc_fg]);
             }
@@ -554,6 +565,10 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
   const UINT numNonZeros = numPerPoint * numPoints;
   std::vector<FP> sparse_data(numNonZeros, 0.0);
   std::vector<FP> sparse_derivs(numNonZeros, 0.0);
+
+  std::cout << "DBG numBinaryEvals numPoints numPerPoint numNonZeros "
+            << numBinaryEvals << ' ' << numPoints << ' ' << numPerPoint << ' '
+            << numNonZeros << '\n';
 
   const std::array<UINT, 3> evalsToUse = {0, 1, 4};
   for (UINT iuse = 0; iuse < numBinaryEvals; ++iuse) {
@@ -601,7 +616,7 @@ void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
             << sd.derivs.size() << '\n';
 
   if (false) {
-    std::cout << "PRINT CONTENTS\n";
+    std::cout << "PRINT CONTENTS (point 0)\n";
     for (UINT iT = 0; iT < numTs; ++iT) {
       for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
         UINT loc = gfrom + numGroups * iT;
@@ -663,7 +678,9 @@ void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
     counter = 0;
     for (const FP d : sd.data) {
       std::cout << std::setprecision(4) << d << ' ';
-      if (++counter % line == 0)
+      if (std::fabs(d) > 1e-210)
+        ++counter;
+      if (counter % line == 0)
         std::cout << '\n';
     }
     std::cout << '\n';
@@ -675,7 +692,9 @@ void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
     counter = 0;
     for (const FP d : sd.derivs) {
       std::cout << std::setprecision(4) << d << ' ';
-      if (++counter % line == 0)
+      if (std::fabs(d) > 1e-210)
+        ++counter;
+      if (counter % line == 0)
         std::cout << '\n';
     }
     std::cout << '\n';
@@ -787,7 +806,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
 
           std::cout << "Data (matrix; cm^2/mole):\n";
           for (UINT gto = 0; gto < numGroups; ++gto) {
-            if (verbosity <= 3 && gto > 0)
+            if (verbosity <= 3 && gto > 1)
               continue;
             for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
               if (gfrom > 0)
@@ -900,7 +919,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
   dat.print_contents(verbosity, precision);
 
   // RM!
-  //return;
+  return;
 
   // Check detailed balance
   if (dat.numEvals == 5) {

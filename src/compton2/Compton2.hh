@@ -118,8 +118,9 @@ public:
         (first_groups_.size() == (num_temperatures_ * num_groups_)) &&
         (indexes_.size() == (num_temperatures_ * num_groups_ + 1U)) &&
         (data_.size() == derivs_.size()) &&
-        (data_.size() >=
-         num_temperatures_ * num_groups_ * num_leg_moments_ * num_evals_) &&
+        (data_.size() >= num_temperatures_ * num_groups_ * num_evals_) &&
+        (data_.size() <=
+         num_temperatures_ * num_groups_ * num_groups_ * num_evals_) &&
         true;
     return all_good;
   }
@@ -157,13 +158,10 @@ private:
   // helper functions
 
   // broadcast data over MPI
-  void broadcast_MPI() const;
-
-  // receive MPI broadcasts
-  void receive_MPI();
+  void broadcast_MPI(int errcode);
 
   // read the binary file
-  void read_binary(std::string filename);
+  int read_binary(std::string filename);
 };
 
 } // namespace rtt_compton2
