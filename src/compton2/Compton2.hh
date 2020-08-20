@@ -49,6 +49,13 @@ class Compton2 {
 public:
   Compton2(std::string filename);
 
+  // TEMPORARY
+  void interp_dense_inscat(std::vector<double> &inscat, double Te_keV,
+                           bool zeroth_moment_only = false) const;
+
+  void interp_linear_outscat(std::vector<double> &outscat, double Te_keV) const;
+
+#if 0
   // Interpolate in temperature and multiply against a vector in-place
   // x := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale) * x
   void interp_matvec(std::vector<double> &x,
@@ -71,6 +78,7 @@ public:
                             const std::vector<double> &rightscale,
                             double Te_keV,
                             bool zeroth_moment_only = false) const;
+
 
   // Interpolate in temperature and return dense in-scattering
   // inscat := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale)
@@ -98,6 +106,7 @@ public:
                              const std::vector<double> &rightscale,
                              const std::vector<double> &flux, double flux_scale,
                              double Te_keV) const;
+#endif
 
   // Accessor functions
   size_t get_num_temperatures() const { return num_temperatures_; }

@@ -26,6 +26,39 @@ using vec = std::vector<FP>;
 
 namespace rtt_compton2 {
 
+// xs is assumed to be monotonically increasing and unique
+// returns index in [0,len-2] so that xs[index] and xs[index+1] are valid
+// modifies x so that xs[index] <= x <= xs[index+1]
+UINT find_index(const std::vector<FP> &xs, FP &x) {
+  // Do binary search for index
+  auto loc = std::upper_bound(xs.begin(), xs.end(), x);
+  // loc - begin guaranteed to be in [0,len]
+  UINT index = (loc - xs.cbegin());
+
+  // Move index and x to be interior
+  // len >=2 assumed
+  UINT len = xs.size();
+  FP xmin = xs[0];
+  FP xmax = xs[len - 1U];
+  index = std::min(len - 1U, std::max(UINT(1), index)) - 1U;
+  x = std::max(xmin, std::min(xmax, x));
+  return index;
+}
+
+// xL <= x <= xR assumed
+std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
+  // Spacing of interval
+  FP h = xR - xL;
+  // Left/right basis functions
+  FP bL = (xR - x) / h;
+  FP bR = (x - xL) / h;
+
+  // Hermite functions
+  std::array<FP, 4> H{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR),
+                      -h * bL * bL * (bL - 1), h * bR * bR * (bR - 1)};
+  return H;
+}
+
 Compton2::Compton2(std::string filename)
     : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U),
       num_evals_(0U), Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U),
@@ -62,11 +95,11 @@ void Compton2::broadcast_MPI(int errcode) {
   data_size = pack[4];
 
   // Derived sizes
-  const UINT tsz = num_temperatures_;
-  const UINT egsz = num_groups_ + 1U;
-  const UINT fgsz = num_temperatures_ * num_groups_;
-  const UINT isz = fgsz + 1U;
-  const UINT dsz = data_size;
+  const auto tsz = int(num_temperatures_);
+  const auto egsz = int(num_groups_ + 1U);
+  const auto fgsz = int(num_temperatures_ * num_groups_);
+  const auto isz = int(fgsz + 1U);
+  const auto dsz = int(data_size);
 
   // Broadcast grids
   if (rank != bcast_rank)
@@ -176,6 +209,97 @@ int Compton2::read_binary(std::string filename) {
   return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
+                                   bool zeroth_moment_only) const {
+  // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
+
+  // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
+  // and 0 <= index <= Ts_.size()-2;
+  FP Teff = Te_keV;
+  UINT it = rtt_compton2::find_index(Ts_, Teff);
+
+  std::cout << "DBG inscat Tfind " << Ts_[it] << ' ' << Teff << ' '
+            << Ts_[it + 1U] << '\n';
+
+  // Fill Hermite function
+  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[it], Ts_[it + 1U]);
+
+  // Precompute some sparse indexes
+  const UINT sz = indexes_[indexes_.size() - 1];
+  UINT const end_leg = zeroth_moment_only ? 1U : num_leg_moments_;
+
+  // Resize and fill with zeros
+  inscat.resize(end_leg * num_groups_ * num_groups_);
+  std::fill(inscat.begin(), inscat.end(), 0.0);
+
+  // Apply Hermite function
+  // (Has only been spot tested)
+  // TODO: Make const
+  for (UINT k = 0; k < end_leg; ++k) {
+    for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
+      // Get contributions from both Ts_[it] and Ts_[it+1]
+      for (UINT n = 0; n < 2; ++n) {
+        UINT i = gfrom + num_groups_ * (it + n);
+        UINT first_gto = first_groups_[i];
+        UINT num_entries = indexes_[i + 1] - indexes_[i];
+        // offset is correct because in_lin has an eval of 0
+        UINT offset = indexes_[i] + k * sz;
+        for (UINT dg = 0; dg < num_entries; ++dg) {
+          UINT gto = dg + first_gto;
+          UINT ii = dg + offset;
+          UINT jj = gfrom + num_groups_ * (gto + num_groups_ * k);
+          inscat[jj] += H[0 + n] * data_[ii] + H[2 + n] * derivs_[ii];
+        }
+      }
+    }
+  }
+}
+
+void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
+  // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
+  // and 0 <= index <= Ts_.size()-2;
+  FP Teff = Te_keV;
+  UINT it = rtt_compton2::find_index(Ts_, Teff);
+
+  // Fill Hermite function
+  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[it], Ts_[it + 1U]);
+
+  // Precompute some sparse indexes
+  const UINT sz = indexes_[indexes_.size() - 1];
+  const UINT eval_offset = sz * num_leg_moments_;
+
+  // Resize and fill with zeros
+  outscat.resize(num_groups_);
+  std::fill(outscat.begin(), outscat.end(), 0.0);
+
+  // Apply Hermite function
+  // (Has only been spot tested)
+  // TODO: Make const
+  for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
+    // Get contributions from both Ts_[it] and Ts_[it+1]
+    for (UINT n = 0; n < 2; ++n) {
+      UINT i = gfrom + num_groups_ * (it + n);
+      UINT num_entries = indexes_[i + 1] - indexes_[i];
+      UINT offset = indexes_[i] + eval_offset;
+      for (UINT dg = 0; dg < num_entries; ++dg) {
+        UINT ii = dg + offset;
+        outscat[gfrom] += H[0 + n] * data_[ii] + H[2 + n] * derivs_[ii];
+      }
+    }
+  }
+
+  std::cout << "DBG outscat ";
+  for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
+    std::cout << outscat[gfrom] << ' ';
+  }
+  std::cout << '\n';
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+#if 0
 void Compton2::interp_matvec(vec &x, const vec &leftscale,
                              const vec &rightscale, double Te_keV,
                              bool zeroth_moment_only) const {
@@ -213,12 +337,13 @@ void Compton2::interp_sparse_inscat(Sparse_Compton_Matrix &inscat,
   // TODO: implement
 }
 
+
 void Compton2::interp_dense_inscat(vec &inscat, const vec &leftscale,
                                    const vec &rightscale, double Te_keV,
                                    bool zeroth_moment_only) const {
+  // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
   const vec &L = leftscale;
   const vec &R = rightscale;
-  FP const T = std::min(Ts_[num_temperatures_ - 1], std::max(Ts_[0], Te_keV));
   UINT const end_leg = zeroth_moment_only ? 1U : num_leg_moments_;
 
   inscat.resize(num_groups_ * num_groups_ * end_leg);
@@ -260,6 +385,7 @@ void Compton2::interp_nonlinear_diff(vec &nldiff, const vec &leftscale,
 
   // Ensure(nldiff.len() == num_groups_);
 }
+#endif
 
 } // namespace rtt_compton2
 
