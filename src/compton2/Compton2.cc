@@ -61,8 +61,8 @@ std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
 
 Compton2::Compton2(std::string filename)
     : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U),
-      num_evals_(0U), Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U),
-      data_(0U), derivs_(0U) {
+      num_evals_(0U), num_points_(0U), Ts_(0U), Egs_(0U), first_groups_(0U),
+      indexes_(0U), data_(0U), derivs_(0U) {
   Require(filename.length() > 0U);
   int rank = rtt_c4::node();
   constexpr int bcast_rank = 0;
@@ -85,14 +85,16 @@ void Compton2::broadcast_MPI(int errcode) {
 
   // Broadcast sizes
   UINT data_size = data_.size();
-  std::array<UINT, 5> pack = {num_temperatures_, num_groups_, num_leg_moments_,
-                              num_evals_, data_size};
+  std::array<UINT, 6> pack = {num_temperatures_, num_groups_, num_leg_moments_,
+                              num_evals_,        num_points_, data_size};
   rtt_c4::broadcast(&pack[0], pack.size(), bcast_rank);
-  num_temperatures_ = pack[0];
-  num_groups_ = pack[1];
-  num_leg_moments_ = pack[2];
-  num_evals_ = pack[3];
-  data_size = pack[4];
+  UINT p = 0;
+  num_temperatures_ = pack[p++];
+  num_groups_ = pack[p++];
+  num_leg_moments_ = pack[p++];
+  num_evals_ = pack[p++];
+  num_points_ = pack[p++];
+  data_size = pack[p++];
 
   // Derived sizes
   const auto tsz = int(num_temperatures_);
@@ -161,7 +163,7 @@ int Compton2::read_binary(std::string filename) {
   UINT tsz = szs[j++];
   UINT gsz = szs[j++];
   UINT lsz = szs[j++];
-  UINT esz = szs[j++]; // number of evals (points, really)
+  UINT esz = szs[j++];
   UINT fgsz = szs[j++];
   UINT isz = szs[j++];
   UINT dsz = szs[j++];
@@ -170,12 +172,16 @@ int Compton2::read_binary(std::string filename) {
   num_groups_ = gsz;
   num_leg_moments_ = lsz;
   num_evals_ = esz;
+  // point is (leg moment, eval) pair
+  // first eval has all leg moments; others have only the 0th moment
+  num_points_ = num_evals_ + num_leg_moments_ - 1U;
   UINT egsz = gsz + 1;
 
   std::cout << "DBG num_temperatures_ " << num_temperatures_ << '\n';
   std::cout << "DBG num_groups_ " << num_groups_ << '\n';
   std::cout << "DBG num_leg_moments_ " << num_leg_moments_ << '\n';
   std::cout << "DBG num_evals_ " << num_evals_ << '\n';
+  std::cout << "DBG num_points_ " << num_points_ << '\n';
   std::cout << "DBG len(first_groups_) " << fgsz << '\n';
   std::cout << "DBG len(indexes_) " << isz << '\n';
   std::cout << "DBG len(data_/derivs_) " << dsz << '\n';
@@ -218,17 +224,15 @@ void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
   // and 0 <= index <= Ts_.size()-2;
   FP Teff = Te_keV;
-  UINT it = rtt_compton2::find_index(Ts_, Teff);
-
-  std::cout << "DBG inscat Tfind " << Ts_[it] << ' ' << Teff << ' '
-            << Ts_[it + 1U] << '\n';
+  UINT iT = rtt_compton2::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[it], Ts_[it + 1U]);
+  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
-  UINT const end_leg = zeroth_moment_only ? 1U : num_leg_moments_;
+  const UINT end_leg = zeroth_moment_only ? 1U : num_leg_moments_;
+  const UINT eval_offset = 0; // in_lin
 
   // Resize and fill with zeros
   inscat.resize(end_leg * num_groups_ * num_groups_);
@@ -236,21 +240,20 @@ void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
 
   // Apply Hermite function
   // (Has only been spot tested)
-  // TODO: Make const
   for (UINT k = 0; k < end_leg; ++k) {
     for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
-      // Get contributions from both Ts_[it] and Ts_[it+1]
-      for (UINT n = 0; n < 2; ++n) {
-        UINT i = gfrom + num_groups_ * (it + n);
-        UINT first_gto = first_groups_[i];
-        UINT num_entries = indexes_[i + 1] - indexes_[i];
-        // offset is correct because in_lin has an eval of 0
-        UINT offset = indexes_[i] + k * sz;
+      const UINT offset_jj = gfrom + num_groups_ * num_groups_ * k;
+      // Get contributions from both Ts_[iT] and Ts_[iT+1]
+      for (UINT n = 0; n < 2U; ++n) {
+        const UINT i = gfrom + num_groups_ * (iT + n);
+        const UINT first_gto = first_groups_[i];
+        const UINT num_entries = indexes_[i + 1U] - indexes_[i];
+        const UINT offset_ii = indexes_[i] + sz * k + eval_offset;
         for (UINT dg = 0; dg < num_entries; ++dg) {
-          UINT gto = dg + first_gto;
-          UINT ii = dg + offset;
-          UINT jj = gfrom + num_groups_ * (gto + num_groups_ * k);
-          inscat[jj] += H[0 + n] * data_[ii] + H[2 + n] * derivs_[ii];
+          const UINT gto = dg + first_gto;
+          const UINT ii = dg + offset_ii;
+          const UINT jj = gto * num_groups_ + offset_jj;
+          inscat[jj] += H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
         }
       }
     }
@@ -261,14 +264,14 @@ void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
   // and 0 <= index <= Ts_.size()-2;
   FP Teff = Te_keV;
-  UINT it = rtt_compton2::find_index(Ts_, Teff);
+  UINT iT = rtt_compton2::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[it], Ts_[it + 1U]);
+  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
-  const UINT eval_offset = sz * num_leg_moments_;
+  const UINT eval_offset = sz * num_leg_moments_; // out_lin
 
   // Resize and fill with zeros
   outscat.resize(num_groups_);
@@ -276,26 +279,61 @@ void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
 
   // Apply Hermite function
   // (Has only been spot tested)
-  // TODO: Make const
   for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
-    // Get contributions from both Ts_[it] and Ts_[it+1]
-    for (UINT n = 0; n < 2; ++n) {
-      UINT i = gfrom + num_groups_ * (it + n);
-      UINT num_entries = indexes_[i + 1] - indexes_[i];
-      UINT offset = indexes_[i] + eval_offset;
+    // Get contributions from both Ts_[iT] and Ts_[iT+1U]
+    for (UINT n = 0; n < 2U; ++n) {
+      const UINT i = gfrom + num_groups_ * (iT + n);
+      const UINT num_entries = indexes_[i + 1U] - indexes_[i];
+      const UINT offset = indexes_[i] + eval_offset;
       for (UINT dg = 0; dg < num_entries; ++dg) {
-        UINT ii = dg + offset;
-        outscat[gfrom] += H[0 + n] * data_[ii] + H[2 + n] * derivs_[ii];
+        const UINT ii = dg + offset;
+        outscat[gfrom] += H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
       }
     }
   }
-
-  std::cout << "DBG outscat ";
-  for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
-    std::cout << outscat[gfrom] << ' ';
-  }
-  std::cout << '\n';
 }
+
+void Compton2::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
+                                          const std::vector<double> &phi,
+                                          double scale) const {
+  // Adds to existing outscat vector
+  Require(outscat.size() == num_groups_);
+
+  // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
+  // and 0 <= index <= Ts_.size()-2;
+  FP Teff = Te_keV;
+  UINT iT = rtt_compton2::find_index(Ts_, Teff);
+
+  // Fill Hermite function
+  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+
+  // Precompute some sparse indexes
+  const UINT sz = indexes_[indexes_.size() - 1];
+  const UINT eval_offset = sz * (num_leg_moments_ + 1U); // nl_diff
+
+  // Precompute constants
+  const FP invscale = scale > 0.0 ? FP(1.0 / scale) : 0.0;
+
+  // Apply Hermite function
+  // (Has only been spot tested)
+  for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
+    // Get contributions from both Ts_[iT] and Ts_[iT+1U]
+    for (UINT n = 0; n < 2U; ++n) {
+      const UINT i = gfrom + num_groups_ * (iT + n);
+      const UINT first_gto = first_groups_[i];
+      const UINT num_entries = indexes_[i + 1U] - indexes_[i];
+      const UINT offset = indexes_[i] + eval_offset;
+      for (UINT dg = 0; dg < num_entries; ++dg) {
+        const UINT gto = dg + first_gto;
+        const FP mag = invscale * phi[gto];
+        const UINT ii = dg + offset;
+        const FP val = H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
+        outscat[gfrom] += mag * val;
+      }
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 

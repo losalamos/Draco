@@ -55,6 +55,13 @@ public:
 
   void interp_linear_outscat(std::vector<double> &outscat, double Te_keV) const;
 
+  // Adds the nonlinear difference to the outscat vector
+  // phi is a group-sized vector for the scalar radiation intensity
+  // when the radiation is in equilibrium, sum_g phi_g = scale
+  void interp_nonlin_diff_and_add(std::vector<double> &outscat, double Te_keV,
+                                  const std::vector<double> &phi,
+                                  double scale) const;
+
 #if 0
   // Interpolate in temperature and multiply against a vector in-place
   // x := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale) * x
@@ -113,6 +120,7 @@ public:
   size_t get_num_groups() const { return num_groups_; }
   size_t get_num_leg_moments() const { return num_leg_moments_; }
   size_t get_num_evals() const { return num_evals_; }
+  size_t get_num_points() const { return num_points_; }
   size_t get_highest_leg_moment() const { return num_leg_moments_ - 1U; }
   const std::vector<double> &get_Ts() const { return Ts_; }
   const std::vector<double> &get_Egs() const { return Egs_; }
@@ -122,14 +130,15 @@ public:
     bool all_good =
         (num_temperatures_ > 0U) && (num_groups_ > 0U) &&
         (num_leg_moments_ > 0U) && (num_evals_ >= 2U) && (num_evals_ <= 3U) &&
+        (num_points_ == num_evals_ + num_leg_moments_ - 1U) &&
         (Ts_.size() == num_temperatures_) &&
         (Egs_.size() == num_groups_ + 1U) &&
         (first_groups_.size() == (num_temperatures_ * num_groups_)) &&
         (indexes_.size() == (num_temperatures_ * num_groups_ + 1U)) &&
         (data_.size() == derivs_.size()) &&
-        (data_.size() >= num_temperatures_ * num_groups_ * num_evals_) &&
+        (data_.size() >= num_temperatures_ * num_groups_ * num_points_) &&
         (data_.size() <=
-         num_temperatures_ * num_groups_ * num_groups_ * num_evals_) &&
+         num_temperatures_ * num_groups_ * num_groups_ * num_points_) &&
         true;
     return all_good;
   }
@@ -139,6 +148,9 @@ private:
   size_t num_groups_;
   size_t num_leg_moments_;
   size_t num_evals_;
+  // a point is a (Leg moment, eval) pair
+  // first eval has all Leg moments and all others have only the 0th moment
+  size_t num_points_;
 
   // Temperature grid for csk data (keV)
   std::vector<double> Ts_;
