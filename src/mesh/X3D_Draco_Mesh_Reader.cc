@@ -34,9 +34,8 @@ X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(
     : filename(filename_), bdy_filenames(bdy_filenames_),
       bdy_flags(bdy_flags_) {
   // check for valid file name
-  Insist(filename_.size() > 0, "No file name supplied.");
-  Insist(bdy_flags_.size() <= bdy_filenames_.size(),
-         "Number of B.C.s > number of boundary (side) node files.");
+  Require(filename_.size() > 0);
+  Require(bdy_flags_.size() <= bdy_filenames_.size());
 }
 
 //----------------------------------------------------------------------------//
@@ -54,7 +53,10 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
   std::ifstream x3dfile(filename.c_str());
 
   // file must exist and be readable
-  Insist(x3dfile.is_open(), "Failed to find or open specified X3D mesh file.");
+  if (!x3dfile.is_open()) {
+    throw std::runtime_error("Failed to find or open specified X3D mesh file " +
+                             filename);
+  }
 
   // STEP 2: parse file token stream into an initial vector of string pairs
 
@@ -129,6 +131,31 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
   Remember(dist_old = dist);
   x3d_cellface_map = map_x3d_block<int, int>("cells", dist);
   Check(dist > dist_old);
+
+  // parse x3d material flags
+  while (dist < parsed_pairs.size() && parsed_pairs[dist].first != "matid")
+    dist++;
+
+  if (parsed_pairs[dist].first != "matid") {
+    throw std::invalid_argument("no matid found in x3d file " + filename);
+  }
+
+  dist++;
+  // As the X3D manual notes, matid is a little weird.
+  x3d_matids.resize(get_numcells());
+  unsigned i = 0;
+  while (i < x3d_matids.size()) {
+    if (dist > parsed_pairs.size()) {
+      throw std::invalid_argument("wrong number of matids in x3d file " +
+                                  filename);
+    }
+    x3d_matids[i++] = parsed_pairs[dist].first;
+    auto const &matids = parsed_pairs[dist].second;
+    dist++;
+    for (auto const &id : matids) {
+      x3d_matids[i++] = id;
+    }
+  }
 
   // STEP 6: parse side node indices and map to faces
 
