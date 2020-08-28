@@ -280,6 +280,11 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
       bg[g] = rtt_cdi::CDI::integratePlanckSpectrum(Elow, Ehigh, T);
       bgsum += bg[g];
     }
+    bgsum = bgsum > 0.0 ? bgsum : 1.0;
+    //Normalize bg[T] (needed when T is near first or last group bounds)
+    for (UINT g = 0; g < numGroups; ++g) {
+      bg[g] /= bgsum;
+    }
     // First pass on nldiff
     FP sumlin = 0.0;
     FP sumnonlin = 0.0;
@@ -918,9 +923,6 @@ void read_csk_files(std::string const &basename, int verbosity) {
   //precision = 16;
   dat.print_contents(verbosity, precision);
 
-  // RM!
-  return;
-
   // Check detailed balance
   if (dat.numEvals == 5) {
     std::cout << "Detailed balance check...\n";
@@ -968,8 +970,12 @@ void read_csk_files(std::string const &basename, int verbosity) {
       if (verbosity > 1)
         std::cout << '\n';
       if (verbosity > 0)
-        std::cout << "bgsum: " << std::setprecision(16) << bgsum << '\n';
+        std::cout << "bgsum (raw): " << std::setprecision(16) << bgsum << '\n';
 
+      // Normalize to bgsum (to match compute_nonlinear_difference)
+      for (UINT g = 0; g < dat.numGroups; ++g) {
+        bg[g] /= bgsum;
+      }
       // Compute sums for each eval in equilibrium (I=B)
       std::array<FP, 5> sums = {0.0, 0.0, 0.0, 0.0, 0.0};
       for (UINT eval = 0; eval < sums.size(); ++eval) {
@@ -999,15 +1005,15 @@ void read_csk_files(std::string const &basename, int verbosity) {
       const FP lindiff = (sums[e_IL] - sums[e_OL]) * scale;
       const FP nonlindiff_raw = (sums[e_ON] - sums[e_IN]) * scale;
       const FP nonlindiff_use = sums[e_fN] * scale;
-      const FP ratio_raw = lindiff / nonlindiff_raw;
-      const FP ratio_use = lindiff / nonlindiff_use;
+      const FP ratio_raw = lindiff / nonlindiff_raw - 1.0;
+      const FP ratio_use = lindiff / nonlindiff_use - 1.0;
       if (verbosity > 1)
         std::cout << "lindiff nonlindiff-RAW nonlindiff-USE: "
                   << std::setprecision(6) << lindiff << ' ' << nonlindiff_raw
                   << ' ' << nonlindiff_use << '\n';
       if (verbosity > 0) {
-        std::cout << "lindiff / nonlindiff_raw: " << ratio_raw << '\n';
-        std::cout << "lindiff / nonlindiff_use: " << ratio_use << '\n';
+        std::cout << "lindiff / nonlindiff_raw - 1: " << ratio_raw << '\n';
+        std::cout << "lindiff / nonlindiff_use - 1: " << ratio_use << '\n';
       } else
         std::cout << T << ' ' << ratio_use << '\n';
 
