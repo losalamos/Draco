@@ -218,7 +218,7 @@ int Compton2::read_binary(std::string filename) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
-                                   bool zeroth_moment_only) const {
+                                   size_t num_moments_truncate) const {
   // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
 
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
@@ -231,7 +231,7 @@ void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
-  const UINT end_leg = zeroth_moment_only ? 1U : num_leg_moments_;
+  const UINT end_leg = std::min(UINT(num_moments_truncate), num_leg_moments_);
   const UINT eval_offset = 0; // in_lin
 
   // Resize and fill with zeros

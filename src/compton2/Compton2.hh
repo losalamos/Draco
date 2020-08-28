@@ -51,7 +51,7 @@ public:
 
   // TEMPORARY
   void interp_dense_inscat(std::vector<double> &inscat, double Te_keV,
-                           bool zeroth_moment_only = false) const;
+                           size_t num_moments_truncate) const;
 
   void interp_linear_outscat(std::vector<double> &outscat, double Te_keV) const;
 
