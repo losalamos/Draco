@@ -195,7 +195,7 @@ if [[ ${INTERACTIVE} == true ]]; then
       ;;
     ccscs[1-4]* | ccscs[6-9]*)
       # shellcheck source=/dev/null
-      source "${DRACO_ENV_DIR}/bashrc/.bashrc_linux64" ;;
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_ccsnet" ;;
 
     # Assume personal workstation
     *) export NoModules=1 ;;

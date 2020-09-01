@@ -51,28 +51,9 @@ if [[ ! ${modcmd} ]]; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-  # If modulefiles is located at $HOME, assume that the current developer wants
-  # to use his/her own checkout of user_contrib modulefiles.
-  if test -d $HOME/modulefiles; then
-    export ucmf=$HOME/modulefiles
-    module use --append $ucmf/`/usr/projects/hpcsoft/utilities/bin/sys_name`
-  else
-    module load user_contrib
-  fi
-  module load friendly-testing
-  module use --append ${VENDOR_DIR}-ec/modulefiles
-
-  export dracomodules="ack htop clang-format python \
-intel/19.0.4 openmpi/2.1.2 mkl \
-cmake/3.17.2 numdiff git totalview trilinos/12.10.1 \
-superlu-dist/5.1.3 metis parmetis random123 eospac/6.4.0 quo caliper"
-
-  if [[ -d ${VENDOR_DIR}-ec ]]; then
-    group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`
-    if [[ `groups | grep -c $group_for_vendor_ec` != 0 ]]; then
-      dracomodules="$dracomodules csk ndi"
-    fi
-  fi
+  module use --append /usr/projects/draco/Modules/snow
+  module load user_contrib/2020.08
+  module load draco/intel19
 
 fi
 
