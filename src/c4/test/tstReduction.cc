@@ -1276,7 +1276,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // handled correctly in the calls)
   vector<uint32_t> xuint(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xuint[i] = std::numeric_limits<int>::max() + rtt_c4::node() * 10 + i;
+    xuint[i] = static_cast<uint32_t>(std::numeric_limits<int>::max()) +
+               rtt_c4::node() * 10 + i;
 
   prefix_sum(&xuint[0], array_size);
 
@@ -1284,7 +1285,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        uint_answer[i] += std::numeric_limits<int>::max() + r * 10 + i;
+        uint_answer[i] +=
+            static_cast<uint32_t>(std::numeric_limits<int>::max()) + r * 10 + i;
     }
   }
 
@@ -1322,7 +1324,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // types are handled correctly in the calls)
   vector<uint64_t> xulong(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xulong[i] = std::numeric_limits<int64_t>::max() + rtt_c4::node() * 10 + i;
+    xulong[i] = static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) +
+                rtt_c4::node() * 10 + i;
 
   prefix_sum(&xulong[0], array_size);
 
@@ -1330,7 +1333,9 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        ulong_answer[i] += std::numeric_limits<int64_t>::max() + r * 10 + i;
+        ulong_answer[i] +=
+            static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) +
+            r * 10 + i;
     }
   }
 

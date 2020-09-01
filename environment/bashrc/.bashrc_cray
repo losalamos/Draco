@@ -56,14 +56,10 @@ fi
 
 unset OMP_NUM_THREADS
 if [[ ${CRAY_CPU_TARGET} =~ arm ]]; then
-#  export OMP_NUM_THREADS=28
   export NRANKS_PER_NODE=56
-#if [[ `lscpu | grep Flags | grep -c avx512` == 0 ]]; then
 elif [[ ${CRAY_CPU_TARGET} =~ haswell ]]; then
-#  export OMP_NUM_THREADS=16
   export NRANKS_PER_NODE=32
 elif [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
-#  export OMP_NUM_THREADS=17
   export NRANKS_PER_NODE=68
 fi
 
@@ -82,50 +78,13 @@ arch=`uname -m`
 
 # Use modules found in the draco directory
 sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
-#if test -d $HOME/modulefiles/$sysname; then
-#  export ucmf=$HOME/modulefiles
-#  module use --append ~/modulefiles/$sysname
-#else
-  module load user_contrib
-#fi
-module load friendly-testing
+module use --append /usr/projects/draco/Modules/$sysname
+module load draco/intel19
+
+
 if [[ ${SLURM_JOB_PARTITION} == "knl" ]]; then
   module swap craype-haswell craype-mic-knl
 fi
-
-if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
-
-  module use --append ${VENDOR_DIR}-ec/modulefiles
-  dracomodules="git cmake/3.17.2 numdiff gsl/2.5 metis eospac/6.4.0 random123 parmetis \
-superlu-dist/5.4.0 trilinos/12.14.1 clang-format python/3.6-anaconda-5.0.1 quo caliper"
-
-  if [[ -d ${VENDOR_DIR}-ec ]]; then
-    group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`
-    if [[ `groups | grep -c $group_for_vendor_ec` != 0 ]]; then
-      dracomodules="$dracomodules csk/0.5.0 ndi"
-    fi
-  fi
-
-elif [[ ${CRAY_CPU_TARGET} =~ arm ]]; then
-
-  alias salloc='salloc --x11'
-
-  module use --append ${VENDOR_DIR}-ec/modulefiles-capulin
-  comp="gcc-8.3.0"
-  mpi="mpt-7.7.10"
-  dracomodules="git/2.20.1 cmake/3.17.2 numdiff/5.9.0-${comp} gsl/2.5-${comp} openblas/0.3.6-${comp} metis/5.1.0-${comp} eospac/6.4.0-${comp} random123/1.09-${comp} parmetis/4.0.3-${comp}-${mpi} superlu-dist/5.4.0-${comp}-${mpi}-openblas trilinos/12.14.1-${comp}-${mpi}-openblas cray-python/3.6.5.6 qt quo"
-
-  if [[ -d ${VENDOR_DIR}-ec ]]; then
-    group_for_vendor_ec=`\ls -aFld ${VENDOR_DIR}-ec | awk '{ print $4 }'`
-    if [[ `groups | grep -c $group_for_vendor_ec` != 0 ]]; then
-      dracomodules="$dracomodules csk/0.5.0-${comp}"
-      # ndi
-    fi
-  fi
-
-fi
-
-export dracomodules
 
 # ---------------------------------------------------------------------------- #
 # Trinity

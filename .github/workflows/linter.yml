@@ -49,17 +49,22 @@ jobs:
       # Run Linter against code base #
       ################################
       - name: Lint Code Base
-        uses: docker://github/super-linter:v3.3.1
+        uses: docker://github/super-linter:v3.8.3
         env:
           DEFAULT_BRANCH: develop
           VALIDATE_ALL_CODEBASE: false
-          VALIDATE_ANSIBLE: false
-          VALIDATE_YAML: true
-          VALIDATE_JSON: true
-          VALIDATE_XML: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_BASH: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_ENV: true
+          VALIDATE_HTML: true
+          VALIDATE_JSON: true
+          VALIDATE_JSON: true
+          VALIDATE_LATEX: true
+          VALIDATE_LUA: true
           VALIDATE_PERL: true
           VALIDATE_PYTHON: true
-          VALIDATE_DOCKER: true
-          VALIDATE_ENV: true
+          VALIDATE_RUBY: true
+          VALIDATE_XML: true
+          VALIDATE_YAML: true
 ...

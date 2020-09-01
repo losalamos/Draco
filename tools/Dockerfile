@@ -1,12 +1,13 @@
 #FROM kinetictheory/draco-ci-2019june
 
 # Use ubuntu if building from scratch
-FROM ubuntu:latest
+# FROM ubuntu:latest
+FROM ubuntu:20.10
 
 # This image:
 # 1. cd /D f:\work\docker (copy Dockerfile and packages.yaml to this location).
 # 2. docker login -u kinetictheory (and password) # ref https://docs.docker.com/get-started/part2/
-# 3. docker build --rm --pull --tag draco-ci-2020may:latest . 
+# 3. docker build --rm --pull --tag draco-ci-2020may:latest .
 #    OR: docker run -it -v /c/work:/work kinetictheory/draco-ci-2020may /bin/bash -l
 #        apt-get install -y --no-install-recommends [ghostview]
 #        rm -rf /vendors/spack/var/spack/repos/builtin/cmake
@@ -14,14 +15,14 @@ FROM ubuntu:latest
 #        spack install cmake@3.17.0
 #        exit
 #        docker ps -a
-#        docker commit -m "added cmake-3.17.0." kind_grothen kinetictheory/draco-ci-2020may:latest 
+#        docker commit -m "added cmake-3.17.0." kind_grothen kinetictheory/draco-ci-2020may:latest
 #        docker push kinetictheory/draco-ci-2020may:latest
 # 4. docker image ls -a ==> find container name (or docker ps)
 # 5. docker commit -m "added sphinx and mscgen" -a kinetictheory <hash> kinetictheory/draco-ci-2020may:latest # queues for upload
 # 6. docker push kinetictheory/draco-ci-2020may:latest
 # 7. docker system prune -a (remove old dangling data)
 
-MAINTAINER KineticTheory "https://github.com/KineticTheory"
+# MAINTAINER KineticTheory "https://github.com/KineticTheory"
 
 # See draco/.travis-run-tests.sh for some instructions.
 
@@ -51,7 +52,8 @@ RUN echo "tzdata tzdata/Areas select US" > /tmp/preseed.txt; \
     echo "tzdata tzdata/Zones/US select Mountain" >> /tmp/preseed.txt; \
     debconf-set-selections /tmp/preseed.txt && \
     apt-get update && \
-    apt-get install -y --no-install-recommends tzdata
+    apt-get install -y --no-install-recommends tzdata && \
+    rm /var/lib/apt/lists/*
 
 ## Basic admin tools
 RUN apt-get install -y --no-install-recommends apt-utils automake autoconf autotools-dev python3 software-properties-common flex bison ssh
