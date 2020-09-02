@@ -10,7 +10,7 @@
 ##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
-if [[ -n "$verbose" ]]; then echo "In .bashrc_linux64"; fi
+if [[ -n "$verbose" ]]; then echo "In draco/environment/bashrc/.bashrc_ccsnet"; fi
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS

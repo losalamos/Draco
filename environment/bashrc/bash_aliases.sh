@@ -1,11 +1,15 @@
 #!/bin/bash
 ##-*- Mode: bash -*-
-#------------------------------------------------------------------------------#
-# bashrc_aliases
-#
-# bashrc_aliases is sourced by interactive shells from
-# .bash_profile and .bashrc
-#------------------------------------------------------------------------------#
+##---------------------------------------------------------------------------##
+## File  : environment/bashrc/bashrc_aliases.sh
+## Date  : Tuesday, Sep 01, 2020, 19:01 pm
+## Author: Kelly Thompson <kgt@lanl.gov>
+## Note  : Copyright (C) 2020, Triad National Security, LLC.
+##         All rights are reserved.
+##
+## bashrc_aliases is sourced by interactive shells from .bash_profile and
+## .bashrc
+##---------------------------------------------------------------------------##
 
 #------------------------------------------------------------------------------#
 # Draco Dev Env Customizations
@@ -35,10 +39,15 @@ alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
 # Module related:
 alias moduel='module'
 alias ma='module avail'
+alias mica='module --ignore_cache avail'
 alias mls='module list'
 alias mld='module load'
 alias mul='module unload'
 alias msh='module show'
+
+# machines
+alias sierra='ssh -t redcap ssh sierra.llnl.gov'
+alias rzansel='ssh -t ihpc-gate1.lanl.gov ssh rzansel.llnl.gov'
 
 #------------------------------------------------------------------------------#
 # Color Prompt
@@ -129,5 +138,5 @@ unset color_prompt
 # add_to_path /scratch/vendors/bin PATH
 
 #------------------------------------------------------------------------------#
-# End .bash_aliases
+# End environment/bashrc/bashrc_aliases.sh
 #------------------------------------------------------------------------------#
