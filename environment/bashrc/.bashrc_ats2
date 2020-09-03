@@ -56,7 +56,7 @@ else
 
 # StdEnv
 
-  export dracomodules="cuda/11.0.2 python/3.7.2 ack htop gsl numdiff git random123 gcc/8.3.1 cmake/3.17.0 metis netlib-lapack eospac/6.4.0 spectrum-mpi/2019.06.24 parmetis superlu-dist trilinos libquo csk ndi caliper"
+  export dracomodules="cuda/11.0.2 python/3.8.2 ack htop gsl numdiff git random123 gcc/8.3.1 cmake/3.17.0 metis netlib-lapack eospac/6.4.0 spectrum-mpi/2019.06.24 parmetis superlu-dist trilinos libquo csk ndi caliper"
 
 fi
 
