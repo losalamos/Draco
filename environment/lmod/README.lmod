@@ -1,0 +1,4 @@
+These files can be renamed and moved to $HOME to customize how lmod modules work for you.
+
+~/.modulerc.lua can be used to hide modulefiles that you don't care about. (old versions?)
+~/.lmodrc.lua   can be used to modify colors of text.
