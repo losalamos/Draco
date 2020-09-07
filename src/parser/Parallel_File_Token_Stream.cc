@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   Parallel_File_Token_Stream.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief  Definitions of Parallel_File_Token_Stream methods.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Parallel_File_Token_Stream.hh"
 #include "c4/C4_Functions.hh"
@@ -39,7 +39,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream()
   Ensure(Parallel_File_Token_Stream::location_() == "\"\", line 0");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Construct a Parallel_File_Token_Stream
  *
@@ -59,7 +59,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
   Ensure(Parallel_File_Token_Stream::location_() == file_name + ", line 1");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Construct a Parallel_File_Token_Stream that derives its text from the
  *        specified file. If the file cannot be opened, then \c error() will
@@ -84,7 +84,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
   Ensure(whitespace() == ws);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reopen a Parallel_File_Token_Stream with a new file.
  *
@@ -106,7 +106,7 @@ void Parallel_File_Token_Stream::open(string const &file_name) {
   Ensure(check_class_invariants());
   Ensure(location_() == file_name + ", line 1");
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Open file filestream for Parallel_File_Token_Stream.
  *
@@ -142,7 +142,7 @@ void Parallel_File_Token_Stream::letter::open_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function constructs and returns a string of the form "filename, line #"
  * indicating the location at which the last token was parsed.  This is useful
@@ -160,7 +160,7 @@ string Parallel_File_Token_Stream::location_() const {
   return Result.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Only the I/O processor actually reads from the file.  Up to
  * numeric_limits<signed char>::max() characters are read by this processor.
@@ -215,7 +215,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Only the I/O processor actually reads from the file.  Up to
  * numeric_limits<signed char>::max() characters are read by this processor.
@@ -284,7 +284,7 @@ void Parallel_File_Token_Stream::letter::fill_character_buffer_(
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief This function may be used to check whether an I/O error has occured,
  *        such as failure to open the text file.
@@ -295,7 +295,7 @@ bool Parallel_File_Token_Stream::error_() const {
   return letter_ != nullptr ? letter_->at_error_ : false;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function may be used to check whether the end of the text file has been
  * reached.
@@ -307,7 +307,7 @@ bool Parallel_File_Token_Stream::end_() const {
   return letter_ != nullptr ? letter_->at_eof_ : true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  * Only processor 0 writes the message, to avoid many (possibly thousands) of
@@ -321,7 +321,7 @@ void Parallel_File_Token_Stream::report(Token const &token,
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  * Only processor 0 writes the message, to avoid many (possibly thousands) of
@@ -342,7 +342,7 @@ void Parallel_File_Token_Stream::report(string const &message) {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  * Only processor 0 writes the message, to avoid many (possibly thousands) of
@@ -360,7 +360,7 @@ void Parallel_File_Token_Stream::comment(string const &message) {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function rewinds the file stream associated with the file token stream
  * and flushes its internal buffers, so that scanning resumes at the beginning
@@ -395,17 +395,17 @@ void Parallel_File_Token_Stream::letter::rewind() {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Parallel_File_Token_Stream::check_class_invariants() const { return true; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Parallel_File_Token_Stream::letter::check_class_invariants() const {
   unsigned iocount = is_io_processor_;
   rtt_c4::global_sum(iocount);
   return iocount == 1;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param filename Name of file to be included at this point. On return,
  * replaced with an absolute path based on DRACO_INCLUDE_PATH if the relative
@@ -417,7 +417,7 @@ void Parallel_File_Token_Stream::push_include(std::string &filename) {
   letter_ = make_shared<letter>(filename);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Parallel_File_Token_Stream::pop_include() {
   Require(!letters_.empty());
 
@@ -428,6 +428,6 @@ void Parallel_File_Token_Stream::pop_include() {
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Parallel_File_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -228,7 +228,7 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename, bool
  */
 std::string remove_color(std::string const &colored_string);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Extract version of the form M.m.p from a string.
  *

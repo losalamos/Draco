@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/draco_info.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Small executable that prints the version and copyright strings.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "draco_info.hh"
 #include "c4/config.h"
@@ -21,7 +21,7 @@
 
 namespace rtt_diagnostics {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Constructor
 DracoInfo::DracoInfo()
     : release(rtt_dsxx::release()), copyright(rtt_dsxx::copyright()),
@@ -82,7 +82,7 @@ DracoInfo::DracoInfo()
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void print_text_with_word_wrap(std::string const &longstring,
                                size_t const indent_column,
                                size_t const max_width, std::ostringstream &msg,
@@ -103,7 +103,7 @@ void print_text_with_word_wrap(std::string const &longstring,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::string DracoInfo::fullReport() const {
   using std::cout;
   using std::endl;
@@ -178,7 +178,7 @@ std::string DracoInfo::fullReport() const {
   return infoMessage.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::string DracoInfo::briefReport() const {
   std::ostringstream infoMessage;
 
@@ -189,7 +189,7 @@ std::string DracoInfo::briefReport() const {
   return infoMessage.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! extract the single-line version info from release and return it
 std::string DracoInfo::versionReport() const {
   std::ostringstream infoMessage;
@@ -200,6 +200,6 @@ std::string DracoInfo::versionReport() const {
 
 } // end namespace rtt_diagnostics
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of draco_info.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

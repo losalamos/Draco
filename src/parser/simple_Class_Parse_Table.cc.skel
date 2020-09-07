@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   MyPackage/MyClass__parser.cc
  * \author Kent Budge
@@ -12,7 +12,7 @@
  * wherever the new class name should appear, and MyPackage where the new class
  * package directory name should appear.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "MyClass__parser.hh"
 
@@ -21,7 +21,7 @@
 namespace rtt_parser {
 using namespace MyNamespace;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Parse a flag specification.
  *
  * \param tokens Tokens stream from which to parse the specification.
@@ -33,7 +33,7 @@ void Class_Parse_Table<MyClass>::parse_flag(Token_Stream &tokens, int) {
   current->flag = true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Parse a constant specification.
  *
  * \param tokens Tokens stream from which to parse the specification.
@@ -46,7 +46,7 @@ void Class_Parse_Table<MyClass>::parse_constant(Token_Stream &tokens, int) {
   tokens.check_semantics(current->constant > 0.0, "constant must be positive");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Constructor
  *
  * \param debug_word The debugging context.
@@ -73,7 +73,7 @@ Class_Parse_Table<MyClass>::Class_Parse_Table(Context_Type debug_word)
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Check completeness and consistency of parsed specification.
  *
  * \param tokens Token stream to which to report errors.
@@ -86,7 +86,7 @@ void Class_Parse_Table<MyClass>::check_completeness(Token_Stream &tokens) {
   tokens.check_semantics(constant > 0.0, "constant not specified");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Create an object from the parsed specification.
  *
  * \throw std::bad_alloc
@@ -95,7 +95,7 @@ shared_ptr<Sweeper_Creator> Class_Parse_Table<MyClass>::create_object() {
   return std::make_shared<MyClass>(debug_context, flag, constant);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Specialization of parse_class for MyClass.
 
 template <>
@@ -106,6 +106,6 @@ shared_ptr<MyClass> parse_class<MyClass>(Token_Stream &tokens,
 }
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of MyPackage/MyClass__parser.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

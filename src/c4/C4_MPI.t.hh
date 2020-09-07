@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_MPI.t.hh
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  C4 MPI template implementation for explicit instantiation.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_t_hh
 #define c4_C4_MPI_t_hh
@@ -21,9 +21,9 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // BLOCKING SEND/RECEIVE OPERATIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T>
 int send(const T *buffer, int size, int destination, int tag) {
@@ -34,7 +34,7 @@ int send(const T *buffer, int size, int destination, int tag) {
   return C4_SUCCESS;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T> int receive(T *buffer, int size, int source, int tag) {
   Require(size == 0 || buffer != nullptr);
 
@@ -52,7 +52,7 @@ template <typename T> int receive(T *buffer, int size, int source, int tag) {
   return count;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 int send_udt(const T *buffer, int size, int destination, C4_Datatype &data_type,
              int tag) {
@@ -63,7 +63,7 @@ int send_udt(const T *buffer, int size, int destination, C4_Datatype &data_type,
   return C4_SUCCESS;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 int receive_udt(T *buffer, int size, int source, C4_Datatype &data_type,
                 int tag) {
@@ -81,7 +81,7 @@ int receive_udt(T *buffer, int size, int source, C4_Datatype &data_type,
   return count;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename TS, typename TR>
 int send_receive(TS *sendbuf, int sendcount, int destination, TR *recvbuf,
                  int recvcount, int source, int sendtag, int recvtag) {
@@ -97,9 +97,9 @@ int send_receive(TS *sendbuf, int sendcount, int destination, TR *recvbuf,
   return check;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T>
 C4_Req send_async(const T *buffer, int size, int destination, int tag) {
@@ -119,7 +119,7 @@ C4_Req send_async(const T *buffer, int size, int destination, int tag) {
   return request;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void send_async(C4_Req &request, const T *buffer, int size, int destination,
                 int tag) {
@@ -134,7 +134,7 @@ void send_async(C4_Req &request, const T *buffer, int size, int destination,
             destination, tag, communicator, &request.r());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void send_is(C4_Req &request, const T *buffer, int size, int destination,
              int tag) {
@@ -152,7 +152,7 @@ void send_is(C4_Req &request, const T *buffer, int size, int destination,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 C4_Req receive_async(T *buffer, int size, int source, int tag) {
 
@@ -172,7 +172,7 @@ C4_Req receive_async(T *buffer, int size, int source, int tag) {
   return request;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void receive_async(C4_Req &request, T *buffer, int size, int source, int tag) {
   Require(size == 0 || buffer != nullptr);
@@ -189,9 +189,9 @@ void receive_async(C4_Req &request, T *buffer, int size, int source, int tag) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // BROADCAST
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> int broadcast(T *buffer, int size, int root) {
   Require(root >= 0 && root < nodes());
@@ -200,9 +200,9 @@ template <typename T> int broadcast(T *buffer, int size, int root) {
   return r;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // GATHER/SCATTER
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> int gather(T *send_buffer, T *receive_buffer, int size) {
   int Result = MPI_Gather(send_buffer, size, MPI_Traits<T>::element_type(),
@@ -213,7 +213,7 @@ template <typename T> int gather(T *send_buffer, T *receive_buffer, int size) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 int allgather(T *send_buffer, T *receive_buffer, int size) {
   int Result = MPI_Allgather(send_buffer, size, MPI_Traits<T>::element_type(),
@@ -223,7 +223,7 @@ int allgather(T *send_buffer, T *receive_buffer, int size) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size) {
   int Result = MPI_Scatter(send_buffer, size, MPI_Traits<T>::element_type(),
                            receive_buffer, size, MPI_Traits<T>::element_type(),
@@ -233,7 +233,7 @@ template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 int gatherv(T *send_buffer, int send_size, T *receive_buffer,
             int *receive_sizes, int *receive_displs) {
@@ -246,7 +246,7 @@ int gatherv(T *send_buffer, int send_size, T *receive_buffer,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 int scatterv(T *send_buffer, int *send_sizes, int *send_displs,
              T *receive_buffer, int receive_size) {
@@ -258,9 +258,9 @@ int scatterv(T *send_buffer, int *send_sizes, int *send_displs,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_sum(T &x) {
 
@@ -272,7 +272,7 @@ template <typename T> void global_sum(T &x) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request) {
 
@@ -286,7 +286,7 @@ void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T> void global_prod(T &x) {
 
   // do global MPI reduction (result is on all processors) into x
@@ -294,7 +294,7 @@ template <typename T> void global_prod(T &x) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_min(T &x) {
 
@@ -303,7 +303,7 @@ template <typename T> void global_min(T &x) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_max(T &x) {
 
@@ -312,7 +312,7 @@ template <typename T> void global_max(T &x) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_sum(T *x, int n) {
   Require(x != nullptr);
@@ -324,7 +324,7 @@ template <typename T> void global_sum(T *x, int n) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_prod(T *x, int n) {
   Require(x != nullptr);
@@ -336,7 +336,7 @@ template <typename T> void global_prod(T *x, int n) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_min(T *x, int n) {
   Require(x != nullptr);
@@ -348,7 +348,7 @@ template <typename T> void global_min(T *x, int n) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void global_max(T *x, int n) {
   Require(x != nullptr);
@@ -360,7 +360,7 @@ template <typename T> void global_max(T *x, int n) {
                 communicator);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> T prefix_sum(const T node_value) {
   T prefix_sum = 0;
@@ -369,7 +369,7 @@ template <typename T> T prefix_sum(const T node_value) {
   return prefix_sum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename T> void prefix_sum(T *buffer, const int32_t n) {
   Require(buffer != nullptr);
@@ -384,6 +384,6 @@ template <typename T> void prefix_sum(T *buffer, const int32_t n) {
 
 #endif // c4_C4_MPI_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/C4_MPI.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

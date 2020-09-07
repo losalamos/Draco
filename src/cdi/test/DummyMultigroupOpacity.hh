@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/DummyMultigroupOpacity.hh
  * \author Kelly Thompson
@@ -7,7 +7,7 @@
  *         ../MultigroupOpacity)
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_DummyMultigroupOpacity_hh
 #define rtt_cdi_DummyMultigroupOpacity_hh
@@ -16,7 +16,7 @@
 
 namespace rtt_cdi_test {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class DummyMultigroupOpacity
  *
@@ -40,7 +40,7 @@ namespace rtt_cdi_test {
  * \sa cdi/test/tDummyOpacity.cc
  * \sa cdi/test/tCDI.cc
  */
-//============================================================================//
+//================================================================================================//
 
 class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 
@@ -341,10 +341,10 @@ public:
 
 }; // end of class DummyMultigroupOpacity
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TEMPLATE DEFINITIONS
 // (enable us to use automatic instantiation)
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns an STL container of opacities that
  * correspond to a tuple of provided STL containers (temperatures and
@@ -368,7 +368,7 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
   return opacityIter;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns an STL container of opacities that
  * correspond to a list of provided STL temperature values.  The length of the
@@ -387,7 +387,7 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
   return opacityIter;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns an STL container of opacities that
  * correspond to a list of provided STL density values and a fixed temperature.
@@ -410,6 +410,6 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
 
 #endif // rtt_cdi_DummyMultigroupOpacity_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi/test/DummyMultigroupOpacity.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

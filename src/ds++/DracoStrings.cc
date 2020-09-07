@@ -206,7 +206,7 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename,
   return get_word_count(data, verbose);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Remove control characters from string that might produce color, etc.
 std::string remove_color(std::string const &colored_string) {
   std::regex color_regex("\033["
@@ -214,7 +214,7 @@ std::string remove_color(std::string const &colored_string) {
   return std::regex_replace(colored_string, color_regex, "");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Extract version of the form M.m.p from a string.
 std::string extract_version(std::string const &string_in, size_t digits) {
   Require(digits > 0);

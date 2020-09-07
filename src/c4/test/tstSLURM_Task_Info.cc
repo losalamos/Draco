@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstSLURM_Task_Info.cc
  * \author Tim Kelley
  * \date   Fri Jun 7 08:06:53 2019
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/SLURM_Task_Info.hh"
 #include "ds++/Release.hh"
@@ -22,7 +22,7 @@ using rtt_dsxx::UnitTest;
 using env_store_value = std::pair<bool, std::string>;
 using env_store_t = std::map<std::string, env_store_value>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Helper function: Record SLURM keys and values, if any, then remove them from
  * environment. Return recorded values so they can be restored later. */
 env_store_t clean_env() {
@@ -54,7 +54,7 @@ env_store_t clean_env() {
   return store;
 } // clean_env
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Helper function: Restore the SLURM keys that were previously defined. */
 void restore_env(env_store_t const &store) {
   /* For each key, if it was defined, restore that definition. If it was
@@ -84,7 +84,7 @@ void restore_env(env_store_t const &store) {
   return;
 } // restore_env
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a "clean" environment--that is, no slurm keys. */
 void test_instantiate_SLURM_Info(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
@@ -100,7 +100,7 @@ void test_instantiate_SLURM_Info(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a "live" environment--that is, slurm keys are defined. */
 void test_SLURM_Info(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
@@ -123,7 +123,7 @@ void test_SLURM_Info(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a partial "live" environment--that is, slurm keys are defined. */
 void test_SLURM_Info_partial(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
@@ -146,7 +146,7 @@ void test_SLURM_Info_partial(UnitTest &ut) {
 
 using t_func = std::function<void(UnitTest &)>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   f(u);
   if (u.numFails == 0) {
@@ -155,7 +155,7 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -167,6 +167,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/test/tstSLURM_Task_Info.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

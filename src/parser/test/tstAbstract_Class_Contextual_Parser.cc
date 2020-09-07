@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstAbstract_Class_Contextual_Parser.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief  Test the Abstract_Class_Contextual_Parser template
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,9 +19,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Declare an abstract class, Parent, for which we wish to write a constructor.
  * The following would typically be declared in a file named Parent.hh
@@ -44,7 +44,7 @@ private:
   int magic_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Declare a parse table for parsing objects derived from Parent. Note that this
  * must be in the rtt_parser namespace regardless of which namespace Parent
@@ -128,7 +128,7 @@ std::shared_ptr<Parent> Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
 Parse_Table Class_Parse_Table<Parent>::parse_table_;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Specialization of the parse_class template function for T=Parent
  */
@@ -139,7 +139,7 @@ std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * We now declare a child class derived from Parent.  The following would
  * normally be placed in the file Son.hh
@@ -155,7 +155,7 @@ public:
   // parameter, but we do want to check that the context is got right.
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Now declare a parser class for parsing specifications for Son. Typically the
  * child parser class will be derived from the parent parser class so that parse
@@ -243,12 +243,12 @@ private:
   static bool parse_table_is_initialized_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
 Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <>
 std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
                                       int const &context) {
@@ -257,7 +257,7 @@ std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Now define a second child of Parent, which we will (whimsically) call
  * Daughter. The following would typicall be placed in the file Daughter.hh
@@ -271,7 +271,7 @@ public:
   // (if it makes sense).
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Define a parser class now for Daughter. This is similar to what we do for Son
  * so we will go light on comments.
@@ -344,7 +344,7 @@ Class_Parse_Table<Daughter> *Class_Parse_Table<Daughter>::current_;
 Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <>
 std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
@@ -363,7 +363,7 @@ std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens, int const &) {
   return parse_class<Daughter>(tokens);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test all the above */
 
 void test(UnitTest &ut) {
@@ -389,7 +389,7 @@ void test(UnitTest &ut) {
   ut.check(parent->magic() == 42, "context");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -399,6 +399,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAbstract_Class_Contextual_Parser.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

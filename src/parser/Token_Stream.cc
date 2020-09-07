@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token_Stream member functions.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Token_Stream.hh"
 #include <cstring>
@@ -13,12 +13,12 @@
 namespace rtt_parser {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Syntax_Error::Syntax_Error() : runtime_error("syntax error") {
   Ensure(!strcmp(what(), "syntax error"));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function returns the token at the cursor position and advance the
  * cursor. It will, if necessary, fill() the token buffer first.
@@ -40,7 +40,7 @@ Token Token_Stream::shift() {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function looks ahead in the token stream without changing the cursor
  * position.  It will, if necessary, fill_() the token buffer first.  If the
@@ -61,7 +61,7 @@ Token const &Token_Stream::lookahead(unsigned const pos) {
   return deq[pos];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function pushes the specified token onto the front of the token stream,
  * so that it is now the token in the lookahead(0) position.
@@ -73,7 +73,7 @@ void Token_Stream::pushback(Token const &token) {
   Ensure(lookahead() == token);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The default implementation of this function passes its message on to
  * Report_Error, then throws a Syntax_Error exception.
@@ -105,7 +105,7 @@ void Token_Stream::report_syntax_error(Token const &token,
   throw Syntax_Error();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The default implementation of this function passes its message on to report,
  * then throws a Syntax_Error exception.
@@ -135,7 +135,7 @@ void Token_Stream::report_syntax_error(string const &message) {
   throw Syntax_Error();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The default implementation of this function passes its message on to report,
  * then returns.
@@ -157,7 +157,7 @@ void Token_Stream::report_semantic_error(Token const &token,
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The default implementation of this function passes its message on to report,
  * then returns.
@@ -178,7 +178,7 @@ void Token_Stream::report_semantic_error(string const &message) {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * The default implementation of this function passes its message on to report,
@@ -200,7 +200,7 @@ void Token_Stream::report_semantic_error(exception const &message) {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reset the token stream.
  *
@@ -216,6 +216,6 @@ void Token_Stream::rewind() {
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Token_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

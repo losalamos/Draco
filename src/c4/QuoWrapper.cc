@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/QuoWrapper.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Wrap libquo (github.com/lanl/libquo)
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "QuoWrapper.hh"
 #include "C4_Functions.hh"
@@ -14,7 +14,7 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Initialize pointer to zero so that it can be initialized in first
  *         call to  getInstance
  */
@@ -23,7 +23,7 @@ QuoWrapper *QuoWrapper::instance = nullptr;
 QUO_context QuoWrapper::quo = nullptr;
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief default constructor (private!)
  *
@@ -44,7 +44,7 @@ QuoWrapper::QuoWrapper() {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Calling this public function should always return true.
  *
  * If this singleton has not be created, then it will be created. Otherwise,
@@ -58,7 +58,7 @@ bool QuoWrapper::is_initialized() {
   return instance != nullptr;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Number of cores per node
 uint32_t QuoWrapper::num_cores() {
   // Construct on first use.
@@ -91,7 +91,7 @@ uint32_t QuoWrapper::num_hw_threads() {
   return static_cast<uint32_t>(n);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Number of nodes used by the current process
  *
@@ -117,7 +117,7 @@ uint32_t QuoWrapper::num_nodes() {
   return static_cast<uint32_t>(n);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Number of cores per node used by the current process.
 uint32_t QuoWrapper::num_mpi_ranks_per_node() {
   // Construct on first use.
@@ -134,7 +134,7 @@ uint32_t QuoWrapper::num_mpi_ranks_per_node() {
   return static_cast<uint32_t>(n);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Number of sockets per node
 uint32_t QuoWrapper::num_sockets_per_node() {
   // Construct on first use.
@@ -149,7 +149,7 @@ uint32_t QuoWrapper::num_sockets_per_node() {
   return static_cast<uint32_t>(n);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Number of numa domains per node
 uint32_t QuoWrapper::num_numanodes_per_node() {
   // Construct on first use.
@@ -170,7 +170,7 @@ uint32_t QuoWrapper::num_numanodes_per_node() {
   return static_cast<uint32_t>(n);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Is this process bound to a resource?
 bool QuoWrapper::is_bound() {
   // Construct on first use.
@@ -185,7 +185,7 @@ bool QuoWrapper::is_bound() {
   return (n == 1);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return a string representation of the caller's current binding policy
 //! (cpuset) in a hexadecimal format.
 std::string QuoWrapper::bindings() {
@@ -206,6 +206,6 @@ std::string QuoWrapper::bindings() {
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of QuoWrapper.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

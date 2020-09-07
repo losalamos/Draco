@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/global_containers.i.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Member definitions of class global_containers
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_global_containers_i_hh
 #define c4_global_containers_i_hh
@@ -21,7 +21,7 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Merge a set across all processors.
  *
@@ -78,7 +78,7 @@ void global_merge(std::set<ElementType> &local_set) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename IndexType, typename ElementType>
 void global_merge(std::map<IndexType, ElementType> &local_map) {
   using namespace std;
@@ -152,7 +152,7 @@ void global_merge(std::map<IndexType, ElementType> &local_map) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* We have specialized the case of bool map elements because the standard C++
  * STL library does "clever" things with bool containers that don't play well
  * with the generic implementation. In particular, the communications steps
@@ -245,6 +245,6 @@ void global_merge(std::map<IndexType, bool> &local_map) {
 
 #endif // c4_global_containers_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/global_containers.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

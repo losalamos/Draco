@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Processor_Group.i.hh
  * \brief  Template method definitions of class Processor_Group
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_Processor_Group_i_hh
 #define c4_Processor_Group_i_hh
@@ -20,7 +20,7 @@ namespace rtt_c4 {
 
 #ifdef C4_MPI
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename RandomAccessContainer>
 void Processor_Group::sum(RandomAccessContainer &x) {
   using T = typename RandomAccessContainer::value_type;
@@ -37,7 +37,7 @@ void Processor_Group::sum(RandomAccessContainer &x) {
   Insist(status == 0, "MPI_Allreduce failed");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Assemble a set of local vectors into global vectors (container-based
  *        version).
@@ -60,7 +60,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
   Insist(status == 0, "MPI_Gather failed");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Assemble a set of local vectors into global vectors (pointer-based
  *        version).
@@ -81,13 +81,13 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 
 #else // not C4_MPI
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename RandomAccessContainer>
 void Processor_Group::sum(RandomAccessContainer & /*x*/) {
   // noop
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Assemble a set of local vectors into global vectors (container-based
  *        version).
@@ -101,7 +101,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
   global = local;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Assemble a set of local vectors into global vectors (pointer-based
  *        version).
@@ -121,6 +121,6 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 
 #endif // c4_Processor_Group_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/Processor_Group.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/RTT_Format_Reader.hh
  * \author B.T. Adams
@@ -6,7 +6,7 @@
  * \brief  Header file for RTT_Format_Reader library.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 #define rtt_RTT_Format_Reader_RTT_Format_Reader_hh
@@ -21,7 +21,7 @@
 
 namespace rtt_RTT_Format_Reader {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \brief  A generalized input routine to parse an RTT Format mesh file.
  *
@@ -31,7 +31,7 @@ namespace rtt_RTT_Format_Reader {
  *    allow data retrieval. The \ref overview_rtt_format_reader page presents a
  *    summary of the capabilities provided by the class.
  */
-//============================================================================//
+//================================================================================================//
 
 class RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
@@ -820,6 +820,6 @@ public:
 
 #endif // rtt_RTT_Format_Reader_RTT_Format_Reader_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Format_Reader.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

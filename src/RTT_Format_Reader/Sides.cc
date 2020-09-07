@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/Sides class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Sides.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the sides block data from the mesh file via calls to private
  *        member functions.
@@ -24,7 +24,7 @@ void Sides::readSides(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the sides block keyword.
  * \param meshfile Mesh file name.
@@ -37,7 +37,7 @@ void Sides::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the sides block data.
  * \param meshfile Mesh file name.
@@ -74,7 +74,7 @@ void Sides::readData(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_sides block keyword.
  * \param meshfile Mesh file name.
@@ -88,7 +88,7 @@ void Sides::readEndKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Changes the side nodes when the cell definitions specified in the
  *        RTT_Format file have been transformed into an alternative cell
@@ -123,6 +123,6 @@ void Sides::redefineSides() {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Sides.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

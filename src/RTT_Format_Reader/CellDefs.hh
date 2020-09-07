@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellDefs.hh
  * \author B.T. Adams
@@ -6,7 +6,7 @@
  * \brief  Header file for CellDefs library.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_CellDefs_hh
 #define rtt_RTT_Format_Reader_CellDefs_hh
@@ -20,7 +20,7 @@ namespace rtt_RTT_Format_Reader {
 // forward declaration.
 class CellDefs;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
@@ -127,7 +127,7 @@ public:
   const vector_uint &get_node_map() const { return node_map; }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
@@ -262,6 +262,6 @@ public:
 
 #endif // rtt_RTT_Format_Reader_CellDefs_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellDefs.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
