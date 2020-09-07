@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_swap_t_hh
@@ -38,8 +37,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
   Check(outgoing_pid.size() < UINT_MAX);
   auto outgoing_processor_count = static_cast<unsigned>(outgoing_pid.size());
 
-  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of
-  // zero-length.
+  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of zero-length.
   {
 
     // Post the asynchronous sends.

@@ -4,8 +4,7 @@
  * \author Rob Lowrie
  * \date   Mon Nov 19 10:09:11 2007
  * \brief  Implementation of Invert_Comm_Map
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Invert_Comm_Map.hh"
@@ -30,8 +29,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
   MPI_Win_create(&num_recv, 1 * sizeof(int), sizeof(int), MPI_INFO_NULL,
                  MPI_COMM_WORLD, &win);
 
-  // Assertion value for fences.  Currently, we effectively don't set
-  // anything (zero).
+  // Assertion value for fences.  Currently, we effectively don't set anything (zero).
   const int fence_assert = 0;
 
   // Accumulate the local and remote data values
@@ -79,15 +77,15 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
   // request handle for the receives
   std::vector<C4_Req> recvs(num_recv);
 
-  // the number of data elements to be received from each proc.  This data will
-  // ultimately be loaded into from_map, once we know the sending proc ids.
+  // the number of data elements to be received from each proc.  This data will ultimately be loaded
+  // into from_map, once we know the sending proc ids.
   std::vector<size_t> sizes(num_recv);
 
   // communication tag for sends/recvs
   const int tag = 201;
 
-  // Posts the receives for the data sizes.  We don't yet know the proc numbers
-  // sending the data, so use any_source.
+  // Posts the receives for the data sizes.  We don't yet know the proc numbers sending the data, so
+  // use any_source.
   for (int i = 0; i < num_recv; ++i) {
     receive_async(recvs[i], &sizes[i], 1, any_source, tag);
   }
@@ -104,8 +102,8 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
       // on-proc map
       from_map[my_proc] = it->second;
     } else {
-      // we can ignore the request returned, because our send buffers are
-      // not shared, and we'll wait on the receives below.
+      // we can ignore the request returned, because our send buffers are not shared, and we'll wait
+      // on the receives below.
       send_async(&(it->second), 1, it->first, tag);
     }
   }

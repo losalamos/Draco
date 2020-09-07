@@ -125,7 +125,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG(msg.str());
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Ensure that system + user <= wall
   //
   // Due to round off errors, the wall clock time might be less than the system

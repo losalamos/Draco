@@ -64,13 +64,13 @@ Platform Checks...
 ")
 dbs_set_sitename()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Sanity checks for Cray Programming Environments
 #
 # - Ensure CMAKE_EXE_LINKER_FLAGS contains "-dynamic"
 # - Ensure that the compilers given to cmake are actually Cray compiler
 #   wrappers.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( query_craype )
 
   # We expect developers to use the Cray compiler wrappers. See also
@@ -280,12 +280,12 @@ macro( query_have_restrict_keyword )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Query if hardware has FMA, AVX2
 #
 # This code is adopted from
 # https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( query_fma_on_hardware )
 
   if( NOT PLATFORM_CHECK_FMA_DONE )

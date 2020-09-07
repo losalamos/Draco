@@ -4,8 +4,7 @@
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req class definition.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_Req_hh
@@ -27,15 +26,13 @@ namespace rtt_c4 {
  * \class C4_ReqRefRep
  * \brief Handle for non-blocking message requests.
  *
- * This class provides an encapsulation for the message requests (MPI) which are
- * produced by non blocking calls.  This class automatically waits for the
- * message to complete when the containing object goes out of scope, thus
- * plugging one of the easiest types of programming errors with non blocking
- * messaging.  Reference counting is used so that these may be passed by value
- * without accidentally triggering a program stall.
+ * This class provides an encapsulation for the message requests (MPI) which are produced by non
+ * blocking calls.  This class automatically waits for the message to complete when the containing
+ * object goes out of scope, thus plugging one of the easiest types of programming errors with non
+ * blocking messaging.  Reference counting is used so that these may be passed by value without
+ * accidentally triggering a program stall.
  *
- * This is a "work" class. The user interface for requests is provided by
- * rtt_c4::C4_Req.
+ * This is a "work" class. The user interface for requests is provided by rtt_c4::C4_Req.
  */
 //================================================================================================//
 
@@ -58,10 +55,9 @@ private:
 
   /*! \brief Destructor.
    *
-   * It is important that all existing requests are cleared before the
-   * destructor is called.  We used to have a wait() in here; however, this
-   * causes exception safety problems.  In any case, it is probably a bad idea
-   * to clean up communication by going out of scope. */
+   * It is important that all existing requests are cleared before the destructor is called.  We
+   * used to have a wait() in here; however, this causes exception safety problems.  In any case, it
+   * is probably a bad idea to clean up communication by going out of scope. */
   ~C4_ReqRefRep() = default;
 
 public:
@@ -94,15 +90,13 @@ private:
  * \class C4_Req
  * \brief Non-blocking communication request class.
  *
- * This class provides an encapsulation for the message requests (MPI) which are
- * produced by non blocking calls.  This class automatically waits for the
- * message to complete when the containing object goes out of scope, thus
- * plugging one of the easiest types of programming errors with non blocking
- * messaging.  Reference counting is used so that these may be passed by value
- * without accidentally triggering a program stall.
+ * This class provides an encapsulation for the message requests (MPI) which are produced by non
+ * blocking calls.  This class automatically waits for the message to complete when the containing
+ * object goes out of scope, thus plugging one of the easiest types of programming errors with non
+ * blocking messaging.  Reference counting is used so that these may be passed by value without
+ * accidentally triggering a program stall.
  *
- * This class provides an interface for non-blocking request handles that should
- * be used by users.
+ * This class provides an interface for non-blocking request handles that should be used by users.
  */
 //================================================================================================//
 
@@ -145,12 +139,11 @@ private:
 
   /* FRIENDSHIP
    *
-   * Specific friend C4 functions that may need to manipulate the C4_ReqRefRep
-   * internals. A friend function of a class is defined outside that class'
-   * scope but it has the right to access all private and protected members of
-   * the class. Even though the prototypes for friend functions appear in the
-   * class definition, friends are not member functions.
-   * \ref https://www.tutorialspoint.com/cplusplus/cpp_friend_functions.htm
+   * Specific friend C4 functions that may need to manipulate the C4_ReqRefRep internals. A friend
+   * function of a class is defined outside that class' scope but it has the right to access all
+   * private and protected members of the class. Even though the prototypes for friend functions
+   * appear in the class definition, friends are not member functions.  \ref
+   * https://www.tutorialspoint.com/cplusplus/cpp_friend_functions.htm
    */
   template <typename T>
   friend C4_Req send_async(const T *buf, int nels, int dest, int tag);

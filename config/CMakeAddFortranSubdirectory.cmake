@@ -54,9 +54,9 @@ set(_CAFS_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 include(CheckLanguage)
 include(ExternalProject)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Find gfortran and check/setup x86/x64 information.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(_setup_cafs_config_and_build source_dir build_dir)
 
   # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
@@ -165,9 +165,9 @@ execute_process( COMMAND \"${CMAKE_COMMAND}\" ${build_command_args} )
 
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # _add_fortran_library_link_interface
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(_add_fortran_library_link_interface library depend_library)
   set_target_properties(${library} PROPERTIES
     IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG "${depend_library}")
@@ -179,10 +179,10 @@ function(_add_fortran_library_link_interface library depend_library)
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # This is the main function.  This generates the required external_project
 # pieces that will be run under a different generator (MinGW Makefiles).
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(cmake_add_fortran_subdirectory subdir)
 
   # Parse arguments to function
@@ -554,10 +554,10 @@ function( cafs_fix_mpi_library )
 
 endfunction(cafs_fix_mpi_library)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Create imported libraries owned by the Visual Studio project to be used in the
 # CAFS subproject.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function( cafs_create_imported_targets targetName libName targetPath linkLang)
 
   set(verbose_target_name "Lib_foo")
@@ -650,13 +650,13 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   unset(lib_debug CACHE)
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Generate a set of default variables for the CAFS cmake command line.
 # This macro sets these cmake variables:
 #   - build_system_state
 # Optional arguments:
 # - PROJECT "Draco"
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(init_build_system_state)
 
   # Parse arguments to function
@@ -714,7 +714,7 @@ function(init_build_system_state)
 
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Capture boilerplate setup for Fortran-only directories built with CAFS
 # 1. Ensure that draco/config is listed in CMAKE_MODULE_PATH
 # 2. Include basic build system setup routines that define helper macros used
@@ -723,7 +723,7 @@ endfunction()
 # 3. Define draco_BINARY_DIR and create local import targets for common
 #    dependencies like Lib_dsxx and Lib_c4.
 # 4. Include extra directories to find header files.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro(CAFS_Fortran_dir_boilerplate_setup)
 
   # Parse arguments to function
@@ -784,14 +784,14 @@ macro(CAFS_Fortran_dir_boilerplate_setup)
   endif(NOT TARGET Lib_dsxx)
 endmacro(CAFS_Fortran_dir_boilerplate_setup)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Capture MPI-specific boilerplate setup for Fortran-only directories built
 # with CAFS
 # 1. Call Draco's setupMPILibraries() to discover and configure MPI for use.
 # 2. For MSVC+MSYS-gfortran, do some extra MPI setup to help this project
 #    find MPI's headers and libraries.
 # 3. Sets and returns CAFS_MPI_DEPS
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro(CAFS_Fortran_dir_MPI_setup)
 
   if( "${DRACO_C4}" STREQUAL "MPI")
@@ -826,6 +826,6 @@ macro(CAFS_Fortran_dir_MPI_setup)
 
 endmacro(CAFS_Fortran_dir_MPI_setup)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End of CMakeAddFortranSubdirectory.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

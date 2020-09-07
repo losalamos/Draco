@@ -3,8 +3,7 @@
  * \file   c4/Timer.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:56:11 2002
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Timer.hh"
@@ -22,10 +21,9 @@ namespace rtt_c4 {
 /*!
  * Initialize global static non-const data members found in the Timer class
  *
- * By default, we count up the total L2 data cache misses and hits and the total
- * number of floating point operations. These allow us to report the percentage
- * of data cache hits and the number of floating point operations per cache
- * miss.
+ * By default, we count up the total L2 data cache misses and hits and the total number of floating
+ * point operations. These allow us to report the percentage of data cache hits and the number of
+ * floating point operations per cache miss.
  */
 int Timer::papi_events_[papi_max_counters_] = {PAPI_L2_DCM, PAPI_L2_DCH,
                                                PAPI_FP_OPS};
@@ -53,8 +51,8 @@ Timer::Timer()
 
 #ifdef HAVE_PAPI
 
-  // Initialize the PAPI library on construction of first timer if it has not
-  // already be initialized through a call to Timer::initialize.
+  // Initialize the PAPI library on construction of first timer if it has not already be initialized
+  // through a call to Timer::initialize.
 
   papi_init_();
 
@@ -128,8 +126,7 @@ void Timer::printline(std::ostream &out, unsigned const p,
   out.setf(ios::fixed, ios::floatfield);
   out.precision(p);
 
-  // Width of first column (intervals) should be set by client before calling
-  // this function.
+  // Width of first column (intervals) should be set by client before calling this function.
   out << num_intervals << setw(w) << sum_user_cpu() << setw(w)
       << sum_system_cpu() << setw(w) << sum_wall_clock();
 
@@ -168,9 +165,9 @@ void Timer::initialize(int &argc, char *argv[])
 void Timer::initialize(int & /*argc*/, char ** /*argv*/)
 #endif
 {
-// The initialize function need not be called if the default settings are
-// okay. Otherwise, initialize is called with the command line arguments to
-// allow command line control of which cache is sampled under PAPI.
+// The initialize function need not be called if the default settings are okay. Otherwise,
+// initialize is called with the command line arguments to allow command line control of which cache
+// is sampled under PAPI.
 //
 // At present, there are no non-PAPI options controlled by initialize.
 #ifdef HAVE_PAPI
@@ -270,11 +267,10 @@ void Timer::papi_init_() {
               << std::endl;
   }
 
-  // At present, some platforms *lie* about how many counters they have
-  // available, reporting they have three then returning an out of counters
-  // error when you actually try to assign the three counter types listed
-  // above. Until we have a fix, hardwire to leave out the flops count, which is
-  // the least essential of the three counts.
+  // At present, some platforms *lie* about how many counters they have available, reporting they
+  // have three then returning an out of counters error when you actually try to assign the three
+  // counter types listed above. Until we have a fix, hardwire to leave out the flops count, which
+  // is the least essential of the three counts.
   papi_num_counters_ = 2;
 
   if (papi_num_counters_ > sizeof(papi_events_) / sizeof(int))
@@ -314,12 +310,9 @@ void Timer::pause(double const pauseSeconds) {
 /*! Print out a summary timing report for averages across MPI ranks.
  *
  * \param out Stream to which to write the report.
- * \param p Precision with which to write the timing and variance numbers.
- *          Defaults to 2.
- * \param w Width of the timing number fields. Defaults to each field being 13
- *          characters wide.
- * \param v Width of the variance number fields. Defaults to each field being 5
- *          characters wide.
+ * \param p Precision with which to write the timing and variance numbers.  Defaults to 2.
+ * \param w Width of the timing number fields. Defaults to each field being 13 characters wide.
+ * \param v Width of the variance number fields. Defaults to each field being 5 characters wide.
  */
 void Timer::printline_mean(std::ostream &out, unsigned const p,
                            unsigned const w, unsigned const v) const {
@@ -348,8 +341,8 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
   ww = buffer[6];
   ww2 = buffer[7];
 
-  // Casting from a double to unsigned. Ensure that we aren't overflowing the
-  // unsigned or dropping a negative sign.
+  // Casting from a double to unsigned. Ensure that we aren't overflowing the unsigned or dropping a
+  // negative sign.
   Check(ni >= 0.0);
   Check(ni < ranks * std::numeric_limits<unsigned>::max());
   auto mni = static_cast<unsigned>(ni / ranks);
@@ -361,8 +354,7 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
     out.setf(ios::fixed, ios::floatfield);
     out.precision(p);
 
-    // Width of first column (intervals) should be set by client before calling
-    // this function.
+    // Width of first column (intervals) should be set by client before calling this function.
     out << setw(w) << mni << " +/- " << setw(v)
         << sqrt(fabs(ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
         << mu << " +/- " << setw(v)

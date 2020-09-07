@@ -4,12 +4,11 @@
  * \author Mathew Cleveland
  * \date   Feb. 2020
  * \brief  ifpstream class to read processor decomposed data in parallel.
- * \note   Copyright (C) 2020 Triad National Security, LLC.
- *         All rights reserved. 
- * 
- * This is reader is designed to read parallel decomposed data written by the
- * ofpstream object. It uses similar logic by reading all data with rank==0 and
- * broadcasting requested buffers to the remaining processors.
+ * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved.
+ *
+ * This is reader is designed to read parallel decomposed data written by the ofpstream object. It
+ * uses similar logic by reading all data with rank==0 and broadcasting requested buffers to the
+ * remaining processors.
  */
 //------------------------------------------------------------------------------------------------//
 

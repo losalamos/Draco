@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_Timer_hh
@@ -24,13 +23,11 @@ namespace rtt_c4 {
  *
  * \brief POSIX standard timer.
  *
- * The Timer class is used to calculate wall clock, user CPU, and system CPU
- * timings.  It uses the POSIX standard times function, so it should work well
- * on all (POSIX) systems.
+ * The Timer class is used to calculate wall clock, user CPU, and system CPU timings.  It uses the
+ * POSIX standard times function, so it should work well on all (POSIX) systems.
  *
- * On systems where the PAPI performance tool is available, the Timer class also
- * records some basic cache performance statistics. This is much less portable,
- * but is also not as important.  \sa
+ * On systems where the PAPI performance tool is available, the Timer class also records some basic
+ * cache performance statistics. This is much less portable, but is also not as important.  \sa
  * http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
  * Usage:
@@ -46,8 +43,8 @@ namespace rtt_c4 {
  * std::cout << t.wall_clock() << std::endl;
  * \endcode
  *
- * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced
- * Programming in the UNIX Environment" by Stevens.
+ * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced Programming in the
+ * UNIX Environment" by Stevens.
  *
  * The MSVC implementation of timers is described on MSDN
  * - http://msdn.microsoft.com/en-us/library/4e2ess30%28vs.71%29.aspx
@@ -71,9 +68,9 @@ namespace rtt_c4 {
  * };
  * \endcode
  *
- * Store the CPU time used by this process and all its dead children (and their
- * dead children) in \c BUFFER. Return the elapsed real time, or (\c clock_t) -1
- * for errors.  All times are in \c CLK_TCK ths of a second.
+ * Store the CPU time used by this process and all its dead children (and their dead children) in \c
+ * BUFFER. Return the elapsed real time, or (\c clock_t) -1 for errors.  All times are in \c CLK_TCK
+ * ths of a second.
  *
  * \code
  * extern clock_t times (struct tms *__buffer) __THROW;

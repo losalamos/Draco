@@ -5,9 +5,9 @@
 # brief  This is a Python script that is used to test cdi_eospac/QueryEospac
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Boilerplate code to get the location of the application_unit_test.py in
 # draco/config
 import sys
@@ -27,7 +27,7 @@ else:
 # import unit test functions
 sys.path.append(draco_config_dir)
 from application_unit_test import UnitTest
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Setup test using sys.argv and run:
 tQuery_Eospac = UnitTest()

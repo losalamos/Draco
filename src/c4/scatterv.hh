@@ -4,11 +4,10 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  Data scatterv functions
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  *
- * This file contains the declarations for determinate and indeterminate
- * variable length scatter functions.
+ * This file contains the declarations for determinate and indeterminate variable length scatter
+ * functions.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -24,14 +23,13 @@ namespace rtt_c4 {
 /*!
  * \brief Scatter messages of known but processor-dependent size
  *
- * This subroutine handles the case where the lengths of each processor's
- * message are known in advance.
+ * This subroutine handles the case where the lengths of each processor's message are known in
+ * advance.
  *
- * \param outgoing_data Data to be sent from root processor. Ignored on any
- *          processor but the root processor.
- * \param incoming_data On entry, the size of each subarray must be set to the
- *          expected size of the incoming message. On return, contains the
- *          scattered data.
+ * \param outgoing_data Data to be sent from root processor. Ignored on any processor but the root
+ *          processor.
+ * \param incoming_data On entry, the size of each subarray must be set to the expected size of the
+ *          incoming message. On return, contains the scattered data.
  */
 template <typename T>
 void determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
@@ -41,11 +39,10 @@ void determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
 /*!
  * \brief Scatter messages of unknown size
  *
- * This subroutine handles the case where the lengths of each processor's
- * message are not known in advance.
+ * This subroutine handles the case where the lengths of each processor's message are not known in
+ * advance.
  *
- * \param outgoing_data Data to be sent from root processor. Ignored on all
- *          other processors.
+ * \param outgoing_data Data to be sent from root processor. Ignored on all other processors.
  * \param incoming_data On return, contains the scattered data.
  */
 template <typename T>

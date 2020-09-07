@@ -54,9 +54,9 @@ start_date_str=lastreleasedate.strftime("%B %d %Y")
 re_date_str = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
 all_done=False
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Pull Requests
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # parse the first json result page, onlt print PR data for PRs that were merged
 print("\nShowing merged pull requests dated after {0}:\n".format(start_date_str))
@@ -98,9 +98,9 @@ while 'next' in result.links.keys() and not all_done:
                 all_done=True
                 break
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Issues - Fixed
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # this API url gets all of the closed pull resquests in draco, this generally
 # looks like  https://api.github.com/DATA/ORG/REPO_NAME/DESCRIPTOR, see the
@@ -151,9 +151,9 @@ for entry in result_json:
 #                     else:
 #                         break
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Issues - Still Open (label:bug)
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # this API url gets all of the closed pull resquests in draco, this generally
 # looks like  https://api.github.com/DATA/ORG/REPO_NAME/DESCRIPTOR, see the

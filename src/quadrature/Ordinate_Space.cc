@@ -464,7 +464,7 @@ bool Ordinate_Space::check_class_invariants() const {
   }
 }
 
-//--------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Ordinate_Space::compute_reflection_maps_() {
   vector<Ordinate> const &ordinates = this->ordinates();
   size_t const number_of_ordinates = ordinates.size();

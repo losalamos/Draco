@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/component_macros.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
@@ -6,22 +6,22 @@
 #        directories.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 include( compilerEnv )
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Ensure order of setup is correct
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 if( NOT DEFINED USE_IPO )
   dbsSetupCompilers() # sets USE_IPO
 endif()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Common Standards
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Apply these properties to all targets (libraries, executables)
 set(Draco_std_target_props_C
@@ -44,10 +44,10 @@ set(Draco_std_target_props
   INTERPROCEDURAL_OPTIMIZATION_RELEASE ${USE_IPO}
   POSITION_INDEPENDENT_CODE ON )
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Set properties that are common across all packages.  Including the required
 # language standard per target.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function( dbs_std_tgt_props target )
 
   get_property(project_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
@@ -840,7 +840,7 @@ macro( add_parallel_tests )
   unset( lverbose )
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # provide_aux_files
 #
 # Call this macro from a package CMakeLists.txt to instruct the build system
@@ -915,7 +915,7 @@ targets for copying support files.")
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # PROCESS_AUTODOC_PAGES - Run configure_file(...) for all .dcc.in files found in
 # the autodoc directory.  Destination will be the autodoc directory in the
 # component binary directory.  The CMakeLists.txt in the draco/autodoc directory
@@ -925,7 +925,7 @@ endmacro()
 # @Draco_VERSION@)
 #
 # E.g.: process_autodoc_pages()
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( process_autodoc_pages )
   file( GLOB autodoc_in autodoc/*.in )
   foreach( file ${autodoc_in} )
@@ -944,10 +944,10 @@ macro( process_autodoc_pages )
   unset( num_images )
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # ADD_DIR_IF_EXISTS - A helper macro used for including sub-project directories
 # from src/CMakeLists.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( add_dir_if_exists package )
   if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
     message( "   ${package}" )
@@ -955,6 +955,6 @@ macro( add_dir_if_exists package )
   endif()
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/component_macros.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

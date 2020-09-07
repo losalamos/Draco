@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation for explicit instantiation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_t_hh
@@ -276,8 +275,7 @@ template <typename T> void global_sum(T &x) {
 template <typename T>
 void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request) {
 
-  // do global MPI non-blocking reduction (result is on all processors) into
-  // recv_buffer
+  // do global MPI non-blocking reduction (result is on all processors) into recv_buffer
   Remember(int check =) MPI_Iallreduce(&send_buffer, &recv_buffer, 1,
                                        MPI_Traits<T>::element_type(), MPI_SUM,
                                        communicator, &(request.r()));
@@ -318,8 +316,7 @@ template <typename T> void global_sum(T *x, int n) {
   Require(x != nullptr);
   Require(n > 0);
 
-  // do a element-wise global reduction (result is on all processors) into
-  // x
+  // do a element-wise global reduction (result is on all processors) into x
   MPI_Allreduce(MPI_IN_PLACE, x, n, MPI_Traits<T>::element_type(), MPI_SUM,
                 communicator);
 }
@@ -342,8 +339,7 @@ template <typename T> void global_min(T *x, int n) {
   Require(x != nullptr);
   Require(n > 0);
 
-  // do a element-wise global reduction (result is on all processors) into
-  // x
+  // do a element-wise global reduction (result is on all processors) into x
   MPI_Allreduce(MPI_IN_PLACE, x, n, MPI_Traits<T>::element_type(), MPI_MIN,
                 communicator);
 }
@@ -354,8 +350,7 @@ template <typename T> void global_max(T *x, int n) {
   Require(x != nullptr);
   Require(n > 0);
 
-  // do a element-wise global reduction (result is on all processors) into
-  // x
+  // do a element-wise global reduction (result is on all processors) into x
   MPI_Allreduce(MPI_IN_PLACE, x, n, MPI_Traits<T>::element_type(), MPI_MAX,
                 communicator);
 }

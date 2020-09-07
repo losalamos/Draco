@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/config.h"
@@ -58,8 +57,8 @@ int initialize(int &argc, char **&argv, int required) {
 //------------------------------------------------------------------------------------------------//
 
 void finalize() {
-  // If Libquo is active, it must be torn-down before MPI_Finalize is called.
-  // Otherwise, this call is a no-op.
+  // If Libquo is active, it must be torn-down before MPI_Finalize is called.  Otherwise, this call
+  // is a no-op.
   QuoWrapper::quo_free();
   MPI_Finalize();
   return;
@@ -118,8 +117,7 @@ void global_barrier() {
 double wall_clock_time() { return MPI_Wtime(); }
 // overloaded function (provide POSIX timer information).
 double wall_clock_time(DRACO_TIME_TYPE &now) {
-// obtain POSIX timer information and return it to the user via the reference
-// value argument "now".
+// obtain POSIX timer information and return it to the user via the reference value argument "now".
 #ifdef WIN32
   now = std::chrono::high_resolution_clock::now();
 #else
@@ -137,7 +135,7 @@ double wall_clock_resolution() { return MPI_Wtick(); }
 //------------------------------------------------------------------------------------------------//
 
 bool probe(int source, int tag, int &message_size) {
-  // TODO: Change message_size to C4_Status to allow source = any_source
+  //! \todo Change message_size to C4_Status to allow source = any_source
   //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 
@@ -157,7 +155,7 @@ bool probe(int source, int tag, int &message_size) {
 
 //------------------------------------------------------------------------------------------------//
 void blocking_probe(int source, int tag, int &message_size) {
-  // TODO: Change message_size to C4_Status to allow source = any_source
+  //! \todo Change message_size to C4_Status to allow source = any_source
   //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 

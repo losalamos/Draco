@@ -4,8 +4,7 @@
  * \author Robert B. Lowrie
  * \date   Friday May 19 6:54:21 2017
  * \brief  C4_Status class definition.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_Status_hh
@@ -26,8 +25,8 @@ namespace rtt_c4 {
  * \class C4_Status
  * \brief Status container for communications.
  *
- * This class contains the status information for communications.  For MPI, this
- * class wraps MPI_Status.
+ * This class contains the status information for communications.  For MPI, this class wraps
+ * MPI_Status.
  */
 //================================================================================================//
 

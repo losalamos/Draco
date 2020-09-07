@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:07:40 2002
  * \brief  Traits classes for MPI types.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_MPI_Traits_hh
@@ -22,10 +21,9 @@ namespace rtt_c4 {
  * \brief Provide a generic way to get MPI_Datatype arguments for MPI function
  *        calls.
  *
- * This struct provides a generic programming--common way to get MPI_Datatype
- * arguments for MPI function calls. The static function, element_type(),
- * returns an argument of type MPI_Datatype that matches a C++ datatype with an
- * MPI_Datatype.
+ * This struct provides a generic programming--common way to get MPI_Datatype arguments for MPI
+ * function calls. The static function, element_type(), returns an argument of type MPI_Datatype
+ * that matches a C++ datatype with an MPI_Datatype.
  */
 //================================================================================================//
 

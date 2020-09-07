@@ -42,7 +42,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
            "L_long_labels has the expected values.");
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(3);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0, 1000.0};
@@ -68,7 +68,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("M_long_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(6);
     constexpr std::array<double, iSenVal> adSenVal = {0.0,   1.0,   1000.0,
@@ -97,7 +97,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("t_long_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     double constexpr keV2K(1.16045193028089e7);
     int constexpr iSenVal(4);
@@ -125,7 +125,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("T_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(2);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0};
@@ -145,7 +145,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("I_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(3);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0,
@@ -166,7 +166,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("A_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(2);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0};

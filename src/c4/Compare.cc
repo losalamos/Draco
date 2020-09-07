@@ -3,8 +3,7 @@
  * \file   c4/Compare.cc
  * \author Mike Buksas
  * \date   Thu May  1 14:42:10 2008
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Compare.hh"
@@ -17,10 +16,9 @@ namespace rtt_c4 {
 /*!
  * \brief Function to check the equivalence of an int across all processors.
  *
- * This function is (hopefully) a temporary parallel check function that more
- * properly belongs in C4.  It is used to check the equivalence of a given
- * integer across all processors.  This is used for Design By Contract analysis
- * in the Source_Builder codes.
+ * This function is (hopefully) a temporary parallel check function that more properly belongs in
+ * C4.  It is used to check the equivalence of a given integer across all processors.  This is used
+ * for Design By Contract analysis in the Source_Builder codes.
  *
  * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
@@ -66,10 +64,9 @@ bool check_global_equiv(int local_value) {
  * \brief Function to check the equivalence of an unsigned long across all
  *        processors.
  *
- * This function is (hopefully) a temporary parallel check function that more
- * properly belongs in C4.  It is used to check the equivalence of a given
- * integer across all processors.  This is used for Design By Contract analysis
- * in the Source_Builder codes.
+ * This function is (hopefully) a temporary parallel check function that more properly belongs in
+ * C4.  It is used to check the equivalence of a given integer across all processors.  This is used
+ * for Design By Contract analysis in the Source_Builder codes.
  *
  * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
@@ -114,13 +111,11 @@ bool check_global_equiv(unsigned long local_value) {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Function to check the equivalence of an unsigned long long across all
- *        processors.
+ * \brief Function to check the equivalence of an unsigned long long across all processors.
  *
- * This function is (hopefully) a temporary parallel check function that more
- * properly belongs in C4.  It is used to check the equivalence of a given
- * integer across all processors.  This is used for Design By Contract analysis
- * in the Source_Builder codes.
+ * This function is (hopefully) a temporary parallel check function that more properly belongs in
+ * C4.  It is used to check the equivalence of a given integer across all processors.  This is used
+ * for Design By Contract analysis in the Source_Builder codes.
  *
  * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
@@ -167,10 +162,9 @@ bool check_global_equiv(unsigned long long local_value) {
 /*!
  * \brief Function to check the equivalence of a long across all processors.
  *
- * This function is (hopefully) a temporary parallel check function that more
- * properly belongs in C4.  It is used to check the equivalence of a given
- * integer across all processors.  This is used for Design By Contract analysis
- * in the Source_Builder codes.
+ * This function is (hopefully) a temporary parallel check function that more properly belongs in
+ * C4.  It is used to check the equivalence of a given integer across all processors.  This is used
+ * for Design By Contract analysis in the Source_Builder codes.
  *
  * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
@@ -218,10 +212,9 @@ bool check_global_equiv(long local_value) {
  * \brief Function to check the equivalence of a long long across all
  *        processors.
  *
- * This function is (hopefully) a temporary parallel check function that more
- * properly belongs in C4.  It is used to check the equivalence of a given
- * integer across all processors.  This is used for Design By Contract analysis
- * in the Source_Builder codes.
+ * This function is (hopefully) a temporary parallel check function that more properly belongs in
+ * C4.  It is used to check the equivalence of a given integer across all processors.  This is used
+ * for Design By Contract analysis in the Source_Builder codes.
  *
  * \param[in] local_value integer value to check against
  * \return true if equivalent across all processors; false if not
@@ -268,8 +261,8 @@ bool check_global_equiv(long long local_value) {
 /*!
  * \brief Function to check the equivalence of a double across all processors.
  *
- * This function is the same as check_global_equiv(int) except that doubles are
- * compared to precision eps.
+ * This function is the same as check_global_equiv(int) except that doubles are compared to
+ * precision eps.
  *
  * \param[in] local_value integer value to check against
  * \param[in] eps precision of double, default 1e-8

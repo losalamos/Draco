@@ -2,8 +2,7 @@
 /*!
  * \file   c4/Processor_Group.hh
  * \brief  Definition of class Processor_Group
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_Processor_Group_hh
@@ -23,10 +22,9 @@ namespace rtt_c4 {
  * \class Processor_Group
  * \brief Representation of subgroup of processors
  *
- * This class provides a parallel interface for a group of processors that is a
- * subset of the entire process set.  This allows communications libraries to do
- * things like sums over process groups efficiently.  In other words, this class
- * is essentially a representation of an MPI communicator.
+ * This class provides a parallel interface for a group of processors that is a subset of the entire
+ * process set.  This allows communications libraries to do things like sums over process groups
+ * efficiently.  In other words, this class is essentially a representation of an MPI communicator.
  */
 //================================================================================================//
 
@@ -62,16 +60,14 @@ public:
   void sum(RandomAccessContainer &values);
 
   /*!
-   * \brief Assemble a set of local vectors into global vectors (container-based
-   *        version).
+   * \brief Assemble a set of local vectors into global vectors (container-based version).
    */
   template <typename T>
   void assemble_vector(std::vector<T> const &local_vector,
                        std::vector<T> &global_vector) const;
 
   /*!
-   * \brief Assemble a set of local vectors into global vectors (pointer-based
-   *        version).
+   * \brief Assemble a set of local vectors into global vectors (pointer-based version).
    */
   template <typename T>
   void assemble_vector(T const *local_vector, T *global_vector,

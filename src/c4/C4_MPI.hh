@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:16 2002
  * \brief  C4 MPI function declarations.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_hh
@@ -61,8 +60,7 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * Broadcast the range [first, last) from proc 0 into [result, ...) on all other
- * processors.
+ * Broadcast the range [first, last) from proc 0 into [result, ...) on all other processors.
  */
 
 // This signature must be exported since it is explicitly instantiated.
@@ -105,8 +103,7 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 template <typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator first, ForwardIterator last,
                OutputIterator result, OutputIterator result_end) {
-  // Check that the result is large enough to hold the data that is currently in
-  // buf.
+  // Check that the result is large enough to hold the data that is currently in buf.
   Insist(std::distance(first, last) == std::distance(result, result_end),
          "Destination must be same size as source data.");
   broadcast(first, last, result);

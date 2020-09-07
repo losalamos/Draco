@@ -108,7 +108,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   type_list.push_back(Element_Definition::HEXA_20);
   type_list.push_back(Element_Definition::HEXA_27);
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   cout << endl << "Building Elements for Test ---" << endl << endl;
   list<Element_Definition> elem_defs;
   for (size_t i = 0; i < type_list.size(); i++) {
@@ -121,7 +121,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
       FAILMSG(msg.str());
     }
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   cout << "\nChecking Elements ---\n" << endl;
 
   // CAREFUL HERE -- the order of the function calls must match the type_list
@@ -174,9 +174,9 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element_test::test_hexa_27(ut, elem_defs.front());
   elem_defs.pop_front();
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Test the POLYGON element.
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
 
   cout << "\nBuilding POLYGON Element ---\n" << endl;
 
@@ -198,9 +198,9 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            8,       // number_of_sides
                            polyg_elem_defs, polyg_side_type, polyg_side_nodes);
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Test the POLYHEDRON element.
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
 
   cout << "\nBuilding POLYHEDRON Element ---\n" << endl;
 
@@ -245,7 +245,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            6,             // number_of_sides
                            polyh_elem_defs, polyh_side_type, polyh_side_nodes);
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Merely attempting construction, with DBC active, will invoke a slew of
   // precondition, postcondition, and consistency checks.  We perform no
   // other explicit checks here.

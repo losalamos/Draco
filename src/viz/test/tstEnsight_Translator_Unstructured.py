@@ -6,7 +6,7 @@
 #        viz/test/tstEnsight_Translator
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 import sys
 import re

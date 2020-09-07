@@ -67,7 +67,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Read polyhedron mesh file - this is the mesh that is of most interest in
   // this test
   {

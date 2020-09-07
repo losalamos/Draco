@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # File:   .travis.yml
 # Author: Kelly Thompson <kgt@lanl.gov>
 # Date:   Friday, Jul 13, 2018, 07:41 am
@@ -6,14 +6,14 @@
 #         This script wil be run to test pull requests
 # Note:   Copyright (C) 2018-2020 Triad National Security, LLC.
 #         All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 language: cpp
 sudo: required
 services:
   - docker
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Notes: Build docker container before running this script:
 #
 # 1. cd to directory contataining Dockerfile.
@@ -39,9 +39,9 @@ services:
 #
 #    docker run -it -v /path/to/draco:/home/travis/draco -w /home/travis/draco kinetictheory/draco-travis-ci /bin/bash -l -c "./.travis-run-tests.sh"
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Travis Environment:
 #
 # HOME=/home/travis
@@ -54,7 +54,7 @@ services:
 #   /home/travis/Draco
 # - The vendors are at /vendors/spack
 # - Spack is already in the environment
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 env:
   global:
@@ -92,7 +92,7 @@ script:
   - if [[ ${COVERAGE:-OFF} == "ON" ]]; then ci_env=`/bin/bash <(curl -s https://codecov.io/env)`; fi
   - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CI=${CI} -e TRAVIS=${TRAVIS} -e TRAVIS_BRANCH=${TRAVIS_BRANCH} -e GCCVER=${GCCVER} -e CI_MERGE_REQUEST_TARGET_BRANCH_NAME=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} kinetictheory/draco-ci-2020may /bin/bash -l -c "${SOURCE_DIR}/tools/travis-run-tests.sh"
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # See also:
 # - Advanced used: https://github.com/laristra/flecsi/blob/master/.travis.yml
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

@@ -4,13 +4,11 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  C4 Communication Functions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  *
- * This file contains the declarations for communication functions provided by
- * C4. This file allows the client to include the message passing services
- * provided by C4.  The function declarations and class definitions are
- * contained in the rtt_c4 namespace.  For backwards compatibility, the
+ * This file contains the declarations for communication functions provided by C4. This file allows
+ * the client to include the message passing services provided by C4.  The function declarations and
+ * class definitions are contained in the rtt_c4 namespace.  For backwards compatibility, the
  * old-style C4 functions and classes are declared in the C4 namespace.
  */
 //------------------------------------------------------------------------------------------------//
@@ -28,9 +26,9 @@ namespace rtt_c4 {
 //------------------------------------------------------------------------------------------------//
 /*! Forward declarations
  *
- * We postpone including C4_Req.hh until C4_MPI.i.hh is loaded. This allows the
- * 'friend' declarations found in class C4_Req to be seen after the 'official'
- * function declarations (with optional default arguments) are loaded.
+ * We postpone including C4_Req.hh until C4_MPI.i.hh is loaded. This allows the 'friend'
+ * declarations found in class C4_Req to be seen after the 'official' function declarations (with
+ * optional default arguments) are loaded.
  */
 class C4_Req;
 
@@ -273,13 +271,13 @@ void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
 // BROADCAST
 //------------------------------------------------------------------------------------------------//
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /*
  * \brief Send data from processor 0 to all other processors.
  *
- * These are declared and defined in C4_MPI.hh and in C4_Serial.hh.  KT is
- * having trouble with getting the DLL_PUBLIC_c4 to be correct, so delay
- * declaration until the C4_MPI.hh or C4_Serial.hh files are included.
+ * These are declared and defined in C4_MPI.hh and in C4_Serial.hh.  KT is having trouble with
+ * getting the DLL_PUBLIC_c4 to be correct, so delay declaration until the C4_MPI.hh or C4_Serial.hh
+ * files are included.
 
 template <typename T>
 int broadcast(T *buffer, int size, int root);
@@ -400,8 +398,8 @@ double wall_clock_resolution();
  * Tag for pending message.
  * \param message_size
  * On return, size of the pending message in bytes.
- * \return \c true if a message from the specified processor with the
- * specified tag is pending; \c false otherwise.
+ * \return \c true if a message from the specified processor with the specified tag is pending; \c
+ * false otherwise.
  */
 bool probe(int source, int tag, int &message_size);
 
@@ -435,10 +433,9 @@ void wait_all(const unsigned count, C4_Req *const requests);
 /*!
  * \brief Wait until every one of a set of posted sends/receives is complete.
  *
- * This version returns source rank information for RECEIVE REQUESTS ONLY
- * WARNING: If you call this function with send requests, the source rank ID
- * might not be set in MPI_STATUS. REPEAT: THE RETURN VALUE IS VALID FOR
- * RECEIVE REQUESTS ONLY!!!! 
+ * This version returns source rank information for RECEIVE REQUESTS ONLY WARNING: If you call this
+ * function with send requests, the source rank ID might not be set in MPI_STATUS. REPEAT: THE
+ * RETURN VALUE IS VALID FOR RECEIVE REQUESTS ONLY!!!!
  *
  * \pre All requests passed to this function must be receive requests
  *

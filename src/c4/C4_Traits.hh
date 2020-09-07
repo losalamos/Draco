@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:37:29 2002
  * \brief  Traits for C4 intrinsic types.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_C4_Traits_hh
@@ -20,9 +19,8 @@ namespace rtt_c4 {
 /*!
  * \struct C4_Traits
  *
- * This struct and its specializations are used to implement the type-safe
- * default message tags in C4.  Any other type-determined property needed in C4
- * would also go here.
+ * This struct and its specializations are used to implement the type-safe default message tags in
+ * C4.  Any other type-determined property needed in C4 would also go here.
  */
 //================================================================================================//
 

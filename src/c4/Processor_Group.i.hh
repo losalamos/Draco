@@ -2,8 +2,7 @@
 /*!
  * \file   c4/Processor_Group.i.hh
  * \brief  Template method definitions of class Processor_Group
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_Processor_Group_i_hh
@@ -39,8 +38,7 @@ void Processor_Group::sum(RandomAccessContainer &x) {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Assemble a set of local vectors into global vectors (container-based
- *        version).
+ * \brief Assemble a set of local vectors into global vectors (container-based version).
  *
  * \param[in]  local  Points to a region of storage of size N.
  * \param[out] global Points to a region of storage of size N*this->size()
@@ -62,8 +60,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Assemble a set of local vectors into global vectors (pointer-based
- *        version).
+ * \brief Assemble a set of local vectors into global vectors (pointer-based version).
  *
  * \param[in]  local  Points to a region of storage of size N.
  * \param[out] global Points to a region of storage of size N*this->size()
@@ -89,8 +86,7 @@ void Processor_Group::sum(RandomAccessContainer & /*x*/) {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Assemble a set of local vectors into global vectors (container-based
- *        version).
+ * \brief Assemble a set of local vectors into global vectors (container-based version).
  *
  * \param[in]  local  Points to a region of storage of size N.
  * \param[out] global Points to a region of storage of size N*this->size()
@@ -103,8 +99,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Assemble a set of local vectors into global vectors (pointer-based
- *        version).
+ * \brief Assemble a set of local vectors into global vectors (pointer-based version).
  *
  * \param[in]  local  Points to a region of storage of size N.
  * \param[out] global Points to a region of storage of size N*this->size()

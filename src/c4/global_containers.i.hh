@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 24 09:26:31 2008
  * \brief  Member definitions of class global_containers
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef c4_global_containers_i_hh
@@ -25,9 +24,8 @@ namespace rtt_c4 {
 /*!
  * Merge a set across all processors.
  *
- * \param local_set On entry, contains a local set. On exit, contains a set
- *        consisting of the union of all the local sets that came into the
- *        function on all processors.
+ * \param local_set On entry, contains a local set. On exit, contains a set consisting of the union
+ *        of all the local sets that came into the function on all processors.
  */
 template <typename ElementType>
 void global_merge(std::set<ElementType> &local_set) {
@@ -153,12 +151,11 @@ void global_merge(std::map<IndexType, ElementType> &local_map) {
 }
 
 //------------------------------------------------------------------------------------------------//
-/* We have specialized the case of bool map elements because the standard C++
- * STL library does "clever" things with bool containers that don't play well
- * with the generic implementation. In particular, the communications steps
- * promote the bool elements to int to ensure correct communication. Char might
- * work as well and be more efficient; we can experiment with this if this code
- * ever proves a computational bottleneck.
+/* We have specialized the case of bool map elements because the standard C++ STL library does
+ * "clever" things with bool containers that don't play well with the generic implementation. In
+ * particular, the communications steps promote the bool elements to int to ensure correct
+ * communication. Char might work as well and be more efficient; we can experiment with this if this
+ * code ever proves a computational bottleneck.
  */
 template <typename IndexType>
 void global_merge(std::map<IndexType, bool> &local_map) {

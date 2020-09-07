@@ -5,7 +5,7 @@
  * \brief  Define the Debug_Options enumeration and declare parse functions.
  * \note   Copyright (C) 2014-2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef parser_Debug_Options_hh
 #define parser_Debug_Options_hh
@@ -64,6 +64,6 @@ DLL_PUBLIC_parser std::string debug_options_as_text(unsigned debug_options);
 
 #endif /* parser_Debug_Options_hh */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of parser/Debug_Options.hh */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
