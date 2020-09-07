@@ -4,7 +4,7 @@
 ## File  : environment/bashrc/.bashrc
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
+## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
 ## Bash configuration file upon bash shell startup
@@ -195,7 +195,7 @@ if [[ ${INTERACTIVE} == true ]]; then
       ;;
     ccscs[1-4]* | ccscs[6-9]*)
       # shellcheck source=/dev/null
-      source "${DRACO_ENV_DIR}/bashrc/.bashrc_linux64" ;;
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_ccsnet" ;;
 
     # Assume personal workstation
     *) export NoModules=1 ;;
@@ -217,7 +217,7 @@ fi
 source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
 
 if [[ "${verbose:=false}" == "true" ]]; then
-  echo "done with draco/environment/bashrc/.bashrc";
+  echo "in draco/environment/bashrc/.bashrc ... done";
 fi
 
 ##---------------------------------------------------------------------------##

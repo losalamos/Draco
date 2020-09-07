@@ -31,21 +31,6 @@ if(TARGET NDI::ndi)
     get_filename_component(NDI_ROOT_DIR "${NDI_LIBRARY}" DIRECTORY)
     get_filename_component(NDI_ROOT_DIR "${NDI_LIBRARY}" DIRECTORY CACHE)
   endif()
-
-  # Location of gendir and gendir.all files.
-  if( NOT DEFINED NDI_DATA_DIR OR NOT EXISTS "${NDI_DATA_DIR}" )
-    if( DEFINED ENV{NDI_GENDIR_PATH} AND EXISTS "$ENV{NDI_GENDIR_PATH}" )
-      get_filename_component( NDI_DATA_DIR "$ENV{NDI_GENDIR_PATH}" DIRECTORY )
-    elseif( EXISTS "${NDI_ROOT_DIR}/share/gendir" )
-      set( NDI_DATA_DIR "${NDI_ROOT_DIR}/share" )
-    else()
-      message( FATAL_ERROR "Could not find NDI data file gendir.")
-    endif()
-  endif()
-  set( NDI_DATA_DIR "${NDI_DATA_DIR}" CACHE PATH
-    "Location of NDI gendir file." )
-else()
-  set(NDI_DATA_DIR "notfound")
 endif()
 
 # ---------------------------------------------------------------------------- #
@@ -73,7 +58,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
 install( TARGETS Lib_cdi_ndi  EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ndi )
@@ -85,7 +69,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING AND NOT DEFINED ENV{APPVEYOR} )
   add_subdirectory( test )
 endif()

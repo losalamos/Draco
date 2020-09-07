@@ -13,6 +13,7 @@
 
 #include "cdi_ndi/config.h" // definition of NDI_FOUND
 #include "ds++/Assert.hh"
+#include "ds++/Query_Env.hh"
 #include "ds++/path.hh"
 #include "units/PhysicalConstexprs.hh"
 #include <string>
@@ -29,24 +30,18 @@ namespace rtt_cdi_ndi {
  *        Currently only multigroup data is supported, continuous energy data
  *        is probably best added through a refactor.
  * \example cdi_ndi/test/tstNDI_AtomicMass.cc
+ *
+ * Upon contruction, warn if the NDI library version is different that the NDI
+ * gendir version.  Assume versions are compatible for differences in the patch
+ * version.
  */
 //============================================================================//
 class NDI_AtomicMass {
 public:
-  /*!
-   * \brief Constructor for NDI atomic mass weight reader, using custom path to
-   *        NDI gendir file.
-   * \param[in] gendir_path_in path to gendir file
-   */
+  //! Default constructor
   explicit NDI_AtomicMass(
-      std::string gendir_path_in = rtt_dsxx::getFilenameComponent(
-          std::string(NDI_DATA_DIR) + rtt_dsxx::dirSep + "gendir",
-          rtt_dsxx::FilenameComponent::FC_NATIVE))
-      : gendir_path(std::move(gendir_path_in)), pc() {
-    Insist(rtt_dsxx::fileExists(gendir_path),
-           "Specified NDI library is not available. gendir_path = " +
-               gendir_path);
-  }
+      std::string gendir_path_in =
+          rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second);
 
   //! Retrieve atomic mass weight for isotope with given ZAID
   double get_amw(const int zaid) const;

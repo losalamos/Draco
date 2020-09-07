@@ -91,7 +91,8 @@ static inline bool CPU_ISSET(int num, cpu_set_t *cs) {
   return (cs->count & teh_bit) != 0;
 }
 
-int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/, cpu_set_t *cpu_set) {
+inline int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/,
+                             cpu_set_t *cpu_set) {
   int64_t core_count = 0;
   size_t len = sizeof(core_count);
   int ret = sysctlbyname(SYSCTL_CORE_COUNT, &core_count, &len, 0, 0);
@@ -112,7 +113,7 @@ int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/, cpu_set_t *cpu_set) {
 #ifdef WIN32
 
 //! \param[in] num_cpu Number of CPU's per node.
-std::string cpuset_to_string(unsigned const num_cpu) {
+inline std::string cpuset_to_string(unsigned const num_cpu) {
 
   // return value;
   std::ostringstream cpuset;
@@ -151,7 +152,7 @@ std::string cpuset_to_string(unsigned const num_cpu) {
 
 #else
 
-std::string cpuset_to_string(unsigned const /*num_cpu*/) {
+inline std::string cpuset_to_string(unsigned const /*num_cpu*/) {
 
   // return value;
   std::ostringstream cpuset;

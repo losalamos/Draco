@@ -92,12 +92,15 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     amw_test(ut);
-    std::string gendir_default = rtt_dsxx::getFilenameComponent(
-        std::string(NDI_DATA_DIR) + rtt_dsxx::dirSep + "gendir",
-        rtt_dsxx::FilenameComponent::FC_NATIVE);
+    std::string gendir_default;
+    bool def_gendir{false};
+    std::tie(def_gendir, gendir_default) =
+        rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH");
 
-    if (rtt_dsxx::fileExists(gendir_default)) {
+    if (def_gendir && rtt_dsxx::fileExists(gendir_default)) {
       amw_default_test(ut);
+    } else {
+      PASSMSG("==> ENV{NDI_GENDIR_PATH} not set. Some tests were not run.");
     }
   }
   UT_EPILOG(ut);

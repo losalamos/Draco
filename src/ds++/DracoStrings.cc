@@ -11,6 +11,7 @@
 #include "Assert.hh"
 #include <fstream>
 #include <iostream>
+#include <regex>
 
 namespace rtt_dsxx {
 
@@ -203,6 +204,38 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename,
 
   infile.close();
   return get_word_count(data, verbose);
+}
+
+//----------------------------------------------------------------------------//
+//! Remove control characters from string that might produce color, etc.
+std::string remove_color(std::string const &colored_string) {
+  std::regex color_regex("\033["
+                         "[[:digit:]]+[m]");
+  return std::regex_replace(colored_string, color_regex, "");
+}
+
+//----------------------------------------------------------------------------//
+//! Extract version of the form M.m.p from a string.
+std::string extract_version(std::string const &string_in, size_t digits) {
+  Require(digits > 0);
+  // build up a regex that will be used for version extraction.
+  std::string regexString{"[A-Za-z/\\\\]*([[:digit:]]+[abehlpt]*)"};
+  for (size_t i = 1; i < digits; ++i)
+    regexString += "[.]([[:digit:]]+[abehlpt]*)";
+  regexString += "(.*)";
+  // instantiate the regex object and create variable for results.
+  std::regex VerNumRegex{regexString.c_str()};
+  std::smatch matchResults;
+  // Search
+  std::regex_match(string_in, matchResults, VerNumRegex);
+  // Build the resulting version string
+  std::string version;
+  if (matchResults.size() > 0) {
+    version += matchResults.str(1);
+    for (size_t i = 2; i <= digits; ++i)
+      version += "." + matchResults.str(i);
+  }
+  return version;
 }
 
 } // namespace rtt_dsxx

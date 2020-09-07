@@ -86,10 +86,10 @@ protected:
   std::vector<std::vector<std::vector<double>>> product_distributions;
 
   //! Reaction Q value i.e. change in energy
-  double q_reaction;
+  double q_reaction = 0.0;
 
   //! Number of groups
-  uint32_t num_groups;
+  uint32_t num_groups = 0;
 
   //! Group boundaries (keV)
   std::vector<double> group_bounds;
@@ -169,6 +169,11 @@ public:
   inline std::vector<double> get_group_energies() const & {
     return group_energies;
   }
+
+  // >> Non-interacting helper functions.
+
+  //! Helper function to format a warning message.
+  static void warn_ndi_version_mismatch(std::string const &gendir);
 };
 
 } // namespace rtt_cdi_ndi

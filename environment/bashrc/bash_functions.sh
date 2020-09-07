@@ -3,7 +3,7 @@
 ## File  : environment/bashrc/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
+## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -343,7 +343,7 @@ function qrm ()
 export -f qrm
 
 if [[ "${verbose:=false}" ==  "true" ]]; then
-  echo "done with draco/environment/bashrc/bash_functions.sh";
+  echo "in draco/environment/bashrc/bash_functions.sh ... done";
 fi
 
 #------------------------------------------------------------------------------#

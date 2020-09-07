@@ -9,10 +9,29 @@
 //----------------------------------------------------------------------------//
 
 #include "NDI_AtomicMass.hh"
+#include "NDI_Base.hh"
+#include "ds++/DracoStrings.hh"
 #include "ds++/SystemCall.hh"
 #include <array>
 
 namespace rtt_cdi_ndi {
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Constructor for NDI atomic mass weight reader, using custom path to
+ *        NDI gendir file.
+ * \param[in] gendir_path_in path to gendir file
+ *
+ * Print a warning if the gendir version and the ndi library version are not
+ * compatible.
+ */
+NDI_AtomicMass::NDI_AtomicMass(std::string gendir_path_in)
+    : gendir_path(std::move(gendir_path_in)), pc() {
+  Insist(rtt_dsxx::fileExists(gendir_path),
+         "Specified NDI library is not available. gendir_path = " +
+             gendir_path);
+  NDI_Base::warn_ndi_version_mismatch(gendir_path);
+}
 
 //----------------------------------------------------------------------------//
 /*!
