@@ -42,8 +42,7 @@ template <typename T>
 void determinate_swap(std::vector<unsigned> const &outgoing_pid,
                       std::vector<std::vector<T>> const &outgoing_data,
                       std::vector<unsigned> const &incoming_pid,
-                      std::vector<std::vector<T>> &incoming_data,
-                      int tag = C4_Traits<T *>::tag);
+                      std::vector<std::vector<T>> &incoming_data, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -66,8 +65,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
  */
 template <typename T>
 void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
-                      std::vector<std::vector<T>> &incoming_data,
-                      int tag = C4_Traits<T *>::tag);
+                      std::vector<std::vector<T>> &incoming_data, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -118,8 +116,7 @@ template <typename T>
 void indeterminate_swap(std::vector<unsigned> const &outgoing_pid,
                         std::vector<std::vector<T>> const &outgoing_data,
                         std::vector<unsigned> &incoming_pid,
-                        std::vector<std::vector<T>> &incoming_data,
-                        int tag = C4_Traits<T *>::tag);
+                        std::vector<std::vector<T>> &incoming_data, int tag = C4_Traits<T *>::tag);
 
 } // end namespace rtt_c4
 
