@@ -43,6 +43,8 @@
 
 #pragma once
 
+#include "macros.hpp"
+
 #include <cstddef>
 
 namespace std {
