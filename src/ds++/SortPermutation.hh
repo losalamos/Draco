@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/SortPermutation.hh
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:18:27 2000
  * \brief  SortPermutation class definition.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_SortPermutation_hh
 #define rtt_dsxx_SortPermutation_hh
@@ -21,17 +20,16 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class SortPermutation
  *
  * This class determines a permutation used to sort a sequence.
  *
- * This is necessary if multiple sequences need to be re-arranged, via the
- * ordering necessary to sort a sequece of "keys".
+ * This is necessary if multiple sequences need to be re-arranged, via the ordering necessary to
+ * sort a sequece of "keys".
  *
- * Create an object of class SortPermutation using either of the following
- * constructors:
+ * Create an object of class SortPermutation using either of the following constructors:
  * \code
  *      template<typename ForwardIterator>
  *      SortPermutation(ForwardIterator first, ForwardIterator last)
@@ -40,30 +38,28 @@ namespace rtt_dsxx {
  *      SortPermutation(ForwardIterator first, ForwardIterator last,
  *                      StrictWeakOrdering comp)
  * \endcode
- * The object creates a permutation that results in an ordering of elements in
- * [first,last) into nondescending order.  This ordering is not necessarily
- * stable.
+ * The object creates a permutation that results in an ordering of elements in [first,last) into
+ * nondescending order.  This ordering is not necessarily stable.
  *
- * The SortPermutation object can be used to access the "index table" for the
- * sequence via operator[](int), begin(), and end().
+ * The SortPermutation object can be used to access the "index table" for the sequence via
+ * operator[](int), begin(), and end().
  *
- * An index table is a table of integer pointers telling which number sequence
- * element comes first in ascending order, which second, and so on.  See
- * "Numerical Recipes" for a full discussion of an index table.
+ * An index table is a table of integer pointers telling which number sequence element comes first
+ * in ascending order, which second, and so on.  See "Numerical Recipes" for a full discussion of an
+ * index table.
  *
- * The inverse operations on the SortPermutation object can be used to access
- * the "rank table" for the sequence via inv(int), inv_begin(), and inv_end().
+ * The inverse operations on the SortPermutation object can be used to access the "rank table" for
+ * the sequence via inv(int), inv_begin(), and inv_end().
  *
- * A rank table is a table telling what the numerical rank of the first sequence
- * element, the second sequence element, and so on.  See "Numerical Recipes" for
- * a full discussion of a rank table.
+ * A rank table is a table telling what the numerical rank of the first sequence element, the second
+ * sequence element, and so on.  See "Numerical Recipes" for a full discussion of a rank table.
  */
 /*!
  * \example tstSortPermutation.cc
  *
  * Test of rtt_dsxx::SortPermutation and isSorted.hh functions.
  */
-//============================================================================//
+//================================================================================================//
 
 class SortPermutation {
 
@@ -150,8 +146,8 @@ public:
 
   /*!
    * \brief Returns the i'th entry into the index table.
-   * \param i The i'th entry into the sorted order.  The condition, *(first +
-   *        sortPerm[i+1]) < *(first + sortPerm[i]), is guaranteed to be false.
+   * \param i The i'th entry into the sorted order.  The condition, *(first + sortPerm[i+1]) <
+   *        *(first + sortPerm[i]), is guaranteed to be false.
    *
    * For example,
    * \code
@@ -248,6 +244,6 @@ private:
 
 #endif // rtt_dsxx_SortPermutation_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/SortPermutation.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

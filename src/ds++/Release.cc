@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/Release.cc
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "Release.hh"
 #include "DracoTerminal.hh"
@@ -16,10 +15,10 @@
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Format list of authors to do correct line breaks and ensures total
- *        line length is less than a specified maximum.
+ * \brief Format list of authors to do correct line breaks and ensures total line length is less
+ *        than a specified maximum.
  *
  * \arg[in] maxlen Maximum line length
  * \arg[in] line_name Category title
@@ -56,9 +55,11 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
   return msg.str();
 }
 
-//----------------------------------------------------------------------------//
-// function definition for Release, define the local version number for this
-// library in the form ds_#.#.# in pkg_version variable
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Function definition for Release, define the local version number for this library in the form
+ *  ds_#.#.# in pkg_version variable
+ */
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
@@ -87,24 +88,21 @@ const std::string release() {
   return pkg_release.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Return a list of Draco contributing authors
  *
- * \param[in] use_doxygen_formatting If true, use extra decoration in the
- *              output.
+ * \param[in] use_doxygen_formatting If true, use extra decoration in the output.
  *
- * Data is collected from git (see regression/alist.sh) based on LOC
- * added/removed. Because the git repository only includes code provided
- * starting at draco-6_0_0, all LOC were attributed to KT at draco-6_0_0 since
- * he converted the svn repo to git. The remaining numbers are computed by
+ * Data is collected from git (see regression/alist.sh) based on LOC added/removed. Because the git
+ * repository only includes code provided starting at draco-6_0_0, all LOC were attributed to KT at
+ * draco-6_0_0 since he converted the svn repo to git. The remaining numbers are computed by
  * counting LOC added/removed since draco-6_0_0.
  */
 const std::string author_list(bool const use_doxygen_formatting) {
   std::stringstream alist;
 
   mmdevs current_developers;
-  // not totally fair... KT got credit for LOC when svn repository was converted
-  // to git.
+  // not totally fair... KT got credit for LOC when svn repository was converted to git.
   current_developers.insert(fomdev(189354, "Kelly G. Thompson"));
   current_developers.insert(fomdev(12432, "Kent G. Budge"));
   current_developers.insert(fomdev(3733, "Ryan T. Wollaeger"));
@@ -176,7 +174,7 @@ const std::string author_list(bool const use_doxygen_formatting) {
   return alist.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Print a Copyright note with an author list:
 const std::string copyright() {
   std::ostringstream msg;
@@ -192,7 +190,7 @@ const std::string copyright() {
 
 } // namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! This version can be called by Fortran and wraps the C++ version.
 extern "C" void ec_release(char *release_string, size_t maxlen) {
   std::string tmp_rel = rtt_dsxx::release();
@@ -203,6 +201,6 @@ extern "C" void ec_release(char *release_string, size_t maxlen) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Release.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

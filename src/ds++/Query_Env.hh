@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/Query_Env.hh
  * \author Tim Kelley
  * \date   Fri Jun 7 08:06:53 2019
  * \brief  Functions for working with your environment
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef Query_Env_hh
 #define Query_Env_hh
@@ -21,7 +20,7 @@
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Get a value from the environment
  *
@@ -31,12 +30,11 @@ namespace rtt_dsxx {
  * \param default_value: a default value to return if key undefined.
  * \return: {whether key was defined, corresponding value}
  *
- * \note Calls POSIX getenv() function, which is not required to be re-entrant.
- *       If the key was set in the environment, get_env_val() returns the value
- *       converted to type T, that was set in the environment. If the key was
- *       not set in the environment, it returns the default_value that the
- *       caller provides. The first argument of the pair describes whether the
- *       key was defined.
+ * \note Calls POSIX getenv() function, which is not required to be re-entrant.  If the key was set
+ *       in the environment, get_env_val() returns the value converted to type T, that was set in
+ *       the environment. If the key was not set in the environment, it returns the default_value
+ *       that the caller provides. The first argument of the pair describes whether the key was
+ *       defined.
  *
  * \example ds++/test/tstQuery_Env.cc
  */
@@ -60,6 +58,6 @@ std::pair<bool, T> get_env_val(std::string const &key, T default_value = T{}) {
 
 #endif // Query_Env
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end ds++/Query_Env.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

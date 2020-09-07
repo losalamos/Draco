@@ -1,11 +1,9 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/SystemCall.hh
- * \brief  Wrapper for system calls. Hide differences between Unix/Windows
- *         system calls.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief Wrapper for system calls. Hide differences between Unix/Windows system calls.
+ * \note Copyright (C) 2016-2020 Triad National Security, LLC.  All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_SystemCall_hh
 #define rtt_dsxx_SystemCall_hh
@@ -33,9 +31,9 @@ char const dirSep = UnixDirSep;
 std::string const exeExtension("");
 #endif
 
-//============================================================================//
+//================================================================================================//
 // FREE FUNCTIONS
-//============================================================================//
+//================================================================================================//
 
 //! Return the local hostname
 std::string draco_gethostname();
@@ -82,8 +80,7 @@ void draco_mkdir(std::string const &path);
 /*!
  * \brief Remove file or directory (not recursive)
  *
- * For recursive directory delete, see path.hh's walk_directory_tree and the
- * functor wdtOpRemove.
+ * For recursive directory delete, see path.hh's walk_directory_tree and the functor wdtOpRemove.
  */
 void draco_remove(std::string const &path);
 
@@ -102,6 +99,6 @@ void draco_remove(std::string const &path);
 
 #endif // rtt_dsxx_SystemCall_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of SystemCall.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,13 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/DracoStrings.i.hh
  * \author Kelly G. Thompson <kgt@lanl.gov
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
- * \brief  Enscapulates common string manipulations (implicit template
- *         implementation).
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Enscapulates common string manipulations (implicit template implementation).
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoStrings_i_hh
 #define rtt_dsxx_DracoStrings_i_hh
@@ -18,7 +16,7 @@
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Convert a string into a numeric-type type with error checking.
 template <typename T> auto parse_number(std::string const &str, bool verbose) -> T {
   T retval(0);
@@ -34,9 +32,8 @@ template <typename T> auto parse_number(std::string const &str, bool verbose) ->
                 << std::endl;
     throw e;
   } catch (std::out_of_range & /*error*/) {
-    // if the converted value would fall out of the range of the result type
-    // or if the underlying function (std::strtol or std::strtoull) sets
-    // errno to ERANGE.
+    // if the converted value would fall out of the range of the result type or if the underlying
+    // function (std::strtol or std::strtoull) sets errno to ERANGE.
     if (verbose)
       std::cerr << "\n==ERROR==\nrtt_dsxx::parse_number:: "
                 << "Type conversion from string to a numeric value resulted in "
@@ -51,14 +48,14 @@ template <typename T> auto parse_number(std::string const &str, bool verbose) ->
   return retval;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Convert a string into a vector of floating-point or an integral values.
 template <typename T>
 std::vector<T> string_to_numvec(std::string const &str, std::string const &range_symbols,
                                 std::string const &delimiters) {
 
-  // for vector data, first and last char might be some delimiter character.
-  // For example "[1,2,3)" or "{3.3, 4.4}"
+  // for vector data, first and last char might be some delimiter character.  For example "[1,2,3)"
+  // or "{3.3, 4.4}"
   Insist(range_symbols.length() == 0 ||
              (range_symbols.length() == 2 && str[0] == range_symbols[0] &&
               str[str.length() - 1] == range_symbols[range_symbols.length() - 1]),
@@ -82,6 +79,6 @@ std::vector<T> string_to_numvec(std::string const &str, std::string const &range
 
 #endif // namespace rtt_dsxx_DracoStrings_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of DracoStrings.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

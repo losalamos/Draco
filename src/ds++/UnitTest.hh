@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/UnitTest.hh
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef dsxx_UnitTest_hh
 #define dsxx_UnitTest_hh
@@ -19,22 +18,19 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class UnitTest
  * \brief Object to encapsulate unit testing of Draco classes and functions.
  *
- * This is a virtual class.  You should use one of the following UnitTest
- * classes in your test application:
+ * This is a virtual class.  You should use one of the following UnitTest classes in your test
+ * application:
  *
- * \li ScalarUnitTest      - Used for testing code that does not use parallel
- *                       communication (rtt_c4).
- * \li ParallelUnitTest    - Used for testing code that does use parallel
- *                       communications (rtt_c4).
- * \li ApplicationUnitTest - Used for testing applications that run in
- *                       parallel. The unit test code is run in scalar-mode
- *                       and calls mpirun to run the specified application.
- *
+ * - ScalarUnitTest      - Used for testing code that does not use parallel communication (rtt_c4).
+ * - ParallelUnitTest    - Used for testing code that does use parallel communications (rtt_c4).
+ * - ApplicationUnitTest - Used for testing applications that run in parallel. The unit test code
+ *                         is run in scalar-mode and calls mpirun to run the specified application.
+ * .
  *
  * \sa UnitTest.cc for additional details.
  *
@@ -55,7 +51,7 @@ namespace rtt_dsxx {
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  */
-//============================================================================//
+//================================================================================================//
 
 class UnitTest {
 public:
@@ -85,8 +81,7 @@ public:
   // MANIPULATORS
 
   /*!
-   * \brief Only special cases should use these (like the unit test
-   *        tstScalarUnitTest.cc).
+   * \brief Only special cases should use these (like the unit test tstScalarUnitTest.cc).
    */
   void dbcRequire(bool b) {
     m_dbcRequire = b;
@@ -114,8 +109,8 @@ public:
   /*!
    * \brief Provide a summary of the test status
    *
-   * This pure virtual function must be provided by the inherited class.  It
-   * should provide output concerning the status of UnitTest.
+   * This pure virtual function must be provided by the inherited class.  It should provide output
+   * concerning the status of UnitTest.
    */
   void status() const {
     out << resultMessage() << std::endl;
@@ -136,15 +131,13 @@ public:
   std::string getTestPath() const { return testPath; }
   std::string getTestName() const { return testName; }
   /*!
-   * \brief Returns the path of the test binary directory (useful for locating
-   *        input files).
+   * \brief Returns the path of the test binary directory (useful for locating input files).
    *
-   * This function depends on the cmake build system setting the
-   * COMPILE_DEFINITIONS target property. This should be done in
-   * config/component_macros.cmake.
+   * This function depends on the cmake build system setting the COMPILE_DEFINITIONS target
+   * property. This should be done in config/component_macros.cmake.
    *
-   * set_target_property( unit_test_target_name
-   *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
+   * set_target_property( unit_test_target_name COMPILE_DEFINITIONS
+   *    PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
    */
   static inline std::string getTestInputPath() {
 #ifdef PROJECT_BINARY_DIR
@@ -156,19 +149,16 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc, this
-    // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defined.
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this function must be
+    // valid.  ScalarUnitTest.cc is not a unit test so PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
   /*!
-   * \brief Returns the path of the test source directory (useful for locating
-   *        input files).
+   * \brief Returns the path of the test source directory (useful for locating input files).
    *
-   * This function depends on the cmake build system setting the
-   * COMPILE_DEFINITIONS target property. This should be done in
-   * config/component_macros.cmake.
+   * This function depends on the cmake build system setting the COMPILE_DEFINITIONS target
+   * property. This should be done in config/component_macros.cmake.
    *
    * set_target_property( unit_test_target_name
    *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
@@ -183,9 +173,8 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc, this
-    // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defined.
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this function must be
+    // valid.  ScalarUnitTest.cc is not a unit test so PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
@@ -283,6 +272,6 @@ protected:
 
 #endif // dsxx_UnitTest_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/UnitTest.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
