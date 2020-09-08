@@ -30,10 +30,11 @@ list( APPEND headers ${PROJECT_BINARY_DIR}/plot2D/config.h )
 set(include_dirs PUBLIC
   ${Grace_INCLUDE_DIR}
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
 add_component_library(
    TARGET       Lib_plot2D
    TARGET_DEPS  Lib_dsxx
-   INCLUDE_DIRS "${inlcude_dirs}"
+   INCLUDE_DIRS "${include_dirs}"
    LIBRARY_NAME plot2D
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
