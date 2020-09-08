@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for mesh_element/test.
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -29,12 +29,7 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_mesh_element Objlib_mesh_element EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/mesh_element )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_mesh_element> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

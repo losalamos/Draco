@@ -55,11 +55,7 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_cdi_ndi Objlib_cdi_ndi EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ndi )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_cdi_ndi> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

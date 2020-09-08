@@ -37,7 +37,6 @@ if( HAVE_CUDA AND USE_CUDA )
     LIBRARY_TYPE STATIC
     SOURCES      "${sources}"
     HEADERS      "${headers}" )
-  install( TARGETS Lib_device Objlib_device EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 
 endif()
 

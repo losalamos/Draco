@@ -43,12 +43,8 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_cdi_eospac Objlib_cdi_eospac EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( TARGETS Exe_QueryEospac EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_eospac )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_cdi_eospac> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

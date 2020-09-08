@@ -140,7 +140,6 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_dsxx Objlib_dsxx EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( TARGETS coverage_config EXPORT draco-targets )
 install( FILES ${dsxx_headers} ${template_implementations} DESTINATION
   ${DBSCFGDIR}include/ds++ )
@@ -149,10 +148,6 @@ install( FILES
     ${PROJECT_SOURCE_DIR}/terminal/LICENSE
     ${PROJECT_SOURCE_DIR}/terminal/README.md
   DESTINATION ${DBSCFGDIR}include/terminal )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_dsxx> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

@@ -93,13 +93,8 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_diagnostics Objlib_diagnostics EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
 install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_diagnostics> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

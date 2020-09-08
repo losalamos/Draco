@@ -53,7 +53,14 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Install
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_c4_fc4 Objlib_c4_fc4 EXPORT draco-targets
+if(TARGET Objlib_c4_fc4)
+  install( TARGETS Objlib_c4_fc4 EXPORT draco-targets
+    LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
+    ARCHIVE DESTINATION "${DBSCFGDIR}lib"
+    RUNTIME DESTINATION "${DBSCFGDIR}bin"
+    PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/fc4" )
+endif()
+install( TARGETS Lib_c4_fc4 EXPORT draco-targets
   LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
   ARCHIVE DESTINATION "${DBSCFGDIR}lib"
   RUNTIME DESTINATION "${DBSCFGDIR}bin"

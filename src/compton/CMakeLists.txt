@@ -47,11 +47,7 @@ if( TARGET COMPTON::compton )
   # -------------------------------------------------------------------------- #
   # Installation instructions
   # -------------------------------------------------------------------------- #
-  install( TARGETS Lib_compton Objlib_compton EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
   install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton )
-  if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    install(FILES $<TARGET_PDB_FILE:Lib_compton> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
-  endif()
 
   # -------------------------------------------------------------------------- #
   # Unit tests

@@ -53,25 +53,32 @@ add_component_library(
   TARGET       Lib_rng
   TARGET_DEPS  "${deps}"
   INCLUDE_DIRS "${include_dirs}"
-  LIBRARY_NAME ${PROJECT_NAME} )
+  LIBRARY_NAME ${PROJECT_NAME} 
+  EXPORT_NAME  skip)
 # Target sources should list headers as `PUBLIC` but this is broken as of
 # cmake-3.17.0 (might actually be a Visual Studio issue?). Because this is
 # broken we mark headers as `PRIVATE`.
-foreach( LIB Lib_rng Objlib_rng )
-  target_sources( ${LIB} PRIVATE "${headers_public}" PRIVATE "${sources}" )
-  set_target_properties(${LIB} PROPERTIES PUBLIC_HEADER "${headers_public}")
-endforeach()
+target_sources(Lib_rng PRIVATE "${headers_public}" PRIVATE "${sources}" )
+set_target_properties(Lib_rng PROPERTIES PUBLIC_HEADER "${headers_public}")
+if(TARGET Objlib_rng)
+  target_sources(Objlib_rng PRIVATE "${headers_public}" PRIVATE "${sources}" )
+  set_target_properties($Objlib_rng PROPERTIES PUBLIC_HEADER "${headers_public}")
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_rng Objlib_rng EXPORT draco-targets
+install( TARGETS Lib_rng EXPORT draco-targets
   LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
   ARCHIVE DESTINATION "${DBSCFGDIR}lib"
   RUNTIME DESTINATION "${DBSCFGDIR}bin"
   PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/rng" )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_rng> DESTINATION ${DBSCFGDIR}bin OPTIONAL)
+if(TARGET Objlib_rng)
+  install( TARGETS Objlib_rng EXPORT draco-targets
+    LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
+    ARCHIVE DESTINATION "${DBSCFGDIR}lib"
+    RUNTIME DESTINATION "${DBSCFGDIR}bin"
+    PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/rng" )
 endif()
 
 # ---------------------------------------------------------------------------- #

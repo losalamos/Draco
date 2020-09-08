@@ -263,14 +263,12 @@ endmacro()
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
 #------------------------------------------------------------------------------
 macro( add_component_library )
-  # target_name outputname sources
-  # optional argument: libraryPrefix
 
   # These become variables of the form ${acl_NAME}, etc.
   cmake_parse_arguments(
     acl
     "NOEXPORT"
-    "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
+    "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE;EXPORT_NAME"
     "HEADERS;SOURCES;INCLUDE_DIRS;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV} )
 
@@ -324,25 +322,32 @@ macro( add_component_library )
       LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
   endif()
 
-  # Generate an object library.  This can be used instead of the regular library for better
-  # interprocedural optimization at link time.
-  if( "${acl_TARGET}" MATCHES "Lib_" )
-    string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
-  else()
-    string( CONCAT acl_objlib_TARGET "Objlib_" "${acl_TARGET}" )
+  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # Generate an object library.  This can be used instead of the regular library for better
+    # interprocedural optimization at link time.
+    message(FATAL_ERROR "should not get here")
+    if( "${acl_TARGET}" MATCHES "Lib_" )
+      string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
+    else()
+      string( CONCAT acl_objlib_TARGET "Objlib_" "${acl_TARGET}" )
+    endif()
+    add_library( ${acl_objlib_TARGET} OBJECT ${acl_SOURCES} )
   endif()
-  add_library( ${acl_objlib_TARGET} OBJECT ${acl_SOURCES} )
 
   #
   # Generate properties related to library dependencies
   #
   if( DEFINED acl_TARGET_DEPS )
     target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
-    target_link_libraries( ${acl_objlib_TARGET} ${acl_TARGET_DEPS} )
+    if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+      target_link_libraries( ${acl_objlib_TARGET} ${acl_TARGET_DEPS} )
+    endif()
   endif()
   if( DEFINED acl_INCLUDE_DIRS )
     target_include_directories( ${acl_TARGET} ${acl_INCLUDE_DIRS} )
-    target_include_directories( ${acl_objlib_TARGET} ${acl_INCLUDE_DIRS} )
+    if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+      target_include_directories( ${acl_objlib_TARGET} ${acl_INCLUDE_DIRS} )
+    endif()
   endif()
   if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
     target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )
@@ -350,6 +355,21 @@ macro( add_component_library )
   if( acl_VENDOR_INCLUDE_DIRS )
     set_property(TARGET ${acl_TARGET} APPEND PROPERTY
       INTERFACE_INCLUDE_DIRECTORIES "${acl_VENDOR_INCLUDE_DIRS}")
+  endif()
+
+  #
+  # Basic install commands for the library or object-library that are common to all Draco packages.
+  #
+  if( NOT DEFINED acl_EXPORT_NAME )
+    set(acl_EXPORT_NAME "draco-targets")
+  endif()
+  if( NOT ${acl_EXPORT_NAME} STREQUAL "skip")
+    install( TARGETS ${acl_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
+  endif()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${acl_TARGET}> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
+  else()
+    install( TARGETS ${acl_objlib_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
   endif()
 
 endmacro()
