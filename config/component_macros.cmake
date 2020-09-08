@@ -325,7 +325,6 @@ macro( add_component_library )
   if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # Generate an object library.  This can be used instead of the regular library for better
     # interprocedural optimization at link time.
-    message(FATAL_ERROR "should not get here")
     if( "${acl_TARGET}" MATCHES "Lib_" )
       string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
     else()
