@@ -8,7 +8,7 @@
 ;;======================================================================
 ;; Commentary:
 ;;
-;; - Customize the variable ccs4-env-dirs
+;; - Customize the variable ccs2-env-dirs
 ;;
 ;; - Put (require 'draco-mode) in your ~/.xemacs/init.el
 ;;
@@ -463,7 +463,7 @@ function or method. Width is set by draco-code-comment-width.
   (end-of-line)
 )
 (defun draco-insert-class-doc ()
-"Function for inserting a class desicription boilerplate.  Width is set
+"Function for inserting a class description boilerplate.  Width is set
 by draco-code-comment-width.
 
 //================================================================================================//

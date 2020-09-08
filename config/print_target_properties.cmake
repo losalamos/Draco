@@ -70,7 +70,7 @@ function(echo_target tgt)
 
     # Some targets aren't allowed:
     # Ref: https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR 
+    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR
       prop MATCHES "_LOCATION$")
       continue()
     elseif( prop MATCHES "<LANG>" )
