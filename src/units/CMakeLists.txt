@@ -12,7 +12,6 @@ project( units CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
@@ -20,7 +19,6 @@ file( GLOB headers *.hh )
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_units
    TARGET_DEPS  Lib_dsxx
@@ -31,18 +29,15 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_units EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Lib_units Objlib_units EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/units )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_units> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:Lib_units> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
 endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -50,7 +45,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#

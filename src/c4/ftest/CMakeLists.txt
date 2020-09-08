@@ -37,16 +37,17 @@ set( f90sources
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 set(target_deps Lib_c4_fc4 Lib_c4 Lib_dsxx )
+set(include_dirs PUBLIC
+  "$<BUILD_INTERFACE:${c4_ftest_BINARY_DIR}>"
+  "$<BUILD_INTERFACE:${fc4_BINARY_DIR}>")
 add_component_library(
   TARGET        Lib_c4_ftest
   LIBRARY_NAME  c4_ftest
   SOURCES       "${f90sources}"
   LINK_LANGUAGE Fortran
   TARGET_DEPS   "${target_deps}"
+  INCLUDE_DIRS  "${include_dirs}"
   NOEXPORT )
-target_include_directories( Lib_c4_ftest PUBLIC
-  "$<BUILD_INTERFACE:${c4_ftest_BINARY_DIR}>"
-  "$<BUILD_INTERFACE:${fc4_BINARY_DIR}>")
 
 #------------------------------------------------------------------------------#
 # End c4/ftest/CMakeLists.txt

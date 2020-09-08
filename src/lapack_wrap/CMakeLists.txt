@@ -14,7 +14,6 @@ project( lapack_wrap CXX )
 # 1. LAPACK isn't found.
 # 2. We are targeting an Xcode solution (necessary cmake logic is missing).
 #------------------------------------------------------------------------------#
-
 if( HAVE_Fortran )
 
 if( NOT TARGET lapack OR ${CMAKE_GENERATOR} MATCHES Xcode)

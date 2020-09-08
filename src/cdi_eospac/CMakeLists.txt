@@ -12,7 +12,6 @@ if( EOSPAC_FOUND AND NOT DEFINED ENV{TRAVIS} )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryEospac.cc )
@@ -20,14 +19,13 @@ list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryEospac.cc )
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_cdi_eospac
    TARGET_DEPS  "Lib_cdi;EOSPAC::eospac"
+   INCLUDE_DIRS "PUBLIC;${EOSPAC_INCLUDE_DIR}"
    LIBRARY_NAME cdi_eospac
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
-target_include_directories( Lib_cdi_eospac PUBLIC ${EOSPAC_INCLUDE_DIR} )
 
 add_component_executable(
   TARGET      Exe_QueryEospac
@@ -45,15 +43,11 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_cdi_eospac  EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
-install( TARGETS Exe_QueryEospac EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}bin )
+install( TARGETS Lib_cdi_eospac Objlib_cdi_eospac EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Exe_QueryEospac EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_eospac )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_cdi_eospac> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:Lib_cdi_eospac> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
 endif()
 
 # ---------------------------------------------------------------------------- #

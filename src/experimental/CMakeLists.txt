@@ -15,17 +15,13 @@ project( experimental CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 set( experimental_headers ${PROJECT_SOURCE_DIR}/mdspan )
-file( GLOB supporting_headers_p0009_bits
-  ${PROJECT_SOURCE_DIR}/__p0009_bits/*.hpp)
+file( GLOB supporting_headers_p0009_bits ${PROJECT_SOURCE_DIR}/__p0009_bits/*.hpp)
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( FILES ${experimental_headers} DESTINATION
-  ${DBSCFGDIR}include/experimental )
+install( FILES ${experimental_headers} DESTINATION ${DBSCFGDIR}include/experimental )
 install( FILES ${supporting_headers_p0009_bits} DESTINATION
   ${DBSCFGDIR}include/experimental/__p0009_bits )
 

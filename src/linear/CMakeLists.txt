@@ -12,7 +12,6 @@ project( linear CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
@@ -21,7 +20,6 @@ list( REMOVE_ITEM headers ${template_implementations} )
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_linear
    TARGET_DEPS  Lib_dsxx
@@ -32,15 +30,12 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_linear EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} ${template_implementations} DESTINATION
-  ${DBSCFGDIR}include/linear )
+install( TARGETS Lib_linear Objlib_linear EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/linear )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -48,7 +43,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 # ---------------------------------------------------------------------------- #

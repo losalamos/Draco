@@ -12,26 +12,22 @@ project( cdi_ipcress CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 set( sources
    IpcressFile.cc
    IpcressDataTable.cc
    IpcressGrayOpacity.cc
-   IpcressMultigroupOpacity.cc
-)
+   IpcressMultigroupOpacity.cc )
 set( headers
    IpcressFile.hh
    IpcressMaterial.hh
    IpcressFile.t.hh
    IpcressDataTable.hh
    IpcressGrayOpacity.hh
-   IpcressMultigroupOpacity.hh
-)
+   IpcressMultigroupOpacity.hh )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
   TARGET       Lib_cdi_ipcress
   TARGET_DEPS  "Lib_cdi"
@@ -49,18 +45,14 @@ add_component_executable(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 set( CMAKE_INSTALL_DO_STRIP NO )
-install( TARGETS Lib_cdi_ipcress EXPORT draco-targets
+install( TARGETS Lib_cdi_ipcress Objlib_cdi_ipcress EXPORT draco-targets
   DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
-install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}bin )
+install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_cdi_ipcress> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:Lib_cdi_ipcress> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
 endif()
-install( FILES python/ipcress_reader.py python/plot_ipcress_opacity.py
-  DESTINATION ${DBSCFGDIR}bin )
-
+install( FILES python/ipcress_reader.py python/plot_ipcress_opacity.py DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

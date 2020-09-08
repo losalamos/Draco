@@ -271,7 +271,7 @@ macro( add_component_library )
     acl
     "NOEXPORT"
     "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
-    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "HEADERS;SOURCES;INCLUDE_DIRS;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV} )
 
   #
@@ -324,11 +324,25 @@ macro( add_component_library )
       LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
   endif()
 
+  # Generate an object library.  This can be used instead of the regular library for better
+  # interprocedural optimization at link time.
+  if( "${acl_TARGET}" MATCHES "Lib_" )
+    string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
+  else()
+    string( CONCAT acl_objlib_TARGET "Objlib_" "${acl_TARGET}" )
+  endif()
+  add_library( ${acl_objlib_TARGET} OBJECT ${acl_SOURCES} )
+
   #
   # Generate properties related to library dependencies
   #
-  if( NOT "${acl_TARGET_DEPS}x" STREQUAL "x" )
+  if( DEFINED acl_TARGET_DEPS )
     target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+    target_link_libraries( ${acl_objlib_TARGET} ${acl_TARGET_DEPS} )
+  endif()
+  if( DEFINED acl_INCLUDE_DIRS )
+    target_include_directories( ${acl_TARGET} ${acl_INCLUDE_DIRS} )
+    target_include_directories( ${acl_objlib_TARGET} ${acl_INCLUDE_DIRS} )
   endif()
   if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
     target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )

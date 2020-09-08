@@ -64,7 +64,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 set(deps Lib_c4)
 if(TARGET CALIPER::caliper)
   list(APPEND deps CALIPER::caliper)
@@ -73,13 +72,11 @@ endif()
 add_component_library(
   TARGET       Lib_diagnostics
   TARGET_DEPS  "${deps}"
+  INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
   LIBRARY_NAME ${PROJECT_NAME}
   SOURCES      "${sources}"
   HEADERS      "${headers}"
-  PREFIX       Draco
-  )
-target_include_directories( Lib_diagnostics
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+  PREFIX       Draco )
 
 add_component_executable(
   TARGET      Exe_draco_info
@@ -87,32 +84,26 @@ add_component_executable(
   EXE_NAME    draco_info
   SOURCES     ${PROJECT_SOURCE_DIR}/draco_info_main.cc
   HEADERS     ${PROJECT_SOURCE_DIR}/draco_info.hh
-  PREFIX       Draco
-  )
+  PREFIX       Draco )
 
 if( Qt5Core_DIR AND NOT "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
   add_subdirectory( qt )
 endif()
 
-
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_diagnostics EXPORT draco-targets DESTINATION
+install( TARGETS Lib_diagnostics Objlib_diagnostics EXPORT draco-targets DESTINATION
   ${DBSCFGDIR}lib )
-install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}bin )
+install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_diagnostics> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:Lib_diagnostics> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
 endif()
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -120,7 +111,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#

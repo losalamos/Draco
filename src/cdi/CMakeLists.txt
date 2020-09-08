@@ -12,7 +12,6 @@ project( cdi CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
@@ -20,7 +19,6 @@ file( GLOB headers *.hh )
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_cdi
    TARGET_DEPS  Lib_dsxx
@@ -31,8 +29,7 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_cdi EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Lib_cdi Objlib_cdi EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi )
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   install(FILES $<TARGET_PDB_FILE:Lib_cdi> DESTINATION ${DBSCFGDIR}lib
@@ -42,7 +39,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -50,5 +46,8 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
+
+#--------------------------------------------------------------------------------------------------#
+# End cdi/CMakeLists.txt
+#--------------------------------------------------------------------------------------------------#

@@ -12,7 +12,6 @@ project( ode CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
@@ -21,14 +20,11 @@ list( REMOVE_ITEM headers ${template_implementations} )
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
-install( FILES ${headers} ${template_implementations} DESTINATION
-  ${DBSCFGDIR}include/ode )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/ode )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
@@ -36,7 +32,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#
