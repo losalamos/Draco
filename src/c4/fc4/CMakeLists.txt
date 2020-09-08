@@ -43,7 +43,8 @@ add_component_library(
   SOURCES      "${f90sources}"
   LINK_LANGUAGE Fortran
   TARGET_DEPS   "${target_deps}"
-  INCLUDE_DIRS  "PUBLIC;$<INSTALL_INTERFACE:${DBSCFG_IMPORT_PREFIX}/fc4>")
+  INCLUDE_DIRS  "PUBLIC;$<INSTALL_INTERFACE:${DBSCFG_IMPORT_PREFIX}/fc4>"
+  EXPORT_NAME   skip )
 if( WIN32 )
   # The library must be installed in the master project's RUNTIME_OUTPUT_DIR
   set_target_properties( Lib_c4_fc4 PROPERTIES

@@ -53,7 +53,7 @@ add_component_library(
   TARGET       Lib_rng
   TARGET_DEPS  "${deps}"
   INCLUDE_DIRS "${include_dirs}"
-  LIBRARY_NAME ${PROJECT_NAME} 
+  LIBRARY_NAME ${PROJECT_NAME}
   EXPORT_NAME  skip)
 # Target sources should list headers as `PUBLIC` but this is broken as of
 # cmake-3.17.0 (might actually be a Visual Studio issue?). Because this is
@@ -62,7 +62,7 @@ target_sources(Lib_rng PRIVATE "${headers_public}" PRIVATE "${sources}" )
 set_target_properties(Lib_rng PROPERTIES PUBLIC_HEADER "${headers_public}")
 if(TARGET Objlib_rng)
   target_sources(Objlib_rng PRIVATE "${headers_public}" PRIVATE "${sources}" )
-  set_target_properties($Objlib_rng PROPERTIES PUBLIC_HEADER "${headers_public}")
+  set_target_properties(Objlib_rng PROPERTIES PUBLIC_HEADER "${headers_public}")
 endif()
 
 # ---------------------------------------------------------------------------- #
