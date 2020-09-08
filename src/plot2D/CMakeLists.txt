@@ -42,7 +42,6 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-install( TARGETS Lib_plot2D Objlib_plot2D EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/plot2D )
 
 # ---------------------------------------------------------------------------- #
