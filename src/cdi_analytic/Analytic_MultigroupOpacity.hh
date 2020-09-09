@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_MultigroupOpacity.hh
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 #define rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_analytic {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Analytic_MultigroupOpacity
  *
@@ -42,7 +42,7 @@ namespace rtt_cdi_analytic {
  * \sa cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  * Example usage of Analytic_MultigroupOpacity.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 public:
@@ -149,6 +149,6 @@ public:
 
 #endif // rtt_cdi_analytic_Analytic_MultigroupOpacity_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_MultigroupOpacity.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

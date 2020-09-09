@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/Cells class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Cells.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the cells block data from the mesh file via calls to private
  *        member functions.
@@ -24,7 +24,7 @@ void Cells::readCells(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cells block keyword.
  * \param meshfile Mesh file name.
@@ -37,7 +37,7 @@ void Cells::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cells block data.
  * \param meshfile Mesh file name.
@@ -80,7 +80,7 @@ void Cells::readData(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_cells block keyword.
  * \param meshfile Mesh file name.
@@ -94,7 +94,7 @@ void Cells::readEndKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Changes the cell nodes when the cell definitions specified in the
  *        RTT_Format file have been transformed into an alternative cell
@@ -131,6 +131,6 @@ void Cells::redefineCells() {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Cells.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

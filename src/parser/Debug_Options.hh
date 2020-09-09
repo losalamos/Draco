@@ -5,7 +5,7 @@
  * \brief  Define the Debug_Options enumeration and declare parse functions.
  * \note   Copyright (C) 2014-2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef parser_Debug_Options_hh
 #define parser_Debug_Options_hh
@@ -13,7 +13,7 @@
 #include "Token_Stream.hh"
 
 namespace rtt_parser {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Enumeration of debug flag bits
 
 enum Debug_Options {
@@ -35,28 +35,28 @@ enum Debug_Options {
   // Options producing no terminal output
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Parse debug options in uniform way
 DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &,
                                                unsigned parent_mask = 0);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Add an application-specific debug option.
 DLL_PUBLIC_parser void add_debug_option(string const &option_name,
                                         unsigned const bit);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Add an application-specific debug option.
 DLL_PUBLIC_parser unsigned add_debug_option(string const &option_name);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 DLL_PUBLIC_parser unsigned get_debug_option(string const &option_name);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Flush application-specific debug options.
 DLL_PUBLIC_parser void flush_debug_options();
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Write debug options in a manner that can be parsed
 DLL_PUBLIC_parser std::string debug_options_as_text(unsigned debug_options);
 
@@ -64,6 +64,6 @@ DLL_PUBLIC_parser std::string debug_options_as_text(unsigned debug_options);
 
 #endif /* parser_Debug_Options_hh */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of parser/Debug_Options.hh */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

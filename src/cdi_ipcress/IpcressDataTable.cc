@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressDataTable.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation file for IpcressDataTable objects.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressDataTable.hh"
 #include "IpcressFile.hh"
@@ -23,7 +23,7 @@ namespace rtt_cdi_ipcress {
 // helper functions: local to file scope
 double unary_log(double x) { return std::log(x); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief IpcressData Table constructor.
  *
@@ -83,7 +83,7 @@ IpcressDataTable::IpcressDataTable(
 // PRIVATE FUNCTIONS //
 // ----------------- //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief This function sets both "ipcressDataTypeKey" and "dataDescriptor"
  *     based on the values given for opacityEnergyDescriptor, opacityModel and
@@ -177,7 +177,7 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
          "requested opacity type is not available in the IPCRESS file.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Load the temperature, density, energy boundary and opacity opacity
  *     tables from the IPCRESS file.  Convert all tables (except energy
@@ -201,7 +201,7 @@ void IpcressDataTable::loadDataTable(
                  unary_log);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief This function returns "true" if "key" is found in the list of "keys".
  *        This is a static member function.
@@ -217,7 +217,7 @@ bool IpcressDataTable::key_available(T const &key,
   return false;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Calculate and return an interpolated opacity value.
  *
@@ -342,6 +342,6 @@ double IpcressDataTable::interpOpac(double const targetTemperature,
 
 } // end namespace rtt_cdi_ipcress
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressDataTable.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

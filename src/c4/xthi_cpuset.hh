@@ -1,16 +1,15 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/xthi_cpuset.hh
  * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>
  * \date   Wednesday, Aug 09, 2017, 11:45 am
  * \brief  Helper functions to generate string for core affinity.
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC., All rights reserved.
  *
- * These functions are needed by c4's xthi and ythi programs to report human
- * readable thread bindings.  It is also used by the unit test for libquo.
+ * These functions are needed by c4's xthi and ythi programs to report human readable thread
+ * bindings.  It is also used by the unit test for libquo.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_xthi_cpuset_hh
 #define rtt_c4_xthi_cpuset_hh
@@ -27,30 +26,27 @@
 
 /*! \bug Broken on OSX (sched_getaffinity, cpu_set_t, etc. not defined).
  *
- * Possible solution at
- * https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
+ * Possible solution at https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
  */
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief query the OS for an affinity bitmask and translate it to a human
  *        readable form.
  *
- * For Linux-like systems, borrow code from
- * util-linux-2.13-pre7/schedutils/taskset.c.
+ * For Linux-like systems, borrow code from util-linux-2.13-pre7/schedutils/taskset.c.
  *
- * For Windows systems, make use of GetProcessAffinityMask
- * (processthreadsapi.h). Refs:
+ * For Windows systems, make use of GetProcessAffinityMask (processthreadsapi.h). Refs:
  *
  * - https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-getprocessaffinitymask
  * - https://stackoverflow.com/questions/10877182/getprocessaffinitymask-returns-processaffinty-and-systemaffinity-as-1-overflow
  * - https://stackoverflow.com/questions/2215063/how-can-you-find-the-processor-number-a-thread-is-running-on
  * .
  *
- * In both cases, the affinity bitmask is restricted to 64 cores.  If a node has
- * more than 64 cores, extra logic will be needed to make this function work.
+ * In both cases, the affinity bitmask is restricted to 64 cores.  If a node has more than 64 cores,
+ * extra logic will be needed to make this function work.
  *
  * \return A string of the form "0-8;16-32;" or "0-63"
  */
@@ -72,8 +68,7 @@ namespace rtt_c4 {
 
 /*! \bug Broken on OSX (sched_getaffinity, cpu_set_t, etc. not defined).
  *
- * Possible solution at
- * https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
+ * Possible solution at https://yyshen.github.io/2015/01/18/binding_threads_to_cores_osx.html
  */
 
 #define SYSCTL_CORE_COUNT "machdep.cpu.core_count"
@@ -128,8 +123,7 @@ inline std::string cpuset_to_string(unsigned const num_cpu) {
                                    &dwSystemAffinity);
   Insist(ok, "GetProcessAffinityMask() failed!");
 
-  // Convert the bitmask to an array of bools and then to a string to represent
-  // a CPU range
+  // Convert the bitmask to an array of bools and then to a string to represent a CPU range
   std::bitset<64> const affmask(dwProcessAffinity);
   size_t begin(0);
   bool enabled(false);
@@ -189,6 +183,6 @@ inline std::string cpuset_to_string(unsigned const /*num_cpu*/) {
 
 #endif // rtt_c4_xthi_cpuset_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End c4/xthi_cpuset.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Compound_Analytic_MultigroupOpacity.hh
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Compound_Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_Compound_Analytic_MultigroupOpacity_hh
 #define rtt_cdi_analytic_Compound_Analytic_MultigroupOpacity_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_cdi_analytic {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Compound_Analytic_MultigroupOpacity
  *
@@ -61,7 +61,7 @@ namespace rtt_cdi_analytic {
  * Example usage of Compound_Analytic_MultigroupOpacity, Analytic_Opacity_Model,
  * and their incorporation into rtt_cdi::CDI.
  */
-//============================================================================//
+//================================================================================================//
 
 class Compound_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity {
 public:
@@ -112,9 +112,9 @@ public:
   sf_char pack(void) const;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return a string describing the opacity model.
 Compound_Analytic_MultigroupOpacity::std_string
 Compound_Analytic_MultigroupOpacity::getDataDescriptor() const {
@@ -141,6 +141,6 @@ Compound_Analytic_MultigroupOpacity::getDataDescriptor() const {
 
 #endif // rtt_cdi_analytic_Compound_Analytic_MultigroupOpacity_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_analytic/Compound_Analytic_MultigroupOpacity.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

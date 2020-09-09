@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstScalarUnitTest.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
@@ -31,18 +31,18 @@ using namespace rtt_dsxx;
 #define FAILURE unitTest.failure(__LINE__, __FILE__);
 #define FAILMSG(a) unitTest.failure(a);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 char *convert_string_to_char_ptr(std::string const &s) {
   auto *pc = new char[s.length() + 1];
   std::strncpy(pc, s.c_str(), s.length() + 1);
   return pc;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstOne(UnitTest &unitTest) {
   unitTest.passes("Looks like the passes member function is working.");
@@ -53,7 +53,7 @@ void tstOne(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstTwo(UnitTest &unitTest) {
   unitTest.failure("Looks like the failure member function is working.");
   unitTest.check(false, "Also for check version.");
@@ -71,7 +71,7 @@ void tstTwo(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
   std::ostringstream const msg_nocolor(rtt_dsxx::remove_color(msg.str()));
@@ -106,7 +106,7 @@ void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstGetWordCountFile(UnitTest &unitTest) {
   cout << "\ntstGetWordCountFile...\n" << endl;
 
@@ -148,7 +148,7 @@ void tstGetWordCountFile(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char **argv) {
   std::cout << "Testing Design-by-Contract setters and getters "
             << "for the UnitTest class..." << std::endl;
@@ -223,7 +223,7 @@ void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char **argv) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstVersion(UnitTest &unitTest, char *test) {
   // Check version construction
 
@@ -256,7 +256,7 @@ void tstVersion(UnitTest &unitTest, char *test) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstPaths(UnitTest &unitTest, char *test) {
 
   using std::string;
@@ -326,7 +326,7 @@ void tstPaths(UnitTest &unitTest, char *test) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   try {
     // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
@@ -379,6 +379,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstScalarUnitTest.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

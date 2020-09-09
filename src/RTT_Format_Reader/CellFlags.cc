@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellFlags.cc
  * \author B.T. Adams
@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/CellFlags class
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "CellFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the cell_flags data block of the mesh file via calls to private
  *        member functions.
@@ -24,7 +24,7 @@ void CellFlags::readCellFlags(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +38,7 @@ void CellFlags::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block data.
  * \param meshfile Mesh file name.
@@ -61,7 +61,7 @@ void CellFlags::readFlagTypes(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -75,7 +75,7 @@ void CellFlags::readEndKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Returns the index to the cell flag type that contains the specified
  *        string.
@@ -96,6 +96,6 @@ int CellFlags::get_flag_type_index(string &desired_flag_type) const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellFlags.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

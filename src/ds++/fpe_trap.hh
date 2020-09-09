@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/fpe_trap.hh
  * \author Rob Lowrie, Kelly Thompson
@@ -14,7 +14,7 @@
  * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is available
  * at http://algae.sourceforge.net/.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef fpe_trap_hh
 #define fpe_trap_hh
@@ -25,7 +25,7 @@
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \class fpe_trap
  *
@@ -65,8 +65,7 @@ namespace rtt_dsxx {
 class DLL_PUBLIC_dsxx fpe_trap {
 public:
   //! constructor
-  fpe_trap(bool const abortWithInsist_in = true)
-      : abortWithInsist(abortWithInsist_in){/* emtpy */};
+  fpe_trap(bool const abortWithInsist_in = true) : abortWithInsist(abortWithInsist_in){/* emtpy */};
   ~fpe_trap() = default;
 
   //! Enable trapping of fpe signals.
@@ -82,7 +81,7 @@ private:
 };
 } // end namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* WINDOWS X86
  *
  * Provide additional crash handlers for Win32 platforms. This code provides the
@@ -110,7 +109,7 @@ private:
  * The GetExceptionPointers() static method is used to retrieve exception
  * information.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_WINDOWS_X86
 #include <Windows.h> // EXCEPTION_POINTERS
 
@@ -130,12 +129,10 @@ public:
   void SetThreadExceptionHandlers();
 
   //! Collects current process state.
-  static void GetExceptionPointers(DWORD dwExceptionCode,
-                                   EXCEPTION_POINTERS **pExceptionPointers);
+  static void GetExceptionPointers(DWORD dwExceptionCode, EXCEPTION_POINTERS **pExceptionPointers);
 
   //! Action to perform when an exception is found.
-  static void ActionOnException(std::string const &message,
-                                EXCEPTION_POINTERS *pExcPtrs);
+  static void ActionOnException(std::string const &message, EXCEPTION_POINTERS *pExcPtrs);
 
   /*!
    * \brief This method creates minidump of the process
@@ -155,10 +152,8 @@ public:
 
   static void __cdecl PureCallHandler();
 
-  static void __cdecl InvalidParameterHandler(const wchar_t *expression,
-                                              const wchar_t *function,
-                                              const wchar_t *file,
-                                              unsigned int line,
+  static void __cdecl InvalidParameterHandler(const wchar_t *expression, const wchar_t *function,
+                                              const wchar_t *file, unsigned int line,
                                               uintptr_t pReserved);
 
   static int __cdecl NewHandler(size_t);
@@ -177,6 +172,6 @@ public:
 
 #endif // fpe_trap_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/fpe_trap.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

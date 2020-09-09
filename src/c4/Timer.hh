@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Timer.hh
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_Timer_hh
 #define rtt_c4_Timer_hh
@@ -18,19 +17,17 @@
 
 namespace rtt_c4 {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Timer
  *
  * \brief POSIX standard timer.
  *
- * The Timer class is used to calculate wall clock, user CPU, and system CPU
- * timings.  It uses the POSIX standard times function, so it should work well
- * on all (POSIX) systems.
+ * The Timer class is used to calculate wall clock, user CPU, and system CPU timings.  It uses the
+ * POSIX standard times function, so it should work well on all (POSIX) systems.
  *
- * On systems where the PAPI performance tool is available, the Timer class also
- * records some basic cache performance statistics. This is much less portable,
- * but is also not as important.  \sa
+ * On systems where the PAPI performance tool is available, the Timer class also records some basic
+ * cache performance statistics. This is much less portable, but is also not as important.  \sa
  * http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
  * Usage:
@@ -46,8 +43,8 @@ namespace rtt_c4 {
  * std::cout << t.wall_clock() << std::endl;
  * \endcode
  *
- * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced
- * Programming in the UNIX Environment" by Stevens.
+ * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced Programming in the
+ * UNIX Environment" by Stevens.
  *
  * The MSVC implementation of timers is described on MSDN
  * - http://msdn.microsoft.com/en-us/library/4e2ess30%28vs.71%29.aspx
@@ -71,9 +68,9 @@ namespace rtt_c4 {
  * };
  * \endcode
  *
- * Store the CPU time used by this process and all its dead children (and their
- * dead children) in \c BUFFER. Return the elapsed real time, or (\c clock_t) -1
- * for errors.  All times are in \c CLK_TCK ths of a second.
+ * Store the CPU time used by this process and all its dead children (and their dead children) in \c
+ * BUFFER. Return the elapsed real time, or (\c clock_t) -1 for errors.  All times are in \c CLK_TCK
+ * ths of a second.
  *
  * \code
  * extern clock_t times (struct tms *__buffer) __THROW;
@@ -103,7 +100,7 @@ namespace rtt_c4 {
  *
  * \example c4/test/tstTime.cc
  */
-//============================================================================//
+//================================================================================================//
 
 class Timer {
 private:
@@ -255,9 +252,9 @@ public:
   static void initialize(int &argc, char **argv);
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 //! Set the beginning of the time interval.
 void Timer::start() {
@@ -280,7 +277,7 @@ void Timer::start() {
   begin = wall_clock_time(tms_begin);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Set the end of the time interval.
 void Timer::stop() {
   Require(timer_on);
@@ -316,14 +313,14 @@ void Timer::stop() {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return the wall clock time in seconds, for the last interval.
 double Timer::wall_clock() const {
   Require(!timer_on);
   return (end - begin);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return the system cpu time in seconds, for the last interval.
 double Timer::system_cpu() const {
   Require(!timer_on);
@@ -335,7 +332,7 @@ double Timer::system_cpu() const {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return the user cpu time in seconds, for the last interval.
 double Timer::user_cpu() const {
   Require(!timer_on);
@@ -349,13 +346,13 @@ double Timer::user_cpu() const {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! The error in the posix timings
 double Timer::posix_err() const {
   return 1.0 / static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Reset the interval sums.
 void Timer::reset() {
   Require(!timer_on);
@@ -380,7 +377,7 @@ void Timer::reset() {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Merge counts from another Timer.
 void Timer::merge(Timer const &t) {
   Require(!timer_on);
@@ -398,9 +395,9 @@ void Timer::merge(Timer const &t) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 inline std::ostream &operator<<(std::ostream &out, const Timer &t) {
   t.print(out, 2);
@@ -411,6 +408,6 @@ inline std::ostream &operator<<(std::ostream &out, const Timer &t) {
 
 #endif // rtt_c4_Timer_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/Timer.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

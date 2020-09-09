@@ -1,13 +1,13 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/string_manip.cmake
 # brief  Functions for string/message manipulation
 # note   Copyright (C) 2019-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Print the string ${message} formatted as a hanging indent. Text will be
 # wrapped at column ${width} and all lines after the first will be indented
 # ${indent} spaces.
@@ -31,7 +31,7 @@ include_guard(GLOBAL)
 #      purus
 #
 # See src/CMakeLists.txt for an other example.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function (hanging_indent width indent message)
 
   foreach(idx RANGE 1 ${indent})
@@ -58,7 +58,7 @@ function (hanging_indent width indent message)
 
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Print the string ${message} formatted as a block indent. Text will be wrapped
 # at column ${width} and all lines will be indented ${indent} spaces.
 #
@@ -80,7 +80,7 @@ endfunction()
 #      vitae sapien pellentesque habitant. Urna porttitor rhoncus dolor
 #      purus
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function (block_indent width indent message)
 
   string(REPLACE ";" " " message "${message}")
@@ -110,6 +110,6 @@ function (block_indent width indent message)
 
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/string_manip.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

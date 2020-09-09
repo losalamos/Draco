@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/utilities.hh
  * \author Kent G. Budge
@@ -9,7 +9,7 @@
  * This file declares functions that parse certain common constructs in a
  * uniform way.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef parser_utilities_hh
 #define parser_utilities_hh
@@ -71,7 +71,7 @@ std::shared_ptr<Expression>
 parse_temperature(Token_Stream &, unsigned number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
  * The parse_class template function is intended for general use as a common
@@ -103,6 +103,6 @@ std::shared_ptr<Class> parse_class(Token_Stream &tokens,
 #endif
 // parser_utilities_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of utilities.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

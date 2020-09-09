@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/test/tstAnalytic_Gray_Opacity.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_Gray_Opacity test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
 #include "cdi/CDI.hh"
@@ -28,9 +28,9 @@ using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void constant_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
@@ -99,7 +99,7 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void user_defined_test(rtt_dsxx::UnitTest &ut) {
   // make the user defined Marshak model
@@ -154,7 +154,7 @@ void user_defined_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void CDI_test(rtt_dsxx::UnitTest &ut) {
   // lets make a marshak model gray opacity for scattering and absorption
@@ -263,7 +263,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void packing_test(rtt_dsxx::UnitTest &ut) {
   // test the packing
@@ -315,7 +315,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void type_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
@@ -353,7 +353,7 @@ void type_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void default_behavior_tests(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
   // model
@@ -425,7 +425,7 @@ void default_behavior_tests(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -440,6 +440,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAnalytic_Gray_Opacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

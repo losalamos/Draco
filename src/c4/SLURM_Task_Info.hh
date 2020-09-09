@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/SLURM_Task_Info.hh
  * \author Tim Kelley
  * \date   Fri Jun 7 08:06:53 2019
  * \brief  Functions for working with your environment
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef SLURM_Task_Info_hh
 #define SLURM_Task_Info_hh
@@ -15,23 +14,21 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- *\brief Basic information about SLURM tasks, and whether that information was
- *       available.
+ *\brief Basic information about SLURM tasks, and whether that information was available.
  *
- * \note values are based on what was in the environment at the time this class
- *       is instantiated. This class is likely non-reentrant, so use with care
- *       in multithreaded environments. This class relies on SLURM setting the
- *       following environment variables:
+ * \note values are based on what was in the environment at the time this class is
+ *       instantiated. This class is likely non-reentrant, so use with care in multithreaded
+ *       environments. This class relies on SLURM setting the following environment variables:
  *
  * SLURM_CPUS_PER_TASK  (the argument to -c)
  * SLURM_NTASKS         (the argument to -n)
  * SLURM_JOB_NUM_NODES  (the argument to -N)
  *
- * Draco's unit tests don't really make sure that's the case, so if SLURM
- * changes, this may break. */
-//----------------------------------------------------------------------------//
+ * Draco's unit tests don't really make sure that's the case, so if SLURM changes, this may
+ * break. */
+//------------------------------------------------------------------------------------------------//
 
 class SLURM_Task_Info {
 public:
@@ -50,9 +47,9 @@ public:
   //! Return value of SLURM_NODELIST
   std::string get_nodelist() const { return nodelist_; }
 
-  /* note: these rely on the idea that n_cpus_per_task etc are never going to be
-   * in the realm of 2 billion. On the blessaed day that comes to pass, Machine
-   * Overlords, rethink this (please / thank you). */
+  /* note: these rely on the idea that n_cpus_per_task etc are never going to be in the realm of 2
+   * billion. On the blessaed day that comes to pass, Machine Overlords, rethink this (please /
+   * thank you). */
 
   /**\brief Was SLURM_CPUS_PER_TASK set? */
   bool is_cpus_per_task_set() const { return def_cpus_per_task_; }
@@ -98,6 +95,6 @@ private:
 
 #endif // SLURM_Task_Info_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of SLURM_Task_Info.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

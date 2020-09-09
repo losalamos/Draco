@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   memory/memory.cc
  * \author Kent G. Budge
  * \brief  memory diagnostic utilities
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "memory.hh"
 #include "ds++/Assert.hh"
@@ -68,7 +68,7 @@ struct Unsigned {
   unsigned &operator++() { return ++value; }
 };
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class memory_diagnostics
  * \brief
@@ -76,7 +76,7 @@ struct Unsigned {
  * We put the following in a wrapper so we can control destruction. We want to
  * be sure is_active is forced to be false once alloc_map is destroyed.
  */
-//============================================================================//
+//================================================================================================//
 struct memory_diagnostics {
   map<void *, alloc_t> alloc_map;
   map<size_t, Unsigned> alloc_count;
@@ -86,7 +86,7 @@ struct memory_diagnostics {
 
 #endif // DRACO_DIAGNOSTICS & 2
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool set_memory_checking(bool new_status) {
   bool Result = is_active;
 
@@ -102,16 +102,16 @@ bool set_memory_checking(bool new_status) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t total_allocation() { return total; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t peak_allocation() { return peak; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t largest_allocation() { return largest; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Print a report on possible leaks.
  *
  * This function prints a report in a human-friendly format on possible memory
@@ -141,7 +141,7 @@ using namespace rtt_memory;
 
 #if DRACO_DIAGNOSTICS & 2
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Allocate memory with diagnostics.
  *
  * This version of operator new overrides the library default and allows us to
@@ -212,7 +212,7 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Deallocate memory with diagnostics
  *
  * This is the operator delete override to go with the operator new override
@@ -239,7 +239,7 @@ void operator delete(void *ptr) throw() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Deallocate memory with diagnostics
  *
  * C++14 introduces operator delete with a size_t argument, used in place of
@@ -252,7 +252,7 @@ void operator delete(void *ptr) throw() {
 void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Provide a special action when an out-of-memory condition is
  *        encountered.
@@ -288,6 +288,6 @@ void rtt_memory::out_of_memory_handler() {
             << rtt_dsxx::print_stacktrace("bad_alloc");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of memory.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

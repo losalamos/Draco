@@ -1,22 +1,20 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/StackTrace.cc
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 10:15 am
  * \brief  Linux/X86 implementation of stack trace functions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "StackTrace.hh"
 #include <array>
 #include <iostream>
 #include <sstream>
 
-//----------------------------------------------------------------------------//
-// Stack trace feature is only available on Unix-based systems when
-// compiled with Intel or GNU C++.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// Stack trace feature is only available on Unix-based systems when compiled with Intel or GNU C++.
+// ------------------------------------------------------------------------------------------------//
 #ifdef UNIX
 
 #ifndef draco_isPGI
@@ -29,7 +27,7 @@
 #include <ucontext.h>
 #include <unistd.h> // readlink
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper functions
 std::string st_to_string(int const i) {
   std::ostringstream msg;
@@ -37,11 +35,10 @@ std::string st_to_string(int const i) {
   return msg.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
-  // store/build the message here.  At the end of the function we return
-  // msg.str().
+  // store/build the message here.  At the end of the function we return msg.str().
   std::ostringstream msg;
 
   // Get our PID and build the name of the link in /proc
@@ -85,8 +82,8 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
     return msg.str();
   }
 
-  // resolve addresses into strings containing "filename(function+address)",
-  // this array must be free()-ed
+  // resolve addresses into strings containing "filename(function+address)", this array must be
+  // free()-ed
   char **symbollist = backtrace_symbols(addrlist.data(), stack_depth);
 
   // allocate string which will be filled with the demangled function name
@@ -100,15 +97,15 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // }
   // msg << "\nDemangled format:" << std::endl;
 
-  // iterate over the returned symbol lines. skip first two,
-  // (addresses of this function and handler)
+  // iterate over the returned symbol lines. skip first two, (addresses of this function and
+  // handler)
   for (int i = 0; i < stack_depth - 2; i++) {
     char *begin_name = nullptr;
     char *begin_offset = nullptr;
     char *end_offset = nullptr;
 
-    // find parentheses and +address offset surrounding the mangled name:
-    // ./module(function+0x15c) [0x8048a6d]
+    // find parentheses and +address offset surrounding the mangled name: ./module(function+0x15c)
+    // [0x8048a6d]
     for (char *p = symbollist[i]; *p; ++p) {
       if (*p == '(')
         begin_name = p;
@@ -126,9 +123,8 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
       *end_offset = '\0';
       char *location = end_offset + 1;
 
-      // mangled name is now in [begin_name, begin_offset) and caller
-      // offset in [begin_offset, end_offset). now apply
-      // __cxa_demangle():
+      // mangled name is now in [begin_name, begin_offset) and caller offset in [begin_offset,
+      // end_offset). now apply __cxa_demangle():
 
       int status(1); // assume failure
       char *ret01 = nullptr;
@@ -140,8 +136,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
         msg << "  " << symbollist[i] << " : " << funcname << "()+"
             << begin_offset << location << "\n";
       } else {
-        // demangling failed. Output function name as a C function with
-        // no arguments.
+        // demangling failed. Output function name as a C function with no arguments.
         msg << "  " << symbollist[i] << " : " << begin_name << "()+"
             << begin_offset << "\n";
       }
@@ -172,17 +167,15 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // UNIX
 
-//----------------------------------------------------------------------------//
-// Stack trace feature is also available on Win32-based systems when
-// compiled with Visual Studio.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// Stack trace feature is also available on Win32-based systems when compiled with Visual Studio.
+// ------------------------------------------------------------------------------------------------//
 #ifdef WIN32
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
-  // store/build the message here.  At the end of the function we return
-  // msg.str().
+  // store/build the message here.  At the end of the function we return msg.str().
   std::ostringstream msg;
 
   int pid(0);
@@ -209,6 +202,6 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // WIN32
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/StackTrace.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

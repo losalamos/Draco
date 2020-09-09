@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ndi/test/tstNDI_AtomicMass.cc
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  NDI_AtomicMass test
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
 #include "cdi_ndi/NDI_AtomicMass.hh"
@@ -24,9 +24,9 @@
 using rtt_cdi_ndi::NDI_AtomicMass;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void amw_test(rtt_dsxx::UnitTest &ut) {
 
@@ -64,7 +64,7 @@ void amw_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void amw_default_test(rtt_dsxx::UnitTest &ut) {
 
   NDI_AtomicMass ndi_amw;
@@ -87,22 +87,25 @@ void amw_default_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     amw_test(ut);
-    std::string gendir_default = rtt_dsxx::getFilenameComponent(
-        std::string(NDI_DATA_DIR) + rtt_dsxx::dirSep + "gendir",
-        rtt_dsxx::FilenameComponent::FC_NATIVE);
+    std::string gendir_default;
+    bool def_gendir{false};
+    std::tie(def_gendir, gendir_default) =
+        rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH");
 
-    if (rtt_dsxx::fileExists(gendir_default)) {
+    if (def_gendir && rtt_dsxx::fileExists(gendir_default)) {
       amw_default_test(ut);
+    } else {
+      PASSMSG("==> ENV{NDI_GENDIR_PATH} not set. Some tests were not run.");
     }
   }
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstNDI_AtomicMass.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

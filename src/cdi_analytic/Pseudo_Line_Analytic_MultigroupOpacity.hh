@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh
 #define rtt_cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh
@@ -16,7 +16,7 @@
 namespace rtt_cdi_analytic {
 using rtt_parser::Expression;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \class Pseudo_Line_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a random line
@@ -72,6 +72,6 @@ public:
 
 #endif // rtt_cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

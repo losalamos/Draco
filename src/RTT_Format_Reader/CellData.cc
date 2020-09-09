@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/CellData class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "CellData.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the cell_data block data from the mesh file via calls to
  *        private member functions.
@@ -25,7 +25,7 @@ void CellData::readCellData(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_data block keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +38,7 @@ void CellData::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_data block data.
  * \param meshfile Mesh file name.
@@ -57,7 +57,7 @@ void CellData::readData(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validate the end_celldat block keyworde.
  * \param meshfile Mesh file name.
@@ -73,6 +73,6 @@ void CellData::readEndKeyword(ifstream &meshfile) {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellData.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   units/test/tstUnitSystemEnums.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Unit tests for units/UnitSystemEnum class
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -15,9 +15,9 @@
 #include <iomanip>
 #include <sstream>
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_enumValues(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
@@ -42,7 +42,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
            "L_long_labels has the expected values.");
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(3);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0, 1000.0};
@@ -68,7 +68,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("M_long_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(6);
     constexpr std::array<double, iSenVal> adSenVal = {0.0,   1.0,   1000.0,
@@ -97,7 +97,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("t_long_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     double constexpr keV2K(1.16045193028089e7);
     int constexpr iSenVal(4);
@@ -125,7 +125,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("T_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(2);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0};
@@ -145,7 +145,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("I_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(3);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0,
@@ -166,7 +166,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("A_labels does not have the expected values.");
   }
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   {
     int constexpr iSenVal(2);
     constexpr std::array<double, iSenVal> adSenVal = {0.0, 1.0};
@@ -189,7 +189,7 @@ void test_enumValues(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -198,6 +198,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstUnitSystemEnums.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

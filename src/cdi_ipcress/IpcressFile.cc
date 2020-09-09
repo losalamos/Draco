@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation file for IpcressFile class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressFile.t.hh"
@@ -15,7 +15,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief The standard IpcressFile constructor.
  *
@@ -132,7 +132,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   ipcressFileHandle.close();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Indicate if the requested material id is available in the data file.
  *
@@ -142,7 +142,7 @@ bool IpcressFile::materialFound(size_t matid) const {
   return std::find(matIDs.begin(), matIDs.end(), matid) != matIDs.end();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   std::string foundFile;
 
@@ -157,7 +157,7 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   return ipcressFile;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read 8 character strings from the binary file
  *
@@ -186,7 +186,7 @@ void IpcressFile::read_strings(size_t const byte_offset,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Populate the materialData member data container.
 void IpcressFile::loadFieldData() {
   // Attempt to open the ipcress file.
@@ -251,6 +251,6 @@ void IpcressFile::loadFieldData() {
 
 } // end namespace rtt_cdi_ipcress
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressFile.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

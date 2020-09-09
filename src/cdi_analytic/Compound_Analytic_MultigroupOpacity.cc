@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Compound_Analytic_MultigroupOpacity.cc
  * \brief  Compound_Analytic_MultigroupOpacity class member definitions.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Compound_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
@@ -12,9 +12,9 @@
 
 namespace rtt_cdi_analytic {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic multigroup opacity model.
  *
@@ -47,7 +47,7 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
   Ensure(check_class_invariant());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
  *
@@ -110,14 +110,14 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
 
   Ensure(check_class_invariant());
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Compound_Analytic_MultigroupOpacity::check_class_invariant() const {
   return group_models.size() + 1 == getGroupBoundaries().size();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // OPACITY INTERFACE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Return the group opacities given a scalar temperature and density.
  *
@@ -157,7 +157,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(double temperature,
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a vector of multigroup opacities given a vector of
@@ -206,7 +206,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a vector of multigroup opacities given a vector of
@@ -255,7 +255,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Pack an analytic multigroup opacity.
  *
@@ -313,6 +313,6 @@ Compound_Analytic_MultigroupOpacity::pack() const {
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Compound_Analytic_MultigroupOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

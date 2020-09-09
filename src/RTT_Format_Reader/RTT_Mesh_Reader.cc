@@ -6,7 +6,7 @@
  * \brief  Implementation file for RTT_Mesh_Reader library.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "RTT_Mesh_Reader.hh"
 #include <algorithm>
@@ -15,7 +15,7 @@ namespace rtt_RTT_Format_Reader {
 
 using rtt_mesh_element::Element_Definition;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Transforms the RTT_Format data to the CGNS format.
  */
@@ -186,7 +186,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Returns the node numbers associated with each element (i.e., sides and
  *        cells).
@@ -207,7 +207,7 @@ RTT_Mesh_Reader::vector_vector_uint RTT_Mesh_Reader::get_element_nodes() const {
   return element_nodes;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Returns the nodes associated with each node_flag_type_name and
  *        node_flag_name combination.
@@ -239,7 +239,7 @@ RTT_Mesh_Reader::get_node_sets() const {
   return node_sets;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Returns the elements (i.e., sides and cells) associated with each
  *        flag_type_name and flag_name combination for the sides and cells read
@@ -304,7 +304,7 @@ RTT_Mesh_Reader::get_element_sets() const {
   return element_sets;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Performs a basic sanity check on the mesh file data.
  * \return Acceptablity of the mesh file data.
@@ -323,6 +323,6 @@ bool RTT_Mesh_Reader::invariant() const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Mesh_Reader.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

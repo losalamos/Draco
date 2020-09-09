@@ -1,23 +1,22 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/opstream.cc
  * \author Kent G. Budge
  * \date   Mon Jun 25 12:12:31 MDT 2018
  * \brief  Define methods of class opstream
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "opstream.hh"
 #include "C4_Functions.hh"
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Write all buffered data to console.
  *
- * Causes all buffered data to be written to console in MPI rank order; that is,
- * all data from rank 0 is written first, then all data from rank 1, and so on.
+ * Causes all buffered data to be written to console in MPI rank order; that is, all data from rank
+ * 0 is written first, then all data from rank 1, and so on.
  */
 void opstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
@@ -49,19 +48,17 @@ void opstream::mpibuf::send() {
   rtt_c4::global_barrier();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Add the specified character to the buffer.
  *
- * For simplicity, opstream is currently implemented by treating every character
- * write as an overflow which is intercepted and added to the internal
- * buffer. This is not actually that inefficient for this class, since it means
- * that when the stream using the buffer wants to insert data, it checks the
- * buffer's cursor pointer, always finds that it is null, and calls overflow
- * instead. These are not expensive operations. Should we see any evidence this
- * class is taking significant time, which should not happen for its intended
- * use (synchronizing diagnostic output), we can re-implement to let the stream
- * do explicitly buffered insertions without this change affecting any user code
- * -- this interface is all private.
+ * For simplicity, opstream is currently implemented by treating every character write as an
+ * overflow which is intercepted and added to the internal buffer. This is not actually that
+ * inefficient for this class, since it means that when the stream using the buffer wants to insert
+ * data, it checks the buffer's cursor pointer, always finds that it is null, and calls overflow
+ * instead. These are not expensive operations. Should we see any evidence this class is taking
+ * significant time, which should not happen for its intended use (synchronizing diagnostic output),
+ * we can re-implement to let the stream do explicitly buffered insertions without this change
+ * affecting any user code -- this interface is all private.
  *
  * \param[in] c Next character to add to the internal buffer.
  *
@@ -72,18 +69,17 @@ void opstream::mpibuf::send() {
   return c;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Shrink the buffer to fit the current data.
  *
- * This is included for completeness, and also to let a user who is really
- * concerned about the last byte of storage shrink the buffer of an opstream
- * that has done some large writes, and which he will be using again later,
- * but which he does not want tying up any memory in the meanwhile.
+ * This is included for completeness, and also to let a user who is really concerned about the last
+ * byte of storage shrink the buffer of an opstream that has done some large writes, and which he
+ * will be using again later, but which he does not want tying up any memory in the meanwhile.
  */
 void opstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of opstream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

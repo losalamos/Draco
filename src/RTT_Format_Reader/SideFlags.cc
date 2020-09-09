@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/SideFlags class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "SideFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the side_flags data block of the mesh file via calls to
  *        private member functions.
@@ -24,7 +24,7 @@ void SideFlags::readSideFlags(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the side_flags block keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +38,7 @@ void SideFlags::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the side_flags block data.
  * \param meshfile Mesh file name.
@@ -59,7 +59,7 @@ void SideFlags::readFlagTypes(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_side_flags block keyword.
  * \param meshfile Mesh file name.
@@ -73,7 +73,7 @@ void SideFlags::readEndKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Returns the index to the side flag type that contains the specified
  *        string.
@@ -94,6 +94,6 @@ int SideFlags::get_flag_type_index(string &desired_flag_type) const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/SideFlags.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

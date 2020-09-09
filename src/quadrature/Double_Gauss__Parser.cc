@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Double_Gauss__Parser.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
  * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
  *         reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Double_Gauss.hh"
 #include "parser/utilities.hh"
@@ -14,7 +14,7 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::shared_ptr<Quadrature> Double_Gauss::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "order", "expected an order");
@@ -29,6 +29,6 @@ std::shared_ptr<Quadrature> Double_Gauss::parse(Token_Stream &tokens) {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Double_Gauss__Parser.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

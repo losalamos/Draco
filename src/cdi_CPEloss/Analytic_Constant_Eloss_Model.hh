@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_Constant_Eloss_Model.hh
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Analytic_Constant_Eloss_Model class definition.
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPEloss_Analytic_Constant_Eloss_Model_hh
 #define rtt_cdi_CPEloss_Analytic_Constant_Eloss_Model_hh
@@ -15,14 +15,14 @@
 #include <algorithm>
 
 namespace rtt_cdi_cpeloss {
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Analytic_Constant_Eloss_Model
  * \brief Analytic_Constant_Eloss_Model derived class.
  *
  * CP energy loss class using constant value provided to constructor.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_Constant_Eloss_Model : public Analytic_Eloss_Model {
 public:
@@ -47,6 +47,6 @@ private:
 
 #endif // rtt_cdi_CPEloss_Analytic_Constant_Eloss_Model_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_Constant_Eloss_Model.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

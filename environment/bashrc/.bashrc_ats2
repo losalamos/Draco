@@ -20,7 +20,7 @@ export VENDOR_DIR
 export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
 
 # Support building cassio with ccsrad shared deployment repository.
-if [[ -d /usr/workspace/eapdev/eap/users/ccsrad/Cassio.deployment ]]; then
+if [[ -d /usr/workspace/dacodes/eap/users/ccsrad/Cassio.deployment ]]; then
   export TF_DEPLOYMENT_CLONES=/usr/workspace/dacodes/eap/users/ccsrad/eap.deployment
   export TF_SPACK_INSTANCES=/usr/workspace/dacodes/eap/users/ccsrad/spack_instances
 fi
@@ -56,7 +56,7 @@ else
 
 # StdEnv
 
-  export dracomodules="cuda/11.0.2 python/3.7.2 ack htop gsl numdiff git random123 gcc/8.3.1 cmake/3.17.0 metis netlib-lapack eospac/6.4.0 spectrum-mpi/2019.06.24 parmetis superlu-dist trilinos libquo csk ndi caliper"
+  export dracomodules="cuda/11.0.2 python/3.8.2 ack htop gsl numdiff git random123 gcc/8.3.1 cmake/3.17.0 metis netlib-lapack eospac/6.4.0 spectrum-mpi/2019.06.24 parmetis superlu-dist trilinos libquo csk ndi caliper"
 
 fi
 

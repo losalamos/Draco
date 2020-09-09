@@ -1,10 +1,10 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*----------------------------------------------*-C-*---------------------------------------------*/
 /*!
  * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_dsxx_config_h
 #define rtt_dsxx_config_h
@@ -12,9 +12,9 @@
 /* hostname */
 #include <limits.h>        // HOST_NAME_MAX, hostname
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* Draco/CMake build system variables */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 /* DBC ENVIRONMENTS */
 #define DBC @DRACO_DBC_LEVEL@
@@ -86,9 +86,9 @@
   (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* Platform checks */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 /* Does this machine support hardware FMA? */
 #cmakedefine HAVE_HARDWARE_FMA @HAVE_HARDWARE_FMA@
@@ -103,8 +103,8 @@
 
 /* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT
-/* restrict is valid keyword in C99 but not in C++11.  Protect this define so
- * that it is set only for C++ */
+/* restrict is valid keyword in C99 but not in C++11.  Protect this define so that it is set only
+ * for C++ */
 #ifdef __cplusplus
 #if ! defined(MSVC) || MSVC_VERSION < 1927
 #define restrict @RESTRICT_KEYWORD@
@@ -116,8 +116,8 @@
 #cmakedefine HAVE_UNISTD_H   @HAVE_UNISTD_H@
 #cmakedefine HAVE_WINSOCK2_H @HAVE_WINSOCK2_H@
 
-/* Use the POSIX minimum guarantee if HOST_NAME_MAX is not found.  Should be
- * located in climits (also posixl_lim.h, limits.h, syslimits.h). */
+/* Use the POSIX minimum guarantee if HOST_NAME_MAX is not found.  Should be located in climits
+ * (also posixl_lim.h, limits.h, syslimits.h). */
 #cmakedefine HAVE_HOST_NAME_MAX
 #cmakedefine HAVE_MAXHOSTNAMELEN
 #cmakedefine HAVE_POSIX_HOST_NAME_MAX
@@ -176,12 +176,12 @@
 /*!
  * \page diagnostics Diagnostics Levels
  *
- * The diagnostics can be turned on in three different levels based on logical
- * bit comparisons.  The following shows the levels:
+ * The diagnostics can be turned on in three different levels based on logical bit comparisons.  The
+ * following shows the levels:
+ *
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
  * - Bit 1, (010), activates Level 2 (some performance impact and possible
- *                                    intrusive output, rtt_memory tracking is
- *                                    activated.)
+ *                                    intrusive output, rtt_memory trackin is activated.)
  *                 and a stack trace will be added to DbC messages.
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
@@ -195,16 +195,15 @@
  * - 6 Level 2, Level 3
  * - 7 Level 1, Level 2, Level 3
  * .
- * Thus setting -DDRACO_DIAGNOSTICS=7 at configure time will turn on all
- * levels.  The default setting is 0.
+  * Thus setting -DDRACO_DIAGNOSTICS=7 at configure time will turn on all levels.  The default
+ * setting is 0.
  *
- * The intent is to use Level 1 for high-level, low cost diagnostics that are
- * always active (i.e. User "Education").  Levels 2 and 3 are for low-level
- * diagnostics that could incur a performance penalty.  However, all of these
- * usages are up to the client.
+ * The intent is to use Level 1 for high-level, low cost diagnostics that are always active
+ * (i.e. User "Education").  Levels 2 and 3 are for low-level diagnostics that could incur a
+ * performance penalty.  However, all of these usages are up to the client.
  *
- * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx
- * and config.h, respectively.
+ * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx and config.h,
+ * respectively.
  */
 /* ---------------------------------------- */
 
@@ -262,14 +261,14 @@
 #endif
 
 /* ----------------------------------------------------------------
- * Define declaration specifiers for MSVC and GCC.  This defines
- * CPP definitions like DLL_PUBLIC_<pkg>
+ * Define declaration specifiers for MSVC and GCC.  This defines CPP definitions like
+ * DLL_PUBLIC_<pkg>
  * ---------------------------------------------------------------- */
 #include "ds++/dll_declspec.h"
 
-/* In MSVC, constants like M_PI are not defined by default in math.h.
- * To include them, we must define _USE_MATH_DEFINES. The undefs
- * help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
+/* In MSVC, constants like M_PI are not defined by default in math.h.  To include them, we must
+ * define _USE_MATH_DEFINES. The undefs help MSVC resolve numeric_limits<T>::max()
+ * vs. std::max(int,int) */
 #ifdef _MSC_VER
     #undef max
     #undef min
@@ -289,9 +288,8 @@
  * Clean code:
  * ---------------------------------------------------------------- */
 
-/* When using GCC, provide a CPP macro that tells the compiler to
-   expect (and not warn) if a variable is defined but not used.
-   This warning can be suppressed by marking the variable with a
+/* When using GCC, provide a CPP macro that tells the compiler to expect (and not warn) if a
+   variable is defined but not used.  This warning can be suppressed by marking the variable with a
    special attribute.  See jayenne/src/mc/Constants.hh. */
 #ifdef __GNUC__
 #define VARIABLE_IS_NOT_USED __attribute__ ((unused))
@@ -301,6 +299,6 @@
 
 #endif /* __dsxx_config_h__ */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of config.h */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

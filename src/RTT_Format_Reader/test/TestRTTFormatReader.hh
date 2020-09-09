@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/test/TestRTTFormatReader.hh
  * \author B.T. Adams
@@ -6,7 +6,7 @@
  * \brief  Header file for the RTT_Format_Reader class unit test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_test_TestRTT_Format_Reader_hh
 #define rtt_test_TestRTT_Format_Reader_hh
@@ -60,6 +60,6 @@ bool check_cell_data(const RTT_Format_Reader &mesh, const Meshes &meshtype,
 
 #endif // _test_TestRTT_Format_Reader_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of meshReaders/test/TestRTTFormatReader.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

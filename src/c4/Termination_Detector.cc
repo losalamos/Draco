@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Termination_Detector.cc
  * \author Kent Budge
  * \date   Thu Jan 12 10:27:45 2006
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "Termination_Detector.hh"
 #include "C4_Functions.hh"
@@ -15,12 +14,11 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * \brief Constructor
- * \param[in] tag Tag to use for termination algorithm messages. This must be
- *                distinct from any other message tags that may simultaneously
- *                be in use.
+ * \param[in] tag Tag to use for termination algorithm messages. This must be distinct from any
+ *                other message tags that may simultaneously be in use.
  */
 Termination_Detector::Termination_Detector(int const tag)
     : tag_(tag), number_of_processors_(nodes()), pid_(node()),
@@ -44,7 +42,7 @@ Termination_Detector::Termination_Detector(int const tag)
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Termination_Detector::init() {
   state_ = UP;
   send_count_ = 0;
@@ -53,7 +51,7 @@ void Termination_Detector::init() {
   old_global_work_count_ = 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef PRINTF_DEBUG
 Termination_Detector::~Termination_Detector() {
   cout << pid_ << '/' << tag_ << ": destroyed" << endl;
@@ -62,7 +60,7 @@ Termination_Detector::~Termination_Detector() {
 Termination_Detector::~Termination_Detector() = default;
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Return \c true if we have terminated; \c false otherwise.
 bool Termination_Detector::is_terminated() {
 
@@ -100,8 +98,8 @@ bool Termination_Detector::is_terminated() {
            << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
-      // If the daughter exists, the son also exists, and the subtree counts are
-      // already initialized.
+      // If the daughter exists, the son also exists, and the subtree counts are already
+      // initialized.
       subtree_send_count_ += buffer[0];
       subtree_receive_count_ += buffer[1];
       subtree_work_count_ += buffer[2];
@@ -297,6 +295,6 @@ bool Termination_Detector::is_terminated() {
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Termination_Detector.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
