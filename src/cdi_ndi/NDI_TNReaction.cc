@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ndi/NDI_TNReaction.cc
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  NDI_TNReaction member definitions.
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #include "NDI_TNReaction.hh"
 #include <cmath>
 
@@ -14,9 +14,9 @@ namespace rtt_cdi_ndi {
 
 // Protect actual NDI calls with NDI_FOUND macro:
 #ifdef NDI_FOUND
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for NDI reader specific to TN reaction data with provided
  *        path to gendir file.
@@ -34,7 +34,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in,
 
   load_ndi();
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for NDI reader specific to TN reaction data using default
  *        gendir file.
@@ -50,7 +50,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &library_in,
 
   load_ndi();
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Load NDI dataset. Split off from constructor to allow for both
  *        default and overridden gendir paths.
@@ -283,7 +283,7 @@ void NDI_TNReaction::load_ndi() {
   Require(ndi_error == 0);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Return normalized probability distribution function for energy of a
  *        reaction product at a given temperature.
@@ -327,9 +327,9 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
   return pdf;
 }
 #else
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for NDI reader -- base class constructor will throw
  *        because NDI is not available.
@@ -369,6 +369,6 @@ NDI_TNReaction::get_PDF(const int /*product_zaid*/,
 #endif // NDI_FOUND
 } // namespace rtt_cdi_ndi
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_ndi/NDI_TNReaction.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

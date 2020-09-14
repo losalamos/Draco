@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "cdi/CDI.hh"
@@ -23,7 +23,7 @@ using namespace rtt_cdi;
 typedef Analytic_MultigroupOpacity::sf_double sf_double;
 typedef Analytic_MultigroupOpacity::vf_double vf_double;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class PLP_Functor {
 public:
   typedef double return_type;
@@ -41,7 +41,7 @@ double PLP_Functor::operator()(double x) {
   return ptr_->monoOpacity(x, T_) * Pseudo_Line_Base::BB(T_, x);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class PLPW_Functor {
 public:
   typedef double return_type;
@@ -58,7 +58,7 @@ double PLPW_Functor::operator()(double x) {
   return Pseudo_Line_Base::BB(T_, x);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class PLR_Functor {
 public:
   typedef double return_type;
@@ -76,7 +76,7 @@ double PLR_Functor::operator()(double x) {
   return Pseudo_Line_Base::DBB(T_, x) / ptr_->monoOpacity(x, T_);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class PLRW_Functor {
 public:
   typedef double return_type;
@@ -93,7 +93,7 @@ double PLRW_Functor::operator()(double x) {
   return Pseudo_Line_Base::DBB(T_, x);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Pseudo_Line_Analytic_MultigroupOpacity::Pseudo_Line_Analytic_MultigroupOpacity(
     sf_double const &group_bounds_in, rtt_cdi::Reaction const reaction_in,
     std::shared_ptr<Expression const> const &continuum,
@@ -107,7 +107,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::Pseudo_Line_Analytic_MultigroupOpacity(
                        seed_in),
       averaging_(averaging), qpoints_(qpoints) {}
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Packing function
 //! \bug No unit tests so commenting out until a test can be added.
 
@@ -122,7 +122,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 sf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
                                                    double /*rho*/) const {
@@ -226,7 +226,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
                                                              double rho) const {
   size_t const n = T.size();
@@ -239,14 +239,14 @@ vf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double const T,
                                                    sf_double const &rho) const {
   return vf_double(rho.size(), getOpacity(T, rho[0]));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Pseudo_Line_Analytic_MultigroupOpacity::std_string
 Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const {
   std_string descriptor;
@@ -268,6 +268,6 @@ Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const {
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Pseudo_Line_Analytic_MultigroupOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

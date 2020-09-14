@@ -29,6 +29,15 @@ draco/environment/elisp for better XEmacs performance.  Simply run
 of elisp commands in your ~/.emacs.d directory, you may want to compile
 those files too.
 
+MELPA - Install extra Emacs modes
+==============================
+Copy the MELPA setup code into ~/.emacs and restart emacs.
+Try installing yaml-mode and cmake-mode:
+M-x package-list-packages
+C-s cmake-mode ==> click to install
+C-s yaml-mode  ==> click to install
+q              ==> quit
+
 Useful Keybindings
 ==============================
 

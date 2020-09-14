@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressOpacity.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi/OpacityCommon.hh"
@@ -27,9 +27,9 @@ using rtt_cdi_ipcress::IpcressGrayOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   // Ipcress data filename (IPCRESS format required)
@@ -238,7 +238,7 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"file_check_analytic\"...\n";
@@ -703,7 +703,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"check_ipcress_stl_accessors\"...\n";
@@ -1065,7 +1065,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"gray_opacity_packing_test\"...\n";
@@ -1162,7 +1162,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"mg_opacity_packing_test\"...\n";
@@ -1288,7 +1288,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1303,6 +1303,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tIpcressOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

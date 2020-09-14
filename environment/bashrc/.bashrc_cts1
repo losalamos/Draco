@@ -51,9 +51,12 @@ if [[ ! ${modcmd} ]]; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-  module use --append /usr/projects/draco/Modules/snow
-  module load user_contrib/2020.08
-  module load draco/intel19
+  if [[ -x /usr/projects/hpcsoft/utilities/bin/sys_name ]] && \
+    [[ -d /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name) ]]; then
+    module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)
+    module load uc/2020.08
+    module load draco/intel19
+  fi
 
 fi
 

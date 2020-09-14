@@ -132,14 +132,21 @@ Consider prepending your local directories."
   :group 'draco-mode
   :type 'list)
 
-(defcustom draco-code-comment-width 80
-  "*Number of characters to use for comments (default 80)"
+(defcustom draco-code-comment-width 100
+  "*Number of characters to use for comments (default 100)"
 :group 'draco-mode
 :type '(number) )
 
 ;; ========================================
 ;; Use Draco configuration for these modes
 ;; ========================================
+
+(defcustom draco-want-yaml-mode t
+  "*Does the user want to have the Draco minor mode enabled for YAML
+mode?"
+:group 'draco-mode
+:type '(radio	(const :tag "Yes" t)
+		(const :tag "No"  nil)))
 
 (defcustom draco-want-mppl-mode t
   "*Does the user want to have the Draco minor mode enabled for MPPL
@@ -351,6 +358,8 @@ compilation-mode?"
 (defconst emacs>=23p (and (not xemacsp) (> emacs-major-version 22))
   "Are we running GNU Emacs 23 or above?")
 
+(global-auto-revert-mode t)
+(setq require-final-newline t)
 (setq-default indent-tabs-mode nil)
 (defun insert-timestamp ()
   (interactive)

@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2014 April 23
@@ -6,10 +6,10 @@
 #        via CMakeAddFortranSubdirectory.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Run this file from the command line as:
 # cmake -DCMAKE_BUILD_TYPE=[Debug|Release] -P config_cafs_proj.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 set(ENV{PATH} "@CAFS_Fortran_COMPILER_PATH@\;$ENV{PATH}")
 set(CMAKE_COMMAND_LINE "@ARGS_CMAKE_COMMAND_LINE@")
 set(VERBOSE @ARGS_VERBOSE@)

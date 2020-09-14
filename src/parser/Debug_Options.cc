@@ -1,11 +1,11 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
  * \file   parser/Debug_Options.cc
  * \author Kent Grimmett Budge
  * \brief  Define Debug_Options parse functions.
  * \note   Copyright (C) 2014-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #include "Debug_Options.hh"
 #include <map>
@@ -39,7 +39,7 @@ bool is_bit(unsigned bit) {
 namespace rtt_parser {
 using std::string;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Get a debug specification.
  *
@@ -78,7 +78,7 @@ unsigned get_debug_option(string const &option_name) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parse a debug specification.
  *
@@ -119,7 +119,7 @@ unsigned parse_debug_options(Token_Stream &tokens, unsigned const parent) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Convert a debug mask to a string containing comma-delimited set of
  *      debug keywords.
@@ -174,7 +174,7 @@ string debug_options_as_text(unsigned debug_options) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Add a new debug option to the debug parser specific to an
  *      application. This version assigns the next available bit.
@@ -202,7 +202,7 @@ unsigned add_debug_option(string const &option_name) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Add a new debug option to the debug parser specific to an
  *      application. This version requests a specific bit and throws an
@@ -231,7 +231,7 @@ void add_debug_option(string const &option_name, unsigned const bit) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void flush_debug_options() {
   extended_debug_option.clear();
   extended_debug_back_option.clear();
@@ -240,6 +240,6 @@ void flush_debug_options() {
 
 } // end namespace rtt_parser
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of parser/Debug_Options.cc */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

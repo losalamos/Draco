@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   compton/Compton.cc
  * \author Kendra Keady
@@ -6,7 +6,7 @@
  * \brief  Implementation file for compton CSK_generator interface
  * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 // headers provided in draco:
 #include "compton/Compton.hh"
@@ -21,7 +21,7 @@ namespace rtt_compton {
 // Constructors //
 // ------------ //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an existing multigroup libfile.
  *
@@ -52,7 +52,7 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an existing pointwise file and a multigroup structure.
  *
@@ -135,7 +135,7 @@ Compton::~Compton(void) {}
 //  Interfaces  //
 // ------------ //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate opacity data to a given SCALED electron temperature
  *        \f$ (T / m_e) \f$
@@ -161,7 +161,7 @@ Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
   return ei->interpolate_csk(etemp, limit_grps);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate nu_ratio data to a given SCALED electron temperature
  * (T / m_e)
@@ -187,7 +187,7 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
   return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate EREC data to a given electron temperature / frequency
  *
@@ -204,7 +204,7 @@ double Compton::interpolate_erec(const double Tm, const double freq) const {
   return llnli->interpolate_erec(Tm, freq);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate Compton opacity data to a given electron temperature
  *        / frequency
@@ -224,7 +224,7 @@ double Compton::interpolate_sigc(const double Tm, const double freq) const {
   return llnli->interpolate_sigc(Tm, freq);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate EREC data in a cell for a given frequency
  *
@@ -246,7 +246,7 @@ double Compton::interpolate_cell_erec(const int64_t cell,
   return llnli->interpolate_erec(cell, freq);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate Compton opacity data in a cell for a given frequency
  *
@@ -268,7 +268,7 @@ double Compton::interpolate_cell_sigc(const int64_t cell,
   return llnli->interpolate_sigc(cell, freq);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate opacity and EREC data to cell temperatures
  *
@@ -287,6 +287,6 @@ void Compton::interpolate_precycle(const std::vector<double> &Tms,
 
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End compton/Compton.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

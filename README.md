@@ -84,7 +84,6 @@ Synopsis of Active Draco Packages
 * roots - Root finding algorithms
 * RTT_Format_Reader - meshReaders implementation for RTT format mesh files or
   input-streams.
-* shared_lib - Dynamically load/unload shared object libraries via dl load
 * special_functions - Specialized math functions like factorial and Dirac delta.
 * traits - A traits class used by viz.
 * units - Provides encapsulated unit systems, functions to convert between unit
@@ -92,6 +91,10 @@ Synopsis of Active Draco Packages
 * VendorChecks - A testing component to ensure that discovered and used vendor
   libraries behave as expected.
 * viz - Generates Ensight files for data visualization.
+
+Deprecated packages
+----------------
+* shared_lib - Dynamically load/unload shared object libraries via dl load (removed 2020 Sep 7).
 
 Authors
 ----------------

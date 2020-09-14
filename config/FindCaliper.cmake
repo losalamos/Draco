@@ -1,10 +1,10 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/FindCaliper.cmake
 # date   Tuesday, Jun 30, 2020, 08:11 am
 # brief  Instructions for discovering the Caliper vendor libraries.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 #.rst:
 # FindCaliper
@@ -52,7 +52,7 @@
 #  CALIPER_LIBRARY        - Location of the Caliper library.
 #  CALIPER_LIBRARY_DEBUG  - Location of the debug Caliper library (if any).
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Include these modules to handle the QUIETLY and REQUIRED arguments.
 include(FindPackageHandleStandardArgs)
@@ -184,6 +184,6 @@ if( CALIPER_FOUND AND NOT TARGET CALIPER::caliper )
   endif()
 endif()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End FindCaliper.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Models.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_Models implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
@@ -15,9 +15,9 @@
 
 namespace rtt_cdi_analytic {
 
-//============================================================================//
+//================================================================================================//
 // EOS_ANALYTIC_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 
 /*!
  * \brief Calculate the electron temperature given density and Electron internal
@@ -107,9 +107,9 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
   }
 }
 
-//============================================================================//
+//================================================================================================//
 // CONSTANT_ANALYTIC_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
 Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
@@ -139,7 +139,7 @@ Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
@@ -170,7 +170,7 @@ Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
 Analytic_Opacity_Model::sf_double
@@ -178,9 +178,9 @@ Constant_Analytic_Opacity_Model::get_parameters() const {
   return sf_double(1, sigma);
 }
 
-//============================================================================//
+//================================================================================================//
 // POLYNOMIAL_ANALYTIC_OPACITY_MODEL DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
 Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
@@ -210,7 +210,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char
@@ -252,7 +252,7 @@ Polynomial_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
 Analytic_Opacity_Model::sf_double
@@ -273,9 +273,9 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const {
   return p;
 }
 
-//============================================================================//
+//================================================================================================//
 // POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
 Polynomial_Specific_Heat_Analytic_EoS_Model::
@@ -305,7 +305,7 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char
@@ -342,7 +342,7 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 Analytic_EoS_Model::sf_double
 Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
@@ -357,9 +357,9 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   return p;
 }
 
-//============================================================================//
+//================================================================================================//
 // CONSTANT_ANALYTIC_EI_COUPLING_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
 Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(
@@ -389,7 +389,7 @@ Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
 Analytic_EICoupling_Model::sf_char
@@ -421,7 +421,7 @@ Constant_Analytic_EICoupling_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
 Analytic_EICoupling_Model::sf_double
@@ -429,9 +429,9 @@ Constant_Analytic_EICoupling_Model::get_parameters() const {
   return sf_double(1, ei_coupling);
 }
 
-//============================================================================//
+//================================================================================================//
 // ANALYTIC_KP_ALPHA_ELOSS_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 
 /*! \brief Calculate the eloss in units of shk^-1; T given in keV, rho in g/cc,
  *         v0 in cm/shk
@@ -470,6 +470,6 @@ double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Analytic_Models.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

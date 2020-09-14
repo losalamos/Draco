@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ndi/NDI_Base.hh
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  NDI_Base class definition.
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef cdi_ndi_NDI_Base_hh
 #define cdi_ndi_NDI_Base_hh
@@ -24,7 +24,7 @@
 
 namespace rtt_cdi_ndi {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class NDI_Base
  *
@@ -40,7 +40,7 @@ namespace rtt_cdi_ndi {
  * multigroup data is supported, continuous energy data is probably best added
  * through a refactor.
  */
-//============================================================================//
+//================================================================================================//
 
 class NDI_Base {
 
@@ -86,10 +86,10 @@ protected:
   std::vector<std::vector<std::vector<double>>> product_distributions;
 
   //! Reaction Q value i.e. change in energy
-  double q_reaction;
+  double q_reaction = 0.0;
 
   //! Number of groups
-  uint32_t num_groups;
+  uint32_t num_groups = 0;
 
   //! Group boundaries (keV)
   std::vector<double> group_bounds;
@@ -169,12 +169,17 @@ public:
   inline std::vector<double> get_group_energies() const & {
     return group_energies;
   }
+
+  // >> Non-interacting helper functions.
+
+  //! Helper function to format a warning message.
+  static void warn_ndi_version_mismatch(std::string const &gendir);
 };
 
 } // namespace rtt_cdi_ndi
 
 #endif // cdi_ndi_NDI_Base_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_ndi/NDI_Base.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

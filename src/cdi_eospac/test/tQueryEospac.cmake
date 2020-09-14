@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   cdi_eospac/test/tQueryEospac.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Friday, Jul 10, 2015, 14:16 pm
 # brief  This is a CTest script that is used to test cdi_eospac/QueryEospac
 # note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Setup the CMake based ApplicationUnitTest environment
 set( CMAKE_MODULE_PATH ${DRACO_CONFIG_DIR} )

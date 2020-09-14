@@ -8,7 +8,7 @@
 ;;======================================================================
 ;; Commentary:
 ;;
-;; - Customize the variable ccs4-env-dirs
+;; - Customize the variable ccs2-env-dirs
 ;;
 ;; - Put (require 'draco-mode) in your ~/.xemacs/init.el
 ;;
@@ -54,12 +54,6 @@ is loaded from the 2nd part of the pair and a filename with this
 new extension is loaded (if it exists)."
   :type 'list
   :group 'draco-mode)
-
-(defcustom want-pooma-style-by-default  nil
-"Do you want to use alternate POOMA-style indentation?"
-:group 'draco-mode
-:type '(radio (const :tag "No" nil)
-	      (const :tag "Yes" t)))
 
 (defcustom want-draco-menu                t
 "\nIf non-nil, an RTT menu will be placed in the XEmacs menubar.
@@ -438,7 +432,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 "Default function for inserting a comment block in front of a C++
 function or method. Width is set by draco-code-comment-width.
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief
  *
@@ -463,14 +457,14 @@ function or method. Width is set by draco-code-comment-width.
   (end-of-line)
 )
 (defun draco-insert-class-doc ()
-"Function for inserting a class desicription boilerplate.  Width is set
+"Function for inserting a class description boilerplate.  Width is set
 by draco-code-comment-width.
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class
  * \brief
-//============================================================================//
+//================================================================================================//
 "
   (interactive)
   (insert "//")
@@ -545,9 +539,9 @@ draco-companion-file-alist."
 (defun draco-f90-subroutine-divider ()
 "Insert a comment block for f90
 
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
 !
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
 "
   (interactive)
   (beginning-of-line)
@@ -563,7 +557,7 @@ draco-companion-file-alist."
 (defun draco-f90-comment-divider ()
 "Insert a single line prepended by an f90 comment mark.
 
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
 "
   (interactive)
   (beginning-of-line)
@@ -677,7 +671,7 @@ c-----------------------------------------------------------------------------c
 (defun draco-c-comment-divider ()
 "Insert a C style divider.
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 "
   (interactive)
   (beginning-of-line)
@@ -690,9 +684,9 @@ c-----------------------------------------------------------------------------c
 (defun draco-c-divider ()
 "Insert a C style comment block.
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* text */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 "
   (interactive)
   (beginning-of-line)
@@ -715,9 +709,9 @@ c-----------------------------------------------------------------------------c
 
 (defun draco-cc-divider ()
 "Insert a C style comment block:
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //
-//----------------------------------------------------------------------------//"
+//------------------------------------------------------------------------------------------------//"
   (interactive)
   (beginning-of-line)
   (insert "//")
@@ -748,6 +742,19 @@ c-----------------------------------------------------------------------------c
   (end-of-line)
 )
 
+;;---------------------------------------------------------------------------;;
+;; clang-format
+;;---------------------------------------------------------------------------;;
+
+(require 'clang-format)
+(global-set-key [(f12)] 'clang-format-region)
+
+;; See https://www.emacswiki.org/emacs/IndentingC
+;; (if (fboundp 'clang-format)
+;;     (add-hook 'c++-mode-hook
+;;               (lambda ()
+;;                 (add-hook 'before-save-hook 'clang-format-buffer)))
+;;   )
 
 ;;---------------------------------------------------------------------------;;
 ;; time stamp function

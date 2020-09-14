@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/ScalarUnitTest.cc
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ScalarUnitTest.hh"
 #include "Assert.hh"
@@ -15,21 +14,20 @@
 #include <sstream>
 
 namespace rtt_dsxx {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for ScalarUnitTest
  * \arg argc The number of command line arguments
  * \arg argv A list of strings containing the command line arguments
  * \arg release_ A function pointer to this package's release function.
  * \arg out_ A user specified iostream that defaults to std::cout.
- * \arg verbose_ flags whether to print messages for successful tests. Defaults
- *      to true.
- * \exception rtt_dsxx::assertion An exception with the message "Success" will
- *      be thrown if \c --version is found in the argument list.
+ * \arg verbose_ flags whether to print messages for successful tests. Defaults to true.
+ * \exception rtt_dsxx::assertion An exception with the message "Success" will be thrown if \c
+ *      --version is found in the argument list.
  *
- * The constructor initializes the base class UnitTest by setting numPasses
- * and numFails to zero.  It also prints a message that declares this to be a
- * scalar unit test and provides the unit test name.
+ * The constructor initializes the base class UnitTest by setting numPasses and numFails to zero.
+ * It also prints a message that declares this to be a scalar unit test and provides the unit test
+ * name.
  */
 ScalarUnitTest::ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
                                std::ostream &out_, bool const verbose_)
@@ -84,6 +82,6 @@ ScalarUnitTest::ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
 
 } // end namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ScalarUnitTest.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

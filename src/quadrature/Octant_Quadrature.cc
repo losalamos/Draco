@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Octant_Quadrature.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Implementation for Octant_Quadrature
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Octant_Quadrature.hh"
 #include "ds++/DracoStrings.hh"
@@ -20,13 +20,13 @@
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 bool Octant_Quadrature::has_axis_assignments() const {
   return has_axis_assignments_;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Ordinate> Octant_Quadrature::create_ordinates_(
     unsigned const dimension, Geometry const geometry, double const norm,
     unsigned const mu_axis, unsigned const eta_axis,
@@ -193,7 +193,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Ordinate> Octant_Quadrature::create_ordinates_(
     unsigned dimension, Geometry geometry, double norm,
     bool include_starting_directions, bool include_extra_directions) const {
@@ -245,7 +245,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
                            include_extra_directions);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Pure virtual used in conjuction with child implementations, for common
  * features.
@@ -266,6 +266,6 @@ string Octant_Quadrature::as_text(string const &indent) const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Octant_Quadrature.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

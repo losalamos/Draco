@@ -6,13 +6,13 @@
  * \brief  Implementation file for RTT_Format_Reader/NodeData class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "NodeData.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parses the node_data block data from the mesh file via calls to
  *        private member functions.
@@ -25,7 +25,7 @@ void NodeData::readNodeData(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_data block keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +38,7 @@ void NodeData::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_data block datae.
  * \param meshfile Mesh file name.
@@ -56,7 +56,7 @@ void NodeData::readData(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_nodedat block keyword.
  * \param meshfile Mesh file name.
@@ -72,6 +72,6 @@ void NodeData::readEndKeyword(ifstream &meshfile) {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/NodeData.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

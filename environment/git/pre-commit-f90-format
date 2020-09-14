@@ -26,14 +26,17 @@ function version_gt()
 }
 
 # Defaults ----------------------------------------
-EMACS=`which emacs`
-if [[ $EMACS ]]; then
+unalias emacs 2> /dev/null
+EMACS=$(which emacs 2> /dev/null)
+if [[ -x "$EMACS" ]]; then
   EMACSVER=`$EMACS --version | head -n 1 | sed -e 's/.*Emacs //'`
   if [[ `version_gt "24.0.0" $EMACSVER`  ]]; then
     echo "ERROR: Your version of emacs is too old. Expecting v 24.0+."
     echo "       pre-commit-hook partially disabled (f90 indentation)"
     unset EMACS
   fi
+else
+  unset EMACS
 fi
 
 # Allow developers to opt-out
@@ -128,8 +131,9 @@ fi
 
 if [ ! -x "$EMACS" ] ; then
     printf "Error: emacs executable not found.\n"
-    printf "Set the correct path in $(canonicalize_filename "$0").\n"
-    exit 1
+    printf "       skipping f90 format check. To enable this check\n"
+    printf "       set the correct path in $(canonicalize_filename "$0").\n"
+    exit 0
 fi
 
 # create a random filename to store our generated patch

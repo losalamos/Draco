@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/QuoWrapper.hh
  * \author Kelly Thompson
  * \date   Friday, Nov 29, 2019, 18:56 pm
  * \brief  A singleton, light-weight wrapper around Quo (github.com/lanl/libquo)
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.,
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_quowrapper_hh
 #define rtt_c4_quowrapper_hh
@@ -18,21 +17,21 @@
 
 namespace rtt_c4 {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class QuoWrapper
  * \brief A singlton that is a light-weight wrapper around the Quo API
  *        (https://gitlab.lanl.gov/lanl/libquo).
  */
-//============================================================================//
+//================================================================================================//
 
 class QuoWrapper {
 public:
   /*! \brief Destructor
    *
-   * Because Quo must be torn-down before MPI_finalize is called and because
-   * this class uses the RAII pattern, we destroy Quo via QUO_free in
-   * C4_MPI.cc's finalize function.  This free's the quo context.
+   * Because Quo must be torn-down before MPI_finalize is called and because this class uses the
+   * RAII pattern, we destroy Quo via QUO_free in C4_MPI.cc's finalize function.  This free's the
+   * quo context.
    *
    * This destructor body is only called when the program ends.
    */
@@ -40,8 +39,7 @@ public:
 
   /* \brief Destructor helper
    *
-   * This function will free the quo context.  It is called by C4_MPI.cc's
-   * finalize function.
+   * This function will free the quo context.  It is called by C4_MPI.cc's finalize function.
    *
    * \sa Notes associated with the QuoWrapper destructor.
    */
@@ -89,8 +87,8 @@ public:
   //! Is this process bound to a resource?
   static bool is_bound();
 
-  //! Return a string representation of the caller's current binding policy
-  //! (cpuset) in a hexadecimal format.
+  //! Return a string representation of the caller's current binding policy (cpuset) in a
+  //! hexadecimal format.
   static std::string bindings();
 
   //! Return a pointer (handle) to the static-global QUO_context
@@ -125,6 +123,6 @@ private:
 
 #endif // rtt_c4_quowrapper_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of QuoWrapper.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

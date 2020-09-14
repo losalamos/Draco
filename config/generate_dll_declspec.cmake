@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/generate_dll_declspec.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Feb 13
 # brief  Generate dll_declspec.h used to define DLL_PUBLIC_<pkg> definitions.
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 
@@ -14,7 +14,7 @@ function( generate_dll_declspec dir components )
 string( REPLACE "+" "x" safedir ${dir} )
 
 set( dll_declspec_content
-"/*-----------------------------------*-C-*-----------------------------------*/
+"/*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
  * file   dll_declspec.h
  * brief  Defined macros that are used as declarators to control dllexport
@@ -56,7 +56,7 @@ set( dll_declspec_content
  * template DLL_PUBLIC_foo
  * bool isInfinity( float const & x );
  */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_${safedir}_config_h
 #error \"Do not call this file directly. Call ${dir}/config.h instead.\"
@@ -179,15 +179,15 @@ set( dll_declspec_content "${dll_declspec_content}
 set( dll_declspec_content "${dll_declspec_content}
 #endif /* __${safedir}_declspec_h__ */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of dll_declspec.h */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 ")
 
 file( WRITE ${PROJECT_BINARY_DIR}/${dir}/dll_declspec.h ${dll_declspec_content})
 
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # end config/generate_dll
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

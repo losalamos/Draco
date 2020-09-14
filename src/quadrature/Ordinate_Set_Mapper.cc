@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Mapper.cc
  * \author Allan Wollaber
@@ -7,7 +7,7 @@
  *         rtt_quadrature::Ordinate_Set_Mapper.
  * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Ordinate_Set_Mapper.hh"
 #include <algorithm>
@@ -24,7 +24,7 @@ using namespace rtt_quadrature;
 
 #if DBC & 1
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool check_4(Ordinate const &ordinate) {
   // In 1-D spherical geometry, the ordinates must be confined to the first
   // two octants.
@@ -33,7 +33,7 @@ bool check_4(Ordinate const &ordinate) {
   return true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool check_2(Ordinate const &ordinate) {
   // In 2-D geometry, the ordinates must be confined to the first
   // four octants
@@ -44,7 +44,7 @@ bool check_2(Ordinate const &ordinate) {
 
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 typedef std::pair<double, size_t> dsp;
 bool bigger_pair(const dsp &d1, const dsp &d2) { return (d1.first > d2.first); }
 
@@ -52,12 +52,12 @@ bool bigger_pair(const dsp &d1, const dsp &d2) { return (d1.first > d2.first); }
 
 namespace rtt_quadrature {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Ordinate_Set_Mapper::check_class_invariants() const {
   return os_.check_class_invariants();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Primary service method to perform weight mapping
  *
@@ -198,7 +198,7 @@ void Ordinate_Set_Mapper::map_angle_into_ordinates(
   Ensure(rtt_dsxx::soft_equiv(zeroth_moment(weights), ord_in.wt()));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Simple private function to integrate the zeroth angular moment
  *
@@ -223,6 +223,6 @@ Ordinate_Set_Mapper::zeroth_moment(const std::vector<double> &weights) const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Ordinate_Set_Mapper.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

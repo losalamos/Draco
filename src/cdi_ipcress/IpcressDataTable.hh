@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressDataTable.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Header file for IpcressDataTable
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_ipcress_IpcressDataTable_hh
 #define rtt_cdi_ipcress_IpcressDataTable_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \brief Encapsulates all of the data associated with a specific opacity type
  *        (e.g.: total, plank, multigroup) for a single single material.
@@ -33,7 +33,7 @@ namespace rtt_cdi_ipcress {
  * - Judd, B., Fontes, C.J., and Zhang, H.L. Gandolf : Interface Routines for
  *   IPCRESS Files," Los Alamos Technical Report LA-UR-01-5543, 2001.
  */
-//============================================================================//
+//================================================================================================//
 class IpcressDataTable {
 
   // NESTED CLASSES AND TYPEDEFS
@@ -155,6 +155,6 @@ private:
 
 #endif // rtt_cdi_ipcress_IpcressDataTable_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressDataTable.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

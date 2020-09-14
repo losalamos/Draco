@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/Eospac.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation for Eospac class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Eospac.hh"
 #include "EospacException.hh"
@@ -23,7 +23,7 @@ namespace rtt_cdi_eospac {
 // Constructors //
 // ------------ //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief The constructor for Eospac.
  *
@@ -44,7 +44,7 @@ Eospac::Eospac(SesameTables in_SesTabs)
 
 } // end Eospac::Eospac()
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Construct an Eospac by unpacking a vector<char> stream
  */
@@ -57,7 +57,7 @@ Eospac::Eospac(std::vector<char> const &packed)
   expandEosTable();
 }
 
-//--------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Default Eospac() destructor.
  *
@@ -150,7 +150,7 @@ void Eospac::printTableInformation(EOS_INTEGER const tableType,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getSpecificElectronInternalEnergy(double temperature,
                                                  double density) const {
   EOS_INTEGER const returnType = EOS_Ue_DT; // ES4enelc;
@@ -159,7 +159,7 @@ double Eospac::getSpecificElectronInternalEnergy(double temperature,
   return getF(dbl_v1(density), dbl_v1(vtempsKelvin), returnType, ETDD_VALUE)[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double> Eospac::getSpecificElectronInternalEnergy(
     std::vector<double> const &vtemperature,
     std::vector<double> const &vdensity) const {
@@ -171,7 +171,7 @@ std::vector<double> Eospac::getSpecificElectronInternalEnergy(
   return getF(vdensity, vtempsKelvin, returnType, ETDD_VALUE);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getElectronHeatCapacity(double temperature,
                                        double density) const {
   // specific Heat capacity is dE/dT at constant pressure.  To obtain the
@@ -188,7 +188,7 @@ double Eospac::getElectronHeatCapacity(double temperature,
   return Cve[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double>
 Eospac::getElectronHeatCapacity(std::vector<double> const &vtemperature,
                                 std::vector<double> const &vdensity) const {
@@ -207,7 +207,7 @@ Eospac::getElectronHeatCapacity(std::vector<double> const &vtemperature,
   return Cve;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getSpecificIonInternalEnergy(double temperature,
                                             double density) const {
   EOS_INTEGER const returnType = EOS_Uic_DT; // ES4enion;
@@ -217,7 +217,7 @@ double Eospac::getSpecificIonInternalEnergy(double temperature,
   return getF(dbl_v1(density), dbl_v1(vtempsKelvin), returnType, ETDD_VALUE)[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double> Eospac::getSpecificIonInternalEnergy(
     std::vector<double> const &vtemperature,
     std::vector<double> const &vdensity) const {
@@ -229,7 +229,7 @@ std::vector<double> Eospac::getSpecificIonInternalEnergy(
   return getF(vdensity, vtemperature, returnType, ETDD_VALUE);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getIonHeatCapacity(double temperature, double density) const {
   // specific Heat capacity is dE/dT at constant pressure.  To obtain the
   // specific electron heat capacity we load the specific electron internal
@@ -245,7 +245,7 @@ double Eospac::getIonHeatCapacity(double temperature, double density) const {
   return Cvi[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double>
 Eospac::getIonHeatCapacity(std::vector<double> const &vtemperature,
                            std::vector<double> const &vdensity) const {
@@ -264,7 +264,7 @@ Eospac::getIonHeatCapacity(std::vector<double> const &vtemperature,
   return Cvi;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getNumFreeElectronsPerIon(double temperature,
                                          double density) const {
   // Convert temperatures from keV to degrees Kelvin.
@@ -273,7 +273,7 @@ double Eospac::getNumFreeElectronsPerIon(double temperature,
   return getF(dbl_v1(density), dbl_v1(vtempsKelvin), returnType, ETDD_VALUE)[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double>
 Eospac::getNumFreeElectronsPerIon(std::vector<double> const &vtemperature,
                                   std::vector<double> const &vdensity) const {
@@ -285,7 +285,7 @@ Eospac::getNumFreeElectronsPerIon(std::vector<double> const &vtemperature,
   return getF(vdensity, vtempsKelvin, returnType, ETDD_VALUE);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getElectronThermalConductivity(double temperature,
                                               double density) const {
   // Convert temperatures from keV to degrees Kelvin.
@@ -294,7 +294,7 @@ double Eospac::getElectronThermalConductivity(double temperature,
   return getF(dbl_v1(density), dbl_v1(vtempsKelvin), returnType, ETDD_VALUE)[0];
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<double> Eospac::getElectronThermalConductivity(
     std::vector<double> const &vtemperature,
     std::vector<double> const &vdensity) const {
@@ -306,7 +306,7 @@ std::vector<double> Eospac::getElectronThermalConductivity(
   return getF(vdensity, vtempsKelvin, returnType, ETDD_VALUE);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getElectronTemperature(     // keV
     double density,                        // g/cm^3
     double SpecificElectronInternalEnergy, // kJ/g
@@ -318,7 +318,7 @@ double Eospac::getElectronTemperature(     // keV
   return Te_K / keV2K(1.0); // Convert from K back to keV.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Eospac::getIonTemperature(     // keV
     double density,                   // g/cm^3
     double SpecificIonInternalEnergy, // kJ/g
@@ -336,7 +336,7 @@ double Eospac::getIonTemperature(     // keV
 // Packing //
 // ------- //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Pack the Eospac state into a char string represented by a vector<char>. This
  * can be used for persistence, communication, etc. by accessing the char *
@@ -353,7 +353,7 @@ std::vector<char> Eospac::pack() const { return SesTabs.pack(); }
 // Implementation //
 // -------------- //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Retrieves the EoS data associated with the returnType specified
  *         and the given (density, temperature) tuples.
  */
@@ -461,7 +461,7 @@ std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
   return returnVals;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief This member function examines the contents of the data member
  *        "SesTabs" and then calls the EOSPAC routine to load the required EoS
@@ -554,14 +554,14 @@ void Eospac::expandEosTable() const {
   // We don't delete eosTable until ~Eospac() is called.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Returns true if the EoS data associated with "returnType" has been loaded.
 bool Eospac::typeFound(EOS_INTEGER returnType) const {
   return std::find(returnTypes.begin(), returnTypes.end(), returnType) !=
          returnTypes.end();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 unsigned Eospac::tableIndex(EOS_INTEGER returnType) const {
   // Loop over all available types.  If the requested type id matches on in the
   // list then return true.  If we reach the end of the list without a match
@@ -587,7 +587,7 @@ unsigned Eospac::tableIndex(EOS_INTEGER returnType) const {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<EOS_INTEGER> Eospac::initializeInfoItems() {
   std::vector<EOS_INTEGER> ii;
   ii.push_back(EOS_Cmnt_Len);
@@ -616,7 +616,7 @@ std::vector<EOS_INTEGER> Eospac::initializeInfoItems() {
   return ii;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<std::string> Eospac::initializeInfoItemDescriptions() {
   // These are taken from Appendix E of the EOSPAC user manual.
   using std::string;
@@ -654,6 +654,6 @@ std::vector<std::string> Eospac::initializeInfoItemDescriptions() {
 
 } // end namespace rtt_cdi_eospac
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Eospac.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

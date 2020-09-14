@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/FindCompton.cmake
 # author Kendra Keady <keadyk@lanl.gov>
 # date   2017 February 28
 # brief  Instructions for discovering the Compton vendor libraries.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 #.rst:
 # FindCOMPTON
@@ -54,7 +54,7 @@
 #  COMPTON_LIBRARY        - Location of the COMPTON library.
 #  COMPTON_LIBRARY_DEBUG  - Location of the debug COMPTON library (if any).
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Include these modules to handle the QUIETLY and REQUIRED arguments.
 include(FindPackageHandleStandardArgs)
@@ -198,6 +198,6 @@ if( COMPTON_FOUND AND NOT TARGET COMPTON::compton )
   endif()
 endif()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End FindCOMPTON.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

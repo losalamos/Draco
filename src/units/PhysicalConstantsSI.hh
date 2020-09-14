@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   PhysicalConstantsSI.hh
  *  \author Kelly Thompson, Kent G. Budge
  *  \brief  Provide a single place where physical constants (pi, speed of
@@ -6,7 +6,7 @@
  *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *          All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_PhysicalConstantsSI_hh
 #define rtt_units_PhysicalConstantsSI_hh
@@ -23,7 +23,7 @@ namespace rtt_units {
 //    W - watts, J - joules, C - coulombs, F - farads
 //    mol - mole
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * FUNDAMENTAL CONSTANTS
  *
@@ -39,7 +39,7 @@ namespace rtt_units {
  * - Derived constants are listed second.
  * - Actual data is placed in a user-defined type for C-interoperability.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 //! [c] SPEED OF LIGHT (M/S)
 // exact value by NIST definition
@@ -90,12 +90,12 @@ static double constexpr accelerationFromGravitySI = 9.80665; // m/s^2
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
 static double constexpr protonMassSI = 1.672621777e-27; // kg
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // DERIVED CONSTANTS
 //  - constants derived from fundamental constants listed above
 //  - constants with alternate units
 //  - conversion factors
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*! \brief EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
  *
@@ -137,6 +137,6 @@ static double constexpr classicalElectronRadiusSI =
 
 #endif // rtt_units_PhysicalConstantsSI_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of units/PhysicalConstantsSI.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

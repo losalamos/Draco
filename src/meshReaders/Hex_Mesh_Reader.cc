@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   meshReaders/Hex_Mesh_Reader.cc
  * \author John McGhee
@@ -6,7 +6,7 @@
  * \brief  Implements a CIC-19 Hex Mesh Format mesh reader.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Hex_Mesh_Reader.hh"
 #include <algorithm>
@@ -18,7 +18,7 @@ namespace rtt_meshReaders {
 
 using rtt_mesh_element::Element_Definition;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     : meshfile_name(filename), version("unknown"), npoints(0), ncells(0),
       nvrtx(0), nvrpf(0), ndim(0), nvb_faces(0), nrb_faces(0), nmat(0),
@@ -128,7 +128,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
   // Ensure(invariant());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns all the ndim-dimensional interior elements as well as the (ndim-1)
  * dimensional vacuum and reflective boundary face elements
@@ -151,7 +151,7 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns an element type for each element in the mesh. Will always be one of
  * - rtt_mesh_element::Element_Definition::NODE,
@@ -186,7 +186,7 @@ Hex_Mesh_Reader::get_element_types() const {
   return tmp;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns the unique element types defined in the mesh. Will always be one of
  * - rtt_mesh_element::Element_Definition::NODE,
@@ -215,7 +215,7 @@ Hex_Mesh_Reader::get_unique_element_types() const {
   return tmp;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * There is no provision for naming element sets in the Hex format. The
  * following default names are provided for the sets found on the mesh file:
@@ -301,7 +301,7 @@ Hex_Mesh_Reader::get_element_sets() const {
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Checks the internal consistancy of the Hex_Mesh_Reader private data.
 bool Hex_Mesh_Reader::invariant() const {
   bool ldum = check_dims() && (point_coords.size() == npoints) &&
@@ -338,6 +338,6 @@ bool Hex_Mesh_Reader::check_dims() const {
 
 } // end namespace rtt_meshReaders
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Hex_Mesh_Reader.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

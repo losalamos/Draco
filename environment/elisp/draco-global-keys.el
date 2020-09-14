@@ -24,6 +24,12 @@
 (define-key global-map "\C-x?"    'describe-key-briefly)
 (define-key global-map "\C-z"     'undo)
 
+;; Disable C-x C-z keybinding (suspend-frame)
+(global-unset-key (kbd "C-x C-z"))
+
+;; Bind Alt as Meta
+(setq x-alt-keysym 'meta)
+
 ;; Force these onto the global map as well as the draco-mode-map
 (define-key global-map [(button3)]          'kill-region)
 (define-key global-map [(meta button3)]     'delete-rectangle)

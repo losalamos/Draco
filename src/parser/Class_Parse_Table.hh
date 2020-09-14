@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
@@ -26,7 +26,7 @@
  * breaks encapsulation, to put it mildly. So we refrain from providing such a
  * default implementation.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef parser_Class_Parse_Table_hh
 #define parser_Class_Parse_Table_hh
@@ -35,7 +35,7 @@
 
 namespace rtt_parser {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for parse table classes
  *
  * No general implementation is provided. The developer wishing to make his
@@ -111,7 +111,7 @@ namespace rtt_parser {
  */
 template <typename Class> class Class_Parse_Table;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
@@ -157,7 +157,7 @@ parse_class_from_table(Token_Stream &tokens) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
@@ -207,7 +207,7 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for base class for class parser
  *
  * This is to simplify writing a class parser. A specializaton of
@@ -342,6 +342,6 @@ template <typename Class, bool allow_exit>
 
 #endif // parser_Class_Parse_Table_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of parser/Class_Parse_Table.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

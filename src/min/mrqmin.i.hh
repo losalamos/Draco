@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   min/mrqmin.i.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Implementation of mrqmin
  * \note   Copyright (C) 2009-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef min_mrqmin_i_hh
 #define min_mrqmin_i_hh
@@ -22,7 +22,7 @@ namespace rtt_min {
 
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Helper function for mrqmin
 template <class RandomContainer, class RandomBoolContainer>
 void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
@@ -46,7 +46,7 @@ void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Helper function for mrqmin
 
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
@@ -101,7 +101,7 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Perform a nonlinear least squares fit of data to a model function.
  *
@@ -218,6 +218,6 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
 
 #endif // min_mrqmin_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of min/mrqmin.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
