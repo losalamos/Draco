@@ -25,8 +25,7 @@ add_component_library(
    TARGET       Lib_quadrature_test
    TARGET_DEPS  Lib_quadrature
    LIBRARY_NAME quadrature_test
-   SOURCES      "${test_lib_sources}"
-   PREFIX       Draco )
+   SOURCES      "${test_lib_sources}")
 
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests

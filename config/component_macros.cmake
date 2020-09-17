@@ -2,10 +2,8 @@
 # file   config/component_macros.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
-# brief  Provide extra macros to simplify CMakeLists.txt for component
-#        directories.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# brief  Provide extra macros to simplify CMakeLists.txt for component directories.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -14,7 +12,6 @@ include( compilerEnv )
 #--------------------------------------------------------------------------------------------------#
 # Ensure order of setup is correct
 #--------------------------------------------------------------------------------------------------#
-
 if( NOT DEFINED USE_IPO )
   dbsSetupCompilers() # sets USE_IPO
 endif()
@@ -45,8 +42,8 @@ set(Draco_std_target_props
   POSITION_INDEPENDENT_CODE ON )
 
 #--------------------------------------------------------------------------------------------------#
-# Set properties that are common across all packages.  Including the required
-# language standard per target.
+# Set properties that are common across all packages.  Including the required language standard per
+# target.
 #--------------------------------------------------------------------------------------------------#
 function( dbs_std_tgt_props target )
 
@@ -80,6 +77,39 @@ function( dbs_std_tgt_props target )
 
 endfunction()
 
+#--------------------------------------------------------------------------------------------------#
+# Build a list of dependencies to support object-library mechanism
+#
+# objlib_target - object library target name (e.g. Objlib_c4)
+#
+# Returns ${objlib_target}_TARGET_DEPS by saving it to the CMakeCache.txt
+#--------------------------------------------------------------------------------------------------#
+function( dbs_objlib_build_dep_list objlib_target deplist)
+
+  set(itd_beg 0 ) # length of dep list
+  list(LENGTH deplist itd_end)
+  while( NOT ${itd_beg} STREQUAL ${itd_end} )
+    foreach(dep ${deplist} )
+      if(NOT "${${dep}_TARGET_DEPS}x" STREQUAL "x")
+        list(APPEND deplist ${${dep}_TARGET_DEPS} )
+      endif()
+      get_target_property(ill ${dep} INTERFACE_LINK_LIBRARIES )
+      if(NOT ill MATCHES NOTFOUND)
+        foreach( i ${ill} )
+          if( TARGET ${i} )
+            list(APPEND deplist ${i} )
+          endif()
+        endforeach()
+      endif()
+    endforeach()
+    list(REMOVE_DUPLICATES deplist)
+    set( itd_beg ${itd_end} )
+    list(LENGTH deplist itd_end)
+  endwhile()
+  set( ${objlib_target}_TARGET_DEPS "${deplist}" CACHE STRING "objlib dependencies" FORCE)
+
+endfunction()
+
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_executable'
 #
@@ -99,7 +129,6 @@ endfunction()
 #   TARGET       "target name"
 #   EXE_NAME     "output executable name"
 #   TARGET_DEPS  "dep1;dep2;..."
-#   PREFIX       "ClubIMC"
 #   SOURCES      "file1.cc;file2.cc;..."
 #   HEADERS      "file1.hh;file2.hh;..."
 #   VENDOR_LIST  "MPI;GSL"
@@ -108,6 +137,8 @@ endfunction()
 #   FOLDER       "myfolder"
 #   PROJECT_LABEL "myproject42"
 #   NOEXPORT        - do not export target or dependencies to draco-config.cmake
+#   EXPORT_NAME     - not currently used; but will be used to install a binary and add its
+#                     information to <project>-config.cmake.
 #   NOCOMMANDWINDOW - On win32, do not create a command window (qt)
 #   )
 #
@@ -117,7 +148,6 @@ endfunction()
 #   TARGET       Exe_draco_info
 #   EXE_NAME     draco_info
 #   TARGET_DEPS  Lib_diagnostics
-#   PREFIX       Draco
 #   SOURCES      "${PROJECT_SOURCE_DIR}/draco_info_main.cc"
 #   FOLDER       diagnostics
 #   )
@@ -132,17 +162,10 @@ macro( add_component_executable )
   cmake_parse_arguments(
     ace
     "NOEXPORT;NOCOMMANDWINDOW"
-    "PREFIX;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
+    "EXPORT_NAME;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
     "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
-
-  # Prefix for export
-  if( NOT DEFINED ace_PREFIX AND NOT DEFINED ace_NOEXPORT)
-    message( FATAL_ERROR
-      "add_component_executable requires a PREFIX value to allow EXPORT of this
-target or the target must be labeled NOEXPORT.")
-  endif()
 
   # Default link language is C++
   if( NOT DEFINED ace_LINK_LANGUAGE )
@@ -205,7 +228,22 @@ target or the target must be labeled NOEXPORT.")
   # Generate properties related to library dependencies
   #
   if( DEFINED ace_TARGET_DEPS )
-    target_link_libraries( ${ace_TARGET} ${ace_TARGET_DEPS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      unset( ace_objlib_TARGET_DEPS )
+      foreach( lib ${ace_TARGET_DEPS} )
+        string( REPLACE "Lib_" "Objlib_" objlib ${lib} )
+        if( TARGET ${objlib} )
+          list(APPEND ace_objlib_TARGET_DEPS ${objlib} )
+        else()
+          list(APPEND ace_objlib_TARGET_DEPS ${lib} )
+        endif()
+      endforeach()
+      # Keep a list of transitive dependencies; returns ${ace_objlib_TARGET}_TARGET_DEPS
+      dbs_objlib_build_dep_list(${ace_TARGET} "${ace_objlib_TARGET_DEPS}")
+      target_link_libraries( ${ace_TARGET} ${${ace_TARGET}_TARGET_DEPS} )
+    else()
+      target_link_libraries( ${ace_TARGET} ${ace_TARGET_DEPS} )
+    endif()
   endif()
   if( DEFINED ace_VENDOR_LIBS )
     target_link_libraries( ${ace_TARGET} ${ace_VENDOR_LIBS} )
@@ -236,7 +274,7 @@ endmacro()
 #   TARGET       "target name"
 #   LIBRARY_NAME "output library name"
 #   TARGET_DEPS  "dep1;dep2;..."
-#   PREFIX       "ClubIMC"
+#   INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
 #   SOURCES      "file1.cc;file2.cc;..."
 #   HEADERS      "file1.hh;file2.hh;..."
 #   LIBRARY_NAME_PREFIX "rtt_"
@@ -253,7 +291,6 @@ endmacro()
 #   TARGET       Lib_quadrature
 #   LIBRARY_NAME quadrature
 #   TARGET_DEPS  "Lib_parser;Lib_special_functions;Lib_mesh_element"
-#   PREFIX       "Draco"
 #   SOURCES      "${sources}"
 #   )
 #
@@ -263,15 +300,13 @@ endmacro()
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
 #------------------------------------------------------------------------------
 macro( add_component_library )
-  # target_name outputname sources
-  # optional argument: libraryPrefix
 
   # These become variables of the form ${acl_NAME}, etc.
   cmake_parse_arguments(
     acl
     "NOEXPORT"
-    "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
-    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "EXPORT_NAME;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
+    "HEADERS;SOURCES;INCLUDE_DIRS;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV} )
 
   #
@@ -324,11 +359,50 @@ macro( add_component_library )
       LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
   endif()
 
+  if(DBS_GENERATE_OBJECT_LIBRARIES)
+    # Generate an object library.  This can be used instead of the regular library for better
+    # interprocedural optimization at link time.
+    if( "${acl_TARGET}" MATCHES "Lib_" )
+      string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
+    else()
+      string( CONCAT acl_objlib_TARGET "Objlib_" "${acl_TARGET}" )
+    endif()
+    if( DEFINED acl_SOURCES )
+      add_library( ${acl_objlib_TARGET} OBJECT ${acl_SOURCES} )
+    else()
+      message(FATAL_ERROR "acl_sources NOT defined")
+    endif()
+  endif()
+
   #
   # Generate properties related to library dependencies
   #
-  if( NOT "${acl_TARGET_DEPS}x" STREQUAL "x" )
+  if( DEFINED acl_TARGET_DEPS )
     target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      unset( acl_objlib_TARGET_DEPS )
+      foreach( lib ${acl_TARGET_DEPS} )
+        string( REPLACE "Lib_" "Objlib_" objlib ${lib} )
+        if( TARGET ${objlib} )
+          list(APPEND acl_objlib_TARGET_DEPS ${objlib} )
+        else()
+          list(APPEND acl_objlib_TARGET_DEPS ${lib} )
+        endif()
+      endforeach()
+      # Keep a list of transitive dependencies; returns ${acl_objlib_TARGET}_TARGET_DEPS
+      dbs_objlib_build_dep_list(${acl_objlib_TARGET} "${acl_objlib_TARGET_DEPS}")
+
+      # Create the actual dependency.
+      target_link_libraries( ${acl_objlib_TARGET} ${${acl_objlib_TARGET}_TARGET_DEPS} )
+    else()
+      target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+    endif()
+  endif()
+  if( DEFINED acl_INCLUDE_DIRS )
+    target_include_directories( ${acl_TARGET} ${acl_INCLUDE_DIRS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      target_include_directories( ${acl_objlib_TARGET} ${acl_INCLUDE_DIRS} )
+    endif()
   endif()
   if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
     target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )
@@ -336,6 +410,24 @@ macro( add_component_library )
   if( acl_VENDOR_INCLUDE_DIRS )
     set_property(TARGET ${acl_TARGET} APPEND PROPERTY
       INTERFACE_INCLUDE_DIRECTORIES "${acl_VENDOR_INCLUDE_DIRS}")
+  endif()
+
+  #
+  # Basic install commands for the library or object-library that are common to all Draco packages.
+  #
+  if( acl_NOEXPORT )
+    # if package is marked as NOEXPRT, we do not create an installation instruction.
+  else()
+    if( NOT DEFINED acl_EXPORT_NAME )
+      set(acl_EXPORT_NAME "draco-targets")  # default value.
+    endif()
+    install( TARGETS ${acl_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      install( TARGETS ${acl_objlib_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
+    endif()
+  endif()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${acl_TARGET}> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
   endif()
 
 endmacro()

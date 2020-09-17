@@ -80,6 +80,31 @@ macro(dbsSetupCompilers)
       message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
     endif()
 
+    #----------------------------------------------------------------------------#
+    # Add user provided options:
+    #
+    # 1. Users may set environment variables
+    #    - C_FLAGS
+    #    - CXX_FLAGS
+    #    - Fortran_FLAGS
+    #    - EXE_LINKER_FLAGS
+    # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
+    #----------------------------------------------------------------------------#
+    foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
+      if( DEFINED ENV{${lang}_FLAGS} )
+        string( APPEND ${lang}_FLAGS " $ENV{${lang}_FLAGS}")
+      endif()
+      if( DEFINED ENV{CMAKE_${lang}_FLAGS} )
+        string( APPEND CMAKE_${lang}_FLAGS " $ENV{CMAKE_${lang}_FLAGS}")
+      endif()
+      if( ${lang}_FLAGS )
+        toggle_compiler_flag( TRUE "${${lang}_FLAGS}" ${lang} "" )
+      endif()
+      if( CMAKE_${lang}_FLAGS )
+        toggle_compiler_flag( TRUE "${CMAKE_${lang}_FLAGS}" ${lang} "" )
+      endif()
+    endforeach()
+
     # Defaults for 1st pass:
 
     # shared or static libraries?
@@ -343,25 +368,6 @@ macro(dbsSetupCxx)
     add_definitions(-D_DARWIN_C_SOURCE)
     set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
   endif()
-
-  #----------------------------------------------------------------------------#
-  # Add user provided options:
-  #
-  # 1. Users may set environment variables
-  #    - C_FLAGS
-  #    - CXX_FLAGS
-  #    - Fortran_FLAGS
-  #    - EXE_LINKER_FLAGS
-  # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
-  #----------------------------------------------------------------------------#
-  foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
-    if( DEFINED ENV{${lang}_FLAGS} )
-      string( APPEND ${lang}_FLAGS " $ENV{${lang}_FLAGS}")
-    endif()
-    if( ${lang}_FLAGS )
-      toggle_compiler_flag( TRUE "${${lang}_FLAGS}" ${lang} "" )
-    endif()
-  endforeach()
 
   if( NOT CCACHE_CHECK_AVAIL_DONE )
     set( CCACHE_CHECK_AVAIL_DONE TRUE CACHE BOOL

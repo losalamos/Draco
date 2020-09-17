@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for viz/test.
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( viz_test CXX )
 
@@ -26,26 +25,23 @@ if( NOT APPLE AND DRACO_C4 STREQUAL MPI )
 
   add_parallel_tests(
     SOURCES "${test_sources}"
-    DEPS    "Lib_viz" 
+    DEPS    "Lib_viz"
     PE_LIST   "1;2;4")
 
-  # for Ut_viz_tstEnsight_Translator_exe, check the generated viz files using
-  # numdiff from a cmake script instead of trying to use the system() command.
-  # Using system fails for BG/Q systems.
+  # for Ut_viz_tstEnsight_Translator_exe, check the generated viz files using numdiff from a cmake
+  # script instead of trying to use the system() command.  Using system fails for BG/Q systems.
 
   add_component_executable(
     TARGET      Ut_viz_tstEnsight_Translator_exe
     TARGET_DEPS Lib_viz
     EXE_NAME    tstEnsight_Translator
-    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator.cc
-    PREFIX      Draco )
+    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator.cc)
 
   add_component_executable(
     TARGET      Ut_viz_tstEnsight_Translator_Unstructured_exe
     TARGET_DEPS Lib_viz
     EXE_NAME    tstEnsight_Translator_Unstructured
-    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator_Unstructured.cc
-    PREFIX      Draco )
+    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator_Unstructured.cc)
 
   # set( VERBOSE_DEBUG ON )
   include( ApplicationUnitTest )
@@ -65,9 +61,9 @@ if( NOT APPLE AND DRACO_C4 STREQUAL MPI )
 
 endif()
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 ## Extra 'make clean' files
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 set( extra_clean_files
    Densities.diff
    Pressure.diff

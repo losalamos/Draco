@@ -26,17 +26,17 @@ if( HAVE_CUDA AND USE_CUDA )
   list( APPEND headers
     GPU_Device.hh
     device_cuda.h )
+  set( include_dirs PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}> )
   add_component_library(
     TARGET       Lib_device
     TARGET_DEPS  Lib_dsxx
+    INCLUDE_DIRS "${include_dirs}"
     LIBRARY_NAME device
     LIBRARY_TYPE STATIC
     SOURCES      "${sources}"
     HEADERS      "${headers}" )
-  target_include_directories( Lib_device
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}> )
-  install( TARGETS Lib_device EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 
 endif()
 
@@ -45,7 +45,6 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/device )
 #--------------------------------------------------------------------------------------------------#
 # Unit tests
 #--------------------------------------------------------------------------------------------------#
-
 if( BUILD_TESTING )
   add_subdirectory( test )
 endif()
@@ -53,7 +52,6 @@ endif()
 #--------------------------------------------------------------------------------------------------#
 # Autodoc
 #--------------------------------------------------------------------------------------------------#
-
 process_autodoc_pages()
 
 # Push some variables up one level

@@ -2,9 +2,8 @@
 # file   config/unix-crayftn.cmake
 # author Kelly Thompson
 # date   2008 May 30
-# brief  Establish flags for Unix - Intel Fortran
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# brief  Establish flags for Unix - Cray Fortran
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 #
@@ -23,7 +22,7 @@ if( NOT Fortran_FLAGS_INITIALIZED )
     STRING "Fortran compiler version string" FORCE )
   mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
 
-  set( CMAKE_Fortran_FLAGS                "" )
+  # string( APPEND CMAKE_Fortran_FLAGS "" )
   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -DDEBUG" )
   set( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -DNDEBUG" )
   set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
@@ -46,7 +45,6 @@ toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 # -hnegmsgs # show pos/neg messages about optimizations.
 # -hlist=m  # creates annotated listing (loopmark).
 #
-
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-crayftn.cmake

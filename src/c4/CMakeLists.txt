@@ -46,13 +46,11 @@ endif()
 add_component_library(
    TARGET       Lib_c4
    TARGET_DEPS  ${target_deps}
+   INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
    LIBRARY_NAME c4
    SOURCES      "${sources}"
    HEADERS      "${headers}"
-   ${c4_extra_VENDORS}
-   )
-target_include_directories( Lib_c4
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+   ${c4_extra_VENDORS}  )
 
 #--------------------------------------------------------------------------------------------------#
 # Fortran-based MPI wrapper
@@ -111,12 +109,7 @@ add_subdirectory( bin )
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
-install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_c4> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
-endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests

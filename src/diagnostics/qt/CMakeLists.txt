@@ -39,7 +39,6 @@ add_component_executable(
   TARGET      Exe_draco_info_gui
   TARGET_DEPS "Lib_diagnostics;Qt5::Widgets"
   SOURCES     "${sources};${ui_files}"
-  PREFIX       Draco
   FOLDER       diagnostics
   NOCOMMANDWINDOW )
 
@@ -52,7 +51,7 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 endif()
 
 # Copy necessary dll files to build directory
-if (WIN32)  
+if (WIN32)
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx>
             $<TARGET_FILE_DIR:Exe_draco_info_gui>

@@ -10,7 +10,6 @@ project( cdi_ndi CXX )
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
-
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
@@ -41,30 +40,22 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 #--------------------------------------------------------------------------------------------------#
 # Build package library
 #--------------------------------------------------------------------------------------------------#
+set( include_dirs PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+if(TARGET NDI::ndi)
+  list(APPEND include_dirs ${NDI_INCLUDE_DIR} )
+endif()
 add_component_library(
    TARGET       Lib_cdi_ndi
    TARGET_DEPS  "${deps}"
+   INCLUDE_DIRS "${include_dirs}"
    LIBRARY_NAME cdi_ndi
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
 
-target_include_directories( Lib_cdi_ndi
-   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
-
-if(TARGET NDI::ndi)
-  target_include_directories( Lib_cdi_ndi PUBLIC ${NDI_INCLUDE_DIR} )
-endif()
-
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
-install( TARGETS Lib_cdi_ndi  EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ndi )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_cdi_ndi> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
-endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests

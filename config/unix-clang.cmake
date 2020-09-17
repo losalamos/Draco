@@ -1,8 +1,7 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/unix-clang.cmake
 # brief  Establish flags for Unix clang
-# note   Copyright (C) 2010-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2010-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 # Note: In config/compilerEnv.cmake, the build system sets flags for
@@ -34,7 +33,8 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -Wno-long-long -Wreserved-id-macro -pedantic" )
+  string( APPEND CMAKE_C_FLAGS " -Wcast-align -Wpointer-arith -Wall -Wno-long-long"
+    " -Wreserved-id-macro -pedantic" )
   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
     set( CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} -march=native" )
   endif()
@@ -43,11 +43,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
 
-  # Suppress warnings about typeid() called with function as an argument. In this
-  # case, the function might not be called if the type can be deduced.
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -Wno-undefined-var-template -Wno-potentially-evaluated-expression" )
-  if( DEFINED CMAKE_CXX_COMPILER_WRAPPER AND
-      "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
+  # Suppress warnings about typeid() called with function as an argument. In this case, the function
+  # might not be called if the type can be deduced.
+  list( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS} -Wno-undefined-var-template"
+    " -Wno-potentially-evaluated-expression" )
+  if( DEFINED CMAKE_CXX_COMPILER_WRAPPER AND "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
   else()
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libc++")
@@ -93,9 +93,8 @@ endif()
 if( OpenMP_CXX_FLAGS )
   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_CXX_FLAGS}" "CXX" "" )
 endif()
-# adding openmp option to EXE_LINKER will break MPI detection for gfortran when
-# running with clang++/clang/gfortran.
-
+# adding openmp option to EXE_LINKER will break MPI detection for gfortran when running with
+# clang++/clang/gfortran.
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-clang.cmake

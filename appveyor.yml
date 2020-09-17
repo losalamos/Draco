@@ -66,7 +66,6 @@ build_script:
   - cd \projects
   - mkdir build
   - cd build
-# no MPI installed so force scalar builds.
   - echo cmake -G "%GENERATOR%" -A x64 %CMAKE_OPTIONS% -DDRACO_C4=%C4_OPTS% %APPVEYOR_BUILD_FOLDER%
   - cmake -G "%GENERATOR%" -A x64 %CMAKE_OPTIONS% -DDRACO_C4=%C4_OPTS% %APPVEYOR_BUILD_FOLDER%
   - echo cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%

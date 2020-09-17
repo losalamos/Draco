@@ -18,9 +18,7 @@ if( WIN32 )
 add_component_executable(
   TARGET      Exe_testCrashHandler
   TARGET_DEPS Lib_dsxx
-  SOURCES     ${PROJECT_SOURCE_DIR}/testCrashHandler.cc
-  PREFIX       Draco
-  )
+  SOURCES     ${PROJECT_SOURCE_DIR}/testCrashHandler.cc)
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
@@ -38,8 +36,7 @@ endif() # WIN32
 add_component_executable(
   TARGET      Exe_query_cpu
   TARGET_DEPS Lib_dsxx
-  SOURCES     ${Draco_SOURCE_DIR}/config/query_fma.cc
-  PREFIX      Draco )
+  SOURCES     ${Draco_SOURCE_DIR}/config/query_fma.cc)
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions

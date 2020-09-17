@@ -50,7 +50,7 @@ message(" ")
 message( STATUS "Configuring Level 1 packages --" )
 add_dir_if_exists( ds++ )
 
-# Only test selected componenets if CI_CLANG_TIDY is running
+# Only test selected components if CI_CLANG_TIDY is running
 
 # Level 2
 message(" ")
@@ -106,7 +106,7 @@ add_dir_if_exists( quadrature ) # needs mesh_element, parser, special_functions
 # Deprecated
 add_dir_if_exists( plot2D )
 
-endif()
+endif( NOT CI_CLANG_TIDY )
 
 # Summary
 

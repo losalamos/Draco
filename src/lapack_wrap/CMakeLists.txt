@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for lapack_wrap.
-# note   Copyright (C) 2016-2019, Triad National Security
+# note   Copyright (C) 2016-2020, Triad National Security
 #        All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -14,7 +14,6 @@ project( lapack_wrap CXX )
 # 1. LAPACK isn't found.
 # 2. We are targeting an Xcode solution (necessary cmake logic is missing).
 #--------------------------------------------------------------------------------------------------#
-
 if( HAVE_Fortran )
 
 if( NOT TARGET lapack OR ${CMAKE_GENERATOR} MATCHES Xcode)

@@ -16,7 +16,6 @@ project( compton CXX )
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
-
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/compton/config.h )
 
 set( sources "${PROJECT_SOURCE_DIR}/Compton.cc" )
@@ -33,36 +32,26 @@ if( TARGET COMPTON::compton )
   add_component_library(
     TARGET       Lib_compton
     TARGET_DEPS  "Lib_c4;COMPTON::compton"
+    INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
     LIBRARY_NAME compton
     SOURCES      "${sources}"
     HEADERS      "${headers}" )
-  # generated include directive files (config.h)
-  target_include_directories( Lib_compton
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
   # Copy necessary dll files to the build directory
   if( MSVC AND DRACO_LIBRARY_TYPE STREQUAL SHARED )
     add_custom_command( TARGET Lib_compton POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
               $<TARGET_FILE:COMPTON::compton> $<TARGET_FILE_DIR:Lib_compton> )
   endif()
 
   # -------------------------------------------------------------------------- #
   # Installation instructions
   # -------------------------------------------------------------------------- #
-
-  install( TARGETS Lib_compton EXPORT draco-targets DESTINATION
-    ${DBSCFGDIR}lib )
   install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_compton> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
-endif()
 
   # -------------------------------------------------------------------------- #
   # Unit tests
   # -------------------------------------------------------------------------- #
-
   if( BUILD_TESTING )
     add_subdirectory( test )
   endif()
@@ -70,7 +59,6 @@ endif()
   # -------------------------------------------------------------------------- #
   # Autodoc
   # -------------------------------------------------------------------------- #
-
   process_autodoc_pages()
 
 else()

@@ -41,9 +41,9 @@ add_component_library(
   LIBRARY_NAME fc4
   SOURCES      "${f90sources}"
   LINK_LANGUAGE Fortran
-  TARGET_DEPS   "${target_deps}")
-target_include_directories( Lib_c4_fc4 PUBLIC
-    $<INSTALL_INTERFACE:${DBSCFG_IMPORT_PREFIX}/fc4> )
+  TARGET_DEPS   "${target_deps}"
+  INCLUDE_DIRS  "PUBLIC;$<INSTALL_INTERFACE:${DBSCFG_IMPORT_PREFIX}/fc4>"
+  NOEXPORT)
 if( WIN32 )
   # The library must be installed in the master project's RUNTIME_OUTPUT_DIR
   set_target_properties( Lib_c4_fc4 PROPERTIES
@@ -53,6 +53,13 @@ endif()
 #--------------------------------------------------------------------------------------------------#
 # Install
 #--------------------------------------------------------------------------------------------------#
+if(TARGET Objlib_c4_fc4)
+  install( TARGETS Objlib_c4_fc4 EXPORT draco-targets
+    LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
+    ARCHIVE DESTINATION "${DBSCFGDIR}lib"
+    RUNTIME DESTINATION "${DBSCFGDIR}bin"
+    PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/fc4" )
+endif()
 install( TARGETS Lib_c4_fc4 EXPORT draco-targets
   LIBRARY DESTINATION "${DBSCFGDIR_LIBRARY}"
   ARCHIVE DESTINATION "${DBSCFGDIR}lib"

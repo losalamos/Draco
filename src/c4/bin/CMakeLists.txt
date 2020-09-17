@@ -16,16 +16,14 @@ if(OPENMP_FOUND)
   add_component_executable(
     TARGET      Exe_xthi
     TARGET_DEPS Lib_c4
-    SOURCES     ${PROJECT_SOURCE_DIR}/xthi.cc
-    PREFIX       Draco )
+    SOURCES     ${PROJECT_SOURCE_DIR}/xthi.cc)
   install( TARGETS Exe_xthi EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 endif()
 
 add_component_executable(
   TARGET      Exe_ythi
   TARGET_DEPS Lib_c4
-  SOURCES     ${PROJECT_SOURCE_DIR}/ythi.cc
-  PREFIX       Draco )
+  SOURCES     ${PROJECT_SOURCE_DIR}/ythi.cc)
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions

@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for plot2D.
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( plot2D CXX )
@@ -27,21 +26,21 @@ list( APPEND headers ${PROJECT_BINARY_DIR}/plot2D/config.h )
 #--------------------------------------------------------------------------------------------------#
 # Build package library
 #--------------------------------------------------------------------------------------------------#
+set(include_dirs PUBLIC
+  ${Grace_INCLUDE_DIR}
+  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
 add_component_library(
    TARGET       Lib_plot2D
    TARGET_DEPS  Lib_dsxx
+   INCLUDE_DIRS "${include_dirs}"
    LIBRARY_NAME plot2D
    SOURCES      "${sources}"
    HEADERS      "${headers}" )
-target_include_directories( Lib_plot2D
-   PUBLIC
-     ${Grace_INCLUDE_DIR}
-     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
-install( TARGETS Lib_plot2D EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/plot2D )
 
 #--------------------------------------------------------------------------------------------------#
