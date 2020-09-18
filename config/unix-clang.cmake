@@ -29,7 +29,6 @@ endif()
 #
 # Compiler Flags
 #
-
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
@@ -45,7 +44,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   # Suppress warnings about typeid() called with function as an argument. In this case, the function
   # might not be called if the type can be deduced.
-  list( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS} -Wno-undefined-var-template"
+  string( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS} -Wno-undefined-var-template"
     " -Wno-potentially-evaluated-expression" )
   if( DEFINED CMAKE_CXX_COMPILER_WRAPPER AND "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
@@ -61,31 +60,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
 endif()
 
-##---------------------------------------------------------------------------##
-# Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING
-  "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING
-  "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING
-  "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING
-  "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING
-  "compiler flags" FORCE )
-
-set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"
-  CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"
-  CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"
-  CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"
-  CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-  CACHE STRING "compiler flags" FORCE )
-
+#--------------------------------------------------------------------------------------------------#
 # Toggle for OpenMP support
 if( OpenMP_C_FLAGS )
   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_C_FLAGS}" "C" "" )
@@ -93,8 +68,13 @@ endif()
 if( OpenMP_CXX_FLAGS )
   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_CXX_FLAGS}" "CXX" "" )
 endif()
-# adding openmp option to EXE_LINKER will break MPI detection for gfortran when running with
-# clang++/clang/gfortran.
+# Note: adding openmp option to EXE_LINKER will break MPI detection for gfortran when running with
+#       clang++/clang/gfortran.
+
+#--------------------------------------------------------------------------------------------------#
+# Ensure cache values always match current selection
+deduplicate_flags(CMAKE_CXX_FLAGS)
+force_compiler_flags_to_cache()
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-clang.cmake
