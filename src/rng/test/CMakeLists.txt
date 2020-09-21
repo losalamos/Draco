@@ -39,6 +39,14 @@ set( random123_known_answer_tests
    ${PROJECT_SOURCE_DIR}/kat_cpp.cpp
 )
 
+# Some compilers (esp. MSVC) have trouble with compiling these files as C11 code, so tell cmake
+# to treat them as C++14.
+set_source_files_properties( 
+   ${PROJECT_SOURCE_DIR}/time_serial.c 
+   ${random123_known_answer_tests}
+   ${random123_unit_tests}
+   PROPERTIES LANGUAGE CXX )
+
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
