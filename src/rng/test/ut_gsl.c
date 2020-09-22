@@ -45,8 +45,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _MSC_FULL_VER
 // 4311 - 'type cast': pointer truncation from 'char[54]' to 'long'
 // 4202 - nonstandard extension used: non-constant aggregate initializer
+// 4127 - conditional expression is constant
+// 4302 - 'type cast': truncation from 'const char *' to 'long'
 #pragma warning(push)
-#pragma warning(disable : 4311 4204)
+#pragma warning(disable : 4311 4204 4127 4302)
 #endif
 
 #include "rng/config.h"

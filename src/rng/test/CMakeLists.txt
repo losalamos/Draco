@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for rng/test.
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( rng_test C CXX )
 
@@ -23,10 +22,23 @@ set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_aes.cpp
    ${PROJECT_SOURCE_DIR}/ut_ars.c
    ${PROJECT_SOURCE_DIR}/ut_carray.cpp
-   ${PROJECT_SOURCE_DIR}/ut_gsl.c
    ${PROJECT_SOURCE_DIR}/ut_M128.cpp
    ${PROJECT_SOURCE_DIR}/ut_uniform.cpp
 )
+# [2020-08-21 KT] There is a bug in ut_gsl.c that most compilers are happy with, but newer Visual
+# Studio 2019 Community version newer than 16.8.0 Preview 3 refuse to compile and produce the
+# following error:
+#
+# "C:\projects\draco\src\rng\test\ut_gsl.c(62,1): error C2086: 'const gsl_rng_type \
+#    *gsl_rng_cbrng': redefinition"
+#
+# Indeed, reviewing the Random123 file gsl_cbrng.h reveals that that gsl_rng_type is declared twice,
+# first on line 68 and then again on line 125 (with an assignment this time). We should probably
+# consider retiring this test, but since it still works everywhere except MSVC, we will only
+# disable it in this one place.
+if( NOT MSVC )
+   list(APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_gsl.c )
+endif()
 
 if( R123_USE_CXX11 )
    list( APPEND random123_unit_tests
@@ -41,8 +53,8 @@ set( random123_known_answer_tests
 
 # Some compilers (esp. MSVC) have trouble with compiling these files as C11 code, so tell cmake
 # to treat them as C++14.
-set_source_files_properties( 
-   ${PROJECT_SOURCE_DIR}/time_serial.c 
+set_source_files_properties(
+   ${PROJECT_SOURCE_DIR}/time_serial.c
    ${random123_known_answer_tests}
    ${random123_unit_tests}
    PROPERTIES LANGUAGE CXX )
