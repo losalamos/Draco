@@ -19,8 +19,9 @@
 
 #ifdef _MSC_FULL_VER
 // - 4204 :: nonstandard extension used: non-constant aggregate initializer.
+// - 4127 :: conditional expression is constant
 #pragma warning(push)
-#pragma warning(disable : 4204 4100)
+#pragma warning(disable : 4204 4100 4127)
 #endif
 
 #include <Random123/aes.h>
@@ -28,7 +29,7 @@
 #include <Random123/philox.h>
 #include <Random123/threefry.h>
 
-#ifdef _MSC_FULL_VERf
+#ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
 

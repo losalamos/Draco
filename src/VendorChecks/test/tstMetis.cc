@@ -3,18 +3,16 @@
  * \file   VendorChecks/test/tstMetis.cc
  * \date   Wednesday, May 11, 2016, 12:01 pm
  * \brief  Attempt to link to libmetis and run a simple problem.
- * \note   Copyright (C) 2016-2019, Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
+#include "metis.h"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include <array>
-#include <metis.h>
 #include <vector>
 
-// Original provided by Erik Zenker
-// https://gist.github.com/erikzenker/c4dc42c8d5a8c1cd3e5a
+// Original provided by Erik Zenker, https://gist.github.com/erikzenker/c4dc42c8d5a8c1cd3e5a
 
 void test_metis(rtt_dsxx::UnitTest &ut) {
   idx_t nVertices = 10;
@@ -24,8 +22,8 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
   idx_t objval(0);
   std::vector<idx_t> part(nVertices, 0);
 
-  // here's the mesh, there is only one valid cut so the expected result (or a
-  // mirror of it) should alays be obtained
+  // here's the mesh, there is only one valid cut so the expected result (or a mirror of it) should
+  // alays be obtained
   //
   //  0 \       / 6
   //  1 \       / 7
@@ -38,18 +36,15 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
   // Adjacent vertices in consecutive index order
   // conn. for:     0, 1, 2, 3, 4            , 5,            ,6, 7, 8, 9
   // index:         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, 14,15,16,17
-  std::array<idx_t, 18> adjncy = {4, 4, 4, 4, 0, 1, 2, 3, 5,
-                                  4, 6, 7, 8, 9, 5, 5, 5, 5};
+  std::array<idx_t, 18> adjncy = {4, 4, 4, 4, 0, 1, 2, 3, 5, 4, 6, 7, 8, 9, 5, 5, 5, 5};
 
-  // Weights of vertices
-  // if all weights are equal then can be set to NULL
+  // Weights of vertices: if all weights are equal then can be set to NULL
   std::vector<idx_t> vwgt(nVertices * nWeights, 0);
 
-  // Partition a graph into k parts using either multilevel recursive bisection
-  // or multilevel k-way partitioning.
-  int ret = METIS_PartGraphKway(
-      &nVertices, &nWeights, xadj.data(), adjncy.data(), nullptr, nullptr,
-      nullptr, &nParts, nullptr, nullptr, nullptr, &objval, &part[0]);
+  // Partition a graph into k parts using either multilevel recursive bisection or multilevel k-way
+  // partitioning.
+  int ret = METIS_PartGraphKway(&nVertices, &nWeights, xadj.data(), adjncy.data(), nullptr, nullptr,
+                                nullptr, &nParts, nullptr, nullptr, nullptr, &objval, &part[0]);
 
   std::cout << "partition: ";
   for (int32_t i = 0; i < nVertices; ++i) {
@@ -64,8 +59,7 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
 
   std::array<int, 10> expectedResult = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
   std::array<int, 10> mirrorExpectedResult = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
-  std::vector<idx_t> vExpectedResult(expectedResult.begin(),
-                                     expectedResult.end());
+  std::vector<idx_t> vExpectedResult(expectedResult.begin(), expectedResult.end());
   std::vector<idx_t> vMirrorExpectedResult(mirrorExpectedResult.begin(),
                                            mirrorExpectedResult.end());
   if (part == vExpectedResult || part == vMirrorExpectedResult)

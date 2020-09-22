@@ -40,7 +40,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "time_misc.h"
 #include "util_print.h"
 
+#ifdef _MSC_FULL_VER
+// - 4505 :: 'warmupCPU': unreferenced local function has been removed.
+#pragma warning(push)
+#pragma warning(disable : 4505)
+#endif
+
 #include "util_cpu.h"
+
 #define KERNEL R123_STATIC_INLINE
 #define get_global_id(i) (i)
 #include "time_random123.h"
@@ -163,6 +170,10 @@ int main(int argc, char **argv) {
 #ifdef __GNUC__
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif
 
 //------------------------------------------------------------------------------------------------//

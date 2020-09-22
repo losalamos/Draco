@@ -68,6 +68,35 @@ macro( query_openmp_availability )
 endmacro()
 
 #--------------------------------------------------------------------------------------------------#
+# Force save compiler flags to CMakeCache.txt
+#--------------------------------------------------------------------------------------------------#
+function(force_compiler_flags_to_cache)
+  foreach(lang C CXX)
+    foreach( flag FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO )
+      set( CMAKE_${lang}_${flag} "${CMAKE_${lang}_${flag}}" CACHE STRING "compiler flags" FORCE )
+    endforeach()
+  endforeach()
+  set( DRACO_LINK_OPTIONS "${DRACO_LINK_OPTIONS}" CACHE STRING "link flags" FORCE)
+endfunction()
+
+#--------------------------------------------------------------------------------------------------#
+# De-duplicate compiler flags
+#
+# example: deduplicate_flags(CMAKE_C_FLAGS)
+#
+# ${FLAGS} evaluates to a string like "CMAKE_C_FLAGS"
+# ${${FLAGS}} evalues to a list of compiler options like "-Werror -O2"
+#--------------------------------------------------------------------------------------------------#
+function(deduplicate_flags FLAGS)
+  set(flag_list ${${FLAGS}}) # ${FLAGS} is CMAKE_C_FLAGS, double ${${FLAGS}} is the string of flags.
+  separate_arguments(flag_list)
+  list(REMOVE_DUPLICATES flag_list)
+  string (REGEX REPLACE "([^\\]|^);" "\\1 " _TMP_STR "${flag_list}")
+  string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}") #fixes escaping
+  set (${FLAGS} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------------------------------------#
 # Setup compilers
 #--------------------------------------------------------------------------------------------------#
 macro(dbsSetupCompilers)
@@ -441,23 +470,20 @@ endmacro()
 #--------------------------------------------------------------------------------------------------#
 macro(dbsSetupStaticAnalyzers)
 
-  set( DRACO_STATIC_ANALYZER "none" CACHE STRING "Enable a static analysis tool"
-    )
+  set( DRACO_STATIC_ANALYZER "none" CACHE STRING "Enable a static analysis tool" )
   set_property( CACHE DRACO_STATIC_ANALYZER PROPERTY STRINGS
     "none" "clang-tidy" "iwyu" "cppcheck" "cpplint" "iwyl" )
 
   # Sanity Checks
-  if( "${DRACO_STATIC_ANALYZER}" STREQUAL "clang-tidy" AND
-      NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
-    message( FATAL_ERROR "When DRACO_STATIC_ANALYZER=clang-tidy, the CXX"
-      " compiler must be clang.")
+  if( "${DRACO_STATIC_ANALYZER}" STREQUAL "clang-tidy" AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL
+      "Clang" )
+    message( FATAL_ERROR "When DRACO_STATIC_ANALYZER=clang-tidy, the CXX compiler must be clang.")
   endif()
 
   if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 
     # clang-tidy
-    # Ex: cmake -DDRACO_STATIC_ANALYZER=clang-tidy \
-             #  -DCLANG_TIDY_CHECKS="-checks=generate-*" ...
+    # Ex: cmake -DDRACO_STATIC_ANALYZER=clang-tidy -DCLANG_TIDY_CHECKS="-checks=generate-*" ...
     # https://clang.llvm.org/extra/clang-tidy/
     if( "${DRACO_STATIC_ANALYZER}" MATCHES "clang-tidy" )
       if( NOT CMAKE_CXX_CLANG_TIDY )
@@ -471,6 +497,8 @@ macro(dbsSetupStaticAnalyzers)
       if( CMAKE_CXX_CLANG_TIDY )
         if( NOT CLANG_TIDY_OPTIONS )
           set( CLANG_TIDY_OPTIONS "-header-filter=.*[.]hh" )
+          # Only run clang tidy on src, test, examples and skip 3rd party libraries
+#          set( CLANG_TIDY_OPTIONS "\"-header-filter=.*\\b(src|test|examples)\\b\\/(?!lib).*\"")
         endif()
         set( CLANG_TIDY_OPTIONS "${CLANG_TIDY_OPTIONS}" CACHE STRING
           "clang-tidy extra options (eg: -header-filter=.*[.]hh;-fix)" FORCE )
@@ -487,17 +515,16 @@ macro(dbsSetupStaticAnalyzers)
         set( CLANG_TIDY_IPATH "${CLANG_TIDY_IPATH}" CACHE STRING
           "clang-tidy extra include directories" FORCE )
         if( NOT "${CLANG_TIDY_CHECKS}" MATCHES "[-]checks[=]" )
-          message( FATAL_ERROR "Option CLANG_TIDY_CHECKS string must start"
-                   " with the string '-check='")
+          message( FATAL_ERROR "Option CLANG_TIDY_CHECKS string must start with the string "
+            "'-check='")
         endif()
         # re-create clang-tidy command
         if( "${CMAKE_CXX_CLANG_TIDY}" MATCHES "[-]checks[=]" )
           list( GET CMAKE_CXX_CLANG_TIDY 0 CMAKE_CXX_CLANG_TIDY )
         endif()
         set( CMAKE_CXX_CLANG_TIDY
-            "${CMAKE_CXX_CLANG_TIDY};${CLANG_TIDY_CHECKS};${CLANG_TIDY_OPTIONS}"
-            CACHE STRING "Run clang-tidy on each source file before compile."
-            FORCE)
+            "${CMAKE_CXX_CLANG_TIDY};${CLANG_TIDY_CHECKS};${CLANG_TIDY_OPTIONS}" CACHE STRING
+            "Run clang-tidy on each source file before compile." FORCE)
       else()
         unset( CMAKE_CXX_CLANG_TIDY )
         unset( CMAKE_CXX_CLANG_TIDY CACHE )
@@ -519,8 +546,8 @@ macro(dbsSetupStaticAnalyzers)
       if( CMAKE_CXX_INCLUDE_WHAT_YOU_USE )
         if( NOT "${CMAKE_CXX_INCLUDE_WHAT_YOU_USE}" MATCHES "Xiwyu" )
           set( CMAKE_CXX_INCLUDE_WHAT_YOU_USE
-            "${CMAKE_CXX_INCLUDE_WHAT_YOU_USE};-Xiwyu;--transitive_includes_only"
-            CACHE STRING "Run iwyu on each source file before compile." FORCE)
+            "${CMAKE_CXX_INCLUDE_WHAT_YOU_USE};-Xiwyu;--transitive_includes_only" CACHE STRING
+            "Run iwyu on each source file before compile." FORCE)
         endif()
       else()
         unset( CMAKE_CXX_INCLUDE_WHAT_YOU_USE )
@@ -563,11 +590,9 @@ macro(dbsSetupStaticAnalyzers)
   # include-what-you-link
   # https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/'
   if( ${DRACO_STATIC_ANALYZER} MATCHES "iwyl" AND UNIX )
-    option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked."
-      TRUE )
+    option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked." TRUE )
   else()
-    option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked."
-      FALSE )
+    option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked." FALSE )
   endif()
 
   # Report
