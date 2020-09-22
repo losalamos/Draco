@@ -25,24 +25,21 @@ set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_M128.cpp
    ${PROJECT_SOURCE_DIR}/ut_uniform.cpp
 )
-# [2020-08-21 KT] There is a bug in ut_gsl.c that most compilers are happy with, but newer Visual
-# Studio 2019 Community version newer than 16.8.0 Preview 3 refuse to compile and produce the
-# following error:
+# [2020-08-21 KT] The code in ut_gsl.c is not valid C++.  Because this test is a mix of C and C++,
+# it causes issues. Most compilers are happy to compile this code with C, visual studio is not.
+# When marked as C++, this test fails with:
 #
 # "C:\projects\draco\src\rng\test\ut_gsl.c(62,1): error C2086: 'const gsl_rng_type \
 #    *gsl_rng_cbrng': redefinition"
 #
 # Indeed, reviewing the Random123 file gsl_cbrng.h reveals that that gsl_rng_type is declared twice,
-# first on line 68 and then again on line 125 (with an assignment this time). We should probably
-# consider retiring this test, but since it still works everywhere except MSVC, we will only
-# disable it in this one place.
+# first on line 68 and then again on line 125 (with an assignment this time). We can continue
+# building and running this tests on platforms that can processs it (all but MSVC right now).
 if( NOT MSVC )
    list(APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_gsl.c )
 endif()
-
 if( R123_USE_CXX11 )
-   list( APPEND random123_unit_tests
-      ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
+   list( APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
 endif()
 
 # Random123 known-answer tests
@@ -52,12 +49,15 @@ set( random123_known_answer_tests
 )
 
 # Some compilers (esp. MSVC) have trouble with compiling these files as C11 code, so tell cmake
-# to treat them as C++14.
-set_source_files_properties(
-   ${PROJECT_SOURCE_DIR}/time_serial.c
-   ${random123_known_answer_tests}
-   ${random123_unit_tests}
-   PROPERTIES LANGUAGE CXX )
+# to treat them as C++14. ut_gsl.c has a bug that prevents it from compiling as C++, so we omit it
+# from this list.
+if( MSVC )
+  set_source_files_properties(
+     ${PROJECT_SOURCE_DIR}/time_serial.c
+     ${PROJECT_SOURCE_DIR}/ut_ars.c
+     ${PROJECT_SOURCE_DIR}/kat_c.c
+     PROPERTIES LANGUAGE CXX )
+endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
