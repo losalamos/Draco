@@ -132,8 +132,8 @@ Consider prepending your local directories."
   :group 'draco-mode
   :type 'list)
 
-(defcustom draco-code-comment-width 80
-  "*Number of characters to use for comments (default 80)"
+(defcustom draco-code-comment-width 100
+  "*Number of characters to use for comments (default 100)"
 :group 'draco-mode
 :type '(number) )
 
