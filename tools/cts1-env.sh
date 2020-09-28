@@ -14,7 +14,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="intel1904env intel1704env gcc830env gcc740env"
+environments="intel1904env gcc830env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -44,57 +44,21 @@ fi
 case "${ddir}" in
 
   #--------------------------------------------------------------------------------------------------#
-  draco-7_5*|draco-7_6*|draco-7_7*)
+  draco-7_8*)
     function intel1904env
     {
       run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/19.0.4 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
-      run "module list"
-    }
-    function intel1704env
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/17.0.4 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)"
+      run "module load uc/2020.08"
+      run "module load draco/intel19"
       run "module list"
     }
     function gcc830env()
     {
       run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load gcc/8.3.0 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
-      run "module list"
-    }
-    function gcc740env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.2 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load gcc/7.4.0 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)"
+      run "module load uc/2020.08"
+      run "module load draco/gcc8"
       run "module list"
     }
     ;;

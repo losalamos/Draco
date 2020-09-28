@@ -22,10 +22,10 @@ environments="x86gcc730env x86intel1905env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_7*)
+  draco-7_7*|draco-7_8_*)
     function x86gcc730env()
     {
-      export darwin_queue="-p volta-v100-x86"
+      export darwin_queue="-p volta-x86"
       run "module purge"
       module use --append ${VENDOR_DIR}/user_contrib
       module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
@@ -34,9 +34,16 @@ case $ddir in
       cflavor="gcc-7.3.0"
       mflavor="$cflavor-openmpi-3.1.3"
       lflavor="lapack-3.8.0"
-      noflavor="git gcc/7.3.0 cuda/10.1 cmake/3.17.0"
-      compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.3-gcc_7.3.0"
-      mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lflavor trilinos/12.14.1-cuda-10.1-$mflavor-$lflavor"
+
+      module_for_comp=`echo $cflavor | sed -e 's%-%/%'`
+      module_for_mpi=`echo $mflavor | sed -e 's/.*open/open/' | sed -e 's%-%/%'`-`echo $cflavor | sed -e 's/-/_/'`
+      noflavor="git ${module_for_comp} cmake/3.17.0"
+      compflavor="gsl/2.5-$cflaavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor ${module_for_mpi}"
+      if [[ ${SLURM_JOB_PARTITION} =~ "volta-" ]] ; then
+        # If we have GPUs on this node, then load the cuda toolkit module by default
+        compflavor+=" cuda/10.2"
+      fi
+      mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-${lflavor} trilinos/12.14.1-$mflavor-${lflavor} libquo/1.3-$mflavor"
       ec_mf="ndi csk/0.5.0-$cflavor"
 
       export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
@@ -53,18 +60,26 @@ case $ddir in
 
     function x86intel1905env()
     {
-      export darwin_queue="-p volta-v100-x86"
+      export darwin_queue="-p volta-x86"
       run "module purge"
       module use --append ${VENDOR_DIR}/user_contrib
       module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
-      run "module load user_contrib"
+      run "module load user_contrib gcc/7.3.0"
+      unset CC CXX CPP FC F77 F90
 
       cflavor="intel-19.0.5"
       mflavor="$cflavor-openmpi-3.1.4"
       lflavor="lapack-3.8.0"
-      noflavor="git gcc/7.3.0 intel/19.0.5 cmake/3.17.0"
-      compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.4-intel_19.0.5"
-      mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lflavor trilinos/12.14.1-$mflavor-$lflavor"
+
+      module_for_comp=`echo $cflavor | sed -e 's%-%/%'`
+      module_for_mpi=`echo $mflavor | sed -e 's/.*open/open/' | sed -e 's%-%/%'`-`echo $cflavor | sed -e 's/-/_/'`
+      noflavor="git ${module_for_comp} cmake/3.17.0"
+      compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor ${module_for_mpi}"
+      if [[ ${SLURM_JOB_PARTITION} =~ "volta-" ]] ; then
+        # If we have GPUs on this node, then load the cuda toolkit module by default
+        compflavor+=" cuda/10.2"
+      fi
+      mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-${lflavor} trilinos/12.14.1-$mflavor-${lflavor} libquo/1.3-$mflavor"
       ec_mf="ndi csk/0.5.0-$cflavor"
 
       export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
@@ -74,39 +89,6 @@ case $ddir in
       # export CXX=`which g++`
       # export CC=`which gcc`
       # export FC=`which gfortran`
-      export MPIEXEC_EXECUTABLE=`which mpirun`
-      unset MPI_ROOT
-      run "module list"
-    }
-    ;;
-
-  #---------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3* | draco-7_4* | draco-7_5* | draco-7_6*)
-    function x86gcc730env()
-    {
-      export darwin_queue="-p volta-v100-x86"
-      run "module purge"
-      module use --append ${VENDOR_DIR}/user_contrib
-      module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
-      module load user_contrib
-
-      cflavor="gcc-7.3.0"
-      mflavor="$cflavor-openmpi-3.1.3"
-      lflavor="lapack-3.8.0"
-      noflavor="emacs git ack gcc/7.3.0 cuda/10.1"
-      compflavor="cmake/3.16.4 gsl/2.5-$cflavor
-netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor
-metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.3-gcc_7.3.0"
-      mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lflavor trilinos/12.14.1-cuda-10.1-$mflavor-$lflavor"
-      ec_mf="ndi csk/0.5.0-$cflavor"
-
-      export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
-      for m in $dracomodules; do
-        module load $m
-      done
-      export CXX=`which g++`
-      export CC=`which gcc`
-      export FC=`which gfortran`
       export MPIEXEC_EXECUTABLE=`which mpirun`
       unset MPI_ROOT
       run "module list"

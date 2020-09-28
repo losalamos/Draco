@@ -13,7 +13,7 @@ export buildflavor=`flavor`
 export build_pe=`npes_build`
 export test_pe=`npes_test`
 case `uname -n` in
-rzansel* | sierra* )  export test_pe=1 ;;
+rzansel* | sierra* )  export test_pe=80 ;;
 esac
 
 

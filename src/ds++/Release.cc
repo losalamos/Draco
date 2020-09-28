@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "Release.hh"
+#include "DracoStrings.hh"
 #include "DracoTerminal.hh"
 #include "ds++/config.h"
 #include <cstring> // memcpy
@@ -25,8 +26,7 @@ namespace rtt_dsxx {
  * \arg[in] list of developers
  * \return A formatted message.
  */
-std::string print_devs(size_t const maxlinelen, std::string const &line_name,
-                       mmdevs const &devs) {
+std::string print_devs(size_t const maxlinelen, std::string const &line_name, mmdevs const &devs) {
   // indent subsequent lines by this many spaces.
   size_t const indent(5);
   std::string current_line(line_name);
@@ -36,7 +36,7 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 
   for (auto it = devs.begin(); it != devs.end();) {
     std::string const name = it->second;
-    if (current_line.length() + name.length() + 2 > maxlinelen) {
+    if (remove_color(current_line).length() + name.length() + 2 > maxlinelen) {
       // flush current line to the real output
       msg << current_line << std::endl;
       // reset the string that contains the current line.
@@ -56,31 +56,27 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 }
 
 //------------------------------------------------------------------------------------------------//
-/*!
- * \brief Function definition for Release, define the local version number for this library in the form
- *  ds_#.#.# in pkg_version variable
- */
+//! Define the local version number for this library in the form Draco-#_#_#.
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << Term::ccolor(Term::style::bold) << Term::ccolor(Term::fg::cyan)
-              << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
-              << "_" << Draco_VERSION_PATCH << Term::ccolor(Term::fg::reset)
-              << Term::ccolor(Term::style::reset);
+  pkg_release << Term::ccolor(Term::style::bold) << Term::ccolor(Term::fg::cyan) << "Draco-"
+              << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR << "_" << Draco_VERSION_PATCH
+              << Term::ccolor(Term::fg::reset) << Term::ccolor(Term::style::reset);
 
   // build date and type
   std::string const build_date(Draco_BUILD_DATE);
   std::string const build_type(BUILD_TYPE);
-  pkg_release << ", build date " << build_date << "; build type: " << build_type
+  pkg_release << ", build date " << build_date << ", build type: " << build_type
 #ifdef DBC
-              << "; DBC: " << DBC
+              << ", DBC: " << DBC
 #endif
 #ifdef DRACO_DIAGNOSTICS
-              << "; DRACO_DIAGNOSTICS: " << DRACO_DIAGNOSTICS
+              << ", DRACO_DIAGNOSTICS: " << DRACO_DIAGNOSTICS
 #endif
 #ifdef DRACO_DIAGNOSTICS_LEVEL_3
 #ifdef FPETRAP_SUPPORTED
-              << "; FPE_TRAP: ON"
+              << ", FPE_TRAP: ON"
 #endif
 #endif
       ;
@@ -103,16 +99,16 @@ const std::string author_list(bool const use_doxygen_formatting) {
 
   mmdevs current_developers;
   // not totally fair... KT got credit for LOC when svn repository was converted to git.
-  current_developers.insert(fomdev(189354, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(12432, "Kent G. Budge"));
-  current_developers.insert(fomdev(3733, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(3667, "Ben R. Ryan"));
-  current_developers.insert(fomdev(3545, "Alex R. Long"));
-  current_developers.insert(fomdev(1750, "Kendra P. Long"));
-  current_developers.insert(fomdev(1639, "James S. Warsa"));
-  current_developers.insert(fomdev(1636, "Matt A. Cleveland"));
-  current_developers.insert(fomdev(603, "Tim Kelley"));
-  current_developers.insert(fomdev(379, "Jae H. Chang"));
+  current_developers.insert(fomdev(178350, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(23628, "Kent G. Budge"));
+  current_developers.insert(fomdev(6252, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(3862, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(3488, "Alex R. Long"));
+  current_developers.insert(fomdev(3411, "Ben R. Ryan"));
+  current_developers.insert(fomdev(1930, "Kendra P. Long"));
+  current_developers.insert(fomdev(1430, "James S. Warsa"));
+  current_developers.insert(fomdev(817, "Tim Kelley"));
+  current_developers.insert(fomdev(404, "Jae H. Chang"));
   current_developers.insert(fomdev(173, "Andrew T. Till"));
   current_developers.insert(fomdev(98, "Seth D. Cook"));
   current_developers.insert(fomdev(94, "Ondrej Certik"));
@@ -120,16 +116,16 @@ const std::string author_list(bool const use_doxygen_formatting) {
 
   mmdevs prior_developers;
 
-  prior_developers.insert(fomdev(3933, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(2018, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(476, "Rob B. Lowrie"));
-  prior_developers.insert(fomdev(293, "Paul W. Talbot"));
+  prior_developers.insert(fomdev(3886, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(1934, "Allan B. Wollaber"));
+  prior_developers.insert(fomdev(421, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(287, "Paul W. Talbot"));
   prior_developers.insert(fomdev(194, "Katherine J. Wang"));
   prior_developers.insert(fomdev(66, "Peter Ahrens"));
   prior_developers.insert(fomdev(24, "Daniel Holladay"));
-  prior_developers.insert(fomdev(12, "Jeff D. Densmore"));
   prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
   prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
+  prior_developers.insert(fomdev(6, "Jeff D. Densmore"));
 
   // Previous authors with no current LOC attribution:
   prior_developers.insert(fomdev(1, "Jeff Furnish"));
@@ -144,7 +140,7 @@ const std::string author_list(bool const use_doxygen_formatting) {
   prior_developers.insert(fomdev(1, "Tom Evans"));
   prior_developers.insert(fomdev(1, "Lori Pritchett-Sheats"));
 
-  size_t maxlinelen(80);
+  size_t maxlinelen(100);
   std::string line_name("CCS-2 Draco Team: ");
 
   if (use_doxygen_formatting) {
@@ -152,9 +148,8 @@ const std::string author_list(bool const use_doxygen_formatting) {
     alist << "\n\\par " << line_name << "\n\n";
     line_name = "";
   } else {
-    line_name = Term::ccolor(Term::style::bold) + Term::ccolor(Term::fg::cyan) +
-                line_name + Term::ccolor(Term::fg::reset) +
-                Term::ccolor(Term::style::reset);
+    line_name = Term::ccolor(Term::style::bold) + Term::ccolor(Term::fg::cyan) + line_name +
+                Term::ccolor(Term::fg::reset) + Term::ccolor(Term::style::reset);
   }
 
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, current_developers);
@@ -165,9 +160,8 @@ const std::string author_list(bool const use_doxygen_formatting) {
     alist << "\\par " << line_name << "\n\n";
     line_name = "";
   } else {
-    line_name = Term::ccolor(Term::style::bold) + Term::ccolor(Term::fg::cyan) +
-                line_name + Term::ccolor(Term::fg::reset) +
-                Term::ccolor(Term::style::reset);
+    line_name = Term::ccolor(Term::style::bold) + Term::ccolor(Term::fg::cyan) + line_name +
+                Term::ccolor(Term::fg::reset) + Term::ccolor(Term::style::reset);
   }
   alist << rtt_dsxx::print_devs(maxlinelen, line_name, prior_developers);
 

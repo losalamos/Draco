@@ -19,7 +19,7 @@ environments="p9gcc730env p9xl16117env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_7* )
+  draco-7_7* | draco-7_8*)
     function p9gcc730env()
     {
       export darwin_queue="-p power9-asc -A asc-priority"
@@ -31,11 +31,10 @@ case $ddir in
       cflavor="gcc-7.3.0"
       mflavor="$cflavor-openmpi-3.1.3"
       lflavor="lapack-3.8.0"
-      noflavor="git gcc/7.3.0 cuda/10.1 cmake/3.17.0 random123"
-      compflavor="numdiff/5.9.0-$cflavor gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/p9/3.1.3-gcc_7.3.0"
-      mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-${lflavor} trilinos/12.14.1-${mflavor}-${lflavor} libquo/1.3-$mflavor"
-      ec_mf="csk/0.5.0-$cflavor ndi/2.1.4alpha"
-
+      noflavor="git gcc/7.3.0 cuda/11.0 cmake/3.17.3 random123 numdiff"
+      compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/p9/3.1.3-gcc_7.3.0"
+      mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.4.0-${mflavor}-lapack-3.8.0 trilinos/12.14.1-${mflavor}-lapack-3.8.0 libquo/1.3-$mflavor caliper/2.0.1-$mflavor"
+      ec_mf="csk/0.5.0-$cflavor ndi"
       # work around for known openmpi issues:
       # https://rtt.lanl.gov/redmine/issues/1229
       # eliminates warnings: "there are more than one active ports on host"
@@ -71,11 +70,12 @@ case $ddir in
 
       cflavor="xl-16.1.1.7"
       mflavor="$cflavor-spectrum-mpi-10.3.0.1"
-      lflavor="lapack-3.8.0"
-      noflavor="git gcc/7.4.0 ibm/xlc-16.1.1.7-xlf-16.1.1.7 cmake/3.17.0 random123" # cuda/10.2
-      compflavor="numdiff/5.9.0-$cflavor gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor ibm/smpi/p9/10.3.0.1-xlc-16.1.1.5-xlf-16.1.1.5"
-      mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.4.0-${mflavor}-${lflavor} trilinos/12.14.1-${mflavor}-${lflavor} libquo/1.3.1-$mflavor"
-      ec_mf="csk/0.5.0-$cflavor ndi/2.1.4alpha"
+      noflavor="git ibm/xlc-16.1.1.7-xlf-16.1.1.7-gcc-7.4.0-cuda-11.0 cmake/3.17.3 random123 numdiff"
+      compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor ibm/smpi/p9/10.3.0.1-xlc-16.1.1.7-xlf-16.1.1.7-gcc-7.4.0-cuda-11.0"
+      mpiflavor="parmetis/4.0.3-$mflavor libquo/1.3.1-$mflavor superlu-dist/5.4.0-${mflavor}-lapack-3.8.0 trilinos/12.14.1-${mflavor}-lapack-3.8.0 caliper/2.0.1-$mflavor"
+      ec_mf="csk/0.5.0-$cflavor"
+      # ndi
+
       # work around for known openmpi issues:
       # https://rtt.lanl.gov/redmine/issues/1229
       # eliminates warnings: "there are more than one active ports on host"

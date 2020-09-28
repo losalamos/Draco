@@ -24,7 +24,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="intel1904env intel1904env-knl intel1704env intel1704env-knl"
+environments="intel1904env intel1904env-knl"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -49,140 +49,39 @@ fi
 case "$ddir" in
 
   #--------------------------------------------------------------------------------------------------#
-  draco-7_5*|draco-7_6*|draco-7_7*)
+  draco-7_8*)
     function intel1904env()
     {
       unset partition
       unset jobnameext
 
+      sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
+      module use --append /usr/projects/draco/Modules/$sysname
+
       if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
         run "module swap craype-mic-knl craype-haswell"
       fi
-      run "module load user_contrib friendly-testing"
-      run "module unload cmake numdiff git"
-      run "module unload gsl random123 eospac"
-      run "module unload trilinos ndi quo"
-      run "module unload superlu-dist metis parmetis"
-      run "module unload csk lapack"
-      run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
-      run "module unload lapack "
-      run "module unload intel gcc"
-      run "module unload papi perftools"
-      run "module load PrgEnv-intel"
-      run "module unload intel"
-      run "module unload xt-libsci xt-totalview"
-      run "module load intel/19.0.4"
-      run "module load cmake/3.17.0 numdiff git"
-      run "module load gsl random123 eospac/6.4.0 ndi python/3.6-anaconda-5.0.1"
-      run "module load trilinos/12.14.1 metis parmetis/4.0.3 superlu-dist quo"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk"
+      run "module load draco/intel19"
       run "module list"
       CC=$(which cc)
       CXX=$(which CC)
       FC=$(which ftn)
-      export LD_LIBRARY_PATH="$CRAY_LD_LIBRARY_PATH":"$LD_LIBRARY_PATH"
+      # export LD_LIBRARY_PATH="$CRAY_LD_LIBRARY_PATH":"$LD_LIBRARY_PATH"
       export CC CXX FC
     }
 
     function intel1904env-knl()
     {
-      export partition="-p knl"
+      export partition="-p knl --exclude=nid00192"
       export jobnameext="-knl"
 
-      if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
-        run "module swap craype-mic-knl craype-haswell"
-      fi
-      run "module load user_contrib friendly-testing"
-      run "module unload cmake numdiff git"
-      run "module unload gsl random123 eospac"
-      run "module unload trilinos ndi quo"
-      run "module unload superlu-dist metis parmetis"
-      run "module unload csk lapack"
-      run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
-      run "module unload intel gcc"
-      run "module unload papi perftools"
-      run "module load PrgEnv-intel"
-      run "module unload intel"
-      run "module unload xt-libsci xt-totalview"
-      run "module load intel/19.0.4"
-      run "module load cmake/3.17.0 numdiff git"
-      run "module load gsl random123 eospac/6.4.0 ndi python/3.6-anaconda-5.0.1"
-      run "module load trilinos/12.14.1 metis parmetis/4.0.3 superlu-dist quo"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk"
-      run "module swap craype-haswell craype-mic-knl"
-      run "module list"
-      run "module list"
-      CC=$(which cc)
-      CXX=$(which CC)
-      FC=$(which ftn)
-      export LD_LIBRARY_PATH="$CRAY_LD_LIBRARY_PATH":"$LD_LIBRARY_PATH"
-      export CC CXX FC
-    }
-    function intel1704env()
-    {
-      unset partition
-      unset jobnameext
+      sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
+      module use --append /usr/projects/draco/Modules/$sysname
 
-      if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
-        run "module swap craype-mic-knl craype-haswell"
+      if ! [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
+        run "module swap craype-haswell craype-mic-knl"
       fi
-      run "module load user_contrib friendly-testing"
-      run "module unload cmake numdiff git"
-      run "module unload gsl random123 eospac"
-      run "module unload trilinos ndi quo"
-      run "module unload superlu-dist metis parmetis"
-      run "module unload csk lapack"
-      run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
-      run "module unload lapack "
-      run "module unload intel gcc"
-      run "module unload papi perftools"
-      run "module load PrgEnv-intel"
-      run "module unload intel"
-      run "module unload xt-libsci xt-totalview"
-      run "module load intel/17.0.4"
-      run "module load cmake/3.17.0 numdiff git"
-      run "module load gsl random123 eospac/6.4.0 ndi python/3.6-anaconda-5.0.1"
-      run "module load trilinos/12.14.1 metis parmetis/4.0.3 superlu-dist" # quo
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk"
-      run "module list"
-      CC=$(which cc)
-      CXX=$(which CC)
-      FC=$(which ftn)
-      export LD_LIBRARY_PATH="$CRAY_LD_LIBRARY_PATH":"$LD_LIBRARY_PATH"
-      export CC CXX FC
-    }
-
-    function intel1704env-knl()
-    {
-      export partition="-p knl"
-      export jobnameext="-knl"
-
-      if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
-        run "module swap craype-mic-knl craype-haswell"
-      fi
-      run "module load user_contrib friendly-testing"
-      run "module unload cmake numdiff git"
-      run "module unload gsl random123 eospac"
-      run "module unload trilinos ndi quo"
-      run "module unload superlu-dist metis parmetis"
-      run "module unload csk lapack"
-      run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
-      run "module unload intel gcc"
-      run "module unload papi perftools"
-      run "module load PrgEnv-intel"
-      run "module unload intel"
-      run "module unload xt-libsci xt-totalview"
-      run "module load intel/17.0.4"
-      run "module load cmake/3.17.0 numdiff git"
-      run "module load gsl random123 eospac/6.4.0 ndi python/3.6-anaconda-5.0.1"
-      run "module load trilinos/12.14.1 metis parmetis/4.0.3 superlu-dist" # quo
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk"
-      run "module swap craype-haswell craype-mic-knl"
-      run "module list"
+      run "module load draco/intel19"
       run "module list"
       CC=$(which cc)
       CXX=$(which CC)
