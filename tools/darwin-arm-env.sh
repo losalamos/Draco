@@ -19,7 +19,7 @@ environments="armgcc820env"
 case $ddir in
 
   #---------------------------------------------------------------------------#
-  draco-7_2* | draco-7_3* | draco-7_4* | draco-7_5* | draco-7_6* | draco-7_7*)
+  draco-7_2* | draco-7_3* | draco-7_4* | draco-7_5* | draco-7_6* | draco-7_7* | draco-7_8*)
     function armgcc820env()
     {
       export darwin_queue="-p arm"
