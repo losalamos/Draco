@@ -20,22 +20,18 @@ endif()
 #--------------------------------------------------------------------------------------------------#
 if( DEFINED ENV{PAPI_HOME} )
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH
-    "PAPI headers at this location" )
-  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
-    "PAPI library." )
+  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
+  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
 endif()
 
 if( HAVE_PAPI )
   set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
   set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
   if( NOT EXISTS ${PAPI_LIBRARY} )
-    message( FATAL_ERROR
-      "PAPI requested, but library not found. Set PAPI_LIBDIR to correct path.")
+    message( FATAL_ERROR "PAPI requested, but library not found. Set PAPI_LIBDIR to correct path.")
   endif()
   mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
-  add_feature_info( HAVE_PAPI HAVE_PAPI
-    "Provide PAPI hardware counters if available." )
+  add_feature_info( HAVE_PAPI HAVE_PAPI "Provide PAPI hardware counters if available." )
 endif()
 
 #--------------------------------------------------------------------------------------------------#
@@ -148,8 +144,7 @@ macro(dbsSetupCompilers)
       set( DRACO_SHARED_LIBS 1 )
       mark_as_advanced(DRACO_SHARED_LIBS)
     else()
-      message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or "
-      "SHARED.")
+      message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
     endif()
     set( DRACO_SHARED_LIBS "${DRACO_SHARED_LIBS}" CACHE BOOL
       "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or"
@@ -185,8 +180,7 @@ macro(dbsSetupCompilers)
         message( STATUS "Code coverage build ... disabled (CODE_COVERAGE=OFF)" )
       endif()
       if( CODE_COVERAGE AND NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        message( STATUS "Code coverage build ... disabled (Compiler not "
-          "GNU|Clang)")
+        message( STATUS "Code coverage build ... disabled (Compiler not GNU|Clang)")
       endif()
       if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
@@ -197,8 +191,8 @@ macro(dbsSetupCompilers)
           *terminal/*
           *FortranChecks/*)
         list(REMOVE_DUPLICATES CODE_COVERAGE_IGNORE_REGEX)
-        set( CODE_COVERAGE_IGNORE_REGEX ${CODE_COVERAGE_IGNORE_REGEX}
-          CACHE STRING "List of regex that lcov will ignore" FORCE)
+        set( CODE_COVERAGE_IGNORE_REGEX ${CODE_COVERAGE_IGNORE_REGEX} CACHE STRING
+          "List of regex that lcov will ignore" FORCE)
 
         if( CMAKE_BUILD_TYPE STREQUAL Debug )
           # Add required flags (GCC & LLVM/Clang)
@@ -221,9 +215,8 @@ macro(dbsSetupCompilers)
             elseif( EXISTS "${DRACO_DIR}/cmake/capture_lcov.sh" )
               set( captureLcov "${DRACO_DIR}/cmake/capture_lcov.sh" )
             else()
-              message( FATAL_ERROR "CODE_COVERAGE=ON, but required helper"
-                " script capture_lcov.sh not found.  Looked at"
-                " ${PROJECT_SOURCE_DIR}/config/capture_lcov.sh and"
+              message( FATAL_ERROR "CODE_COVERAGE=ON, but required helper script capture_lcov.sh"
+                " not found.  Looked at ${PROJECT_SOURCE_DIR}/config/capture_lcov.sh and"
                 " ${DRACO_DIR}/cmake/capture_lcov.sh" )
             endif()
             add_custom_command(

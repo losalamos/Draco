@@ -21,11 +21,11 @@ namespace rtt_dsxx {
 /*!
  * Build the error string (private member function).
  *
- * \param cond Condition (test) that failed.
- * \param file The name of the file where the assertion was tested.
- * \param line The line number in the file where the assertion was tested.
+ * \param[in] cond Condition (test) that failed.
+ * \param[in] file The name of the file where the assertion was tested.
+ * \param[in] line The line number in the file where the assertion was tested.
  * \retval myMessage A string that contains the failed condition, the file and the line number of
- *                   the error.
+ *         the error.
  */
 std::string assertion::build_message(std::string const &cond, std::string const &file,
                                      int const line) {
@@ -70,8 +70,8 @@ void toss_cookies_ptr(char const *const cond, char const *const file, int const 
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
  *
- * This version defers the branch, and so is preferred for testing code coverage by the test
- * suite. However, it has the performance penalty of an extra function call.
+ * This version defers the branch, and so is preferred for testing code coverage by the test suite.
+ * However, it has the performance penalty of an extra function call.
  *
  * \return Throws an assertion.
  */

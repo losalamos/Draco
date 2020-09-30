@@ -59,6 +59,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # Notes on options:
   # - /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have dll-interface to be
   #            used by clients of class 'type2'
+  # - /wd 5105 After upgrading to VS2019 version 16.8.0 preview 3, warning C5105 is issued from many
+  #            system headers like stdio.h. Suppress for now.
   # - /arch:[SSE|SSE2|AVX|AVX2|IA32]
 
   string( APPEND CMAKE_C_FLAGS " /nologo /Gy /fp:precise /DWIN32 /D_WINDOWS /MP /wd4251" )
@@ -81,7 +83,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS_DEBUG " /Z7"   )
   endif()
 
-  # /Zc:__cplusplus - enables the __cplusplus preprocessor macro to report an updated value for 
+  # /Zc:__cplusplus - enables the __cplusplus preprocessor macro to report an updated value for
   #                   recent C++ language standards
   string( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS} /EHa /Zc:__cplusplus" )
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
@@ -89,7 +91,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Zi /DDEBUG" )
 
-  # Don't warn about missing pdb files.  We won't necessarily have these for TPLs. Link options are 
+  # Don't warn about missing pdb files.  We won't necessarily have these for TPLs. Link options are
   # applied in component_macros.cmake near calls to add_libarary or add_executable.
   set( DRACO_LINK_OPTIONS "$<$<CONFIG:DEBUG>:/ignore:4099>")
 
@@ -134,11 +136,11 @@ endif()
 
 # Extra logic to ensure correct winsock is found.
 if( "${Lib_win_winsock}" MATCHES "um/x86" AND CMAKE_CL_64 )
-  message( FATAL_ERROR "Found 32-bit winsock (${Lib_win_winsock} but targeting x64 architecture."
-    " Ensure that cmake is run from the x64 Visual Studio Command Prompt." )
+  message( FATAL_ERROR "Found 32-bit winsock (${Lib_win_winsock} but targeting x64 architecture. "
+  "Ensure that cmake is run from the x64 Visual Studio Command Prompt." )
 elseif( "${Lib_win_winsock}" MATCHES "um/x64" AND NOT CMAKE_CL_64 )
-  message( FATAL_ERROR "Found 64-bit winsock (${Lib_win_winsock} but targeting x86 architecture."
-    " Ensure that cmake is run from the x86 Visual Studio Command Prompt." )
+  message( FATAL_ERROR "Found 64-bit winsock (${Lib_win_winsock} but targeting x86 architecture. "
+  "Ensure that cmake is run from the x86 Visual Studio Command Prompt." )
 endif()
 
 #--------------------------------------------------------------------------------------------------#
