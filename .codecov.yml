@@ -27,6 +27,8 @@ coverage:
   ignore:
     - "src/.*/test/.*"
     - "src/FortranChecks/f90sub/Draco_Test.F90"
+    - "src/mesh/*.in"
+    - "src/mesh/test/*.in"
 
 comment:
   layout: "header, diff"

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   viz/test/tstViz_Traits.cc
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
- * \note   Copyright (C) 2000-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2000-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,7 +15,7 @@
 using namespace std;
 using rtt_viz::Viz_Traits;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // simple test field class for checking viz traits
 
 template <typename T> class Test_Field {
@@ -34,18 +33,14 @@ public:
   size_t ncols(size_t r) const { return data[r].size(); }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Use soft_equiv for floating-point types, but not for integral types.
 
-bool compare_vdf_field(double const &v1, double const &v2) {
-  return rtt_dsxx::soft_equiv(v1, v2);
-}
-bool compare_vdf_field(float const &v1, float const &v2) {
-  return rtt_dsxx::soft_equiv(v1, v2);
-}
+bool compare_vdf_field(double const &v1, double const &v2) { return rtt_dsxx::soft_equiv(v1, v2); }
+bool compare_vdf_field(float const &v1, float const &v2) { return rtt_dsxx::soft_equiv(v1, v2); }
 bool compare_vdf_field(int const &v1, int const &v2) { return v1 == v2; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // test vector traits specialization
 
 template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
@@ -78,7 +73,7 @@ template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // standard Viz_Traits field test
 
 template <typename T> void test_FT(rtt_dsxx::UnitTest &ut) {
@@ -107,7 +102,7 @@ template <typename T> void test_FT(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -121,6 +116,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstViz_Traits.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/ludcmp_pt.cc
  * \author Kent Budge
@@ -6,26 +6,25 @@
  * \brief  LU decomposition
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ludcmp.i.hh"
 #include "ds++/Slice.hh"
 
 namespace rtt_linear {
 
-template DLL_PUBLIC_linear void ludcmp(vector<double> &a,
-                                       vector<unsigned> &indx, double &d);
+template void ludcmp(std::vector<double> &a, std::vector<unsigned> &indx,
+                     double &d);
 
-template DLL_PUBLIC_linear void lubksb(vector<double> const &a,
-                                       vector<unsigned> const &indx,
-                                       vector<double> &b);
+template void lubksb(std::vector<double> const &a,
+                     std::vector<unsigned> const &indx, std::vector<double> &b);
 
-template DLL_PUBLIC_linear void
-lubksb(vector<double> const &a, vector<unsigned> const &indx,
-       rtt_dsxx::Slice<vector<double>::iterator> &b);
+template void lubksb(std::vector<double> const &a,
+                     std::vector<unsigned> const &indx,
+                     rtt_dsxx::Slice<std::vector<double>::iterator> &b);
 
 } // end namespace rtt_linear
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ludcmp_pt.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

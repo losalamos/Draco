@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressMaterial.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Header file for IpcressMaterial class
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_ipcress_IpcressMaterial_hh
 #define rtt_cdi_ipcress_IpcressMaterial_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class IpcressMaterial
  *
@@ -61,7 +61,7 @@ namespace rtt_cdi_ipcress {
  * of empty IpcressMaterials is created (length = num materials) and then the
  * data for each material is stored via the add_field() member function.
  */
-//============================================================================//
+//================================================================================================//
 
 class IpcressMaterial {
 
@@ -73,13 +73,13 @@ class IpcressMaterial {
   std::vector<std::vector<double>> fieldValues;
 
   //! Ratio of Z to A for this material. Ration generated from 'comp' data.
-  double zoa;
+  double zoa = {0.0};
 
 public:
   // CREATORS
 
   //! Default constructor builds an empty object.
-  IpcressMaterial(void) : fieldNames(), fieldValues(), zoa(0.0){/* empty */};
+  IpcressMaterial() : fieldNames(), fieldValues(){/* empty */};
 
   // MANIPULATORS
 
@@ -128,7 +128,7 @@ public:
   // ACCESSORS
 
   //! return the list of known field descriptors
-  std::vector<std::string> listDataFieldNames(void) const { return fieldNames; }
+  std::vector<std::string> listDataFieldNames() const { return fieldNames; }
 
   //! return the vector of data associated with a field name.
   std::vector<double> data(std::string const &fieldName) const {
@@ -147,8 +147,7 @@ private:
    */
   size_t getFieldIndex(std::string const &fieldName) const {
     Require(fieldName.size() > 0);
-    Remember(std::vector<std::string>::const_iterator pos =
-                 find(fieldNames.begin(), fieldNames.end(), fieldName););
+    Remember(auto pos = find(fieldNames.begin(), fieldNames.end(), fieldName));
     Check(pos != fieldNames.end());
     size_t fieldIndex = std::distance(
         fieldNames.begin(),
@@ -162,6 +161,6 @@ private:
 
 #endif // rtt_cdi_ipcress_IpcressFile_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

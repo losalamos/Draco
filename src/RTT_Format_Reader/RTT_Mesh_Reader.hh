@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/RTT_Mesh_Reader.hh
  * \author B.T. Adams
@@ -6,7 +6,7 @@
  * \brief  Header file for RTT_Mesh_Reader library.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_RTT_Mesh_Reader_hh
 #define rtt_RTT_Format_Reader_RTT_Mesh_Reader_hh
@@ -15,7 +15,7 @@
 #include "meshReaders/Mesh_Reader.hh"
 
 namespace rtt_RTT_Format_Reader {
-//============================================================================//
+//================================================================================================//
 /*!
  * \class RTT_Mesh_Reader
  *
@@ -30,10 +30,9 @@ namespace rtt_RTT_Format_Reader {
  *    none of the RTT_Format_Reader class public accessor functions are
  *    accessible.
  */
-//============================================================================//
+//================================================================================================//
 
-class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
-    : public rtt_meshReaders::Mesh_Reader {
+class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::string string;
   typedef std::set<int> set_int;
@@ -62,14 +61,14 @@ public:
    * \brief Constructs an RTT_Mesh_Reader class object.
    * \param RTT_File Mesh file name.
    */
-  RTT_Mesh_Reader(const string &RTT_File)
-      : rttMesh(new RTT_Format_Reader(RTT_File)), element_defs(),
+  explicit RTT_Mesh_Reader(string RTT_File)
+      : rttMesh(new RTT_Format_Reader(std::move(RTT_File))), element_defs(),
         element_types(), unique_element_types() {
     transform2CGNS();
   }
 
   //! Destroys an RTT_Mesh_Reader class object
-  ~RTT_Mesh_Reader() {}
+  ~RTT_Mesh_Reader() = default;
 
   // ACCESSORS
 
@@ -150,6 +149,6 @@ private:
 
 #endif // rtt_RTT_Format_Reader_RTT_Mesh_Reader_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/RTT_Mesh_Reader.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

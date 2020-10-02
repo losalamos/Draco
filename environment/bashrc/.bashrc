@@ -4,7 +4,7 @@
 ## File  : environment/bashrc/.bashrc
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
+## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
 ##         All rights are reserved.
 ##
 ## Bash configuration file upon bash shell startup
@@ -57,20 +57,23 @@ case ${-} in
 
     # Attempt to find DRACO
     if ! [[ $DRACO_SRC_DIR ]]; then
-      _BINDIR=`dirname "$BASH_ARGV"`
-      export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
-      export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+      _BINDIR=$(dirname "${BASH_ARGV[0]}")
+      DRACO_SRC_DIR=$(cd "$_BINDIR/../.." || exit; pwd)
+      export DRACO_SRC_DIR
+      export DRACO_ENV_DIR="${DRACO_SRC_DIR}/environment"
     fi
 
     ##------------------------------------------------------------------------##
     ## Common aliases
     ##------------------------------------------------------------------------##
 
-    source ${DRACO_ENV_DIR}/bashrc/bash_aliases.sh
+    # help shellcheck linter.
+    # shellcheck source=/dev/null
+    source "${DRACO_ENV_DIR}/bashrc/bash_aliases.sh"
 
     # If this is an xterm set the title to user@host:dir
     case "$TERM" in
-      xterm*|rxvt*) echo -ne "\033]0;${nodename}\007" ;;
+      xterm*|rxvt*) echo -ne "\033]0;${nodename:-xterm}\007" ;;
       *) ;;
     esac
     ;; # end case 'interactive'
@@ -92,13 +95,16 @@ esac
 if [[ ${INTERACTIVE} ]]; then
 
   # Common bash functions and alias definitions
-  source ${DRACO_ENV_DIR}/bashrc/bash_functions.sh
-  source ${DRACO_ENV_DIR}/../tools/common.sh
+  # shellcheck source=/dev/null
+  source "${DRACO_ENV_DIR}/bashrc/bash_functions.sh"
+  # shellcheck source=/dev/null
+  source "${DRACO_ENV_DIR}/../tools/common.sh"
 
   # aliases and bash functions for working with slurm
-  if !  [[ `which squeue 2>&1 | grep -c "no squeue"` == 1 ]] &&
-    [[ `which squeue | grep -c squeue` -gt 0 ]]; then
-    source ${DRACO_ENV_DIR}/bashrc/bashrc_slurm
+  if !  [[ $(which squeue 2>&1 | grep -c "no squeue") == 1 ]] &&
+    [[ $(which squeue | grep -c squeue) -gt 0 ]]; then
+    # shellcheck source=/dev/null
+    source "${DRACO_ENV_DIR}/bashrc/bashrc_slurm"
   fi
 fi
 
@@ -106,22 +112,16 @@ fi
 ## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
 
-# Darwin salloc inherits the user environment, so we need to bypass the
-# "already-done" logic
-if [[ ${SLURM_CLUSTER_NAME} == "darwin" ]]; then
-  export DRACO_BASHRC_DONE=no
-fi
-
-if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
+if [[ ${INTERACTIVE} == true ]]; then
 
   # Append PATHS (not linux specific, not ccs2 specific).
-  add_to_path ${DRACO_ENV_DIR}/bin
-  add_to_path ${DRACO_SRC_DIR}/tools
+  add_to_path "${DRACO_ENV_DIR}/bin"
+  add_to_path "${DRACO_SRC_DIR}/tools"
 
   # Tell wget to use LANL's www proxy (see
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
   # export http_proxy=http://wpad.lanl.gov/wpad.dat
-  current_domain=`awk '/^domain/ {print $2}' /etc/resolv.conf`
+  current_domain=$(awk '/^domain/ {print $2}' /etc/resolv.conf)
   #  found=`nslookup proxyout.lanl.gov | grep -c Name`
   #  if test ${found} == 1; then
   if [[ ${current_domain} == "lanl.gov" ]]; then
@@ -129,7 +129,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
     export HTTPS_PROXY=$http_proxy
-    export no_proxy=".lanl.gov"
+    export no_proxy=".lanl.gov,127.0.0.1,localhost"
     export NO_PROXY=$no_proxy
   fi
 
@@ -142,7 +142,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
 
   # Parse the setup scripts, but don't actually load any modules.  This allows
   # the developer to run 'dracoenv' or 'rdde' later to load modules.
-  if [[ -z $DRACO_ENV_LOAD ]]; then
+  if [[ -z "$DRACO_ENV_LOAD" ]]; then
     export DRACO_ENV_LOAD=ON
   fi
 
@@ -152,35 +152,40 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
   ##---------------------------------------------------------------------------##
   ## ENVIRONMENTS - machine specific settings
   ##---------------------------------------------------------------------------##
-  target="`uname -n | sed -e s/[.].*//`"
-  arch=`uname -m`
+  target=$(uname -n | sed -e s/[.].*//)
 
   case ${target} in
 
     # Darwin Heterogeneous Cluster (GPU, ARM, P9, etc.)
     # wiki: https://darwin.lanl.gov
     darwin-fe* | cn[0-9]*)
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe" ;;
 
     # Badger | Cyclone | Fire | Grizzly | Ice | Snow
     ba* | cy* | fi* | gr* | ic* | sn* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_cts1 ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_cts1" ;;
 
     # wtrw and rfta
     red-wtrw* | rfta* | redcap* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_rfta" ;;
 
     # capulin, thunder, trinitite (tt-fey) | trinity (tr-fe)
     cp-login* | th-login* |tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_cray ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_cray" ;;
 
     # LLNL ATS-2
     rzmanta* | rzansel* | sierra* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_ats2 ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_ats2" ;;
 
     # LAP Virtual Machine
     vc*)
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_vm ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_vm" ;;
 
     # CCS-NET machines (insufficient space on ccscs5 for vendor+data).
     ccscs5*)
@@ -189,45 +194,30 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       export NoModules=1
       ;;
     ccscs[1-4]* | ccscs[6-9]*)
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64 ;;
+      # shellcheck source=/dev/null
+      source "${DRACO_ENV_DIR}/bashrc/.bashrc_ccsnet" ;;
 
     # Assume personal workstation
-    *)
-      if [[ -d /ccs/codes/radtran ]]; then
-        # assume this is a CCS LAN machine (64-bit)
-        if test `uname -m` = 'x86_64'; then
-          # draco environment only supports 64-bit linux...
-          source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64
-        else
-          echo "Draco's environment is not fully supported on 32-bit Linux."
-          echo "Module support may not be available. Email kgt@lanl.gov for more information."
-          # source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
-        fi
-      elif [[ -d /usr/projects/draco ]]; then
-        # XCP machine like 'toolbox'?
-        source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64
-      fi
-      export NoModules=1
-      ;;
+    *) export NoModules=1 ;;
 
   esac
 
-  source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
+  # shellcheck source=/dev/null
+  source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
   if [[ "${DRACO_ENV_LOAD:-OFF}" == "ON" ]]; then
     dracoenv
   fi
-
-  # Mark that we have already done this setup
-  export DRACO_BASHRC_DONE=yes
 
 fi
 
 # provide some bash functions (dracoenv, rmdracoenv) for non-interactive
 # sessions.
-source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
+
+# shellcheck source=/dev/null
+source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
 
 if [[ "${verbose:=false}" == "true" ]]; then
-  echo "done with draco/environment/bashrc/.bashrc";
+  echo "in draco/environment/bashrc/.bashrc ... done";
 fi
 
 ##---------------------------------------------------------------------------##

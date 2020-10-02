@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/qt/mainwindow.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Declarations for draco info main Qt window.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef diagnostics_qt_mainwindow_hh
 #define diagnostics_qt_mainwindow_hh
@@ -22,8 +22,8 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = 0);
-  ~MainWindow() = default;
+  explicit MainWindow(QWidget *parent = nullptr);
+  ~MainWindow() override = default;
 
   // disable copy/move construction
   MainWindow(MainWindow const &rhs) = delete;
@@ -46,6 +46,6 @@ private:
 
 #endif // diagnostics_qt_mainwindow_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of diagnostics/qt/mainwindow.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/SesameTables.cc
  * \author Kelly Thompson
@@ -7,7 +7,7 @@
  *         to Sesame table indexes).
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "SesameTables.hh"
 #include "ds++/Assert.hh"
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_eospac {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Construct from packed data stream
 SesameTables::SesameTables(std::vector<char> const &packed)
     : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
@@ -63,29 +63,17 @@ SesameTables::SesameTables(std::vector<char> const &packed)
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Set functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 SesameTables &SesameTables::addTable(EOS_INTEGER const tableID,
                                      unsigned const matID) {
-  // matMap is a one-to-one map.  We don't allow re-mapping.
-  //Require( matMap.count( tableID ) == 0 );
-
   // insert a new entry into the matMap.
   matMap[tableID] = matID;
-  if (rtMap.count(matID)) {
-    // we've already used this mat ID so there should be an entry in the map.
-    // Look to see if EOS_Ue_DT is already registered before adding it.
-    bool found(false);
-    for (size_t i = 0; i < rtMap[matID].size(); ++i)
-      if (rtMap[matID][i] == tableID)
-        found = true;
-    if (!found)
-      rtMap[matID].push_back(tableID);
-  } else {
+  if (std::find(rtMap[matID].begin(), rtMap[matID].end(), tableID) ==
+      rtMap[matID].end())
     rtMap[matID].push_back(tableID);
-  }
   return *this;
 }
 
@@ -120,7 +108,7 @@ SesameTables &SesameTables::T_DUic(unsigned matID) {
 // Move functions out as they are needed by new code and add unit tests for each.
 #if 0
 
-SesameTables& SesameTables::T_DUiz( unsigned matID ) 
+SesameTables& SesameTables::T_DUiz( unsigned matID )
 {
     return addTable( EOS_T_DUiz, matID );
 }
@@ -128,64 +116,64 @@ SesameTables& SesameTables::Ut_DT( unsigned matID )
 {
     return addTable( EOS_Ut_DT, matID );
 }
-SesameTables& SesameTables::T_DPt( unsigned matID ) 
+SesameTables& SesameTables::T_DPt( unsigned matID )
 {
     return addTable( EOS_T_DPt, matID );
 }
-SesameTables& SesameTables::T_DUt( unsigned matID ) 
+SesameTables& SesameTables::T_DUt( unsigned matID )
 {
     return addTable( EOS_T_DUt, matID );
 }
-SesameTables& SesameTables::Pt_DUt( unsigned matID ) 
+SesameTables& SesameTables::Pt_DUt( unsigned matID )
 {
     return addTable( EOS_Pt_DUt, matID );
 }
-SesameTables& SesameTables::Ut_DPt( unsigned matID ) 
+SesameTables& SesameTables::Ut_DPt( unsigned matID )
 {
     return addTable( EOS_Ut_DPt, matID );
 }
-SesameTables& SesameTables::Pic_DT( unsigned matID ) 
+SesameTables& SesameTables::Pic_DT( unsigned matID )
 {
     return addTable( EOS_Pic_DT, matID );
 }
-SesameTables& SesameTables::T_DPic( unsigned matID ) 
+SesameTables& SesameTables::T_DPic( unsigned matID )
 {
     return addTable( EOS_T_DPic, matID );
 }
-SesameTables& SesameTables::Pic_DUic( unsigned matID ) 
+SesameTables& SesameTables::Pic_DUic( unsigned matID )
 {
     return addTable( EOS_Pic_DUic, matID );
 }
-SesameTables& SesameTables::Uic_DPic( unsigned matID ) 
+SesameTables& SesameTables::Uic_DPic( unsigned matID )
 {
     return addTable( EOS_Uic_DPic, matID );
 }
-SesameTables& SesameTables::Pe_DT( unsigned matID ) 
+SesameTables& SesameTables::Pe_DT( unsigned matID )
 {
     return addTable( EOS_Pe_DT, matID );
 }
-SesameTables& SesameTables::T_DPe( unsigned matID ) 
+SesameTables& SesameTables::T_DPe( unsigned matID )
 {
     return addTable( EOS_T_DPe, matID );
 }
 
-SesameTables& SesameTables::Pe_DUe( unsigned matID ) 
+SesameTables& SesameTables::Pe_DUe( unsigned matID )
 {
     return addTable( EOS_Pe_DUe, matID );
 }
-SesameTables& SesameTables::Ue_DPe( unsigned matID ) 
+SesameTables& SesameTables::Ue_DPe( unsigned matID )
 {
     return addTable( EOS_Ue_DPe, matID );
 }
-SesameTables& SesameTables::Pc_D( unsigned matID ) 
+SesameTables& SesameTables::Pc_D( unsigned matID )
 {
     return addTable( EOS_Pc_D, matID );
 }
-SesameTables& SesameTables::Uc_D( unsigned matID ) 
+SesameTables& SesameTables::Uc_D( unsigned matID )
 {
     return addTable( EOS_Uc_D, matID );
 }
-SesameTables& SesameTables::Kr_DT( unsigned matID ) 
+SesameTables& SesameTables::Kr_DT( unsigned matID )
 {
     return addTable( EOS_Kr_DT, matID );
 }
@@ -243,7 +231,7 @@ SesameTables& SesameTables::Gs_D( unsigned matID )
 }
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Get Functions
 
 // Return the enumerated data type associated with the provided integer index
@@ -271,7 +259,7 @@ unsigned SesameTables::matID(EOS_INTEGER returnType) const {
   return matMap.find(returnType)->second;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Pack a SesameTables object into a vector<char> stream.
  *
  * Packed data stream:
@@ -282,7 +270,7 @@ unsigned SesameTables::matID(EOS_INTEGER returnType) const {
  * size_t   rtMap.size()
  * map<unsigned,vector<int>> rtMap
  */
-std::vector<char> SesameTables::pack(void) const {
+std::vector<char> SesameTables::pack() const {
   using std::string;
   using std::vector;
 
@@ -315,19 +303,19 @@ std::vector<char> SesameTables::pack(void) const {
 
   // pack the matMap (size+data)
   packer << packed_matmap.size();
-  for (size_t i = 0; i < packed_matmap.size(); ++i)
-    packer << packed_matmap[i];
+  for (char &c : packed_matmap)
+    packer << c;
 
   // pack the rtMap(data)
   packer << packed_rtmap.size();
-  for (size_t i = 0; i < packed_rtmap.size(); ++i)
-    packer << packed_rtmap[i];
+  for (char &c : packed_rtmap)
+    packer << c;
 
   Ensure(packer.get_ptr() == &packed[0] + packed_SesameTable_size);
   return packed;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void SesameTables::printEosTableList() const {
   std::cout << "List of EOS Tables:\n" << std::endl;
   for (size_t i = 0; i < tableName.size(); ++i)
@@ -336,7 +324,7 @@ void SesameTables::printEosTableList() const {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<std::string>
 SesameTables::initializeTableNames(size_t const datasize) {
   // Create a mapping between the Enum and a string name
@@ -544,9 +532,9 @@ SesameTables::initializeTableNames(size_t const datasize) {
   return tableName;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Initialize the tableDescriptions database
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::vector<std::string>
 SesameTables::initializeTableDescriptions(size_t const datasize) {
   std::vector<std::string> tableDescription(datasize);
@@ -1040,6 +1028,6 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
 
 } // end namespace rtt_cdi_eospac
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of SesameTables.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

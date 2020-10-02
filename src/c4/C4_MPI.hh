@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_MPI.hh
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:16 2002
  * \brief  C4 MPI function declarations.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_hh
 #define c4_C4_MPI_hh
@@ -20,25 +19,25 @@
 #include "c4_mpi.h"
 #include "ds++/Assert.hh"
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Prototypes
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 //! Set c4's initialzed variable to true (called from Fortran tests)
 extern "C" void setMpiInit();
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // MPI Communicator
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 DLL_PUBLIC_c4 extern MPI_Comm communicator;
 DLL_PUBLIC_c4 extern bool initialized;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // SETUP FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <typename Comm> void inherit(const Comm &comm) {
   Remember(int result =) MPI_Comm_dup(comm, &communicator);
@@ -59,10 +58,9 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
   return info;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * Broadcast the range [first, last) from proc 0 into [result, ...) on all other
- * processors.
+ * Broadcast the range [first, last) from proc 0 into [result, ...) on all other processors.
  */
 
 // This signature must be exported since it is explicitly instantiated.
@@ -100,13 +98,12 @@ void broadcast(ForwardIterator first, ForwardIterator last,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // safer version of broadcast using stl ranges
 template <typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator first, ForwardIterator last,
                OutputIterator result, OutputIterator result_end) {
-  // Check that the result is large enough to hold the data that is currently in
-  // buf.
+  // Check that the result is large enough to hold the data that is currently in buf.
   Insist(std::distance(first, last) == std::distance(result, result_end),
          "Destination must be same size as source data.");
   broadcast(first, last, result);
@@ -121,6 +118,6 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 
 #endif // c4_C4_MPI_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/C4_MPI.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

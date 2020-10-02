@@ -1,21 +1,20 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/bin/ythi.hh
  * \author Kelly Thompson <kgt@lanl.gov>, Tim Kelley <tkelley@lanl.gov.
  * \date   Tuesday, Jun 05, 2018, 17:12 pm
  * \brief  Print MPI rank, thread number and core affinity bindings.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved.
  *
  * These functions are used by c4/bin/ythi.cc and c4/test/tstQuoWrapper.cc
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_bin_ythi_hh
 #define rtt_c4_bin_ythi_hh
 
 #include "c4/C4_Functions.hh"
-#include "c4/QueryEnv.hh"
+#include "c4/SLURM_Task_Info.hh"
 #include "c4/xthi_cpuset.hh"
 #include <atomic>
 #include <iomanip>
@@ -25,7 +24,7 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**\brief After atomic bool changes to true, print out some thread info. */
 void run_thread(std::atomic<bool> &signal, std::string const &hostname,
                 int const rank, size_t const simple_thread_id) {
@@ -39,7 +38,7 @@ void run_thread(std::atomic<bool> &signal, std::string const &hostname,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void report_bindings(uint32_t const num_workers) {
 
   std::string const hostname = rtt_dsxx::draco_gethostname();
@@ -69,6 +68,6 @@ void report_bindings(uint32_t const num_workers) {
 
 #endif // rtt_c4_bin_ythi_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End c4/bin/ythi.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

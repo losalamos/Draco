@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/tDummyEICoupling.cc
  * \author Mathew Cleveland
@@ -6,7 +6,7 @@
  * \brief  EICoupling class test.
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "DummyEICoupling.hh"
 #include "cdi/EICoupling.hh"
@@ -21,9 +21,9 @@ using namespace std;
 using rtt_cdi::EICoupling;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   // ---------------------------- //
@@ -34,7 +34,8 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<EICoupling> spEICoupling;
 
   // The actual instatniate is specific (dummyEoS).
-  if ((spEICoupling.reset(new rtt_cdi_test::DummyEICoupling())), spEICoupling) {
+  if ((spEICoupling = std::make_shared<rtt_cdi_test::DummyEICoupling>()),
+      spEICoupling) {
     // If we get here then the object was successfully instantiated.
     PASSMSG("Smart Pointer to new EICoupling object created.");
   } else {
@@ -102,7 +103,7 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -111,6 +112,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tDummyEICoupling.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

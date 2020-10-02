@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstutilities.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,9 +19,9 @@ using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstutilities(UnitTest &ut) {
   std::cout << "Running test tstutilities()..." << std::endl;
@@ -84,8 +84,8 @@ void tstutilities(UnitTest &ut) {
 
   // Try to read some vectors.
 
-  double v[3];
-  parse_vector(tokens, v);
+  std::array<double, 3> v;
+  parse_vector(tokens, v.data());
   Token token = tokens.shift();
   if (rtt_dsxx::soft_equiv(v[0], 3.0, eps) &&
       rtt_dsxx::soft_equiv(v[1], 0.0, eps) &&
@@ -95,7 +95,7 @@ void tstutilities(UnitTest &ut) {
   else
     FAILMSG("1-D vector NOT successfully parsed");
 
-  parse_vector(tokens, v);
+  parse_vector(tokens, v.data());
   token = tokens.shift();
   if (rtt_dsxx::soft_equiv(v[0], 1.0, eps) &&
       rtt_dsxx::soft_equiv(v[1], 2.0, eps) &&
@@ -105,7 +105,7 @@ void tstutilities(UnitTest &ut) {
   else
     FAILMSG("2-D vector NOT successfully parsed");
 
-  parse_vector(tokens, v);
+  parse_vector(tokens, v.data());
   if (rtt_dsxx::soft_equiv(v[0], 4.0, eps) &&
       rtt_dsxx::soft_equiv(v[1], 3.0, eps) &&
       rtt_dsxx::soft_equiv(v[2], 2.0, eps) && tokens.shift().text() == "stop")
@@ -113,8 +113,8 @@ void tstutilities(UnitTest &ut) {
   else
     FAILMSG("3-D vector NOT successfully parsed");
 
-  unsigned w[3];
-  parse_unsigned_vector(tokens, w, 3);
+  std::array<unsigned, 3> w;
+  parse_unsigned_vector(tokens, w.data(), 3);
   token = tokens.shift();
   if (w[0] == 3 && w[1] == 2 && w[2] == 1 && token.type() == KEYWORD &&
       token.text() == "stop")
@@ -262,6 +262,18 @@ void tstutilities(UnitTest &ut) {
   else
     PASSMSG("sr definition checks out");
 
+  left = parse_unit(tokens);
+  if (left != W * 1e17)
+    FAILMSG("jerk and shake definitions did NOT check out");
+  else
+    PASSMSG("jerk and shake definition checks out");
+
+  left = parse_unit(tokens);
+  if (left != s * 1e-8)
+    FAILMSG("sh definitions did NOT check out");
+  else
+    PASSMSG("sh definition checks out");
+
   // Now see if we catch a bogus unit expression.
   try {
     left = parse_unit(tokens);
@@ -284,7 +296,7 @@ void tstutilities(UnitTest &ut) {
     FAILMSG("cgs energy NOT successfully parsed");
 
   unsigned old_error_count = tokens.error_count();
-  length = parse_quantity(tokens, rtt_parser::m, "length");
+  /* length = */ parse_quantity(tokens, rtt_parser::m, "length");
   if (tokens.error_count() == old_error_count)
     FAILMSG("bad length NOT successfully detected");
   else
@@ -503,8 +515,8 @@ void tstutilities(UnitTest &ut) {
   }
   {
     String_Token_Stream string("1 2 3");
-    unsigned x[4];
-    parse_unsigned_vector(string, x, 4);
+    std::array<unsigned, 4> x;
+    parse_unsigned_vector(string, x.data(), 4);
     if (string.error_count() == 0)
       FAILMSG("did NOT detect too short vector correctly");
     else
@@ -606,7 +618,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT quantity with units to SI correctly");
     quantity_with_units.rewind();
 
-    c = parse_quantity(bare_quantity, m / s, "velocity");
+    /* c = */ parse_quantity(bare_quantity, m / s, "velocity");
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -641,7 +653,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT quantity with units to cgs correctly");
     quantity_with_units.rewind();
 
-    c = parse_quantity(bare_quantity, m / s, "velocity");
+    /* c = */ parse_quantity(bare_quantity, m / s, "velocity");
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -684,7 +696,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT parse local_Temp with units to SI correctly");
     quantity_with_units.rewind();
 
-    local_Temp = parse_temperature(bare_quantity);
+    /* local_Temp = */ parse_temperature(bare_quantity);
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -720,7 +732,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT quantity with units to X4 correctly");
     quantity_with_units.rewind();
 
-    local_Temp = parse_temperature(bare_quantity);
+    /* local_Temp = */ parse_temperature(bare_quantity);
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -764,7 +776,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT parse local_Temp with units to SI correctly");
     quantity_with_units.rewind();
 
-    local_Temp = parse_temperature(bare_quantity);
+    /* local_Temp = */ parse_temperature(bare_quantity);
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -799,7 +811,7 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT quantity with units to X4 correctly");
     quantity_with_units.rewind();
 
-    local_Temp = parse_temperature(bare_quantity);
+    /* local_Temp = */ parse_temperature(bare_quantity);
     if (bare_quantity.error_count() > 0)
       PASSMSG("correctly flagged missing units in bare quantity");
     else
@@ -953,7 +965,7 @@ void tstutilities(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -962,6 +974,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstutilities.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

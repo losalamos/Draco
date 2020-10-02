@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
@@ -26,7 +26,7 @@
  * breaks encapsulation, to put it mildly. So we refrain from providing such a
  * default implementation.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef parser_Class_Parse_Table_hh
 #define parser_Class_Parse_Table_hh
@@ -35,7 +35,7 @@
 
 namespace rtt_parser {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for parse table classes
  *
  * No general implementation is provided. The developer wishing to make his
@@ -49,11 +49,11 @@ namespace rtt_parser {
  * indicating that the corresponding parameters have not been parsed yet.  This
  * allows us to detect whether a parameter has been parsed yet.
  *
- * Where possible, the sentinel value should be one that doesn't make
- * sense for the parameter in question, such as 0 for a dimension that
- * must be nonzero, or a negative value for a parameter that must be
- * positive.  This ensures that the sentinel value can be distinguished
- * from any value a user might specify in an input "deck."
+ * Where possible, the sentinel value should be one that doesn't make sense for
+ * the parameter in question, such as 0 for a dimension that must be nonzero, or
+ * a negative value for a parameter that must be positive.  This ensures that
+ * the sentinel value can be distinguished from any value a user might specify
+ * in an input "deck."
  *
  * Since Parse_Table uses static functions to parse the token stream, it is
  * generally necessary to have a static pointer somewhere that points to the
@@ -100,8 +100,8 @@ namespace rtt_parser {
  *
  * Create the object from the parsed fields.  This function should have no
  * preconditions that are not guaranteed by a preceding successful call to
- * check_completeness. create_object will be called only if no errors
- * were detected in the input "deck".
+ * check_completeness. create_object will be called only if no errors were
+ * detected in the input "deck".
  *
  * Note that Class_Parse_Table must define the type Return_Class, which is the
  * class of the object that Class_Parse_Table is designed to parse.
@@ -109,10 +109,9 @@ namespace rtt_parser {
  * For convenience, skeletons for such a class are provided in
  * draco/environment/templates/template__parser.hh,cc
  */
+template <typename Class> class Class_Parse_Table;
 
-template <class Class> class Class_Parse_Table;
-
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
@@ -120,21 +119,20 @@ template <class Class> class Class_Parse_Table;
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
-
-template <class Class_Parse_Table>
+template <typename Class_Parse_Table>
 std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens) {
   using rtt_parser::END;
   using rtt_parser::EXIT;
   using rtt_parser::Token;
 
-  typedef typename Class_Parse_Table::Return_Class Return_Class;
+  using Return_Class = typename Class_Parse_Table::Return_Class;
 
   // Construct the parse object as described above.
   Class_Parse_Table parse_table;
 
-  // Save the old error count, so we can distinguish fresh errors within
-  // this class keyword block from previous errors.
+  // Save the old error count, so we can distinguish fresh errors within this
+  // class keyword block from previous errors.
   unsigned const old_error_count = tokens.error_count();
 
   // Parse the class keyword block and check for completeness
@@ -142,8 +140,8 @@ parse_class_from_table(Token_Stream &tokens) {
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
   std::shared_ptr<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
-  // A class keyword block is expected to end with an END or (if
-  // allow_exit is true) an EXIT.
+  // A class keyword block is expected to end with an END or (if allow_exit is
+  // true) an EXIT.
   {
     parse_table.check_completeness(tokens);
 
@@ -151,15 +149,15 @@ parse_class_from_table(Token_Stream &tokens) {
       // No fresh errors in the class keyword block.  Create the object.
       Result = parse_table.create_object();
     }
-    // else there were errors in the keyword block. Don't try to
-    // create a class object.  Return the null pointer.
+    // else there were errors in the keyword block. Don't try to create a class
+    // object.  Return the null pointer.
   } else {
     tokens.report_syntax_error("missing 'end'?");
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
@@ -170,7 +168,6 @@ parse_class_from_table(Token_Stream &tokens) {
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
-
 template <typename Class_Parse_Table, typename Context>
 std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens, Context const &context) {
@@ -178,13 +175,13 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
   using rtt_parser::EXIT;
   using rtt_parser::Token;
 
-  typedef typename Class_Parse_Table::Return_Class Return_Class;
+  using Return_Class = typename Class_Parse_Table::Return_Class;
 
   // Construct the parse object as described above.
   Class_Parse_Table parse_table(context);
 
-  // Save the old error count, so we can distinguish fresh errors within
-  // this class keyword block from previous errors.
+  // Save the old error count, so we can distinguish fresh errors within this
+  // class keyword block from previous errors.
   unsigned const old_error_count = tokens.error_count();
 
   // Parse the class keyword block and check for completeness
@@ -192,8 +189,8 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
   std::shared_ptr<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
-  // A class keyword block is expected to end with an END or (if
-  // allow_exit is true) an EXIT.
+  // A class keyword block is expected to end with an END or (if allow_exit is
+  // true) an EXIT.
   {
     parse_table.check_completeness(tokens);
 
@@ -201,8 +198,8 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
       // No fresh errors in the class keyword block.  Create the object.
       Result = parse_table.create_object();
     }
-    // else there were errors in the keyword block. Don't try to
-    // create a class object.  Return the null pointer.
+    // else there were errors in the keyword block. Don't try to create a class
+    // object.  Return the null pointer.
   } else {
     tokens.report_syntax_error("missing 'end'?");
   }
@@ -210,11 +207,11 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
   return Result;
 }
 
-//----------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for base class for class parser
  *
- * This is to simplify writing a class parser. A specializaton of Class_Parse_Table for a
- * class Class uses this as a base class, as follows:
+ * This is to simplify writing a class parser. A specializaton of
+ * Class_Parse_Table for a class Class uses this as a base class, as follows:
  *
  * Class__parser.hh:
  *
@@ -229,7 +226,8 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
  *      shared_ptr<Sweeper_Creator> create_object();
  *
  *    protected:
- *      // Data to be parsed which will be used to construct the class, for example:
+ *      // Data to be parsed which will be used to construct the class, for
+ *      // example:
  *
  *      Context_Type debug_context;
  *      bool flag;
@@ -285,18 +283,17 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
  *        tokens, debug_context);
  * }
  *
- * This introduces all the "boilerplate" and lets the developer focus on the data required
- * for the constructor for Class, the parse functions needed to parse this data, and the
- * check and construct functions.
+ * This introduces all the "boilerplate" and lets the developer focus on the
+ * data required for the constructor for Class, the parse functions needed to
+ * parse this data, and the check and construct functions.
  */
-
-template <class Class, bool allow_an_exit = false>
+template <typename Class, bool allow_an_exit = false>
 class Class_Parse_Table_Base {
 public:
   // TYPEDEFS
 
-  typedef Class Return_Class;
-  typedef unsigned Context_Type;
+  using Return_Class = Class;
+  using Context_type = unsigned;
 
   // MANAGEMENT
 
@@ -320,7 +317,7 @@ private:
 
   friend class Class_Parse_Table<Class>;
 
-  void initialize(Keyword const keywords[], unsigned count) {
+  void initialize(Keyword const *keywords, unsigned count) {
     static bool first_time = true;
     if (first_time) {
       count /= static_cast<unsigned>(sizeof(Keyword));
@@ -334,17 +331,17 @@ private:
   static Parse_Table parse_table_;
 };
 
-template <class Class, bool allow_exit>
+template <typename Class, bool allow_exit>
 /*static*/ Class_Parse_Table<Class>
     *Class_Parse_Table_Base<Class, allow_exit>::current_;
 
-template <class Class, bool allow_exit>
+template <typename Class, bool allow_exit>
 /*static*/ Parse_Table Class_Parse_Table_Base<Class, allow_exit>::parse_table_;
 
 } // end namespace rtt_parser
 
 #endif // parser_Class_Parse_Table_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of parser/Class_Parse_Table.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

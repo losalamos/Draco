@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/autodoc_macros.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   Wednesday, Nov 14, 2018, 19:01 pm
@@ -6,7 +6,7 @@
 #        directories.
 # note   Copyright (C) 2018-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 set(draco_config_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
@@ -83,7 +83,7 @@ function( set_doxygen_input )
   endif()
 
   # Tell doxygen where Draco's include files are:
-  set( DOXYGEN_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/include" PARENT_SCOPE)
+  # set( DOXYGEN_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/include" PARENT_SCOPE)
 
 endfunction()
 
@@ -128,6 +128,10 @@ function( set_doxygen_dot_num_threads )
     set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES"
       PARENT_SCOPE)
   endif()
+  if( ${DOXYGEN_VERSION} VERSION_LESS 1.8.17 )
+    set( PERL_PATH "PERL_PATH = /usr/bin/perl" PARENT_SCOPE)
+  endif()
+
   # Escalate doxygen warnings into errors for CI builds
   if( DEFINED ENV{CI} AND DEFINED ENV{TRAVIS} )
     set( DOXYGEN_WARN_AS_ERROR "YES" PARENT_SCOPE )
@@ -202,6 +206,6 @@ function( set_doxygen_tagfiles )
   set( TAGFILES "${DRACO_TAG_FILE}=${DRACO_AUTODOC_HTML_DIR}" PARENT_SCOPE)
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/autodoc_macros.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

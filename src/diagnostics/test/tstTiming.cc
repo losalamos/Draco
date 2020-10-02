@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/test/tstTiming.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Test the diagnostics/TIMER macros
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "diagnostics/Diagnostics.hh"
 #include "diagnostics/Timing.hh"
@@ -17,15 +17,15 @@
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
-typedef rtt_diagnostics::Timing_Diagnostics D;
+using D = rtt_diagnostics::Timing_Diagnostics;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TEST HELPERS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void do_A() {
   TIMER(A_timer);
-  TIMER_START(A_timer);
+  TIMER_START("A_iteration", A_timer);
 
   // do a mat-vec multiply
 
@@ -49,15 +49,15 @@ void do_A() {
   b[0] = B * x[0] + C * x[1];
   b[S - 1] = A * x[S - 2] + B * x[S - 1];
 
-  TIMER_STOP(A_timer);
+  TIMER_STOP("A_iteration", A_timer);
   TIMER_RECORD("A_iteration", A_timer);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void do_B() {
   TIMER(B_timer);
-  TIMER_START(B_timer);
+  TIMER_START("B_iteration", B_timer);
 
   // do a mat-vec multiply
 
@@ -81,15 +81,15 @@ void do_B() {
   b[0] = B * x[0] + C * x[1];
   b[S - 1] = A * x[S - 2] + B * x[S - 1];
 
-  TIMER_STOP(B_timer);
+  TIMER_STOP("B_iteration", B_timer);
   TIMER_RECORD("B_iteration", B_timer);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void do_C() {
   TIMER(C_timer);
-  TIMER_START(C_timer);
+  TIMER_START("C_iteration", C_timer);
 
   // do a mat-vec multiply
 
@@ -113,13 +113,13 @@ void do_C() {
   b[0] = B * x[0] + C * x[1];
   b[S - 1] = A * x[S - 2] + B * x[S - 1];
 
-  TIMER_STOP(C_timer);
+  TIMER_STOP("C_iteration", C_timer);
   TIMER_RECORD("C_iteration", C_timer);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void timing_active() {
 #ifdef DRACO_TIMING_ON
@@ -129,7 +129,7 @@ void timing_active() {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_timing(rtt_dsxx::UnitTest &ut) {
   // add to some timers
@@ -215,20 +215,20 @@ void test_timing(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Diagnostics timer lists ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_macros(rtt_dsxx::UnitTest &ut) {
   // delete all existing timers
   D::delete_timers();
 
   // make timers and do results
   TIMER(outer_timer);
-  TIMER_START(outer_timer);
+  TIMER_START("Outer", outer_timer);
 
   do_A();
   do_B();
   do_C();
 
-  TIMER_STOP(outer_timer);
+  TIMER_STOP("Outer", outer_timer);
   TIMER_RECORD("Outer", outer_timer);
 
   // if the timers are off we get no timing data
@@ -239,6 +239,7 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
   if (D::num_timers() != 0)
     ITFAILS;
 #else
+#ifndef DRACO_CALIPER
   if (keys.size() != 4)
     ITFAILS;
   cout << setw(15) << "Routine" << setw(15) << "Fraction" << endl;
@@ -259,6 +260,7 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
 
   cout << "The total time was " << total << endl;
   cout << endl;
+#endif // DRACO_CALIPER
 #endif
 
   TIMER_REPORT(outer_timer, cout, "Total time");
@@ -267,7 +269,7 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Timer macros ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -278,6 +280,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstTiming.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

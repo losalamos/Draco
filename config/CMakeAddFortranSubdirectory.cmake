@@ -25,7 +25,7 @@
 #
 #   cmake_add_fortran_subdirectory(
 #    <subdir>                # name of subdirectory
-#    PROJECT <project_name>  # project name in subdirectories's top 
+#    PROJECT <project_name>  # project name in subdirectories's top
 #                            # CMakeLists.txt
 #                            # recommendation: use the same project name as
 #                            # listed in <subdir>/CMakeLists.txt
@@ -45,12 +45,6 @@
 # Relative paths in ARCHIVE_DIR and RUNTIME_DIR are interpreted with respect
 # to the build directory corresponding to the source directory in which the
 # function is invoked.
-#
-# Limitations:
-#
-# NO_EXTERNAL_INSTALL is required for forward compatibility with a future
-# version that supports installation of the external project binaries during "
-# make install".
 
 #=============================================================================
 # This is a heavily modified version of CMakeAddFortranSubdirectory.cmake that
@@ -60,9 +54,9 @@ set(_CAFS_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 include(CheckLanguage)
 include(ExternalProject)
 
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Find gfortran and check/setup x86/x64 information.
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(_setup_cafs_config_and_build source_dir build_dir)
 
   # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
@@ -76,9 +70,9 @@ function(_setup_cafs_config_and_build source_dir build_dir)
     )
   if( NOT EXISTS ${CAFS_Fortran_COMPILER} )
     message(FATAL_ERROR
-      "A Fortran compiler was not found.  Please set CAFS_Fortran_COMPILER to the full
-path of a working Fortran compiler. For Windows platforms, you need to install MinGW
-with the gfortran option." )
+      "A Fortran compiler was not found.  Please set CAFS_Fortran_COMPILER to "
+      "the full path of a working Fortran compiler. For Windows platforms, you "
+      "need to install MinGW with the gfortran option." )
   endif()
 
   # Validate flavor/architecture of specified gfortran
@@ -109,12 +103,11 @@ with the gfortran option." )
   if(NOT "${out}" MATCHES "${_cafs_fortran_target_arch}")
     string(REPLACE "\n" "\n  " out "  ${out}")
     message(FATAL_ERROR
-      "CAFS_Fortran_COMPILER is set to\n"
-      "  ${CAFS_Fortran_COMPILER}\n"
+      "CAFS_Fortran_COMPILER is set to\n  ${CAFS_Fortran_COMPILER}\n"
       "which is not a valid Fortran compiler for this architecture.  "
-      "The output from '${CAFS_Fortran_COMPILER} -v' does not match '${_cafs_fortran_target_arch}':\n"
-      "${out}\n"
-      "Set CAFS_Fortran_COMPILER to a compatible Fortran compiler for this architecture."
+      "The output from '${CAFS_Fortran_COMPILER} -v' does not match "
+      "'${_cafs_fortran_target_arch}':\n${out}\nSet CAFS_Fortran_COMPILER to "
+      "a compatible Fortran compiler for this architecture."
       )
   endif()
 
@@ -131,6 +124,14 @@ with the gfortran option." )
   endif()
 
   # Generate the config_cafs_proj.cmake command file:
+  if( ARGS_VERBOSE )
+  message("
+    configure_file(
+    ${_CAFS_CURRENT_SOURCE_DIR}/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
+    ${build_dir}/config_cafs_proj.cmake
+    @ONLY)
+  ")
+  endif()
   configure_file(
     ${_CAFS_CURRENT_SOURCE_DIR}/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
     ${build_dir}/config_cafs_proj.cmake
@@ -161,10 +162,12 @@ execute_process( COMMAND \"${CMAKE_COMMAND}\" ${build_command_args} )
     message( "Generating ${build_dir}/build_cafs_proj.cmake")
   endif()
   file(WRITE "${build_dir}/build_cafs_proj.cmake" ${build_cafs_proj_command})
+
 endfunction()
 
-#-------------------------------------------------------------------------------#
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+# _add_fortran_library_link_interface
+#--------------------------------------------------------------------------------------------------#
 function(_add_fortran_library_link_interface library depend_library)
   set_target_properties(${library} PROPERTIES
     IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG "${depend_library}")
@@ -176,10 +179,10 @@ function(_add_fortran_library_link_interface library depend_library)
   endif()
 endfunction()
 
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # This is the main function.  This generates the required external_project
 # pieces that will be run under a different generator (MinGW Makefiles).
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(cmake_add_fortran_subdirectory subdir)
 
   # Parse arguments to function
@@ -189,7 +192,7 @@ function(cmake_add_fortran_subdirectory subdir)
     CMAKE_COMMAND_LINE)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}"
     ${ARGN})
-  if(NOT ARGS_NO_EXTERNAL_INSTALL)
+  if(NOT ARGS_NO_EXTERNAL_INSTALL AND ARGS_VERBOSE)
     message("
 -- The external_project ${ARGS_PROJECT} will be installed to the location
    specified by CMAKE_INSTALL_PREFIX. This install location should be set via
@@ -200,6 +203,15 @@ function(cmake_add_fortran_subdirectory subdir)
 
   # If the current generator/system already supports Fortran, then simply add
   # the requested directory to the project.
+  if(ARGS_VERBOSE)
+    if(MSVC)
+      message("MSVC = TRUE")
+    endif()
+    message("
+    _LANGUAGES_            = ${_LANGUAGES_}
+    CMAKE_Fortran_COMPILER = ${CMAKE_Fortran_COMPILER}
+    ")
+  endif()
   if( _LANGUAGES_ MATCHES Fortran OR
       (MSVC AND "${CMAKE_Fortran_COMPILER}" MATCHES ifort ) )
     add_subdirectory(${subdir})
@@ -215,6 +227,19 @@ function(cmake_add_fortran_subdirectory subdir)
   set(target_names "${ARGS_TARGET_NAMES}")
   list(LENGTH libraries numlibs)
   list(LENGTH target_names numtgtnames)
+  if(ARGS_VERBOSE)
+    message("
+    Preparing CAFS external project:
+    - source_dir   = \"${CMAKE_CURRENT_SOURCE_DIR}/${subdir}\"
+    - project_name = \"${ARGS_PROJECT}\"
+    - library_dir  = \"${ARGS_ARCHIVE_DIR}\"
+    - binary_dir   = \"${ARGS_RUNTIME_DIR}\"
+    - libraries    = \"${ARGS_LIBRARIES}\"
+    - target_names = \"${ARGS_TARGET_NAMES}\"
+    - numlibs      = ${numlibs}
+    - numtgtnames  = ${numtgtnames}
+    ")
+  endif()
   if( ${numtgtnames} STREQUAL 0 )
      set(target_names ${libraries})
      set( numtgtnames ${numlibs})
@@ -243,6 +268,20 @@ function(cmake_add_fortran_subdirectory subdir)
      set(ep_build_type "${CMAKE_BUILD_TYPE}")
   endif()
   # create the external project
+  if( ARGS_VERBOSE )
+  message("
+    externalproject_add(${project_name}_build
+    DEPENDS           ${ARGS_DEPENDS}
+    SOURCE_DIR        ${source_dir}
+    BINARY_DIR        ${build_dir}
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=${ep_build_type}
+                      -P ${build_dir}/config_cafs_proj.cmake
+    BUILD_COMMAND     ${CMAKE_COMMAND} -P ${build_dir}/build_cafs_proj.cmake
+    BUILD_ALWAYS 1
+    INSTALL_COMMAND   \"\"
+    )
+  ")
+  endif()
   externalproject_add(${project_name}_build
     DEPENDS           ${ARGS_DEPENDS}
     SOURCE_DIR        ${source_dir}
@@ -289,10 +328,12 @@ function(cmake_add_fortran_subdirectory subdir)
     if( WIN32 )
       if( ARGS_VERBOSE )
         message("    set_target_properties(${tgt} PROPERTIES
-        IMPORTED_IMPLIB \"${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}\" )" )
+        IMPORTED_IMPLIB
+          \"${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}\" )" )
       endif()
       set_target_properties(${tgt} PROPERTIES
-        IMPORTED_IMPLIB "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
+        IMPORTED_IMPLIB
+          "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
     endif()
     # [2015-01-29 KT/Wollaber: We don't understand why this is needed, but
     # adding IMPORTED_LOCATION_DEBUG to the target_properties fixes a missing
@@ -300,7 +341,8 @@ function(cmake_add_fortran_subdirectory subdir)
     # that the Fortran project is always built in Debug mode.
     if( APPLE )
       set_target_properties(${tgt} PROPERTIES
-        IMPORTED_LOCATION_DEBUG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+        IMPORTED_LOCATION_DEBUG
+          "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
     endif()
     add_dependencies( ${tgt} ${project_name}_build )
 
@@ -315,18 +357,18 @@ function(cmake_add_fortran_subdirectory subdir)
       # artificially create some targets to help Ninja resolve dependencies.
       execute_process( COMMAND ${CMAKE_COMMAND} -E touch
         "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
-#       add_custom_command(
-#         # OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-#         OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-#         COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
-#         )
-#       # file( RELATIVE_PATH var dir1 dir2)
-#       message("
-#       add_custom_command(
-#         OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-#         OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-#         COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
-#         )
+#     add_custom_command(
+#       # OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+#       OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+#       COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
+#       )
+#     # file( RELATIVE_PATH var dir1 dir2)
+#     message("
+#     add_custom_command(
+#       OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+#       OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+#       COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
+#       )
 # ")
     endif()
 
@@ -374,6 +416,48 @@ cmake_add_fortran_subdirectory
   if(DEFINED target)
     _add_fortran_library_link_interface(${target} "${target_libs}")
   endif()
+
+  # If we are installing this target, then create a string that can be saved
+  # to the installed <project>-config.cmake file for import by clients.
+  # This information will be saved in the variable CAFS_EXPORT_TARGET_PROPERTIES
+  if( NOT ARGS_NO_EXTERNAL_INSTALL AND CMAKE_CONFIGURATION_TYPES )
+
+    string(APPEND CAFS_EXPORT_DEFINE_IMPORT_PREFIX "
+# Compute the installation prefix relative to this file.
+# (generated by CMakeAddFortranSubdirectory.cmake)
+if( NOT DEFINED _IMPORT_PREFIX )
+  get_filename_component(_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
+  get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
+  if(_IMPORT_PREFIX STREQUAL \"/\")
+    set(_IMPORT_PREFIX \"\")
+  endif()
+endif()
+    ")
+
+    string(APPEND CAFS_EXPORT_TARGET_PROPERTIES "
+# Create imported target ${ARGS_TARGET_NAMES}
+# (generated by CMakeAddFortranSubdirectory.cmake)
+add_library(${ARGS_TARGET_NAMES} SHARED IMPORTED)
+foreach( build_type ${CMAKE_CONFIGURATION_TYPES} )
+  string( TOUPPER \${build_type} build_type_allcaps )
+  if( EXISTS \"\${_IMPORT_PREFIX}/\${build_type}/lib/lib${ARGS_LIBRARIES}.lib\" AND
+      EXISTS \"\${_IMPORT_PREFIX}/\${build_type}/bin/lib${ARGS_LIBRARIES}.dll\" AND
+      EXISTS \"\${_IMPORT_PREFIX}/\${build_type}/include/${subdir}\" )
+    set_property(TARGET ${ARGS_TARGET_NAMES} APPEND PROPERTY IMPORTED_CONFIGURATIONS \${build_type})
+    set_target_properties(${ARGS_TARGET_NAMES} PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES \"\${_IMPORT_PREFIX}/\${build_type}/include/${subdir}\"
+      INTERFACE_LINK_LIBRARIES \"${ARGS_DEPENDS}\"
+      IMPORTED_IMPLIB_\${build_type_allcaps} \"\${_IMPORT_PREFIX}/\${build_type}/lib/lib${ARGS_LIBRARIES}.lib\"
+      IMPORTED_LOCATION_\${build_type_allcaps} \"\${_IMPORT_PREFIX}/\${build_type}/bin/lib${ARGS_LIBRARIES}.dll\" )
+  endif()
+endforeach()
+    ")
+    set(CAFS_EXPORT_TARGET_PROPERTIES "${CAFS_EXPORT_TARGET_PROPERTIES}"
+      PARENT_SCOPE)
+    set(CAFS_EXPORT_DEFINE_IMPORT_PREFIX "${CAFS_EXPORT_DEFINE_IMPORT_PREFIX}"
+      PARENT_SCOPE)
+  endif()
+
 endfunction()
 
 #-----------------------------------------------------------------------------#
@@ -438,6 +522,18 @@ function( cafs_fix_mpi_library )
       "For more help see https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment")
     endif()
 
+    # 1. Create a new imported target to represent MPI::CAFS
+    add_library(MPI::MPI_cafs SHARED IMPORTED)
+    set_target_properties(MPI::MPI_cafs PROPERTIES
+      IMPORTED_CONFIGURATIONS RELEASE
+      INTERFACE_INCLUDE_DIRECTORIES
+      "${MPI_C_HEADER_DIR};${MPI_mpifptr_INCLUDE_DIR}"
+      IMPORTED_IMPLIB_RELEASE         "${MPI_gfortran_LIBRARIES}"
+      IMPORTED_LOCATION_RELEASE       "${MPI_gfortran_LIBRARIES}" )
+    # 2. Strip MPI deps from Lib_c4
+    set_target_properties( Lib_c4 PROPERTIES
+      INTERFACE_LINK_LIBRARIES "Lib_dsxx;MPI::MPI_cafs" )
+
     # Force '-fno-range-check' gfortran compiler flag
     foreach( comp_opt FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_RELWITHDEBINFO
       MINSIZEREL )
@@ -458,20 +554,46 @@ function( cafs_fix_mpi_library )
 
 endfunction(cafs_fix_mpi_library)
 
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Create imported libraries owned by the Visual Studio project to be used in the
 # CAFS subproject.
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function( cafs_create_imported_targets targetName libName targetPath linkLang)
 
-  get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
+  set(verbose_target_name "Lib_foo")
+  if( targetName STREQUAL verbose_target_name )
+    message("
+    targetName = ${targetName}
+    libName    = ${libName}
+    targetPath = ${targetPath}
+    linkLang   = ${linkLang}
+    ")
+  endif()
 
+  get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
+  if( targetName STREQUAL verbose_target_name )
+    message("
+      find_library( lib
+      NAMES ${libName}
+      PATHS ${pkgloc}
+      PATH_SUFFIXES Release Debug
+      )
+  ")
+  endif()
   find_library( lib
     NAMES ${libName}
     PATHS ${pkgloc}
     PATH_SUFFIXES Release Debug
     )
   get_filename_component( libloc ${lib} DIRECTORY )
+  if( targetName STREQUAL verbose_target_name )
+    message("libloc = ${libloc}")
+  endif()
+  if( "${libloc}x" STREQUAL "x" )
+    message( FATAL_ERROR, "cafs_create_imported_targets :: Did not find "
+    "library ${lib} at location ${pkgloc} when trying to create import target "
+    "${targetName}")
+  endif()
 
   # Debug case?
   find_library( lib_debug
@@ -489,16 +611,18 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   else()
     set(dll_loc "${libloc}" )
     set(dll_loc_debug "${libloc_debug}" )
-  endif() 
-  
+  endif()
+
   add_library( ${targetName} SHARED IMPORTED GLOBAL)
   set_target_properties( ${targetName} PROPERTIES
-    IMPORTED_LOCATION "${dll_loc}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    IMPORTED_LOCATION
+      "${dll_loc}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     IMPORTED_LINK_INTERFACE_LANGUAGES ${linkLang}
     )
   if( lib_debug )
     set_target_properties( ${targetName} PROPERTIES
-      IMPORTED_LOCATION_DEBUG "${dll_loc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+      IMPORTED_LOCATION_DEBUG
+        "${dll_loc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
   endif()
 
   # platform specific properties
@@ -518,7 +642,7 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
       set_target_properties(${targetName}
         PROPERTIES
         IMPORTED_IMPLIB_DEBUG
-        "${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+          "${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
         )
     endif()
   endif()
@@ -526,6 +650,182 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   unset(lib_debug CACHE)
 endfunction()
 
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+# Generate a set of default variables for the CAFS cmake command line.
+# This macro sets these cmake variables:
+#   - build_system_state
+# Optional arguments:
+# - PROJECT "Draco"
+#--------------------------------------------------------------------------------------------------#
+function(init_build_system_state)
+
+  # Parse arguments to function
+  set(options)
+  set(oneValueArgs PROJECT )
+  set(multiValueArgs)
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    ${ARGN})
+  if( NOT ARGS_PROJECT )
+    set(ARGS_PROJECT "Draco")
+    set( draco_DIR ${Draco_SOURCE_DIR}/config )
+  endif()
+
+  # If the current generator/system already supports Fortran, then simply add
+  # the requested directory to the project.
+  if( _LANGUAGES_ MATCHES Fortran OR
+      (MSVC AND "${CMAKE_Fortran_COMPILER}" MATCHES ifort ) )
+    return()
+  endif()
+
+  # CMake does not support storing a list of lists when sending data to a macro.
+  # Because Draco_TPL_INCLUDE_DIRS is a list and we want to stuff it into the
+  # list build_system_state, recode Draco_TPL_INCLUDE_DIRS by replacing
+  # semicolons with triple underscores.  The list will be reconstructed in the
+  # subdirectory's CMakeLists.txt.
+  string( REGEX REPLACE ";" "___" tmp
+    "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
+
+  # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
+  # will need some of the current build system parameters:
+  set( build_system_state
+    "-DDRACO_C4=${DRACO_C4}"
+    "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
+    "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
+    "-Ddraco_DIR=${draco_DIR}")
+  if( ${DRACO_C4} MATCHES "MPI" )
+    list( APPEND build_system_state
+    "-DMPI_C_LIBRARIES=${MPI_C_LIBRARIES}"
+    "-DMPI_C_INCLUDE_DIRS=${MPI_C_INCLUDE_DIRS}" )
+  endif()
+  if( WIN32 )
+    # For Win32 builds, DLL and applications are built in the directory
+    # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+    list( APPEND build_system_state
+      "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${${ARGS_PROJECT}_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
+    if(CMAKE_TOOLCHAIN_FILE)
+      list( APPEND build_system_state
+        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+    endif()
+  else()
+    list( APPEND build_system_state "-DHAVE_CUDA=${HAVE_CUDA}" )
+  endif()
+  set(build_system_state "${build_system_state}" PARENT_SCOPE)
+  set(draco_DIR "${draco_DIR}" PARENT_SCOPE)
+
+endfunction()
+
+#--------------------------------------------------------------------------------------------------#
+# Capture boilerplate setup for Fortran-only directories built with CAFS
+# 1. Ensure that draco/config is listed in CMAKE_MODULE_PATH
+# 2. Include basic build system setup routines that define helper macros used
+#    by the main Draco build system (do platoform_checks, compilerEnv, vendors,
+#    etc.)
+# 3. Define draco_BINARY_DIR and create local import targets for common
+#    dependencies like Lib_dsxx and Lib_c4.
+# 4. Include extra directories to find header files.
+#--------------------------------------------------------------------------------------------------#
+macro(CAFS_Fortran_dir_boilerplate_setup)
+
+  # Parse arguments to function
+  set(options)
+  set(oneValueArgs PROJECT )
+  set(multiValueArgs)
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    ${ARGN})
+  if( NOT ARGS_PROJECT )
+    set(ARGS_PROJECT "Draco")
+  endif()
+
+  if(NOT TARGET Lib_dsxx)
+
+    # Build system configuration files are located here.
+    if( NOT DEFINED draco_DIR OR NOT EXISTS ${draco_DIR} )
+      message( FATAL_ERROR "can't find draco/config directory at draco_DIR = "
+        "\"${draco_DIR}\"" )
+    endif()
+
+    # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see
+    # api/CMakeLists.txt) by replacing triple underscores with a semicolon.
+    # This must be done before calling find_package(draco)
+    string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
+      "${Draco_TPL_INCLUDE_DIRS}" )
+
+    if( NOT ARGS_PROJECT STREQUAL "Draco" )
+      set(CROD "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+      find_package( draco REQUIRED CONFIG )
+      dbs_basic_setup()
+      set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CROD}")
+      unset(CROD)
+    else()
+      get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../..
+        ABSOLUTE )
+      cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
+        "${draco_BINARY_DIR}/src/ds++" CXX )
+      cafs_create_imported_targets( Lib_c4 "rtt_c4"
+        "${draco_BINARY_DIR}/src/c4" CXX )
+
+      # If we get here, we also need to use the Draco scripts to setup compiler
+      # flags and MPI options
+      include( buildEnv )
+      dbsSetDefaults()
+      # On Win32, set the default top level output directory:
+      if(WIN32)
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+          CACHE PATH "Build runtime objects at this location.")
+      endif()
+      include( platform_checks )
+      include( compilerEnv )
+      dbsSetupFortran()
+      include( component_macros )
+      include( vendor_libraries )
+    endif()
+
+    include_directories( "${cafs_Draco_TPL_INCLUDE_DIRS}" )
+  endif(NOT TARGET Lib_dsxx)
+endmacro(CAFS_Fortran_dir_boilerplate_setup)
+
+#--------------------------------------------------------------------------------------------------#
+# Capture MPI-specific boilerplate setup for Fortran-only directories built
+# with CAFS
+# 1. Call Draco's setupMPILibraries() to discover and configure MPI for use.
+# 2. For MSVC+MSYS-gfortran, do some extra MPI setup to help this project
+#    find MPI's headers and libraries.
+# 3. Sets and returns CAFS_MPI_DEPS
+#--------------------------------------------------------------------------------------------------#
+macro(CAFS_Fortran_dir_MPI_setup)
+
+  if( "${DRACO_C4}" STREQUAL "MPI")
+    # unset( CAFS_MPI_DEPS )
+    # CAFS setup unique to this directory; vendor discovery
+    setupMPILibraries()
+
+    # Link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll,
+    # and ensure that the compiler option '-frange-check' is disabled.
+    cafs_fix_mpi_library()
+
+    # Directories to search for include directives
+    # if( DEFINED MPI_Fortran_INCLUDE_PATH )
+    #   # Only include directories if mpif.h is found.
+    #   set( mpifh_found FALSE )
+    #   foreach( dir ${MPI_Fortran_INCLUDE_PATH} )
+    #     if( EXISTS ${dir}/mpif.h )
+    #       set( mpifh_found TRUE )
+    #     endif()
+    #   endforeach()
+    #   if( mpifh_found )
+    #     include_directories( "${MPI_Fortran_INCLUDE_PATH}" )
+    #   endif()
+    # endif()
+    add_definitions( -DC4_MPI )
+    # if(MPI_gfortran_LIBRARIES)
+    #   set( CAFS_MPI_DEPS ${MPI_gfortran_LIBRARIES} )
+    # else()
+    #   set( CAFS_MPI_DEPS ${MPI_Fortran_LIBRARIES} )
+    # endif()
+  endif()
+
+endmacro(CAFS_Fortran_dir_MPI_setup)
+
+#--------------------------------------------------------------------------------------------------#
 # End of CMakeAddFortranSubdirectory.cmake
-#-------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

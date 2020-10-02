@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/test/tEospacWithCDI.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation file for tEospacWithCDI
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
 #include "cdi_eospac/Eospac.hh"
@@ -24,9 +24,9 @@ using namespace std;
 namespace rtt_cdi_eospac_test {
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Tests the Eospac access routines via the CDI interface.
  *
@@ -43,38 +43,36 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   // Create a SesameTables object //
   // ---------------------------- //
 
-  // The user must create a SesameTables object that links material ID
-  // numbers to EOSPAC data types (each SesameTables object only contains
-  // lookups for one material).  If the user needs heat capacity values for
-  // Al then he/she must create a SesameTables object for Aluminum and then
-  // assign an aluminum material ID (e.g. 3717) to the enelc EOSPAC data
-  // type.  See the tests below for more details.
+  // The user must create a SesameTables object that links material ID numbers
+  // to EOSPAC data types (each SesameTables object only contains lookups for
+  // one material).  If the user needs heat capacity values for Al then he/she
+  // must create a SesameTables object for Aluminum and then assign an aluminum
+  // material ID (e.g. 3717) to the enelc EOSPAC data type.  See the tests below
+  // for more details.
 
   // Set the material identifier This one is for Aluminum (03717) Category-1
   // data (0) + Mat# 371 (Al) + Version # 7
 
   // See http://xweb.lanl.gov/projects/data/ for material ID information.
 
-  // This matID for Al has lookup tables for prtot, entot, tptot, tntot,
-  // pntot, eptot, prelc, enelc, tpelc, tnelc pnelc, epelc, prcld, and encld
-  // (see SesameTables.hh for an explanantion of these keywords).  I need
-  // the table that contains enion lookups so that I can query for Cve()
-  // values.
+  // This matID for Al has lookup tables for prtot, entot, tptot, tntot, pntot,
+  // eptot, prelc, enelc, tpelc, tnelc pnelc, epelc, prcld, and encld (see
+  // SesameTables.hh for an explanantion of these keywords).  I need the table
+  // that contains enion lookups so that I can query for Cve() values.
 
   // Sesame Number 3717 provides data tables: 101 102 201 301 303 304 305 306 401
   int const Al3717 = 3717;
 
-  // I also want to lookup the mean ion charge (EOS_Zfc_DT) which is found
-  // in sesame table 601.  Add sesame number 23714 which provides data
-  // tables: 101 102 201 601 602 603 604
+  // I also want to lookup the mean ion charge (EOS_Zfc_DT) which is found in
+  // sesame table 601.  Add sesame number 23714 which provides data tables: 101
+  // 102 201 601 602 603 604
   int const Al23714 = 23714;
 
   // Create a SesameTables object for Aluminum.
   rtt_cdi_eospac::SesameTables AlSt;
 
-  // Assign matID Al3717 to enion lookups (used for Cvi) for AlSt.  We can
-  // also assign these tables when the Eospac object is created (see example
-  // below).
+  // Assign matID Al3717 to enion lookups (used for Cvi) for AlSt.  We can also
+  // assign these tables when the Eospac object is created (see example below).
 
   // Also assign matID Al23714 for temperature-based electron thermal
   // conductivity (tconde).
@@ -82,17 +80,17 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
 
   // Verify that the assignments were made correctly.
 
-  // Cvi (returnType=EOS_Uic_DT (=ES4enion)) should point to matID 3717.
-  // The user should never need to access this function.  However Eospac.cc
-  // does and we need to test this funcitonality.
+  // Cvi (returnType=EOS_Uic_DT (=ES4enion)) should point to matID 3717.  The
+  // user should never need to access this function.  However Eospac.cc does and
+  // we need to test this funcitonality.
 
   if (AlSt.matID(EOS_Uic_DT) != 3717)
     FAILMSG("AlSt.matID(EOS_Uic_DT) points to the wrong matID.");
 
   // The temperature-based electorn thermal conductivity
   // (returnType=27=EOS_Ktc_DT) should point to matID 23714.  The user should
-  // never need to access this function.  However Eospac.cc does and we need
-  // to test this funcitonality.
+  // never need to access this function.  However Eospac.cc does and we need to
+  // test this funcitonality.
 
   if (AlSt.matID(EOS_Ktc_DT) != 23714)
     FAILMSG("AlSt.matID(27) points to the wrong matID.");
@@ -101,19 +99,18 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   // Create an Eospac object //
   // ----------------------- //
 
-  // An Eospac object allows the user to access EoS information about a
-  // material that has been constructed in a SesameTable object.  The
-  // constructor for Eospac takes one argument: a SesameTables object.
+  // An Eospac object allows the user to access EoS information about a material
+  // that has been constructed in a SesameTable object.  The constructor for
+  // Eospac takes one argument: a SesameTables object.
 
   std::shared_ptr<const rtt_cdi::EoS> spEospac;
 
-  // Try to instantiate the new Eospac object.  Simultaneously, we are
-  // assigned material IDs to more SesameTable values.
+  // Try to instantiate the new Eospac object.  Simultaneously, we are assigned
+  // material IDs to more SesameTable values.
 
-  if (spEospac.reset(
-          new const rtt_cdi_eospac::Eospac(AlSt.Ue_DT(Al3717).Zfc_DT(Al23714))),
+  if (spEospac = std::make_shared<rtt_cdi_eospac::Eospac>(
+          AlSt.Ue_DT(Al3717).Zfc_DT(Al23714)),
       spEospac)
-
     PASSMSG("shared_ptr to new Eospac object created.");
   else {
     FAILMSG("Unable to create shared_ptr to new Eospac object.");
@@ -124,13 +121,13 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
 
   // CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!  CAUTION!!!
 
-  // Adding this block breaks Eospac as currently implemented.  Effectively,
-  // the destructor for spEospacAlt destroys all of the table handles for
-  // libeospac.  This is a flaw in libeospac, but we may be forced to manage
-  // it in cdi_eospac by using a Singleton Eospac object that uses reference
-  // counting for each material+data tuple and calls eos_DestroyTables()
-  // instead of eos_DestroyAll().  A redesign is also required to make this
-  // package thread safe!
+  // Adding this block breaks Eospac as currently implemented.  Effectively, the
+  // destructor for spEospacAlt destroys all of the table handles for libeospac.
+  // This is a flaw in libeospac, but we may be forced to manage it in
+  // cdi_eospac by using a Singleton Eospac object that uses reference counting
+  // for each material+data tuple and calls eos_DestroyTables() instead of
+  // eos_DestroyAll().  A redesign is also required to make this package thread
+  // safe!
 
   // {   // Test alternate ctor method:
 
@@ -154,7 +151,7 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   // ------------------- //
 
   std::shared_ptr<rtt_cdi::CDI> spCdiEos;
-  if (spCdiEos.reset(new rtt_cdi::CDI()), spCdiEos)
+  if (spCdiEos = std::make_shared<rtt_cdi::CDI>(), spCdiEos)
     PASSMSG("shared_ptr to CDI object created successfully.");
   else
     FAILMSG("Failed to create shared_ptr to CDI object.");
@@ -175,8 +172,8 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
 
   double const K2keV = 1.0 / 1.1604412E+7; // keV/Kelvin
 
-  // All of these tests request an EoS value given a single
-  // temperature and a single density.
+  // All of these tests request an EoS value given a single temperature and a
+  // single density.
 
   // Retrieve an Electron internal energy value;
 
@@ -258,10 +255,9 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   // Test vector access routines //
   // --------------------------- //
 
-  // Set up simple temp and density vectors.  vtemp(i) will
-  // always be associated with vdensities(i).  In this case
-  // both tuples have identical data so that the returned
-  // results will also be identical.
+  // Set up simple temp and density vectors.  vtemp(i) will always be associated
+  // with vdensities(i).  In this case both tuples have identical data so that
+  // the returned results will also be identical.
 
   vector<double> vtemps(2);
   vector<double> vdensities(2);
@@ -271,15 +267,14 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   vdensities[0] = density;
   vdensities[1] = density;
 
-  // Retrieve electron based heat capacities for each set of
-  // (density, temperature) values.
+  // Retrieve electron based heat capacities for each set of (density,
+  // temperature) values.
 
   vector<double> vcve(2);
   vcve = spCdiEos->eos()->getElectronHeatCapacity(vtemps, vdensities);
 
-  // Since the i=0 and i=1 tuples of density and temperature
-  // are identical the two returned heat capacities should
-  // also match.
+  // Since the i=0 and i=1 tuples of density and temperature are identical the
+  // two returned heat capacities should also match.
 
   if (soft_equiv(vcve[0], vcve[1], tol)) {
     ostringstream msg;
@@ -293,8 +288,7 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG(msg.str());
   }
 
-  // This result should also match the scalar value
-  // calculated above.
+  // This result should also match the scalar value calculated above.
 
   heatCapacity = spCdiEos->eos()->getElectronHeatCapacity(temperature, density);
 
@@ -314,7 +308,7 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
 
 } // end of namespace rtt_cdi_eospac_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -324,6 +318,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tEospacwithCDI.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   units/test/tstFundUnit.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \brief
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -14,9 +12,9 @@
 #include "units/FundUnit.hh"
 #include <sstream>
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_construction(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
@@ -30,7 +28,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   using std::ostringstream;
   using std::string;
 
-  FundUnit<Ltype> myLength(L_null, L_cf, L_labels);
+  FundUnit<Ltype> myLength(L_null, L_cf.data(), L_labels);
 
   // Is the enum value correct?
   if (myLength.enumVal() == L_null) {
@@ -58,7 +56,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "Unit label was not set correctly "
-        << "(\"" << myLength.label() << "\" != \"NA\")" << endl;
+        << "(\"" << myLength.label() << R"(" != "NA"))" << endl; // " fix emacs
     FAILMSG(msg.str());
   }
 
@@ -66,8 +64,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
 
   // Use "long labels" string...
 
-  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf,
-                            rtt_units::L_long_labels);
+  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf.data(), rtt_units::L_long_labels);
 
   // Is the label correct?
   std::string sentinelValue("centimeter");
@@ -76,8 +73,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "Unit long label was not set correctly "
-        << "(\"" << myLength2.label() << "\" != \"" << sentinelValue << "\")"
-        << endl;
+        << "(\"" << myLength2.label() << "\" != \"" << sentinelValue << "\")" << endl;
     FAILMSG(msg.str());
   }
   // Is the conversion factor correct?
@@ -93,7 +89,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -102,6 +98,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstFundUnit.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

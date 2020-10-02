@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   draco/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
 # note   Copyright (C) 2019-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Build notes:
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/
@@ -14,7 +14,7 @@
 cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
 set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
-project( Draco DESCRIPTION ${ddesc} VERSION 7.6 LANGUAGES CXX C)
+project( Draco DESCRIPTION ${ddesc} VERSION 7.8 LANGUAGES CXX C)
 
 # Do not look for Fortran/CUDA for
 # 1. XCode based Generators, or
@@ -72,7 +72,6 @@ dbsConfigInfo()
 # Platform Checks: Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is
 # gethostname() available?
 include( platform_checks )
-query_craype()
 set_draco_uname()
 query_have_gethostname()
 query_have_maxpathlen()

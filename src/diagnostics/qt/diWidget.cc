@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/qt/diWidget.cc
  * \author Kelly Thompson
@@ -6,13 +6,13 @@
  * \brief  Implementation for draco info widget.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "diWidget.hh"
 #include "../draco_info.hh"
 
 diWidget::diWidget(QWidget *parent)
-    : QWidget(parent), layout(new QGridLayout(this)), label1(NULL),
+    : QWidget(parent), layout(new QGridLayout(this)), label1(nullptr),
       pushbutton1(new QPushButton("&Ok")) {
   // Set the window title.
   setWindowTitle("draco_info-gui");
@@ -35,6 +35,6 @@ diWidget::diWidget(QWidget *parent)
   setLayout(layout);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of diagnostics/qt/diWidget.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,10 +1,9 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/path_getFilenameComponent.cc
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "path.hh"
 #include <algorithm> // std::replace()
@@ -12,14 +11,16 @@
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Helper function to extract path information from a filename.
- * \param fqName A fully qualified filename (/path/to/the/unit/test)
+ *
+ * \param[in] fqName A fully qualified filename (/path/to/the/unit/test)
+ * \param fc Enum type FilenameComponent that specifies the action.
  * \return filename only, or path to file only.
  *
- * This function expects a fully qualified name of a unit test (e.g.: argv[0]).
- * It strips off the path and returns the name of the unit test.
+ * This function expects a fully qualified name of a unit test (e.g.: argv[0]).  It strips off the
+ * path and returns the name of the unit test.
  *
  * Options:
  *    FC_PATH        Return path portion only for fqName
@@ -49,8 +50,7 @@ std::string getFilenameComponent(std::string const &fqName,
 
     idx = fullName.rfind(rtt_dsxx::UnixDirSep);
     if (idx == string::npos) {
-      // Didn't find directory separator, as 2nd chance look for Windows
-      // directory separator.
+      // Didn't find directory separator, as 2nd chance look for Windows directory separator.
       idx = fullName.rfind(rtt_dsxx::WinDirSep);
     }
     // If we still cannot find a path separator, return "./"
@@ -69,12 +69,10 @@ std::string getFilenameComponent(std::string const &fqName,
 
     idx = fullName.rfind(UnixDirSep);
     if (idx == string::npos) {
-      // Didn't find directory separator, as 2nd chance look for Windows
-      // directory separator.
+      // Didn't find directory separator, as 2nd chance look for Windows directory separator.
       idx = fullName.rfind(WinDirSep);
     }
-    // If we still cannot find a path separator, return the whole string as the
-    // test name.
+    // If we still cannot find a path separator, return the whole string as the test name.
     if (idx == string::npos)
       retVal = fullName;
     else
@@ -103,8 +101,7 @@ std::string getFilenameComponent(std::string const &fqName,
     Insist(false, "case for FC_NAME_WE not implemented.");
     break;
   case FC_NATIVE:
-    // This is always done before returning (see implementation found after the
-    // case statement)
+    // This is always done before returning (see implementation found after the case statement)
     retVal = fullName;
     break;
 
@@ -125,6 +122,6 @@ std::string getFilenameComponent(std::string const &fqName,
 
 } // end namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of path_getFilenameComponent.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

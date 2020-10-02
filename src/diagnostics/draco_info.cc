@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/draco_info.cc
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "draco_info.hh"
 #include "c4/config.h"
@@ -21,15 +20,13 @@
 
 namespace rtt_diagnostics {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Constructor
-DracoInfo::DracoInfo(void)
+DracoInfo::DracoInfo()
     : release(rtt_dsxx::release()), copyright(rtt_dsxx::copyright()),
       contact("For information, send e-mail to draco@lanl.gov."),
-      build_type(rtt_dsxx::string_toupper(CMAKE_BUILD_TYPE)),
-      library_type("static"), system_type("Unknown"), site_name("Unknown"),
-      cuda(false), mpi(false), mpirun_cmd(""), openmp(false),
-      diagnostics_level("disabled"), diagnostics_timing(false),
+      build_type(rtt_dsxx::string_toupper(CMAKE_BUILD_TYPE)), library_type("static"),
+      system_type("Unknown"), site_name("Unknown"), mpirun_cmd(""), diagnostics_level("disabled"),
       cxx(CMAKE_CXX_COMPILER), cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER),
       cc_flags(CMAKE_C_FLAGS), fc("none"), fc_flags("none") {
 #ifdef DRACO_SHARED_LIBS
@@ -83,29 +80,27 @@ DracoInfo::DracoInfo(void)
 #endif
 }
 
-//----------------------------------------------------------------------------//
-void print_text_with_word_wrap(std::string const &longstring,
-                               size_t const indent_column,
+//------------------------------------------------------------------------------------------------//
+void print_text_with_word_wrap(std::string const &longstring, size_t const indent_column,
                                size_t const max_width, std::ostringstream &msg,
                                std::string const &delimiters = " ") {
-  std::vector<std::string> const tokens =
-      rtt_dsxx::tokenize(longstring, delimiters);
+  std::vector<std::string> const tokens = rtt_dsxx::tokenize(longstring, delimiters);
   std::string const delimiter(delimiters.substr(0, 1));
   size_t i(indent_column);
   for (auto item : tokens) {
-    if (i + item.length() + 1 > max_width) {
+    if (i + rtt_dsxx::remove_color(item).length() + 1 > max_width) {
       msg << "\n" << std::string(indent_column, ' ');
       i = indent_column;
     }
     msg << item;
     if (item != tokens.back())
       msg << delimiter;
-    i += item.length() + 1;
+    i += rtt_dsxx::remove_color(item).length() + 1;
   }
 }
 
-//----------------------------------------------------------------------------//
-std::string DracoInfo::fullReport(void) const {
+//------------------------------------------------------------------------------------------------//
+std::string DracoInfo::fullReport() const {
   using std::cout;
   using std::endl;
 
@@ -113,21 +108,21 @@ std::string DracoInfo::fullReport(void) const {
 
   // Create a list of features for DbC
   std::vector<std::string> dbc_info;
-  dbc_info.push_back("Insist");
+  dbc_info.emplace_back("Insist");
 #ifdef REQUIRE_ON
-  dbc_info.push_back("Require");
+  dbc_info.emplace_back("Require");
 #endif
 #ifdef CHECK_ON
-  dbc_info.push_back("Check");
+  dbc_info.emplace_back("Check");
 #endif
 #ifdef ENSURE_ON
-  dbc_info.push_back("Ensure");
+  dbc_info.emplace_back("Ensure");
 #endif
 #if DBC & 8
-  dbc_info.push_back("no-throw version");
+  dbc_info.emplace_back("no-throw version");
 #endif
 #if DBC & 16
-  dbc_info.push_back("check-deferred version");
+  dbc_info.emplace_back("check-deferred version");
 #endif
 
   // Print version and copyright information to the screen:
@@ -142,24 +137,21 @@ std::string DracoInfo::fullReport(void) const {
               << "\n    System type       : " << system_type
               << "\n    Site name         : " << site_name
               << "\n    CUDA support      : " << (cuda ? "enabled" : "disabled")
-              << "\n    MPI support       : "
-              << (mpi ? "enabled" : "disabled (c4 scalar mode)");
+              << "\n    MPI support       : " << (mpi ? "enabled" : "disabled (c4 scalar mode)");
 
   if (mpi)
     infoMessage << "\n      mpirun cmd      : " << mpirun_cmd;
 
-  infoMessage << "\n    OpenMP support    : "
-              << (openmp ? "enabled" : "disabled")
+  infoMessage << "\n    OpenMP support    : " << (openmp ? "enabled" : "disabled")
               << "\n    Design-by-Contract: " << DBC << ", features = ";
   std::copy(dbc_info.begin(), dbc_info.end() - 1,
             std::ostream_iterator<std::string>(infoMessage, ", "));
   infoMessage << dbc_info.back();
   infoMessage << "\n    Diagnostics       : " << diagnostics_level
-              << "\n    Diagnostics Timing: "
-              << (diagnostics_timing ? "enabled" : "disabled");
+              << "\n    Diagnostics Timing: " << (diagnostics_timing ? "enabled" : "disabled");
 
   // Compilers and Flags
-  size_t const max_width(80);
+  size_t const max_width(100);
   size_t const hanging_indent(std::string("    CXX Compiler      : ").length());
   infoMessage << "\n    CXX Compiler      : ";
   print_text_with_word_wrap(cxx, hanging_indent, max_width, infoMessage, "/");
@@ -179,28 +171,28 @@ std::string DracoInfo::fullReport(void) const {
   return infoMessage.str();
 }
 
-//----------------------------------------------------------------------------//
-std::string DracoInfo::briefReport(void) const {
+//------------------------------------------------------------------------------------------------//
+std::string DracoInfo::briefReport() const {
   std::ostringstream infoMessage;
 
   // Print version and copyright information to the screen:
   infoMessage << "\n";
-  print_text_with_word_wrap(release, 5, 80, infoMessage, ";");
+  print_text_with_word_wrap(release, 5, 100, infoMessage, " ");
   infoMessage << "\n\n" << copyright << "\n" << contact << "\n" << std::endl;
   return infoMessage.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! extract the single-line version info from release and return it
-std::string DracoInfo::versionReport(void) const {
+std::string DracoInfo::versionReport() const {
   std::ostringstream infoMessage;
-  print_text_with_word_wrap(release, 5, 80, infoMessage, ";");
+  print_text_with_word_wrap(release, 5, 100, infoMessage, ";");
   infoMessage << "\n" << std::endl;
   return infoMessage.str();
 }
 
 } // end namespace rtt_diagnostics
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of draco_info.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

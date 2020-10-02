@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   draco/autodoc/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
 # note   Copyright (C) 2010-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # 2018-03-10 (KT): As of cmake-3.9.0, we have the option of using the cmake
 # function doxygen_add_docs() instead of the complex logic below.  We would
@@ -34,10 +34,13 @@ set_doxygen_image_path() # --> DOXYGEN_IMAGE_PATH
 set_doxygen_dot_num_threads() # --> DOXYGEN_DOT_NUM_THREADS
                               # --> DOXYGEN_HTML_DYNAMIC_MENUS (v 1.8.14+)
                               # --> DOXYGEN_WARN_AS_ERROR
+                              # --> PERL_PATH
 
 set( DOXYGEN_HTML_OUTPUT draco )
 set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
 string( REPLACE " " "___" project_brief ${project_brief} )
+string( REPLACE " " "___" DOXYGEN_HTML_DYNAMIC_MENUS "${DOXYGEN_HTML_DYNAMIC_MENUS}" )
+string( REPLACE " " "___" PERL_PATH "${PERL_PATH}" )
 
 # doxygen_config.in needs the following symbols:
 add_custom_command(
@@ -129,6 +132,6 @@ add_custom_target( autodoc
 # To Do:
 # 1. How to 'make clean'?
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End autodoc/CMakeLists.txt
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

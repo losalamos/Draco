@@ -3,7 +3,7 @@
 ## File  : environment/bashrc/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
+## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -293,11 +293,11 @@ function rdde ()
 }
 export -f rdde
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Quick remove: instead of 'rm -rf', mv the directory to .../trash/tmpname
 #
 # Use: qrm dir1 dir2 ...
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function qrm ()
 {
   # must provide at least one directory
@@ -343,9 +343,9 @@ function qrm ()
 export -f qrm
 
 if [[ "${verbose:=false}" ==  "true" ]]; then
-  echo "done with draco/environment/bashrc/bash_functions.sh";
+  echo "in draco/environment/bashrc/bash_functions.sh ... done";
 fi
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End environment/bashrc/bash_functions
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

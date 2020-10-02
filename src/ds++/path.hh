@@ -1,13 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/path.hh
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  *
- * \bug Consider replacing path.cc and path.hh with C++17 filesystem
- */
-//----------------------------------------------------------------------------//
+ * \bug Consider replacing path.cc and path.hh with C++17 filesystem */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_path_hh
 #define rtt_dsxx_path_hh
@@ -33,30 +31,23 @@ enum FilenameComponent {
   FC_LASTVALUE
 };
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Get a specific component of a full filename.
- * \param fqName a fully qualified pathname
- * \param fc Enum type FilenameComponent that specifies the action.
- */
-std::string getFilenameComponent(std::string const &fqName,
-                                 FilenameComponent fc);
+//------------------------------------------------------------------------------------------------//
+//! Get a specific component of a full filename.
+std::string getFilenameComponent(std::string const &fqName, FilenameComponent fc);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Does the file exist?
 bool fileExists(std::string const &filename);
 bool isDirectory(std::string const &path);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Functor for printing all items in a directory tree
 class wdtOpPrint {
 public:
-  void operator()(std::string const &dirpath) const {
-    std::cout << dirpath << std::endl;
-  }
+  void operator()(std::string const &dirpath) const { std::cout << dirpath << std::endl; }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Functor for removing one item in a directory tree
 class wdtOpRemove {
 public:
@@ -66,19 +57,16 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Walk a directory tree structure, perform myOperator() action on each
- *        entry.
+ * \brief Walk a directory tree structure, perform myOperator() action on each entry.
  * \arg dirname String representing the top node of the directory to be parsed.
- * \arg myOperator Functor that defines action to be taken on each entry in
- *      the directory. Recommend using wdtOpPrint or wdtOpRemove
+ * \arg myOperator Functor that defines action to be taken on each entry in the directory. Recommend
+ *      using wdtOpPrint or wdtOpRemove
  * \return void
  *
- * \sa draco_remove_dir Helper function to recursively delete a directory and
- *     all its contents.
- * \sa draco_dir_print Helper function that will print a directory and all its
- *     contents.
+ * \sa draco_remove_dir Helper function to recursively delete a directory and all its contents.
+ * \sa draco_dir_print Helper function that will print a directory and all its contents.
  *
  * Sample implementation for Win32 (uses Win API which I don't want to do)
  * http://forums.codeguru.com/showthread.php?239271-Windows-SDK-File-System-How-to-delete-a-directory-and-subdirectories
@@ -105,19 +93,16 @@ public:
  * \endcode
  */
 template <typename T>
-void draco_walk_directory_tree(std::string const &dirname,
-                               T const &myOperator) {
+void draco_walk_directory_tree(std::string const &dirname, T const &myOperator) {
   // If file does not exist, report and continue.
   if (!fileExists(dirname)) {
-    std::cout << "File/directory \"" << dirname
-              << "\"does not exist.  Continuing..." << std::endl;
+    std::cout << "File/directory \"" << dirname << "\"does not exist.  Continuing..." << std::endl;
     return;
   }
 
 #ifdef WIN32
-  /*! \note If path contains the location of a directory, it cannot contain a
-     * trailing backslash. If it does, -1 will be returned and errno will be set
-     * to ENOENT. */
+  /*! \note If path contains the location of a directory, it cannot contain a trailing backslash. If
+     * it does, -1 will be returned and errno will be set to ENOENT. */
   std::string d_name;
   if (dirname[dirname.size() - 1] == rtt_dsxx::WinDirSep ||
       dirname[dirname.size() - 1] == rtt_dsxx::UnixDirSep)
@@ -147,8 +132,7 @@ void draco_walk_directory_tree(std::string const &dirname,
 
       std::string itemPath(d_name + "\\" + FileInformation.cFileName);
 
-      // if the entry is a directory, recursively delete it,
-      // otherwise, delete the file:
+      // if the entry is a directory, recursively delete it, otherwise, delete the file:
       if (draco_getstat(itemPath).isdir())
         draco_walk_directory_tree(itemPath, myOperator);
       else
@@ -188,8 +172,7 @@ void draco_walk_directory_tree(std::string const &dirname,
       else
         itemPath = dirname + UnixDirSep + d_name;
 
-      // if the entry is a directory, recursively delete it,
-      // otherwise, delete the file
+      // if the entry is a directory, recursively delete it, otherwise, delete the file
       if (draco_getstat(itemPath).isdir())
         draco_walk_directory_tree(itemPath, myOperator);
       else
@@ -206,7 +189,7 @@ void draco_walk_directory_tree(std::string const &dirname,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Recursively remove a directory.
 void draco_remove_dir(std::string const &path);
 //! Recursively print a directory tree.
@@ -216,6 +199,6 @@ void draco_dir_print(std::string const &path);
 
 #endif // rtt_dsxx_path_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of path.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

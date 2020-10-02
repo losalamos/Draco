@@ -39,22 +39,37 @@
 ;; Personal Settings below this line
 ;;---------------------------------------------------------------------------------------
 
+
+;; ---------------------------------------------------------------------------
+;; MELPA package manager
+;; https://melpa.org/#/getting-started
+;; https://github.com/atilaneves/cmake-ide
+;;
+;; M-x package-install <RET> cmake-ide
+;;
+;; package manager for emacs
+;; M-x package-refresh-contents
+;; M-x package-list-packages
+;; M-x package install
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (when no-ssl (warn "\
+Your version of Emacs does not support SSL connections,
+which is unsafe because it allows man-in-the-middle attacks.
+There are two things you can do about this warning:
+1. Install an Emacs version that does support SSL and be safe.
+2. Remove this warning from your init file so you won't see it again."))
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+(package-initialize)
+
+
 ;; this is the same title bar format all Gnome apps seem to use
 (setq frame-title-format (list "[" (system-name) "] %b" ))
 
 ; Turn off warning:
 (setq large-file-warning-threshold nil)
-
-;; Automatically keep buffers synchronized with file system
-;; (i.e. reload the buffer automatically if the file changes outside
-;; of emacs).
-(global-auto-revert-mode t)
-
-;; CEDET
-;; Generate tag files for Fortran: 'gtags --gtagslabel=ctags'
-(defvar file-at-root-level-draco "~/.draco_ede")
-(defvar file-at-root-level-eap "~/cassio/.eap_ede")
-; (draco-start-ecb)
 
 ;; Allow 'emacsclient' to connect to running emacs.
 (server-start)
@@ -64,6 +79,15 @@
               (use-local-map (copy-keymap (current-local-map))))
             (when server-buffer-clients
               (local-set-key (kbd "C-c C-c") 'server-edit))))
+
+
+;; Decode ansi color flags
+(require 'ansi-color)
+(defun display-ansi-colors ()
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+(if (fboundp 'display-ansi-colors)
+    (define-key text-mode-map [(f12)] 'display-ansi-colors))
 
 ;; ========================================
 ;; GNU Emacs Custom settings
@@ -78,34 +102,31 @@
  '(compilation-auto-jump-to-first-error nil)
  '(compilation-scroll-output (quote first-error))
  '(cua-mode t nil (cua-base))
- '(draco-code-comment-width 80)
+ '(draco-code-comment-width 100)
  '(draco-elisp-dir (concat my-draco-env-dir "elisp/"))
  '(draco-env-dir my-draco-env-dir)
-; '(ecb-layout-window-sizes (quote (("ecb-layout-kt" (0.25 . 0.25) (0.15 . 0.25) (0.4 . 0.45) (0.4 . 0.3)))))
-; '(ecb-options-version "2.40")
-; '(ecb-prescan-directories-for-emptyness nil)
-; '(ecb-primary-secondary-mouse-buttons (quote mouse-1--mouse-2))
-; '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-CVS . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state) (ecb-vc-dir-managed-by-MTN . ecb-vc-state))))
  '(font-lock-maximum-decoration t)
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
+ '(package-selected-packages (quote (yaml-mode cmake-mode)))
+ '(ring-bell-function (quote ignore))
  '(scroll-bar-mode (quote right))
  '(show-paren-mode t nil (paren))
  '(text-mode-hook (quote (turn-on-auto-fill text-mode-hook-identify)))
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
 
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal
-                        :weight normal :height 90 :width normal
-                        :background "mint cream" ))))
+ '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 90 :width normal :background "mint cream"))))
  '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "purple"))))
  '(font-lock-constant-face ((((class color) (min-colors 88) (background light)) (:foreground "CadetBlue"))))
- '(font-lock-doc-face ((t (:inherit font-lock-string-face :foreground "bisque3"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-string-face :foreground
+                                    "peru")))) ;; bisque
  '(font-lock-function-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Blue3"))))
  '(font-lock-keyword-face ((((class color) (min-colors 88) (background light)) (:foreground "firebrick2"))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "hotpink"))))
@@ -115,6 +136,5 @@
  '(mode-line ((t (:background "wheat" :foreground "black" :box (:line-width -1 :style released-button) :weight bold :height 0.9 :width normal :foundry "inconsolata" :family "unknown"))))
  '(mode-line-emphasis ((t (:foreground "red" :weight bold))))
  '(mode-line-inactive ((t (:background "wheat" :family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 90 :width normal))))
- '(modeline ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 90 :width normal))))
+ '(modeline ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 100 :width normal))))
  '(modeline-face ((((class color) (min-colors 88) (background light)) (:background "wheat")))))
-(setq x-alt-keysym 'meta)

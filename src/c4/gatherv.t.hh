@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/gatherv.t.hh
  * \author Thomas M. Evans, Kent Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_gatherv_t_hh
 #define c4_gatherv_t_hh
@@ -20,9 +19,9 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // GATHER
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void indeterminate_gatherv(std::string &outgoing_data,
                            std::vector<std::string> &incoming_data) {
@@ -52,7 +51,7 @@ void indeterminate_gatherv(std::string &outgoing_data,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void indeterminate_gatherv(std::vector<T> &outgoing_data,
                            std::vector<std::vector<T>> &incoming_data) {
@@ -84,9 +83,8 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
              "32-bit unsigned integer limit.");
       auto total_count = static_cast<unsigned>(total_count_64);
 
-      // We can only use the &vector[0] notation if the vector is non-zero in
-      // length.  An shorthand-if is used to pass 'nullptr' to MPI if there is
-      // no data to gather.
+      // We can only use the &vector[0] notation if the vector is non-zero in length.  An
+      // shorthand-if is used to pass 'nullptr' to MPI if there is no data to gather.
       std::vector<T> recbuf(total_count, 42);
       Check(outgoing_data.size() < INT_MAX);
       Remember(check =) rtt_c4::gatherv(
@@ -120,7 +118,7 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void determinate_gatherv(std::vector<T> &outgoing_data,
                          std::vector<std::vector<T>> &incoming_data) {
@@ -181,6 +179,6 @@ void determinate_gatherv(std::vector<T> &outgoing_data,
 
 #endif // c4_gatherv_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/gatherv.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

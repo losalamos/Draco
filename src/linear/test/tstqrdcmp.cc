@@ -1,32 +1,28 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/test/tstqrdcmp.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
+ * \brief  Unit teests for qrdcmp
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-
-#include <iostream>
-#include <vector>
-
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
+ *         All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "linear/qrdcmp.hh"
+#include <array>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_linear;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstqrdcmp(UnitTest &ut) {
   vector<double> A(4);
@@ -40,16 +36,16 @@ void tstqrdcmp(UnitTest &ut) {
   qrdcmp(A, 2, C, D);
 
   // Compute QR to verify
-  double uj[2];
+  array<double, 2> uj;
   uj[0] = A[0 + 2 * 0];
   uj[1] = A[1 + 2 * 0];
-  double Qj[4];
+  array<double, 4> Qj;
   Qj[0 + 2 * 0] = 1 - uj[0] * uj[0] / C[0];
   Qj[0 + 2 * 1] = -uj[0] * uj[1] / C[0];
   Qj[1 + 2 * 0] = -uj[1] * uj[0] / C[0];
   Qj[1 + 2 * 1] = 1 - uj[1] * uj[1] / C[0];
 
-  double QR[4];
+  array<double, 4> QR;
   QR[0 + 2 * 0] = Qj[0 + 2 * 0] * D[0];
   QR[0 + 2 * 1] = Qj[0 + 2 * 0] * A[0 + 2 * 1] + Qj[0 + 2 * 1] * D[1];
   QR[1 + 2 * 0] = Qj[1 + 2 * 0] * D[0];
@@ -77,23 +73,15 @@ void tstqrdcmp(UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
-
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
   try {
-    ScalarUnitTest ut(argc, argv, release);
     tstqrdcmp(ut);
-  } catch (exception &err) {
-    cout << "ERROR: While testing tstqrdcmp, " << err.what() << endl;
-    return 1;
-  } catch (...) {
-    cout << "ERROR: While testing tstqrdcmp, an unknown exception was thrown."
-         << endl;
-    return 1;
   }
-  return 0;
+  UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstqrdcmp.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

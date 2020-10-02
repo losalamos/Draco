@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   meshReaders/Mesh_Reader.hh
  * \author John McGhee
@@ -6,7 +6,7 @@
  * \brief  Header file for the RTT Mesh_Reader base class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_meshReaders_Mesh_Reader_hh
 #define rtt_meshReaders_Mesh_Reader_hh
@@ -18,7 +18,7 @@
 
 namespace rtt_meshReaders {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Mesh_Reader
  * \brief Base class for the RTT mesh readers.
@@ -29,26 +29,13 @@ namespace rtt_meshReaders {
  * called "AMR" or "hanging-node" meshes and C0 connectivity meshes can be
  * described.
  */
-//============================================================================//
+//================================================================================================//
 
-class DLL_PUBLIC_meshReaders Mesh_Reader {
-  // NESTED CLASSES AND TYPEDEFS
-
-  // DATA
-
+class Mesh_Reader {
 public:
   // CREATORS
 
-  //Defaulted: Mesh_Reader();
-  //Defaulted: Mesh_Reader(const Mesh_Reader &rhs);
-
-  virtual ~Mesh_Reader() {
-    //Empty
-  }
-
-  // MANIPULATORS
-
-  //Defaulted: Mesh_Reader& operator=(const Mesh_Reader &rhs);
+  virtual ~Mesh_Reader() = default;
 
   // ACCESSORS
 
@@ -140,6 +127,6 @@ private:
 
 #endif // rtt_meshReaders_Mesh_Reader_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of meshReaders/Mesh_Reader.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

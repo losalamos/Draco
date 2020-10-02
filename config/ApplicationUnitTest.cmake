@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/ApplicationUnitTest.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Monday, Nov 19, 2012, 16:21 pm
@@ -7,14 +7,14 @@
 #        input file and diff the resulting output file).
 # note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Reference: https://rtt.lanl.gov/redmine/projects/draco/wiki/CMake-based_ApplicationUnitTest
 # Example: draco/src/diagnostics/test/tDracoInfo.cmake (and associated CMakeLists.txt).
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 ## Example from draco/src/diagnostics/test/tDracoInfo.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Use config/ApplicationUnitTest.cmake test registration:
 #
@@ -67,7 +67,7 @@
 
 # Variables defined above can be used in this script.
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 set( VERBOSE_DEBUG OFF )
@@ -325,7 +325,7 @@ macro( aut_register_test )
   unset(num_procs)
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # See documentation at the top of this file.
 macro( add_app_unit_test )
 

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/CDI.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  CDI class header file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CDI_hh
 #define rtt_cdi_CDI_hh
@@ -19,13 +19,14 @@
 #include "ds++/Constexpr_Functions.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // UNNAMED NAMESPACE
-//----------------------------------------------------------------------------//
+// ----------------------------------------------------------------------------//
 // Nested unnamed namespace that holds data and services used by the Planckian
 // integration routines.  The data in this namespace is accessible by the
 // methods in this file only (internal linkage).
@@ -33,22 +34,22 @@
 namespace {
 
 // Constants used in the Taylor series expansion of the Planckian:
-static double const coeff_3 = 1.0 / 3.0;
-static double const coeff_4 = -1.0 / 8.0;
-static double const coeff_5 = 1.0 / 60.0;
-static double const coeff_7 = -1.0 / 5040.0;
-static double const coeff_9 = 1.0 / 272160.0;
-static double const coeff_11 = -1.0 / 13305600.0;
-static double const coeff_13 = 1.0 / 622702080.0;
-static double const coeff_15 = -6.91 / 196151155200.0;
-static double const coeff_17 = 1.0 / 1270312243200.0;
-static double const coeff_19 = -3.617 / 202741834014720.0;
-static double const coeff_21 = 43.867 / 107290978560589824.0;
+double constexpr coeff_3 = 1.0 / 3.0;
+double constexpr coeff_4 = -1.0 / 8.0;
+double constexpr coeff_5 = 1.0 / 60.0;
+double constexpr coeff_7 = -1.0 / 5040.0;
+double constexpr coeff_9 = 1.0 / 272160.0;
+double constexpr coeff_11 = -1.0 / 13305600.0;
+double constexpr coeff_13 = 1.0 / 622702080.0;
+double constexpr coeff_15 = -6.91 / 196151155200.0;
+double constexpr coeff_17 = 1.0 / 1270312243200.0;
+double constexpr coeff_19 = -3.617 / 202741834014720.0;
+double constexpr coeff_21 = 43.867 / 107290978560589824.0;
 
-static double const coeff = 0.1539897338202651; // 15/pi^4
-static double const NORM_FACTOR = 0.25 * coeff; // 15/(4*pi^4);
+double constexpr coeff = 0.1539897338202651; // 15/pi^4
+double constexpr NORM_FACTOR = 0.25 * coeff; // 15/(4*pi^4);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \fn inline double taylor_series_planck(double x)
  * \brief Computes the normalized Planck integral via a 21 term Taylor
@@ -131,7 +132,7 @@ static double polylog_series_minus_one_planck(double const x,
 
   double const xsqrd = x * x;
 
-  static double const i_plus_two_inv[9] = {
+  constexpr std::array<double, 9> i_plus_two_inv = {
       0.5000000000000000, // 1/2
       0.3333333333333333, // 1/3
       0.2500000000000000, // 1/4
@@ -142,7 +143,7 @@ static double polylog_series_minus_one_planck(double const x,
       0.1111111111111111, // 1/9
       0.1000000000000000  // 1/10
   };
-  double const *curr_inv = i_plus_two_inv;
+  double const *curr_inv = i_plus_two_inv.data();
 
   // initialize to what would have been the calculation of the i=1 term.
   // This saves a number of "mul by one" ops.
@@ -182,9 +183,9 @@ static double polylog_series_minus_one_planck(double const x,
 
     li2 += r20 + r21 + r22;
 
-    double const r40 = (eixr_ip0 *= ip0_inv);
-    double const r41 = (eixr_ip1 *= ip1_inv);
-    double const r42 = (eixr_ip2 *= ip2_inv);
+    double const r40 = (eixr_ip0 * ip0_inv);
+    double const r41 = (eixr_ip1 * ip1_inv);
+    double const r42 = (eixr_ip2 * ip2_inv);
 
     li3 += r30 + r31 + r32;
     li4 += r40 + r41 + r42;
@@ -198,7 +199,7 @@ static double polylog_series_minus_one_planck(double const x,
   return poly;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Compute the difference between an integrated Planck and Rosseland
  * curves over \f$ (0,\nu) \f$.
@@ -245,7 +246,7 @@ static double Planck2Rosseland(double const freq, double const exp_freq) {
 
 namespace rtt_cdi {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class CDI
  *
@@ -459,25 +460,25 @@ namespace rtt_cdi {
  * The test code also provides a mechanism to test the CDI independent of any
  * "real" data objects.
  */
-//============================================================================//
+//================================================================================================//
 
 class CDI {
   // NESTED CLASSES AND TYPEDEFS
-  typedef std::shared_ptr<const GrayOpacity> SP_GrayOpacity;
-  typedef std::shared_ptr<const MultigroupOpacity> SP_MultigroupOpacity;
-  typedef std::shared_ptr<const EoS> SP_EoS;
-  typedef std::shared_ptr<const EICoupling> SP_EICoupling;
-  typedef std::shared_ptr<const CPEloss> SP_CPEloss;
-  typedef std::vector<SP_GrayOpacity> SF_GrayOpacity;
-  typedef std::vector<SF_GrayOpacity> VF_GrayOpacity;
-  typedef std::vector<SP_MultigroupOpacity> SF_MultigroupOpacity;
-  typedef std::vector<SF_MultigroupOpacity> VF_MultigroupOpacity;
-  typedef std::vector<SP_CPEloss> SF_CPEloss;
-  typedef std::string std_string;
+  using SP_GrayOpacity = std::shared_ptr<const GrayOpacity>;
+  using SP_MultigroupOpacity = std::shared_ptr<const MultigroupOpacity>;
+  using SP_EoS = std::shared_ptr<const EoS>;
+  using SP_EICoupling = std::shared_ptr<const EICoupling>;
+  using SP_CPEloss = std::shared_ptr<const CPEloss>;
+  using SF_GrayOpacity = std::vector<SP_GrayOpacity>;
+  using VF_GrayOpacity = std::vector<SF_GrayOpacity>;
+  using SF_MultigroupOpacity = std::vector<SP_MultigroupOpacity>;
+  using VF_MultigroupOpacity = std::vector<SF_MultigroupOpacity>;
+  using SF_CPEloss = std::vector<SP_CPEloss>;
+  using std_string = std::string;
   // Typedefs for CPT mapping:
-  typedef const std::pair<int32_t, int32_t> pt_zaid_pair;
-  typedef std::map<pt_zaid_pair, size_t> index_pt_map;
-  typedef index_pt_map::const_iterator map_it;
+  using pt_zaid_pair = const std::pair<int32_t, int32_t>;
+  using index_pt_map = std::map<pt_zaid_pair, size_t>;
+  using map_it = index_pt_map::const_iterator;
 
   // DATA
 
@@ -561,7 +562,7 @@ public:
   // CONSTRUCTORS
   // ------------
 
-  CDI(const std_string &id = std_string());
+  explicit CDI(std_string id = std::string());
   virtual ~CDI();
 
   // SETTERS
@@ -592,8 +593,8 @@ public:
   SP_MultigroupOpacity mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
   SP_CPEloss eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t proj_zaid,
                    int32_t targ_zaid) const;
-  SP_EoS eos(void) const;
-  SP_EICoupling ei_coupling(void) const;
+  SP_EoS eos() const;
+  SP_EICoupling ei_coupling() const;
 
   //! Collapse Multigroup data to single-interval data with Planck weighting.
   static double
@@ -640,7 +641,7 @@ public:
   static std::vector<double> getFrequencyGroupBoundaries();
 
   //! Returns the number of frequency groups in the stored frequency vector.
-  static size_t getNumberFrequencyGroups(void);
+  static size_t getNumberFrequencyGroups();
 
   // INTEGRATORS:
   // ===========
@@ -710,11 +711,11 @@ public:
       std::vector<double> &planck, std::vector<double> &rosseland);
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**
  * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
  * (\frac{h\nu}{kT}) \f$.
@@ -728,7 +729,7 @@ double CDI::integrate_planck(double const scaled_freq) {
   return CDI::integrate_planck(scaled_freq, exp_scaled_freq);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**
  * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
  *        (\frac{h\nu}{kT}) \f$.
@@ -770,7 +771,7 @@ double CDI::integrate_planck(double const scaled_freq,
   return integral;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Integrate the normalized Planckian and Rosseland spectrums from 0 to
  *         \f$ x (\frac{h\nu}{kT}) \f$.
  *
@@ -806,6 +807,6 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
 
 #endif // rtt_cdi_CDI_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi/CDI.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

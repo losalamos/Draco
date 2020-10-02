@@ -1,17 +1,16 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/ifpstream.cc
  * \author Mathew Cleveland
  * \date   Feb. 2020
  * \brief  ifpstream class to read processor decomposed data in parallel.
- * \note   Copyright (C) 2020 Triad National Security, LLC.
- *         All rights reserved. 
- * 
- * This is reader is designed to read parallel decomposed data written by the
- * ofpstream object. It uses similar logic by reading all data with rank==0 and
- * broadcasting requested buffers to the remaining processors.
+ * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved.
+ *
+ * This is reader is designed to read parallel decomposed data written by the ofpstream object. It
+ * uses similar logic by reading all data with rank==0 and broadcasting requested buffers to the
+ * remaining processors.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ifpstream.hh"
 #include "C4_Functions.hh"
@@ -19,7 +18,7 @@
 namespace rtt_c4 {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Create an ifpstream to for a parallel file read.
  *
  * Create an ifpstream that reads and brocasts input file streams to all ranks
@@ -36,7 +35,7 @@ ifpstream::ifpstream(std::string const &filename,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! \brief Fill parallel buffers with data from the input file
  *
  * \param[in] buffer_size local process buffer size
@@ -70,6 +69,6 @@ void ifpstream::fill_buffers(unsigned const buffer_size) {
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ifpstream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

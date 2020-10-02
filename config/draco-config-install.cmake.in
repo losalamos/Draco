@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/draco-config-install.cmake.in
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Save Draco configuration information for installation (cmake export)
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}" )
 get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
 include( "${_SELF_DIR}/draco-targets.cmake" )
@@ -38,7 +38,6 @@ set_package_properties( draco PROPERTIES
 
 set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
-set( CRAY_PE "@CRAY_PE@" )
 
 ## ---------------------------------------------------------------------------
 ## Set library specifications and paths
@@ -49,12 +48,6 @@ set(Draco_VERSION "@Draco_VERSION@")
 
 ## The project libraries.
 set(Draco_LIBRARIES "@Draco_LIBRARIES@" )
-
-## The project tpl include paths
-set(Draco_TPL_INCLUDE_DIRS "@Draco_TPL_INCLUDE_DIRS@" )
-
-## The project tpl libraries
-set(Draco_TPL_LIBRARIES "@Draco_TPL_LIBRARIES@" )
 
 ## The project's exported executables
 set( Draco_EXECUTABLES "@Draco_EXECUTABLES@" )
@@ -70,6 +63,7 @@ set(Draco_MPIEXEC_EXECUTABLE "@MPIEXEC_EXECUTABLE@")
 set(Draco_MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 set(Draco_MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
 set(Draco_MPI_C_WORKS "@MPI_C_WORKS@") # Used to help CAFS setup on Win32
+set(Draco_MPI_LANG_LIST "@Draco_MPI_LANG_LIST@")
 
 # CUDA
 option( HAVE_CUDA "Should we build Cuda parts of the project?" @HAVE_CUDA@ )
@@ -104,3 +98,18 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 ## ---------------------------------------------------------------------------
 
 @Draco_EXPORT_TARGET_PROPERTIES@
+
+#--------------------------------------------------------------------------------------------------#
+# Ensure imported targets required by Draco are defined
+# - Optionally we could use 'include(CMakeFindDependencyMacro)'
+#--------------------------------------------------------------------------------------------------#
+
+# CMake macros to query the availability of TPLs.
+include( vendor_libraries )
+
+# If DRACO_CALIPER is 1, then this build of Draco requires the CALIPER::caliper
+# target. If the CALIPER::caliper target is not defined, then create it.
+set( DRACO_CALIPER @DRACO_CALIPER@ )
+if( DRACO_CALIPER AND NOT TARGET CALIPER::caliper)
+  setupCaliper()
+endif()

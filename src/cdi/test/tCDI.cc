@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/tCDI.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  CDI test executable.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
 #include "DummyGrayOpacity.hh"
@@ -30,9 +30,9 @@ using rtt_cdi_test::DummyGrayOpacity;
 using rtt_cdi_test::DummyMultigroupOpacity;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void check_CDI(rtt_dsxx::UnitTest &ut, CDI const &cdi) {
   // check cdi, note that the different combinations of rtt_cdi::Model and
@@ -90,13 +90,12 @@ void check_CDI(rtt_dsxx::UnitTest &ut, CDI const &cdi) {
   else
     FAILMSG("CDI.gray()->getOpacity is not ok.");
 
-  // mg test case: Find the mg opacities at T=0.35 keV and rho = 27.2
-  // g/cm^3.  For DummyMultigroupOpacity the values should be { }.  Three
-  // groups
+  // mg test case: Find the mg opacities at T=0.35 keV and rho = 27.2 g/cm^3.
+  // For DummyMultigroupOpacity the values should be { }.  Three groups
   size_t ng = 3;
 
-  // The energy groups in DummyMultigroupOpacity are hardwired to
-  // be { 0.05, 0.5, 5.0, 50.0 } keV.
+  // The energy groups in DummyMultigroupOpacity are hardwired to be { 0.05,
+  // 0.5, 5.0, 50.0 } keV.
   std::vector<double> energyBoundary(ng + 1);
   energyBoundary[0] = 0.05;
   energyBoundary[1] = 0.5;
@@ -195,7 +194,7 @@ void check_CDI(rtt_dsxx::UnitTest &ut, CDI const &cdi) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_CDI(rtt_dsxx::UnitTest &ut) {
   // make shared_ptrs to opacity and EoS objects
@@ -207,31 +206,30 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<const EoS> eos;
 
   // assign to dummy state objects
-  gray_planck_abs.reset(
-      new DummyGrayOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
-  gray_iso_scatter.reset(
-      new DummyGrayOpacity(rtt_cdi::SCATTERING, rtt_cdi::ISOTROPIC));
-
-  mg_planck_abs.reset(
-      new DummyMultigroupOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
-  mg_iso_scatter.reset(
-      new DummyMultigroupOpacity(rtt_cdi::SCATTERING, rtt_cdi::ISOTROPIC));
+  gray_planck_abs =
+      std::make_shared<DummyGrayOpacity>(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK);
+  gray_iso_scatter = std::make_shared<DummyGrayOpacity>(rtt_cdi::SCATTERING,
+                                                        rtt_cdi::ISOTROPIC);
+  mg_planck_abs = std::make_shared<DummyMultigroupOpacity>(rtt_cdi::ABSORPTION,
+                                                           rtt_cdi::PLANCK);
+  mg_iso_scatter = std::make_shared<DummyMultigroupOpacity>(rtt_cdi::SCATTERING,
+                                                            rtt_cdi::ISOTROPIC);
   //multigroup with different boundaries
-  mg_diff_bound.reset(
-      new DummyMultigroupOpacity(rtt_cdi::SCATTERING, rtt_cdi::THOMSON, 6));
+  mg_diff_bound = std::make_shared<DummyMultigroupOpacity>(rtt_cdi::SCATTERING,
+                                                           rtt_cdi::THOMSON, 6);
 
   // EOS
-  eos.reset(new DummyEoS());
+  eos = std::make_shared<DummyEoS>();
 
   // make a CDI, it should be empty
   std::string const matName("dummyMaterial");
   CDI cdi(matName);
   for (size_t i = 0; i < rtt_cdi::constants::num_Models; i++)
     for (size_t j = 0; j < rtt_cdi::constants::num_Reactions; j++) {
-      // casting these is inherently dangerous, but because this is a
-      // test I won't go nuts
-      rtt_cdi::Model m = static_cast<rtt_cdi::Model>(i);
-      rtt_cdi::Reaction r = static_cast<rtt_cdi::Reaction>(j);
+      // casting these is inherently dangerous, but because this is a test I
+      // won't go nuts
+      auto const m = static_cast<rtt_cdi::Model>(i);
+      auto const r = static_cast<rtt_cdi::Reaction>(j);
 
       if (cdi.isGrayOpacitySet(m, r))
         ITFAILS;
@@ -286,8 +284,8 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
       FAILMSG("Multigroup data has inconsistent energy groups.");
   }
 
-  // catch an exception when we try to assign a multigroup opacity to CDI
-  // that has a different frequency group structure
+  // catch an exception when we try to assign a multigroup opacity to CDI that
+  // has a different frequency group structure
   bool caught = false;
   try {
     cdi.setMultigroupOpacity(mg_diff_bound);
@@ -411,11 +409,11 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_planck_integration(rtt_dsxx::UnitTest &ut) {
-  // We have not defined any group structure yet; thus, the Insist will
-  // always fire if an integration is requested over a non-existent group
+  // We have not defined any group structure yet; thus, the Insist will always
+  // fire if an integration is requested over a non-existent group
   bool caught = false;
   try {
     CDI::integratePlanckSpectrum(1, 1.0);
@@ -656,7 +654,7 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   // Only report this as a failure if 1) the error was not caught AND 2)
   // the Require macro is available.
@@ -871,8 +869,8 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   // Vector for testing the rosseland-only integration
   std::vector<double> rosseland_only;
 
-  // Test using both combined Rosseland/Planckian integration and
-  // stand-alone Rosseland integration
+  // Test using both combined Rosseland/Planckian integration and stand-alone
+  // Rosseland integration
   CDI::integrate_Rosseland_Planckian_Spectrum(group_bounds, 1.0, planck,
                                               rosseland);
   CDI::integrate_Rosseland_Spectrum(group_bounds, 1.0, rosseland_only);
@@ -984,7 +982,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   std::cout << "Running test test_mgopacity_collapse(ut)..." << std::endl;
   size_t const numFailCheckpoint(ut.numFails);
@@ -1034,8 +1032,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
-    // Make sure you get the same answer with the version that doesn't
-    // calculate emission CDF
+    // Make sure you get the same answer with the version that doesn't calculate
+    // emission CDF
     double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum);
     double const opacity_pl_recip =
@@ -1060,9 +1058,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
 
   // Standard use:
   {
-    // Compute the planck and rosseland integrals for all groups in the
-    // spectrum with the temperature of this cell.  This will return the
-    // following data:
+    // Compute the planck and rosseland integrals for all groups in the spectrum
+    // with the temperature of this cell.  This will return the following data:
     // planck_spectrum
     //   = { 0.00528686276374045, 0.749239929709154, 0.24546691079067 }
     // rosseland_spectrum
@@ -1078,8 +1075,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
-    // Make sure you get the same answer with the version that doesn't
-    // calculate emission CDF
+    // Make sure you get the same answer with the version that doesn't calculate
+    // emission CDF
     double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum);
 
@@ -1139,8 +1136,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpac, planck_spectrum, emission_group_cdf);
-    // Make sure you get the same answer with the version that doesn't
-    // calculate emission CDF
+    // Make sure you get the same answer with the version that doesn't calculate
+    // emission CDF
     double const opacity_pl_alt =
         CDI::collapseMultigroupOpacitiesPlanck(bounds, mgOpac, planck_spectrum);
 
@@ -1188,8 +1185,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Collapse the opacities:
     double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum, emission_group_cdf);
-    // Make sure you get the same answer with the version that doesn't
-    // calculate emission CDF
+    // Make sure you get the same answer with the version that doesn't calculate
+    // emission CDF
     double const opacity_pl_alt = CDI::collapseMultigroupOpacitiesPlanck(
         bounds, mgOpacities, planck_spectrum);
 
@@ -1217,7 +1214,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1229,6 +1226,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tCDI.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

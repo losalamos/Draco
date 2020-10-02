@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Header file for IpcressFile class
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_ipcress_IpcressFile_hh
 #define rtt_cdi_ipcress_IpcressFile_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class IpcressFile
  *
@@ -60,7 +60,7 @@ namespace rtt_cdi_ipcress {
  * \example cdi_ipcress/test/tIpcressFile.cc
  * Example of IpcressFile use independent of IpcressOpacity or CDI.
  */
-//============================================================================//
+//================================================================================================//
 
 class IpcressFile {
 
@@ -127,17 +127,7 @@ class IpcressFile {
 public:
   // CREATORS
 
-  /*!
-   * \brief Standard IpcressFile constructor.
-   *
-   * This is the standard IpcressFile constructor.  This object is typically
-   * instantiated as a smart pointer.
-   *
-   * \param[in] ipcressDataFilename A string that contains the name of the
-   *     Ipcress data file in IPCRESS format.  The f77 Ipcress vendor library
-   *     expects a name with 80 characters or less. If the filename is longer
-   *     than 80 characters the library will not be able to open the file.
-   */
+  //! Standard IpcressFile constructor.
   explicit IpcressFile(std::string const &ipcressDataFilename);
 
   // ACCESSORS
@@ -193,7 +183,7 @@ private:
    * \brief Load the list of field data names and the associated data arrays for
    *        the requested material from the Ipcress file and save them into the
    *        IpcressMaterial container. */
-  void loadFieldData(void);
+  void loadFieldData();
 
   //! Read an array of integers or doubles from the ipcress file.
   template <typename T>
@@ -208,6 +198,6 @@ private:
 
 #endif // rtt_cdi_ipcress_IpcressFile_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

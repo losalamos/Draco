@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/EICoupling.hh
  * \author Mathew Cleveland
@@ -6,7 +6,7 @@
  * \brief  EICoupling class header file (an abstract class)
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_EICoupling_hh
 #define rtt_cdi_EICoupling_hh
@@ -46,10 +46,10 @@ public:
   /*!
    * \brief Default EoS() destructor.
    *
-   * This is required to correctly release memory when any object derived
-   * from EICoupling is destroyed.
+   * This is required to correctly release memory when any object derived from
+   * EICoupling is destroyed.
    */
-  virtual ~EICoupling(){/*empty*/};
+  virtual ~EICoupling() = default;
 
   // --------- //
   // Accessors //
@@ -120,6 +120,6 @@ public:
 
 #endif // rtt_cdi_EICoupling_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi/EICoupling.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

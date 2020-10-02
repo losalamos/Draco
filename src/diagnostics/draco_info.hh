@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/draco_info.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Small executable that prints the version and copyright strings.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_diagnostics_draco_info_hh
 #define rtt_diagnostics_draco_info_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_diagnostics {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class DracoInfo
  * \brief Store and present basic information about the current draco build.
@@ -69,7 +69,7 @@ Build information:
 
  * \endverbatim
  */
-//============================================================================//
+//================================================================================================//
 class DracoInfo {
 public:
   // IMPLELEMENTATION
@@ -77,20 +77,20 @@ public:
 
   // Constructors
   // ------------
-  DracoInfo(void);
+  DracoInfo();
 
   // Actions
   // -------
 
   /*! \brief Construct an information message that includes Draco's version,
    *         copyright and basic build parameters. */
-  std::string fullReport(void) const;
+  std::string fullReport() const;
 
   //! Version and Copyright only
-  std::string briefReport(void) const;
+  std::string briefReport() const;
 
   //! Version only
-  std::string versionReport(void) const;
+  std::string versionReport() const;
 
 private:
   // DATA
@@ -103,12 +103,12 @@ private:
   std::string library_type;
   std::string system_type;
   std::string site_name;
-  bool cuda;
-  bool mpi;
+  bool cuda = {false};
+  bool mpi = {false};
   std::string mpirun_cmd;
-  bool openmp;
+  bool openmp = {false};
   std::string diagnostics_level;
-  bool diagnostics_timing;
+  bool diagnostics_timing = {false};
   std::string cxx;
   std::string cxx_flags;
   std::string cc;
@@ -121,6 +121,6 @@ private:
 
 #endif //  rtt_diagnostics_draco_info_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of draco_info.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

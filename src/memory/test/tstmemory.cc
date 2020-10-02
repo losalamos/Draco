@@ -5,7 +5,7 @@
  * \brief  memory test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,9 +16,9 @@
 using namespace std;
 using namespace rtt_memory;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 size_t get_really_big_size_t();
 
@@ -41,9 +41,8 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
 
   set_memory_checking(true);
 
-  double *array = new double[20];
-
-  double *array2 = new double[30];
+  auto *array = new double[20];
+  auto *array2 = new double[30];
 
 #if DRACO_DIAGNOSTICS & 2
   if (total_allocation() == 50 * sizeof(double)) {
@@ -130,7 +129,7 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   size_t const num_fails_start(ut.numFails);
 
@@ -170,7 +169,7 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Some compilers are clever enough to figure out that if you pass
 // std::numeric_limits<size_t>::max() to the new operator, you will always blow
 // away member, and so they will refuse to compile the code. We have to use a
@@ -180,7 +179,7 @@ size_t get_really_big_size_t() {
   return numeric_limits<std::ptrdiff_t>::max() / sizeof(size_t);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -190,6 +189,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstmemory.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

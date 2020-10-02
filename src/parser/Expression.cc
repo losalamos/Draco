@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Expression.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Implementation of class Expression
  * \note   Copyright 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
 #include <limits>
@@ -14,10 +14,10 @@
 namespace rtt_parser {
 using namespace rtt_dsxx;
 
-typedef std::shared_ptr<Expression> pE;
-typedef map<string, pair<unsigned, Unit>> Variable_Map;
+using pE = std::shared_ptr<Expression>;
+using Variable_Map = map<string, pair<unsigned, Unit>>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The and operator implicitly converts its operands to bool. Hence no unit
  * compatibility of the operands is required, and the result is dimensionless.
@@ -67,7 +67,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Cos_Expression : public Expression {
 public:
   Cos_Expression(pE const &expression)
@@ -111,7 +111,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Difference_Expression : public Expression {
 public:
   Difference_Expression(pE const &e1, pE const &e2)
@@ -158,7 +158,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Exp_Expression : public Expression {
 public:
   Exp_Expression(pE const &expression)
@@ -202,7 +202,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Greater_Expression : public Expression {
 public:
   Greater_Expression(pE const &e1, pE const &e2)
@@ -249,7 +249,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class GE_Expression : public Expression {
 public:
   GE_Expression(pE const &e1, pE const &e2)
@@ -296,7 +296,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Less_Expression : public Expression {
 public:
   Less_Expression(pE const &e1, pE const &e2)
@@ -343,7 +343,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class LE_Expression : public Expression {
 public:
   LE_Expression(pE const &e1, pE const &e2)
@@ -390,7 +390,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Log_Expression : public Expression {
 public:
   Log_Expression(pE const &expression)
@@ -434,7 +434,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Negate_Expression : public Expression {
 public:
   Negate_Expression(pE const &expression)
@@ -475,7 +475,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Not_Expression : public Expression {
 public:
   Not_Expression(pE const &expression)
@@ -516,7 +516,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Or_Expression : public Expression {
 public:
   Or_Expression(pE const &e1, pE const &e2)
@@ -563,7 +563,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Power_Expression : public Expression {
 public:
   Power_Expression(pE const &e1, pE const &e2)
@@ -615,7 +615,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Product_Expression : public Expression {
 public:
   Product_Expression(pE const &e1, pE const &e2)
@@ -661,7 +661,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Quotient_Expression : public Expression {
 public:
   Quotient_Expression(pE const &e1, pE const &e2)
@@ -707,7 +707,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Sin_Expression : public Expression {
 public:
   Sin_Expression(pE const &expression)
@@ -751,7 +751,7 @@ private:
   pE expression_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Sum_Expression : public Expression {
 public:
   Sum_Expression(pE const &e1, pE const &e2)
@@ -797,7 +797,7 @@ private:
   pE e1_, e2_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 class Variable_Expression : public Expression {
 public:
   Variable_Expression(unsigned const index, unsigned const number_of_variables,
@@ -830,7 +830,7 @@ private:
   unsigned index_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_primary(unsigned const number_of_variables,
                         Variable_Map const &variable_map,
                         Token_Stream &tokens) {
@@ -896,7 +896,7 @@ static pE parse_primary(unsigned const number_of_variables,
     } else
     // a variable or constant name
     {
-      Variable_Map::const_iterator i = variable_map.find(variable.text());
+      auto i = variable_map.find(variable.text());
       if (i != variable_map.end()) {
         retvalue = pE(new Variable_Expression(
             i->second.first, number_of_variables,
@@ -967,7 +967,7 @@ static pE parse_primary(unsigned const number_of_variables,
   return retvalue;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_power(unsigned const number_of_variables,
                       Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_primary(number_of_variables, variable_map, tokens);
@@ -981,13 +981,13 @@ static pE parse_power(unsigned const number_of_variables,
       tokens.report_semantic_error("base of non-constant exponent must"
                                    " be dimensionless");
     } else {
-      Result.reset(new Power_Expression(Result, exponent));
+      Result = std::make_shared<Power_Expression>(Result, exponent);
     }
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_unary(unsigned const number_of_variables,
                       Variable_Map const &variable_map, Token_Stream &tokens) {
   if (tokens.lookahead().text() == "+") {
@@ -1007,7 +1007,7 @@ static pE parse_unary(unsigned const number_of_variables,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_multiplicative(unsigned const number_of_variables,
                                Variable_Map const &variable_map,
                                Token_Stream &tokens) {
@@ -1015,19 +1015,19 @@ static pE parse_multiplicative(unsigned const number_of_variables,
   while (tokens.lookahead().text() == "*" || tokens.lookahead().text() == "/") {
     if (tokens.lookahead().text() == "*") {
       tokens.shift();
-      Result.reset(new Product_Expression(
-          Result, parse_unary(number_of_variables, variable_map, tokens)));
+      Result = std::make_shared<Product_Expression>(
+          Result, parse_unary(number_of_variables, variable_map, tokens));
     } else {
       Check(tokens.lookahead().text() == "/");
       tokens.shift();
-      Result.reset(new Quotient_Expression(
-          Result, parse_unary(number_of_variables, variable_map, tokens)));
+      Result = std::make_shared<Quotient_Expression>(
+          Result, parse_unary(number_of_variables, variable_map, tokens));
     }
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_additive(unsigned const number_of_variables,
                          Variable_Map const &variable_map,
                          Token_Stream &tokens) {
@@ -1040,7 +1040,7 @@ static pE parse_additive(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for + operator");
       } else {
-        Result.reset(new Sum_Expression(Result, Right));
+        Result = std::make_shared<Sum_Expression>(Result, Right);
       }
     } else {
       Check(tokens.lookahead().text() == "-");
@@ -1050,14 +1050,14 @@ static pE parse_additive(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for - operator");
       } else {
-        Result.reset(new Difference_Expression(Result, Right));
+        Result = std::make_shared<Difference_Expression>(Result, Right);
       }
     }
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_relational(unsigned const number_of_variables,
                            Variable_Map const &variable_map,
                            Token_Stream &tokens) {
@@ -1073,7 +1073,7 @@ static pE parse_relational(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for <");
       } else {
-        Result.reset(new Less_Expression(Result, Right));
+        Result = std::make_shared<Less_Expression>(Result, Right);
       }
     } else if (token.text() == "<=") {
       tokens.shift();
@@ -1082,7 +1082,7 @@ static pE parse_relational(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for <=");
       } else {
-        Result.reset(new LE_Expression(Result, Right));
+        Result = std::make_shared<LE_Expression>(Result, Right);
       }
     } else if (token.text() == ">") {
       tokens.shift();
@@ -1091,7 +1091,7 @@ static pE parse_relational(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for >");
       } else {
-        Result.reset(new Greater_Expression(Result, Right));
+        Result = std::make_shared<Greater_Expression>(Result, Right);
       }
     } else {
       Check(token.text() == ">=");
@@ -1101,7 +1101,7 @@ static pE parse_relational(unsigned const number_of_variables,
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for >=");
       } else {
-        Result.reset(new GE_Expression(Result, Right));
+        Result = std::make_shared<GE_Expression>(Result, Right);
       }
     }
     token = tokens.lookahead();
@@ -1109,31 +1109,31 @@ static pE parse_relational(unsigned const number_of_variables,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_and(unsigned const number_of_variables,
                     Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_relational(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "&&") {
     tokens.shift();
-    Result.reset(new And_Expression(
-        Result, parse_relational(number_of_variables, variable_map, tokens)));
+    Result = std::make_shared<And_Expression>(
+        Result, parse_relational(number_of_variables, variable_map, tokens));
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 static pE parse_or(unsigned const number_of_variables,
                    Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_and(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "||") {
     tokens.shift();
-    Result.reset(new Or_Expression(
-        Result, parse_and(number_of_variables, variable_map, tokens)));
+    Result = std::make_shared<Or_Expression>(
+        Result, parse_and(number_of_variables, variable_map, tokens));
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param[in] x Variable values to apply to the expression. The values must be
  *                 in SI units.
@@ -1149,7 +1149,7 @@ double Expression::operator()(vector<double> const &x) const {
   return evaluate_(&x[0]);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param[in] number_of_variables Number of distinct independent variables in
  *                 the expression.
@@ -1180,13 +1180,13 @@ Expression::parse(unsigned const number_of_variables,
       parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
-    Result.reset(new Or_Expression(
-        Result, parse_or(number_of_variables, variable_map, tokens)));
+    Result = std::make_shared<Or_Expression>(
+        Result, parse_or(number_of_variables, variable_map, tokens));
   }
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param number_of_variables Number of distinct independent variables in the
  *             expression.
@@ -1224,8 +1224,8 @@ Expression::parse(unsigned const number_of_variables,
       parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
-    Result.reset(new Or_Expression(
-        Result, parse_or(number_of_variables, variable_map, tokens)));
+    Result = std::make_shared<Or_Expression>(
+        Result, parse_or(number_of_variables, variable_map, tokens));
   }
   if (unit_expressions_are_required() ||
       !is_compatible(Result->units(), dimensionless)) {
@@ -1236,7 +1236,7 @@ Expression::parse(unsigned const number_of_variables,
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Expression::write(Precedence const p, vector<string> const &vars,
                        ostream &out) const {
   Require(vars.size() == number_of_variables());
@@ -1248,6 +1248,6 @@ void Expression::write(Precedence const p, vector<string> const &vars,
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Expression.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

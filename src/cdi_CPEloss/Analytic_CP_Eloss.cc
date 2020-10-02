@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_CP_Eloss.cc
  * \author Kendra P. Long
@@ -6,16 +6,16 @@
  * \brief  Analytic_CP_Eloss member definitions.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Analytic_CP_Eloss.hh"
 #include "ds++/Assert.hh"
 
 namespace rtt_cdi_cpeloss {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic gray eloss model.
  *
@@ -34,7 +34,7 @@ namespace rtt_cdi_cpeloss {
  *                 scattering
  */
 Analytic_CP_Eloss::Analytic_CP_Eloss(
-    SP_Analytic_Model model_in, rtt_cdi::CParticle target_in,
+    SP_Analytic_Model model_in, rtt_cdi::CParticle target_in, // NOLINT
     rtt_cdi::CParticle projectile_in,
     rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
     : rtt_cdi::CPEloss(target_in, projectile_in,
@@ -44,9 +44,9 @@ Analytic_CP_Eloss::Analytic_CP_Eloss(
   Ensure(analytic_model);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // ELOSS INTERFACE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Return a scalar eloss given a scalar temperature, density, and
  *        particle speed.
@@ -76,6 +76,6 @@ double Analytic_CP_Eloss::getEloss(double temperature, double density,
 
 } // namespace rtt_cdi_cpeloss
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_CP_Eloss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

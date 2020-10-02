@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressGrayOpacity.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  IpcressGrayOpacity templated class implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressGrayOpacity.hh"
 #include "IpcressDataTable.hh"
@@ -20,7 +20,7 @@ namespace rtt_cdi_ipcress {
 // Constructors //
 // ------------ //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for IpcressGrayOpacity object.
  *
@@ -34,8 +34,8 @@ IpcressGrayOpacity::IpcressGrayOpacity(
       materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
       opacityReaction(in_opacityReaction), energyPolicyDescriptor("gray"),
       spIpcressDataTable() {
-  // Verify that the requested material ID is available in the specified
-  // IPCRESS file.
+  // Verify that the requested material ID is available in the specified IPCRESS
+  // file.
   Insist(spIpcressFile->materialFound(materialID),
          std::string("The requested material ID is not available in the ") +
              std::string("specified Ipcress file."));
@@ -44,15 +44,15 @@ IpcressGrayOpacity::IpcressGrayOpacity(
   fieldNames = spIpcressFile->listDataFieldNames(materialID);
   Check(fieldNames.size() > 0);
 
-  // Create the data table object and fill it with the table
-  // data from the IPCRESS file.
-  spIpcressDataTable.reset(new IpcressDataTable(
+  // Create the data table object and fill it with the table data from the
+  // IPCRESS file.
+  spIpcressDataTable = std::make_shared<IpcressDataTable>(
       energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile));
+      materialID, spIpcressFile);
 
 } // end of IpcressData constructor
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressGrayOpacity object.
  *
@@ -114,11 +114,11 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
 
   // build a new IpcressFile
   std::shared_ptr<IpcressFile> spIpcressFile;
-  spIpcressFile.reset(new IpcressFile(ipcressFilename));
+  spIpcressFile = std::make_shared<IpcressFile>(ipcressFilename);
   Check(spIpcressFile);
 
-  // Verify that the requested material ID is available in the
-  // specified IPCRESS file.
+  // Verify that the requested material ID is available in the specified IPCRESS
+  // file.
   Insist(spIpcressFile->materialFound(materialID),
          "Requested material ID is not found in the specified Ipcress file.");
 
@@ -126,11 +126,11 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
   fieldNames = spIpcressFile->listDataFieldNames(materialID);
   Check(fieldNames.size() > 0);
 
-  // Create the data table object and fill it with the table
-  // data from the IPCRESS file.
-  spIpcressDataTable.reset(new IpcressDataTable(
+  // Create the data table object and fill it with the table data from the
+  // IPCRESS file.
+  spIpcressDataTable = std::make_shared<IpcressDataTable>(
       energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile));
+      materialID, spIpcressFile);
 
   Ensure(spIpcressFile);
   Ensure(spIpcressDataTable);
@@ -140,26 +140,25 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
 // Accessors //
 // --------- //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a single opacity (or a
- *     vector of opacities for the multigroup EnergyPolicy) that
- *     corresponds to the provided temperature and density.
+ * \brief Opacity accessor that returns a single opacity (or a vector of
+ *     opacities for the multigroup EnergyPolicy) that corresponds to the
+ *     provided temperature and density.
  */
 double IpcressGrayOpacity::getOpacity(double targetTemperature,
                                       double targetDensity) const {
-  double opacity = -99.0 * targetTemperature * targetDensity;
-  opacity = spIpcressDataTable->interpOpac(targetTemperature, targetDensity);
+  double opacity =
+      spIpcressDataTable->interpOpac(targetTemperature, targetDensity);
   Check(opacity > 0.0);
   return opacity;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of opacities (or a
- *     vector of vectors of opacities for the multigroup
- *     EnergyPolicy) that correspond to the provided vector of
- *     temperatures and a single density value.
+ * \brief Opacity accessor that returns a vector of opacities (or a vector of
+ *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
+ *     the provided vector of temperatures and a single density value.
  */
 std::vector<double>
 IpcressGrayOpacity::getOpacity(std::vector<double> const &targetTemperature,
@@ -175,12 +174,11 @@ IpcressGrayOpacity::getOpacity(std::vector<double> const &targetTemperature,
   return opacity;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of opacities (or a
- *     vector of vectors of opacities for the multigroup
- *     EnergyPolicy) that correspond to the provided vector of
- *     densities and a single temperature value.
+ * \brief Opacity accessor that returns a vector of opacities (or a vector of
+ *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
+ *     the provided vector of densities and a single temperature value.
  */
 std::vector<double>
 IpcressGrayOpacity::getOpacity(double targetTemperature,
@@ -199,7 +197,7 @@ IpcressGrayOpacity::getOpacity(double targetTemperature,
 // Packing //
 // ------- //
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Pack the IpcressGrayOpacity state into a char string represented by a \c
  * vector<char>. This can be used for persistence, communication, etc. by
@@ -219,8 +217,8 @@ std::vector<char> IpcressGrayOpacity::pack() const {
   vector<char> packed_filename;
   rtt_dsxx::pack_data(ipcressFilename, packed_filename);
 
-  // determine the total size: 3 ints (reaction, model, material id) + 2
-  // ints for packed_filename size and packed_descriptor size + char in
+  // determine the total size: 3 ints (reaction, model, material id) + 2 ints
+  // for packed_filename size and packed_descriptor size + char in
   // packed_filename and packed_descriptor
   size_t size =
       5 * sizeof(int) + packed_filename.size() + packed_descriptor.size();
@@ -234,13 +232,13 @@ std::vector<char> IpcressGrayOpacity::pack() const {
 
   // pack the descriptor
   packer << static_cast<int>(packed_descriptor.size());
-  for (size_t i = 0; i < packed_descriptor.size(); i++)
-    packer << packed_descriptor[i];
+  for (char &c : packed_descriptor)
+    packer << c;
 
   // pack the filename (size and elements)
   packer << static_cast<int>(packed_filename.size());
-  for (size_t i = 0; i < packed_filename.size(); i++)
-    packer << packed_filename[i];
+  for (char &c : packed_filename)
+    packer << c;
 
   // pack the material id
   packer << static_cast<int>(materialID);
@@ -254,6 +252,6 @@ std::vector<char> IpcressGrayOpacity::pack() const {
 
 } // end namespace rtt_cdi_ipcress
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressGrayOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

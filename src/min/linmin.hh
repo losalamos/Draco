@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   min/linmin.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Find minimum of a multivariate function on a specified line.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef min_linmin_hh
 #define min_linmin_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_min {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \class f1dim
  * \brief Helper template for line minimization
@@ -33,7 +33,7 @@ public:
 
   double operator()(double const x) const {
     Check(p.size() < UINT_MAX);
-    unsigned const n = static_cast<unsigned>(p.size());
+    auto n = static_cast<unsigned>(p.size());
     std::vector<double> xt(n);
     for (unsigned i = 0; i < n; ++i) {
       xt[i] = p[i] + x * xi[i];
@@ -46,7 +46,7 @@ private:
   RandomContainer &p, &xi;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Find minimum of a multivariate function on a specified line.
  *
@@ -71,7 +71,7 @@ void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
   double const TOL = sqrt(numeric_limits<double>::epsilon());
 
   Check(p.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(p.size());
+  auto const n = static_cast<unsigned>(p.size());
 
   // Initial guess for brackets
   double ax = 0.0;
@@ -92,6 +92,6 @@ void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
 
 #endif // min_linmin_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of min/linmin.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

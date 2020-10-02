@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/DummyGrayOpacity.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  DummyGrayOpacity class implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "DummyGrayOpacity.hh"
 
@@ -29,9 +29,8 @@ namespace rtt_cdi_test {
 DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
                                    rtt_cdi::Model model)
     : dataFilename("none"), dataDescriptor("DummyGrayOpacity"),
-      energyPolicyDescriptor("Gray"), numTemperatures(3), numDensities(2),
-      temperatureGrid(), densityGrid(), reaction_type(reaction),
-      model_type(model) {
+      energyPolicyDescriptor("Gray"), temperatureGrid(), densityGrid(),
+      reaction_type(reaction), model_type(model) {
   // Set up the temperature and density grid.
   temperatureGrid.resize(numTemperatures);
   densityGrid.resize(numDensities);
@@ -91,6 +90,6 @@ DummyGrayOpacity::getOpacity(double targetTemperature,
 
 } // namespace rtt_cdi_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of DummyGrayOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

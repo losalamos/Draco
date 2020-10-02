@@ -16,15 +16,15 @@ information about these third parties and how to obtian or build them.
 The vendors used by Draco and associated projects are maintained by the Draco
 core team.  Vendor software is typically built per platform (Roadrunner, CCS-2
 Linux64, etc.) and stored in either the \c /ccs/codes/radtran/vendors or \c
-/usr/projects/dracy/vendors directory.
+/usr/projects/draco/vendors directory.
 
 Draco uses the compilers and MPI files provided by the systems team for each
 platform.  Each MPI installation requires a custom installation to correctly
 use the high speed interconnect hardware.
 
-<hr><!-- ------------------------------------------------------------ -->
+--------------------------------------------------------------------------------
 
-<!-- See http://www.mcternan.me.uk/mscgen/ for command syntax -->
+* See http://www.mcternan.me.uk/mscgen/ for mscgen command syntax
 
 \msc
 # Draco versions
@@ -51,7 +51,6 @@ d521 abox d620 [label="GSL-1.14", textbgcolour="#7fff7f"];
 \endmsc
 
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of vendors.dcc
-//----------------------------------------------------------------------------//
-
+//------------------------------------------------------------------------------------------------//

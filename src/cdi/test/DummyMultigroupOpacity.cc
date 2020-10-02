@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/DummyMultigroupOpacity.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  DummyMultigroupOpacity templated class implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "DummyMultigroupOpacity.hh"
 #include <cmath> // pow(x,n)
@@ -20,9 +20,8 @@ namespace rtt_cdi_test {
 /*!
  * \brief Constructor for DummyMultigroupOpacity object.
  *
- * \sa The constructor assigns fixed values for all of the member
- *     data.  Every instance of this object has the same member
- *     data.
+ * \sa The constructor assigns fixed values for all of the member data.  Every
+ *     instance of this object has the same member data.
  *
  *     Temperatures     = { 1.0, 2.0, 3.0 }
  *     Densities        = { 0.1, 0.2 }
@@ -31,9 +30,9 @@ namespace rtt_cdi_test {
 DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
                                                rtt_cdi::Model model)
     : dataFilename("none"), dataDescriptor("DummyMultigroupOpacity"),
-      energyPolicyDescriptor("Multigroup"), numTemperatures(3), numDensities(2),
-      numGroupBoundaries(4), groupBoundaries(), temperatureGrid(),
-      densityGrid(), reaction_type(reaction), model_type(model) {
+      energyPolicyDescriptor("Multigroup"), groupBoundaries(),
+      temperatureGrid(), densityGrid(), reaction_type(reaction),
+      model_type(model) {
   temperatureGrid.resize(numTemperatures);
   densityGrid.resize(numDensities);
   groupBoundaries.resize(numGroupBoundaries);
@@ -52,9 +51,9 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
                                                rtt_cdi::Model model,
                                                size_t num_boundaries)
     : dataFilename("none"), dataDescriptor("DummyMultigroupOpacity"),
-      energyPolicyDescriptor("Multigroup"), numTemperatures(3), numDensities(2),
-      numGroupBoundaries(num_boundaries), groupBoundaries(), temperatureGrid(),
-      densityGrid(), reaction_type(reaction), model_type(model) {
+      energyPolicyDescriptor("Multigroup"), numGroupBoundaries(num_boundaries),
+      groupBoundaries(), temperatureGrid(), densityGrid(),
+      reaction_type(reaction), model_type(model) {
   temperatureGrid.resize(numTemperatures);
   densityGrid.resize(numDensities);
   groupBoundaries.resize(numGroupBoundaries);
@@ -72,13 +71,11 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
 // --------- //
 
 /*!
- * \brief Opacity accessor that returns a vector of opacities (one
- *     for each group) that corresponds to the provided
- *     temperature and density.
+ * \brief Opacity accessor that returns a vector of opacities (one for each
+ *     group) that corresponds to the provided temperature and density.
  *
  *     Opacity = 2 * ( temperature + density/1000 )
  *                 / ( E_high + E_low )
- *
  */
 std::vector<double>
 DummyMultigroupOpacity::getOpacity(double targetTemperature,
@@ -91,10 +88,10 @@ DummyMultigroupOpacity::getOpacity(double targetTemperature,
 }
 
 /*!
- * \brief Opacity accessor that returns a vector of multigroup
- *     opacities corresponding to the provided vector of
- *     temperatures and a single density.  Each multigroup opacity
- *     is in itself a vector of numGroups opacities.
+ * \brief Opacity accessor that returns a vector of multigroup opacities
+ *     corresponding to the provided vector of temperatures and a single
+ *     density.  Each multigroup opacity is in itself a vector of numGroups
+ *     opacities.
  *
  *     Opacity = 2 * ( temperature + density/1000 )
  *                 / ( E_high + E_low )
@@ -116,10 +113,10 @@ DummyMultigroupOpacity::getOpacity(const std::vector<double> &targetTemperature,
 }
 
 /*!
- * \brief Opacity accessor that returns a vector of multigroup
- *     opacities corresponding to the provided vector of
- *     densities and a single temperature.  Each multigroup opacity
- *     is in itself a vector of numGroups opacities.
+ * \brief Opacity accessor that returns a vector of multigroup opacities
+ *     corresponding to the provided vector of densities and a single
+ *     temperature.  Each multigroup opacity is in itself a vector of numGroups
+ *     opacities.
  *
  *     Opacity = 2 * ( temperature + density/1000 )
  *                 / ( E_high + E_low )
@@ -141,6 +138,6 @@ std::vector<std::vector<double>> DummyMultigroupOpacity::getOpacity(
 
 } // end namespace rtt_cdi_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of DummyMultigroupOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

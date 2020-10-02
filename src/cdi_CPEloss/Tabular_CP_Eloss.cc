@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Tabular_CP_Eloss.cc
  * \author Ben R. Ryan
@@ -6,10 +6,11 @@
  * \brief  Tabular_CP_Eloss member definitions.
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
 #include "ds++/DracoStrings.hh"
+#include <utility>
 
 namespace rtt_cdi_cpeloss {
 
@@ -19,7 +20,7 @@ using std::experimental::dynamic_extent;
 using std::experimental::extents;
 using std::experimental::layout_left;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Do a 3D linear interpolation between vertices of a rectangular prism.
  *
@@ -79,34 +80,34 @@ linear_interpolate_3(double const x0, double const x1, double const y0,
   return f;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic tabular eloss model.
  *
  * This constructor builds an eloss model defined by the
  * rtt_cdi_cpeloss::Tabular_Eloss_Model derived class argument.
  *
- * The path to an eloss datafile is passed to the constructor,
- * which opens and parses the file. The file format is the usual
- * LANL format for stopping powers.
+ * The path to an eloss datafile is passed to the constructor, which opens and
+ * parses the file. The file format is the usual LANL format for stopping
+ * powers.
  *
  * \param[in] filename_in path to eloss file
  * \param[in] target_in target particle zaid
  * \param[in] projectile_in transporting particle zaid
  * \param[in] model_angle_cutoff_in rtt_cdi::CPModelAngleCutoff the angle
- *                 separating the stopping power approximation from analog 
+ *                 separating the stopping power approximation from analog
  *                 scattering
  */
 Tabular_CP_Eloss::Tabular_CP_Eloss(
-    const std::string &filename_in, rtt_cdi::CParticle target_in,
+    std::string filename_in, rtt_cdi::CParticle target_in,
     rtt_cdi::CParticle projectile_in,
     rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
     : rtt_cdi::CPEloss(target_in, projectile_in,
                        rtt_cdi::CPModelType::TABULAR_ETYPE,
                        model_angle_cutoff_in),
-      filename(filename_in) {
+      filename(std::move(filename_in)) {
   using std::stod;
   using std::stoi;
 
@@ -259,7 +260,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
       exp(min_log_temperature + d_log_temperature * (n_temperature));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read through the next nlines lines and ignore them.
  * \param[in] nlines number of lines in file to skip
@@ -271,7 +272,7 @@ void Tabular_CP_Eloss::skip_lines(uint32_t nlines) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read a line from an eloss datafile and return as a vector of strings.
  * \return entries the resulting vector of entries in the datafile line.
@@ -282,7 +283,7 @@ std::vector<std::string> const Tabular_CP_Eloss::read_line() {
   return rtt_dsxx::tokenize(line);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate the tabulated stopping power for a given material and
  *        projectile state.
@@ -336,6 +337,6 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
 
 } // namespace rtt_cdi_cpeloss
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Tabular_CP_Eloss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

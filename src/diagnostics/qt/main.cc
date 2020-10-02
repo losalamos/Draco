@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/qt/main.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Main program for Gui version of draco info.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "mainwindow.hh"
 #include <QApplication>
@@ -18,11 +18,11 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   app.setApplicationName("draco_info-gui");
   app.setOrganizationName("LANL CCS-2");
-  MainWindow *mainWin = new MainWindow;
+  auto *mainWin = new MainWindow;
   mainWin->show();
   return app.exec();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of diagnostics/qt/main.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

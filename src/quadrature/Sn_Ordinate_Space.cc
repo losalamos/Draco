@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Sn_Ordinate_Space.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Define methods of class Sn_Ordinate_Space
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Sn_Ordinate_Space.hh"
 #include "special_functions/Ylm.hh"
@@ -20,7 +20,7 @@ namespace rtt_quadrature {
 
 using std::vector;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -36,7 +36,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
                                                     unsigned /*N*/) {
   vector<Moment> result;
@@ -52,7 +52,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -67,7 +67,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment>
 Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class,
                                      unsigned N) {
@@ -76,7 +76,7 @@ Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
                                                    unsigned /*N*/) {
   vector<Moment> result;
@@ -91,7 +91,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Sn_Ordinate_Space::compute_M() {
   using rtt_sf::Ylm;
 
@@ -160,7 +160,7 @@ void Sn_Ordinate_Space::compute_M() {
   }   // moment loop
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! This computation requires that the moment-to-discrete matrix M is already
  *  created.
  */
@@ -207,7 +207,7 @@ void Sn_Ordinate_Space::compute_D() {
   D_.swap(D);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * The computation of the tau and alpha coefficients is described by Morel in
@@ -259,23 +259,23 @@ Sn_Ordinate_Space::Sn_Ordinate_Space(unsigned const dimension,
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Sn_Ordinate_Space::check_class_invariants() const {
   return D_.size() == ordinates().size() * moments().size() &&
          M_.size() == ordinates().size() * moments().size();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 QIM Sn_Ordinate_Space::quadrature_interpolation_model() const { return SN; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for the moment, we include all orders.
  */
 
 vector<double> Sn_Ordinate_Space::D() const { return D_; }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for the moment, we include all orders.
@@ -284,6 +284,6 @@ vector<double> Sn_Ordinate_Space::M() const { return M_; }
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Sn_Ordinate_Space.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

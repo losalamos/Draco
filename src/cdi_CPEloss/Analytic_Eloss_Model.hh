@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_Eloss_Model.hh
  * \author Kendra P. Long, Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Analytic_Eloss_Model class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPEloss_Analytic_Eloss_Model_hh
 #define rtt_cdi_CPEloss_Analytic_Eloss_Model_hh
@@ -17,7 +17,8 @@
 #include <vector>
 
 namespace rtt_cdi_cpeloss {
-//============================================================================//
+
+//================================================================================================//
 /*!
  * \class Analytic_Eloss_Model
  * \brief Analytic_Eloss_Model base class.
@@ -33,13 +34,12 @@ namespace rtt_cdi_cpeloss {
  *
  * The returned eloss coefficient is a power with units of keV shk^-1.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_Eloss_Model {
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_Eloss_Model() { /*...*/
-  }
+  virtual ~Analytic_Eloss_Model() = default;
 
   //! Interface for derived analytic eloss models.
   virtual double calculate_eloss(const double T, const double rho,
@@ -81,6 +81,6 @@ protected:
 
 #endif // rtt_cdi_CPEloss_Analytic_Eloss_Model_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_Eloss_Model.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

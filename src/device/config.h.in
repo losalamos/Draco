@@ -1,4 +1,4 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
  * \file   device/config.h
  * \author Gabriel M. Rockefeller
@@ -6,7 +6,7 @@
  * \brief  CPP defines necessary for the device package.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_device_config_h
 #define rtt_device_config_h
@@ -19,14 +19,18 @@
 /*----------------------------------------------------------------------------*/
 /* Mark functions for compilation on host and device */
 
-#if defined HAVE_CUDA && defined USE_CUDA
+#if defined __NVCC__ && defined USE_CUDA
 #define HOST_AND_DEVICE_FUNCTION __host__ __device__
 #define GPU_HOST_DEVICE __host__ __device__
+#define GPU_DEVICE __device__
 #define GPU_KERNEL __global__
+#define CONSTANT __constant__
 #else
 #define HOST_AND_DEVICE_FUNCTION
 #define GPU_HOST_DEVICE
+#define GPU_DEVICE
 #define GPU_KERNEL
+#define CONSTANT constexpr
 #endif
 
 /*----------------------------------------------------------------------------*/
@@ -38,6 +42,6 @@ std::string const test_kernel_bindir("@TEST_KERNEL_BINDIR@");
 
 #endif /* rtt_device_config_h */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of device/config.h */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

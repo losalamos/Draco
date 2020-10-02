@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_KP_Alpha_Eloss_Model.hh
  * \author Kendra P. Long, Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Analytic_KP_Alpha_Eloss_Model class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPEloss_Analytic_KP_Alpha_Eloss_Model_hh
 #define rtt_cdi_CPEloss_Analytic_KP_Alpha_Eloss_Model_hh
@@ -15,7 +15,7 @@
 #include "ds++/Assert.hh"
 
 namespace rtt_cdi_cpeloss {
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Analytic_KP_Alpha_Eloss_Model
  * \brief Analytic_KP_Alpha_Eloss_Model derived class.
@@ -30,7 +30,7 @@ namespace rtt_cdi_cpeloss {
  * Equation (2) gives the range formula. We convert this to an energy loss rate
  * per unit time for ease of use in transport.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_KP_Alpha_Eloss_Model : public Analytic_Eloss_Model {
 public:
@@ -44,13 +44,13 @@ public:
   //! Calculate the eloss rate in units of shk^-1;
   //! T given in keV, rho in g/cc, v0 in cm/shk
   double calculate_eloss(const double T, const double rho,
-                         const double v0) const;
+                         const double v0) const override;
 };
 
 } // namespace rtt_cdi_cpeloss
 
 #endif // rtt_cdi_CPEloss_Analytic_KP_Alpha_Eloss_Model_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_KP_Alpha_Eloss_Model.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

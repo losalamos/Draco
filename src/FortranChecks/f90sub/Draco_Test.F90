@@ -57,24 +57,8 @@ contains
 
   end subroutine pass_msg
 
-  ! ---------------------------------------------------------------------------
-  ! Provide a routine to uniformly report test successes to CTEST
-  ! ---------------------------------------------------------------------------
-  ! subroutine test_report(rank,nf)
-  !   implicit none
-  !   integer, intent(in ) :: rank
-  !   integer, intent(out) :: nf
-
-  !   write(*,'(45("*"))')
-  !   if (f90_num_failures == 0 ) then
-  !      write (*,'("**** Test: PASSED on ", I3)') rank
-  !   else
-  !      write (*,'("**** Test: FAILED on ", I3, " with ", I3, " errors.")')  &
-  !           rank, f90_num_failures
-  !   end if
-  !   write(*,'(45("*"))')
-  !   nf = f90_num_failures
-
-  ! end subroutine test_report
-
 end module draco_test
+
+! ---------------------------------------------------------------------------
+! End Draco_Test.F90
+! ---------------------------------------------------------------------------

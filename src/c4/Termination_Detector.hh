@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Termination_Detector.hh
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_Termination_Detector_hh
 #define c4_Termination_Detector_hh
@@ -14,39 +13,35 @@
 
 namespace rtt_c4 {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Termination_Detector
  * \brief Detect termination of an indeterminate parallel algorithm.
  *
- * This class is our implementation in C++ of Will McLendon's (Sandia)
- * termination package.  It is used to detect termination of an indeterminate
- * algorithm.
+ * This class is our implementation in C++ of Will McLendon's (Sandia) termination package.  It is
+ * used to detect termination of an indeterminate algorithm.
  *
- * An indeterminate algorithm is one for which it is not possible to determine
- * in advance how much work must be done on each processor.  One example of an
- * indeterminate algorithm is traversal of a directed graph that may have
- * cycles. A processor performing such a sweep cannot know in advance whether
- * all of its nodes will be visited by the traversal, which makes the traversal
+ * An indeterminate algorithm is one for which it is not possible to determine in advance how much
+ * work must be done on each processor.  One example of an indeterminate algorithm is traversal of a
+ * directed graph that may have cycles. A processor performing such a sweep cannot know in advance
+ * whether all of its nodes will be visited by the traversal, which makes the traversal
  * indeterminate.
  *
- * The code is used as follows: Every time a processor is able to make progress
- * on the computation (as measured in arbitrary units of work) the
- * Update_Work_Count function should be called to indicate the progress
- * made. Whenever data is communicated to another processor, the
- * Update_Send_Count function should be called to indicate the messages sent
- * out. And whenever data is received, the Update_Receive_Count function should
- * be called to indicate the messages received.
+ * The code is used as follows: Every time a processor is able to make progress on the computation
+ * (as measured in arbitrary units of work) the Update_Work_Count function should be called to
+ * indicate the progress made. Whenever data is communicated to another processor, the
+ * Update_Send_Count function should be called to indicate the messages sent out. And whenever data
+ * is received, the Update_Receive_Count function should be called to indicate the messages
+ * received.
  *
- * Whenever a processor has no more work to do, it should be sure the counts are
- * all updated, then call Process() to see if the algorithm has
- * terminated. Termination occurs when no processor has work to do (as implied
- * by the call to Process()), no processor has done any work since the last
+ * Whenever a processor has no more work to do, it should be sure the counts are all updated, then
+ * call Process() to see if the algorithm has terminated. Termination occurs when no processor has
+ * work to do (as implied by the call to Process()), no processor has done any work since the last
  * check, and all sent messages have been received.
  *
  * See test/tstTermination_Detector for an example of how this works.
  */
-//============================================================================//
+//================================================================================================//
 
 class Termination_Detector {
 public:
@@ -120,6 +115,6 @@ private:
 
 #endif // c4_Termination_Detector_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/Termination_Detector.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

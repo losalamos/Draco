@@ -1,28 +1,26 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/test/tstDiagnostics.cc
  * \author Thomas M. Evans
  * \date   Fri Dec  9 16:16:27 2005
  * \brief  Diagnostics test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-//! \version $Id$
-//----------------------------------------------------------------------------//
+ *         All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "diagnostics/Diagnostics.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_diagnostics;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_ints(rtt_dsxx::UnitTest &ut) {
   // add an integer quantity
@@ -44,7 +42,7 @@ void test_ints(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Diagnostics integers ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_floats(rtt_dsxx::UnitTest &ut) {
   if (Diagnostics::integers["A"] != 22)
@@ -73,7 +71,7 @@ void test_floats(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Diagnostics doubles ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_vectors(rtt_dsxx::UnitTest &ut) {
   Diagnostics::vec_integers["A"];
@@ -114,16 +112,11 @@ void test_vectors(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Diagnostics vectors ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_macro(rtt_dsxx::UnitTest &ut) {
   cout << endl;
-
-  int level[4];
-  level[0] = 1;
-  level[1] = 0;
-  level[2] = 0;
-  level[3] = 0;
+  array<int, 4> level = {1, 0, 0, 0};
 
 #ifdef DRACO_DIAGNOSTICS_LEVEL_1
   cout << ">>> Testing Level 1 Block diagnostics." << endl;
@@ -174,7 +167,7 @@ void test_macro(rtt_dsxx::UnitTest &ut) {
     PASSMSG("Diagnostics macro ok.");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -187,6 +180,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstDiagnostics.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

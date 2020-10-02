@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/Thread_Wrapper.hh
  * \author Tim Kelley
  * \date   Thursday, Oct 12, 2017, 10:50 am
  * \brief  Header file for Thread_Wrapper
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef THREAD_WRAPPER_HH
 #define THREAD_WRAPPER_HH
@@ -16,14 +15,13 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /**\class Thread_Wrapper
- * \brief Joins underlying thread in dtor, avoiding untimely process
- *        termination.
+ * \brief Joins underlying thread in dtor, avoiding untimely process termination.
  *
  * cf Scott Meyers, Effective Modern C++, Item #37
  */
-//============================================================================//
+//================================================================================================//
 class Thread_Wrapper {
 public:
   /**\brief enum class to indicate action to take on termination. */
@@ -60,6 +58,6 @@ private:
 
 #endif // include guard
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/Thread_Wrapper.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

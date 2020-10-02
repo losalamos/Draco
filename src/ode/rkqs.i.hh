@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ode/rkqs.i.hh
  * \author Kent Budge
@@ -7,7 +7,7 @@
  *         control using fifth-order Cash-Karp Runge-Kutta steps.
  * \note   Copyright (C) 2004-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef ode_rkqs_i_hh
 #define ode_rkqs_i_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_ode {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Perform a single fifth-order Cash-Karp Runge-Kutta step.
  *
  * \arg \a Field A field type, such as \c double or \c std::complex<double>.
@@ -63,7 +63,7 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
                       dc6 = c6 - 0.25;
 
   Check(y.size() < UINT_MAX);
-  const unsigned n = static_cast<unsigned>(y.size());
+  const auto n = static_cast<unsigned>(y.size());
 
   yout.resize(n);
   yerr.resize(n);
@@ -107,7 +107,7 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Integrate an ordinary differential equation with local error
  * control using fifth-order Cash-Karp Runge-Kutta steps.
@@ -155,7 +155,7 @@ void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
   using std::vector;
 
   Check(y.size() < UINT_MAX);
-  const unsigned n = static_cast<unsigned>(y.size());
+  const auto n = static_cast<unsigned>(y.size());
 
   double const SAFETY = 0.9;
   double const PSHRNK = -0.25;
@@ -195,6 +195,6 @@ void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
 
 #endif // ode_rkqs_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ode/rkqs.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

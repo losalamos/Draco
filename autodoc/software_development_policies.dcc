@@ -1,22 +1,23 @@
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // software_development_policies.dcc
 // Example configure commands
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*!
 
 \page software_development_policies Software Development Policies
 
 \section copyright Copyright notification
-Before a file is commited back to the version control repository, the
-copyright statment in the file header must be updated.  The updated statement
-should have one of these forms:
+
+Before a file is commited back to the version control repository, the copyright
+statment in the file header must be updated.  The updated statement should have
+one of these forms:
 
 - Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved.
 
 \section agile_manifesto Agile C++ Development
 
-\li (borrowed from this <a href=")http://cplusplus-soup.com/2010/12/14/agile-c-development/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+CppSoup+(C%2B%2B+Soup)">link</a>)
+\li (borrowed from this <a href="http://cplusplus-soup.com/2010/12/14/agile-c-development/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+CppSoup+(C%2B%2B+Soup)">link</a>)
 
 We are uncovering better ways of developing software by doing it and helping
 others do it. Through this work we have come to value:
@@ -27,7 +28,8 @@ others do it. Through this work we have come to value:
 - Responding to change over following a plan. That is, while there is value in
   the items on the right, we value the items on the left more.
 
-So what are the hallmarks of Agile Software Development? For one thing, the premium on:
+So what are the hallmarks of Agile Software Development? For one thing, the
+premium on:
 
 - \b Iterative \b Development - building software in a way that allows for
   quickly changing implementations over a period of time, and making sure that
@@ -38,18 +40,18 @@ So what are the hallmarks of Agile Software Development? For one thing, the prem
   built to assume that anything at any given point later on can (and probably
   will) change.
 
-Because Agile Software Development is a process or a "way of building
-software", the tools you use aren't largely affected - but the practices you
-follow might be affected. For example, instead of writing lengthy design
-documents, you.d rather write code and generate the design document out of the
-code; instead of writing specification documents, you actually write
+Because Agile Software Development is a process or a "way of building software",
+the tools you use aren't largely affected - but the practices you follow might
+be affected. For example, instead of writing lengthy design documents, you.d
+rather write code and generate the design document out of the code; instead of
+writing specification documents, you actually write
 unit/integration/system-level/acceptance tests; instead of having planning
 sessions you have quick 5-minute meetings and more collaborative modes of
 development (pair-programming, for example). Now other languages have tons of
 tools that help with making these practices more in-grained in the development
 process . things like one-click unit-test runners and continuous testing
-environments (that build and run the tests as soon as changes are being made
-to the code for immediate feedback).
+environments (that build and run the tests as soon as changes are being made to
+the code for immediate feedback).
 
 Agile C++ themes also include:
 
@@ -89,15 +91,15 @@ Agile C++ themes also include:
   that measuring it matters. Do it however you like, but just make sure you're
   measuring progress and productivity.
 
-Overall I've been in various roles in the Agile projects I've worked with in
-the past. Having a clear understanding of what your software needs to do and
-what the customer wants is key to the Agile process. The clarity yields
-happier customers and better software in the long run, and even improves
-developer productivity by being able to focus and iterate on the solution
-rather than trying to design it right at the start.
+Overall I've been in various roles in the Agile projects I've worked with in the
+past. Having a clear understanding of what your software needs to do and what
+the customer wants is key to the Agile process. The clarity yields happier
+customers and better software in the long run, and even improves developer
+productivity by being able to focus and iterate on the solution rather than
+trying to design it right at the start.
 
-So have you been part of an Agile Software Development project lately with
-C++? How did you find it? Did I miss anything obvious above?
+So have you been part of an Agile Software Development project lately with C++?
+How did you find it? Did I miss anything obvious above?
 
 \section development_links Useful web links
 
@@ -115,33 +117,22 @@ C++? How did you find it? Did I miss anything obvious above?
 
 \section joel_test Twelve Steps to Better Code
 
-   1. Do you use source control?<br>
-   2. Can you make a build in one step?<br>
-   3. Do you make daily builds?<br>
-   4. Do you have a bug database?<br>
-   5. Do you fix bugs before writing new code?<br>
-   6. Do you have an up-to-date schedule?<br>
-   7. Do you have a spec?<br>
-   8. Do programmers have quiet working conditions?<br>
-   9. Do you use the best tools money can buy?<br>
-  10. Do you have testers?<br>
-  11. Do new candidates write code during their interview?<br>
-  12. Do you do hallway usability testing?
+- Do you use source control?
+- Can you make a build in one step?
+- Do you make daily builds?
+- Do you have a bug database?
+- Do you fix bugs before writing new code?
+- Do you have an up-to-date schedule?
+- Do you have a spec?
+- Do programmers have quiet working conditions?
+- Do you use the best tools money can buy?
+- Do you have testers?
+- Do new candidates write code during their interview?
+- Do you do hallway usability test
+.
 
-  <a href="http://www.joelonsoftware.com/articles/fog0000000043.html">The Joel
-  Test: 12 Steps to Better Code</a>
+*/
 
-\section known_bugs Known Bugs
-
-- Some Draco classes inherit from STL containers.  In general, this is a bad
-  idea because the STL classes are not designed to support this use (e.g.:
-  they do not provide virtual destructors).  Some discussion on this topic is
-  found at
-  http://stackoverflow.com/questions/679520/advice-on-a-better-way-to-extend-c-stl-container-with-user-defined-methods.
-
-
-
-
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

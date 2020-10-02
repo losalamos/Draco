@@ -1,24 +1,25 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh_element/test/TestElementDefinition.cc
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:06:55 2002
  * \brief  Test Element Definitions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC. 
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "mesh_element/Element_Definition.hh"
+#include <array>
 #include <list>
 #include <sstream>
 
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 namespace rtt_mesh_element_test {
 
@@ -71,6 +72,12 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
 
 } // end namespace rtt_mesh_element_test
 
+//------------------------------------------------------------------------------------------------//
+template <std::size_t N> std::vector<unsigned> makeuv(std::array<int, N> s) {
+  return std::vector<unsigned>(s.begin(), s.end());
+}
+
+//------------------------------------------------------------------------------------------------//
 void runTest(rtt_dsxx::UnitTest &ut) {
   using rtt_mesh_element::Element_Definition;
 
@@ -101,11 +108,11 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   type_list.push_back(Element_Definition::HEXA_20);
   type_list.push_back(Element_Definition::HEXA_27);
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   cout << endl << "Building Elements for Test ---" << endl << endl;
   list<Element_Definition> elem_defs;
   for (size_t i = 0; i < type_list.size(); i++) {
-    elem_defs.push_back(Element_Definition(type_list[i]));
+    elem_defs.emplace_back(type_list[i]);
     cout << elem_defs.back();
     if (!elem_defs.back().invariant_satisfied()) {
       ostringstream msg;
@@ -114,7 +121,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
       FAILMSG(msg.str());
     }
   }
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   cout << "\nChecking Elements ---\n" << endl;
 
   // CAREFUL HERE -- the order of the function calls must match the type_list
@@ -167,14 +174,14 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element_test::test_hexa_27(ut, elem_defs.front());
   elem_defs.pop_front();
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Test the POLYGON element.
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
 
   cout << "\nBuilding POLYGON Element ---\n" << endl;
 
   vector<Element_Definition> polyg_elem_defs;
-  polyg_elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
+  polyg_elem_defs.emplace_back(Element_Definition::BAR_2);
 
   vector<unsigned> polyg_side_type(8,  // number of sides
                                    0); // index into elem_defs
@@ -191,9 +198,9 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            8,       // number_of_sides
                            polyg_elem_defs, polyg_side_type, polyg_side_nodes);
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Test the POLYHEDRON element.
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
 
   cout << "\nBuilding POLYHEDRON Element ---\n" << endl;
 
@@ -202,13 +209,13 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   vector<vector<unsigned>> polyh_side_nodes;
 
   // First side is QUAD_4
-  polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_4));
+  polyh_elem_defs.emplace_back(Element_Definition::QUAD_4);
   polyh_side_type.push_back(0);
   vector<unsigned> side0_nodes = {0, 1, 5, 4};
   polyh_side_nodes.push_back(side0_nodes);
 
   // Next four sides are QUAD_5
-  polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_5));
+  polyh_elem_defs.emplace_back(Element_Definition::QUAD_5);
 
   polyh_side_type.push_back(1);
   vector<unsigned> side1_nodes = {1, 0, 3, 2, 11};
@@ -227,7 +234,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   polyh_side_nodes.push_back(side4_nodes);
 
   // Last (sixth) side is QUAD_9
-  polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_9));
+  polyh_elem_defs.emplace_back(Element_Definition::QUAD_9);
   polyh_side_type.push_back(2);
   vector<unsigned> side5_nodes = {3, 7, 6, 2, 8, 9, 10, 11, 12};
   polyh_side_nodes.push_back(side5_nodes);
@@ -238,7 +245,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            6,             // number_of_sides
                            polyh_elem_defs, polyh_side_type, polyh_side_nodes);
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Merely attempting construction, with DBC active, will invoke a slew of
   // precondition, postcondition, and consistency checks.  We perform no
   // other explicit checks here.
@@ -250,11 +257,11 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 namespace rtt_mesh_element_test {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_node(rtt_dsxx::UnitTest &ut,
                const rtt_mesh_element::Element_Definition elem_def) {
   // Test the NODE element.
@@ -277,7 +284,7 @@ bool test_node(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_bar_2(rtt_dsxx::UnitTest &ut,
                 const rtt_mesh_element::Element_Definition elem_def) {
   // Test the BAR_2 element.
@@ -291,13 +298,11 @@ bool test_bar_2(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 1;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 1;
-  const int size = 1;
-  int s0[size] = {0};
-  int s1[size] = {1};
-  ldum =
-      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
-  ldum =
-      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
+  constexpr int size = 1;
+  std::array<int, size> s0 = {0};
+  std::array<int, size> s1 = {1};
+  ldum = ldum && (elem_def.get_side_nodes(0) == makeuv(s0));
+  ldum = ldum && (elem_def.get_side_nodes(1) == makeuv(s1));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -310,7 +315,7 @@ bool test_bar_2(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_bar_3(rtt_dsxx::UnitTest &ut,
                 const rtt_mesh_element::Element_Definition elem_def) {
   // Test the BAR_3 element.
@@ -324,13 +329,11 @@ bool test_bar_3(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 1;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 1;
-  const int size = 1;
-  int s0[size] = {0};
-  int s1[size] = {1};
-  ldum =
-      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
-  ldum =
-      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
+  constexpr int size = 1;
+  std::array<int, size> s0 = {0};
+  std::array<int, size> s1 = {1};
+  ldum = ldum && (elem_def.get_side_nodes(0) == makeuv(s0));
+  ldum = ldum && (elem_def.get_side_nodes(1) == makeuv(s1));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -343,7 +346,7 @@ bool test_bar_3(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_tri_3(rtt_dsxx::UnitTest &ut,
                 const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TRI_3 element.
@@ -358,13 +361,13 @@ bool test_tri_3(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
-  const int size = 2;
-  int s0[size] = {0, 1};
-  int s1[size] = {1, 2};
-  int s2[size] = {2, 0};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  constexpr int size = 2;
+  std::array<int, size> s0 = {0, 1};
+  std::array<int, size> s1 = {1, 2};
+  std::array<int, size> s2 = {2, 0};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -377,7 +380,7 @@ bool test_tri_3(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_tri_6(rtt_dsxx::UnitTest &ut,
                 const rtt_mesh_element::Element_Definition elem_def) {
   // Test the element.
@@ -392,13 +395,13 @@ bool test_tri_6(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
-  const int size = 3;
-  int s0[size] = {0, 1, 3};
-  int s1[size] = {1, 2, 4};
-  int s2[size] = {2, 0, 5};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
+  constexpr int size = 3;
+  std::array<int, size> s0 = {0, 1, 3};
+  std::array<int, size> s1 = {1, 2, 4};
+  std::array<int, size> s2 = {2, 0, 5};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -411,7 +414,7 @@ bool test_tri_6(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_4(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_4 element.
@@ -427,15 +430,15 @@ bool test_quad_4(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 2;
-  const int size = 2;
-  int s0[size] = {0, 1};
-  int s1[size] = {1, 2};
-  int s2[size] = {2, 3};
-  int s3[size] = {3, 0};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  constexpr int size = 2;
+  std::array<int, size> s0 = {0, 1};
+  std::array<int, size> s1 = {1, 2};
+  std::array<int, size> s2 = {2, 3};
+  std::array<int, size> s3 = {3, 0};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -448,7 +451,7 @@ bool test_quad_4(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_5(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_5 element.
@@ -468,14 +471,14 @@ bool test_quad_5(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
 
-  int s0[2] = {0, 1};
-  int s1[3] = {1, 2};
-  int s2[3] = {2, 3};
-  int s3[3] = {3, 0, 4};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 2);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 2);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
+  std::array<int, 2> s0 = {0, 1};
+  std::array<int, 2> s1 = {1, 2};
+  std::array<int, 2> s2 = {2, 3};
+  std::array<int, 3> s3 = {3, 0, 4};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
 
   if (ldum) {
     ostringstream message;
@@ -489,7 +492,7 @@ bool test_quad_5(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_6(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_6 element.
@@ -515,14 +518,14 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
     ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
     ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
 
-    int s0[2] = {0, 1};
-    int s1[2] = {1, 2};
-    int s2[3] = {2, 3, 4};
-    int s3[3] = {3, 0, 5};
-    ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
-    ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 2);
-    ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 3);
-    ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
+    std::array<int, 2> s0 = {0, 1};
+    std::array<int, 2> s1 = {1, 2};
+    std::array<int, 3> s2 = {2, 3, 4};
+    std::array<int, 3> s3 = {3, 0, 5};
+    ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+    ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+    ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+    ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   } else {
     string ename = "QUAD_6o";
     ldum = ldum && elem_def.get_name() == ename;
@@ -538,14 +541,14 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
     ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
     ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
 
-    int s0[2] = {0, 1};
-    int s1[3] = {1, 2, 4};
-    int s2[2] = {2, 3};
-    int s3[3] = {3, 0, 5};
-    ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
-    ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 3);
-    ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 2);
-    ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
+    std::array<int, 2> s0 = {0, 1};
+    std::array<int, 3> s1 = {1, 2, 4};
+    std::array<int, 2> s2 = {2, 3};
+    std::array<int, 3> s3 = {3, 0, 5};
+    ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+    ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+    ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+    ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   }
 
   if (ldum) {
@@ -560,7 +563,7 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_7(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_7 element.
@@ -580,14 +583,14 @@ bool test_quad_7(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
 
-  int s0[2] = {0, 1};
-  int s1[3] = {1, 2, 4};
-  int s2[3] = {2, 3, 5};
-  int s3[3] = {3, 0, 6};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + 2);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + 3);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + 3);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + 3);
+  std::array<int, 2> s0 = {0, 1};
+  std::array<int, 3> s1 = {1, 2, 4};
+  std::array<int, 3> s2 = {2, 3, 5};
+  std::array<int, 3> s3 = {3, 0, 6};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
 
   if (ldum) {
     ostringstream message;
@@ -601,7 +604,7 @@ bool test_quad_7(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_8(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_8 element.
@@ -617,15 +620,15 @@ bool test_quad_8(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
-  const int size = 3;
-  int s0[size] = {0, 1, 4};
-  int s1[size] = {1, 2, 5};
-  int s2[size] = {2, 3, 6};
-  int s3[size] = {3, 0, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  constexpr int size = 3;
+  std::array<int, size> s0 = {0, 1, 4};
+  std::array<int, size> s1 = {1, 2, 5};
+  std::array<int, size> s2 = {2, 3, 6};
+  std::array<int, size> s3 = {3, 0, 7};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -638,7 +641,7 @@ bool test_quad_8(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_quad_9(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_9 element.
@@ -654,15 +657,15 @@ bool test_quad_9(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
-  const int size = 3;
-  int s0[size] = {0, 1, 4};
-  int s1[size] = {1, 2, 5};
-  int s2[size] = {2, 3, 6};
-  int s3[size] = {3, 0, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  constexpr int size = 3;
+  array<int, size> s0 = {0, 1, 4};
+  array<int, size> s1 = {1, 2, 5};
+  array<int, size> s2 = {2, 3, 6};
+  array<int, size> s3 = {3, 0, 7};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -675,7 +678,7 @@ bool test_quad_9(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_tetra_4(rtt_dsxx::UnitTest &ut,
                   const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TETRA_4 element.
@@ -691,15 +694,15 @@ bool test_tetra_4(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
-  const int size = 3;
-  int s0[size] = {0, 2, 1};
-  int s1[size] = {0, 1, 3};
-  int s2[size] = {1, 2, 3};
-  int s3[size] = {2, 0, 3};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  constexpr int size = 3;
+  array<int, size> s0 = {0, 2, 1};
+  array<int, size> s1 = {0, 1, 3};
+  array<int, size> s2 = {1, 2, 3};
+  array<int, size> s3 = {2, 0, 3};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -712,7 +715,7 @@ bool test_tetra_4(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_tetra_10(rtt_dsxx::UnitTest &ut,
                    const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TETRA_10 element.
@@ -728,15 +731,15 @@ bool test_tetra_10(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 6;
-  const int size = 6;
-  int s0[size] = {0, 2, 1, 6, 5, 4};
-  int s1[size] = {0, 1, 3, 4, 8, 7};
-  int s2[size] = {1, 2, 3, 5, 9, 8};
-  int s3[size] = {2, 0, 3, 6, 7, 9};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
+  constexpr int size = 6;
+  array<int, size> s0 = {0, 2, 1, 6, 5, 4};
+  array<int, size> s1 = {0, 1, 3, 4, 8, 7};
+  array<int, size> s2 = {1, 2, 3, 5, 9, 8};
+  array<int, size> s3 = {2, 0, 3, 6, 7, 9};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -749,7 +752,7 @@ bool test_tetra_10(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_pyra_5(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PYRA_5 element.
@@ -768,18 +771,18 @@ bool test_pyra_5(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
   ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 3;
-  const int sizeq = 4;
-  int s0[sizeq] = {0, 3, 2, 1};
-  const int sizet = 3;
-  int s1[sizet] = {0, 1, 4};
-  int s2[sizet] = {1, 2, 4};
-  int s3[sizet] = {2, 3, 4};
-  int s4[sizet] = {3, 0, 4};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
+  constexpr int sizeq = 4;
+  array<int, sizeq> s0 = {0, 3, 2, 1};
+  constexpr int sizet = 3;
+  array<int, sizet> s1 = {0, 1, 4};
+  array<int, sizet> s2 = {1, 2, 4};
+  array<int, sizet> s3 = {2, 3, 4};
+  array<int, sizet> s4 = {3, 0, 4};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -792,7 +795,7 @@ bool test_pyra_5(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_pyra_14(rtt_dsxx::UnitTest &ut,
                   const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PYRA_14 element.
@@ -805,18 +808,18 @@ bool test_pyra_14(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_sides() == 5;
   ldum = ldum &&
          elem_def.get_side_type(0).get_type() == Element_Definition::QUAD_8;
-  const int sizeq = 8;
-  int s0[sizeq] = {0, 3, 2, 1, 8, 7, 6, 5};
-  const int sizet = 6;
-  int s1[sizet] = {0, 1, 4, 5, 10, 9};
-  int s2[sizet] = {1, 2, 4, 6, 11, 10};
-  int s3[sizet] = {2, 3, 4, 7, 12, 11};
-  int s4[sizet] = {3, 0, 4, 8, 9, 12};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
+  constexpr int sizeq = 8;
+  array<int, sizeq> s0 = {0, 3, 2, 1, 8, 7, 6, 5};
+  constexpr int sizet = 6;
+  array<int, sizet> s1 = {0, 1, 4, 5, 10, 9};
+  array<int, sizet> s2 = {1, 2, 4, 6, 11, 10};
+  array<int, sizet> s3 = {2, 3, 4, 7, 12, 11};
+  array<int, sizet> s4 = {3, 0, 4, 8, 9, 12};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
@@ -835,7 +838,7 @@ bool test_pyra_14(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_penta_6(rtt_dsxx::UnitTest &ut,
                   const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_6 element.
@@ -852,18 +855,18 @@ bool test_penta_6(rtt_dsxx::UnitTest &ut,
   for (int j = 3; j < 5; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::TRI_3;
-  const int sizeq = 4;
-  int s0[sizeq] = {0, 1, 4, 3};
-  int s1[sizeq] = {1, 2, 5, 4};
-  int s2[sizeq] = {2, 0, 3, 5};
-  const int sizet = 3;
-  int s3[sizet] = {0, 2, 1};
-  int s4[sizet] = {3, 4, 5};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
+  constexpr int sizeq = 4;
+  array<int, sizeq> s0 = {0, 1, 4, 3};
+  array<int, sizeq> s1 = {1, 2, 5, 4};
+  array<int, sizeq> s2 = {2, 0, 3, 5};
+  constexpr int sizet = 3;
+  array<int, sizet> s3 = {0, 2, 1};
+  array<int, sizet> s4 = {3, 4, 5};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -882,7 +885,7 @@ bool test_penta_6(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_penta_15(rtt_dsxx::UnitTest &ut,
                    const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_15 element.
@@ -899,18 +902,18 @@ bool test_penta_15(rtt_dsxx::UnitTest &ut,
   for (int j = 3; j < 5; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
-  const int sizeq = 8;
-  int s0[sizeq] = {0, 1, 4, 3, 6, 10, 12, 9};
-  int s1[sizeq] = {1, 2, 5, 4, 7, 11, 13, 10};
-  int s2[sizeq] = {2, 0, 3, 5, 8, 9, 14, 11};
-  const int sizet = 6;
-  int s3[sizet] = {0, 2, 1, 8, 7, 6};
-  int s4[sizet] = {3, 4, 5, 12, 13, 14};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
+  constexpr int sizeq = 8;
+  array<int, sizeq> s0 = {0, 1, 4, 3, 6, 10, 12, 9};
+  array<int, sizeq> s1 = {1, 2, 5, 4, 7, 11, 13, 10};
+  array<int, sizeq> s2 = {2, 0, 3, 5, 8, 9, 14, 11};
+  constexpr int sizet = 6;
+  array<int, sizet> s3 = {0, 2, 1, 8, 7, 6};
+  array<int, sizet> s4 = {3, 4, 5, 12, 13, 14};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -929,7 +932,7 @@ bool test_penta_15(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_penta_18(rtt_dsxx::UnitTest &ut,
                    const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_18 element.
@@ -946,18 +949,18 @@ bool test_penta_18(rtt_dsxx::UnitTest &ut,
   for (int j = 3; j < 5; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
-  const int sizeq = 9;
-  int s0[sizeq] = {0, 1, 4, 3, 6, 10, 12, 9, 15};
-  int s1[sizeq] = {1, 2, 5, 4, 7, 11, 13, 10, 16};
-  int s2[sizeq] = {2, 0, 3, 5, 8, 9, 14, 11, 17};
-  const int sizet = 6;
-  int s3[sizet] = {0, 2, 1, 8, 7, 6};
-  int s4[sizet] = {3, 4, 5, 12, 13, 14};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + sizeq);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + sizet);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + sizet);
+  constexpr int sizeq = 9;
+  array<int, sizeq> s0 = {0, 1, 4, 3, 6, 10, 12, 9, 15};
+  array<int, sizeq> s1 = {1, 2, 5, 4, 7, 11, 13, 10, 16};
+  array<int, sizeq> s2 = {2, 0, 3, 5, 8, 9, 14, 11, 17};
+  constexpr int sizet = 6;
+  array<int, sizet> s3 = {0, 2, 1, 8, 7, 6};
+  array<int, sizet> s4 = {3, 4, 5, 12, 13, 14};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
@@ -977,7 +980,7 @@ bool test_penta_18(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_hexa_8(rtt_dsxx::UnitTest &ut,
                  const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_8 element.
@@ -991,19 +994,19 @@ bool test_hexa_8(rtt_dsxx::UnitTest &ut,
   for (int j = 0; j < 6; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
-  const int size = 4;
-  int s0[size] = {0, 3, 2, 1};
-  int s1[size] = {0, 4, 7, 3};
-  int s2[size] = {2, 3, 7, 6};
-  int s3[size] = {1, 2, 6, 5};
-  int s4[size] = {0, 1, 5, 4};
-  int s5[size] = {4, 5, 6, 7};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
+  constexpr int size = 4;
+  array<int, size> s0 = {0, 3, 2, 1};
+  array<int, size> s1 = {0, 4, 7, 3};
+  array<int, size> s2 = {2, 3, 7, 6};
+  array<int, size> s3 = {1, 2, 6, 5};
+  array<int, size> s4 = {0, 1, 5, 4};
+  array<int, size> s5 = {4, 5, 6, 7};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
+  ldum = ldum && elem_def.get_side_nodes(5) == makeuv(s5);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -1023,7 +1026,7 @@ bool test_hexa_8(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_hexa_20(rtt_dsxx::UnitTest &ut,
                   const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_20 element.
@@ -1037,19 +1040,19 @@ bool test_hexa_20(rtt_dsxx::UnitTest &ut,
   for (int j = 0; j < 6; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
-  const int size = 8;
-  int s0[size] = {0, 3, 2, 1, 11, 10, 9, 8};
-  int s1[size] = {0, 4, 7, 3, 12, 19, 15, 11};
-  int s2[size] = {2, 3, 7, 6, 10, 15, 18, 14};
-  int s3[size] = {1, 2, 6, 5, 9, 14, 17, 13};
-  int s4[size] = {0, 1, 5, 4, 8, 13, 16, 12};
-  int s5[size] = {4, 5, 6, 7, 16, 17, 18, 19};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
+  constexpr int size = 8;
+  array<int, size> s0 = {0, 3, 2, 1, 11, 10, 9, 8};
+  array<int, size> s1 = {0, 4, 7, 3, 12, 19, 15, 11};
+  array<int, size> s2 = {2, 3, 7, 6, 10, 15, 18, 14};
+  array<int, size> s3 = {1, 2, 6, 5, 9, 14, 17, 13};
+  array<int, size> s4 = {0, 1, 5, 4, 8, 13, 16, 12};
+  array<int, size> s5 = {4, 5, 6, 7, 16, 17, 18, 19};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
+  ldum = ldum && elem_def.get_side_nodes(5) == makeuv(s5);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -1070,7 +1073,7 @@ bool test_hexa_20(rtt_dsxx::UnitTest &ut,
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool test_hexa_27(rtt_dsxx::UnitTest &ut,
                   const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_27 element.
@@ -1084,19 +1087,19 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
   for (int j = 0; j < 6; ++j)
     ldum = ldum &&
            elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
-  const int size = 9;
-  int s0[size] = {0, 3, 2, 1, 11, 10, 9, 8, 20};
-  int s1[size] = {0, 4, 7, 3, 12, 19, 15, 11, 21};
-  int s2[size] = {2, 3, 7, 6, 10, 15, 18, 14, 22};
-  int s3[size] = {1, 2, 6, 5, 9, 14, 17, 13, 23};
-  int s4[size] = {0, 1, 5, 4, 8, 13, 16, 12, 24};
-  int s5[size] = {4, 5, 6, 7, 16, 17, 18, 19, 25};
-  ldum = ldum && elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size);
-  ldum = ldum && elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size);
-  ldum = ldum && elem_def.get_side_nodes(2) == vector<unsigned>(s2, s2 + size);
-  ldum = ldum && elem_def.get_side_nodes(3) == vector<unsigned>(s3, s3 + size);
-  ldum = ldum && elem_def.get_side_nodes(4) == vector<unsigned>(s4, s4 + size);
-  ldum = ldum && elem_def.get_side_nodes(5) == vector<unsigned>(s5, s5 + size);
+  constexpr int size = 9;
+  array<int, size> s0 = {0, 3, 2, 1, 11, 10, 9, 8, 20};
+  array<int, size> s1 = {0, 4, 7, 3, 12, 19, 15, 11, 21};
+  array<int, size> s2 = {2, 3, 7, 6, 10, 15, 18, 14, 22};
+  array<int, size> s3 = {1, 2, 6, 5, 9, 14, 17, 13, 23};
+  array<int, size> s4 = {0, 1, 5, 4, 8, 13, 16, 12, 24};
+  array<int, size> s5 = {4, 5, 6, 7, 16, 17, 18, 19, 25};
+  ldum = ldum && elem_def.get_side_nodes(0) == makeuv(s0);
+  ldum = ldum && elem_def.get_side_nodes(1) == makeuv(s1);
+  ldum = ldum && elem_def.get_side_nodes(2) == makeuv(s2);
+  ldum = ldum && elem_def.get_side_nodes(3) == makeuv(s3);
+  ldum = ldum && elem_def.get_side_nodes(4) == makeuv(s4);
+  ldum = ldum && elem_def.get_side_nodes(5) == makeuv(s5);
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
@@ -1104,17 +1107,22 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 9;
   ldum = ldum && elem_def.get_number_of_face_nodes()[5] == 9;
+  FAIL_IF_NOT(ldum);
 
+#ifndef __clang_analyzer__
+  // clang-analyze sees the throw and warns that 'ldum=false' is 'deadcode'.
   try {
     elem_def.get_side_type(6);
     ldum = false;
   } catch (...) {
   }
+
   try {
     elem_def.get_side_nodes(6);
     ldum = false;
   } catch (...) {
   }
+#endif
 
   if (ldum) {
     ostringstream message;
@@ -1129,7 +1137,7 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
 }
 } // namespace rtt_mesh_element_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1138,6 +1146,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of TestElementDefinition.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

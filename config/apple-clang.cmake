@@ -1,9 +1,9 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/apple-clang.cmake
 # brief  Establish flags for Apple OSX
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 
@@ -48,6 +48,6 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/apple-clang.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

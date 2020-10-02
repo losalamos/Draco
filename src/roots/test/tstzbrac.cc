@@ -1,15 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   roots/test/tstzbrac.cc
  * \author Kent Budge
  * \date   Tue Aug 17 15:24:48 2004
  * \brief  Test the zbrac function template
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -20,13 +16,13 @@ using namespace std;
 using namespace rtt_roots;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 double foo(double x) { return log(x); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Functor class representation of log function for testing zbrent and zbrac.
 class Zbrac_Test_Function {
 public:
@@ -41,13 +37,13 @@ double cubic(double const x) {
          (x + 1) * x * (x - 1) / ((2 + 1) * 2 * (2 - 1));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstzbrac(UnitTest &ut) {
   double x1 = 0.1, x2 = 10.0;
 
   // Help out the compiler by defining function pointer signature.
-  typedef double (*fpdd)(double);
+  using fpdd = double (*)(double);
   fpdd log_fpdd = &foo;
 
   zbrac<fpdd>(log_fpdd, x1, x2);
@@ -88,13 +84,13 @@ void tstzbrac(UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
 
   ScalarUnitTest ut(argc, argv, release);
-  // This test includes a check for -NaN by design.  To avoid failure, do
-  // not run this test with fpe_trap enabled.
+  // This test includes a check for -NaN by design.  To avoid failure, do not run this test with
+  // fpe_trap enabled.
   rtt_dsxx::fpe_trap fpeTrap(true);
   fpeTrap.disable();
 
@@ -104,6 +100,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstzbrac.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

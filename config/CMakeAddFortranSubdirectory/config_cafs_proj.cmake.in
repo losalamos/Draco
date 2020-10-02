@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2014 April 23
@@ -6,19 +6,23 @@
 #        via CMakeAddFortranSubdirectory.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Run this file from the command line as:
 # cmake -DCMAKE_BUILD_TYPE=[Debug|Release] -P config_cafs_proj.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 set(ENV{PATH} "@CAFS_Fortran_COMPILER_PATH@\;$ENV{PATH}")
 set(CMAKE_COMMAND_LINE "@ARGS_CMAKE_COMMAND_LINE@")
 set(VERBOSE @ARGS_VERBOSE@)
 if( VERBOSE )
     message("
     execute_process(
-      COMMAND @CMAKE_COMMAND@ @GENERATOR_TYPE@
+      COMMAND @CMAKE_COMMAND@ --no-warn-unused-cli
+      @GENERATOR_TYPE@
+      -DCAFS_ENABLED:BOOL=ON
       -DCMAKE_Fortran_COMPILER:PATH=@CAFS_Fortran_COMPILER@
       -DBUILD_SHARED_LIBS=ON @CAFS_GNUtoMS@
+      -DCMAKE_INSTALL_PREFIX=@CMAKE_INSTALL_PREFIX@/${CMAKE_BUILD_TYPE}
+      -DCMAKE_MODULE_PATH=@CMAKE_MODULE_PATH@
       ${CMAKE_COMMAND_LINE}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       @source_dir@)
@@ -26,9 +30,13 @@ if( VERBOSE )
   list(APPEND CMAKE_COMMAND_LINE "-DCMAKE_VERBOSE_MAKEFILE=ON")
 endif()
 execute_process(
-  COMMAND "@CMAKE_COMMAND@" "@GENERATOR_TYPE@"
+  COMMAND "@CMAKE_COMMAND@" --no-warn-unused-cli
+  "@GENERATOR_TYPE@"
+  -DCAFS_ENABLED:BOOL=ON
   -DCMAKE_Fortran_COMPILER:PATH=@CAFS_Fortran_COMPILER@
   -DBUILD_SHARED_LIBS=ON @CAFS_GNUtoMS@
+  -DCMAKE_INSTALL_PREFIX=@CMAKE_INSTALL_PREFIX@/${CMAKE_BUILD_TYPE}
+  "-DCMAKE_MODULE_PATH=@CMAKE_MODULE_PATH@"
   ${CMAKE_COMMAND_LINE}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   "@source_dir@")

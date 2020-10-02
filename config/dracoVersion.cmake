@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/dracoVersion.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Ensure version is set and use config date as ver. patch value.
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 macro( set_ccs2_software_version PROJNAME )
 
@@ -84,6 +84,8 @@ macro( set_ccs2_software_version PROJNAME )
       "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
       )
   endif()
+  set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME}_VERSION_PATCH} CACHE STRING
+    "version info" FORCE )
 
   set( ${PROJNAME}_VERSION "${${PROJNAME}_VERSION_MAJOR}.${${PROJNAME}_VERSION_MINOR}"
     CACHE STRING "${PROJNAME} version information" FORCE)
@@ -102,6 +104,6 @@ macro( set_ccs2_software_version PROJNAME )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/dracoVersion.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

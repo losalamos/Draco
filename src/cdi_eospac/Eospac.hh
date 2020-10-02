@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/Eospac.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_eospac_Eospac_hh
 #define rtt_cdi_eospac_Eospac_hh
@@ -16,7 +16,7 @@
 #include <iostream>
 
 namespace rtt_cdi_eospac {
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Eospac
  *
@@ -54,9 +54,7 @@ namespace rtt_cdi_eospac {
  * Because of the way this object hooks into EOSPAC, we have chosen to implement
  * it as a Meyers singleton.  This ensures that the loaded EOS data remains
  * available until program termination.
- */
-
-/*!
+ *
  * \example cdi_eospac/test/tEospac.cc
  *
  * This unit test demonstrates the creation of a SesameTable object for
@@ -65,12 +63,7 @@ namespace rtt_cdi_eospac {
  * object is then queried for EoS data such as heat capacity, free electrons per
  * ion and a few other things.
  */
-
-// Todo:
-// --------------------
-// 1. Add STL like accessors.
-
-//============================================================================//
+//================================================================================================//
 
 class Eospac : public rtt_cdi::EoS {
 
@@ -159,16 +152,8 @@ public:
   // Constructors //
   // ------------ //
 
-  /*!
-   * \brief The constructor for Eospac.
-   *
-   * \sa The definition of rtt_cdi_eospac::SesameTables.
-   *
-   * \param[in] in_SesTabs A rtt_cdi_eospac::SesameTables object that defines
-   *           what data tables will be available for queries from the Eospac
-   *           object.
-   */
-  explicit Eospac(SesameTables const &in_SesTabs);
+  //! The constructor for Eospac.
+  explicit Eospac(SesameTables in_SesTabs);
 
   //! Create an Eospac by unpacking a vector<char> stream.
   explicit Eospac(std::vector<char> const &packed);
@@ -182,7 +167,7 @@ public:
    * destroyed.  We define the destructor in the implementation file to avoid
    * including the unnecessary header files.
    */
-  ~Eospac(void);
+  ~Eospac() override;
 
   // MANIPULATORS
 
@@ -207,7 +192,7 @@ public:
    * \return The specific electron internal energy in kJ/g.
    */
   double getSpecificElectronInternalEnergy(double temperature,
-                                           double density) const;
+                                           double density) const override;
 
   /*!
    * \brief Retrieve a set of specific electron internal energies that
@@ -218,9 +203,9 @@ public:
    * \param[in] vtemperature Temperature of the material in keV.
    * \return The specific electron internal energy in kJ/g.
    */
-  std::vector<double>
-  getSpecificElectronInternalEnergy(std::vector<double> const &vtemperature,
-                                    std::vector<double> const &vdensity) const;
+  std::vector<double> getSpecificElectronInternalEnergy(
+      std::vector<double> const &vtemperature,
+      std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve the electron based heat capacity for this material at the
@@ -230,7 +215,8 @@ public:
    * \param temperature Temperature of the material in keV.
    * \return The electron based heat capacity in kJ/g/keV.
    */
-  double getElectronHeatCapacity(double temperature, double density) const;
+  double getElectronHeatCapacity(double temperature,
+                                 double density) const override;
 
   /*!
    * \brief Retrieve a set of electron based heat capacities for this material
@@ -243,7 +229,7 @@ public:
    */
   std::vector<double>
   getElectronHeatCapacity(std::vector<double> const &vtemperature,
-                          std::vector<double> const &vdensity) const;
+                          std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve the specific ion internal energy for this material at the
@@ -253,7 +239,8 @@ public:
    * \param temperature Temperature of the material in keV.
    * \return The specific ion internal energy in kJ/g.
    */
-  double getSpecificIonInternalEnergy(double temperature, double density) const;
+  double getSpecificIonInternalEnergy(double temperature,
+                                      double density) const override;
 
   /*!
    * \brief Retrieve a set of specific ion internal energies for this material
@@ -264,9 +251,9 @@ public:
    * \param vtemperature Temperature of the material in keV.
    * \return A vector of specific ion internal energies in kJ/g.
    */
-  std::vector<double>
-  getSpecificIonInternalEnergy(std::vector<double> const &vtemperature,
-                               std::vector<double> const &vdensity) const;
+  std::vector<double> getSpecificIonInternalEnergy(
+      std::vector<double> const &vtemperature,
+      std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve the ion based heat capacity for this material at the
@@ -276,7 +263,7 @@ public:
    * \param temperature Temperature of the material in keV.
    * \return The ion based heat capacity in kJ/g/keV.
    */
-  double getIonHeatCapacity(double temperature, double density) const;
+  double getIonHeatCapacity(double temperature, double density) const override;
 
   /*!
    * \brief Retrieve a set of ion based heat capacities for this material that
@@ -288,7 +275,7 @@ public:
    */
   std::vector<double>
   getIonHeatCapacity(std::vector<double> const &vtemperature,
-                     std::vector<double> const &vdensity) const;
+                     std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve the number of free electrons per ion for this material at
@@ -298,7 +285,8 @@ public:
    * \param temperature Temperature of the material in keV.
    * \return The number of free electrons per ion.
    */
-  double getNumFreeElectronsPerIon(double temperature, double density) const;
+  double getNumFreeElectronsPerIon(double temperature,
+                                   double density) const override;
 
   /*!
    * \brief Retrieve a set of free electrons per ion averages for this material
@@ -311,7 +299,7 @@ public:
    */
   std::vector<double>
   getNumFreeElectronsPerIon(std::vector<double> const &vtemperature,
-                            std::vector<double> const &vdensity) const;
+                            std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve the electron based thermal conductivity for this material
@@ -322,7 +310,7 @@ public:
    * \return The electron based thermal conductivity in 1/s/cm.
    */
   double getElectronThermalConductivity(double temperature,
-                                        double density) const;
+                                        double density) const override;
 
   /*!
    * \brief Retrieve a set of electron based thermal conductivities for this
@@ -333,9 +321,9 @@ public:
    * \param vtemperature Temperature of the material in keV.
    * \return A vector of electron based thermal conductivities in 1/s/cm.
    */
-  std::vector<double>
-  getElectronThermalConductivity(std::vector<double> const &vtemperature,
-                                 std::vector<double> const &vdensity) const;
+  std::vector<double> getElectronThermalConductivity(
+      std::vector<double> const &vtemperature,
+      std::vector<double> const &vdensity) const override;
 
   /*!
    * \brief Retrieve an electron temperature based on the specific electron
@@ -350,7 +338,7 @@ public:
    */
   double getElectronTemperature(double density,
                                 double SpecificElectronInternalEnergy,
-                                double Tguess = 1.0) const;
+                                double Tguess = 1.0) const override;
 
   /*!
    * \brief Retrieve an ion temperature based on the specific ion internal
@@ -364,7 +352,7 @@ public:
    * \return temperature Temperature of the material in K.
    */
   double getIonTemperature(double density, double SpecificIonInternalEnergy,
-                           double Tguess = 1.0) const;
+                           double Tguess = 1.0) const override;
 
   /*!
    * \brief Interface for packing a derived EoS object.
@@ -373,7 +361,7 @@ public:
    * EoS constructor.  Thus, even though one can pack a EoS through a base
    * class pointer, the client must know the derived type when unpacking.
    */
-  std::vector<char> pack() const;
+  std::vector<char> pack() const override;
 
 private:
   // -------------- //
@@ -405,12 +393,9 @@ private:
    *        "SesTabs" and then calls the EOSPAC routine to load the required EoS
    *        Tables.
    */
-  void expandEosTable(void) const;
+  void expandEosTable() const;
 
-  /*!
-   * \brief Returns true if the EoS data associated with "returnType" has been
-   *        loaded.
-   */
+  //! Returns true if the EoS data associated with "returnType" has been loaded.
   bool typeFound(EOS_INTEGER returnType) const;
   unsigned tableIndex(EOS_INTEGER returnType) const;
 
@@ -419,10 +404,10 @@ private:
   //--------------------//
 
   //! Initialize list of available table info items
-  static std::vector<EOS_INTEGER> initializeInfoItems(void);
+  static std::vector<EOS_INTEGER> initializeInfoItems();
 
   //! Initialize descriptions of available table info items
-  static std::vector<std::string> initializeInfoItemDescriptions(void);
+  static std::vector<std::string> initializeInfoItemDescriptions();
 
   //! Converts a double to a length one vector.
   static inline std::vector<double> dbl_v1(double const dbl) {
@@ -449,6 +434,6 @@ private:
 
 #endif // rtt_cdi_eospac_Eospac_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_eospac/Eospac.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

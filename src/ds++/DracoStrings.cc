@@ -1,21 +1,21 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/DracoStrings.cc
  * \author Kelly G. Thompson <kgt@lanl.gov
  * \date   Wednesday, Aug 23, 2017, 12:48 pm
  * \brief  Encapsulates common string manipulations (implementation).
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC.  All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "DracoStrings.hh"
 #include "Assert.hh"
 #include <fstream>
 #include <iostream>
+#include <regex>
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Convert a string to all lower case
 std::string string_tolower(std::string const &string_in) {
   std::locale loc;
@@ -25,7 +25,7 @@ std::string string_tolower(std::string const &string_in) {
   return string_out.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Convert a string to all upper case
 std::string string_toupper(std::string const &string_in) {
   std::locale loc;
@@ -35,9 +35,9 @@ std::string string_toupper(std::string const &string_in) {
   return string_out.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Definitions for fully specialized template functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 template <> auto parse_number_impl<int32_t>(std::string const &str) -> int32_t {
   return std::stoi(str);
@@ -73,20 +73,17 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
   return std::stod(str);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Definitions for regular functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief trim whitespace (or other characters) from before and after main
- *        text.
+ * \brief trim whitespace (or other characters) from before and after main text.
  *
  * \param[in] str The string that will be processed
- * \param[in] whitespace A set of characters that will be removed.
- *              (default: " \t")
- * \return A new, probably shortened, string without unwanted leading/training
- *         characters.
+ * \param[in] whitespace A set of characters that will be removed.  (default: " \t")
+ * \return A new, probably shortened, string without unwanted leading/training characters.
  */
 std::string trim(std::string const &str, std::string const &whitespace) {
   auto const strBegin = str.find_first_not_of(whitespace);
@@ -97,7 +94,7 @@ std::string trim(std::string const &str, std::string const &whitespace) {
   return str.substr(strBegin, strRange);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Removes all specified characters from a string.
 std::string prune(std::string const &orig_str,
                   std::string const &chars_to_remove) {
@@ -107,7 +104,7 @@ std::string prune(std::string const &orig_str,
   return str;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Split a string into a vector<string> using a specified delimiter.
 std::vector<std::string> tokenize(std::string const &str,
                                   std::string const &delimiters,
@@ -138,7 +135,7 @@ std::vector<std::string> tokenize(std::string const &str,
   return retval;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Parse msg to provide a list of words and the number of occurrences of each.
 std::map<std::string, unsigned> get_word_count(std::ostringstream const &msg,
                                                bool verbose) {
@@ -186,11 +183,8 @@ std::map<std::string, unsigned> get_word_count(std::ostringstream const &msg,
   return word_list;
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Parse text file to provide a list of words and the number of
- *        occurrences of each.
- */
+//------------------------------------------------------------------------------------------------//
+//! Parse text file to provide a list of words and the number of occurrences of each.
 std::map<std::string, unsigned> get_word_count(std::string const &filename,
                                                bool verbose) {
   // open the file
@@ -212,8 +206,40 @@ std::map<std::string, unsigned> get_word_count(std::string const &filename,
   return get_word_count(data, verbose);
 }
 
+//------------------------------------------------------------------------------------------------//
+//! Remove control characters from string that might produce color, etc.
+std::string remove_color(std::string const &colored_string) {
+  std::regex color_regex("\033["
+                         "[[:digit:]]+[m]");
+  return std::regex_replace(colored_string, color_regex, "");
+}
+
+//------------------------------------------------------------------------------------------------//
+//! Extract version of the form M.m.p from a string.
+std::string extract_version(std::string const &string_in, size_t digits) {
+  Require(digits > 0);
+  // build up a regex that will be used for version extraction.
+  std::string regexString{"[A-Za-z/\\\\]*([[:digit:]]+[abehlpt]*)"};
+  for (size_t i = 1; i < digits; ++i)
+    regexString += "[.]([[:digit:]]+[abehlpt]*)";
+  regexString += "(.*)";
+  // instantiate the regex object and create variable for results.
+  std::regex VerNumRegex{regexString.c_str()};
+  std::smatch matchResults;
+  // Search
+  std::regex_match(string_in, matchResults, VerNumRegex);
+  // Build the resulting version string
+  std::string version;
+  if (matchResults.size() > 0) {
+    version += matchResults.str(1);
+    for (size_t i = 2; i <= digits; ++i)
+      version += "." + matchResults.str(i);
+  }
+  return version;
+}
+
 } // namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of DracoStrings.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

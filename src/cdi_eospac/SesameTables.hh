@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/SesameTables.hh
  * \author Kelly Thompson
@@ -7,7 +7,7 @@
  *         to Sesame table indexes).
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_eospac_SesameTables_hh
 #define rtt_cdi_eospac_SesameTables_hh
@@ -19,7 +19,7 @@
 
 namespace rtt_cdi_eospac {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class SesameTables
  *
@@ -38,7 +38,7 @@ namespace rtt_cdi_eospac {
  *
  * \sa cdi_eospac/test/tEospac.cc
  */
-//============================================================================//
+//================================================================================================//
 
 class SesameTables {
   // DATA
@@ -71,7 +71,7 @@ public:
   // CREATORS
 
   //! Default constructor
-  SesameTables(void)
+  SesameTables()
       : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
         matMap(), rtMap(), tableName(initializeTableNames(numReturnTypes)),
         tableDescription(
@@ -180,12 +180,10 @@ public:
 
   //! Return a list of table/material identifiers associated with this
   //! SesameTables object.
-  std::vector<unsigned> matList(void) const {
+  std::vector<unsigned> matList() const {
     std::vector<unsigned> mlist;
-    for (std::map<unsigned, std::vector<EOS_INTEGER>>::const_iterator it =
-             rtMap.begin();
-         it != rtMap.end(); ++it)
-      mlist.push_back((*it).first);
+    for (auto const &it : rtMap)
+      mlist.push_back(it.first);
     return mlist;
   }
 
@@ -206,6 +204,6 @@ public:
 
 #endif // rtt_cdi_eospac_SesameTables_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_eospac/SesameTables.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

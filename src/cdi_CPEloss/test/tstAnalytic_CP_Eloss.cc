@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/test/tstAnalytic_CP_Eloss.cc
  * \author Kendra P. Long
@@ -6,13 +6,14 @@
  * \brief  Analytic_CP_Eloss test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
+#include "cdi/CDI.hh"
 #include "cdi_CPEloss/Analytic_CP_Eloss.hh"
+#include "cdi_CPEloss/Analytic_Constant_Eloss_Model.hh"
 #include "cdi_CPEloss/Analytic_KP_Alpha_Eloss_Model.hh"
 #include "cdi_CPEloss/Analytic_Spitzer_Eloss_Model.hh"
 #include "cdi_CPEloss/Analytic_TR_Eloss_Model.hh"
-#include "cdi/CDI.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
@@ -23,9 +24,9 @@ using namespace std;
 using rtt_cdi::CDI;
 using rtt_cdi_cpeloss::Analytic_CP_Eloss;
 using rtt_cdi_cpeloss::Analytic_Eloss_Model;
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
 
@@ -300,7 +301,46 @@ void TR_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+void Constant_test(rtt_dsxx::UnitTest &ut) {
+
+  // Deuterium:
+  int32_t deuterium_zaid = 1002;
+  double deuterium_mass = 3.34358e-24;
+  rtt_cdi::CParticle target_in(deuterium_zaid, deuterium_mass);
+  // Alpha particle:
+  int32_t alpha_zaid = 2004;
+  double alpha_mass = 6.64424e-24;
+  rtt_cdi::CParticle projectile_in(alpha_zaid, alpha_mass);
+
+  std::shared_ptr<Analytic_Eloss_Model> zero_model_in(
+      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in,
+                                                         projectile_in, 0.));
+  std::shared_ptr<Analytic_Eloss_Model> one_model_in(
+      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in,
+                                                         projectile_in, 1.));
+
+  Analytic_CP_Eloss eloss_zero_mod(zero_model_in, target_in, projectile_in,
+                                   rtt_cdi::CPModelAngleCutoff::NONE);
+  Analytic_CP_Eloss eloss_one_mod(one_model_in, target_in, projectile_in,
+                                  rtt_cdi::CPModelAngleCutoff::NONE);
+
+  // Check that basic accessors return correct result:
+  // Analytic model should match that passed to constructor
+  FAIL_IF_NOT(
+      rtt_dsxx::soft_equiv(eloss_zero_mod.getEloss(1., 2., 3.), 0., 1.0e-3));
+
+  FAIL_IF_NOT(
+      rtt_dsxx::soft_equiv(eloss_one_mod.getEloss(1., 2., 3.), 1., 1.0e-3));
+
+  if (ut.numFails == 0)
+    PASSMSG("Constant CPEloss test passes.");
+  else
+    FAILMSG("Constant CPEloss test fails.");
+
+  return;
+}
+
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -308,10 +348,11 @@ int main(int argc, char *argv[]) {
     KP_alpha_test(ut);
     Spitzer_test(ut);
     TR_test(ut);
+    Constant_test(ut);
   }
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAnalytic_CP_Eloss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

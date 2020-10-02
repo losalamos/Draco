@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/ofpstream.cc
  * \author Kent G. Budge
  * \date   Mon Jun 25 11:36:43 MDT 2018
  * \brief  Define methods of class ofpstream
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ofpstream.hh"
 #include "C4_Functions.hh"
@@ -14,11 +13,10 @@
 namespace rtt_c4 {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Create an ofpstream directed to a specified file.
  *
- * Create an ofpstream that synchronizes output to the specified file by MPI
- * rank.
+ * Create an ofpstream that synchronizes output to the specified file by MPI rank.
  *
  * \param[in] filename Name of the file to which synchronized output is to be
  *               written.
@@ -32,12 +30,11 @@ ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Synchronously write all buffered data.
  *
- * Write all buffered data to the specified file by MPI rank. That is, all
- * buffered data for rank 0 is written, followed by all buffered data for rank
- * 1, and so on.
+ * Write all buffered data to the specified file by MPI rank. That is, all buffered data for rank 0
+ * is written, followed by all buffered data for rank 1, and so on.
  */
 void ofpstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
@@ -82,19 +79,17 @@ void ofpstream::mpibuf::send() {
   rtt_c4::global_barrier();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Add the specified character to the buffer.
  *
- * For simplicity, ofpstream is currently implemented by treating every
- * character write as an overflow which is intercepted and added to the internal
- * buffer. This is not actually that inefficient for this class, since it means
- * that when the stream using the buffer wants to insert data, it checks the
- * buffer's cursor pointer, always finds that it is null, and calls overflow
- * instead. These are not expensive operations. Should we see any evidence this
- * class is taking significant time, which should not happen for its intended
- * use (synchronizing diagnostic output), we can re-implement to let the stream
- * do explicitly buffered insertions without this change affecting any user code
- * -- this interface is all private.
+ * For simplicity, ofpstream is currently implemented by treating every character write as an
+ * overflow which is intercepted and added to the internal buffer. This is not actually that
+ * inefficient for this class, since it means that when the stream using the buffer wants to insert
+ * data, it checks the buffer's cursor pointer, always finds that it is null, and calls overflow
+ * instead. These are not expensive operations. Should we see any evidence this class is taking
+ * significant time, which should not happen for its intended use (synchronizing diagnostic output),
+ * we can re-implement to let the stream do explicitly buffered insertions without this change
+ * affecting any user code -- this interface is all private.
  *
  * \param[in] c Next character to add to the internal buffer.
  *
@@ -106,18 +101,17 @@ ofpstream::mpibuf::overflow(int_type c) {
   return c;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Shrink the buffer to fit the current data.
  *
- * This is included for completeness, and also to let a user who is really
- * concerned about the last byte of storage shrink the buffer of an ofpstream
- * that has done some large writes, and which he will be using again later, but
- * which he does not want tying up any memory in the meanwhile.
+ * This is included for completeness, and also to let a user who is really concerned about the last
+ * byte of storage shrink the buffer of an ofpstream that has done some large writes, and which he
+ * will be using again later, but which he does not want tying up any memory in the meanwhile.
  */
 void ofpstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ofpstream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Constant_Expression.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Definition of class Constant_Expression
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef parser_Constant_Expression_hh
 #define parser_Constant_Expression_hh
@@ -14,10 +14,10 @@
 #include "utilities.hh"
 
 namespace rtt_parser {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void write_c(Unit const &units, ostream &out);
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Constant_Expression
  * \brief Represents a constant.
@@ -25,11 +25,8 @@ void write_c(Unit const &units, ostream &out);
  * This is the only concrete type of Expression that is currently available to
  * clients. The need has never arisen to make any other concrete type of
  * Expression directly available.
- *
- * If you need access to another type of concrete Expression, contact the
- * Capsaicin team.
  */
-//============================================================================//
+//================================================================================================//
 class Constant_Expression : public Expression {
 public:
   // CREATORS
@@ -57,17 +54,15 @@ public:
 
   // ACCESSORS
 
-  /*virtual*/ bool is_constant() const override { return true; }
+  bool is_constant() const override { return true; }
 
 private:
   // IMPLEMENTATION
 
-  /*virtual*/ double evaluate_(double const *const) const override {
-    return units().conv;
-  }
+  double evaluate_(double const *const) const override { return units().conv; }
 
-  virtual void write_(Precedence const, vector<string> const &,
-                      ostream &out) const override {
+  void write_(Precedence const, vector<string> const &,
+              ostream &out) const override {
     if (is_compatible(units(), dimensionless)) {
       out << units().conv;
     } else {
@@ -82,6 +77,6 @@ private:
 
 #endif // parser_Constant_Expression_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of parser/Constant_Expression.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

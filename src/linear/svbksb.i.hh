@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/svbksb.i.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Solve a linear system from its singular value decomposition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_svbksb_i_hh
 #define linear_svbksb_i_hh
@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace rtt_linear {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Solve a linear system given its singular value decomposition.
  *
@@ -50,7 +50,7 @@ namespace rtt_linear {
  * \post \c x.size()==n
  * \post \c x satisfies \f$UWVx=b\f$
  */
-template <class RandomContainer>
+template <typename RandomContainer>
 void svbksb(const RandomContainer &u, const RandomContainer &w,
             const RandomContainer &v, const unsigned m, const unsigned n,
             const RandomContainer &b, RandomContainer &x) {
@@ -59,7 +59,7 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
   Require(b.size() == m);
   Require(v.size() == n * n);
 
-  typedef typename RandomContainer::value_type value_type;
+  using value_type = typename RandomContainer::value_type;
   // minimum representable value
   double const mrv = std::numeric_limits<value_type>::min();
   std::vector<value_type> tmp(n);
@@ -97,6 +97,6 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
 
 #endif // linear_svbksb_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of linear/svbksb.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

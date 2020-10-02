@@ -1,15 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   roots/quadratic.hh
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Solve a quadratic equation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef roots_quadratic_hh
 #define roots_quadratic_hh
@@ -19,7 +15,7 @@
 
 namespace rtt_roots {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Solve a quadratic equation.
  *
  * \arg \a Field A real field type, such as float or double.
@@ -35,13 +31,12 @@ namespace rtt_roots {
  * \param[out] r2
  * Second root
  *
- * \note The roots are not returned in any particular order.  The client must
- * decide which root to use for a particular application.
+ * \note The roots are not returned in any particular order.  The client must decide which root to
+ * use for a particular application.
  */
 
 template <class Field>
-void quadratic(Field const &a, Field const &b, Field const &c, Field &r1,
-               Field &r2) {
+void quadratic(Field const &a, Field const &b, Field const &c, Field &r1, Field &r2) {
   using namespace std;
 
   Field det = sqrt(b * b - 4. * a * c);
@@ -56,6 +51,6 @@ void quadratic(Field const &a, Field const &b, Field const &c, Field &r1,
 
 #endif // roots_quadratic_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of roots/quadratic.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

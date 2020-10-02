@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/CPEloss.hh
  * \author Kendra Long
@@ -6,7 +6,7 @@
  * \brief  CPEloss class header file (an abstract class)
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPEloss_hh
 #define rtt_cdi_CPEloss_hh
@@ -18,19 +18,18 @@
 
 namespace rtt_cdi {
 
-//========================================================================
+//================================================================================================//
 /*!
  * \class CPEloss
  *
  * \brief This is a pure virtual class that defines a standard interface for
- * all derived CPEloss objects.
+ *        all derived CPEloss objects.
  *
  * Any derived CPEloss object must provide as a minumum the functionality
  * outlined in this routine.  This functionality includes access to the data
  * grid and the ability to return calculated eloss values.
- *
  */
-//========================================================================
+//================================================================================================//
 
 class CPEloss {
 public:
@@ -45,10 +44,10 @@ public:
   /*!
    * \brief Default CPEloss() destructor.
    *
-   * This is required to correctly release memory when any
-   * object derived from CPEloss is destroyed.
+   * This is required to correctly release memory when any object derived from
+   * CPEloss is destroyed.
    */
-  virtual ~CPEloss(){/*empty*/};
+  virtual ~CPEloss() = default;
 
   // --------- //
   // Accessors //
@@ -153,6 +152,6 @@ protected:
 
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi/CPEloss.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

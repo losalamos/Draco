@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressFile.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Ipcress file test
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi_ipcress/IpcressFile.hh"
@@ -17,9 +17,9 @@ using namespace std;
 
 using rtt_cdi_ipcress::IpcressFile;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 //! Tests the IpcressFile constructor and access routines.
 void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
@@ -92,8 +92,8 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
     size_t const matid(10001);
     vector<string> fieldNames = spGF->listDataFieldNames(matid);
     cout << "\nMaterial 0 (10001) provides the following fields:\n";
-    for (size_t i = 0; i < fieldNames.size(); ++i)
-      cout << "   " << fieldNames[i] << "\n";
+    for (auto &fieldName : fieldNames)
+      cout << "   " << fieldName << "\n";
     cout << endl;
 
     if (fieldNames[0] == string("tgrid"))
@@ -117,7 +117,7 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -126,6 +126,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tIpcressFile.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

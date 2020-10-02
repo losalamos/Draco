@@ -1,13 +1,12 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/btridag.i.hh
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
  * \brief  Implementation of block tridiagonal solver
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
+ *         All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_btridag_i_hh
 #define linear_btridag_i_hh
@@ -18,7 +17,7 @@
 
 namespace rtt_linear {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Solve a block tridiagonal system of linear equations.
  *
@@ -46,8 +45,7 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
   Require(u.size() == n * m);
 
   using namespace rtt_dsxx;
-
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   if (n == 0) {
     return;
@@ -104,6 +102,6 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
 
 #endif // linear_btridag_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of btridag.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class File_Token_Stream.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_File_Token_Stream_HH
 #define rtt_File_Token_Stream_HH
@@ -18,15 +18,15 @@ using std::ifstream;
 using std::set;
 using std::string;
 
-//-------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief File-based token stream
  *
- * File_Token_Stream represents a text token stream that derives its text
- * stream from a file in the file system.  It reports errors to the standard
- * console error stream \c cerr.
+ * File_Token_Stream represents a text token stream that derives its text stream
+ * from a file in the file system.  It reports errors to the standard console
+ * error stream \c cerr.
  */
-class DLL_PUBLIC_parser File_Token_Stream : public Text_Token_Stream {
+class File_Token_Stream : public Text_Token_Stream {
 public:
   // CREATORS
 
@@ -45,25 +45,25 @@ public:
   //! Attach the File_Token_Stream to a file.
   void open(string const &filename);
 
-  virtual void rewind();
+  void rewind() override;
 
-  virtual void report(Token const &token, string const &message);
+  void report(Token const &token, string const &message) override;
 
-  virtual void report(string const &message);
+  void report(string const &message) override;
 
-  virtual void comment(std::string const &message);
+  void comment(std::string const &message) override;
 
 protected:
   // IMPLEMENTATION
 
-  virtual string location_() const;
+  string location_() const override;
 
-  virtual void fill_character_buffer_();
-  virtual bool error_() const;
-  virtual bool end_() const;
+  void fill_character_buffer_() override;
+  bool error_() const override;
+  bool end_() const override;
 
-  virtual void push_include(std::string &file_name);
-  virtual void pop_include();
+  void push_include(std::string &file_name) override;
+  void pop_include() override;
 
 private:
   struct letter {
@@ -99,6 +99,6 @@ private:
 
 #endif // rtt_File_Token_Stream_HH
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of File_Token_Stream.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,10 +1,9 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   UnitSystem.cc
  *  \author Kelly Thompson
  *  \date   Thu Oct 24 15:10:32 2003
- *  \note   Copyright (C) 2003-2020 Triad National Security, LLC.
- *          All rights reserved. */
-//----------------------------------------------------------------------------//
+ *  \note   Copyright (C) 2003-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "UnitSystem.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -36,25 +35,11 @@ bool UnitSystem::validUnits() const {
   return true;
 } // end validUnits()
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Return a new UnitSystem object whose data has the item-by-item ratio
- *        of two UnitSystem objects.
- */
-// UnitSystem operator/( UnitSystem const & op1, UnitSystem const & op2 )
-// {
-//     return UnitSystem( op1.lengthConversion      / op2.lengthConversion,
-// 		  op1.massConversion        / op2.massConversion,
-// 		  op1.timeConversion        / op2.timeConversion,
-// 		  op1.temperatureConversion / op2.temperatureConversion );
-// }
-
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Return true if op1 and op2 are identical.
  *
- * \return true if conversion data members are the same between op1 and
- *         op2. Otherwise return false.
+ * \return true if conversion data members are the same between op1 and op2. Otherwise return false.
  *
  * For example:
  * \verbatim
@@ -66,21 +51,16 @@ bool UnitSystem::validUnits() const {
  * \endverbatim
  */
 bool operator==(UnitSystem const &op1, UnitSystem const &op2) {
-  return rtt_dsxx::soft_equiv(op1.L(), op2.L()) &&
-         rtt_dsxx::soft_equiv(op1.M(), op2.M()) &&
-         rtt_dsxx::soft_equiv(op1.t(), op2.t()) &&
-         rtt_dsxx::soft_equiv(op1.T(), op2.T()) &&
-         rtt_dsxx::soft_equiv(op1.I(), op2.I()) &&
-         rtt_dsxx::soft_equiv(op1.A(), op2.A()) &&
+  return rtt_dsxx::soft_equiv(op1.L(), op2.L()) && rtt_dsxx::soft_equiv(op1.M(), op2.M()) &&
+         rtt_dsxx::soft_equiv(op1.t(), op2.t()) && rtt_dsxx::soft_equiv(op1.T(), op2.T()) &&
+         rtt_dsxx::soft_equiv(op1.I(), op2.I()) && rtt_dsxx::soft_equiv(op1.A(), op2.A()) &&
          rtt_dsxx::soft_equiv(op1.Q(), op2.Q());
 }
 
-bool operator!=(UnitSystem const &op1, UnitSystem const &op2) {
-  return !(op1 == op2);
-}
+bool operator!=(UnitSystem const &op1, UnitSystem const &op2) { return !(op1 == op2); }
 
 } // end namespace rtt_units
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of UnitSystem.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

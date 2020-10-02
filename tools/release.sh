@@ -36,15 +36,17 @@
 
 # switch to group 'ccsrad' or dacodes
 install_group=$USER
-build_group=$USER
-if [[   `groups | grep -c dacodes` -gt 0 ]]; then install_group=dacodes;
-elif [[ `groups | grep -c ccsrad`  -gt 0 ]]; then install_group=ccsrad; fi
-if [[ $(id -gn) != $install_group ]]; then exec sg $install_group "$0 $*"; fi
+if [[   $(groups | grep -c dacodes) -gt 0 ]]; then install_group=dacodes;
+elif [[ $(groups | grep -c ccsrad)  -gt 0 ]]; then install_group=ccsrad; fi
+if [[ $(id -gn) != "$install_group" ]]; then exec sg $install_group "$0 $*"; fi
 umask 0007       # initially no world or group access
 set -m           # Enable job control
 shopt -s extglob # Allow variable as case condition
 install_permissions="g+rwX,o-rwX"
+export install_permissions
+# shellcheck disable=SC2034
 build_permisssions="g-rwX,o-rwX"
+export build_permissions
 
 #----------------------------------------------------------------------#
 # Per release settings go here (edits go here)
@@ -60,12 +62,15 @@ build_permisssions="g-rwX,o-rwX"
 ## Generic setup (do not edit)
 ##---------------------------------------------------------------------------##
 
-draco_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-draco_script_dir=`echo $draco_script_dir | awk '{ print $1 }'`
-export draco_script_dir=`readlink -f $draco_script_dir`
-if [[ -f $draco_script_dir/common.sh ]]; then
+#draco_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#draco_script_dir=$(echo "$draco_script_dir" | awk '{ print $1 }')
+#draco_script_dir=$(readlink -f "$draco_script_dir")
+draco_script_dir="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+export draco_script_dir
+if [[ -f "$draco_script_dir/common.sh" ]]; then
   echo "source $draco_script_dir/common.sh"
-  source $draco_script_dir/common.sh
+  # shellcheck source=/dev/null
+  source "$draco_script_dir/common.sh"
 else
   echo " "
   echo "FATAL ERROR: Unable to locate Draco's bash functions: "
@@ -74,26 +79,36 @@ else
   exit 1
 fi
 
-export draco_source_prefix=`readlink -f $draco_script_dir/../..`
-export ddir=`echo $draco_source_prefix | sed -e 's%.*/%%'`
+draco_source_prefix=$(readlink -f "$draco_script_dir/../..")
+# shellcheck disable=SC2001
+ddir=$(echo "$draco_source_prefix" | sed -e 's%.*/%%')
+export draco_source_prefix ddir
 
 # If package is set, use those values, otherwise, setup stuff for draco.
 if ! [[ $package ]]; then
   export source_prefix=$draco_source_prefix
   export script_dir=$draco_script_dir
   export pdir=$ddir
-  export package=`echo $pdir | sed -e 's/-.*//'`
-  if [[ -f $draco_script_dir/draco-cmake-opts.sh ]]; then
+
+  # shellcheck disable=SC2001
+  package=$(echo "$pdir" | sed -e 's/-.*//')
+  export package
+  if [[ -f "$draco_script_dir/draco-cmake-opts.sh" ]]; then
     echo "source $draco_script_dir/draco-cmake-opts.sh"
-    source $draco_script_dir/draco-cmake-opts.sh
+    # shellcheck source=/dev/null
+    source "$draco_script_dir/draco-cmake-opts.sh"
   else
     die "Unable to find environment file draco-cmake-opts.sh"
   fi
   # CMake options that will be included in the configuration step
-  export CONFIG_BASE+=" -DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+
+  # shellcheck disable=SC2001
+  dvp=$(echo "$ddir" | sed -e 's/.*_//')
+  CONFIG_BASE+=" -DDraco_VERSION_PATCH=$dvp"
+  export CONFIG_BASE
 fi
 
-scratchdir=`selectscratchdir`
+scratchdir=$(selectscratchdir)
 
 # hw_threads=`lscpu | grep CPU | head -n 1 | awk '{ print $2 }'`
 # hw_threads_per_core=`lscpu | grep Thread | awk '{ print $4 }'`
@@ -101,10 +116,11 @@ scratchdir=`selectscratchdir`
 # build_pe=`npes_build`
 # test_pe=`npes_test`
 
-machfam=`machineFamily`
-if [[ -f $draco_script_dir/${machfam}-env.sh ]]; then
+machfam=$(machineFamily)
+if [[ -f "$draco_script_dir/${machfam}-env.sh" ]]; then
   echo "source ${draco_script_dir}/${machfam}-env.sh"
-  source $draco_script_dir/${machfam}-env.sh
+  # shellcheck source=/dev/null
+  source "$draco_script_dir/${machfam}-env.sh"
 else
   die "Unable to find environment file ${machfam}-env.sh/"
 fi
@@ -140,7 +156,8 @@ echo " "
 ##---------------------------------------------------------------------------##
 
 jobids=""
-echo -e "\nThe following environments will be processed: $environments\n"
+export jobids
+echo -e "\nThe following environments will be processed: ${environments:-none}\n"
 
 for env in $environments; do
 
@@ -150,12 +167,12 @@ for env in $environments; do
   echo "======================================="
   ${env}
 
-  export buildflavor=`flavor`
+  buildflavor=$(flavor)
+  export buildflavor
   # e.g.: buildflavor=snow-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
-
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
 
@@ -165,15 +182,16 @@ for env in $environments; do
     echo -e "\nExtra environment setup:\n"
 
     # callback to append extra data to the cmake options.
-    if [[ `fn_exists append_config_base` -gt 0 ]]; then
-      extra=`append_config_base`
+    if [[ $(fn_exists append_config_base) -gt 0 ]]; then
+      extra=$(append_config_base)
       echo "  - CONFIG_EXTRA += ${extra}"
       export CONFIG_EXTRA="$extra $CONFIG_BASE"
     else
       export CONFIG_EXTRA="$CONFIG_BASE"
     fi
 
-    source ${draco_script_dir}/${machfam}-release.sh
+    # shellcheck source=/dev/null
+    source "${draco_script_dir}/${machfam}-release.sh"
 
   done
 done

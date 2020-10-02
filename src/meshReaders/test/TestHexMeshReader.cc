@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   meshReaders/test/TestHexMeshReader.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Hex Mesh Reader test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "TestHexMeshReader.hh"
 #include "ds++/Release.hh"
@@ -17,9 +17,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void runTest(UnitTest &ut) {
   using rtt_mesh_element::Element_Definition;
@@ -84,7 +84,7 @@ void runTest(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 namespace rtt_meshReaders_test {
 
 bool check_mesh(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
@@ -316,7 +316,7 @@ bool check_invariant(UnitTest &ut,
 bool check_element_sets(UnitTest &ut,
                         const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                         const std::string &testid) {
-  typedef std::map<std::string, std::set<unsigned>> mt;
+  using mt = std::map<std::string, std::set<unsigned>>;
   bool pass_es = true;
   const mt elmsets = mesh.get_element_sets();
   if (testid == "slab") {
@@ -369,7 +369,7 @@ bool check_element_types(UnitTest &ut,
                          const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                          const std::string &testid) {
   // Check Element Types.
-  typedef rtt_mesh_element::Element_Definition et;
+  using et = rtt_mesh_element::Element_Definition;
   bool pass_et = true;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> etypes =
       mesh.get_element_types();
@@ -406,7 +406,7 @@ bool check_unique_element_types(UnitTest &ut,
                                 const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                                 const std::string &testid) {
   // Check Unique Element Types.
-  typedef rtt_mesh_element::Element_Definition et;
+  using et = rtt_mesh_element::Element_Definition;
   bool pass_et = true;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> etypes =
       mesh.get_unique_element_types();
@@ -441,13 +441,12 @@ bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets,
                const std::string &name, const unsigned &begin,
                const unsigned &end) {
   bool pass = true;
-  typedef std::map<std::string, std::set<unsigned>> mt;
-  mt::const_iterator iter = elmsets.find(name);
+  auto const iter = elmsets.find(name);
   if (iter != elmsets.end()) {
     const std::set<unsigned> &elem_subset = (*iter).second;
     if (elem_subset.size() == static_cast<size_t>(end - begin)) {
       for (unsigned i = begin; i < end; ++i) {
-        std::set<unsigned>::const_iterator siter = elem_subset.find(i);
+        auto const siter = elem_subset.find(i);
         pass = pass && (siter != elem_subset.end());
       }
     } else
@@ -458,7 +457,7 @@ bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets,
 }
 } // namespace rtt_meshReaders_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -467,6 +466,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of TestHexMeshReader.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

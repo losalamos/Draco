@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Tabular_CP_Eloss.hh
  * \author Ben R. Ryan
@@ -6,16 +6,16 @@
  * \brief  Tabular_CP_Eloss class definition.
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef cdi_CPEloss_Tabular_CP_Eloss_hh
 #define cdi_CPEloss_Tabular_CP_Eloss_hh
 
-#include "experimental/mdspan"
 #include "cdi/CPCommon.hh"
 #include "cdi/CPEloss.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
+#include "experimental/mdspan"
 #include "units/PhysicalConstexprs.hh"
 #include <cmath>
 #include <fstream>
@@ -25,24 +25,23 @@ namespace rtt_cdi_cpeloss {
 
 namespace stdex = std::experimental;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Tabular_CP_Eloss
  *
- * \brief Derived rtt_cdi::CPEloss class for tabular eloss.
- *        This class implements the interface found in cdi/CPEloss.hh for
- *        the case where CP energy loss data is in tabular form, stored
- *        in a file.
+ * \brief Derived rtt_cdi::CPEloss class for tabular eloss.  This class
+ *        implements the interface found in cdi/CPEloss.hh for the case where CP
+ *        energy loss data is in tabular form, stored in a file.
  */
-//============================================================================//
+//================================================================================================//
 
 class Tabular_CP_Eloss : public rtt_cdi::CPEloss {
 public:
-  typedef std::vector<double> sf_double;
-  typedef stdex::extents<stdex::dynamic_extent,
-                         std::experimental::dynamic_extent,
-                         std::experimental::dynamic_extent>
-      dynamic_extents_3;
+  using sf_double = std::vector<double>;
+  using dynamic_extents_3 =
+      typename stdex::extents<stdex::dynamic_extent,
+                              std::experimental::dynamic_extent,
+                              std::experimental::dynamic_extent>;
 
 private:
   const std::string filename; //!< Path to tabulated stopping power data file
@@ -85,7 +84,7 @@ private:
 
 public:
   // Constructor
-  Tabular_CP_Eloss(const std::string &filename_in, rtt_cdi::CParticle target_in,
+  Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle target_in,
                    rtt_cdi::CParticle projectile_in,
                    rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in);
 
@@ -93,37 +92,37 @@ public:
 
   //! Get a stopping power.
   double getEloss(const double temperature, const double density,
-                  const double v0) const;
+                  const double v0) const override;
 
   //! Query to see if data is in tabular or functional form (true).
   static constexpr bool is_data_in_tabular_form() { return true; }
 
   //! Get the name of the associated data file.
-  inline std::string getDataFilename() const { return filename; }
+  inline std::string getDataFilename() const override { return filename; }
 
   //! Get the material temperature grid.
-  sf_double getTemperatureGrid() const { return temperatures; }
+  sf_double getTemperatureGrid() const override { return temperatures; }
 
   //! Get the material density grid.
-  sf_double getDensityGrid() const { return densities; }
+  sf_double getDensityGrid() const override { return densities; }
 
   //! Get the projectile energy grid.
-  sf_double getEnergyGrid() const { return energies; }
+  sf_double getEnergyGrid() const override { return energies; }
 
   //! Get the number of material temperature grid points.
-  size_t getNumTemperatures() const { return n_temperature; }
+  size_t getNumTemperatures() const override { return n_temperature; }
 
   //! Get the number of material density grid points.
-  size_t getNumDensities() const { return n_density; }
+  size_t getNumDensities() const override { return n_density; }
 
   //! Get the number of projectile energy grid points.
-  size_t getNumEnergies() const { return n_energy; }
+  size_t getNumEnergies() const override { return n_energy; }
 };
 
 } // namespace rtt_cdi_cpeloss
 
 #endif // cdi_CPEloss_Tabular_CP_Eloss_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Tabular_CP_Eloss.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

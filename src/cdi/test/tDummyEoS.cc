@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi/test/tDummyEoS.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  EoS class test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
 #include "cdi/EoS.hh"
@@ -21,9 +21,9 @@ using namespace std;
 using rtt_cdi::EoS;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_EoS(rtt_dsxx::UnitTest &ut) {
   // --------------------- //
@@ -34,7 +34,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<EoS> spEoS;
 
   // The actual instatniate is specific (dummyEoS).
-  if ((spEoS.reset(new rtt_cdi_test::DummyEoS())), spEoS) {
+  if ((spEoS = std::make_shared<rtt_cdi_test::DummyEoS>()), spEoS) {
     // If we get here then the object was successfully instantiated.
     PASSMSG("Smart Pointer to new EoS object created.");
   } else {
@@ -64,8 +64,8 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  // try using a vectors of temps. and densities
-  // vtemperature.size() == vdensity.size()
+  // try using a vectors of temps. and densities vtemperature.size() ==
+  // vdensity.size()
 
   std::vector<double> vtemperature(3);
   vtemperature[0] = 5000.0; // Kelvin
@@ -99,7 +99,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -108,6 +108,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tDummyEoS.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

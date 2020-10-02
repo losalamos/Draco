@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_MPI.cc
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/config.h"
 #include <vector>
@@ -20,28 +19,28 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // MPI COMMUNICATOR
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 MPI_Comm communicator = MPI_COMM_WORLD;
 bool initialized(false);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Any source rank
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 const int any_source = MPI_ANY_SOURCE;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Null source/destination rank
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 const int proc_null = MPI_PROC_NULL;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // SETUP FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int initialize(int &argc, char **&argv, int required) {
   int provided;
@@ -55,23 +54,23 @@ int initialize(int &argc, char **&argv, int required) {
   return provided;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void finalize() {
-  // If Libquo is active, it must be torn-down before MPI_Finalize is called.
-  // Otherwise, this call is a no-op.
+  // If Libquo is active, it must be torn-down before MPI_Finalize is called.  Otherwise, this call
+  // is a no-op.
   QuoWrapper::quo_free();
   MPI_Finalize();
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void type_free(C4_Datatype &old_type) { MPI_Type_free(&old_type); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // QUERY FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int node() {
   int node = 1;
@@ -86,7 +85,7 @@ uint32_t rank() {
   return static_cast<uint32_t>(rank);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int nodes() {
   int nodes = 0;
@@ -101,25 +100,24 @@ uint32_t nranks() {
   return static_cast<uint32_t>(nranks);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void global_barrier() {
   MPI_Barrier(communicator);
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TIMING FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 // overloaded function (no arguments)
 double wall_clock_time() { return MPI_Wtime(); }
 // overloaded function (provide POSIX timer information).
 double wall_clock_time(DRACO_TIME_TYPE &now) {
-// obtain POSIX timer information and return it to the user via the reference
-// value argument "now".
+// obtain POSIX timer information and return it to the user via the reference value argument "now".
 #ifdef WIN32
   now = std::chrono::high_resolution_clock::now();
 #else
@@ -129,15 +127,15 @@ double wall_clock_time(DRACO_TIME_TYPE &now) {
   return MPI_Wtime();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double wall_clock_resolution() { return MPI_Wtick(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // PROBE/WAIT FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 bool probe(int source, int tag, int &message_size) {
-  // TODO: Change message_size to C4_Status to allow source = any_source
+  //! \todo Change message_size to C4_Status to allow source = any_source
   //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 
@@ -155,9 +153,9 @@ bool probe(int source, int tag, int &message_size) {
   return true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void blocking_probe(int source, int tag, int &message_size) {
-  // TODO: Change message_size to C4_Status to allow source = any_source
+  //! \todo Change message_size to C4_Status to allow source = any_source
   //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 
@@ -166,8 +164,8 @@ void blocking_probe(int source, int tag, int &message_size) {
   MPI_Get_count(&status, MPI_CHAR, &message_size);
 }
 
-//----------------------------------------------------------------------------//
-void wait_all(unsigned count, C4_Req *requests) {
+//------------------------------------------------------------------------------------------------//
+void wait_all(const unsigned count, C4_Req *const requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)
@@ -186,17 +184,48 @@ void wait_all(unsigned count, C4_Req *requests) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+std::vector<int> wait_all_with_source(const unsigned count,
+                                      C4_Req *const requests) {
+
+  // Nothing to do if count is zero.
+  if (count == 0)
+    return std::vector<int>();
+
+  // Return value -- rank IDs for all message sources.
+  std::vector<int> msg_sources(count);
+
+  std::vector<MPI_Request> array_of_requests(count);
+  // This is needed to obtain the source rank for each message:
+  std::vector<MPI_Status> array_of_statuses(count);
+  for (unsigned i = 0; i < count; ++i) {
+    if (requests[i].inuse())
+      array_of_requests[i] = requests[i].r();
+    else
+      array_of_requests[i] = MPI_REQUEST_NULL;
+  }
+  Remember(int check =)
+      MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
+  Check(check == MPI_SUCCESS);
+
+  for (unsigned p = 0; p < count; p++) {
+    msg_sources[p] = array_of_statuses[p].MPI_SOURCE;
+  }
+
+  return msg_sources;
+}
+
+//------------------------------------------------------------------------------------------------//
 // ABORT
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int abort(int error) {
   int rerror = MPI_Abort(communicator, error);
   return rerror;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helpers
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool isScalar() { return !initialized; }
 bool isMpiInit() { return initialized; }
 
@@ -210,6 +239,6 @@ void setMpiInit() {
 
 #endif // C4_MPI
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of C4_MPI.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

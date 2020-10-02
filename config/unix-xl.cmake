@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/unix-xl.cmake
 # author Gabriel Rockefeller, Kelly Thompson <kgt@lanl.gov>
 # date   2012 Nov 1
 # brief  Establish flags for Linux64 - IBM XL C++
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Ref:
 # https://www.ibm.com/support/knowledgecenter/en/SSXVZZ_16.1.1/com.ibm.xlcpp1611.lelinux.doc/compiler_ref/rucmpopt.html
@@ -40,29 +40,31 @@ if( NOT CXX_FLAGS_INITIALIZED )
           xlc_version ${module} )
         string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1.\\2.\\3"
           xlc_version_3 ${xlc_version} )
-#      Only cuda-10.1 is currently supported
       elseif( ${module} MATCHES "^cuda" )
-        string( REGEX REPLACE
-          "[^0-9]*([0-9]+).([0-9]+)" "\\1.\\2"
-          cuda_version ${module} )
-        if( NOT ${cuda_version} STREQUAL "10.1" )
-          message( FATAL_ERROR "Only cuda/10.1 is currently supported."
-            " Found cuda/${cuda_version} in your environment. Replace your cuda"
-            " module with cuda/10.1 or unload the cuda module.")
+        if( NOT DEFINED cuda_version )
+          string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+)" "\\1.\\2"
+            cuda_version ${module} )
         endif()
       endif()
     endforeach()
     # Only redhat 7.7 is currently supported
-    # file( READ /etc/redhat-release rhr )
-    #string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).*" "\\1.\\2"
-    #   redhat_version  ${rhr} )
-    set( config_file "/projects/opt/ppc64le/ibm/xlc-${xlc_version}/xlC/${xlc_version_3}/etc/xlc.cfg.rhel.7.7.gcc.${gcc_version}.cuda.10.1" )
-    if( EXISTS ${config_file} )
-      string( APPEND CMAKE_C_FLAGS " -F${config_file}" )
+    file( READ /etc/redhat-release rhr )
+    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).*" "\\1.\\2" redhat_version
+      "${rhr}" )
+    if( NOT DEFINED cuda_version )
+      # if no cuda module is loaded, we still need to point to the config file
+      # that ends in *.cuda.11.0.
+      set( cuda_version "11.0")
+    endif()
+    set( CMAKE_CXX_COMPILER_CONFIG_FILE
+      "/projects/opt/ppc64le/ibm/xlc-${xlc_version}/xlC/${xlc_version_3}/etc/xlc.cfg.rhel.${redhat_version}.gcc.${gcc_version}.cuda.${cuda_version}"
+      CACHE FILEPATH "XL config file" FORCE)
+    if( EXISTS ${CMAKE_CXX_COMPILER_CONFIG_FILE} )
+      string( APPEND CMAKE_C_FLAGS " -F${CMAKE_CXX_COMPILER_CONFIG_FILE}" )
     else()
       message( FATAL_ERROR
         "IBM XLC selected (Darwin), but requested config file was not found."
-        "\nconfig_file = ${config_file}" )
+        "\nCMAKE_CXX_COMPILER_CONFIG_FILE = ${CMAKE_CXX_COMPILER_CONFIG_FILE}" )
     endif()
     unset( gcc_version )
     unset( xl_version )
@@ -129,6 +131,6 @@ if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0 )
   # "C;CXX;EXE_LINKER" "" )
 endif()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/unix-xl.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation file for IpcressFile class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressFile.t.hh"
@@ -15,16 +15,22 @@
 
 namespace rtt_cdi_ipcress {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief The standard IpcressFile constructor.
+ *
+ * This is the standard IpcressFile constructor.  This object is typically
+ * instantiated as a smart pointer.
+ *
+ * \param[in] ipcressDataFilename A string that contains the name of the Ipcress
+ *     data file in IPCRESS format.  The f77 Ipcress vendor library expects a
+ *     name with 80 characters or less. If the filename is longer than 80
+ *     characters the library will not be able to open the file.
  *
  * 1. Set some defaults (bytes per word, number of fields in the TOC).
  * 2. Try to open the file
  * 3. Load the title keys to verify that this is an ipcress file.
  * 4. Load the TOC.
- *
- * \param ipcressDataFilename Name of ipcress file
  */
 IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
     : dataFilename(locateIpcressFile(ipcressDataFilename)),
@@ -126,23 +132,17 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   ipcressFileHandle.close();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Indicate if the requested material id is available in the data file.
  *
  * \param[in] matid unsigned integer that specifies the material to be queried.
  */
 bool IpcressFile::materialFound(size_t matid) const {
-  // Loop over all available materials.  If the requested material id matches on
-  // in the list then return true. If we reach the end of the list without a
-  // match return false.
-  for (size_t i = 0; i < matIDs.size(); ++i)
-    if (matid == matIDs[i])
-      return true;
-  return false;
+  return std::find(matIDs.begin(), matIDs.end(), matid) != matIDs.end();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   std::string foundFile;
 
@@ -157,7 +157,7 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   return ipcressFile;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read 8 character strings from the binary file
  *
@@ -186,9 +186,9 @@ void IpcressFile::read_strings(size_t const byte_offset,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Populate the materialData member data container.
-void IpcressFile::loadFieldData(void) {
+void IpcressFile::loadFieldData() {
   // Attempt to open the ipcress file.
   Insist(ipcressFileHandle.is_open(), "getKeys: Unable to open ipcress file.");
 
@@ -251,6 +251,6 @@ void IpcressFile::loadFieldData(void) {
 
 } // end namespace rtt_cdi_ipcress
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressFile.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

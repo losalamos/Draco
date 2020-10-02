@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   special_functions/F2inv.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of F2inv
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "F2inv.hh"
 #include <cmath>
@@ -14,17 +13,17 @@
 namespace rtt_sf {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The Fermi-Dirac integral is defined as
  * \f[
  * F_n(\eta) = \int_0^\infty \frac{x^n}{e^{x-\eta}+1} dx
  * \f]
  *
- * This implementation is a translation of an implementation from the Chicago
- * Astrophysical Flash Center.  This uses a rational function expansion to get
- * the inverse of the fermi-dirac integral. Reference: antia apjs 84,101 1993
- * 
+ * This implementation is a translation of an implementation from the Chicago Astrophysical Flash
+ * Center.  This uses a rational function expansion to get the inverse of the fermi-dirac
+ * integral. Reference: antia apjs 84,101 1993
+ *
  * \param f Value of \f$F_2(\eta)\f$
  *
  * \pre \c f>0
@@ -66,21 +65,21 @@ double F2inv(double f) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The Fermi-Dirac integral is defined as
  * \f[
  * F_n(\eta) = \int_0^\infty \frac{x^n}{e^{x-\eta}+1} dx
  * \f]
  *
- * This implementation is a translation of an implementation from the Chicago
- * Astrophysical Flash Center.  This uses a rational function expansion to get
- * the inverse of the fermi-dirac integral. Reference: antia apjs 84,101 1993
- * 
+ * This implementation is a translation of an implementation from the Chicago Astrophysical Flash
+ * Center.  This uses a rational function expansion to get the inverse of the fermi-dirac
+ * integral. Reference: antia apjs 84,101 1993
+ *
  * \param[in] f Value of \f$F_2(\eta)\f$
  * \param[out] eta Dimensionless chemical potential \f$\eta\f$
  * \param[out] deta Derivative of dimensionless chemical potential
- * \f$\frac{d\eta}{dF_2(\eta)}\f$ 
+ * \f$\frac{d\eta}{dF_2(\eta)}\f$
  *
  * \pre \c f>0
  */
@@ -126,13 +125,12 @@ void F2inv(double const f, double &eta, double &deta) {
       den = den * ff + b2[i];
     }
     eta = rn / (den * ff);
-    deta = drndf / (den * ff) -
-           rn * (ddendf * ff + den * dffdf) / (den * den * ff * ff);
+    deta = drndf / (den * ff) - rn * (ddendf * ff + den * dffdf) / (den * den * ff * ff);
   }
 }
 
 } // end namespace rtt_sf
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of F2inv.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

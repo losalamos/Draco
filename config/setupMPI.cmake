@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/setupMPI.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
@@ -17,7 +17,7 @@
 # MPI_FLAVOR openmpi|mpih|intel|mvapich2|spectrum|msmpi
 # MPI_VERSION NN.NN.NN
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 include( FeatureSummary )
@@ -33,7 +33,7 @@ function( setMPIflavorVer )
 
   # First attempt to determine MPI flavor -- scape flavor from full path
   # (this ususally works for HPC or systems with modules)
-  if( CRAY_PE )
+  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     set( MPI_FLAVOR "cray" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi" OR
       "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
@@ -47,11 +47,12 @@ function( setMPIflavorVer )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mvapich2")
     set( MPI_FLAVOR "mvapich2" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
-      "${MPIEXEC_EXECUTABLE}" MATCHES "lrun" )
+      "${MPIEXEC_EXECUTABLE}" MATCHES "lrun" OR
+      "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
     set( MPI_FLAVOR "spectrum")
   endif()
 
-  if( CRAY_PE )
+  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     if( DEFINED ENV{CRAY_MPICH2_VER} )
       set( MPI_VERSION $ENV{CRAY_MPICH2_VER} )
     endif()
@@ -254,34 +255,49 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
-  # MPIEXEC_PREFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
-  # . --oversubscribe is only available for openmpi version >= 3.0
-  # . -H localhost,localhost,localhost,localhost might work for older versions.
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
-    set(runasroot "--allow-run-as-root --oversubscribe")
-  endif()
-  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
-  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
-  set( MPIEXEC_PREFLAGS "-bind-to none ${runasroot}" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN ${runasroot}" CACHE
-    STRING "extra mpirun flags (list)." FORCE)
-
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
-  #
+  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
+  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
+  set( MPIEXEC_PREFLAGS "-bind-to none")
+  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
   # Setup for OMP plus MPI
-  #
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
     set( MPIEXEC_OMP_PREFLAGS
-      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
+      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
   endif()
 
-  set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
-    CACHE STRING "extra mpirun flags (list)." FORCE )
+  # Special settings for CI
+  # . --oversubscribe is only available for openmpi version >= 3.0
+  # . -H localhost,localhost,localhost,localhost might work for older versions.
+  # . --allow-run-as-root is required for CI builds.
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
+    set(runasroot "--allow-run-as-root --oversubscribe")
+    string(APPEND MPIEXEC_PREFLAGS           " ${runasroot}")
+    string(APPEND MPIEXEC_PREFLAGS_PERFBENCH " ${runasroot}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS       " ${runasroot}")
+    unset(runasroot)
+  endif()
+
+  # Spectrum-MPI on darwin
+  # Limit communication to on-node via '-intra sm' or 'intra vader'
+  # https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
+  if( "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
+    set(smpi-sm-only "-intra sm -aff off --report-bindings")
+    string(APPEND MPIEXEC_PREFLAGS     " ${smpi-sm-only}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS " ${smpi-sm-only}")
+    unset(smpi-sm-only)
+  endif()
+
+  # Cache the result
+  set( MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS_PERFBENCH}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_OMP_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
   mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
     MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
@@ -341,6 +357,7 @@ macro( setupCrayMPI )
   string(APPEND preflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_PREFLAGS ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
+  # consider adding '-m=cyclic'
   set( MPIEXEC_PREFLAGS_PERFBENCH ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
@@ -351,6 +368,7 @@ endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
+## - https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
 ##---------------------------------------------------------------------------##
 macro( setupSpectrumMPI )
 
@@ -377,15 +395,33 @@ macro( setupSpectrumMPI )
   #                         total
   # - jsrun -a4 -c16 -g2 => 4 tasks, 16 cores, 2 gpus
 
-  set( MPIEXEC_PREFLAGS "--pack --threads=1 --bind=off -v")
+  if( MPIEXEC_EXECUTABLE MATCHES jsrun )
+    # 1 resource set; 1 thread; no gpu; no binding --nrs 1
+    set( MPIEXEC_PREFLAGS "-c 1 -g 0 --bind none")
+  elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
+    set( MPIEXEC_PREFLAGS "--pack --threads=1 -v") # --bind=off
+  endif()
+  # --pack ==> -c 1 -g 0.  This is actually bad for us. Disable
+  # lrun -n 2 -c 10 --threads=10 --bind=off ==>
+  # jsrun --np 1 --nrs 1 -c ALL_CPUS -g ALL_GPUS -d plane:1 -b rs -X 1
+  # consider: jsrun --np 2 --nrs 1 -c 10 -g 0 -bind none
 
   #
   # Setup for OMP plus MPI
   #
 
   if( DEFINED ENV{OMP_NUM_THREADS} )
-#    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS}" )
-    set( MPIEXEC_OMP_PREFLAGS "--pack -c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
+    if( MPIEXEC_EXECUTABLE MATCHES jsrun )
+      # 1 resource set; OMP_NUM_THREADS tasks; no gpu; no binding
+      set( MPIEXEC_OMP_PREFLAGS "--nrs 1 -c $ENV{OMP_NUM_THREADS} -g 0 --bind none")
+    elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
+      if( DEFINED ENV{OMP_NUM_THREADS} )
+        # --bind=off
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=$ENV{OMP_NUM_THREADS} -c$ENV{OMP_NUM_THREADS} -v" )
+      else()
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=4 -c 4 -v" )
+      endif()
+    endif()
   endif()
 
   set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
@@ -396,9 +432,9 @@ macro( setupSpectrumMPI )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Setup MPI when on Linux
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( setupMPILibrariesUnix )
 
   # MPI ---------------------------------------------------------------------
@@ -421,7 +457,7 @@ macro( setupMPILibrariesUnix )
     # If this is a Cray system and the Cray MPI compile wrappers are used, then
     # do some special setup:
 
-    if( CRAY_PE )
+    if(  CMAKE_CXX_COMPILER_WRAPPER MATCHES CrayPrgEnv )
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
         find_program( MPIEXEC_EXECUTABLE srun )
       endif()
@@ -436,8 +472,8 @@ macro( setupMPILibrariesUnix )
       endif()
       set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
         "Program to execute MPI parallel programs." FORCE )
-      set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
-        "mpirun flag used to specify the number of processors to use")
+      set( MPIEXEC_NUMPROC_FLAG "--np" CACHE STRING
+        "mpirun flag used to specify the number of processors to use" FORCE)
     endif()
 
     # Call the standard CMake FindMPI macro.
@@ -461,9 +497,9 @@ macro( setupMPILibrariesUnix )
     else()
       message( FATAL_ERROR "
 The Draco build system doesn't know how to configure the build for
-  MPIEXEC_EXECUTABLE     = ${MPIEXEC_EXECUTABLE}
-  DBS_MPI_VER = ${DBS_MPI_VER}
-  CRAY_PE     = ${CRAY_PE}")
+  MPIEXEC_EXECUTABLE         = ${MPIEXEC_EXECUTABLE}
+  DBS_MPI_VER                = ${DBS_MPI_VER}
+  CMAKE_CXX_COMPILER_WRAPPER = ${CMAKE_CXX_COMPILER_WRAPPER}")
     endif()
 
     # Mark some of the variables created by the above logic as 'advanced' so
@@ -762,6 +798,17 @@ macro( setupMPILibrariesWindows )
   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_PREFLAGS MPI_LIBRARIES )
 
 endmacro( setupMPILibrariesWindows )
+
+#----------------------------------------------------------------------#
+# Helper
+#----------------------------------------------------------------------#
+macro(setupMPILibraries)
+  if ( UNIX )
+    setupMPILibrariesUnix()
+  elseif( WIN32 )
+    setupMPILibrariesWindows()
+  endif()
+endmacro()
 
 #----------------------------------------------------------------------#
 # End setupMPI.cmake
