@@ -1,16 +1,15 @@
 #!/bin/bash
-##-*- Mode: bash -*-
-##---------------------------------------------------------------------------##
-## File  : config/capture_lcov.sh
-## Date  : Thursday, Apr 09, 2020, 10:12 am
-## Author: Kelly Thompson
-## Note  : Copyright (C) 2020, Triad National Security, LLC.
-##         All rights are reserved.
-##
-## Helper script used by the make system's 'covrep' target.  This script allows
-## us to capture the output from lcov to a file in the build directory since
-## lcov only knows how to echo its report to stdout.
-##----------------------------------------------------------------------------##
+#-*- Mode: bash -*-
+#--------------------------------------------------------------------------------------------------#
+# File  : config/capture_lcov.sh
+# Date  : Thursday, Apr 09, 2020, 10:12 am
+# Author: Kelly Thompson
+# Note  : Copyright (C) 2020, Triad National Security, LLC., All rights are reserved.
+#
+# Helper script used by the make system's 'covrep' target.  This script allows us to capture the
+# output from lcov to a file in the build directory since lcov only knows how to echo its report to
+# stdout.
+#--------------------------------------------------------------------------------------------------#
 
 # Helper functions
 
@@ -20,7 +19,7 @@ function die ()
 }
 function run ()
 {
-    echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi
+    echo "==> $1"; if [[ "${dry_run:-no}" == "no" ]]; then eval "$1"; fi
 }
 function print_use()
 {
@@ -49,8 +48,8 @@ esac
 done
 
 # defaults if GCOV or LCOV are not set.
-if ! [[ -x $GCOV ]]; then GCOV=`which gcov` || die "gcov = ${GCOV} was not found"; fi
-if ! [[ -x $LCOV ]]; then LCOV=`which lcov` || die "lcov = ${LCOV} was not found"; fi
+if ! [[ -x $GCOV ]]; then GCOV=$(which gcov) || die "gcov = ${GCOV} was not found"; fi
+if ! [[ -x $LCOV ]]; then LCOV=$(which lcov) || die "lcov = ${LCOV} was not found"; fi
 
 # Sanity Checks
 
@@ -63,12 +62,11 @@ if ! [[ -f coverage.info ]]; then
 fi
 
 # Ask lcov to generate the text report:
-# - generate the text report at the same location as coverage.info (top level of
-#   build tree).
+# - generate the text report at the same location as coverage.info (top level of build tree).
 echo "$LCOV --gcov-tool $GCOV --quiet --list coverage.info --> ${repname}"
-$LCOV --gcov-tool $GCOV --quiet --list coverage.info &> ${repname}
+${LCOV} --gcov-tool "${GCOV}" --quiet --list coverage.info &> "${repname}"
 # also print the report to stdout.
-cat ${repname}
+cat "${repname}"
 
 #--------------------------------------------------------------------------------------------------#
 # end config/capture_lcov.sh
