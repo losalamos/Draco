@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Global_Timer.hh
  * \author Kent G. Budge
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Global_Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_c4_Global_Timer_hh
 #define rtt_c4_Global_Timer_hh
@@ -17,35 +16,33 @@
 
 namespace rtt_c4 {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Global_Timer
  *
  * \brief POSIX standard timer.
  *
- * The Global_Timer class is based on the Timer class, but adds additional
- * features that make it more convenient for timing sections of code without
- * being tied to specific objects that use those sections of code.
+ * The Global_Timer class is based on the Timer class, but adds additional features that make it
+ * more convenient for timing sections of code without being tied to specific objects that use those
+ * sections of code.
  *
- * All Global_Timers have a unique name assigned via the constructor. They can
- * be enabled or disabled as a whole by setting or unsetting a single global
- * variable, or they can be activated selectively by name. The timings can be
- * reset manually, and reports for all active timers can be generated with a
- * single static function call.
+ * All Global_Timers have a unique name assigned via the constructor. They can be enabled or
+ * disabled as a whole by setting or unsetting a single global variable, or they can be activated
+ * selectively by name. The timings can be reset manually, and reports for all active timers can be
+ * generated with a single static function call.
  *
  * Global_Timers are only active on processor 0.
  */
-//============================================================================//
+//================================================================================================//
 
 class Global_Timer : public Timer {
 private:
-  char const *name_; // name assigned by client to this timer, to distinguish
-                     // its output from that of any other timers.
+  char const *name_; // name assigned by client to this timer, to distinguish its output from that
+                     // of any other timers.
 
-  bool active_; // This timer is active. This does not mean it is currently
-                // accumulating timing statistics, but only that it is flagged
-                // to do so when start() is called. If not active, a call to
-                // start() is ignored.
+  bool active_; // This timer is active. This does not mean it is currently accumulating timing
+                // statistics, but only that it is flagged to do so when start() is called. If not
+                // active, a call to start() is ignored.
 
   //! All Global_Timers are active
   DLL_PUBLIC_c4 static bool global_active_;
@@ -115,6 +112,6 @@ public:
 
 #endif // rtt_c4_Global_Timer_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/Global_Timer.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

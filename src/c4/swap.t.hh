@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/swap.t.hh
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_swap_t_hh
 #define c4_swap_t_hh
@@ -18,9 +17,9 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // EXCHANGE
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifdef C4_MPI
 
@@ -38,8 +37,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
   Check(outgoing_pid.size() < UINT_MAX);
   auto outgoing_processor_count = static_cast<unsigned>(outgoing_pid.size());
 
-  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of
-  // zero-length.
+  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of zero-length.
   {
 
     // Post the asynchronous sends.
@@ -75,7 +73,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
                       std::vector<std::vector<T>> &incoming_data, int tag) {
@@ -122,7 +120,7 @@ void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
 
   return;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
                           std::vector<std::vector<T>> const &outgoing_data,
@@ -188,9 +186,9 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // These functions do nothing if there is no communicator (C4_SCALAR=1)
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #else
 
 template <typename T>
@@ -221,6 +219,6 @@ void semideterminate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
 
 #endif // c4_swap_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/swap.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

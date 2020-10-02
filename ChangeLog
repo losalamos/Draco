@@ -1,3 +1,40 @@
+2020-09-23  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Draco has been updated to version 7_8_0 and is tied to theb
+	  release of Jayenne-8_6_0 and Capsaicin-1_6_0.
+	  - https://rtt.lanl.gov/redmine/versions/87
+	  - https://rtt.lanl.gov/redmine/versions/88
+	  - https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	Draco-7_8_0, build date 2020/09/23;build type: Debug;DBC: 7;
+	  DRACO_DIAGNOSTICS: 0
+
+	CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge,
+	  Matt A. Cleveland, Ryan T. Wollaeger, Alex R. Long, Ben R. Ryan,
+	  Kendra P. Long, James S. Warsa, Tim Kelley, Jae H. Chang, Andrew T. Till,
+	  Seth D. Cook, Ondrej Certik, and David A. Dixon.
+
+	Prior Contributors: Gabriel M. Rockefeller,
+	  Allan B. Wollaber, Rob B. Lowrie, Paul W. Talbot, Katherine J. Wang,
+	  Peter Ahrens, Daniel Holladay, Massimiliano Rosa, Todd J. Urbatsch,
+	  Jeff D. Densmore, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas,
+	  Nick Myers, Paul Henning, Randy Roberts, Seth Johnson, Todd Adams,
+	  Tom Evans, and Lori Pritchett-Sheats.
+
+	Copyright (C) 2016-2020 Triad National Security, LLC. (C19028, LA-CC-16-016),
+	  Released under a 3-Clause BSD License.
+
+	* Summary of changes:
+
+	- 1087 files changed, added or removed in 86 commits.
+	- Begin supporting XL+cuda on Power9 (ATS-2).
+	- Provide option to install object libraries isntead of libraries for better IPO on KNL.
+	- Fix build via spack on CrayPE.
+	- Allow Draco Timers to wrap Caliper timers.
+	- Add a constant analytic stopping power mode
+	- Add parallel ensight capability
+	- General build system improvements to better support CUDA enabled builds.
+
 2020-05-29  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Draco has been updated to version 7_7_0 and is tied to the

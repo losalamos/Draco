@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/unix-xlf.cmake
 # author Gabriel Rockefeller, Kelly Thompson <kgt@lanl.gov>
 # date   2012 Nov 1
 # brief  Establish flags for Unix - IBM XL Fortran
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Let anyone who is interested in which FORTRAN compiler we're using switch on
 # this macro.
@@ -45,6 +45,6 @@ set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}"
   CACHE STRING "compiler flags" FORCE )
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/unix-xlf.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

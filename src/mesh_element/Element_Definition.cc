@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh_element/Element_Definition.cc
  * \author John McGhee
@@ -7,7 +7,7 @@
  *         standard mesh elements.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Element_Definition.hh"
 #include <algorithm>
@@ -15,7 +15,7 @@
 
 namespace rtt_mesh_element {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Element_Definition::Element_Definition(Element_Type const &type_)
     : name(), type(type_), dimension(0), number_of_nodes(0), number_of_sides(0),
       elem_defs(), side_type(), side_nodes() {
@@ -90,7 +90,7 @@ Element_Definition::Element_Definition(Element_Type const &type_)
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Element_Definition::Element_Definition(
     std::string name_, unsigned dimension_, unsigned number_of_nodes_,
     unsigned number_of_sides_,
@@ -101,7 +101,7 @@ Element_Definition::Element_Definition(
       dimension(dimension_), number_of_nodes(number_of_nodes_),
       number_of_sides(number_of_sides_), elem_defs(elem_defs_),
       side_type(side_type_), side_nodes(side_nodes_) {
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Check input first, before any modifications
   Require(number_of_nodes_ > 0);
 
@@ -138,7 +138,7 @@ Element_Definition::Element_Definition(
   Ensure(invariant_satisfied());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Element_Definition::invariant_satisfied() const {
   bool ldum = (name.empty() == false);
 
@@ -174,7 +174,7 @@ bool Element_Definition::invariant_satisfied() const {
   return ldum;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_node() {
   name = "NODE";
   dimension = 0;
@@ -182,7 +182,7 @@ void Element_Definition::construct_node() {
   number_of_nodes = 1;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_bar() {
   dimension = 1;
   number_of_sides = 2;
@@ -203,7 +203,7 @@ void Element_Definition::construct_bar() {
   side_type = std::vector<unsigned>(number_of_sides, 0);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_tri() {
   dimension = 2;
   number_of_sides = 3;
@@ -226,7 +226,7 @@ void Element_Definition::construct_tri() {
   side_type = std::vector<unsigned>(number_of_sides, 0);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_quad() {
   dimension = 2;
   number_of_sides = 4;
@@ -336,7 +336,7 @@ void Element_Definition::construct_quad() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_tetra() {
   dimension = 3;
   number_of_sides = 4;
@@ -363,7 +363,7 @@ void Element_Definition::construct_tetra() {
   side_type = std::vector<unsigned>(number_of_sides, 0);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_pyra() {
   dimension = 3;
   number_of_sides = 5;
@@ -396,7 +396,7 @@ void Element_Definition::construct_pyra() {
     side_type.push_back(1);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_penta() {
   dimension = 3;
   number_of_sides = 5;
@@ -447,7 +447,7 @@ void Element_Definition::construct_penta() {
     side_type.push_back(1);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Element_Definition::construct_hexa() {
   dimension = 3;
   number_of_sides = 6;
@@ -491,7 +491,7 @@ void Element_Definition::construct_hexa() {
   side_type = std::vector<unsigned>(number_of_sides, 0);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::ostream &Element_Definition::print(std::ostream &os_out) const {
   os_out << "Element Type   : " << get_type() << "\n"
          << "Element Name   : " << get_name() << "\n"
@@ -534,6 +534,6 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
 
 } // end namespace rtt_mesh_element
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Element_Definition.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

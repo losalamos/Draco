@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/draco-config-install.cmake.in
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Save Draco configuration information for installation (cmake export)
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}" )
 get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
 include( "${_SELF_DIR}/draco-targets.cmake" )
@@ -99,10 +99,10 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 
 @Draco_EXPORT_TARGET_PROPERTIES@
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Ensure imported targets required by Draco are defined
 # - Optionally we could use 'include(CMakeFindDependencyMacro)'
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # CMake macros to query the availability of TPLs.
 include( vendor_libraries )

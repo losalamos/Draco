@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstReduction.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  C4 Reduction test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -23,9 +23,9 @@ using rtt_c4::global_sum;
 using rtt_c4::prefix_sum;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   // test ints with blocking and non-blocking sums
@@ -636,7 +636,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void array_reduction(rtt_dsxx::UnitTest &ut) {
   {
     // make a vector of doubles
@@ -1113,7 +1113,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // Calculate prefix sums on rank ID with MPI call and by hand and compare the
@@ -1241,7 +1241,7 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // Calculate prefix sums on rank ID with MPI call and by hand and compare the
@@ -1276,7 +1276,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // handled correctly in the calls)
   vector<uint32_t> xuint(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xuint[i] = std::numeric_limits<int>::max() + rtt_c4::node() * 10 + i;
+    xuint[i] = static_cast<uint32_t>(std::numeric_limits<int>::max()) +
+               rtt_c4::node() * 10 + i;
 
   prefix_sum(&xuint[0], array_size);
 
@@ -1284,7 +1285,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        uint_answer[i] += std::numeric_limits<int>::max() + r * 10 + i;
+        uint_answer[i] +=
+            static_cast<uint32_t>(std::numeric_limits<int>::max()) + r * 10 + i;
     }
   }
 
@@ -1322,7 +1324,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // types are handled correctly in the calls)
   vector<uint64_t> xulong(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xulong[i] = std::numeric_limits<int64_t>::max() + rtt_c4::node() * 10 + i;
+    xulong[i] = static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) +
+                rtt_c4::node() * 10 + i;
 
   prefix_sum(&xulong[0], array_size);
 
@@ -1330,7 +1333,9 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        ulong_answer[i] += std::numeric_limits<int64_t>::max() + r * 10 + i;
+        ulong_answer[i] +=
+            static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) +
+            r * 10 + i;
     }
   }
 
@@ -1393,7 +1398,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1405,6 +1410,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstReduction.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

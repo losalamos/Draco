@@ -1,10 +1,9 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/Processor_Group.cc
  * \brief  Define non-template methods of class Processor_Group.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/config.h"
 #include <iostream>
@@ -17,17 +16,15 @@ namespace rtt_c4 {
 
 using namespace std;
 
-//--------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for Processor_Group
- * \param stride Number of processor groups to create. Each processor with
- *        rank \c pid will be assigned to processor group <code> pid mod
- *        stride</code>. For example, if the stride is 3, then processors 0,
- *        3, 6, ... form the first processor group, processors 1, 4, 7, ...
- *        form the second processor group, and processors 2, 5, 8, ... form
- *        the third processor group.
+ * \param stride Number of processor groups to create. Each processor with rank \c pid will be
+ *        assigned to processor group <code> pid mod stride</code>. For example, if the stride is 3,
+ *        then processors 0, 3, 6, ... form the first processor group, processors 1, 4, 7, ...  form
+ *        the second processor group, and processors 2, 5, 8, ... form the third processor group.
  */
-//--------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifdef C4_MPI
 
@@ -68,7 +65,7 @@ Processor_Group::~Processor_Group() {
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #else // not C4_MPI
 
@@ -83,10 +80,10 @@ Processor_Group::~Processor_Group() { Ensure(check_class_invariants()); }
 
 #endif //C4_MPI
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Processor_Group.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

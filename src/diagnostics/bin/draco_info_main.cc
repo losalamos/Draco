@@ -1,14 +1,13 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/draco_info_main.cc
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
-#include "draco_info.hh"
+#include "diagnostics/draco_info.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
@@ -99,6 +98,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of draco_info_main.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

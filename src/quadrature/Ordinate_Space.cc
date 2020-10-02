@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Space.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Define methods of class Ordinate_Space
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 // Vendor software
 #include "Ordinate_Space.hh"
@@ -22,7 +22,7 @@ using rtt_dsxx::soft_equiv;
 using std::vector;
 
 namespace rtt_quadrature {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Compute the Azimuthal angle for the current quadrature direction.
  */
@@ -59,7 +59,7 @@ double Ordinate_Space::compute_azimuthalAngle(double const mu,
   return azimuthalAngle;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The computation of the tau and alpha coefficients is described by Morel in
  * various technical notes on the treatment of the angle derivatives in the
@@ -280,7 +280,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
          "unexpected starting direction reflection index");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment>
 Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
                               unsigned const sn_order) {
@@ -307,7 +307,7 @@ Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Compute the description of the moment space.
  *
  * N.B. This must not be called in the Ordinate_Space constructor, but in the
@@ -342,7 +342,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * \param dimension Dimension of the physical problem space (1, 2, or 3)
@@ -391,7 +391,7 @@ Ordinate_Space::Ordinate_Space(unsigned const dimension,
   Ensure(has_extra_starting_directions() == extra_starting_directions);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The psi coefficient is used to compute the self term in the angle derivative
  * term of the streaming operator.
@@ -406,7 +406,7 @@ double Ordinate_Space::psi_coefficient(unsigned const a) const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The source coefficient is used to compute the previous midpoint angle term
  * in the angle derivative term of the streaming operator.
@@ -421,7 +421,7 @@ double Ordinate_Space::source_coefficient(unsigned const a) const {
   double const Result = (alpha_a * (1 - tau_a) / tau_a + alpha_am1) / wt;
   return Result;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The bookkeeping coefficient is used to compute the next midpoint angle
  * specific intensity.
@@ -436,7 +436,7 @@ double Ordinate_Space::bookkeeping_coefficient(unsigned const a) const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Ordinate_Space::check_class_invariants() const {
   if (geometry() == rtt_mesh_element::CARTESIAN) {
     return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
@@ -464,7 +464,7 @@ bool Ordinate_Space::check_class_invariants() const {
   }
 }
 
-//--------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Ordinate_Space::compute_reflection_maps_() {
   vector<Ordinate> const &ordinates = this->ordinates();
   size_t const number_of_ordinates = ordinates.size();
@@ -499,7 +499,7 @@ void Ordinate_Space::compute_reflection_maps_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Return a mapping from the moments to the components of the astrophysical
  * flux. The astrophysical flux is defined consistently with the mean intensity
@@ -550,7 +550,7 @@ void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Return a mapping from the astrophysical flux to the moments. This is the
  * inverse of the mapping returned by moment_to_flux.
@@ -614,6 +614,6 @@ void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Ordinate_Space.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

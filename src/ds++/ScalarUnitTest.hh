@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/ScalarUnitTest.hh
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef dsxx_ScalarUnitTest_hh
 #define dsxx_ScalarUnitTest_hh
@@ -15,13 +14,13 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class ScalarUnitTest
  * \brief This class provides services for scalar unit tests.
  *
- * This class inherits from UnitTest.  Much of the documentation for the
- * services of this class is provided in UnitTest.hh
+ * This class inherits from UnitTest.  Much of the documentation for the services of this class is
+ * provided in UnitTest.hh
  *
  * \sa rtt_dsxx::UnitTest for detailed description of all the UnitTest classes.
  *
@@ -37,23 +36,22 @@ namespace rtt_dsxx {
  }
  * \endcode
  *
- * \test All of the member functions of this class are tested by
- * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
- * \c --version on the command line.
+ * \test All of the member functions of this class are tested by ds++/test/tstScalarUnitTest.cc,
+ * including the early exit caused by \c --version on the command line.
  */
 /*!
  * \example ds++/test/tstScalarUnitTest.cc
  * The unit test for and example usage of the ScalarUnitTest class.
  */
-//============================================================================//
+//================================================================================================//
 
 class ScalarUnitTest : public UnitTest {
 public:
   // CREATORS
 
   //! Default constructors.
-  ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
-                 std::ostream &out_ = std::cout, bool verbose_ = true);
+  ScalarUnitTest(int &argc, char **&argv, string_fp_void release_, std::ostream &out_ = std::cout,
+                 bool verbose_ = true);
 
   //! The copy constructor is disabled.
   ScalarUnitTest(const ScalarUnitTest &rhs) = delete;
@@ -70,7 +68,7 @@ public:
   ScalarUnitTest &operator=(const ScalarUnitTest &rhs) = delete;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Run a scalar unit test.
  *
@@ -82,8 +80,7 @@ public:
  */
 
 template <typename... Lambda, typename Release>
-int do_scalar_unit_test(int argc, char **argv, Release release,
-                        Lambda const &... lambda);
+int do_scalar_unit_test(int argc, char **argv, Release release, Lambda const &... lambda);
 
 } // end namespace rtt_dsxx
 
@@ -91,6 +88,6 @@ int do_scalar_unit_test(int argc, char **argv, Release release,
 
 #endif // dsxx_ScalarUnitTest_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/ScalarUnitTest.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

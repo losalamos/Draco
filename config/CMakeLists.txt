@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Nov 2
 # brief  Install the config directory in the target directory
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
 project( config )
 
@@ -22,9 +22,9 @@ set( CMake_AFSD CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in  )
 # include(debug_macros)
 # echo_all_cmake_variable_values()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Prepare data that will be saved in draco-config.cmake
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 
 string( TOUPPER "${CMAKE_BUILD_TYPE}" upper_build_type )
 set( Draco_CXX_COMPILER_FLAGS

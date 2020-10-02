@@ -1,11 +1,10 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   draco/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2019-2020 Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
 # Build notes:
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/
@@ -14,12 +13,11 @@
 cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
 set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
-project( Draco DESCRIPTION ${ddesc} VERSION 7.7 LANGUAGES CXX C)
+project( Draco DESCRIPTION ${ddesc} VERSION 7.8 LANGUAGES CXX C)
 
 # Do not look for Fortran/CUDA for
 # 1. XCode based Generators, or
-# 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
-#    look for Fortran).
+# 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will look for Fortran).
 # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
 # 4. Unix Makefile generator when:
 #    - Fortran only: $ENV{FC} is not set (e.g. clang on Linux)
@@ -39,10 +37,8 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 #
 # Debug cmake scripts:
 #
-# 1. Review macros defined at config/debug_macros.cmake and
-#    config/print_target_properties.cmake.
-# 2. Uncomment this feature to tell CMake to print include paths
-#    during target registration (requires cmake-2.8.11+).
+# 1. Review macros defined at config/debug_macros.cmake and config/print_target_properties.cmake.
+# 2. Uncomment this feature to tell CMake to print include paths during target registration
 #    set( CMAKE_DEBUG_TARGET_PROPERTIES INCLUDE_DIRECTORIES )
 # 3. Optionally use --trace
 
@@ -69,10 +65,8 @@ dbsInitExportTargets( "Draco" )
 # Save config info
 dbsConfigInfo()
 
-# Platform Checks: Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is
-# gethostname() available?
+# Platform Checks: Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
 include( platform_checks )
-query_craype()
 set_draco_uname()
 query_have_gethostname()
 query_have_maxpathlen()
@@ -104,16 +98,11 @@ endif()
 add_subdirectory( config )  # This must be processed after 'src'
 
 # install top level documents
-install(
-  FILES ChangeLog LICENSE.md README.md
-  DESTINATION ${CMAKE_INSTALL_PREFIX} )
+install( FILES ChangeLog LICENSE.md README.md DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Export targets
-install(
-  EXPORT draco-targets
-  DESTINATION cmake
-  EXPORT_LINK_INTERFACE_LIBRARIES )
+install( EXPORT draco-targets DESTINATION cmake EXPORT_LINK_INTERFACE_LIBRARIES )
 
-##---------------------------------------------------------------------------##
-## End of CMakeLists.txt
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# End of CMakeLists.txt
+#--------------------------------------------------------------------------------------------------#

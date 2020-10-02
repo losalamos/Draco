@@ -22,7 +22,7 @@
    ;; For more information about f90-mode settins in Emacs:
    ;; 1. M-x f90-mode
    ;; 2. C-h m
-   (set-fill-column 80)
+   (set-fill-column 100)
    (turn-on-auto-fill)
    (setq f90-beginning-ampersand nil)
    (setq f90-associate-indent 0)

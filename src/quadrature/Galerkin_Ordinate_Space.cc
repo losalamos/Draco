@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Galerkin_Ordinate_Space.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Define methods of class Galerkin_Ordinate_Space
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Galerkin_Ordinate_Space.hh"
 #include "special_functions/Ylm.hh"
@@ -21,7 +21,7 @@ using std::vector;
 
 namespace rtt_quadrature {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
                                                          unsigned const N) {
   vector<Moment> result;
@@ -35,7 +35,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
                                                           unsigned const N) {
   std::vector<Moment> result;
@@ -50,7 +50,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
@@ -68,7 +68,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
@@ -91,7 +91,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
@@ -128,7 +128,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param dimension Dimension of the physical problem space (1, 2, or 3)
  * \param geometry Geometry of the physical problem space (spherical,
@@ -176,19 +176,19 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space(
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Galerkin_Ordinate_Space::check_class_invariants() const {
   return D_.size() == ordinates().size() * this->moments().size() &&
          M_.size() == ordinates().size() * this->moments().size();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const {
   Check(method_ == GQ1 || method_ == GQ2 || method_ == GQF);
   return method_;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for now, we include all full orders, leaving out any
@@ -207,7 +207,7 @@ vector<double> Galerkin_Ordinate_Space::D() const {
   }
   return Result;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * In the future, this function will allow the client to specify the maximum
  * order to include, but for now, we include all full orders, leaving out any
@@ -228,7 +228,7 @@ vector<double> Galerkin_Ordinate_Space::M() const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Galerkin_Ordinate_Space::compute_operators() {
 
   rtt_mesh_element::Geometry const geometry(this->geometry());
@@ -322,7 +322,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Augment the matrix for curvilinear coordinates
 vector<double>
 Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
@@ -348,7 +348,7 @@ Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
   return D_new;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Augment the matrix for curvilinear coordinates
 vector<double>
 Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
@@ -388,7 +388,7 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
   return M_new;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<double>
 Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
   using rtt_sf::Ylm;
@@ -455,7 +455,7 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
   return M;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 vector<double>
 Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
                                          vector<double> const &Ain) {
@@ -516,6 +516,6 @@ Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Galerkin_Ordinate_Space.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

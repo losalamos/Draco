@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Space.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Definition of class Ordinate_Space
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_Space_hh
 #define quadrature_Ordinate_Space_hh
@@ -19,7 +19,7 @@
 namespace rtt_quadrature {
 using std::ostream;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Ordinate_Space
  * \brief Describes a choice of discrete ordinate and truncated moment
@@ -126,7 +126,7 @@ using std::ostream;
  * space. Thus the angle derivative term will generally be multiplied by an
  * additional factor arising from the spatial discretization.
  */
-//============================================================================//
+//================================================================================================//
 
 class Ordinate_Space : public rtt_quadrature::Ordinate_Set {
 public:

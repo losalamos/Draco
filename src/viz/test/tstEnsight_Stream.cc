@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   viz/test/tstEnsight_Stream.cc
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:52:46 2004
  * \brief  Test for Ensight_Stream.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Packing_Utils.hh"
@@ -17,9 +16,9 @@
 using namespace std;
 using rtt_viz::Ensight_Stream;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Utility functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 // Reads binary value from stream.
 template <typename T> void binary_read(ifstream &stream, T &v) {
@@ -60,9 +59,9 @@ void readit(ifstream &stream, const bool binary, string &s) {
     stream >> s;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
                  bool const decomposed) {
@@ -71,8 +70,7 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
   const int i(20323);
   const string s("dog");
   const double d(112.3);
-  const string file("ensight_stream_" + std::to_string(rtt_c4::nodes()) +
-                    ".out");
+  const string file("ensight_stream_" + std::to_string(rtt_c4::nodes()) + ".out");
 
   {
     Ensight_Stream f(file, binary, geom, decomposed);
@@ -130,7 +128,7 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try { // >>> UNIT TESTS
@@ -152,6 +150,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstEnsight_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

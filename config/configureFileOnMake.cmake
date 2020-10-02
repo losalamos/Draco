@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   draco/config/configureFileOnMake.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Configure a file during the 'make' process instead of during 'cmake'
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Use:
 #   cmake -PconfigureFileOnMake.cmake -DINFILE=$infile \

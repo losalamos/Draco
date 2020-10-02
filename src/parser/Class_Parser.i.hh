@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   Class_Parser.i.hh
  * \brief  Definitions of member functions of template Class_Parser
  * \note   Copyright (C) 2016-2019 Trian National Security, LLC.
  *         All rights reserved */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_Class_Parser_i_hh
 #define rtt_Class_Parser_i_hh
@@ -13,7 +13,7 @@
 
 namespace rtt_parser {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param child Reference to the complete child object for which this base is
  *           being constructed.
@@ -44,7 +44,7 @@ Class_Parser_Base<Class, once, allow_exit>::Class_Parser_Base(
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \param table Array of keywords to be added to the table.
  * \param count Number of valid elements in the array of keywords.
@@ -79,7 +79,7 @@ void Class_Parser_Base<Class, once, allow_exit>::add(
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function is provided to support inheritance of class parsers.
  *
@@ -113,7 +113,7 @@ void Class_Parser_Base<Class, once, allow_exit>::add(
   Ensure(check_class_invariants());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* private */
 template <typename Class, bool once, bool allow_exit>
 void Class_Parser_Base<Class, once, allow_exit>::sort_table_() noexcept(
@@ -160,7 +160,7 @@ void Class_Parser_Base<Class, once, allow_exit>::sort_table_() noexcept(
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Parse the stream of tokens until an END, EXIT, or ERROR token is reached.
  *
@@ -339,7 +339,7 @@ Class_Parser_Base<Class, once, allow_exit>::parse(Token_Stream &tokens) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Comparison function for sorting keyword tables.
  *
@@ -362,7 +362,7 @@ operator()(Keyword const &k1, Keyword const &k2) const {
   return strcmp(k1.moniker, k2.moniker) < 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Comparison function for finding token match in keyword table.
  *
@@ -381,7 +381,7 @@ operator()(Keyword const &k1, Token const &k2) const noexcept {
   return strcmp(k1.moniker, k2.text().c_str()) < 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Check whether a keyword satisfies the requirements for use in a
  *        Parse_Table.
@@ -428,7 +428,7 @@ bool Is_Well_Formed_Keyword(Class_Parser_Keyword<Class> const &key) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename Class, bool once, bool allow_exit>
 bool Class_Parser_Base<Class, once, allow_exit>::check_class_invariants()
     const {
@@ -445,7 +445,7 @@ bool Class_Parser_Base<Class, once, allow_exit>::check_class_invariants()
   return true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename Class, bool once, bool allow_exit>
 std::vector<typename Class_Parser_Base<Class, once, allow_exit>::Keyword>
     Class_Parser_Base<Class, once, allow_exit>::table_;
@@ -454,6 +454,6 @@ std::vector<typename Class_Parser_Base<Class, once, allow_exit>::Keyword>
 
 #endif // rtt_Class_Parser_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Class_Parser.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

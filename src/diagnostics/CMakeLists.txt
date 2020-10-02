@@ -1,28 +1,26 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   diagnostics/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( diagnostics CXX )
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Is Caliper available? If so, let's use it
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 if(TARGET CALIPER::caliper)
   set( DRACO_CALIPER "1")
 else()
   set( DRACO_CALIPER "0")
 endif()
-set( DRACO_CALIPER ${DRACO_CALIPER} CACHE BOOL
-  "Does Draco require the Caliper library?" FORCE)
+set( DRACO_CALIPER ${DRACO_CALIPER} CACHE BOOL "Does Draco require the Caliper library?" FORCE)
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Special options for this component
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 
 # DRACO_DIAGNOSICS is set in ds++ (ds++/config.h).
 
@@ -44,27 +42,25 @@ if( NOT ${HAVE_SYS_TYPES} )
    message( FATAL_ERROR "diagnostics/Procmon.hh requires sys/types.h.")
 endif()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Generate config.h (only occurs when cmake is run)
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Source files
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 
-# Make the header files available in the IDE.
 if( CMAKE_CONFIGURATION_TYPES )
   add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
 endif()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Build package library
-# ---------------------------------------------------------------------------- #
-
+#--------------------------------------------------------------------------------------------------#
 set(deps Lib_c4)
 if(TARGET CALIPER::caliper)
   list(APPEND deps CALIPER::caliper)
@@ -73,56 +69,40 @@ endif()
 add_component_library(
   TARGET       Lib_diagnostics
   TARGET_DEPS  "${deps}"
+  INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
   LIBRARY_NAME ${PROJECT_NAME}
   SOURCES      "${sources}"
-  HEADERS      "${headers}"
-  PREFIX       Draco
-  )
-target_include_directories( Lib_diagnostics
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+  HEADERS      "${headers}")
 
 add_component_executable(
   TARGET      Exe_draco_info
   TARGET_DEPS Lib_diagnostics
   EXE_NAME    draco_info
-  SOURCES     ${PROJECT_SOURCE_DIR}/draco_info_main.cc
-  HEADERS     ${PROJECT_SOURCE_DIR}/draco_info.hh
-  PREFIX       Draco
-  )
+  SOURCES     ${PROJECT_SOURCE_DIR}/bin/draco_info_main.cc
+  HEADERS     ${PROJECT_SOURCE_DIR}/draco_info.hh)
 
 if( Qt5Core_DIR AND NOT "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
   add_subdirectory( qt )
 endif()
 
-
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Installation instructions
-# ---------------------------------------------------------------------------- #
-
-install( TARGETS Lib_diagnostics EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
-install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}bin )
+#--------------------------------------------------------------------------------------------------#
+install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  install(FILES $<TARGET_PDB_FILE:Lib_diagnostics> DESTINATION ${DBSCFGDIR}lib
-    OPTIONAL)
-endif()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Unit tests
-# ---------------------------------------------------------------------------- #
-
+#--------------------------------------------------------------------------------------------------#
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Autodoc
-# ---------------------------------------------------------------------------- #
-
+#--------------------------------------------------------------------------------------------------#
 process_autodoc_pages()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End diagnostics/CMakeLists.txt
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

@@ -62,9 +62,10 @@ export build_permissions
 ## Generic setup (do not edit)
 ##---------------------------------------------------------------------------##
 
-draco_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-draco_script_dir=$(echo "$draco_script_dir" | awk '{ print $1 }')
-draco_script_dir=$(readlink -f "$draco_script_dir")
+#draco_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#draco_script_dir=$(echo "$draco_script_dir" | awk '{ print $1 }')
+#draco_script_dir=$(readlink -f "$draco_script_dir")
+draco_script_dir="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 export draco_script_dir
 if [[ -f "$draco_script_dir/common.sh" ]]; then
   echo "source $draco_script_dir/common.sh"

@@ -7,7 +7,7 @@
 #        data for a range of temperatures.
 # note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 import sys
 import os
 import ipcress_reader as ip_reader

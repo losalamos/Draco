@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   viz/Viz_Traits.hh
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:10:54 2000
  * \brief  Viz_Traits header file.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_viz_Viz_Traits_hh
 #define rtt_viz_Viz_Traits_hh
@@ -16,28 +15,26 @@
 
 namespace rtt_viz {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Viz_Traits
  *
  * \brief Traits that are used by the rtt_viz package.
  *
- * These traits provide a common way to access 2D-styles arrays/fields in the
- * viz package.  Essentially, they allow vector<vector<T> > types to access data
- * using (i,j) operator overloading.  There is a general field templated type
- * class; specializations exist for vector<vector>.  Other specializations can
- * be added as needed.
+ * These traits provide a common way to access 2D-styles arrays/fields in the viz package.
+ * Essentially, they allow vector<vector<T> > types to access data using (i,j) operator overloading.
+ * There is a general field templated type class; specializations exist for vector<vector>.  Other
+ * specializations can be added as needed.
  *
- * The generalized class requires the Field Type (FT) template argument to
- * have the following services:
+ * The generalized class requires the Field Type (FT) template argument to have the following
+ * services:
  *
  * \arg operator()(int i, int j) where the range is [0:N-1, 0:N-1];
  * \arg nrows() returns the number of rows (i index);
  * \arg ncols(int row) returns the number of columns in row (j index);
- * \arg FT::value_type defined to the type returned by the field (int, double, 
- *      etc).
+ * \arg FT::value_type defined to the type returned by the field (int, double, etc).
  */
-//============================================================================//
+//================================================================================================//
 
 template <typename FT> class Viz_Traits {
 private:
@@ -50,9 +47,7 @@ public:
   }
 
   //! Overloaded operator().
-  typename FT::value_type operator()(size_t i, size_t j) const {
-    return field(i, j);
-  }
+  typename FT::value_type operator()(size_t i, size_t j) const { return field(i, j); }
 
   //! Row size accessor.
   size_t nrows() const { return field.nrows(); }
@@ -61,7 +56,7 @@ public:
   size_t ncols(size_t row) const { return field.ncols(row); }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Specialization for std::vector<std::vector>
 
 template <typename T> class Viz_Traits<std::vector<std::vector<T>>> {
@@ -99,6 +94,6 @@ public:
 
 #endif // rtt_viz_Viz_Traits_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of viz/Viz_Traits.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

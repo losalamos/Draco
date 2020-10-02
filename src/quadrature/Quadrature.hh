@@ -6,7 +6,7 @@
  * \brief  Quadrature class header file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights
  *         reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_quadrature_Quadrature_hh
 #define rtt_quadrature_Quadrature_hh
@@ -19,7 +19,7 @@ using rtt_mesh_element::Geometry;
 using std::string;
 using std::vector;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Quadrature
  *
@@ -48,7 +48,7 @@ using std::vector;
  * geometry, Bad Things Will Happen with any supported quadrature except
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
-//============================================================================//
+//================================================================================================//
 class Quadrature {
 public:
   // ENUMERATIONS AND TYPEDEFS
@@ -159,6 +159,6 @@ protected:
 
 #endif // rtt_quadrature_Quadrature_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Quadrature.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

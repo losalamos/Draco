@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Tabular_CP_Eloss.cc
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Tabular_CP_Eloss member definitions.
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Tabular_CP_Eloss.hh"
 #include "ds++/DracoStrings.hh"
@@ -20,7 +20,7 @@ using std::experimental::dynamic_extent;
 using std::experimental::extents;
 using std::experimental::layout_left;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Do a 3D linear interpolation between vertices of a rectangular prism.
  *
@@ -80,9 +80,9 @@ linear_interpolate_3(double const x0, double const x1, double const y0,
   return f;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic tabular eloss model.
  *
@@ -260,7 +260,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
       exp(min_log_temperature + d_log_temperature * (n_temperature));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read through the next nlines lines and ignore them.
  * \param[in] nlines number of lines in file to skip
@@ -272,7 +272,7 @@ void Tabular_CP_Eloss::skip_lines(uint32_t nlines) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read a line from an eloss datafile and return as a vector of strings.
  * \return entries the resulting vector of entries in the datafile line.
@@ -283,7 +283,7 @@ std::vector<std::string> const Tabular_CP_Eloss::read_line() {
   return rtt_dsxx::tokenize(line);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Interpolate the tabulated stopping power for a given material and
  *        projectile state.
@@ -337,6 +337,6 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
 
 } // namespace rtt_cdi_cpeloss
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Tabular_CP_Eloss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -5,7 +5,7 @@
 ! Brief:    Fortran subroutine for cross language link checks.
 ! Note:     Copyright (C) 2016-2020 Triad National Security, LLC.
 !           All rights reserved.
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
 
 ! http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 ! http://www.fortran.bcs.org/2002/interop.htm (Example of C calling Fortran)

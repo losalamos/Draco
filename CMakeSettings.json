@@ -1,9 +1,10 @@
 ﻿{
   "environments": [
     {
-      "BuildDir": "${env.USERPROFILE}\\vs2019",
-      "projectname":  "draco",
-      "install_subdir": "install/d"
+      "BuildDir": "${env.work_dir}",
+      "projectname": "draco",
+      "install_subdir": "install",
+      "cmakeToolchain": "C:/work/vendors64/vs2019-toolchain.cmake"
     }
   ],
   "configurations": [
@@ -12,26 +13,23 @@
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${env.BuildDir}/${name}/${env.projectname}",
-      "installRoot": "${env.BuildDir}/${name}/${env.install_subdir}",
+      "buildRoot": "${env.BuildDir}/${env.projectname}/${name}",
+      "installRoot": "${env.BuildDir}/${env.projectname}/${env.install_subdir}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-verbosity:minimal -m:${env.NUMBER_OF_PROCESSORS}",
       "ctestCommandArgs": "-j ${env.NUMBER_OF_PROCESSORS} --output-on-failure",
-      "cmakeToolchain": "C:/work/vendors64/vs2019-toolchain.cmake",
-      "variables": [],
-      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe"
+      "variables": []
     },
     {
       "name": "x64-Release",
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Release",
-      "buildRoot": "${env.BuildDir}/${name}/${env.projectname}",
-      "installRoot": "${env.BuildDir}/${name}/${env.install_subdir}",
+      "buildRoot": "${env.BuildDir}/${env.projectname}/${name}",
+      "installRoot": "${env.BuildDir}/${env.projectname}/${env.install_subdir}",
       "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-verbosity:minimal -m:${env.NUMBER_OF_PROCESSORS}",
       "ctestCommandArgs": "-j ${env.NUMBER_OF_PROCESSORS} --output-on-failure",
-      "cmakeToolchain": "C:/work/vendors64/vs2019-toolchain.cmake",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": []
     },
@@ -39,13 +37,12 @@
       "name": "x64-Debug-scalar",
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Debug",
-      "buildRoot": "${env.BuildDir}/${name}/${env.projectname}",
-      "installRoot": "${env.BuildDir}/${name}/${env.install_subdir}",
+      "buildRoot": "${env.BuildDir}/${env.projectname}/${name}",
+      "installRoot": "${env.BuildDir}/${env.projectname}/${env.install_subdir}",
       "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
       "cmakeCommandArgs": "-DDRACO_C4=SCALAR",
       "buildCommandArgs": "-verbosity:minimal -m:${env.NUMBER_OF_PROCESSORS}",
       "ctestCommandArgs": "-j ${env.NUMBER_OF_PROCESSORS} --output-on-failure",
-      "cmakeToolchain": "C:/work/vendors64/vs2019-toolchain.cmake",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": []
     },
@@ -53,13 +50,12 @@
       "name": "x64-Clang-Debug",
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Debug",
-      "buildRoot": "${env.BuildDir}/${name}/${env.projectname}",
-      "installRoot": "${env.BuildDir}/${name}/${env.install_subdir}",
+      "buildRoot": "${env.BuildDir}/${env.projectname}/${name}",
+      "installRoot": "${env.BuildDir}/${env.projectname}/${env.install_subdir}",
       "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
-      "cmakeCommandArgs": "-DCMAKE_C_COMPILER:FILEPATH=\"C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/PREVIEW/VC/Tools/Llvm/x64/bin/clang-cl.exe\"",
+      "cmakeCommandArgs": "-DCMAKE_C_COMPILER:FILEPATH=\"C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/PREVIEW/VC/Tools/llvm/x64/bin/clang-cl.exe\"",
       "buildCommandArgs": "-v:m -m:${env.NUMBER_OF_PROCESSORS} ",
       "ctestCommandArgs": "-j ${env.NUMBER_OF_PROCESSORS} --output-on-failure",
-      "cmakeToolchain": "C:/work/vendors64/vs2019-toolchain.cmake",
       "inheritEnvironments": [ "clang_cl_x64_x64" ],
       "intelliSenseMode": "windows-clang-x64",
       "variables": []

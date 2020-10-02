@@ -1,17 +1,17 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   diagnostics/qt/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2015 June 26
 # brief  Generate build project files for diagnostics/qt
 # note   Copyright (C) 2016-2020, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 cmake_minimum_required( VERSION 3.17.0 )
 project( diagnostics_qt CXX )
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Special options for Qt applications
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 
 # Instruct CMake to run MOC automatically when needed (only for subdirectories
 # that need Qt)
@@ -19,18 +19,18 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Source files
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 
 file( GLOB sources   main.cc mainwindow.cc diWidget.cc)
 file( GLOB headers   mainwindow.hh diWidget.hh)
 file( GLOB ui_files  mainwindow.ui )
 # file( GLOB resources *.qrc )
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # Build package library
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 
 # List Qt5::Widgets as a dependencies but not a VENDOR_LIB to prevent DBS from
 # listing this library as a DRACO_TPL_LIBRARY.  It is not intended for export
@@ -39,7 +39,6 @@ add_component_executable(
   TARGET      Exe_draco_info_gui
   TARGET_DEPS "Lib_diagnostics;Qt5::Widgets"
   SOURCES     "${sources};${ui_files}"
-  PREFIX       Draco
   FOLDER       diagnostics
   NOCOMMANDWINDOW )
 
@@ -52,7 +51,7 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 endif()
 
 # Copy necessary dll files to build directory
-if (WIN32)  
+if (WIN32)
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx>
             $<TARGET_FILE_DIR:Exe_draco_info_gui>
@@ -63,6 +62,6 @@ if (WIN32)
             $<TARGET_FILE_DIR:Exe_draco_info_gui> )
 endif()
 
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # end diagnostics/qt/CMakeLists.txt
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#

@@ -1,17 +1,17 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   buildEnv.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Default CMake build parameters
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Build Parameters
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( dbsSetDefaults )
 
   # make install less verbose.
@@ -138,6 +138,26 @@ macro( dbsSetDefaults )
   # Provide a constrained drop down list in cmake-gui.
   set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
+  # ----------------------------------------
+  # Create shared-object libraries?
+  #
+  # When enabled, all object files per directory will be installed in addition to the normal 
+  # installation of library files.  For some platforms, like KNL, linking objects instead of 
+  # libraries with IPO can produce ~10% more efficient code.
+  # 
+  # This option is used in component_macros.cmake's add_component_library function.
+  #
+  # It is currently disabled by default. It can be enabled by setting 
+  # -DDBS_GENERATE_OBJECT_LIBRARIES=ON.  This feature is not currently supported for Visual Studio 
+  # due to conflict in the way object libraries are generated for MSVC and CAFS subprojects.
+  # ----------------------------------------
+  option(DBS_GENERATE_OBJECT_LIBRARIES "When ON, also generate object-libraries." OFF)
+  if( DBS_GENERATE_OBJECT_LIBRARIES AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    message(FATAL_ERROR 
+      "The Draco build system doesn't currently allow the generation of object-libraries with"
+      "Visual Studio projects.")
+  endif()
+
   # Enable parallel build for Eclipse:
   cmake_host_system_information( RESULT logical_cores QUERY
     NUMBER_OF_LOGICAL_CORES )
@@ -192,9 +212,9 @@ macro( dbsInitExportTargets PREFIX )
       "List of third party libraries used by this package." FORCE)
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Save some build parameters for later use by --config options
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( dbsConfigInfo )
 
    set( DBS_OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
@@ -268,6 +288,6 @@ macro( dbsConfigInfo )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

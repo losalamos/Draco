@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_TR_Eloss_Model.hh
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Analytic_TR_Eloss_Model class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPEloss_Analytic_TR_Eloss_Model_hh
 #define rtt_cdi_CPEloss_Analytic_TR_Eloss_Model_hh
@@ -16,7 +16,7 @@
 #include <functional>
 
 namespace rtt_cdi_cpeloss {
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Analytic_TR_Eloss_Model
  * \brief Analytic_TR_Eloss_Model derived class.
@@ -24,7 +24,7 @@ namespace rtt_cdi_cpeloss {
  * CP energy loss class using Harold Rogers/Thurman Talley electron/ion stopping
  * power expression.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_TR_Eloss_Model : public Analytic_Eloss_Model {
 public:
@@ -43,6 +43,6 @@ public:
 
 #endif // rtt_cdi_CPEloss_Analytic_TR_Eloss_Model_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_TR_Eloss_Model.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

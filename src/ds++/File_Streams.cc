@@ -1,36 +1,35 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/File_Streams.cc
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  File_Streams implementation file.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "File_Streams.hh"
 #include <iomanip>
 
 namespace {
 
-// Define a string to indicate that a file was written in binary mode. This
-// string should be one that is unlikely to be used by a client.
+// Define a string to indicate that a file was written in binary mode. This string should be one
+// that is unlikely to be used by a client.
 static const std::string BINARY_FILE_HEADER =
     "bInArYfIlE_rtt_dsxx_File_Streams";
 } // namespace
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // File_Output functions.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor
  *
- * \param filename The file name to open for writing.  If empty, open() must
- *                 be used later to open a file.
+ * \param filename The file name to open for writing.  If empty, open() must be used later to open a
+ *                 file.
  * \param binary   If true, use binary mode for writing.
  */
 File_Output::File_Output(std::string const &filename, bool const binary)
@@ -41,13 +40,11 @@ File_Output::File_Output(std::string const &filename, bool const binary)
     open(filename, binary);
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Destructor
- */
+//------------------------------------------------------------------------------------------------//
+//! Destructor
 File_Output::~File_Output() { close(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opens a file for writing.
  *
@@ -73,10 +70,8 @@ void File_Output::open(const std::string &filename, const bool binary) {
   Ensure(d_stream);
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Closes the stream.
- */
+//------------------------------------------------------------------------------------------------//
+//! Closes the stream.
 void File_Output::close() {
   if (d_stream.is_open()) {
     if (d_last_was_char)
@@ -85,10 +80,8 @@ void File_Output::close() {
   }
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Stream output for type char.
- */
+//------------------------------------------------------------------------------------------------//
+//! Stream output for type char.
 File_Output &File_Output::operator<<(const char c) {
   Require(d_stream.is_open());
 
@@ -96,8 +89,7 @@ File_Output &File_Output::operator<<(const char c) {
     d_stream.write(&c, 1);
   } else // ascii mode
   {
-    // For char, we don't add a newline, in case its part of a
-    // character string.
+    // For char, we don't add a newline, in case its part of a character string.
     d_last_was_char = true;
     d_stream << c;
   }
@@ -107,16 +99,16 @@ File_Output &File_Output::operator<<(const char c) {
   return *this;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // File_Input functions.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor
  *
- * \param filename The file name to open for reading.  If empty, open() must
- *                 be used later to open a file.
+ * \param filename The file name to open for reading.  If empty, open() must be used later to open a
+ *                 file.
  */
 File_Input::File_Input(std::string const &filename)
     : d_stream(), d_line(std::string()) {
@@ -124,13 +116,13 @@ File_Input::File_Input(std::string const &filename)
     open(filename);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Destructor
  */
 File_Input::~File_Input() { close(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opens a file for reading.
  *
@@ -163,7 +155,6 @@ void File_Input::open(const std::string &filename) {
   }
 
   // If the file is not binary, re-open in ascii mode.
-
   if (!d_binary) {
     d_stream.close();
     d_stream.open(filename.c_str());
@@ -172,20 +163,16 @@ void File_Input::open(const std::string &filename) {
   Ensure(d_stream);
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Closes the stream.
- */
+//------------------------------------------------------------------------------------------------//
+//! Closes the stream.
 void File_Input::close() {
   if (d_stream.is_open()) {
     d_stream.close();
   }
 }
 
-//----------------------------------------------------------------------------//
-/*!
- * \brief Stream input for type char.
- */
+//------------------------------------------------------------------------------------------------//
+//! Stream input for type char.
 File_Input &File_Input::operator>>(char &c) {
   Require(d_stream.is_open());
 
@@ -211,6 +198,6 @@ File_Input &File_Input::operator>>(char &c) {
 
 } // namespace rtt_dsxx
 
-//----------------------------------------------------------------------------//
-//                              end of ds++/File_Streams.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// end of ds++/File_Streams.cc
+//------------------------------------------------------------------------------------------------//

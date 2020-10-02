@@ -1,33 +1,32 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_Req.cc
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req member definitions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "C4_Req.hh"
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor.
  *
  * Register a new non blocking message request.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 C4_Req::C4_Req() : p(new C4_ReqRefRep) { ++p->n; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor.
  *
  * Attach to an existing message request.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 C4_Req::C4_Req(const C4_Req &req) : p(nullptr) {
   if (req.inuse())
     p = req.p;
@@ -36,24 +35,23 @@ C4_Req::C4_Req(const C4_Req &req) : p(nullptr) {
   ++p->n;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Destructor.
  *
- * If we've been left holding the bag, make sure the message has completed.
- * This should plug a wide class of potential programming errors.
+ * If we've been left holding the bag, make sure the message has completed.  This should plug a wide
+ * class of potential programming errors.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 C4_Req::~C4_Req() { free_(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Assignment.
  *
- * Detach from our prior message request, waiting on it if necessary.  Then
- * attach to the new one.
+ * Detach from our prior message request, waiting on it if necessary.  Then attach to the new one.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 C4_Req &C4_Req::operator=(const C4_Req &req) {
   this->free_();
 
@@ -67,11 +65,11 @@ C4_Req &C4_Req::operator=(const C4_Req &req) {
   return *this;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Utility for cleaning up letter in letter/envelope idiom
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* private */
 void C4_Req::free_() {
   --p->n;
@@ -89,13 +87,13 @@ void C4_ReqRefRep::free() {
   clear();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor.
  *
  * Register a new non blocking message request.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 C4_ReqRefRep::C4_ReqRefRep()
 #ifdef C4_MPI
     : r(MPI_Request())
@@ -104,7 +102,7 @@ C4_ReqRefRep::C4_ReqRefRep()
   // empty
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Wait for an asynchronous message to complete.
  * \param status Status object.
@@ -114,8 +112,8 @@ C4_ReqRefRep::C4_ReqRefRep()
  *
  * \bug Clang-analyzer via clang-tidy issues a false positive for this code
  * \code
- * draco/src/c4/C4_Req.cc:125:5: warning: Request  has no matching nonblocking\
- *   call.  [clang-analyzer-optin.mpi.MPI-Checker]
+ * draco/src/c4/C4_Req.cc:125:5: warning: Request  has no matching nonblocking  call.
+ * [clang-analyzer-optin.mpi.MPI-Checker]
  * MPI_Wait(&r, s);
  * \endcode
  */
@@ -140,15 +138,14 @@ void C4_ReqRefRep::wait(C4_Status * /*status*/) { clear(); }
 
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Tests for the completion of a non blocking operation.
  * \param status Status object.
  *
- * This function is non-const because it updates the underlying request data
- * member.
+ * This function is non-const because it updates the underlying request data member.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef C4_MPI
 
 bool C4_ReqRefRep::complete(C4_Status *status) {
@@ -182,6 +179,6 @@ bool C4_ReqRefRep::complete(C4_Status * /*status*/) {
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of C4_Req.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
