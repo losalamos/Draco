@@ -40,7 +40,7 @@ def read_csk_files(filebase, verbosity=False):
 
     # normalizations
     mec2 = 510.998 # keV
-    csk_norm = 0.037558 # currently approximate
+    csk_norm = 2.0 * 0.037558 # currently approximate
 
     # Try to read all csk files
     mats = {}

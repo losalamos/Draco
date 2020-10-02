@@ -30,46 +30,34 @@ set( headers
 add_component_library(
   TARGET       Lib_compton2
   TARGET_DEPS  "Lib_c4;Lib_units;Lib_cdi_analytic"
+  INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
   LIBRARY_NAME compton2
   SOURCES      "${sources}"
   HEADERS      "${headers}" )
 
-# generated include directive files (config.h)
-#target_include_directories( Lib_compton2
-    #  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
-
 add_component_executable(
   TARGET      Exe_CSKrw
   TARGET_DEPS "Lib_units;Lib_compton2"
-  SOURCES     ${PROJECT_SOURCE_DIR}/cskrw.cc
-  PREFIX       Draco )
+  SOURCES     ${PROJECT_SOURCE_DIR}/cskrw.cc)
 
 # Copy necessary dll files to the build directory
 if( MSVC AND DRACO_LIBRARY_TYPE STREQUAL SHARED )
 add_custom_command( TARGET Lib_compton2 POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
   $<TARGET_FILE_DIR:Lib_compton2> )
 endif()
 
 # -------------------------------------------------------------------------- #
 # Installation instructions
 # -------------------------------------------------------------------------- #
-
 set( CMAKE_INSTALL_DO_STRIP NO ) # ??
-install( TARGETS Lib_compton2 EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton2 )
-install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION
-  ${DBSCFGDIR}bin )
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
- install(FILES $<TARGET_PDB_FILE:Lib_compton2> DESTINATION ${DBSCFGDIR}lib
-   OPTIONAL)
-endif()
+install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
+install( FILES python/common_compton.py python/csk_reader.py python/merge_csk.py DESTINATION ${DBSCFGDIR}bin )
 
 # -------------------------------------------------------------------------- #
 # Unit tests
 # -------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
   add_subdirectory( test )
 endif()
@@ -77,7 +65,6 @@ endif()
 # -------------------------------------------------------------------------- #
 # Autodoc
 # -------------------------------------------------------------------------- #
-
 process_autodoc_pages()
 
 #------------------------------------------------------------------------------#
