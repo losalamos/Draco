@@ -54,8 +54,9 @@ std::string draco_gethostname() {
   std::array<char, HOST_NAME_MAX> hostname;
   hostname.fill('x');
   int err = gethostname(&hostname[0], sizeof(hostname));
-  if (err)
-    strncpy(&hostname[0], "gethostname() failed", HOST_NAME_MAX);
+  if (err) {
+    return std::string("gethostname() failed!");
+  }
   return std::string(hostname.data());
 
 #else

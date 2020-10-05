@@ -1,11 +1,9 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   MathConstants.hh
  *  \author Kelly Thompson
- *  \brief  Provide a single place where physical constants (pi, speed of
- *          light, etc) are defined.
+ *  \brief  Provide a single place where physical constants (pi, speed of light, etc) are defined.
  *  \date   Fri Nov 07 10:04:52 2003
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.  All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_MathConstants_hh
@@ -15,8 +13,7 @@
 namespace rtt_units {
 // Mathematical constants
 
-// N.B. M_PI and M_E, though widely implemented as part of <cmath>, are not
-// standard C++.
+// N.B. M_PI and M_E, though widely implemented as part of <cmath>, are not standard C++.
 
 //! pi the ratio of a circle's circumference to its diameter (dimensionless)
 static double constexpr PI = 3.141592653589793238462643383279;

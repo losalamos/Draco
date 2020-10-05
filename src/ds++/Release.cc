@@ -56,7 +56,7 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name, mm
 }
 
 //------------------------------------------------------------------------------------------------//
-//! Define the local version number for this library in the form Draco-#_#_#.
+//! Define the local version number for this library in the form \c Draco-NN_NN_NN.
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version

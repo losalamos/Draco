@@ -4,12 +4,9 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta_inv.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  *
- * The implementations here are derived from C implementations from Numerical
- * Recipes.
- */
+ * The implementations here are derived from C implementations from Numerical Recipes.*/
 //------------------------------------------------------------------------------------------------//
 
 #include "F_eta_inv.hh"
@@ -32,8 +29,7 @@ static double lgamma, ln;
  * \brief Return residual of inversion of F_eta.
  *
  * \param eta Dimensionless chemical potential
- * \return Value of the relativistic Fermi-Dirac integral for the given chemical
- *        potential.
+  * \return Value of the relativistic Fermi-Dirac integral for the given chemical potential.
  */
 static double Feta_diff(double eta) { return F_eta(eta, lgamma) - ln; }
 
@@ -46,8 +42,8 @@ static double Feta_diff(double eta) { return F_eta(eta, lgamma) - ln; }
  * \f]
  * The dimensionless number density is its partial derivative with eta.
  *
- * \param n Dimensionless number density \f$\frac{\partial
- *       F_{3/2}}{\partial\eta}=\frac{3Nh^3}{\pi g m^3c^3}\f$
+ * \param n Dimensionless number density \f$\frac{\partial F_{3/2}}{\partial\eta}=\frac{3Nh^3}{\pi g
+ *       m^3c^3}\f$
  * \param gamma Dimensionless temperature \f$\gamma=\frac{kT}{mc^2}\f$
  *
  * \pre \c n>0
@@ -55,10 +51,9 @@ static double Feta_diff(double eta) { return F_eta(eta, lgamma) - ln; }
  *
  * \return Dimensionless chemical potential \f$\eta=\frac{\mu}{kT}\f$
  *
- * \note This implementation is very expensive.  it is also of limited utility,
- *       since for problems for which the relativistic form of the Fermi-Dirac
- *       function is needed, pair production is likely to be important,
- *       requiring inversion of \f$F_{3/2}(\eta, \gamma) - F_{3/2}(-2-\eta,
+ * \note This implementation is very expensive.  it is also of limited utility, since for problems
+ *       for which the relativistic form of the Fermi-Dirac function is needed, pair production is
+ *       likely to be important, requiring inversion of \f$F_{3/2}(\eta, \gamma) - F_{3/2}(-2-\eta,
  *       \gamma)\f$ rather than just \f$F_{3/2}(\eta, \gamma)\f$
  */
 double F_eta_inv(double const n, double const gamma) {

@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:24:48 2004
  * \brief  Test the zbrent function template
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -38,8 +37,6 @@ public:
 void tstzbrent(UnitTest &ut) {
   double x1 = 0.1, x2 = 10.0;
 
-  //    zbrac<double (*)(double)>(log, x1, x2);
-
   // Help out the compiler by defining function pointer signature.
   using fpdd = double (*)(double);
   fpdd log_fpdd = &foo;
@@ -47,7 +44,7 @@ void tstzbrent(UnitTest &ut) {
 
   double xtol = numeric_limits<double>::epsilon();
   double ftol = numeric_limits<double>::epsilon();
-  //    if (soft_equiv(zbrent<double (*)(double)>(log,
+
   if (soft_equiv(zbrent<fpdd>(log_fpdd, x1, x2, 100, xtol, ftol), 1.0)) {
     ut.passes("zbrent found the zero of the log function");
   } else {

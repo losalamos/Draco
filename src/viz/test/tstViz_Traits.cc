@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
- * \note   Copyright (C) 2000-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2000-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -37,12 +36,8 @@ public:
 //------------------------------------------------------------------------------------------------//
 // Use soft_equiv for floating-point types, but not for integral types.
 
-bool compare_vdf_field(double const &v1, double const &v2) {
-  return rtt_dsxx::soft_equiv(v1, v2);
-}
-bool compare_vdf_field(float const &v1, float const &v2) {
-  return rtt_dsxx::soft_equiv(v1, v2);
-}
+bool compare_vdf_field(double const &v1, double const &v2) { return rtt_dsxx::soft_equiv(v1, v2); }
+bool compare_vdf_field(float const &v1, float const &v2) { return rtt_dsxx::soft_equiv(v1, v2); }
 bool compare_vdf_field(int const &v1, int const &v2) { return v1 == v2; }
 
 //------------------------------------------------------------------------------------------------//

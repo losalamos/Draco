@@ -267,13 +267,9 @@ bool fpe_trap::enable() {
 
   fp_control_word &= ~(EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW);
 
-  // Other options:
-  // _EM_DENORMAL
-  // _EM_UNDERFLOW
-  // _EM_INEXACT
+  // Other options: _EM_DENORMAL, _EM_UNDERFLOW, _EM_INEXACT
 
-  // Update the control word with our changes
-  // MCW_EM is Interrupt exception mask.
+  // Update the control word with our changes: MCW_EM is Interrupt exception mask.
   _controlfp(fp_control_word, MCW_EM);
 
   if (this->abortWithInsist)

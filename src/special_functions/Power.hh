@@ -6,11 +6,10 @@
  * \brief  A meta-programming implementation of the Russian Pesant algorithm.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC
  *
- * Use meta-programming to generate an efficient routine to compute integer
- * powers.
+ * Use meta-programming to generate an efficient routine to compute integer powers.
  *
- * E.g.: Power<4>(x) computes the fourth power of x. The function constructed at
- * compile time should be equivalent to the following:
+ * E.g.: Power<4>(x) computes the fourth power of x. The function constructed at compile time should
+ * be equivalent to the following:
  *
  * \code
  *   v1 = x * x
@@ -29,8 +28,8 @@
  *  return v3;
  * \endcode
  *
- * The meta-algorithm is based on the Russian Peasant Algorithm, modified to be
- * recursive, since this is required for template meta-programming in C++.
+ * The meta-algorithm is based on the Russian Peasant Algorithm, modified to be recursive, since
+ * this is required for template meta-programming in C++.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -39,15 +38,13 @@
 
 namespace rtt_sf {
 
-/* Protect the implementation detail of struct P from accidental usage outside
- * of this file.
- */
+// Protect the implementation detail of struct P from accidental usage outside of this file.
 
 namespace {
 
-/* Struct P implements a static method: 'compute' which recusvively calls
- * P::compute for N/2.  We use a struct to hold compute because we need to
- * specialize for N=0 and this is not possible with a template function.
+/* Struct P implements a static method: 'compute' which recusvively calls P::compute for N/2.  We
+ * use a struct to hold compute because we need to specialize for N=0 and this is not possible with
+ * a template function.
  */
 
 template <int N, typename F> struct P {
@@ -61,17 +58,15 @@ template <int N, typename F> struct P {
   }
 };
 
-/* Specialize struct P on N=0 to terminate the recursion.
- */
+// Specialize struct P on N=0 to terminate the recursion.
 template <typename F> struct P<0, F> {
   static F compute(F /*x*/, F p) { return p; }
 };
 } // namespace
 
-/* Function Power recursively implements the first half of the Russian Pesant
- * algorithm, by repeatedly computing x=x^2, N=N/2, so long as the remaining
- * exponent is even. When an odd exponent is reached, it dispatches to
- * P<N>::compute(x,x) which contiunues the calculation.
+/* Function Power recursively implements the first half of the Russian Pesant algorithm, by
+ * repeatedly computing x=x^2, N=N/2, so long as the remaining exponent is even. When an odd
+ * exponent is reached, it dispatches to P<N>::compute(x,x) which contiunues the calculation.
  */
 
 template <int N, typename F> F Power(F x) {

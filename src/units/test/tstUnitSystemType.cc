@@ -3,8 +3,7 @@
  * \file   units/test/tstUnitSystemType.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -57,8 +56,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
     FAILMSG(msg.str());
   }
 
-  // Establish a fundamental unit for the length, mass and Temperature portions
-  // of UnitSystemType...
+  // Establish a fundamental unit for the length, mass and Temperature portions of UnitSystemType...
   ust.L(rtt_units::L_m).M(rtt_units::M_kg).T(rtt_units::T_K);
 
   // Check that the object was updated...
@@ -141,8 +139,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
-        << "Q().enumVal() == Q_mol.  Instead the valued retuned was: "
-        << ust.Q().enumVal() << endl;
+        << "Q().enumVal() == Q_mol.  Instead the valued retuned was: " << ust.Q().enumVal() << endl;
     FAILMSG(msg.str());
   }
   if (soft_equiv(ust.Q().cf(), 1.0)) {
@@ -150,8 +147,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
-        << "Q().cf() == 1.0.  Instead the value returned was: " << ust.Q().cf()
-        << endl;
+        << "Q().cf() == 1.0.  Instead the value returned was: " << ust.Q().cf() << endl;
     FAILMSG(msg.str());
   }
   if (ust.Q().label() == "mol") {
@@ -159,8 +155,8 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
-        << R"(Q().label() == "mol".  Instead the value returned was: ")"
-        << ust.Q().label() << "\"" << endl;
+        << R"(Q().label() == "mol".  Instead the value returned was: ")" << ust.Q().label() << "\""
+        << endl;
     // " fix emacs font-lock issue with odd number of quotes.
     FAILMSG(msg.str());
   }
@@ -189,8 +185,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
         << "A().label() == \"rad\"." << endl
-        << "\tInstead the returned value was: \"" << ust.A().label() << "\""
-        << endl;
+        << "\tInstead the returned value was: \"" << ust.A().label() << "\"" << endl;
     FAILMSG(msg.str());
   }
   //---------------------------------------------------------------------//
@@ -218,8 +213,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
         << "I().label() == \"Amp\"." << endl
-        << "\tInstead the returned value was: \"" << ust.I().label() << "\""
-        << endl;
+        << "\tInstead the returned value was: \"" << ust.I().label() << "\"" << endl;
     FAILMSG(msg.str());
   }
   //---------------------------------------------------------------------//
@@ -247,8 +241,7 @@ void test_default_ctor(rtt_dsxx::UnitTest &ut) {
     ostringstream msg;
     msg << "UnitSystemType container does not have "
         << "t().label() == \"shake\"." << endl
-        << "\tInstead the returned value was: \"" << ust.t().label() << "\""
-        << endl;
+        << "\tInstead the returned value was: \"" << ust.t().label() << "\"" << endl;
     FAILMSG(msg.str());
   }
 
@@ -262,9 +255,8 @@ void test_qualified_ctor(rtt_dsxx::UnitTest &ut) {
   using std::endl;
   using std::ostringstream;
 
-  UnitSystemType ust(rtt_units::L_cm, rtt_units::M_g, rtt_units::t_us,
-                     rtt_units::T_K, rtt_units::I_amp, rtt_units::A_rad,
-                     rtt_units::Q_mol);
+  UnitSystemType ust(rtt_units::L_cm, rtt_units::M_g, rtt_units::t_us, rtt_units::T_K,
+                     rtt_units::I_amp, rtt_units::A_rad, rtt_units::Q_mol);
 
   //----------------------------------------//
 

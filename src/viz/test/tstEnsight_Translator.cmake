@@ -2,12 +2,8 @@
 # file   viz/test/tstEnsight_Translator.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Friday, Aug 28, 2015, 14:27 pm
-# brief  This is a CTest script that is used to check the output from
-#        viz/test/tstEnsight_Translator
-# note   Copyright (C) 2016, Triad National Security, LLC.
-#        All rights reserved.
-#--------------------------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
+# brief  This is a CTest script that is used to check the output from viz/test/tstEnsight_Translator
+# note   Copyright (C) 2016, Triad National Security, LLC.  All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 # See examples at config/ApplicationUnitTest.cmake and diagnostics/test/tDracoInfo.cmake
@@ -21,8 +17,7 @@ include( ApplicationUnitTest )
 aut_setup()
 
 ##---------------------------------------------------------------------------##
-# Run the application and capture the output.
-# Variables available for inspection:
+# Run the application and capture the output.  Variables available for inspection:
 #   ${testres} contains the return code
 #   ${testout} contains stdout
 #   ${testerror} contains stderr
@@ -36,8 +31,7 @@ set( vars
   Temperatures
   Pressure
   Velocity
-  Densities
-  )
+  Densities )
 
 # testproblem_ensight directory
 foreach( var ${vars} )
@@ -95,9 +89,8 @@ diff output = ${diffout}" )
   endif()
 endmacro()
 
-# Comparing binary files is expected to fail on powerpc architectures
-# because the Endianess of the machine is different than for the
-# machine where the gold file was created.  So, for powerpc, skip
+# Comparing binary files is expected to fail on powerpc architectures because the Endianess of the
+# machine is different than for the machine where the gold file was created.  So, for powerpc, skip
 # these comparisons.
 
 set( little-endian TRUE )

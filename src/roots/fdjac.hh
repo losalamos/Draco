@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Wed Aug 11 08:07:04 2004
  * \brief  Compute the Jacobian of a nonlinear system of equations
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef roots_fdjac_hh
@@ -25,27 +24,24 @@ namespace rtt_roots {
 /*!
  * \brief Calculate the Jacobian of a nonlinear system of equations.
  *
- * This procedure computes the Jacobian using a forward-difference
- * approximation.
+ * This procedure computes the Jacobian using a forward-difference approximation.
  *
  * \arg \a Field A field type
- * \arg \a Function_N_to_N A function representing a set of N functions of N
- *         variables.
+ * \arg \a Function_N_to_N A function representing a set of N functions of N variables.
  *
  * \param x Point at which the Jacobian is to be evaluated.
  * \param fvec Residuals of the equations at x.
- * \param df On return, contains the Jacobian. The ordering is that df[i+n*j]
- *         contains the jth derivative of the ith residual.
- * \param vecfunc Multifunctor returning the residuals of the nonlinear
- *         equations.
+ * \param df On return, contains the Jacobian. The ordering is that df[i+n*j] contains the jth
+ *         derivative of the ith residual.
+ * \param vecfunc Multifunctor returning the residuals of the nonlinear equations.
  *
  * \pre \c x.size()==fvec.size()
  * \post \c df.size()==square(x.size())
  */
 
 template <class Field, class Function_N_to_N>
-void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
-           std::vector<Field> &df, const Function_N_to_N &vecfunc) {
+void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec, std::vector<Field> &df,
+           const Function_N_to_N &vecfunc) {
   Require(x.size() == fvec.size());
 
   using std::abs;

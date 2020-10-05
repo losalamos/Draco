@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building src level Makefile.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
 project( draco_src_dir )
@@ -17,21 +16,18 @@ if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
     toggle_compiler_flag( TRUE "-Wconversion -Wdouble-promotion" "CXX" "DEBUG")
   endif()
+
 #  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
-#
 # '-fsanitize=address' Not working just yet.  Issues...
-# 1. libasan.so.5: warning: the use of `tempnam' is dangerous, better use
-#    `mkstemp'
-# 2.==134051==ASan runtime does not come first in initial library list; you
-#   should either link runtime to your application or manually preload it with
-#   LD_PRELOAD.
+# 1. libasan.so.5: warning: the use of `tempnam' is dangerous, better use `mkstemp'
+# 2. ==134051==ASan runtime does not come first in initial library list; you should either link
+#    runtime to your application or manually preload it with LD_PRELOAD.
 # 3. many more run time issues, some may require suppression.
 #
-#    toggle_compiler_flag( TRUE
-#      "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract"
-#      "CXX" "DEBUG")
-#
+#    toggle_compiler_flag( TRUE 
+#      "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract" "CXX" "DEBUG")
 #  endif()
+
 elseif( CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" )
   string( REPLACE "/W2" "/W4" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
   string( REPLACE "/W2" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
@@ -40,8 +36,7 @@ endif()
 # <experimental/mdspan> doesn't work with some tool chains...
 option( USE_MDSPAN "Use experimental/mdspan" ON)
 if( (MSVC AND CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR
-    (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND
-     CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18.0) )
+  (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18.0) )
   set(USE_MDSPAN OFF)
 endif()
 
@@ -206,8 +201,7 @@ if( DBS_PRINT_DEBUG_INFO )
   set( dbs_targets
     # Lib_dsxx
     # Lib_dsxx_test
-    Exe_Ipcress_Interpreter
-    )
+    Exe_Ipcress_Interpreter )
   echo_targets( ${dbs_targets} )
 endif()
 

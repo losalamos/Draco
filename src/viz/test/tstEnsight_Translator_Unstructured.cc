@@ -1,11 +1,10 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   viz/test/tstEnsight_Translator_Unstructured.cc
  * \author Thomas M. Evans, Ryan T. Wollaeger
  * \date   Wednesday, Oct 03, 2018, 15:27 pm
  * \brief  Ensight_Translator unstructured mesh test.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -17,9 +16,8 @@
 using rtt_viz::Ensight_Translator;
 
 template <typename IT>
-void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
-                               bool const binary, bool const geom,
-                               bool const decomposed) {
+void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix, bool const binary,
+                               bool const geom, bool const decomposed) {
 
   // short-cuts
   typedef std::vector<std::string> vec_s;
@@ -42,8 +40,8 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   double time = .01;
   double dt = .01;
 
-  std::string const gd_wpath = rtt_dsxx::getFilenameComponent(
-      ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
+  std::string const gd_wpath =
+      rtt_dsxx::getFilenameComponent(ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
 
   // >>> INITIALIZE AND SET VECTOR DATA
 
@@ -89,8 +87,7 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   }
 
   // Build path for the input file "cell_data_unstr2d"
-  std::string const cdInputFile =
-      ut.getTestSourcePath() + std::string("cell_data_unstr2d");
+  std::string const cdInputFile = ut.getTestSourcePath() + std::string("cell_data_unstr2d");
   std::ifstream input(cdInputFile.c_str());
   if (!input)
     ITFAILS;
@@ -105,11 +102,11 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   }
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
-  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, geom, binary, decomposed);
+  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names, true, geom, binary,
+                                decomposed);
 
-  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
-                          vrtx_data, cell_data, rgn_data, rgn_name);
+  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data,
+                          cell_data, rgn_data, rgn_name);
 
   std::vector<double> dump_times = translator.get_dump_times();
   if (dump_times.size() != 1)
@@ -134,8 +131,7 @@ int main(int argc, char *argv[]) {
     if (rtt_c4::node() == 0) {
       // check serial writes
       bool decomposed{false};
-      std::string prefix =
-          "unstr2d_testproblem_serial_" + std::to_string(rtt_c4::nodes());
+      std::string prefix = "unstr2d_testproblem_serial_" + std::to_string(rtt_c4::nodes());
       ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
       // Binary dumps
@@ -148,8 +144,7 @@ int main(int argc, char *argv[]) {
     }
     // check decomposed writes
     bool decomposed{true};
-    std::string prefix =
-        "unstr2d_testproblem_parallel_" + std::to_string(rtt_c4::nodes());
+    std::string prefix = "unstr2d_testproblem_parallel_" + std::to_string(rtt_c4::nodes());
     ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
     // Binary dumps

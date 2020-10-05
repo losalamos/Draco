@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef roots_zbrent_i_hh
@@ -20,42 +19,37 @@ namespace rtt_roots {
 /*!
  * Pinpoint a bracketed root of a function.
  *
- * \c zbrent returns when either \c tol or \c ftol achieves the requested value
- *           or when \c ITMAX iterations have been attempted.
+ * \c zbrent returns when either \c tol or \c ftol achieves the requested value or when \c ITMAX
+ *           iterations have been attempted.
  *
- * \arg \a Function The template type must support <code>double
- *           operator()(double)</code>.
+ * \arg \a Function The template type must support <code>double operator()(double)</code>.
  *
  * \param[in] func Function whose zero is to be found.
- * \param[in] x1 Lower limit of search range.
+ * \param[in] x1 Lower limit of search range
  * \param[in] x2 Upper limit of search range.  \c x1 and \c x2 must bracket a
  *           root; that is, the value of \c func(x1) must differ in sign from
  *           the value of \c func(x2).  rtt_roots::zbrac may be helpful for
  *           bracketing a root.
  * \param[in] itmax Maximum number of iterations to try.
- * \param[in,out] tol On entry, the desired absolute tolerance in the argument.
- *           On return, this is replaced with the tolerance actually achieved.
- * \param[in,out] ftol On entry, the desired absolute tolerance in the function
- *           value.  On return, this is replaced with the tolerance actually
- *           achieved.
+ * \param[in,out] tol On entry, the desired absolute tolerance in the argument. On return, this is
+ *           replaced with the tolerance actually achieved.
+ * \param[in,out] ftol On entry, the desired absolute tolerance in the function value.  On return,
+ *           this is replaced with the tolerance actually achieved.
  *
  * \pre <code>(fa>=0.0 && fb<=0.0) || (fa<=0.0 && fb>=0.0)</code>
  *
  * \return An estimated zero of the function.
  *
- * \throw std::domain_error If the function does not appear to be analytic in
- *           the search interval.
+ * \throw std::domain_error If the function does not appear to be analytic in the search interval.
  *
- * \note The tolerances \c tol and \c ftol should always be checked after the
- *       function is called, to verify that an acceptable accuracy has been
- *       achieved.  If the function is analytic in <code>[x1,x2]</code>, then in
- *       principle zbrent cannot fail.  In practice, zbrent may fail to achieve
- *       tight tolerances if the function is either very slowly or very rapidly
- *       varying near its zero, due to roundoff.
+ * \note The tolerances \c tol and \c ftol should always be checked after the function is called, to
+ *       verify that an acceptable accuracy has been achieved.  If the function is analytic in
+ *       <code>[x1,x2]</code>, then in principle zbrent cannot fail.  In practice, zbrent may fail
+ *       to achieve tight tolerances if the function is either very slowly or very rapidly varying
+ *       near its zero, due to roundoff.
  */
 template <typename Function, typename Real>
-Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
-            Real &ftol) {
+Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol, Real &ftol) {
   using std::min;
   using std::numeric_limits;
 
@@ -85,8 +79,7 @@ Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
     }
 
     Real absb = (b > 0. ? b : -b);
-    Real const tol1 =
-        2.0 * numeric_limits<double>::epsilon() * absb + 0.5 * tol;
+    Real const tol1 = 2.0 * numeric_limits<double>::epsilon() * absb + 0.5 * tol;
 
     xm = 0.5 * (c - b);
     Real axm = (xm > 0. ? xm : -xm);

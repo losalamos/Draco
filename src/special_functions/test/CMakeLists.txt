@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Aug 1
 # brief  Generate build project files for special_functions/test
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( special_functions_test CXX )
@@ -17,7 +16,6 @@ file( GLOB test_sources *.cc )
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
-
 add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "Lib_special_functions;Lib_diagnostics" )
@@ -25,7 +23,6 @@ add_scalar_tests(
 #--------------------------------------------------------------------------------------------------#
 # Copy vendor dll files to test directory (binary_dir)
 #--------------------------------------------------------------------------------------------------#
-
 if( WIN32 )
    provide_aux_files( FILES "${GSL_DLL_LIBRARIES}" )
 endif()

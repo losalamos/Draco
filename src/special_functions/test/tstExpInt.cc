@@ -4,8 +4,7 @@
  * \author Paul Talbot
  * \date   Thu Jul 28 09:20:34 2011
  * \brief  Tests the ExpInt for correct solutions in each routine
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -89,8 +88,7 @@ void tstE0(rtt_dsxx::UnitTest &ut) {
 
   std::ostringstream msg;
   if (soft_equiv(val, expVal)) {
-    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal
-        << ".";
+    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal << ".";
     ut.passes(msg.str());
   } else {
     msg << "E_" << n << "(" << x << ") did NOT return the expected value.\n"
@@ -109,8 +107,7 @@ void tstE3_0(rtt_dsxx::UnitTest &ut) {
 
   std::ostringstream msg;
   if (soft_equiv(val, expVal)) {
-    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal
-        << ".";
+    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal << ".";
     ut.passes(msg.str());
   } else {
     msg << "E_" << n << "(" << x << ") did NOT return the expected value.\n"
@@ -129,8 +126,7 @@ void tstE4_low(rtt_dsxx::UnitTest &ut) {
 
   std::ostringstream msg;
   if (soft_equiv(val, expVal)) {
-    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal
-        << ".";
+    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal << ".";
     ut.passes(msg.str());
   } else {
     msg << "E_" << n << "(" << x << ") did NOT return the expected value.\n"
@@ -149,8 +145,7 @@ void tstE1_high(rtt_dsxx::UnitTest &ut) {
 
   std::ostringstream msg;
   if (soft_equiv(val, expVal)) {
-    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal
-        << ".";
+    msg << "E_" << n << "(" << x << ") returned the expected value, " << expVal << ".";
     ut.passes(msg.str());
   } else {
     msg << "E_" << n << "(" << x << ") did NOT return the expected value.\n"

@@ -5,6 +5,12 @@
 
 #include "ds++/config.h"
 
+#ifdef _MSC_FULL_VER
+// - 4996: 'sscanf': This function or variable may be unsafe.
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused variable" warning.
@@ -757,6 +763,11 @@ public:
 #pragma GCC diagnostic pop
 #endif
 #endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
+
 // clang-format on
 
 //------------------------------------------------------------------------------------------------//

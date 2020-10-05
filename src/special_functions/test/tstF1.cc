@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \brief  Unit test for F1 function.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -32,9 +31,7 @@ void tstF1(UnitTest &ut) {
     ut.failure("NOT correct F1 for -10.0");
   }
   f1 = F1(1000.0);
-  if (soft_equiv(f1,
-                 pow(1000.0, 2.0) / 2.0 + PI * PI * 1 * pow(1000.0, 0.0) / 6.0,
-                 1.0e-10)) {
+  if (soft_equiv(f1, pow(1000.0, 2.0) / 2.0 + PI * PI * 1 * pow(1000.0, 0.0) / 6.0, 1.0e-10)) {
     ut.passes("correct F1 for 1000.0");
   } else {
     ut.failure("NOT correct F1 for 1000.0");

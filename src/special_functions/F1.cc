@@ -3,8 +3,7 @@
  * \file   special_functions/F1.cc
  * \author Kent Budge
  * \brief  Implementation of F1
- * \note   Copyright (C) 2016-2020 Triad National Security,
-*          All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "F1.hh"
@@ -20,11 +19,10 @@ using namespace std;
  * F_n(\eta) = \int_0^\infty \frac{x^n}{e^{x-\eta}+1} dx
  * \f]
  *
- * This implementation is modelled after Fermi-Dirac implementations from the
- * Chicago Astrophysical Flash Center.  These use a rational function
- * expansion to get the fermi-dirac integral. Reference: antia apjs 84,101
- * 1993
- * 
+ * This implementation is modelled after Fermi-Dirac implementations from the Chicago Astrophysical
+ * Flash Center.  These use a rational function expansion to get the fermi-dirac
+ * integral. Reference: antia apjs 84,101 1993
+ *
  * \param x Dimensionless chemical potential \f$\eta\f$
  *
  * \return Value of \f$F_1(\eta)\f$
@@ -40,14 +38,12 @@ double F1(double const x) {
   unsigned const m2 = 9;
   unsigned const k2 = 5;
 
-  double const a1[m1 + 1] = {-7.606458638543e7, -1.143519707857e8,
-                             -5.167289383236e7, -7.304766495775e6,
-                             -1.630563622280e5, 3.145920924780e3,
-                             -7.156354090495e1, 1.0e0};
+  double const a1[m1 + 1] = {
+      -7.606458638543e7, -1.143519707857e8, -5.167289383236e7, -7.304766495775e6,
+      -1.630563622280e5, 3.145920924780e3,  -7.156354090495e1, 1.0e0};
 
-  double const b1[k1 + 1] = {-7.606458639561e7, -1.333681162517e8,
-                             -7.656332234147e7, -1.638081306504e7,
-                             -1.044683266663e6};
+  double const b1[k1 + 1] = {-7.606458639561e7, -1.333681162517e8, -7.656332234147e7,
+                             -1.638081306504e7, -1.044683266663e6};
 
   double const a2[m2 + 1] = {-3.493105157219e-7, -5.628286279892e-5,
                              -5.188757767899e-3, -2.097205947730e-1,
@@ -55,9 +51,8 @@ double F1(double const x) {
                              -2.042542575231e1,  3.551366939795e0,
                              -2.400826804233e0,  1.0e0};
 
-  double const b2[k2 + 1] = {-6.986210315105e-7, -1.102673536040e-4,
-                             -1.001475250797e-2, -3.864923270059e-1,
-                             -5.435619477378e0,  -1.563274262745e1};
+  double const b2[k2 + 1] = {-6.986210315105e-7, -1.102673536040e-4, -1.001475250797e-2,
+                             -3.864923270059e-1, -5.435619477378e0,  -1.563274262745e1};
 
   if (x < 2.0e0) {
     double const xx = exp(x);

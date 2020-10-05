@@ -3,9 +3,7 @@
  * \file   units/test/tstFundUnit.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \brief
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -66,8 +64,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
 
   // Use "long labels" string...
 
-  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf.data(),
-                            rtt_units::L_long_labels);
+  FundUnit<Ltype> myLength2(rtt_units::L_cm, rtt_units::L_cf.data(), rtt_units::L_long_labels);
 
   // Is the label correct?
   std::string sentinelValue("centimeter");
@@ -76,8 +73,7 @@ void test_construction(rtt_dsxx::UnitTest &ut) {
   } else {
     ostringstream msg;
     msg << "Unit long label was not set correctly "
-        << "(\"" << myLength2.label() << "\" != \"" << sentinelValue << "\")"
-        << endl;
+        << "(\"" << myLength2.label() << "\" != \"" << sentinelValue << "\")" << endl;
     FAILMSG(msg.str());
   }
   // Is the conversion factor correct?

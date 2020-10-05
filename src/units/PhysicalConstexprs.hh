@@ -1,11 +1,10 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   PhysicalConstexprs.hh
  *  \author Ben R. Ryan <brryan@lanl.gov>
- *  \brief  Provide a single place where mathematical and physical constants
- *          are defined in an entirely constexpr fashion.
+ *  \brief  Provide a single place where mathematical and physical constants are defined in an
+ *          entirely constexpr fashion.
  *  \date   2019 Nov 25
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_PhysicalConstexprs_hh
@@ -50,21 +49,20 @@ struct CGSH {
   static constexpr double Quantity = 1.;                    // Mole
 };
 
-//==============================================================================
+//================================================================================================//
 /*!
  * \class PhysicalConstexprs
  *
- * \brief A class to define and encapsulate physical and mathematical constants
- *        in a purely constexpr way.
+ * \brief A class to define and encapsulate physical and mathematical constants in a purely
+ *        constexpr way.
  *
  * \example test/tstPhysicalConstexprs.cc
- * This is the unit regression test for the PhysicalConstexprs class.  It
- * demonstrates typical usage.
+ * This is the unit regression test for the PhysicalConstexprs class.  It demonstrates typical
+ * usage.
  */
-//==============================================================================
+//================================================================================================//
 template <typename UNITS> class PhysicalConstexprs {
 public:
-
   //! accesses Avogadro's number
   constexpr double avogadro() const { return d_avogadro; }
   //! see avogadro()
@@ -109,16 +107,12 @@ public:
   constexpr double sigma() const { return stefanBoltzmann(); }
 
   //! accesses the gravitational constant
-  constexpr double gravitationalConstant() const {
-    return d_gravitationalConstant;
-  }
+  constexpr double gravitationalConstant() const { return d_gravitationalConstant; }
   //! see gravitationalConstant()
   constexpr double G() const { return gravitationalConstant(); }
 
   //! accesses the standard acceleration of gravity
-  constexpr double accelerationFromGravity() const {
-    return d_accelerationFromGravity;
-  }
+  constexpr double accelerationFromGravity() const { return d_accelerationFromGravity; }
   //! see accelerationFromGravity()
   constexpr double g() const { return accelerationFromGravity(); }
 
@@ -128,23 +122,17 @@ public:
   constexpr double F() const { return faradayConstant(); }
 
   //! access the permeability of free space
-  constexpr double permeabilityOfVacuum() const {
-    return d_permeabilityOfVacuum;
-  }
+  constexpr double permeabilityOfVacuum() const { return d_permeabilityOfVacuum; }
   //! see permeabilityOfVacuum()
   constexpr double mu0() const { return permeabilityOfVacuum(); }
 
   //! access the permittivity of free space
-  constexpr double permittivityOfVacuum() const {
-    return d_permittivityOfVacuum;
-  }
+  constexpr double permittivityOfVacuum() const { return d_permittivityOfVacuum; }
   //! see permittivityOfVacuum()
   constexpr double epsi0() const { return permittivityOfVacuum(); }
 
   //! access the classical electron radius
-  constexpr double classicalElectronRadius() const {
-    return d_classicalElectronRadius;
-  }
+  constexpr double classicalElectronRadius() const { return d_classicalElectronRadius; }
   //! see classicalElectronRadius()
   constexpr double re() const { return classicalElectronRadius(); }
 
@@ -210,8 +198,7 @@ private:
   static constexpr double d_speed_of_light_SI = 2.99792458e8; // m s^-1
 
   //! Gravitational constant (CODATA 2010 value)
-  static constexpr double d_gravitationalConstant_SI =
-      6.67384e-11; // m^3 kg^-1 s^-2
+  static constexpr double d_gravitationalConstant_SI = 6.67384e-11; // m^3 kg^-1 s^-2
 
   //! Standard acceleration of gravity (CODATA 2010 value)
   static constexpr double d_accelerationFromGravity_SI = 9.80665; // m s^-2
@@ -224,29 +211,25 @@ private:
 
   //! Stefan-Boltzmann constant
   static constexpr double d_stefanBoltzmann_SI =
-      2.0 * PI * PI * PI * PI * PI * d_boltzmann_SI * d_boltzmann_SI *
-      d_boltzmann_SI * d_boltzmann_SI /
-      (15.0 * d_planck_SI * d_planck_SI * d_planck_SI * d_speed_of_light_SI *
-       d_speed_of_light_SI);
+      2.0 * PI * PI * PI * PI * PI * d_boltzmann_SI * d_boltzmann_SI * d_boltzmann_SI *
+      d_boltzmann_SI /
+      (15.0 * d_planck_SI * d_planck_SI * d_planck_SI * d_speed_of_light_SI * d_speed_of_light_SI);
 
   //! Faraday constant
-  static constexpr double d_faradayConstant_SI =
-      d_avogadro * d_electronCharge_SI; // C mol^-1
+  static constexpr double d_faradayConstant_SI = d_avogadro * d_electronCharge_SI; // C mol^-1
 
   //! Permeability of free space
-  static constexpr double d_permeabilityOfVacuum_SI =
-      4.0 * PI * 1.0e-7; // N A^-2
+  static constexpr double d_permeabilityOfVacuum_SI = 4.0 * PI * 1.0e-7; // N A^-2
 
   //! Permittivity of free space
   static constexpr double d_permittivityOfVacuum_SI =
-      1.0 / d_permeabilityOfVacuum_SI / d_speed_of_light_SI /
-      d_speed_of_light_SI; // F m^-1
+      1.0 / d_permeabilityOfVacuum_SI / d_speed_of_light_SI / d_speed_of_light_SI; // F m^-1
 
   //! Classical electron radius
   static constexpr double d_classicalElectronRadius_SI =
       d_electronCharge_SI * d_electronCharge_SI /
-      (4 * PI * d_permittivityOfVacuum_SI * d_electronMass_SI *
-       d_speed_of_light_SI * d_speed_of_light_SI); // m
+      (4 * PI * d_permittivityOfVacuum_SI * d_electronMass_SI * d_speed_of_light_SI *
+       d_speed_of_light_SI); // m
 
   //! Electron volt
   static constexpr double d_electronVolt_SI = d_electronCharge_SI; // J
@@ -259,8 +242,7 @@ private:
   static constexpr double d_planck = d_planck_SI * Energy * Time;
 
   //! Molar gas constant value in unit system
-  static constexpr double d_gasConstant =
-      d_gasConstant_SI * Energy / Quantity / Temperature;
+  static constexpr double d_gasConstant = d_gasConstant_SI * Energy / Quantity / Temperature;
 
   //! Boltzmann constant value in unit system
   static constexpr double d_boltzmann = d_boltzmann_SI * Energy / Temperature;
@@ -269,8 +251,7 @@ private:
   static constexpr double d_electronCharge = d_electronCharge_SI * Charge;
 
   //! Speed of light value in unit system
-  static constexpr double d_speed_of_light =
-      d_speed_of_light_SI * Length / Time;
+  static constexpr double d_speed_of_light = d_speed_of_light_SI * Length / Time;
 
   //! Stefan-Boltzmann constant value in unit system
   static constexpr double d_stefanBoltzmann =
@@ -278,29 +259,25 @@ private:
       (Length * Length * Temperature * Temperature * Temperature * Temperature);
 
   //! Gravitational constant value in unit system
-  static constexpr double d_gravitationalConstant = d_gravitationalConstant_SI *
-                                                    Length * Length * Length /
-                                                    (Mass * Time * Time);
+  static constexpr double d_gravitationalConstant =
+      d_gravitationalConstant_SI * Length * Length * Length / (Mass * Time * Time);
 
   //! Standard acceleration of gravity value in unit system
   static constexpr double d_accelerationFromGravity =
       d_accelerationFromGravity_SI * Length / (Time * Time);
 
   //! Faraday constant value in unit system
-  static constexpr double d_faradayConstant =
-      d_faradayConstant_SI * Capacitance;
+  static constexpr double d_faradayConstant = d_faradayConstant_SI * Capacitance;
 
   //! Permeability of vacuum value in unit system
   static constexpr double d_permeabilityOfVacuum =
       d_permeabilityOfVacuum_SI * Force / (Current * Current);
 
   //! Permittivity of vacuum value in unit system
-  static constexpr double d_permittivityOfVacuum =
-      d_permittivityOfVacuum_SI * Capacitance / Length;
+  static constexpr double d_permittivityOfVacuum = d_permittivityOfVacuum_SI * Capacitance / Length;
 
   //! Classical electron radius value in unit system
-  static constexpr double d_classicalElectronRadius =
-      d_classicalElectronRadius_SI * Length;
+  static constexpr double d_classicalElectronRadius = d_classicalElectronRadius_SI * Length;
 
   //! Electron mass value in unit system
   static constexpr double d_electronMass = d_electronMass_SI * Mass;

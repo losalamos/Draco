@@ -104,10 +104,9 @@ namespace rtt_dsxx {
  * global function, we pick up the ability to formulate a more complete picture of the error, and
  * provide some optimization capability (both compile time and run time).
  *
- * Note also that at this juncture, we go ahead and drop all support for
- * compilers which are incapable of compiling exception code.  From here
- * forward, exceptions are assumed to be available.  And thereby we do our part
- * to promote "standard C++".
+ * Note also that at this juncture, we go ahead and drop all support for compilers which are
+ * incapable of compiling exception code.  From here forward, exceptions are assumed to be
+ * available.  And thereby we do our part to promote "standard C++".
  *
  * \sa http://akrzemi1.wordpress.com/2013/01/04/preconditions-part-i/
  */

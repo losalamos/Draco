@@ -59,7 +59,6 @@ jobs:
           VALIDATE_ENV: true
           VALIDATE_HTML: true
           VALIDATE_JSON: true
-          VALIDATE_JSON: true
           VALIDATE_LATEX: true
           VALIDATE_LUA: true
           VALIDATE_PERL: true

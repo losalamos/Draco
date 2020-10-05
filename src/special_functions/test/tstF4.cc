@@ -3,8 +3,7 @@
  * \file   special_functions/test/tstF4.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -31,9 +30,7 @@ void tstF4(UnitTest &ut) {
     ut.failure("NOT correct F4 for -20.0");
   }
   f3 = F4(1000.0);
-  if (soft_equiv(f3,
-                 pow(1000.0, 5.0) / 5.0 + PI * PI * 4 * pow(1000.0, 3.0) / 6.0,
-                 1.0e-10)) {
+  if (soft_equiv(f3, pow(1000.0, 5.0) / 5.0 + PI * PI * 4 * pow(1000.0, 3.0) / 6.0, 1.0e-10)) {
     ut.passes("correct F4 for 1000.0");
   } else {
     ut.failure("NOT correct F4 for 1000.0");

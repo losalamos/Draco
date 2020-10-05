@@ -2,8 +2,7 @@
 /*!
  * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 /*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_dsxx_config_h
@@ -180,8 +179,8 @@
  * following shows the levels:
  *
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
- * - Bit 1, (010), activates Level 2 (some performance impact and possible
- *                                    intrusive output, rtt_memory trackin is activated.)
+ * - Bit 1, (010), activates Level 2 (some performance impact and possible intrusive output, 
+ *                                   rtt_memory tracking is activated.)
  *                 and a stack trace will be added to DbC messages.
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .

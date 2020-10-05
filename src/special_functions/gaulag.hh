@@ -4,41 +4,36 @@
  * \author Kent Budge
  * \date   Tue Sep 14 13:16:09 2004
  * \brief  Gauss-Laguerre quadrature
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- */
-//------------------------------------------------------------------------------------------------//
-// $Id: gaulag.hh 5905 2011-06-08 17:11:34Z kellyt $
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_special_functions_gaulag_hh
 #define rtt_special_functions_gaulag_hh
 
-#include <limits>
-
-#include <gsl/gsl_sf_gamma.h>
-
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
+#include <gsl/gsl_sf_gamma.h>
+#include <limits>
 
 namespace rtt_special_functions {
+
 //------------------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Gauss-Laguerre quadrature
  *
- * Calculate abscissae and weights for Gauss-Laguerre quadrature:
- * \f$\int_{0}^{\infty}{x^\alpha e^{-x} f(x) dx} = \sum_{j=0}^{N-1}w_j f(x_j)\f$
- * 
+ * Calculate abscissae and weights for Gauss-Laguerre quadrature: \f$\int_{0}^{\infty}{x^\alpha
+ * e^{-x} f(x) dx} = \sum_{j=0}^{N-1}w_j f(x_j)\f$
+ *
  * \arg \a FieldVector A random access container on a field type.
  *
  * \param x On return, contains abscissae \f$x_j\f$ for quadrature.
  * \param w On return, contains weights \f$w_j\f$ for quadrature.
  * \param alf Lagrange power parameter.
  * \param n Number of points in quadrature.
- * 
+ *
  */
 template <class FieldVector>
-void gaulag(FieldVector &x, FieldVector &w, double const alf,
-            unsigned const n) {
+void gaulag(FieldVector &x, FieldVector &w, double const alf, unsigned const n) {
   using namespace std;
 
   typedef typename FieldVector::value_type Field;
@@ -56,9 +51,8 @@ void gaulag(FieldVector &x, FieldVector &w, double const alf,
       z += (15.0 + 6.25 * alf) / (1.0 + 0.9 * alf + 2.5 * n);
     } else {
       const Field ai = i - 1;
-      z += ((1.0 + 2.55 * ai) / (1.9 * ai) +
-            1.26 * ai * alf / (1.0 + 3.5 * ai)) *
-           (z - x[i - 2]) / (1.0 + 0.3 * alf);
+      z += ((1.0 + 2.55 * ai) / (1.9 * ai) + 1.26 * ai * alf / (1.0 + 3.5 * ai)) * (z - x[i - 2]) /
+           (1.0 + 0.3 * alf);
     }
     unsigned its;
     Field pp, p2;
@@ -71,9 +65,8 @@ void gaulag(FieldVector &x, FieldVector &w, double const alf,
         p1 = ((2 * j + 1 + alf - z) * p2 - (j + alf) * p3) / (j + 1);
       }
 
-      // p1 is now the desired Legendre polynomial evaluated at z. We
-      // next compute pp, its derivative, by a standard relation
-      // involving also p2, the polynomial of one lower order.
+      // p1 is now the desired Legendre polynomial evaluated at z. We next compute pp, its
+      // derivative, by a standard relation involving also p2, the polynomial of one lower order.
       pp = (n * p1 - (n + alf) * p2) / z;
 
       const Field z1 = z;
@@ -87,9 +80,7 @@ void gaulag(FieldVector &x, FieldVector &w, double const alf,
       throw std::range_error(std::string("too many iterations in gaulag"));
     }
     x[i] = z;
-    w[i] =
-        -exp(gsl_sf_lngamma(alf + n) - gsl_sf_lngamma(static_cast<double>(n))) /
-        (pp * n * p2);
+    w[i] = -exp(gsl_sf_lngamma(alf + n) - gsl_sf_lngamma(static_cast<double>(n))) / (pp * n * p2);
   }
 }
 
@@ -98,5 +89,5 @@ void gaulag(FieldVector &x, FieldVector &w, double const alf,
 #endif // rtt_special_functions_gaulag_hh
 
 //------------------------------------------------------------------------------------------------//
-//              end of special_functions/gaulag.hh
+// end of special_functions/gaulag.hh
 //------------------------------------------------------------------------------------------------//

@@ -3,26 +3,24 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( diagnostics CXX )
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Is Caliper available? If so, let's use it
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 if(TARGET CALIPER::caliper)
   set( DRACO_CALIPER "1")
 else()
   set( DRACO_CALIPER "0")
 endif()
-set( DRACO_CALIPER ${DRACO_CALIPER} CACHE BOOL
-  "Does Draco require the Caliper library?" FORCE)
+set( DRACO_CALIPER ${DRACO_CALIPER} CACHE BOOL "Does Draco require the Caliper library?" FORCE)
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Special options for this component
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 
 # DRACO_DIAGNOSICS is set in ds++ (ds++/config.h).
 
@@ -56,7 +54,6 @@ file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 
-# Make the header files available in the IDE.
 if( CMAKE_CONFIGURATION_TYPES )
   add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
 endif()

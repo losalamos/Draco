@@ -4,10 +4,7 @@
 # date   Friday, Aug 28, 2015, 14:27 pm
 # brief  This is a CTest script that is used to check the output from
 #        viz/test/tstEnsight_Translator_Unstructured
-# note   Copyright (C) 2016, Triad National Security, LLC.
-#        All rights reserved.
-#--------------------------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
+# note   Copyright (C) 2016, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 # See examples at config/ApplicationUnitTest.cmake and diagnostics/test/tDracoInfo.cmake
@@ -88,9 +85,8 @@ diff output = ${diffout}" )
   endif()
 endmacro()
 
-# Comparing binary files is expected to fail on powerpc architectures
-# because the Endianess of the machine is different than for the
-# machine where the gold file was created.  So, for powerpc, skip
+# Comparing binary files is expected to fail on powerpc architectures because the Endianess of the
+# machine is different than for the machine where the gold file was created.  So, for powerpc, skip
 # these comparisons.
 
 set( little-endian TRUE )

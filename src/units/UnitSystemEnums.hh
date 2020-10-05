@@ -1,11 +1,9 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   UnitSystemEnums.hh
  *  \author Kelly Thompson
- *  \brief  This file contains enums, conversion factors and labels that help
- *          define a UnitSystem.
+ *  \brief  This file contains enums, conversion factors and labels that help define a UnitSystem.
  *  \date   Fri Oct 24 15:57:09 2003
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_UnitSystemEnums_hh
@@ -30,8 +28,7 @@ enum Ltype {
 int constexpr num_Ltype = 3;
 constexpr std::array<double, num_Ltype> L_cf = {0.0, 1.0, 100.0};
 constexpr char const *L_labels = "NA,m,cm";
-constexpr char const *L_long_labels =
-    "no length unit specified,meter,centimeter";
+constexpr char const *L_long_labels = "no length unit specified,meter,centimeter";
 
 //========================================//
 // ENUMERATED MASS TYPES
@@ -62,8 +59,7 @@ enum ttype {
 };
 
 int constexpr num_ttype = 6;
-constexpr std::array<double, num_ttype> t_cf = {0.0,   1.0,   1.0e3,
-                                                1.0e6, 1.0e8, 1.0e9};
+constexpr std::array<double, num_ttype> t_cf = {0.0, 1.0, 1.0e3, 1.0e6, 1.0e8, 1.0e9};
 constexpr char const *t_labels = "NA,s,ms,us,sh,ns";
 constexpr char const *t_long_labels =
     "no time unit specified,second,milisecond,microsecond,shake,nanosecond";
@@ -75,15 +71,14 @@ constexpr char const *t_long_labels =
 enum Ttype {
   T_null, //!< no temperature type
   T_K,    //!< Kelvin
-  T_keV,  //!< keV (1 K=8.61733238496e-8 keV or 1 keV=1.1604519302808940e7 K)
-          //!< This conversion factor between K and keV must agree with the
-          //!< value given in PhysicalConstants.hh.
+  T_keV,  //!< keV (1 K=8.61733238496e-8 keV or 1 keV=1.1604519302808940e7 K). This conversion
+          //!factor between K and keV must agree with the value given in PhysicalConstants.hh.
   T_eV    //!< eV (1 K = 8.61733238496e-5 keV or 1 eV = 11604.519302808940 K)
 };
 
 int constexpr num_Ttype = 4;
-constexpr std::array<double, num_Ttype> T_cf = {
-    0.0, 1.0, 1.0 / 1.1604519302808940e7, 1.0 / 1.1604519302808940e4};
+constexpr std::array<double, num_Ttype> T_cf = {0.0, 1.0, 1.0 / 1.1604519302808940e7,
+                                                1.0 / 1.1604519302808940e4};
 constexpr char const *T_labels = "NA,K,keV,eV";
 
 //========================================//

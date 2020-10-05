@@ -4,8 +4,7 @@
  * \author Paul Talbot
  * \date   Tue July 26 13:39:00 2011
  * \brief  Iterative methods to calculate Ei(x), E_n(x)
- * \note   Copyright (C) 2016-2019 Los Alamos Natinal Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2019 Los Alamos Natinal Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ExpInt.hh"
@@ -26,18 +25,15 @@ namespace rtt_sf {
  * \param[in] x Used to specify argument of E_n(x).
  * \return E_n(x) evaluated at the argument x.
  *
- * This routine makes use of those described in Numerical Recipes for C++, 3rd
- * Edition (pp 266-270).
+ * This routine makes use of those described in Numerical Recipes for C++, 3rd Edition (pp 266-270).
  *
- * E_n(x) is calculated either by special case definitions for n=0 or x=0 with
- * n=0 or 1, or the Lentz algorithm if x>1.0, or the digamma series
- * representation for greater x.
+ * E_n(x) is calculated either by special case definitions for n=0 or x=0 with n=0 or 1, or the
+ * Lentz algorithm if x>1.0, or the digamma series representation for greater x.
  */
 double En(unsigned const n, double const x) {
   using std::numeric_limits;
 
-  Insist(!(x < 0.0 || (std::abs(x) < std::numeric_limits<double>::min() &&
-                       (n == 0 || n == 1))),
+  Insist(!(x < 0.0 || (std::abs(x) < std::numeric_limits<double>::min() && (n == 0 || n == 1))),
          "bad arguments in En");
 
   const int MAXIT = 100;
@@ -113,14 +109,12 @@ double En(unsigned const n, double const x) {
  * \param x Used to specify argument of Ei(x).
  * \return Ei evaluated at the argument x.
  *
- * This routine makes use of those described in Numerical Recipes for C++, 3rd
- * Edition (pp 266-270).
+ * This routine makes use of those described in Numerical Recipes for C++, 3rd Edition (pp 266-270).
  *
- * Ei is calculated using power series expansion for x<abs(ln(EPS)), where EPS
- * is the required relative error (set to machine precision), as this is the
- * lower limit of the asymptotic series, which is used for greater values of x.
- * The asymptotic series includes all converging terms until values are less
- * than EPS.
+ * Ei is calculated using power series expansion for x<abs(ln(EPS)), where EPS is the required
+ * relative error (set to machine precision), as this is the lower limit of the asymptotic series,
+ * which is used for greater values of x.  The asymptotic series includes all converging terms until
+ * values are less than EPS.
  *
  * Ei(-x) evaluates to the extension -E_1(x).
  */

@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Implementation of FM12
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "FM12.t.hh"
@@ -14,7 +13,7 @@
 
 namespace rtt_sf {
 
-template DLL_PUBLIC_special_functions double FM12(double const &x);
+template double FM12(double const &x);
 
 } // end namespace rtt_sf
 

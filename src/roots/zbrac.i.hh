@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Bracket a root of a function.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef roots_zbrac_i_hh
@@ -19,13 +18,11 @@ namespace rtt_roots {
 /*!
  * Bracket a root of a function.
  *
- * On entry, <code>[x1,x2]</code> defines an initial search interval.  On
- * successful return, the search interval <code>[x1,x2]</code> is guaranteed to
- * contain an odd number of roots if \c func is analytic in \c
- * <code>[x1,x2]</code>.
+ * On entry, <code>[x1,x2]</code> defines an initial search interval.  On successful return, the
+ * search interval <code>[x1,x2]</code> is guaranteed to contain an odd number of roots if \c func
+ * is analytic in \c <code>[x1,x2]</code>.
  *
- * \arg \a Function The template type must support <code>double
- *         operator()(double)</code>.
+ * \arg \a Function The template type must support <code>double operator()(double)</code>.
  *
  * \param[in] func Function whose root is to be bracketed
  * \param[in,out] x1 Lower end of search interval
@@ -33,20 +30,17 @@ namespace rtt_roots {
  *
  * \pre <code>func!=NULL</code>
  * \pre <code>x2>x1</code>
- * \post <code>func(x1)<=0 && func(x2)>=0 || func(x1)>=0 && func(x2)<=0
- *       </code>
+ * \post <code>func(x1)<=0 && func(x2)>=0 || func(x1)>=0 && func(x2)<=0 </code>
  *
- * \throw std::domain_error Indicates that no root could be bracketed, perhaps
- * because the function has none.
+ * \throw std::domain_error Indicates that no root could be bracketed, perhaps because the function
+ * has none.
  *
- * \note zbrac cannot fail to bracket a root or roots of an odd polynomial.  It
- * is otherwise impossible to guarantee success. It can only be guaranteed that,
- * if zbrac returns rather than throwing std::domain_error, then the interval
- * <code>[x1,x2]</code> contains at least one root or singularity of the
- * function.
+ * \note zbrac cannot fail to bracket a root or roots of an odd polynomial.  It is otherwise
+ * impossible to guarantee success. It can only be guaranteed that, if zbrac returns rather than
+ * throwing std::domain_error, then the interval <code>[x1,x2]</code> contains at least one root or
+ * singularity of the function.
  */
-template <typename Function, typename Real>
-void zbrac(Function func, Real &x1, Real &x2) {
+template <typename Function, typename Real> void zbrac(Function func, Real &x1, Real &x2) {
   Require(x2 > x1);
 
   using namespace std;
@@ -103,8 +97,7 @@ void zbrac(Function func, Real &x1, Real &x2) {
     } else {
       Real x0 = x1 - 0.5 * scale * (x2 - x1);
       Real x3 = x2 + scale * (x2 - x1);
-      if (rtt_dsxx::soft_equiv(x0, x1, eps) ||
-          rtt_dsxx::soft_equiv(x2, x3, eps)) {
+      if (rtt_dsxx::soft_equiv(x0, x1, eps) || rtt_dsxx::soft_equiv(x2, x3, eps)) {
         throw std::domain_error("zbrac: "
                                 "could not find search interval");
       }

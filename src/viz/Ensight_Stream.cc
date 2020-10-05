@@ -4,8 +4,7 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Ensight_Stream.hh"
@@ -20,8 +19,8 @@ namespace rtt_viz {
 /*!
  * \brief The endl manipulator.
  *
- * Note that this is a function within the rtt_viz namespace, NOT a member
- * function of Ensight_Stream.
+ * Note that this is a function within the rtt_viz namespace, NOT a member function of
+ * Ensight_Stream.
  */
 Ensight_Stream &endl(Ensight_Stream &s) {
   Require(s.d_stream);
@@ -38,8 +37,8 @@ Ensight_Stream &endl(Ensight_Stream &s) {
 /*!
  * \brief Constructor
  *
- * This constructor opens the stream, if \a file_name is non-empty.  See open()
- * for more information.
+ * This constructor opens the stream, if \a file_name is non-empty.  See open() for more
+ * information.
  *
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
@@ -65,18 +64,17 @@ Ensight_Stream::~Ensight_Stream(void) { close(); }
 /*!
  * \brief Opens the stream.
  *
- * \a geom_file is used only so that the "C Binary" header may be dumped when
- * \a binary is true.  If the geometry file is binary, Ensight assumes that all
- *         data files are also binary.  This class does NOT check whether \a
- *         binary is consistent across all geometry and data files.
+ * \a geom_file is used only so that the "C Binary" header may be dumped when \a binary is true.  If
+ * the geometry file is binary, Ensight assumes that all data files are also binary.  This class
+ * does NOT check whether \a binary is consistent across all geometry and data files.
  *
  * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
  * \param decomposed If true, input is domain decomposed. Otherwise domain replicated.
  */
-void Ensight_Stream::open(const std::string &file_name, const bool binary,
-                          const bool geom_file, const bool decomposed) {
+void Ensight_Stream::open(const std::string &file_name, const bool binary, const bool geom_file,
+                          const bool decomposed) {
   Require(!file_name.empty());
 
   d_binary = binary;
@@ -84,16 +82,14 @@ void Ensight_Stream::open(const std::string &file_name, const bool binary,
   // Open the stream.
   if (decomposed) {
     if (binary)
-      d_decomposed_stream.reset(
-          new rtt_c4::ofpstream(file_name, std::ios::binary));
+      d_decomposed_stream.reset(new rtt_c4::ofpstream(file_name, std::ios::binary));
     else
       d_decomposed_stream.reset(new rtt_c4::ofpstream(file_name));
     // set to a generic ostream
     d_stream = &*d_decomposed_stream;
   } else {
-    Insist(rtt_c4::node() == 0,
-           "Ensight_Stream, called by nonzero rank without "
-           "the domain decomposed flag");
+    Insist(rtt_c4::node() == 0, "Ensight_Stream, called by nonzero rank without "
+                                "the domain decomposed flag");
     if (binary)
       d_serial_stream.reset(new std::ofstream(file_name, std::ios::binary));
     else
@@ -148,8 +144,8 @@ Ensight_Stream &Ensight_Stream::operator<<(const int32_t i) {
 /*
  * \brief Output for unsigned
  *
- * This is a convience function.  It simply casts to int.  Ensight does not
- * support output of unsigned ints.
+ * This is a convience function.  It simply casts to int.  Ensight does not support output of
+ * unsigned ints.
  */
 Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
   Check(i < INT_MAX);
@@ -162,8 +158,8 @@ Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
 /*
  * \brief Output for int64_t.
  *
- * This is a convience function.  It simply casts to int.  Ensight does not
- * support output of unsigned ints.
+ * This is a convience function.  It simply casts to int.  Ensight does not support output of
+ * unsigned ints.
  *
  * \bug Not tested so commented out.
  */
@@ -178,8 +174,8 @@ Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
 /*!
  * \brief Output for uint64_t.
  *
- * This is a convience function.  It simply casts to int.  Ensight does not
- * support output of unsigned ints.
+ * This is a convience function.  It simply casts to int.  Ensight does not support output of
+ * unsigned ints.
  *
  * \bug Not tested so commented out.
  */
@@ -199,10 +195,9 @@ Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
 Ensight_Stream &Ensight_Stream::operator<<(const double d) {
 
 #if defined(MSVC) && MSVC_VERSION < 1900
-  // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
-  // because numeric_limits<double>::max() has a 3-digit exponent.)
-  // Enable two-digit exponent format to stay consistent with GNU and
-  // Intel on Linux.(requires <stdio.h>).
+  // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably because
+  // numeric_limits<double>::max() has a 3-digit exponent.)  Enable two-digit exponent format to
+  // stay consistent with GNU and Intel on Linux.(requires <stdio.h>).
   unsigned old_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
@@ -265,8 +260,8 @@ Ensight_Stream &Ensight_Stream::operator<<(FP f) {
  *
  * The type \a T must support sizeof(T).
  *
- * The template implementation is defined here because only functions within
- * this translation unit should be calling this function.
+ * The template implementation is defined here because only functions within this translation unit
+ * should be calling this function.
  */
 template <typename T> void Ensight_Stream::binary_write(const T v) {
   Require(d_stream);

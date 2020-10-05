@@ -1,11 +1,9 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   UnitSystemType.cc
  *  \author Kelly Thompson
- *  \brief  Aggregates a collection of FundUnits to create a complete
- *          UnitSystemType.
+ *  \brief  Aggregates a collection of FundUnits to create a complete UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "UnitSystemType.hh"
@@ -24,8 +22,8 @@ UnitSystemType::UnitSystemType()
 }
 
 //! fully qualified constructor
-UnitSystemType::UnitSystemType(Ltype myL, Mtype myM, ttype myt, Ttype myT,
-                               Itype myI, Atype myA, Qtype myQ)
+UnitSystemType::UnitSystemType(Ltype myL, Mtype myM, ttype myt, Ttype myT, Itype myI, Atype myA,
+                               Qtype myQ)
     : d_L(FundUnit<Ltype>(myL, L_cf.data(), L_labels)),
       d_M(FundUnit<Mtype>(myM, M_cf.data(), M_labels)),
       d_t(FundUnit<ttype>(myt, t_cf.data(), t_labels)),
@@ -37,46 +35,39 @@ UnitSystemType::UnitSystemType(Ltype myL, Mtype myM, ttype myt, Ttype myT,
 
 //! Copy constructor
 UnitSystemType::UnitSystemType(UnitSystemType const &rhs)
-    : d_L(rhs.L()), d_M(rhs.M()), d_t(rhs.t()), d_T(rhs.T()), d_I(rhs.I()),
-      d_A(rhs.A()), d_Q(rhs.Q()) { /* empty */
+    : d_L(rhs.L()), d_M(rhs.M()), d_t(rhs.t()), d_T(rhs.T()), d_I(rhs.I()), d_A(rhs.A()),
+      d_Q(rhs.Q()) { /* empty */
 }
 
 //------------------------------------------------------------------------------------------------//
 
 //! Set a FundUnit type for this UnitSystem
 
-UnitSystemType &UnitSystemType::L(Ltype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::L(Ltype myType, double const *cf, std::string const &labels) {
   this->d_L = FundUnit<Ltype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::M(Mtype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::M(Mtype myType, double const *cf, std::string const &labels) {
   this->d_M = FundUnit<Mtype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::t(ttype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::t(ttype myType, double const *cf, std::string const &labels) {
   this->d_t = FundUnit<ttype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::T(Ttype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::T(Ttype myType, double const *cf, std::string const &labels) {
   this->d_T = FundUnit<Ttype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::I(Itype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::I(Itype myType, double const *cf, std::string const &labels) {
   this->d_I = FundUnit<Itype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::A(Atype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::A(Atype myType, double const *cf, std::string const &labels) {
   this->d_A = FundUnit<Atype>(myType, cf, labels);
   return *this;
 }
-UnitSystemType &UnitSystemType::Q(Qtype myType, double const *cf,
-                                  std::string const &labels) {
+UnitSystemType &UnitSystemType::Q(Qtype myType, double const *cf, std::string const &labels) {
   this->d_Q = FundUnit<Qtype>(myType, cf, labels);
   return *this;
 }

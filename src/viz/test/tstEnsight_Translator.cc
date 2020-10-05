@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2000-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2000-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -19,8 +18,8 @@ using rtt_viz::Ensight_Translator;
 
 //------------------------------------------------------------------------------------------------//
 template <typename IT>
-void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
-                       bool const geom, bool const decomposed) {
+void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary, bool const geom,
+                       bool const decomposed) {
   if (binary)
     cout << "\nGenerating binary files...\n" << endl;
   else
@@ -73,8 +72,8 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
   double time = .01;
   double dt = .01;
 
-  string const gd_wpath = rtt_dsxx::getFilenameComponent(ut.getTestInputPath(),
-                                                         rtt_dsxx::FC_NATIVE);
+  string const gd_wpath =
+      rtt_dsxx::getFilenameComponent(ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
 
   // make data
   for (size_t i = 0; i < ndata; i++) {
@@ -164,11 +163,11 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
   }
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
-  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, geom, binary, decomposed);
+  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names, true, geom, binary,
+                                decomposed);
 
-  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
-                          vrtx_data, cell_data, rgn_data, rgn_name);
+  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data,
+                          cell_data, rgn_data, rgn_name);
 
   vec_d dump_times = translator.get_dump_times();
   if (dump_times.size() != 1)
@@ -176,45 +175,43 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
   if (!rtt_dsxx::soft_equiv(dump_times[0], 0.01))
     ITFAILS;
 
-  // build another ensight translator; this should overwrite the existing
-  // directories
-  Ensight_Translator translator2(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, geom, binary, decomposed);
+  // build another ensight translator; this should overwrite the existing directories
+  Ensight_Translator translator2(prefix, gd_wpath, vdata_names, cdata_names, false, geom, binary,
+                                 decomposed);
 
-  translator2.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
-                           vrtx_data, cell_data, rgn_data, rgn_name);
+  translator2.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data,
+                           cell_data, rgn_data, rgn_name);
 
-  // build another ensight translator from the existing dump times list;
-  // thus we will not overwrite the existing directories
+  // build another ensight translator from the existing dump times list; thus we will not overwrite
+  // the existing directories
 
-  Ensight_Translator translator3(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, geom, binary, decomposed);
+  Ensight_Translator translator3(prefix, gd_wpath, vdata_names, cdata_names, false, geom, binary,
+                                 decomposed);
 
   // now add another dump to the existing data
-  translator3.ensight_dump(2, .05, dt, ipar, iel_type, rgn_index, pt_coor,
-                           vrtx_data, cell_data, rgn_data, rgn_name);
+  translator3.ensight_dump(2, .05, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data, cell_data,
+                           rgn_data, rgn_name);
 
   // make yet a fourth translator that will append from the reset time
-  Ensight_Translator translator4(prefix, gd_wpath, vdata_names, cdata_names,
-                                 false, geom, binary, decomposed, .05);
+  Ensight_Translator translator4(prefix, gd_wpath, vdata_names, cdata_names, false, geom, binary,
+                                 decomposed, .05);
 
   // add yet another dump to the existing data
-  translator4.ensight_dump(3, .10, dt, ipar, iel_type, rgn_index, pt_coor,
-                           vrtx_data, cell_data, rgn_data, rgn_name);
+  translator4.ensight_dump(3, .10, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data, cell_data,
+                           rgn_data, rgn_name);
 
   // build an Ensight_Translator and do the per-part dump.
   if (rtt_c4::node() == 0) {
     string p_prefix = "part_" + prefix;
-    Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names, cdata_names,
-                                   true, geom, binary);
+    Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names, cdata_names, true, geom,
+                                   binary);
 
     translator5.open(icycle, time, dt);
 
     for (size_t i = 0; i < nrgn; i++) {
       Check(i + 1 < INT_MAX);
-      translator5.write_part(static_cast<int>(i + 1), rgn_name[i], p_ipar[i],
-                             p_iel_type[i], p_pt_coor[i], p_vrtx_data[i],
-                             p_cell_data[i], g_vrtx_indices[i],
+      translator5.write_part(static_cast<int>(i + 1), rgn_name[i], p_ipar[i], p_iel_type[i],
+                             p_pt_coor[i], p_vrtx_data[i], p_cell_data[i], g_vrtx_indices[i],
                              g_cell_indices[i]);
     }
     translator5.close();

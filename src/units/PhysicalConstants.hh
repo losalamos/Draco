@@ -1,11 +1,9 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*! \file   PhysicalConstants.hh
  *  \author Kelly Thompson
- *  \brief  Provide a single place where physical constants (pi, speed of
- *          light, etc) are defined.
+ *  \brief  Provide a single place where physical constants (pi, speed of light, etc) are defined.
  *  \date   Fri Nov 07 10:04:52 2003
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_PhysicalConstants_hh
@@ -21,8 +19,8 @@ namespace rtt_units {
 /*!
  * \class PhysicalConstants
  *
- * \brief A class to define and encapsulate physical and mathematical constants
- *        in the current UnitSystem.
+ * \brief A class to define and encapsulate physical and mathematical constants in the current
+ *        UnitSystem.
  *
  * \sa rtt_units::UnitSystem
  * \sa rtt_units::UnitSystemType
@@ -41,31 +39,28 @@ namespace rtt_units {
  * \endverbatim
  *
  * \example test/tstPhysicalConstants.cc
- * This is the unit regression test for the PhysicalConstants class.  It
- * demonstrates typical usage.
+ * This is the unit regression test for the PhysicalConstants class.  It demonstrates typical usage.
  */
-//==============================================================================
+//================================================================================================//
 
 class PhysicalConstants {
 public:
   // Constructors.
-  //------------------------------------------------------------------------------------------------//
+  //----------------------------------------------------------------------------------------------//
   /*!
-   * \brief Default constructor provides physical constants with SI units (kg,
-   *        m, seconds, degree K, amp, radian, mole).
+   * \brief Default constructor provides physical constants with SI units (kg, m, seconds, degree K,
+   *        amp, radian, mole).
    * \return A PhysicalConstants object.
    */
   constexpr PhysicalConstants()
       : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),
-        d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI),
-        d_cLight(cLightSI), d_stefanBoltzmann(stefanBoltzmannSI),
-        d_gravitationalConstant(gravitationalConstantSI),
-        d_accelerationFromGravity(accelerationFromGravitySI),
-        d_faradayConstant(faradayConstantSI),
+        d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI), d_cLight(cLightSI),
+        d_stefanBoltzmann(stefanBoltzmannSI), d_gravitationalConstant(gravitationalConstantSI),
+        d_accelerationFromGravity(accelerationFromGravitySI), d_faradayConstant(faradayConstantSI),
         d_permeabilityOfVacuum(permeabilityOfVacuumSI),
         d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),
-        d_classicalElectronRadius(classicalElectronRadiusSI),
-        d_electronMass(electronMassSI), d_protonMass(protonMassSI) {
+        d_classicalElectronRadius(classicalElectronRadiusSI), d_electronMass(electronMassSI),
+        d_protonMass(protonMassSI) {
     // empty
   }
   explicit PhysicalConstants(UnitSystem const &u);
@@ -109,16 +104,12 @@ public:
   constexpr double sigma() const { return stefanBoltzmann(); }
 
   //! accesses the gravitational constant
-  constexpr double gravitationalConstant() const {
-    return d_gravitationalConstant;
-  }
+  constexpr double gravitationalConstant() const { return d_gravitationalConstant; }
   //! see gravitationalConstant()
   constexpr double G() const { return gravitationalConstant(); }
 
   //! access the acceleration due to gravity (standard).
-  constexpr double accelerationFromGravity() const {
-    return d_accelerationFromGravity;
-  }
+  constexpr double accelerationFromGravity() const { return d_accelerationFromGravity; }
   //! see accelerationFromGravity()
   constexpr double g() const { return accelerationFromGravity(); }
 
@@ -128,23 +119,17 @@ public:
   constexpr double F() const { return faradayConstant(); }
 
   //! access the Permeability of vacuum (free space)
-  constexpr double permeabilityOfVacuum() const {
-    return d_permeabilityOfVacuum;
-  }
+  constexpr double permeabilityOfVacuum() const { return d_permeabilityOfVacuum; }
   //! see permeabilityOfVacuum()
   constexpr double mu0() const { return permeabilityOfVacuum(); }
 
   //! accesses the permittivity of free space (units of force/length)
-  constexpr double permittivityOfFreeSpace() const {
-    return d_permittivityOfFreeSpace;
-  }
+  constexpr double permittivityOfFreeSpace() const { return d_permittivityOfFreeSpace; }
   //! see permittivityOfFreeSpace()
   constexpr double epsi0() const { return permittivityOfFreeSpace(); }
 
   //! accesses the classical electron radius (units of length)
-  constexpr double classicalElectronRadius() const {
-    return d_classicalElectronRadius;
-  }
+  constexpr double classicalElectronRadius() const { return d_classicalElectronRadius; }
   //! see classicalElectronRadius()
   constexpr double re() const { return classicalElectronRadius(); }
 

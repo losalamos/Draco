@@ -3,8 +3,7 @@
  *  \author Kelly Thompson
  *  \brief  This file defines a fundamental unit type.
  *  \date   Mon Oct 27 16:24:31 2003
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_units_FundUnit_hh

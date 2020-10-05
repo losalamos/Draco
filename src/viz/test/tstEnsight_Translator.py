@@ -1,11 +1,10 @@
-#-----------------------------*-python-*---------------------------------------#
+#-*-python-*---------------------------------------------------------------------------------------#
 # file   viz/test/tstEnsight_Translator.py
 # author Alex Long <along@lanl.gov>
 # date   Wednesday, September 14, 2016, 14:16 pm
 # brief  This is a Python script that is used to check the output from
 #        viz/test/tstEnsight_Translator
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 import sys

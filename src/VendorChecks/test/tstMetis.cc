@@ -6,7 +6,18 @@
  * \note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
+#ifdef _MSC_FULL_VER
+// - 4005: macro redefinition - see https://github.com/microsoft/vcpkg/issues/13774
+#pragma warning(push)
+#pragma warning(disable : 4005)
+#endif
+
 #include "metis.h"
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
+
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include <array>

@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
  * \brief  Unit tests for kronecker_delta and factorial.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -39,13 +38,11 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
   if (kronecker_delta(-1, 0) == 0)
     PASSMSG("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
   if (kronecker_delta(-1, -1) == 1)
     PASSMSG("Found kronecker_delta(-1,-1) == 1, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
 
   unsigned uZero(0);
   unsigned uOne(1);
@@ -127,8 +124,7 @@ void tstFactorial(rtt_dsxx::UnitTest &ut) {
   long lOne(1);
 
   if (factorial(uOne) == uOne)
-    PASSMSG(
-        "Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
+    PASSMSG("Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
   else
     FAILMSG("Found factorial<unsigned>(1) != unsigned(1), factorial is not "
             "working.");
