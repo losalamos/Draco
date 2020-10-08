@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,15 +47,15 @@ enum method_e {
 #define RNGNxW_TPL(base, N, W) base##N##x##W##_e,
 #include "rngNxW.h"
 #undef RNGNxW_TPL
-  unused /* silences warning about dangling comma */
+  last
 };
 
-#define RNGNxW_TPL(base, N, W)                                                 \
-  typedef struct {                                                             \
-    base##N##x##W##_ctr_t ctr;                                                 \
-    base##N##x##W##_ukey_t ukey;                                               \
-    base##N##x##W##_ctr_t expected;                                            \
-    base##N##x##W##_ctr_t computed;                                            \
+#define RNGNxW_TPL(base, N, W)                                                                     \
+  typedef struct {                                                                                 \
+    base##N##x##W##_ctr_t ctr;                                                                     \
+    base##N##x##W##_ukey_t ukey;                                                                   \
+    base##N##x##W##_ctr_t expected;                                                                \
+    base##N##x##W##_ctr_t computed;                                                                \
   } base##N##x##W##_kat;
 #include "rngNxW.h"
 #undef RNGNxW_TPL
@@ -67,6 +67,9 @@ typedef struct {
 #define RNGNxW_TPL(base, N, W) base##N##x##W##_kat base##N##x##W##_data;
 #include "rngNxW.h"
 #undef RNGNxW_TPL
+    /* Sigh... For those platforms that lack uint64_t, carve
+	   out 128 bytes for the counter, key, expected, and computed. */
+    char justbytes[128];
   } u;
 } kat_instance;
 

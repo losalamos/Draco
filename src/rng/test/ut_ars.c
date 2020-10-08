@@ -62,27 +62,21 @@ int main(int argc, char **argv) {
   char m128str[M128_STR_SIZE], *kat;
 
   if (haveAESNI()) {
-    c.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-    k.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    c.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
     ret = ars1xm128i_R(7, c, k);
     kat = "2b1623350cd214dc 7740187993411872";
     if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
-              m128str);
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
       exit(1);
     }
     printf("%s: OK, got %s\n", argv[0], kat);
-    c.v[0].m =
-        m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-    k.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    c.v[0].m = m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
     ret = ars1xm128i_R(7, c, k);
     kat = "2de6b66fa461b668 f380126f32b9cd22";
     if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
-              m128str);
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
       exit(1);
     }
     printf("%s: OK, got %s\n", argv[0], kat);

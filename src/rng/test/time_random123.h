@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __OPENCL_VERSION__
 #define KERNEL __kernel
 #define MEMTYPE __global
+#define xprintf(x)
+#elif defined(__CUDA_ARCH__)
+#define xprintf(x)
+#else
+#define xprintf(x) printf x
 #endif
 
 #ifndef KERNEL
@@ -69,52 +74,51 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    unrepresentative of the kinds of optimizations that are possible in
    practice.  I.e., we could not find any "real" use of the output of
    the RNG that permitted SSE-ization of the RNG. */
-#define LOOK_AT(A, I, N)                                                       \
-  do {                                                                         \
-    if (N == 4)                                                                \
-      if (R123_BUILTIN_EXPECT(!(A.v[N > 2 ? 3 : 0] ^ A.v[N > 2 ? 2 : 0] ^      \
-                                A.v[N > 1 ? 1 : 0] ^ A.v[0]),                  \
-                              0))                                              \
-        ++I;                                                                   \
-    if (N == 2)                                                                \
-      if (R123_BUILTIN_EXPECT(!(A.v[N > 1 ? 1 : 0] ^ A.v[0]), 0))              \
-        ++I;                                                                   \
-    if (N == 1)                                                                \
-      if (R123_BUILTIN_EXPECT(!(A.v[0]), 0))                                   \
-        ++I;                                                                   \
+#define LOOK_AT(A, I, N)                                                                           \
+  do {                                                                                             \
+    if (N == 4)                                                                                    \
+      if (R123_BUILTIN_EXPECT(                                                                     \
+              !(A.v[N > 2 ? 3 : 0] ^ A.v[N > 2 ? 2 : 0] ^ A.v[N > 1 ? 1 : 0] ^ A.v[0]), 0))        \
+        ++I;                                                                                       \
+    if (N == 2)                                                                                    \
+      if (R123_BUILTIN_EXPECT(!(A.v[N > 1 ? 1 : 0] ^ A.v[0]), 0))                                  \
+        ++I;                                                                                       \
+    if (N == 1)                                                                                    \
+      if (R123_BUILTIN_EXPECT(!(A.v[0]), 0))                                                       \
+        ++I;                                                                                       \
   } while (0)
 
 /* Macro that will expand later into all the Random123 PRNGs for NxW_R */
-/* Note that making the first argument uint seems to expose some
-   argument marshalling bugs in version 2.4 of the AMDAPPSDK.  Passing
-   a 64-bit (ulong) seems to fix things, but since we know the value
-   fits in 32 bits, we assign it to a 32-bit (uint) to reduce loop
-   overhead.
-*/
-#define TEST_TPL(NAME, N, W, R)                                                \
-  KERNEL void test_##NAME##N##x##W##_##R(                                      \
-      uint64_t n64, NAME##N##x##W##_ukey_t uk, NAME##N##x##W##_ctr_t ctrinit,  \
-      MEMTYPE NAME##N##x##W##_ctr_t *ctr) {                                    \
-    uint n = (uint)n64;                                                        \
-    unsigned tid = get_global_id(0);                                           \
-    uint i;                                                                    \
-    NAME##N##x##W##_ctr_t c, v = {{0}};                                        \
-    NAME##N##x##W##_key_t k = NAME##N##x##W##keyinit(uk);                      \
-    c = ctrinit;                                                               \
-    if (R == NAME##N##x##W##_rounds) {                                         \
-      for (i = 0; i < n; ++i) {                                                \
-        v = NAME##N##x##W(c, k);                                               \
-        LOOK_AT(v, i, N);                                                      \
-        c.v[0]++;                                                              \
-      }                                                                        \
-    } else {                                                                   \
-      for (i = 0; i < n; ++i) {                                                \
-        v = NAME##N##x##W##_R(R, c, k);                                        \
-        LOOK_AT(v, i, N);                                                      \
-        c.v[0]++;                                                              \
-      }                                                                        \
-    }                                                                          \
-    ctr[tid] = v;                                                              \
+/* XXX AMDAPPSDK 2.4 seemed unhappy with the first arg being uint, but
+   was ok when it was changed to uint64_t.  It's now back to unsigned
+   because that seems more correct and generic.  Nobody's using 2.4
+   any more, are they?  Note that this macro is expanded into CPU,
+   CUDA and OpenCL "kernels", so it has to be generic. */
+#define TEST_TPL(NAME, N, W, R)                                                                                                                              \
+  KERNEL void test_##NAME##N##x##W##_##R(unsigned n, NAME##N##x##W##_ctr_t ctrinit,                                                                          \
+                                         NAME##N##x##W##_ukey_t uk,                                                                                          \
+                                         MEMTYPE NAME##N##x##W##_ctr_t *ctr) {                                                                               \
+    unsigned tid = get_global_id(0);                                                                                                                         \
+    unsigned i;                                                                                                                                              \
+    NAME##N##x##W##_ctr_t c, v = {{0}};                                                                                                                      \
+    NAME##N##x##W##_key_t k = NAME##N##x##W##keyinit(uk);                                                                                                    \
+    c = ctrinit;                                                                                                                                             \
+    if (R == NAME##N##x##W##_rounds) {                                                                                                                       \
+      for (i = 0; i < n; ++i) {                                                                                                                              \
+        v = NAME##N##x##W(c, k);                                                                                                                             \
+        LOOK_AT(v, i, N);                                                                                                                                    \
+        c.v[0]++;                                                                                                                                            \
+      }                                                                                                                                                      \
+    } else {                                                                                                                                                 \
+      for (i = 0; i < n; ++i) {                                                                                                                              \
+        v = NAME##N##x##W##_R(R, c, k);                                                                                                                      \
+        /*xprintf(("1: %s k[0] %lx c[0] %lx v[0] %lx\n", #NAME #N "x" #W "_" #R, (unsigned long) k.v[0], (unsigned long) c.v[0], (unsigned long) v.v[0]));*/ \
+        /*if (c.v[0] == 0) printline_##NAME##N##x##W##_##R(k, c, &v, 1);*/                                                                                   \
+        LOOK_AT(v, i, N);                                                                                                                                    \
+        c.v[0]++;                                                                                                                                            \
+      }                                                                                                                                                      \
+    }                                                                                                                                                        \
+    ctr[tid] = v;                                                                                                                                            \
   }
 
 /*

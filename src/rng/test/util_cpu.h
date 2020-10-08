@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,13 +50,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * before reading /proc/cpuinfo, might fool
  * energy-saving CPU into showing its true speed
  */
-static void warmupCPU(long n) {
+static double warmupCPU(long n) {
   double d = 0.3;
   int i;
   for (i = 0; i < n; i++) {
     d = 3.6 * d * (1. - d);
   }
   dprintf(("logistic map produced %f\n", d));
+  return d;
 }
 
 #if defined(_MSC_VER)
@@ -99,7 +100,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
 static double clockspeedHz(int *ncores, char **modelnamep) {
   FILE *fp = popen("sysctl hw.cpufrequency", "r");
   double hz = 0.;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   if (fscanf(fp, "%*s %lf", &hz) != 1)
     return 0.;
   pclose(fp);
@@ -109,12 +110,11 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
     *modelnamep = ntcsdup("Apple");
   return hz;
 }
-#elif defined(__SUNPRO_CC) || defined(__SUNPRO_C) ||                           \
-    (defined(__GNUC__) && defined(__sun__))
+#elif defined(__SUNPRO_CC) || defined(__SUNPRO_C) || (defined(__GNUC__) && defined(__sun__))
 static double clockspeedHz(int *ncores, char **modelnamep) {
   FILE *fp = popen("kstat -p -s current_clock_Hz", "r");
   double hz = 0.;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   /* To-do: get a model name from kstat too */
   if (modelnamep)
     *modelnamep = ntcsdup("Solaris");
@@ -133,7 +133,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
   double Mhz = 0.;
   double xMhz;
   int i;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   FILE *fp;
   if ((fp = fopen("/proc/cpuinfo", "r")) == NULL) {
     if (ncores)
@@ -170,7 +170,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
         *ncores += 1;
     }
   }
-  double d = Mhz * 1e6;
+  d = Mhz * 1e6;
   dprintf(("clockspeed is %f\n", d));
   return d;
 }
@@ -213,8 +213,7 @@ CPUInfo *cpu_init(const char *arg) {
   CPUInfo *tp;
   tp = (CPUInfo *)malloc(sizeof(CPUInfo));
   tp->hz = clockspeedHz(&tp->ncores, &tp->cpuname);
-  printf("%d cores, %.3f Ghz, cpu %s\n", tp->ncores, tp->hz * 1e-9,
-         tp->cpuname);
+  printf("%d cores, %.3f Ghz, cpu %s\n", tp->ncores, tp->hz * 1e-9, tp->cpuname);
   if (arg) {
     int n = atoi(arg);
     if (n) {
