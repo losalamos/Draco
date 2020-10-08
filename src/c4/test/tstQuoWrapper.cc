@@ -58,8 +58,7 @@ void quo_hw_report(rtt_dsxx::UnitTest &ut) {
   // and std::thread::hardware_concurency  will give the total system resources
   // (not respecting what has been reserved for the OS). Use std::thread as an
   // upper bound check
-  FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() <=
-              thread::hardware_concurrency());
+  FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() <= thread::hardware_concurrency());
 
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_sockets_per_node() > 0);
   FAIL_IF_NOT(rtt_c4::QuoWrapper::num_numanodes_per_node() > 0);
@@ -68,31 +67,24 @@ void quo_hw_report(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(rtt_c4::QuoWrapper::bindings().length() > 0);
 
   bool using_hyperthreads =
-      (rtt_c4::QuoWrapper::num_cores() != rtt_c4::QuoWrapper::num_hw_threads())
-          ? true
-          : false;
+      (rtt_c4::QuoWrapper::num_cores() != rtt_c4::QuoWrapper::num_hw_threads()) ? true : false;
   if (rtt_c4::rank() == 0) {
     cout << "\nThe current application has access to the following "
          << "resources:"
-         << "\n - Nodes used by this process : "
-         << rtt_c4::QuoWrapper::num_nodes()
-         << "\n - Cores per node             : "
-         << rtt_c4::QuoWrapper::num_cores()
-         << "\n - Hardware threads per node  : "
-         << rtt_c4::QuoWrapper::num_hw_threads();
+         << "\n - Nodes used by this process : " << rtt_c4::QuoWrapper::num_nodes()
+         << "\n - Cores per node             : " << rtt_c4::QuoWrapper::num_cores()
+         << "\n - Hardware threads per node  : " << rtt_c4::QuoWrapper::num_hw_threads();
     if (using_hyperthreads) {
       cout << " (hyperthreading enabled)";
     }
-    cout << "\n - Sockets per node           : "
-         << rtt_c4::QuoWrapper::num_sockets_per_node()
-         << "\n - NumaNodes per node         : "
-         << rtt_c4::QuoWrapper::num_numanodes_per_node()
-         << "\n - MPI ranks on this node     : "
-         << rtt_c4::QuoWrapper::num_mpi_ranks_per_node() << endl
+    cout << "\n - Sockets per node           : " << rtt_c4::QuoWrapper::num_sockets_per_node()
+         << "\n - NumaNodes per node         : " << rtt_c4::QuoWrapper::num_numanodes_per_node()
+         << "\n - MPI ranks on this node     : " << rtt_c4::QuoWrapper::num_mpi_ranks_per_node()
+         << endl
          << endl;
   }
-  cout << "MPI Rank " << rtt_c4::rank()
-       << " - Bindings: " << rtt_c4::QuoWrapper::bindings() << endl;
+  cout << "MPI Rank " << rtt_c4::rank() << " - Bindings: " << rtt_c4::QuoWrapper::bindings()
+       << endl;
   sync_output();
 
   if (rtt_c4::rank() == 0)
@@ -108,13 +100,11 @@ void quo_hw_report(rtt_dsxx::UnitTest &ut) {
       // num_nodes         == num nodes actually used by this process.
       FAIL_IF_NOT(rtt_c4::QuoWrapper::num_nodes() <= sti.get_job_num_nodes());
       if (using_hyperthreads) {
-        FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() ==
-                    sti.get_cpus_on_node());
+        FAIL_IF_NOT(rtt_c4::QuoWrapper::num_hw_threads() == sti.get_cpus_on_node());
       } else {
         FAIL_IF_NOT(rtt_c4::QuoWrapper::num_cores() == sti.get_cpus_on_node());
       }
-      FAIL_IF_NOT(rtt_c4::QuoWrapper::num_mpi_ranks_per_node() <=
-                  sti.get_cpus_on_node());
+      FAIL_IF_NOT(rtt_c4::QuoWrapper::num_mpi_ranks_per_node() <= sti.get_cpus_on_node());
 
       if (rtt_c4::rank() == 0) {
         cout << "\nSLURM values:"
@@ -196,9 +186,7 @@ void quo_new_bindings(rtt_dsxx::UnitTest &ut) {
   // limit max num_workers to (num_cores/numa -1) to avoid threads talking
   // across a numa boundary. Note: num_workers = threads/mpi-rank - 1;
   uint32_t const num_workers =
-      std::min(rtt_dsxx::ceil_int_division(nc, nmrpn),
-               rtt_dsxx::ceil_int_division(nc, nnnpn)) -
-      1;
+      std::min(rtt_dsxx::ceil_int_division(nc, nmrpn), rtt_dsxx::ceil_int_division(nc, nnnpn)) - 1;
 
   if (rtt_c4::node() == 0) {
     cout << "ncores per node = " << rtt_c4::QuoWrapper::num_cores()
@@ -265,6 +253,7 @@ int main(int argc, char *argv[]) {
   try {
     quo_hw_report(ut);
     quo_new_bindings(ut);
+    std::cout << "==> done with tests. cleaning up..." << std::endl;
   }
   UT_EPILOG(ut);
 }

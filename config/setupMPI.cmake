@@ -260,8 +260,8 @@ macro( setupOpenMPI )
 
   # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
   # '-bind-to none'.  The 'bind-to none' is required to pack a node.
-  set( MPIEXEC_PREFLAGS "-bind-to none")
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
+  set( MPIEXEC_PREFLAGS "-bind-to none --debug-daemons")
+  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN --debug-daemons")
   # Setup for OMP plus MPI
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
