@@ -48,3 +48,11 @@ the back end before running the release script.
 salloc -N 1 -p power9
 cd /usr/projects/draco/draco-7_5_0
 source/tools/release.sh &> logs/release-darwin-power9.log &
+
+
+Usage (ATS-2)
+
+Same as above but run the script from within an allocation.
+lalloc 1 -W 240
+cd /usr/gapps/jayenne/draco-7_8_0
+source/tools/release.sh | tee logs/release-rzansel.log

@@ -3,8 +3,7 @@
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Ensure version is set and use config date as ver. patch value.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 macro( set_ccs2_software_version PROJNAME )
@@ -18,8 +17,7 @@ macro( set_ccs2_software_version PROJNAME )
     set(${PROJNAME}_VERSION_MINOR 0)
   endif()
 
-  # Use the configure date as the patch number for development builds (non-
-  # release builds)
+  # Use the configure date as the patch number for development builds (non- release builds)
   if( UNIX )
     execute_process(
       COMMAND         date +%m/%d/%Y
@@ -75,17 +73,18 @@ macro( set_ccs2_software_version PROJNAME )
   # git rev-parse --abbrev-ref HEAD
 
   string(TOUPPER ${PROJNAME} PROJNAME_UPPER)
+  if( DEFINED ${PROJNAME}_VERSION_PATCH )
+    set( ${PROJNAME_UPPER}_VERSION_PATCH "${${PROJNAME}_VERSION_PATCH}" )
+  endif()
   set( ${PROJNAME}_BUILD_DATE
     "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
   if( DEFINED ${PROJNAME_UPPER}_VERSION_PATCH ) # "[1-9]?[1-9]$")
     set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME_UPPER}_VERSION_PATCH} )
   else()
     set( ${PROJNAME}_VERSION_PATCH
-      "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
-      )
+      "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}" )
   endif()
-  set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME}_VERSION_PATCH} CACHE STRING
-    "version info" FORCE )
+  set( ${PROJNAME}_VERSION_PATCH ${${PROJNAME}_VERSION_PATCH} CACHE STRING "version info" FORCE )
 
   set( ${PROJNAME}_VERSION "${${PROJNAME}_VERSION_MAJOR}.${${PROJNAME}_VERSION_MINOR}"
     CACHE STRING "${PROJNAME} version information" FORCE)

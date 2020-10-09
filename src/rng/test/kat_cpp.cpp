@@ -239,13 +239,6 @@ void host_execute_tests(kat_instance *tests, unsigned ntests) {
   genmap[make_pair(philox4x32_e, 7u)] = do_test<r123::Philox4x32_R<7>>;
   genmap[make_pair(philox4x32_e, 10u)] = do_test<r123::Philox4x32_R<10>>;
 
-#if R123_USE_PHILOX_64BIT
-  genmap[make_pair(philox2x64_e, 7u)] = do_test<r123::Philox2x64_R<7>>;
-  genmap[make_pair(philox2x64_e, 10u)] = do_test<r123::Philox2x64_R<10>>;
-  genmap[make_pair(philox4x64_e, 7u)] = do_test<r123::Philox4x64_R<7>>;
-  genmap[make_pair(philox4x64_e, 10u)] = do_test<r123::Philox4x64_R<10>>;
-#endif
-
 #if R123_USE_AES_NI
   genmap[make_pair(aesni4x32_e, 10u)] = do_test<r123::AESNI4x32>;
   genmap[make_pair(ars4x32_e, 7u)] = do_test<r123::ARS4x32_R<7>>;

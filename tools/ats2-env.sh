@@ -26,8 +26,8 @@ environments="gcc831env xl20200819env"
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
 export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
-export MAKE_COMMAND="lexec -q make"
-export CTEST_COMMAND="lexec -q ctest"
+#export MAKE_COMMAND="lexec -q make"
+#export CTEST_COMMAND="lexec -q ctest"
 
 # job launch options
 #case $siblings in
