@@ -11,7 +11,7 @@
 #include "../draco_info.hh"
 
 diWidget::diWidget(QWidget *parent)
-    : QWidget(parent), layout(new QGridLayout(this)) pushbutton1(new QPushButton("&Ok")) {
+    : QWidget(parent), layout(new QGridLayout(this)), pushbutton1(new QPushButton("&Ok")) {
   // Set the window title.
   setWindowTitle("draco_info-gui");
 
