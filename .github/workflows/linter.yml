@@ -52,19 +52,26 @@ jobs:
         uses: github/super-linter@v3
         env:
           DEFAULT_BRANCH: develop
-          FILTER_REGEX_EXCLUDE: .*.cc
+          ERROR_ON_MISSING_EXEC_BIT: true
+          FILTER_REGEX_EXCLUDE: .*/.*.cc
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_BASH: true
+          VALIDATE_BASH_EXEC: true
           VALIDATE_DOCKERFILE: true
           VALIDATE_ENV: true
           VALIDATE_HTML: true
           VALIDATE_JSON: true
           VALIDATE_LATEX: true
           VALIDATE_LUA: true
+          VALIDATE_MARKDOWN: true
           VALIDATE_PERL: true
           VALIDATE_PYTHON: true
+          VALIDATE_PYTHON_FLAKE8: true
+          VALIDATE_POWERSHELL: true
           VALIDATE_RUBY: true
+          VALIDATE_SHELL_SHFMT: true
           VALIDATE_XML: true
           VALIDATE_YAML: true
 ...
