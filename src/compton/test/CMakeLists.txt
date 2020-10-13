@@ -16,6 +16,9 @@ project( compton_test CXX )
 set( test_sources
   ${PROJECT_SOURCE_DIR}/tCompton.cc )
 
+set( test2_sources
+  ${PROJECT_SOURCE_DIR}/t2Compton.cc )
+
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
@@ -40,6 +43,13 @@ else()
 
   add_parallel_tests(
     SOURCES "${test_sources}"
+    PE_LIST "1"
+    DEPS    "Lib_compton;Lib_c4"
+    LABEL   "nomemcheck"
+    MPI_PLUS_OMP )
+
+  add_parallel_tests(
+    SOURCES "${test2_sources}"
     PE_LIST "1"
     DEPS    "Lib_compton;Lib_c4"
     LABEL   "nomemcheck"

@@ -20,29 +20,24 @@ set( test_sources
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( NOT TARGET Lib_compton2 )
-
-  add_parallel_tests(
-    SOURCES "${test_sources}"
-    PE_LIST "1"
-    DEPS    "Lib_c4"
-    LABEL   "nomemcheck"
-    MPI_PLUS_OMP )
-
-  # generated include directive files (config.h)
-  target_include_directories( Ut_compton_tCompton2_exe
-    PUBLIC $<BUILD_INTERFACE:${compton_BINARY_DIR}> )
-
-else()
-
-  add_parallel_tests(
+add_parallel_tests(
     SOURCES "${test_sources}"
     PE_LIST "1"
     DEPS    "Lib_compton2;Lib_c4"
     LABEL   "nomemcheck"
     MPI_PLUS_OMP )
 
-endif()
+#add_app_unit_test(
+#    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
+#    APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
+#    TEST_ARGS "${PROJECT_SOURCE_DIR}/odfregression10.ipcress"
+#    STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.odf.stdin"
+#    GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-odfregression10.ipcress.gold"
+#    )
+#add_test(
+#    NAME Ut_compton2_cskrw
+#    COMMAND $<TARGET_FILE:CSKrw> dummy_data
+#    )
 
 # ---------------------------------------------------------------------------- #
 # end of compton2/test/CMakeLists.txt
