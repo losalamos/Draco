@@ -165,31 +165,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
 endif()
 
-##---------------------------------------------------------------------------##
-# Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
-
-set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
-
 #
 # Toggle compiler flags for optional features
 #
@@ -205,6 +180,11 @@ toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 if( ${SITENAME} MATCHES "seq" )
   toggle_compiler_flag( OFF "-pedantic" "CXX" "")
 endif()
+
+#--------------------------------------------------------------------------------------------------#
+# Ensure cache values always match current selection
+deduplicate_flags(CMAKE_CXX_FLAGS)
+force_compiler_flags_to_cache()
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-g++.cmake
