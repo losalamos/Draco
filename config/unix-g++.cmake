@@ -58,8 +58,10 @@ endif()
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
 #
 # Added, but shouldn't be needed:
-# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress
-#           warnings.
+# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress warnings.
+#
+# Control FMA
+# -ffp-contract=off
 
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )

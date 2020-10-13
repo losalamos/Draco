@@ -3,26 +3,20 @@
  * \file   diagnostics/Procmon.hh
  * \author Kelly Thompson
  * \date   Monday, Apr 22, 2013, 10:10 am
- * \brief  Procmon class for printing runtime system diagnostics (free memory
- *         per node, etc).
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \brief  Procmon class for printing runtime system diagnostics (free memory per node, etc).
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  *
- * A file with the same name lives in wedgehog_components and provided the
- * macros \c PROCMON_START and \c PROCMON_STOP.  These command would provide a
- * one line system summary (including timing information).  We don't need the
- * timing information as that can be accessed using other tools (\em Draco
- * timers or system provilers like \em HPC \em Toolkit).  This file provides a
- * similar one line diagnostic output that provides a snapshot in time for
- * system memory via the Linux system command \c 'getrusage.'
+ * A file with the same name lives in wedgehog_components and provided the macros \c PROCMON_START
+ * and \c PROCMON_STOP.  These command would provide a one line system summary (including timing
+ * information).  We don't need the timing information as that can be accessed using other tools
+ * (\em Draco timers or system profilers like \em HPC \em Toolkit).  This file provides a similar
+ * one line diagnostic output that provides a snapshot in time for system memory via the Linux
+ * system command \c 'getrusage.'
  *
- * Mike McKay provides a package in \em xRage that provides these memory
- * instrumentation calls and more for many systems.  It may be useful to
- * review his coding when extending the feature set of this package or when
- * porting these capabilities to new architectures (i.e.: IBM BlueGene ).  His
- * files are: \c procmon_info.h, \c procmon_info.c, \c procmon_iface.h and
- * \c resources.f90.
- */
+ * Mike McKay provides a package in \em xRage that provides these memory instrumentation calls and
+ * more for many systems.  It may be useful to review his coding when extending the feature set of
+ * this package or when porting these capabilities to new architectures (i.e.: IBM BlueGene ).  His
+ * files are: \c procmon_info.h, \c procmon_info.c, \c procmon_iface.h and \c resources.f90. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef diagnostics_Procmon_hh
@@ -121,9 +115,8 @@ namespace rtt_diagnostics {
  * \example diagnostics/test/tstProcmon.cc
  */
 //================================================================================================//
-DLL_PUBLIC_diagnostics void
-procmon_resource_print(std::string const &identifier, int const &mynode = -1,
-                       std::ostream &msg = std::cout);
+void procmon_resource_print(std::string const &identifier, int const &mynode = -1,
+                            std::ostream &msg = std::cout);
 
 } // end namespace rtt_diagnostics
 
