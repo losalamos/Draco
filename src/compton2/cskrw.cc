@@ -1007,8 +1007,8 @@ int main(int argc, char *argv[]) {
 
   try {
     int verbosity = 0;
-    //verbosity = 1;
-    verbosity = 2;
+    verbosity = 1;
+    //verbosity = 2;
     //verbosity = 3;
     //verbosity = 4;
     read_csk_files(filename, verbosity);

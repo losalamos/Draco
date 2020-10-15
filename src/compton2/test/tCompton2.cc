@@ -42,7 +42,7 @@ void test(rtt_dsxx::UnitTest &ut) {
             << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
-  const std::string filename = ut.getTestSourcePath() + "dummy_data_b";
+  const std::string filename = ut.getTestSourcePath() + "dummy_data_gold_b";
   std::cout << "Attempting to construct a Compton2 object...\n" << std::endl;
   std::unique_ptr<rtt_compton2::Compton2> compton_test;
 

@@ -27,17 +27,17 @@ add_parallel_tests(
     LABEL   "nomemcheck"
     MPI_PLUS_OMP )
 
-#add_app_unit_test(
-#    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
-#    APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
-#    TEST_ARGS "${PROJECT_SOURCE_DIR}/odfregression10.ipcress"
-#    STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.odf.stdin"
-#    GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-odfregression10.ipcress.gold"
-#    )
-#add_test(
-#    NAME Ut_compton2_cskrw
-#    COMMAND $<TARGET_FILE:CSKrw> dummy_data
-#    )
+#--------------------------------------------------------------------------------------------------#
+# Python based test runners
+#--------------------------------------------------------------------------------------------------#
+include( ApplicationUnitTest )
+if(TARGET Exe_CSKrw)
+  add_app_unit_test(
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstCSKrw.py
+    APP       $<TARGET_FILE_DIR:Exe_CSKrw>/$<TARGET_FILE_NAME:Exe_CSKrw>
+    TEST_ARGS "${CMAKE_CURRENT_SOURCE_DIR}/dummy_data"
+    )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # end of compton2/test/CMakeLists.txt
