@@ -56,8 +56,7 @@ struct Sparse_Compton_Data {
   std::vector<FP> derivs;
 };
 
-Sparse_Compton_Data::Sparse_Compton_Data()
-    : first_groups(), indexes(), data(), derivs() {}
+Sparse_Compton_Data::Sparse_Compton_Data() : first_groups(), indexes(), data(), derivs() {}
 
 struct Dense_Compton_Data {
   UINT numEvals;
@@ -113,16 +112,14 @@ void Dense_Compton_Data::resize(UINT numfiles, std::string filename) {
 }
 
 // read the entire contents of one file
-void Dense_Compton_Data::read_from_file(UINT eval, std::string filename,
-                                        bool isnonlin) {
+void Dense_Compton_Data::read_from_file(UINT eval, std::string filename, bool isnonlin) {
   Insist(eval < numEvals, "eval must be < numEvals");
   std::ifstream f(filename);
   Insist(f.is_open(), "Unable to open " + filename);
 
   // Normalization / unit change
   const FP mtocm = 100.0;
-  const FP classical_electron_radius =
-      mtocm * rtt_units::classicalElectronRadiusSI; // cm
+  const FP classical_electron_radius = mtocm * rtt_units::classicalElectronRadiusSI; // cm
 
   // Normalization constants for raw CSK data:
   // CSK to cross section: 2 * pi * classicalElectronRadius^2 / 4
@@ -130,8 +127,7 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename,
   // opacity to micro xs: 1/avogadrosNumber
   //
   // convert from CSK data to opacity (cm^2/mole)
-  const FP csk_opac_norm = 0.25 * 2 * rtt_units::PI *
-                           classical_electron_radius *
+  const FP csk_opac_norm = 0.25 * 2 * rtt_units::PI * classical_electron_radius *
                            classical_electron_radius * rtt_units::AVOGADRO;
   Ensure(soft_equiv(csk_opac_norm, 2 * 0.037558, 1e-4));
   //
@@ -147,9 +143,8 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename,
 
   // set effective renorm base multipliers
   const FP basescale = csk_opac_norm; // cm^2/mole
-  const FP nlbase = (4.0 / 9.0) * 2.0 /
-                    (hplanck * hplanck * hplanck * cspeed * cspeed) *
-                    (mec2 * mec2 * mec2);
+  const FP nlbase =
+      (4.0 / 9.0) * 2.0 / (hplanck * hplanck * hplanck * cspeed * cspeed) * (mec2 * mec2 * mec2);
 
   // Line 1: sizes
   UINT numTbreakpoints = 0;
@@ -207,9 +202,7 @@ void Dense_Compton_Data::read_from_file(UINT eval, std::string filename,
 
         // Put in 1D data vector
         const UINT loc =
-            gto + numGroups *
-                      (gfrom +
-                       numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+            gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
         Check(loc < data.size());
         data[loc] = val;
       }
@@ -304,19 +297,13 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
           // use scattering matrix (no transpose) for outscattering
           for (UINT eval : {e_OL, e_ON}) {
             const UINT loc =
-                gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
             vals[eval] = data[loc];
           }
           // use transpose of scattering matrix for inscattering
           for (UINT eval : {e_IL, e_IN}) {
             const UINT loc =
-                gfrom +
-                numGroups *
-                    (gto +
-                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                gfrom + numGroups * (gto + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
             vals[eval] = data[loc];
           }
 
@@ -325,15 +312,12 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
           const bool bzero = bgto <= eps || bgfrom <= eps;
 
           // Take differences of spontaneous and induced rates at equilibrium
-          const FP impldiff =
-              (bzero) ? 0.0 : vals[e_IL] / bgfrom - vals[e_OL] / bgto;
+          const FP impldiff = (bzero) ? 0.0 : vals[e_IL] / bgfrom - vals[e_OL] / bgto;
           const FP expldiff = vals[e_ON] - vals[e_IN];
 
           // For low E/T, store impldiff; for high E/T, store expldiff
           const UINT loc_fN =
-              gto + numGroups *
-                        (gfrom + numGroups * (iT + numTs * (iL + numLegMoments *
-                                                                     e_fN)));
+              gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
           data[loc_fN] = (lowE) ? impldiff : expldiff;
 
           // Keep sums of 0th moment rates for later ratio
@@ -353,9 +337,7 @@ void Dense_Compton_Data::compute_nonlinear_difference() {
       for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
         for (UINT gto = 0; gto < numGroups; ++gto) {
           const UINT loc_fN =
-              gto + numGroups *
-                        (gfrom + numGroups * (iT + numTs * (iL + numLegMoments *
-                                                                     e_fN)));
+              gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * e_fN)));
           data[loc_fN] *= scalenl;
         }
       }
@@ -381,8 +363,7 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
     FP T2 = Ts[it + 1];
     validTs = validTs && (T1 < T2);
   }
-  Insist(validTs,
-         "Temperatures are not monotonically increasing and unique.\n");
+  Insist(validTs, "Temperatures are not monotonically increasing and unique.\n");
 
   // Temporary array for finite differences
   const UINT fd_sz = numGroups * numGroups * (numTs - 1U);
@@ -399,15 +380,10 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
           for (UINT gto = 0; gto < numGroups; ++gto) {
 
             const UINT loc_m =
-                gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
             const UINT loc_p =
                 gto +
-                numGroups *
-                    (gfrom + numGroups * ((iT + 1U) +
-                                          numTs * (iL + numLegMoments * eval)));
+                numGroups * (gfrom + numGroups * ((iT + 1U) + numTs * (iL + numLegMoments * eval)));
             const FP fd = (data[loc_p] - data[loc_m]) * inv_dT;
 
             const UINT loc_fd = gto + numGroups * (gfrom + numGroups * iT);
@@ -422,8 +398,7 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
       // Step 2a: First temperature (no limiter; first-order estimate)
       {
         UINT iT = 0;
-        const UINT offset =
-            numGroups * (iT + numTs * (iL + numLegMoments * eval));
+        const UINT offset = numGroups * (iT + numTs * (iL + numLegMoments * eval));
         const UINT offset_fd = numGroups * iT;
         for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
           for (UINT gto = 0; gto < numGroups; ++gto) {
@@ -437,8 +412,7 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
       // Step 2b: Last temperature (no limiter; first-order estimate)
       {
         UINT iT = numTs - 1U;
-        const UINT offset =
-            numGroups * (iT + numTs * (iL + numLegMoments * eval));
+        const UINT offset = numGroups * (iT + numTs * (iL + numLegMoments * eval));
         const UINT offset_fd = numGroups * (iT - 1U);
         for (UINT gfrom = 0; gfrom < numGroups; ++gfrom) {
           for (UINT gto = 0; gto < numGroups; ++gto) {
@@ -457,8 +431,7 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
         const FP f_m = (2. * dT_m + dT_p) / (3. * (dT_m + dT_p));
         const FP f_p = 1.0 - f_m;
 
-        const UINT offset =
-            numGroups * (iT + numTs * (iL + numLegMoments * eval));
+        const UINT offset = numGroups * (iT + numTs * (iL + numLegMoments * eval));
 
         const UINT offset_fd_m = numGroups * (iT - 1U);
         const UINT offset_fd_p = numGroups * iT;
@@ -477,9 +450,7 @@ void Dense_Compton_Data::compute_temperature_derivatives() {
             const int sign_m = int(0.0 < fd_m) - int(fd_m < 0.0);
             const int sign_p = int(0.0 < fd_p) - int(fd_p < 0.0);
 
-            const FP d = (sign_m * sign_p > 0)
-                             ? (fd_m * fd_p) / (f_m * fd_m + f_p * fd_p)
-                             : 0.0;
+            const FP d = (sign_m * sign_p > 0) ? (fd_m * fd_p) / (f_m * fd_m + f_p * fd_p) : 0.0;
             const UINT loc = gto + numGroups * (gfrom + offset);
             derivs[loc] = d;
           }
@@ -527,19 +498,12 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
             const UINT iT_p = iT < (numTs - 1U) ? iT + 1U : numTs - 1U;
             const UINT loc_m =
                 gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT_m + numTs * (iL + numLegMoments * eval)));
+                numGroups * (gfrom + numGroups * (iT_m + numTs * (iL + numLegMoments * eval)));
             const UINT loc =
-                gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
             const UINT loc_p =
                 gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT_p + numTs * (iL + numLegMoments * eval)));
+                numGroups * (gfrom + numGroups * (iT_p + numTs * (iL + numLegMoments * eval)));
             const FP val_m = std::fabs(data[loc_m]);
             const FP val = std::fabs(data[loc]);
             const FP val_p = std::fabs(data[loc_p]);
@@ -571,9 +535,11 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
   std::vector<FP> sparse_data(numNonZeros, 0.0);
   std::vector<FP> sparse_derivs(numNonZeros, 0.0);
 
+  /*
   std::cout << "DBG numBinaryEvals numPoints numPerPoint numNonZeros "
             << numBinaryEvals << ' ' << numPoints << ' ' << numPerPoint << ' '
             << numNonZeros << '\n';
+   */
 
   const std::array<UINT, 3> evalsToUse = {0, 1, 4};
   for (UINT iuse = 0; iuse < numBinaryEvals; ++iuse) {
@@ -591,10 +557,7 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
             // d for dense; s for sparse
             const UINT gto = dg + first;
             const UINT loc_d =
-                gto +
-                numGroups *
-                    (gfrom +
-                     numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                gto + numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
             const UINT loc_s = dg + offset;
             sparse_data[loc_s] = data[loc_d];
             sparse_derivs[loc_s] = derivs[loc_d];
@@ -616,9 +579,8 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
 
 // Debug print sparse data
 void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
-  std::cout << "sparse sizes : " << sd.first_groups.size() << ' '
-            << sd.indexes.size() << ' ' << sd.data.size() << ' '
-            << sd.derivs.size() << '\n';
+  std::cout << "sparse sizes : " << sd.first_groups.size() << ' ' << sd.indexes.size() << ' '
+            << sd.data.size() << ' ' << sd.derivs.size() << '\n';
 
   if (false) {
     std::cout << "PRINT CONTENTS (point 0)\n";
@@ -630,9 +592,8 @@ void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
         UINT endd = sd.indexes[loc + 1];
         for (UINT ii = strt; ii < endd; ++ii) {
           UINT gto = (ii - strt) + fg;
-          std::cout << iT << ' ' << gfrom << ' ' << gto << ' '
-                    << std::setprecision(2) << sd.data[ii] << ' '
-                    << std::setprecision(2) << sd.derivs[ii] << '\n';
+          std::cout << iT << ' ' << gfrom << ' ' << gto << ' ' << std::setprecision(2)
+                    << sd.data[ii] << ' ' << std::setprecision(2) << sd.derivs[ii] << '\n';
         }
       }
     }
@@ -707,8 +668,7 @@ void Dense_Compton_Data::print_sparse(const Sparse_Compton_Data &sd) {
 }
 
 // Write to binary
-void Dense_Compton_Data::write_binary(std::string fileout,
-                                      Sparse_Compton_Data &sd) {
+void Dense_Compton_Data::write_binary(std::string fileout, Sparse_Compton_Data &sd) {
   auto fout = std::ofstream(fileout, std::ios::out | std::ios::binary);
 
   // binary type
@@ -738,8 +698,10 @@ void Dense_Compton_Data::write_binary(std::string fileout,
   Check(isz == (numGroups * numTs + 1U));
   Check(dsz == sd.derivs.size());
 
+  /*
   std::cout << "DBG binary file v" << version_major << '.' << version_minor
             << " ordering " << binary_ordering << '\n';
+   */
 
   // sizes
   fout.write(reinterpret_cast<char *>(&numTs), sizeof(UINT));
@@ -753,8 +715,7 @@ void Dense_Compton_Data::write_binary(std::string fileout,
   // data
   fout.write(reinterpret_cast<char *>(&Ts[0]), tsz * sizeof(FP));
   fout.write(reinterpret_cast<char *>(&groupBdrs[0]), egsz * sizeof(FP));
-  fout.write(reinterpret_cast<char *>(&sd.first_groups[0]),
-             fgsz * sizeof(UINT));
+  fout.write(reinterpret_cast<char *>(&sd.first_groups[0]), fgsz * sizeof(UINT));
   fout.write(reinterpret_cast<char *>(&sd.indexes[0]), isz * sizeof(UINT));
   fout.write(reinterpret_cast<char *>(&sd.data[0]), dsz * sizeof(FP));
   fout.write(reinterpret_cast<char *>(&sd.derivs[0]), dsz * sizeof(FP));
@@ -799,8 +760,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
   // Print contents
   if (verbosity > 2) {
     std::cout << '\n';
-    std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin",
-                                          "out_nonlin", "nldiff"};
+    std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin", "out_nonlin", "nldiff"};
     for (UINT eval = 0; eval < numEvals; ++eval) {
       std::cout << "Eval: " << evalNames[eval] << '\n';
       for (UINT iL = 0; iL < numLegMoments; ++iL) {
@@ -818,9 +778,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
                 std::cout << ' ';
               const UINT loc =
                   gto +
-                  numGroups *
-                      (gfrom +
-                       numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                  numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
               std::cout << std::setprecision(precision) << data[loc];
             }
             std::cout << '\n';
@@ -835,9 +793,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
                 std::cout << ' ';
               const UINT loc =
                   gto +
-                  numGroups *
-                      (gfrom +
-                       numGroups * (iT + numTs * (iL + numLegMoments * eval)));
+                  numGroups * (gfrom + numGroups * (iT + numTs * (iL + numLegMoments * eval)));
               std::cout << std::setprecision(precision) << derivs[loc];
             }
             std::cout << '\n';
@@ -935,8 +891,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
     // indexes for the evaluations
     // I for inscattering, O for outscattering, f for difference
     // L for linear, N for nonlinear
-    std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin",
-                                          "out_nonlin", "nldiff"};
+    std::vector<std::string> evalNames = {"in_lin", "out_lin", "in_nonlin", "out_nonlin", "nldiff"};
     const UINT e_IL = 0;
     const UINT e_OL = 1;
     const UINT e_IN = 2;
@@ -951,8 +906,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
       // Get T
       const FP T = dat.Ts[iT];
       if (verbosity > 0)
-        std::cout << "Temperature (keV): " << std::setprecision(precision) << T
-                  << '\n';
+        std::cout << "Temperature (keV): " << std::setprecision(precision) << T << '\n';
 
       // Compute bg[T]
       if (verbosity > 1)
@@ -988,9 +942,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
             const UINT loc =
                 gto +
                 dat.numGroups *
-                    (gfrom +
-                     dat.numGroups *
-                         (iT + dat.numTs * (iL + dat.numLegMoments * eval)));
+                    (gfrom + dat.numGroups * (iT + dat.numTs * (iL + dat.numLegMoments * eval)));
             const FP val = dat.data[loc];
             subsum += bgto * val * bgfrom;
           }
@@ -1008,9 +960,8 @@ void read_csk_files(std::string const &basename, int verbosity) {
       const FP ratio_raw = lindiff / nonlindiff_raw - 1.0;
       const FP ratio_use = lindiff / nonlindiff_use - 1.0;
       if (verbosity > 1)
-        std::cout << "lindiff nonlindiff-RAW nonlindiff-USE: "
-                  << std::setprecision(6) << lindiff << ' ' << nonlindiff_raw
-                  << ' ' << nonlindiff_use << '\n';
+        std::cout << "lindiff nonlindiff-RAW nonlindiff-USE: " << std::setprecision(6) << lindiff
+                  << ' ' << nonlindiff_raw << ' ' << nonlindiff_use << '\n';
       if (verbosity > 0) {
         std::cout << "lindiff / nonlindiff_raw - 1: " << ratio_raw << '\n';
         std::cout << "lindiff / nonlindiff_use - 1: " << ratio_use << '\n';
@@ -1035,9 +986,8 @@ int main(int argc, char *argv[]) {
   help_strings['v'] = "print version information and exit.";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
-  std::string const helpstring(
-      "\nUsage: cskrw [-hv] "
-      "<csk_base_filename>\n¡Under active development!\n");
+  std::string const helpstring("\nUsage: cskrw [-hv] "
+                               "<csk_base_filename>\n¡Under active development!\n");
 
   int c(0);
   while ((c = program_options()) != -1) {
@@ -1047,8 +997,7 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'h': // --help
-      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring
-           << endl;
+      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring << endl;
       return 0;
     }
   }
@@ -1058,7 +1007,7 @@ int main(int argc, char *argv[]) {
 
   try {
     int verbosity = 0;
-    verbosity = 1;
+    //verbosity = 1;
     verbosity = 2;
     //verbosity = 3;
     //verbosity = 4;

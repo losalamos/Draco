@@ -29,7 +29,7 @@ using rtt_dsxx::soft_equiv;
 //!  Simple test
 void test(rtt_dsxx::UnitTest &ut) {
   // Make true if golds need updating
-  const bool do_print = true;
+  const bool do_print = false;
 
   // Tolerance used for checks
   // TODO: Figure out why I can't use 1e-11 for the tol (outscat)
@@ -38,7 +38,7 @@ void test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
   std::cout << "\n---------------------------------------------------------\n"
-            << "             Test Draco direct CSK routines\n"
+            << "             Test Draco Compton data routines\n"
             << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
@@ -53,7 +53,7 @@ void test(rtt_dsxx::UnitTest &ut) {
     // if construction fails, there is no reason to continue testing...
     return;
   }
-  std::cout << "\n(...Success!)" << std::endl;
+  std::cout << "(...Success!)\n" << std::endl;
 
   // Check some of the data in the CSK_generator-opened file:
   const std::vector<double> grp_bds = compton_test->get_Egs();
@@ -108,7 +108,7 @@ void test(rtt_dsxx::UnitTest &ut) {
            "checked highest Legendre moment");
 
   if (ut.numFails == 0) {
-    std::cout << "\nCorrectly read sizes, group bounds, and electron temps!" << std::endl;
+    std::cout << "Correctly read sizes, group bounds, and electron temps!\n" << std::endl;
   }
 
   // Test data retrieval: interpolate to a grid point in temperature
@@ -120,7 +120,7 @@ void test(rtt_dsxx::UnitTest &ut) {
     const size_t L = compton_test->get_num_leg_moments();
     std::vector<double> inscat(G * G * L, -1.0);
     std::vector<double> outscat(G, -1.0);
-    std::vector<double> nl_diff(G, -1.0);
+    std::vector<double> nl_diff(G, 0.0);
 
     // Returns flattened 3D inscat array with order [moment, group_to, group_from]
     compton_test->interp_dense_inscat(inscat, interp_T_keV, G);
@@ -129,8 +129,8 @@ void test(rtt_dsxx::UnitTest &ut) {
     compton_test->interp_linear_outscat(outscat, interp_T_keV);
 
     // Use dummy flux for nonlinear component
-    const double phival = 2.0;
-    const double phiscale = 0.1;
+    const double phival = 1.732984; // random
+    const double phiscale = phival * double(G);
     std::vector<double> phi(compton_test->get_num_groups(), phival);
     // Returns 1D nonlinear difference array [group_from] (performs matrix multiplication with phi)
     compton_test->interp_nonlin_diff_and_add(nl_diff, interp_T_keV, phi, phiscale);
@@ -162,96 +162,46 @@ void test(rtt_dsxx::UnitTest &ut) {
       }(nl_diff);
     }
 
-    // NB: These dense values come directly from the ASCII data files
-    // flattened 1D array with ordering (slowest) [eval, gfrom, gto, leg] (fastest)
-    std::vector<double> raw_gold = {
-        // out_lin
-        1.023686968316, 0.003573655955675, 0.1408569058113, -0.003385368827333, 0, 0, 0, 0,
-        0.01368733137026, -0.000337289996441, 0.8580132416506, 0.00346237220459, 0.1150544176069,
-        -0.002695776219916, 0, 0, 0, 0, 0.03016927525143, -0.000745487878607, 0.7395544180756,
-        0.003537535339196, 0.08790804121747, -0.001974567477495, 0, 0, 0, 0, 0.02760683687763,
-        -0.0006747774819197, 0.7154380590368, 0.002500085526454,
-        // in_lin
-        1.029549163582, 0.003360819879047, 0.1682617986774, -0.004498320348364, 0, 0, 0, 0,
-        0.01155720790042, -0.000254680100335, 0.8615393494377, 0.003337305544177, 0.1370933267956,
-        -0.003577889661548, 0, 0, 0, 0, 0.02546236651279, -0.0005628307049739, 0.74122185377,
-        0.003480918190072, 0.104392775669, -0.002618892286625, 0, 0, 0, 0, 0.02330836203736,
-        -0.0005092109709329, 0.7158405069922, 0.002485525111488,
-        // out_nonlin
-        2.417350052736e-20, 5.333857003773e-23, 1.569215319107e-22, -3.474039416897e-24, 0, 0, 0, 0,
-        2.025140617993e-22, -5.27716088378e-24, 4.991731616824e-22, 1.576887628939e-24,
-        7.937214293507e-24, -1.661082680445e-25, 0, 0, 0, 0, 1.15611911544e-23, -3.08379217909e-25,
-        2.906510852958e-23, 1.161410570085e-25, 3.652307822369e-25, -6.9213492314e-27, 0, 0, 0, 0,
-        6.471151078044e-25, -1.788886184269e-26, 9.067645193159e-25, 3.288019868804e-27,
-        // in_nonlin
-        2.412582001649e-20, 5.506360234252e-23, 1.858984933376e-22, -4.598103855448e-24, 0, 0, 0, 0,
-        1.70028840385e-22, -3.978450052949e-24, 4.964897275093e-22, 1.671777660171e-24,
-        9.356135881693e-24, -2.194753402066e-25, 0, 0, 0, 0, 9.680369923644e-24, -2.32267253788e-25,
-        2.875946793361e-23, 1.265594484598e-25, 4.274264612141e-25, -9.142968009692e-27, 0, 0, 0, 0,
-        5.392751048597e-25, -1.344066881751e-26, 8.87128629256e-25, 3.986007245261e-27};
+    // NB: The inscat values come directly from the ASCII in_lin file
+    std::vector<double> inscat_gold = {//in_lin last temperature
+                                       0.077335961983675,
+                                       0.00086813512403298,
+                                       3.7589542861865e-12,
+                                       0,
+                                       0.0126392099825,
+                                       0.064715680156296,
+                                       0.0019126397051273,
+                                       4.2280402573895e-09,
+                                       7.5743500030441e-10,
+                                       0.010297948543218,
+                                       0.055677870598416,
+                                       0.0017508387789385,
+                                       0,
+                                       1.7871075876201e-07,
+                                       0.0078416029229916,
+                                       0.05377131679901,
+                                       0.00025245247880701,
+                                       -1.9130636257311e-05,
+                                       -3.3342618791366e-13,
+                                       0,
+                                       -0.00033789734745753,
+                                       0.00025068616810335,
+                                       -4.2277780938278e-05,
+                                       -3.556692022306e-10,
+                                       -6.7240010226582e-11,
+                                       -0.00026875796575325,
+                                       0.00026147382401739,
+                                       -3.8250062923392e-05,
+                                       0,
+                                       -1.5099779118058e-08,
+                                       -0.00019672159570614,
+                                       0.00018670354202682};
 
-    // Slice up raw gold and rescale
-    const double mtocm = 100.0;
-    const double classical_electron_radius = mtocm * rtt_units::classicalElectronRadiusSI; // cm
-    const double valscale = 0.25 * 2 * rtt_units::PI * classical_electron_radius *
-                            classical_electron_radius * rtt_units::AVOGADRO;
-    std::cout << "Scaling raw opacities by " << valscale << '\n';
+    std::vector<double> outscat_gold = {0.087476270446994, 0.074121503186901, 0.064422154448942,
+                                        0.055814819950424};
 
-    // Fill inscat_gold (reorder)
-    // TODO: FIX REORDERING
-    std::vector<double> inscat_gold(G * G * L, 0.0);
-    const size_t in_offset = G * G * L;
-    for (size_t gfrom = 0; gfrom < G; ++gfrom) {
-      for (size_t gto = 0; gto < G; ++gto) {
-        for (size_t m = 0; m < L; ++m) {
-          const size_t i_raw = in_offset + m + L * (gto + G * gfrom);
-          const size_t i = gfrom + G * (gto + G * m);
-          inscat_gold[i] = valscale * raw_gold[i_raw];
-        }
-      }
-    }
-
-    // Fill outscat_gold (reorder and sum)
-    std::vector<double> outscat_gold(G, 0.0);
-    const size_t out_offset = 0;
-    const size_t P0 = 0;
-    for (size_t gfrom = 0; gfrom < G; ++gfrom) {
-      double sum = 0.0;
-      for (size_t gto = 0; gto < G; ++gto) {
-        const size_t i_raw = out_offset + P0 + L * (gto + G * gfrom);
-        sum += raw_gold[i_raw];
-      }
-      outscat_gold[gfrom] = valscale * sum;
-    }
-
-    std::vector<double> nl_diff_gold(G, 0.0);
-
-    // Print result (useful if golds need updating)
-    if (do_print) {
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\ninscat_gold\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(inscat_gold);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\noutscat_gold\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(outscat_gold);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\nnl_diff_gold\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(nl_diff_gold);
-    }
+    std::vector<double> nl_diff_gold = {0.017286371393823, 0.0087938222181754, 0.0011691552185996,
+                                        0.00012086891440242};
 
     // Print diff (useful if golds need updating)
     if (do_print) {
@@ -270,27 +220,195 @@ void test(rtt_dsxx::UnitTest &ut) {
           std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
         std::cout << std::endl;
       }(outscat, outscat_gold);
-    }
-    // TODO: Hack print of values from cskrw.cc
-    // TODO: Check sparsity structure of interp or data
-    // TODO: Check temperature interpolation coeff (verified correct)
 
-    // TODO: Figure out why inscat has unexpected non-zeros
+      [tol](const std::vector<double> &v, const std::vector<double> &r) {
+        std::cout << std::setprecision(14);
+        std::cout << "\nnl_diff / nl_diff_gold - 1\n";
+        for (size_t i = 0; i < v.size(); ++i)
+          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
+        std::cout << std::endl;
+      }(nl_diff, nl_diff_gold);
+    }
+
     ut.check(std::equal(inscat.begin(), inscat.end(), inscat_gold.begin(),
                         [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
              "checked data retrieval for inscat");
 
-    // TODO: Figure out why outscat is slightly off
     ut.check(std::equal(outscat.begin(), outscat.end(), outscat_gold.begin(),
                         [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
              "checked data retrieval for outscat");
 
-    // Enough operations are done on the nl_diff in the converter
-    // that using the raw values is not feasible
-    // TODO: Hack print of nl_diff and use for gold
+    ut.check(std::equal(nl_diff.begin(), nl_diff.end(), nl_diff_gold.begin(),
+                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
+             "checked data retrieval for nl_diff");
+  }
+
+  // Test interpolation
+  {
+    const double alpha = 0.4;
+    const double interp_T_keV = alpha * T_evals[0] + (1.0 - alpha) * T_evals[1];
+    std::cout << "Testing interpolation at T = " << interp_T_keV << " keV\n";
+
+    const size_t G = compton_test->get_num_groups();
+    const size_t L = compton_test->get_num_leg_moments();
+    std::vector<double> inscat(G * G * L, -1.0);
+    std::vector<double> outscat(G, -1.0);
+    std::vector<double> nl_diff(G, 0.0);
+
+    // Returns flattened 3D inscat array with order [moment, group_to, group_from]
+    compton_test->interp_dense_inscat(inscat, interp_T_keV, G);
+
+    // Returns 1D outscat array [group_from]
+    compton_test->interp_linear_outscat(outscat, interp_T_keV);
+
+    // Use dummy flux for nonlinear component
+    const double phival = 2.394559; // random
+    const double phiscale = phival * double(G);
+    std::vector<double> phi(compton_test->get_num_groups(), phival);
+    // Returns 1D nonlinear difference array [group_from] (performs matrix multiplication with phi)
+    compton_test->interp_nonlin_diff_and_add(nl_diff, interp_T_keV, phi, phiscale);
+
+    // Print result (useful if golds need updating)
+    if (do_print) {
+      [](const std::vector<double> &v) {
+        auto print = [](double a) { std::cout << a << ", "; };
+        std::cout << std::setprecision(14);
+        std::cout << "\ninscat\n";
+        std::for_each(v.begin(), v.end(), print);
+        std::cout << std::endl;
+      }(inscat);
+
+      [](const std::vector<double> &v) {
+        auto print = [](double a) { std::cout << a << ", "; };
+        std::cout << std::setprecision(14);
+        std::cout << "\noutscat\n";
+        std::for_each(v.begin(), v.end(), print);
+        std::cout << std::endl;
+      }(outscat);
+
+      [](const std::vector<double> &v) {
+        auto print = [](double a) { std::cout << a << ", "; };
+        std::cout << std::setprecision(14);
+        std::cout << "\nnl_diff\n";
+        std::for_each(v.begin(), v.end(), print);
+        std::cout << std::endl;
+      }(nl_diff);
+    }
+
+    std::vector<double> inscat_gold = {//in_lin
+                                       0.11237635504081,
+                                       0.003892290232165,
+                                       0,
+                                       0,
+                                       0.0032474360053123,
+                                       0.085567151564651,
+                                       0.003918277640946,
+                                       0,
+                                       0,
+                                       0.0013177739461996,
+                                       0.071555894009793,
+                                       0.0080465483923832,
+                                       0,
+                                       0,
+                                       0.00035657507884865,
+                                       0.050765688411202,
+                                       9.3287262136785e-05,
+                                       -9.2936704368115e-05,
+                                       0,
+                                       0,
+                                       -8.1502684127148e-05,
+                                       0.00016450195164588,
+                                       -9.3405055656181e-05,
+                                       0,
+                                       0,
+                                       -3.1620447251114e-05,
+                                       0.00018889454989741,
+                                       -0.00017952275276575,
+                                       0,
+                                       0,
+                                       -4.6914663077267e-06,
+                                       0.0004902506924202};
+
+    std::vector<double> outscat_gold = {0.11533649452761, 0.090894893695562, 0.076437945828947,
+                                        0.061604582646344};
+
+    std::vector<double> nl_diff_gold = {3.7130057760837e-05, 3.0320968944752e-05,
+                                        4.7840481582021e-06, 4.108948064536e-07};
+
+    // Print diff (useful if golds need updating)
+    if (do_print) {
+      [tol](const std::vector<double> &v, const std::vector<double> &r) {
+        std::cout << std::setprecision(14);
+        std::cout << "\ninscat / inscat_gold - 1\n";
+        for (size_t i = 0; i < v.size(); ++i)
+          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
+        std::cout << std::endl;
+      }(inscat, inscat_gold);
+
+      [tol](const std::vector<double> &v, const std::vector<double> &r) {
+        std::cout << std::setprecision(14);
+        std::cout << "\noutscat / outscat_gold - 1\n";
+        for (size_t i = 0; i < v.size(); ++i)
+          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
+        std::cout << std::endl;
+      }(outscat, outscat_gold);
+
+      [tol](const std::vector<double> &v, const std::vector<double> &r) {
+        std::cout << std::setprecision(14);
+        std::cout << "\nnl_diff / nl_diff_gold - 1\n";
+        for (size_t i = 0; i < v.size(); ++i)
+          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
+        std::cout << std::endl;
+      }(nl_diff, nl_diff_gold);
+    }
+
+    ut.check(std::equal(inscat.begin(), inscat.end(), inscat_gold.begin(),
+                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
+             "checked data retrieval for inscat");
+
+    ut.check(std::equal(outscat.begin(), outscat.end(), outscat_gold.begin(),
+                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
+             "checked data retrieval for outscat");
+
+    ut.check(std::equal(nl_diff.begin(), nl_diff.end(), nl_diff_gold.begin(),
+                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
+             "checked data retrieval for nl_diff");
   }
 }
 
+//------------------------------------------------------------------------------------------------//
+//!  Tests Compton's error-handling on a non-existent file.
+void bad_file_test(rtt_dsxx::UnitTest &ut) {
+  std::cout << "\n---------------------------------------------------------\n"
+            << "    Test Compton2 bad file handling    \n"
+            << "---------------------------------------------------------\n";
+  // open a small mg opacity file:
+  std::string filename = ut.getTestSourcePath() + "non_existent_b";
+  std::cout << "Testing with a non-existent file...\n" << std::endl;
+  std::unique_ptr<rtt_compton2::Compton2> compton_test;
+
+  bool caught = false;
+  try {
+    compton_test.reset(new rtt_compton2::Compton2(filename));
+  } catch (rtt_dsxx::assertion &asrt) {
+    std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
+    // We successfully caught the bad file!
+    caught = true;
+  } catch (const int & /*asrt*/) {
+    std::cout << "CSK exception thrown. " << std::endl;
+    // We successfully caught the bad file!
+    caught = true;
+  }
+
+  if (!caught)
+    ITFAILS;
+
+  if (ut.numFails == 0) {
+    PASSMSG("Successfully caught a bad file exception.");
+  } else {
+    FAILMSG("Did not successfully catch a bad file exception.");
+  }
+}
 } // namespace rtt_compton2_test
 
 //----------------------------------------------------------------------------//
@@ -299,6 +417,7 @@ int main(int argc, char *argv[]) {
   try {
     // >>> UNIT TESTS
     rtt_compton2_test::test(ut);
+    rtt_compton2_test::bad_file_test(ut);
   }
   UT_EPILOG(ut);
 }

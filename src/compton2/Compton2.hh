@@ -29,10 +29,8 @@ enum Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
  *        multigroup frequency distributions from csk data files
  *
  * This interface class allows the client to:
- * 1) access (interpolate) data from existing multigroup CSK_generator libraries
- * 2) build new multigroup libraries from existing CSK_generator pointwise
-      libraries
- * 3) obtain auxiliary information for existing multigroup libraries
+ * 1) access (interpolate) data from existing multigroup csk libraries
+ * 2) obtain auxiliary information from existing multigroup libraries
  *    (electron temperature bounds, frequency group structures, etc)
  *
  */
@@ -40,7 +38,7 @@ enum Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
 /*!
  * \example compton2/test/tCompton2.cc
  *
- * This unit test demonstrates the two methods for constructing a Compton
+ * This unit test demonstrates the method for constructing a Compton
  * object, and exercises all routines for interpolation and data access.
 */
 
@@ -49,19 +47,27 @@ class Compton2 {
 public:
   Compton2(std::string filename);
 
-  // TEMPORARY
+  // Interpolate csk data in temperature for the linear inscattering
+  // and return a flattened dense matrix with ordering
+  // (slowest) [legendre moment, group to, group from] (fastest)
+  // Must specify the largest desired Legendre moment.
   void interp_dense_inscat(std::vector<double> &inscat, double Te_keV,
                            size_t num_moments_truncate) const;
 
+  // Interpolate csk data in temperature for the linear outscattering
+  // and sum over outgoing group to return a vector with index [group from].
+  // outscat must be pre-sized to the number of groups.
   void interp_linear_outscat(std::vector<double> &outscat, double Te_keV) const;
 
   // Adds the nonlinear difference to the outscat vector
   // phi is a group-sized vector for the scalar radiation intensity
   // when the radiation is in equilibrium, sum_g phi_g = scale
+  // outscat must be pre-sized and pre-filled with the outscat data
+  // by calling interp_linear_outscat
   void interp_nonlin_diff_and_add(std::vector<double> &outscat, double Te_keV,
-                                  const std::vector<double> &phi,
-                                  double scale) const;
+                                  const std::vector<double> &phi, double scale) const;
 
+  // The following are for future implementation
 #if 0
   // Interpolate in temperature and multiply against a vector in-place
   // x := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale) * x
@@ -127,19 +133,16 @@ public:
 
   // Size checks for valid state
   bool check_class_invariants() const {
-    bool all_good =
-        (num_temperatures_ > 0U) && (num_groups_ > 0U) &&
-        (num_leg_moments_ > 0U) && (num_evals_ >= 2U) && (num_evals_ <= 3U) &&
-        (num_points_ == num_evals_ + num_leg_moments_ - 1U) &&
-        (Ts_.size() == num_temperatures_) &&
-        (Egs_.size() == num_groups_ + 1U) &&
-        (first_groups_.size() == (num_temperatures_ * num_groups_)) &&
-        (indexes_.size() == (num_temperatures_ * num_groups_ + 1U)) &&
-        (data_.size() == derivs_.size()) &&
-        (data_.size() >= num_temperatures_ * num_groups_ * num_points_) &&
-        (data_.size() <=
-         num_temperatures_ * num_groups_ * num_groups_ * num_points_) &&
-        true;
+    bool all_good = (num_temperatures_ > 0U) && (num_groups_ > 0U) && (num_leg_moments_ > 0U) &&
+                    (num_evals_ >= 2U) && (num_evals_ <= 3U) &&
+                    (num_points_ == num_evals_ + num_leg_moments_ - 1U) &&
+                    (Ts_.size() == num_temperatures_) && (Egs_.size() == num_groups_ + 1U) &&
+                    (first_groups_.size() == (num_temperatures_ * num_groups_)) &&
+                    (indexes_.size() == (num_temperatures_ * num_groups_ + 1U)) &&
+                    (data_.size() == derivs_.size()) &&
+                    (data_.size() >= num_temperatures_ * num_groups_ * num_points_) &&
+                    (data_.size() <= num_temperatures_ * num_groups_ * num_groups_ * num_points_) &&
+                    true;
     return all_good;
   }
 

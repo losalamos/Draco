@@ -18,6 +18,8 @@
 #include <array>
 #include <cstring>
 #include <fstream>
+#include <iomanip> // RM
+#include <ios>     // RM
 #include <iostream>
 
 using UINT = size_t;
@@ -54,15 +56,14 @@ std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
   FP bR = (x - xL) / h;
 
   // Hermite functions
-  std::array<FP, 4> H{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR),
-                      -h * bL * bL * (bL - 1), h * bR * bR * (bR - 1)};
+  std::array<FP, 4> H{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR), -h * bL * bL * (bL - 1),
+                      h * bR * bR * (bR - 1)};
   return H;
 }
 
 Compton2::Compton2(std::string filename)
-    : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U),
-      num_evals_(0U), num_points_(0U), Ts_(0U), Egs_(0U), first_groups_(0U),
-      indexes_(0U), data_(0U), derivs_(0U) {
+    : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U), num_evals_(0U), num_points_(0U),
+      Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U), data_(0U), derivs_(0U) {
   Require(filename.length() > 0U);
   int rank = rtt_c4::node();
   constexpr int bcast_rank = 0;
@@ -137,8 +138,8 @@ int Compton2::read_binary(std::string filename) {
   char file_type[sizeof(expected)];
   fin.read(file_type, sizeof(file_type));
   if (std::strcmp(file_type, expected) != 0) {
-    std::cerr << "Expecting binary file " << filename << " to start with '"
-              << expected << "' but got '" << file_type << "'";
+    std::cerr << "Expecting binary file " << filename << " to start with '" << expected
+              << "' but got '" << file_type << "'";
     std::cerr << std::endl;
     return 1;
   }
@@ -177,14 +178,16 @@ int Compton2::read_binary(std::string filename) {
   num_points_ = num_evals_ + num_leg_moments_ - 1U;
   UINT egsz = gsz + 1;
 
-  std::cout << "DBG num_temperatures_ " << num_temperatures_ << '\n';
-  std::cout << "DBG num_groups_ " << num_groups_ << '\n';
-  std::cout << "DBG num_leg_moments_ " << num_leg_moments_ << '\n';
-  std::cout << "DBG num_evals_ " << num_evals_ << '\n';
-  std::cout << "DBG num_points_ " << num_points_ << '\n';
-  std::cout << "DBG len(first_groups_) " << fgsz << '\n';
-  std::cout << "DBG len(indexes_) " << isz << '\n';
-  std::cout << "DBG len(data_/derivs_) " << dsz << '\n';
+  if (false) {
+    std::cout << "DBG num_temperatures_ " << num_temperatures_ << '\n';
+    std::cout << "DBG num_groups_ " << num_groups_ << '\n';
+    std::cout << "DBG num_leg_moments_ " << num_leg_moments_ << '\n';
+    std::cout << "DBG num_evals_ " << num_evals_ << '\n';
+    std::cout << "DBG num_points_ " << num_points_ << '\n';
+    std::cout << "DBG len(first_groups_) " << fgsz << '\n';
+    std::cout << "DBG len(indexes_) " << isz << '\n';
+    std::cout << "DBG len(data_/derivs_) " << dsz << '\n';
+  }
 
   Ts_.resize(tsz);
   for (UINT i = 0; i < tsz; ++i)
@@ -196,8 +199,7 @@ int Compton2::read_binary(std::string filename) {
 
   first_groups_.resize(fgsz);
   for (UINT i = 0; i < fgsz; ++i)
-    fin.read(reinterpret_cast<char *>(&first_groups_[i]),
-             sizeof(first_groups_[i]));
+    fin.read(reinterpret_cast<char *>(&first_groups_[i]), sizeof(first_groups_[i]));
 
   indexes_.resize(isz);
   for (UINT i = 0; i < isz; ++i)
@@ -212,13 +214,58 @@ int Compton2::read_binary(std::string filename) {
     fin.read(reinterpret_cast<char *>(&derivs_[i]), sizeof(derivs_[i]));
 
   fin.close();
+
+  if (false) {
+    std::cout << '\n';
+    std::cout << "-------------------------------------------------\n";
+
+    std::cout << "\nDBG Ts";
+    for (UINT i = 0; i < tsz; ++i)
+      std::cout << ", " << Ts_[i] / 510.998;
+    std::cout << '\n';
+
+    std::cout << "\nDBG Egs";
+    for (UINT i = 0; i < egsz; ++i)
+      std::cout << ", " << Egs_[i] / 510.998;
+    std::cout << '\n';
+
+    std::cout << "\nDBG first_groups";
+    for (UINT i = 0; i < fgsz; ++i)
+      std::cout << ", " << first_groups_[i];
+    std::cout << '\n';
+
+    std::cout << "\nDBG indexes";
+    for (UINT i = 0; i < isz; ++i)
+      std::cout << ", " << indexes_[i];
+    std::cout << '\n';
+
+    std::cout << "\nDBG data";
+    for (UINT p = 0; p < num_points_; ++p) {
+      std::cout << "\nPoint " << p << "\n";
+      UINT szp = dsz / num_points_;
+      for (UINT ii = 0; ii < fgsz; ++ii) {
+        UINT istrt = indexes_[ii] + p * szp;
+        UINT iend = indexes_[ii + 1] + p * szp;
+        std::cout << "  index " << ii;
+        for (UINT i = istrt; i < iend; ++i) {
+          std::cout << std::setprecision(12); // << std::scientific;
+          std::cout << ", " << data_[i] / 0.075116337052433;
+        }
+        std::cout << '\n';
+      }
+    }
+    std::cout << std::defaultfloat;
+
+    std::cout << "-------------------------------------------------\n";
+    std::cout << '\n';
+  }
+
   return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
-                                   size_t num_moments_truncate) const {
+void Compton2::interp_dense_inscat(vec &inscat, double Te_keV, size_t num_moments_truncate) const {
   // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
 
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
@@ -239,7 +286,6 @@ void Compton2::interp_dense_inscat(vec &inscat, double Te_keV,
   std::fill(inscat.begin(), inscat.end(), 0.0);
 
   // Apply Hermite function
-  // (Has only been spot tested)
   for (UINT k = 0; k < end_leg; ++k) {
     for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
       const UINT offset_jj = gfrom + num_groups_ * num_groups_ * k;
@@ -278,7 +324,6 @@ void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
   std::fill(outscat.begin(), outscat.end(), 0.0);
 
   // Apply Hermite function
-  // (Has only been spot tested)
   for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
     // Get contributions from both Ts_[iT] and Ts_[iT+1U]
     for (UINT n = 0; n < 2U; ++n) {
@@ -294,8 +339,7 @@ void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
 }
 
 void Compton2::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
-                                          const std::vector<double> &phi,
-                                          double scale) const {
+                                          const std::vector<double> &phi, double scale) const {
   // Adds to existing outscat vector
   Require(outscat.size() == num_groups_);
 
@@ -315,7 +359,6 @@ void Compton2::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
   const FP invscale = scale > 0.0 ? FP(1.0 / scale) : 0.0;
 
   // Apply Hermite function
-  // (Has only been spot tested)
   for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
     // Get contributions from both Ts_[iT] and Ts_[iT+1U]
     for (UINT n = 0; n < 2U; ++n) {
