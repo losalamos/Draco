@@ -4,8 +4,7 @@
  * \author Thomas M. Evans, Aimee Hungerford
  * \date   Fri Dec  9 10:52:38 2005
  * \brief  Diagnostics class for runtime info.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef diagnostics_Diagnostics_hh
@@ -32,16 +31,15 @@ namespace rtt_diagnostics {
  * .
  * The key for each map is a std::string.
  *
- * These maps can be used to store diagnostic quantities.  Because they have
- * global, file scope they can be accessed from any routine.  The general usage
- * is as follows:
+ * These maps can be used to store diagnostic quantities.  Because they have global, file scope they
+ * can be accessed from any routine.  The general usage is as follows:
  *
  * \code
  *   rtt_diagnostics::Diagnostics::integers["Num_part_per_proc"] = 1011;
  * \endcode
  *
- * A compile-time switching mechanism for using these maps is provided by the
- * macros DIAGNOSTICS_ONE, DIAGNOSTICS_TWO, and DIAGNOSTICS_THREE.
+ * A compile-time switching mechanism for using these maps is provided by the macros
+ * \c DIAGNOSTICS_ONE, \c DIAGNOSTICS_TWO, and \c DIAGNOSTICS_THREE.
  *
  * \example diagnostics/test/tstDiagnostics.cc
  */
@@ -56,12 +54,10 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, int> integers;
 extern DLL_PUBLIC_diagnostics std::map<std::string, double> doubles;
 
 //! Map of vector, integer data.
-extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<int>>
-    vec_integers;
+extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<int>> vec_integers;
 
 //! Map of vector, double data.
-extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
-    vec_doubles;
+extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>> vec_doubles;
 
 } // end of namespace Diagnostics
 
@@ -71,12 +67,11 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
 /*!
  * \page diagnostics Diagnostics Levels
  *
- * The diagnostics can be turned on in three different levels based on logical
- * bit comparisions.  The following shows the levels:
+ * The diagnostics can be turned on in three different levels based on logical bit comparisons.
+ * The following shows the levels: 
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
- * - Bit 1, (010), activates Level 2 (some performance impact and possible
- *                                    intrusive output, rtt_memory trackin is
- *                                    activated.)
+ * - Bit 1, (010), activates Level 2 (some performance impact and possible intrusive output, 
+ *                 rtt_memory tracking is activated.)
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
  * The following integer settings activate Levels in the following way:
@@ -89,16 +84,15 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
  * - 6 Level 2, Level 3
  * - 7 Level 1, Level 2, Level 3
  * .
- * Thus setting -DDRACO_DIAGNOSTICS=7 at configure time will turn on all
- * levels.  The default setting is 0.
+ * Thus setting \c -DDRACO_DIAGNOSTICS=7 at configure time will turn on all levels.  The default
+ * setting is 0.
  *
- * The intent is to use Level 1 for high-level, low cost diagnostics that are
- * always active (ie. User "Education").  Levels 2 and 3 are for low-level
- * diagnostics that could incur a performance penalty.  However, all of these
- * usages are up to the client.
+ * The intent is to use Level 1 for high-level, low cost diagnostics that are always active (ie.
+ * User "Education").  Levels 2 and 3 are for low-level diagnostics that could incur a performance
+ * penalty.  However, all of these usages are up to the client.
  *
- * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx
- * and config.h, respectively.
+ * The value for \c DRACO_DIAGNOSTICS is set and saved in ds++'s \c CMakeLists.txt and \c config.h,
+ * respectively.
  */
 /*!
  * \def DIAGNOSTICS_ONE(Diagnostics::member)

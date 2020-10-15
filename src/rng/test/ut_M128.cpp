@@ -138,7 +138,7 @@ int main(int, char **) {
   // exception test in ut_carray.cpp
 
   bool b(false);
-#if ! ( defined(_MSC_VER) && ! defined(DEBUG) )
+#if !(defined(_MSC_VER) && !defined(DEBUG))
   rngRemember(bool caught);
   rngRemember(caught = false);
   try {
@@ -147,7 +147,7 @@ int main(int, char **) {
     rngRemember(caught = true);
   }
   assert(caught);
-  
+
   rngRemember(caught = false);
   try {
     b = One <= AnotherOne;

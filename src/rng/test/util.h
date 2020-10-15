@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------*/
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -227,51 +227,49 @@ double hextod(const char *cp) {
   return d;
 }
 
-#define CHECKNOTEQUAL(x, y)                                                    \
-  do {                                                                         \
-    if ((x) != (y))                                                            \
-      ;                                                                        \
-    else {                                                                     \
-      fprintf(stderr, "%s: %s line %d error %s == %s (%s)\n", progname,        \
-              __FILE__, __LINE__, #x, #y, strerror(errno));                    \
-      exit(1);                                                                 \
-    }                                                                          \
+#define CHECKNOTEQUAL(x, y)                                                                        \
+  do {                                                                                             \
+    if ((x) != (y))                                                                                \
+      ;                                                                                            \
+    else {                                                                                         \
+      fprintf(stderr, "%s: %s line %d error %s == %s (%s)\n", progname, __FILE__, __LINE__, #x,    \
+              #y, strerror(errno));                                                                \
+      exit(1);                                                                                     \
+    }                                                                                              \
   } while (0)
-#define CHECKEQUAL(x, y)                                                       \
-  do {                                                                         \
-    if ((x) == (y))                                                            \
-      ;                                                                        \
-    else {                                                                     \
-      fprintf(stderr, "%s: %s line %d error %s != %s (%s)\n", progname,        \
-              __FILE__, __LINE__, #x, #y, strerror(errno));                    \
-      exit(1);                                                                 \
-    }                                                                          \
+#define CHECKEQUAL(x, y)                                                                           \
+  do {                                                                                             \
+    if ((x) == (y))                                                                                \
+      ;                                                                                            \
+    else {                                                                                         \
+      fprintf(stderr, "%s: %s line %d error %s != %s (%s)\n", progname, __FILE__, __LINE__, #x,    \
+              #y, strerror(errno));                                                                \
+      exit(1);                                                                                     \
+    }                                                                                              \
   } while (0)
 #define CHECKZERO(x) CHECKEQUAL((x), 0)
 #define CHECKNOTZERO(x) CHECKNOTEQUAL((x), 0)
 
-#define dprintf(x)                                                             \
-  do {                                                                         \
-    if (debug < 1)                                                             \
-      ;                                                                        \
-    else {                                                                     \
-      printf x;                                                                \
-      fflush(stdout);                                                          \
-    }                                                                          \
+#define dprintf(x)                                                                                 \
+  do {                                                                                             \
+    if (debug < 1)                                                                                 \
+      ;                                                                                            \
+    else {                                                                                         \
+      printf x;                                                                                    \
+      fflush(stdout);                                                                              \
+    }                                                                                              \
   } while (0)
 
-#define ALLZEROS(x, K, N)                                                      \
-  do {                                                                         \
-    int allzeros = 1;                                                          \
-    unsigned xi, xj;                                                           \
-    for (xi = 0; xi < (unsigned)(K); xi++)                                     \
-      for (xj = 0; xj < (unsigned)(N); xj++)                                   \
-        allzeros = allzeros & ((x)[xi].v[xj] == 0);                            \
-    if (allzeros)                                                              \
-      fprintf(stderr,                                                          \
-              "%s: Unexpected, all %lu elements of %ux%u had all zeros!\n",    \
-              progname, (unsigned long)K, (unsigned)N,                         \
-              (unsigned)sizeof(x[0].v[0]));                                    \
+#define ALLZEROS(x, K, N)                                                                          \
+  do {                                                                                             \
+    int allzeros = 1;                                                                              \
+    unsigned xi, xj;                                                                               \
+    for (xi = 0; xi < (unsigned)(K); xi++)                                                         \
+      for (xj = 0; xj < (unsigned)(N); xj++)                                                       \
+        allzeros = allzeros & ((x)[xi].v[xj] == 0);                                                \
+    if (allzeros)                                                                                  \
+      fprintf(stderr, "%s: Unexpected, all %lu elements of %ux%u had all zeros!\n", progname,      \
+              (unsigned long)K, (unsigned)N, (unsigned)sizeof(x[0].v[0]));                         \
   } while (0)
 
 /* Read in N words of width W into ARR */
@@ -287,12 +285,9 @@ double hextod(const char *cp) {
       if (debug > 1)                                                                                                                                  \
         printf("line %d: xfmt for W=%d is \"%s\", got ret=%d xj=%d, "                                                                                 \
                "%s[%d]=%llx cp=%s",                                                                                                                   \
-               linenum, W, xfmt, ret, xj, #ARR, xi,                                                                                                   \
-               (unsigned long long)ARR.v[xi], cp);                                                                                                    \
+               linenum, W, xfmt, ret, xj, #ARR, xi, (unsigned long long)ARR.v[xi], cp);                                                               \
       if (ret < 1) {                                                                                                                                  \
-        fprintf(stderr,                                                                                                                               \
-                "%s: ran out of words reading %s on line %d: " #NAME #N "x" #W                                                                        \
-                " %2d %s",                                                                                                                            \
+        fprintf(stderr, "%s: ran out of words reading %s on line %d: " #NAME #N "x" #W " %2d %s",                                                     \
                 progname, #ARR, linenum, rounds, line);                                                                                               \
         errs++;                                                                                                                                       \
         return;                                                                                                                                       \
@@ -312,16 +307,16 @@ double hextod(const char *cp) {
     }                                                                                                                                                                \
   } while (0)
 
-#define PRINTLINE(NAME, N, W, R, ictr, ukey, octr, fp)                         \
-  do {                                                                         \
-    fprintf(fp, "%s %d ", #NAME #N "x" #W, R);                                 \
-    PRINTARRAY(ictr, fp);                                                      \
-    putc(' ', fp);                                                             \
-    PRINTARRAY(ukey, fp);                                                      \
-    putc(' ', fp);                                                             \
-    PRINTARRAY(octr, fp);                                                      \
-    putc('\n', fp);                                                            \
-    fflush(fp);                                                                \
+#define PRINTLINE(NAME, N, W, R, ictr, ukey, octr, fp)                                             \
+  do {                                                                                             \
+    fprintf(fp, "%s %d ", #NAME #N "x" #W, R);                                                     \
+    PRINTARRAY(ictr, fp);                                                                          \
+    putc(' ', fp);                                                                                 \
+    PRINTARRAY(ukey, fp);                                                                          \
+    putc(' ', fp);                                                                                 \
+    PRINTARRAY(octr, fp);                                                                          \
+    putc('\n', fp);                                                                                \
+    fflush(fp);                                                                                    \
   } while (0)
 
 #endif /* UTIL_H */

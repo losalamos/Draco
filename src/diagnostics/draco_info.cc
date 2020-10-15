@@ -25,10 +25,10 @@ namespace rtt_diagnostics {
 DracoInfo::DracoInfo()
     : release(rtt_dsxx::release()), copyright(rtt_dsxx::copyright()),
       contact("For information, send e-mail to draco@lanl.gov."),
-      build_type(rtt_dsxx::string_toupper(CMAKE_BUILD_TYPE)), library_type("static"),
-      system_type("Unknown"), site_name("Unknown"), mpirun_cmd(""), diagnostics_level("disabled"),
-      cxx(CMAKE_CXX_COMPILER), cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER),
-      cc_flags(CMAKE_C_FLAGS), fc("none"), fc_flags("none") {
+      build_type(rtt_dsxx::string_toupper(CBT)), library_type("static"), system_type("Unknown"),
+      site_name("Unknown"), mpirun_cmd(""), diagnostics_level("disabled"), cxx(CMAKE_CXX_COMPILER),
+      cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER), cc_flags(CMAKE_C_FLAGS), fc("none"),
+      fc_flags("none") {
 #ifdef DRACO_SHARED_LIBS
   library_type = "Shared";
 #endif

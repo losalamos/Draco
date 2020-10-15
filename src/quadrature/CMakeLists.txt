@@ -1,8 +1,7 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 # file   quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2010-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
 project( quadrature CXX )
@@ -16,7 +15,6 @@ string(CONCAT header_prefix_source "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>"
 #--------------------------------------------------------------------------------------------------#
 file( GLOB sources RELATIVE "${PROJECT_SOURCE_DIR}" *.cc )
 file( GLOB headers RELATIVE "${PROJECT_SOURCE_DIR}" *.hh )
-file( GLOB f90sources RELATIVE "${PROJECT_SOURCE_DIR}" *.f90 )
 
 # prefix header files with appropriate paths (build vs install).
 foreach( file ${headers} )
@@ -42,6 +40,34 @@ add_component_library(
 # endif()
 
 #--------------------------------------------------------------------------------------------------#
+# Fortran side of the API
+#--------------------------------------------------------------------------------------------------#
+if( HAVE_Fortran )
+
+  # For Unix, this will simply run add_subdirectory(fc4). For Visual Studio or XCode, an
+  # ExternalProject will be created that uses an alternate gfortran via Makefiles to generate the
+  # library external to the main project.
+  include(CMakeAddFortranSubdirectory)
+  init_build_system_state() # returns ${build_system_state} used below.
+
+  cmake_add_fortran_subdirectory(
+    fquadrature               # directory name
+    PROJECT quadrature_fquadrature # project name in top level CMakeLists.txt. Creates target named
+                              # 'quadrature_fquadrature_build'
+    ARCHIVE_DIR  fquadrature  # .lib location relative to root binary tree
+    RUNTIME_DIR  fquadrature  # .dll location relative to root binary tree
+    LIBRARIES    rtt_fquadrature # new library will have this name. --> librtt_fquadrature.dll.
+    TARGET_NAMES Lib_quadrature_fquadrature
+    CMAKE_COMMAND_LINE "${build_system_state}"
+    # VERBOSE
+  )
+  string(APPEND Draco_EXPORT_TARGET_PROPERTIES "${CAFS_EXPORT_DEFINE_IMPORT_PREFIX}"
+    "${CAFS_EXPORT_TARGET_PROPERTIES}")
+  set(Draco_EXPORT_TARGET_PROPERTIES "${Draco_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
+
+endif()
+
+#--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
 # install( TARGETS Lib_quadrature EXPORT draco-targets
@@ -57,7 +83,6 @@ add_component_library(
 #     PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/quadrature" )
 # endif()
 install( FILES ${headers_public} DESTINATION ${DBSCFGDIR}include/quadrature )
-install( FILES ${f90sources} DESTINATION ${DBSCFGDIR}include/quadrature )
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests
@@ -66,29 +91,20 @@ if( BUILD_TESTING )
    add_subdirectory( test )
 
   if( HAVE_Fortran )
-    # For Unix, this will simply run add_subdirectory(ftest). For MVSE or XCode,
-    # an ExternalProject will be created that uses an alternate gfortran via
-    # Makefiles to generate the library external to the main project.
-    include(CMakeAddFortranSubdirectory)
-    init_build_system_state() # returns ${build_system_state} used below.
-
     cmake_add_fortran_subdirectory(
       ftest                       # directory name
-      PROJECT quadrature_ftest    # project name in top level CMakeLists.txt
-                                  # Creates target named 'quadrature_ftest_build'
+      PROJECT quadrature_ftest    # project name in top level CMakeLists.txt. Creates target named
+                                  # 'quadrature_ftest_build'
       ARCHIVE_DIR  ftest          # .lib location relative to root binary tree
       RUNTIME_DIR  ftest          # .dll location relative to root binary tree
       LIBRARIES    rtt_quadrature_ftest # new library will have this name.
                                   # --> librtt_quadrature_ftest.dll.
       TARGET_NAMES Lib_quadrature_ftest
-      DEPENDS      "Lib_quadrature_test;Lib_quadrature;Lib_c4;Lib_dsxx"
+      DEPENDS      "Lib_quadrature_test;Lib_quadrature;Lib_quadrature_fquadrature"
       NO_EXTERNAL_INSTALL
       CMAKE_COMMAND_LINE "${build_system_state}"
       # VERBOSE
       )
-
-    # This directory contains c++ main code that wraps the Fortran tests.
-    add_subdirectory( fctest )
   endif()
 
 endif()

@@ -55,7 +55,11 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 
 if( CMAKE_CONFIGURATION_TYPES )
-  add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
+  set_source_files_properties( ${PROJECT_SOURCE_DIR}/draco_info.cc PROPERTIES COMPILE_DEFINITIONS
+    CBT="${CMAKE_CFG_INTDIR}" )
+else()
+  set_source_files_properties( ${PROJECT_SOURCE_DIR}/draco_info.cc PROPERTIES COMPILE_DEFINITIONS
+    CBT="${CMAKE_BUILD_TYPE}" )
 endif()
 
 #--------------------------------------------------------------------------------------------------#

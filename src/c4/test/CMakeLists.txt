@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4/test.
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( c4_test CXX )
 
@@ -13,8 +12,8 @@ project( c4_test CXX )
 #--------------------------------------------------------------------------------------------------#
 file( GLOB test_sources *.cc )
 
-# Remove some tests from the generic list. These will be process individually
-# with custom build options
+# Remove some tests from the generic list. These will be process individually with custom build
+# options
 list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/tstfc4_hw.cc )
 
 #--------------------------------------------------------------------------------------------------#
@@ -83,6 +82,10 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
 endif()
 
 # Tests that expect exactly 4 PE (omit for DRACO_C4=SCALAR builds):
+# - There is a weird API conflict between libquo and openmpi@3.  The former uses hwloc@2 and the
+#   later uses hwloc@1.  Valgrind trips on this with an UMR that frequently leads to a code hang.
+#   The solution is to build openmpi~internal-hwloc or move openmpi@4 which uses hwloc@2.
+#   Ref: https://rtt.lanl.gov/redmine/issues/2163
 set( four_pe_tests ${PROJECT_SOURCE_DIR}/tstQuoWrapper.cc )
 list( REMOVE_ITEM test_sources ${four_pe_tests} )
 
@@ -90,7 +93,8 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
   add_parallel_tests(
     SOURCES   "${four_pe_tests}"
     DEPS      Lib_c4
-    PE_LIST   "4" )
+    PE_LIST   "4"
+    LABEL     "nomemcheck" )
   if( NOT DEFINED MPI_MAX_NUMPROCS_PHYSICAL )
     message(FATAL_ERROR "need max procs in c4/tests/CMakeLists.txt")
   endif()

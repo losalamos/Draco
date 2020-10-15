@@ -209,20 +209,17 @@ template <typename AType> void doit(size_t N, size_t W) {
     assert((int)ull(*p) == 1 + (p - iota.begin()));
   }
   // cbegin/cend
-  for (typename atype::const_iterator p = iota.cbegin(); p != iota.cend();
-       ++p) {
+  for (typename atype::const_iterator p = iota.cbegin(); p != iota.cend(); ++p) {
     assert((int)ull(*p) == 1 + (p - iota.cbegin()));
   }
 
   // rbegin/rend
-  for (typename atype::reverse_iterator p = iota.rbegin(); p != iota.rend();
-       ++p) {
+  for (typename atype::reverse_iterator p = iota.rbegin(); p != iota.rend(); ++p) {
     assert((int)ull(*p) == iota.rend() - p);
   }
 
   // crbegin/crend
-  for (typename atype::const_reverse_iterator p = iota.crbegin();
-       p != iota.crend(); ++p) {
+  for (typename atype::const_reverse_iterator p = iota.crbegin(); p != iota.crend(); ++p) {
     assert((int)ull(*p) == iota.crend() - p);
   }
 

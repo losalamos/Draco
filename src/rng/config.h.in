@@ -3,8 +3,7 @@
  *  \author Thomas M. Evans
  *  \date   Mon Jan 11 10:20:29 1999
  *  \brief  rng package defines
- *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *          All rights reserved. */
+ *  \note   Copyright (C) 2016-2020 Triad National Security, LLC.,  All rights reserved. */
 /*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_rng_config_h
@@ -14,6 +13,11 @@
 
 /* Enable Random123 C++11 support */
 #cmakedefine R123_USE_CXX11 @R123_USE_CXX11@
+
+/* Use C++11 std::random */
+#cmakedefine R123_USE_STD_RANDOM @R123_USE_STD_RANDOM@
+
+#cmakedefine R123_USE_64BIT @R123_USE_64BIT@
 
 /* USE STANDARD C INTERFACE */
 #ifndef _MSC_VER

@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,27 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "kat.h"
-KAT_KERNEL void dev_execute_tests(KAT_GLOBAL kat_instance *tests, KAT_UINT ntests){
-    size_t i;
-    for(i=0; i<ntests; ++i){
-        KAT_GLOBAL kat_instance *ti = &tests[i];
-        switch(tests[i].method){
-            /* case philox2x32_e: ti->philox2x32_data.computed = philox2x32_R(ti->rounds, ti->philox2x32_data.ctr, ti->philox2x32_data.key); */
-#define RNGNxW_TPL(base, N, W) case base##N##x##W##_e: ti->u.base##N##x##W##_data.computed = base##N##x##W##_R(ti->nrounds, ti->u.base##N##x##W##_data.ctr, base##N##x##W##keyinit(ti->u.base##N##x##W##_data.ukey)); break;
+#ifndef KAT_METAL_BUFFER0
+#define KAT_METAL_BUFFER0 /* non-empty only when compiling Metal kernel */
+#endif
+KAT_KERNEL void dev_execute_tests(KAT_GLOBAL kat_instance *tests KAT_METAL_BUFFER0) {
+  size_t i;
+  int done = 0;
+  for (i = 0; !done; ++i) {
+    KAT_GLOBAL kat_instance *ti = &tests[i];
+    switch (tests[i].method) {
+      //case philox2x32_e: ti->u.philox2x32_data.computed = philox2x32_R(ti->rounds, ti->u.philox2x32_data.ctr, ti->u.philox2x32_data.key);
+#define RNGNxW_TPL(base, N, W)                                                                     \
+  case base##N##x##W##_e:                                                                          \
+    ti->u.base##N##x##W##_data.computed =                                                          \
+        base##N##x##W##_R(ti->nrounds, ti->u.base##N##x##W##_data.ctr,                             \
+                          base##N##x##W##keyinit(ti->u.base##N##x##W##_data.ukey));                \
+    break;
 #include "rngNxW.h"
 #undef RNGNxW_TPL
-        case unused: ; /* silence a warning */
-        }
+    case last:
+      done = 1;
+      break;
     }
+  }
 }

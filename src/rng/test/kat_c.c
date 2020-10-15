@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #ifdef _MSC_FULL_VER
-// - 4521: Engines have multiple copy constructors, quite legal C++, disable
-//         MSVC complaint.
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable MSVC complaint.
 // - 4244: possible loss of data when converting between int types.
 // - 4204: nonstandard extension used - non-constant aggregate initializer
 // - 4127: conditional expression is constant
@@ -41,17 +40,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable : 4521 4244 4204 4127 4100)
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
 #include "kat_main.h"
 
 #define KAT_KERNEL
 #define KAT_GLOBAL
-#define KAT_UINT size_t
 #include "kat_dev_execute.h"
 
-void host_execute_tests(kat_instance *tests, size_t ntests) {
-  dev_execute_tests(tests, ntests);
+void host_execute_tests(kat_instance *tests, unsigned ntests) {
+  (void)ntests; /* unused */
+  dev_execute_tests(tests);
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
+
+//------------------------------------------------------------------------------------------------//
+// End kat_c.c
+//------------------------------------------------------------------------------------------------//

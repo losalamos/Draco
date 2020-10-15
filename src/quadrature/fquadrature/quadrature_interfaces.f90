@@ -1,28 +1,25 @@
-!----------------------------------*-F90-*----------------------------------
+!---------------------------------------------*-F90-*---------------------------------------------!
 !
 ! \file   quadrature/quadrature_interfaces.f90
 ! \author Allan Wollaber, Jae Chang
 ! \date   Tue May 17 13:24:38 MDT 2016
-! \brief  Provides F90 quadrature interfaces 
-! \note   Copyright (c) 2016-2020 Triad National Security, LLC.
-!         All rights reserved.
-!---------------------------------------------------------------------------
+! \brief  Provides F90 quadrature interfaces
+! \note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
+!-------------------------------------------------------------------------------------------------!
 !
 ! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 !      http://fortranwiki.org/fortran/show/Generating+C+Interfaces
 !
-!---------------------------------------------------------------------------
-! This module provides all of the quadrature interface derived types
-! and function signatures.
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!
+! This module provides all of the quadrature interface derived types and function signatures.
+!-------------------------------------------------------------------------------------------------!
 
 module quadrature_interfaces
   use iso_c_binding, only : c_double, c_int, c_ptr, c_null_ptr
   implicit none
-  ! ----------------------------------------------------------------
-  ! This *must* exactly match the layout in Quadrature_Interface.hh
-  ! Quadrature Data Struct
-  ! ----------------------------------------------------------------
+  ! ---------------------------------------------------------------------------------------
+  ! This *must* exactly match the layout in Quadrature_Interface.hh Quadrature Data Struct
+  ! ---------------------------------------------------------------------------------------
   type, bind(C) :: quadrature_data
      integer(c_int) :: dimension       !< (1, 2, 3)
      integer(c_int) :: type            !< GL, LOBATO, LS, etc
@@ -34,7 +31,6 @@ module quadrature_interfaces
      type(c_ptr)    :: xi              !< directional cosines
      type(c_ptr)    :: wt              !< ordinate weights
   end type quadrature_data
-
 
   interface
 
@@ -48,11 +44,10 @@ module quadrature_interfaces
        type(quadrature_data), intent(inout) :: quad
      end subroutine init_quadrature
 
-     ! ----------------------------------------------------------------
-     ! This function inspects the desired quadrature specifications
-     ! in the enumerated (integer) struct values and fills in the
-     ! ordinate data. It assumes there is space to write the data.
-     ! ----------------------------------------------------------------
+     ! -------------------------------------------------------------------------------------------
+     ! This function inspects the desired quadrature specifications in the enumerated (integer)
+     ! struct values and fills in the ordinate data. It assumes there is space to write the data.
+     ! -------------------------------------------------------------------------------------------
      subroutine get_quadrature(quad) bind(C, name="get_quadrature")
        import quadrature_data
        implicit none
@@ -63,3 +58,7 @@ module quadrature_interfaces
   end interface
 
 end module quadrature_interfaces
+
+!-------------------------------------------------------------------------------------------------!
+! End quadrature_interfaces.f90
+!-------------------------------------------------------------------------------------------------!
