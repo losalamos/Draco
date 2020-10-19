@@ -29,8 +29,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TIME_INITKEYCTR_H__
-#define TIME_INITKEYCTR_H__ 1
+#ifndef TIME_INITKEYCTR_H
+#define TIME_INITKEYCTR_H 1
 
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 70000)
@@ -123,7 +123,7 @@ static aesni4x32_ctr_t good_aesni4x32_10 = {{0x1e68c9fd, 0x347b0858, 0x503d8d91,
  * caused by constants, so we get worst-case numbers.  Users may,
  * of course, benefit from compile-time optimization if they
  * have some constants for key or ctr values.
- * 
+ *
  */
 #define TEST_TPL(NAME, N, W, R)                                                                    \
   if ((strncmp(#NAME, "aes", 3) == 0 || strncmp(#NAME, "ars", 3) == 0) && !haveAESNI()) {          \
@@ -181,7 +181,7 @@ static aesni4x32_ctr_t good_aesni4x32_10 = {{0x1e68c9fd, 0x347b0858, 0x503d8d91,
 #endif
 #endif
 
-#endif /* TIME_INITKEYCTR_H__ */
+#endif /* TIME_INITKEYCTR_H */
 
 //------------------------------------------------------------------------------------------------//
 // end time_initkeyctr.h

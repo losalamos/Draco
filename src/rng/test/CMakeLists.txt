@@ -17,15 +17,16 @@ set( test_sources
 
 # Random123 unit tests (these tests have special PASS/FAIL REGEX conditions)
 set( random123_unit_tests
+  ${PROJECT_SOURCE_DIR}/ut_M128.cpp
   ${PROJECT_SOURCE_DIR}/ut_aes.cpp
   ${PROJECT_SOURCE_DIR}/ut_ars.c
   ${PROJECT_SOURCE_DIR}/ut_carray.cpp
-  ${PROJECT_SOURCE_DIR}/ut_M128.cpp
+  ${PROJECT_SOURCE_DIR}/ut_gsl.c
   ${PROJECT_SOURCE_DIR}/ut_uniform.cpp )
 
 # [2020-08-21 KT] The code in ut_gsl.c is not valid C++.  Because this test is a mix of C and C++,
-# it causes issues. Most compilers are happy to compile this code with C, visual studio is not.
-# When marked as C++, this test fails with:
+# it causes issues. Most compilers are happy to compile this code with C. However, LLVM clang and
+# Visual Studio cl.exe report fatal errors.  When marked as C++, this test fails with:
 #
 # "C:\projects\draco\src\rng\test\ut_gsl.c(62,1): error C2086: 'const gsl_rng_type \
 #    *gsl_rng_cbrng': redefinition"
@@ -33,28 +34,18 @@ set( random123_unit_tests
 # Indeed, reviewing the Random123 file gsl_cbrng.h reveals that that gsl_rng_type is declared twice,
 # first on line 68 and then again on line 125 (with an assignment this time). We can continue
 # building and running this tests on platforms that can processs it (all but MSVC right now).
-if( NOT MSVC )
-  list(APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_gsl.c )
-endif()
-if( R123_VERSION VERSION_GREATER 1.09 )
-  list( APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
+if( CMAKE_CXX_COMPILER_ID MATCHES Clang OR CMAKE_CXX_COMPILER_ID MATCHES MSVC )
+  list(REMOVE_ITEM random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_gsl.c )
+else()
+  if( R123_VERSION VERSION_GREATER 1.09 )
+    list( APPEND random123_unit_tests ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
+  endif()
 endif()
 
 # Random123 known-answer tests
 set( random123_known_answer_tests
-  ${PROJECT_SOURCE_DIR}/kat_c.c
+  ${PROJECT_SOURCE_DIR}/kat_c.cc
   ${PROJECT_SOURCE_DIR}/kat_cpp.cpp )
-
-# Some compilers (esp. MSVC) have trouble with compiling these files as C11 code, so tell cmake
-# to treat them as C++14. ut_gsl.c has a bug that prevents it from compiling as C++, so we omit it
-# from this list.
-if( MSVC )
-  set_source_files_properties(
-    ${PROJECT_SOURCE_DIR}/time_serial.c
-    ${PROJECT_SOURCE_DIR}/ut_ars.c
-    ${PROJECT_SOURCE_DIR}/kat_c.c
-    PROPERTIES LANGUAGE CXX )
-endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
@@ -69,6 +60,7 @@ add_scalar_tests(
   DEPS       "Lib_rng"
   PASS_REGEX "OK|SUCCESS"
   FAIL_REGEX "failed;error;Failure" )
+
 target_include_directories( Ut_rng_ut_uniform_exe PRIVATE $<BUILD_INTERFACE:${rng_SOURCE_DIR}> )
 
 add_scalar_tests(
@@ -89,7 +81,7 @@ endif()
 
 add_component_executable(
   TARGET  Exe_time_serial
-  SOURCES ${PROJECT_SOURCE_DIR}/time_serial.c
+  SOURCES ${PROJECT_SOURCE_DIR}/time_serial.cc
   NOEXPORT )
 target_include_directories( Exe_time_serial PRIVATE
   $<BUILD_INTERFACE:${rng_BINARY_DIR}>

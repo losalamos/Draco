@@ -29,8 +29,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TIME_MISC_H__
-#define TIME_MISC_H__ 1
+#ifndef TIME_MISC_H
+#define TIME_MISC_H 1
 /* Miscellaneous common definitions for time_*.c */
 
 #if defined(TRY_OTHER)
@@ -50,4 +50,4 @@ double sec_per_trial = 0.2;
 
 #define PREFIX "test_"
 
-#endif /* TIME_MISC_H__ */
+#endif /* TIME_MISC_H */
