@@ -116,7 +116,7 @@ macro(dbsSetupCompilers)
     #----------------------------------------------------------------------------------------------#
     foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
       if( DEFINED ENV{${lang}_FLAGS} )
-        string(REPLACE "\"" "" tmp "$ENV{CMAKE_${lang}_FLAGS}" )
+        string(REPLACE "\"" "" tmp "$ENV{${lang}_FLAGS}" )
         string( APPEND ${lang}_FLAGS " ${tmp}")
         unset(tmp)
       endif()

@@ -52,10 +52,12 @@ add_component_library(
    HEADERS      "${headers}"
    ${c4_extra_VENDORS}  )
 
+# xthi, ythi binaries
+add_subdirectory( bin )
+
 #--------------------------------------------------------------------------------------------------#
 # Fortran-based MPI wrapper
 #--------------------------------------------------------------------------------------------------#
-
 if( HAVE_Fortran )
 
   set( deplist Lib_c4 Lib_dsxx )
@@ -68,8 +70,7 @@ if( HAVE_Fortran )
 
   cmake_add_fortran_subdirectory(
     fc4                       # directory name
-    PROJECT c4_fc4            # project name in top level CMakeLists.txt
-                              # Creates target named 'c4_fc4_build'
+    PROJECT c4_fc4            # project name in top level CMakeLists.txt. Creates tgt 'c4_fc4_build'
     ARCHIVE_DIR  fc4          # .lib location relative to root binary tree
     RUNTIME_DIR  fc4          # .dll location relative to root binary tree
     LIBRARIES    rtt_fc4      # new library will have this name. --> librtt_fc4.dll.
@@ -81,30 +82,11 @@ if( HAVE_Fortran )
     CMAKE_COMMAND_LINE "${build_system_state}"
     # VERBOSE
   )
-  string(APPEND Draco_EXPORT_TARGET_PROPERTIES
-    "${CAFS_EXPORT_DEFINE_IMPORT_PREFIX}"
+  string(APPEND Draco_EXPORT_TARGET_PROPERTIES "${CAFS_EXPORT_DEFINE_IMPORT_PREFIX}"
     "${CAFS_EXPORT_TARGET_PROPERTIES}")
-  set(Draco_EXPORT_TARGET_PROPERTIES "${Draco_EXPORT_TARGET_PROPERTIES}"
-    PARENT_SCOPE)
-
-  cmake_add_fortran_subdirectory(
-    ftest                       # directory name
-    PROJECT c4_ftest            # project name in top level CMakeLists.txt
-                                # Creates target named 'quadrature_ftest_build'
-    ARCHIVE_DIR  ftest          # .lib location relative to root binary tree
-    RUNTIME_DIR  ftest          # .dll location relative to root binary tree
-    LIBRARIES    rtt_c4_ftest   # new library will have this name. --> librtt_c4_ftest.dll.
-    TARGET_NAMES Lib_c4_ftest
-    DEPENDS      "Lib_c4_fc4;${deplist}"
-    NO_EXTERNAL_INSTALL
-    CMAKE_COMMAND_LINE "${build_system_state}"
-    # VERBOSE
-    )
+  set(Draco_EXPORT_TARGET_PROPERTIES "${Draco_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
 
 endif()
-
-# xthi, ythi binaries
-add_subdirectory( bin )
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
@@ -116,6 +98,23 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
 #--------------------------------------------------------------------------------------------------#
 if( BUILD_TESTING )
   add_subdirectory( test )
+
+  if( HAVE_Fortran )
+    cmake_add_fortran_subdirectory(
+      ftest                       # directory name
+      PROJECT c4_ftest            # project name in top level CMakeLists.txt. Creates target named
+                                  # 'c4_ftest_build'
+      ARCHIVE_DIR  ftest          # .lib location relative to root binary tree
+      RUNTIME_DIR  ftest          # .dll location relative to root binary tree
+      LIBRARIES    rtt_c4_ftest   # new library will have this name. --> librtt_c4_ftest.dll.
+      TARGET_NAMES Lib_c4_ftest
+      DEPENDS      "Lib_c4_fc4;${deplist}"
+      NO_EXTERNAL_INSTALL
+      CMAKE_COMMAND_LINE "${build_system_state}"
+      # VERBOSE
+      )
+  endif()
+
 endif()
 
 #--------------------------------------------------------------------------------------------------#

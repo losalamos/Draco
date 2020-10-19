@@ -3,9 +3,8 @@
  * \file   diagnostics/Timing.cc
  * \author Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
- * \brief  Timing class member defininitions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \brief  Timing class member definitions.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Timing.hh"
@@ -20,10 +19,9 @@ namespace rtt_diagnostics {
 /*!
  * \brief Add to a specified timer.
  *
- * This functions adds value to the timer with name key.  The first time this is
- * called the value is added to zero.  The timers are all static, so multiple
- * calls to the same key will keep a running tally.  To reset, call
- * reset_timer().
+ * This functions adds value to the timer with name key.  The first time this is called the value is
+ * added to zero.  The timers are all static, so multiple calls to the same key will keep a running
+ * tally.  To reset, call reset_timer().
  *
  * Calling this function adds the timer with name key to the map of timers.
  */

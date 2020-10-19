@@ -239,6 +239,15 @@ void host_execute_tests(kat_instance *tests, unsigned ntests) {
   genmap[make_pair(philox4x32_e, 7u)] = do_test<r123::Philox4x32_R<7>>;
   genmap[make_pair(philox4x32_e, 10u)] = do_test<r123::Philox4x32_R<10>>;
 
+/* LLVM warning/error:
+ * macro expansion producing 'defined' has undefined behavior [-Werror,-Wexpansion-to-defined]
+ * Random123/features/gccfeatures.h:222:42: note: expanded from macro
+ * 'R123_USE_MULHILO64_MULHI_INTRIN' */
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#endif
+
 #if R123_USE_PHILOX_64BIT
   genmap[make_pair(philox2x64_e, 7u)] = do_test<r123::Philox2x64_R<7>>;
   genmap[make_pair(philox2x64_e, 10u)] = do_test<r123::Philox2x64_R<10>>;
@@ -250,6 +259,11 @@ void host_execute_tests(kat_instance *tests, unsigned ntests) {
   genmap[make_pair(aesni4x32_e, 10u)] = do_test<r123::AESNI4x32>;
   genmap[make_pair(ars4x32_e, 7u)] = do_test<r123::ARS4x32_R<7>>;
   genmap[make_pair(ars4x32_e, 10u)] = do_test<r123::ARS4x32_R<10>>;
+#endif
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
 #endif
 
   dev_execute_tests(tests, ntests);

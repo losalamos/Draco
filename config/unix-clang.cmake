@@ -4,13 +4,11 @@
 # note   Copyright (C) 2010-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
+
 # Note: In config/compilerEnv.cmake, the build system sets flags for
 # 1) the language standard (C++14, C99, etc)
 # 2) interprocedural optimization.
-
-#
-# Compiler flag checks
-#
 
 # Debug flags to consider adding:
 # http://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
@@ -35,7 +33,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   string( APPEND CMAKE_C_FLAGS " -Wcast-align -Wpointer-arith -Wall -Wno-long-long"
     " -Wreserved-id-macro -pedantic" )
   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
-    set( CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} -march=native" )
+    string( APPEND CMAKE_C_FLAGS " -march=native" )
   endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -O0 -Wextra -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )

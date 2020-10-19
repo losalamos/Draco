@@ -30,9 +30,8 @@ namespace rtt_c4 {
  * UnitTest by setting numPasses and numFails to zero.  It also prints a message that declares this
  * to be a scalar unit test and provides the unit test name.
  */
-ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
-                                   string_fp_void release_, std::ostream &out_,
-                                   bool const verbose_)
+ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv, string_fp_void release_,
+                                   std::ostream &out_, bool const verbose_)
     : UnitTest(argc, argv, release_, out_, verbose_) {
   using std::string;
 
@@ -45,8 +44,7 @@ ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
 
   if (node() == 0)
     out << "\n============================================="
-        << "\n=== Parallel Unit Test: " << testName
-        << "\n=== Number of Processors: " << nodes()
+        << "\n=== Parallel Unit Test: " << testName << "\n=== Number of Processors: " << nodes()
         << "\n=============================================\n"
         << std::endl;
 
@@ -109,6 +107,7 @@ ParallelUnitTest::~ParallelUnitTest() {
   // global_barrier();
   // out << resultMessage() << std::endl;
   global_barrier();
+  std::cout << "==> In ~ParallelUnitTest.  Calling mpi_finalize..." << std::endl;
   finalize();
   return;
 }
@@ -123,10 +122,7 @@ void ParallelUnitTest::status() {
     if (node() == 0)
       out << std::endl;
   }
-  {
-    out << "Done testing " << testName << " on node " << node() << "."
-        << std::endl;
-  }
+  { out << "Done testing " << testName << " on node " << node() << "." << std::endl; }
   return;
 }
 
@@ -143,8 +139,8 @@ void ParallelUnitTest::status() {
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
  * \param fatal True if the test is to throw a std::assert on failure.
  */
-bool ParallelUnitTest::check_all(bool const i_am_good,
-                                 std::string const &passmsg, bool const fatal) {
+bool ParallelUnitTest::check_all(bool const i_am_good, std::string const &passmsg,
+                                 bool const fatal) {
   unsigned good = i_am_good;
   rtt_c4::global_min(good);
   unsigned p = rtt_c4::node();

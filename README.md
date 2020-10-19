@@ -6,6 +6,7 @@ Draco
 [![codecov.io](https://codecov.io/github/lanl/Draco/coverage.svg?branch=develop)](https://codecov.io/github/lanl/Draco/branch/develop)
 [![Latest Version](https://img.shields.io/github/release/lanl/draco.svg?style=flat-square)](https://github.com/lanl/Draco/releases)
 [![PyPI](https://img.shields.io/pypi/l/Django.svg)](https://github.com/lanl/Draco/blob/develop/LICENSE.md)
+[![GitHub Super-Linter](https://github.com/lanl/Draco/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 Draco is an object-oriented component library geared towards numerically intensive, radiation
 (particle) transport applications built for parallel computing hardware.  It consists of

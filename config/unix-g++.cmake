@@ -58,8 +58,10 @@ endif()
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
 #
 # Added, but shouldn't be needed:
-# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress
-#           warnings.
+# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress warnings.
+#
+# Control FMA
+# -ffp-contract=off
 
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
@@ -77,8 +79,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # -Wdouble-promotion  # warn if float is implicit promoted to double
   # -Wformat=2          # warn on security issues around functions that format output (ie printf)
   # -Winline            # Warn if function marked 'inline' cannot be inlined
-  # -Wold-style-cast    # Warn if c-style casts are used, replace with
-  #                       c++-style cast.
+  # -Wold-style-cast    # Warn if c-style casts are used, replace with c++-style cast.
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   string( CONCAT CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra"
@@ -163,30 +164,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
 endif()
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
-
-set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
+deduplicate_flags(CMAKE_C_FLAGS)
+deduplicate_flags(CMAKE_CXX_FLAGS)
+force_compiler_flags_to_cache()
 
 #
 # Toggle compiler flags for optional features

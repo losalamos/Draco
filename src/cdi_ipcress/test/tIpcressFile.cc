@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Ipcress file test
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC.,
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
@@ -84,8 +84,7 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
   cout << "\nMaterials found in the data file:" << endl;
 
   for (size_t i = 0; i < spGF->getNumMaterials(); ++i)
-    cout << "  Material " << i << " has the identification number "
-         << spGF->getMatIDs()[i] << endl;
+    cout << "  Material " << i << " has the identification number " << spGF->getMatIDs()[i] << endl;
 
   // Retrieve a list of fields available for material 10001
   {
@@ -102,15 +101,13 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
       FAILMSG("Did not find tgrid in the list of fields for mat 10001.");
 
     vector<double> tgrid = spGF->getData(matid, fieldNames[0]);
-    cout << "\nMaterial 0 (10001)'s tgrid field has " << tgrid.size()
-         << " entries: \n{ ";
+    cout << "\nMaterial 0 (10001)'s tgrid field has " << tgrid.size() << " entries: \n{ ";
     for (size_t i = 0; i < tgrid.size() - 1; ++i)
       cout << tgrid[i] << ", ";
     cout << tgrid[tgrid.size() - 1] << " }\n" << endl;
 
     vector<double> tgrid_expect = {0.01, 0.2575, 0.505, 0.7525, 1.0};
-    if (rtt_dsxx::soft_equiv(tgrid_expect.begin(), tgrid_expect.end(),
-                             tgrid.begin(), tgrid.end()))
+    if (rtt_dsxx::soft_equiv(tgrid_expect.begin(), tgrid_expect.end(), tgrid.begin(), tgrid.end()))
       PASSMSG("tgrid for mat 10001 has the expected values.");
     else
       FAILMSG("tgrid for mat 10001 does not have the expected values.");
