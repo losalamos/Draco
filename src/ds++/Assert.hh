@@ -1,9 +1,9 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   ds++/Assert.hh
+ * \file  ds++/Assert.hh
  * \brief Header file for Draco specific exception class definition (rtt_dsxx::assertion). Also
- *         define Design-by-Contract macros.
- * \note Copyright (C) 2016-2020 Triad National Security, LLC.  All rights reserved. */
+ *        define Design-by-Contract macros.
+ * \note  Copyright (C) 2016-2020 Triad National Security, LLC.  All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef RTT_dsxx_Assert_HH

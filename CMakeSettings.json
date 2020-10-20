@@ -21,7 +21,8 @@
       "installRoot": "${env.idir}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "${env.cba}",
-      "ctestCommandArgs": "-${env.cta}",
+      "ctestCommandArgs": "${env.cta}",
+      "cmakeToolchain": "${env.cmakeToolchain}",
       "variables": []
     },
     {
@@ -32,8 +33,9 @@
       "installRoot": "${env.idir}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "${env.cba}",
-      "ctestCommandArgs": "-${env.cta}",
+      "ctestCommandArgs": "${env.cta}",
       "inheritEnvironments": [ "msvc_x64_x64" ],
+      "cmakeToolchain": "${env.cmakeToolchain}",
       "variables": []
     },
     {
@@ -44,8 +46,9 @@
       "installRoot": "${env.idir}",
       "cmakeCommandArgs": "-DDRACO_C4=SCALAR",
       "buildCommandArgs": "${env.cba}",
-      "ctestCommandArgs": "-${env.cta}",
+      "ctestCommandArgs": "${env.cta}",
       "inheritEnvironments": [ "msvc_x64_x64" ],
+      "cmakeToolchain": "${env.cmakeToolchain}",
       "variables": []
     },
     {
@@ -56,9 +59,10 @@
       "installRoot": "${env.idir}",
       "cmakeCommandArgs": "-DCMAKE_C_COMPILER:FILEPATH=\"C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/PREVIEW/VC/Tools/llvm/x64/bin/clang-cl.exe\"",
       "buildCommandArgs": "${env.cba}",
-      "ctestCommandArgs": "-${env.cta}",
+      "ctestCommandArgs": "${env.cta}",
       "inheritEnvironments": [ "clang_cl_x64_x64" ],
       "intelliSenseMode": "windows-clang-x64",
+      "cmakeToolchain": "${env.cmakeToolchain}",
       "variables": []
     }
   ]

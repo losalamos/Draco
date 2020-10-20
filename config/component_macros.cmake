@@ -110,18 +110,15 @@ function( dbs_objlib_build_dep_list objlib_target deplist)
 
 endfunction()
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 # replacement for built in command 'add_executable'
 #
-# Purpose 1: In addition to adding an executable built from $sources, set
-# Draco-specific properties for the library.  This macro reduces ~20
-# lines of code repeated code down to 1-2.
+# Purpose 1: In addition to adding an executable built from $sources, set Draco-specific properties
+# for the library.  This macro reduces ~20 lines of code repeated code down to 1-2.
 #
-# Purpose 2: Encapsulate library and vendor library dependencies per
-# package.
+# Purpose 2: Encapsulate library and vendor library dependencies per package.
 #
-# Purpose 3: Use information from 1 and 2 above to generate exported
-# targets.
+# Purpose 3: Use information from 1 and 2 above to generate exported targets.
 #
 # Usage:
 #
@@ -136,9 +133,9 @@ endfunction()
 #   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
 #   FOLDER       "myfolder"
 #   PROJECT_LABEL "myproject42"
-#   NOEXPORT        - do not export target or dependencies to draco-config.cmake
-#   EXPORT_NAME     - not currently used; but will be used to install a binary and add its
-#                     information to <project>-config.cmake.
+#   NOEXPORT    - do not export target or dependencies to draco-config.cmake
+#   EXPORT_NAME - not currently used; but will be used to install a binary and add its information
+#                 to <project>-config.cmake.
 #   NOCOMMANDWINDOW - On win32, do not create a command window (qt)
 #   )
 #
@@ -155,7 +152,7 @@ endfunction()
 # Note: directories listed as VENDOR_INCLUDE_DIRS will be exported in the
 #       INTERFACE_INCLUDE_DIRECTORIES target property.
 #
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 macro( add_component_executable )
 
   # These become variables of the form ${ace_NAME}, etc.
@@ -567,11 +564,11 @@ macro( register_parallel_test targetname numPE command cmd_args )
   unset( lverbose )
 endmacro()
 
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # add_scalar_tests
 #
-# Given a list of sources, create unit test executables, one exe for
-# each source file.  Register the test to be run by ctest.
+# Given a list of sources, create unit test executables, one exe for each source file.  Register the
+# test to be run by ctest.
 #
 # Usage:
 #
@@ -587,15 +584,13 @@ endmacro()
 # )
 #
 # Options:
-#   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the
-#        test under 'aprun'.  ApplicationUnitTest based tests must be
-#        run this way.  Setting this option when DRACO_C4==SCALAR will
-#        reset any value provided in TEST_ARGS to be "--np scalar".
-#   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler
-#        for the final link of the test.  This is needed for Intel and
-#        PGI.
+#   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the test under 'aprun'.
+#        ApplicationUnitTest based tests must be run this way.  Setting this option when
+#        DRACO_C4==SCALAR will reset any value provided in TEST_ARGS to be "--np scalar".
+#   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler for the final link of the
+#        test.  This is needed for Intel and PGI.
 #
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
 
   # These become variables of the form ${addscalartests_SOURCES}, etc.
@@ -623,8 +618,7 @@ macro( add_scalar_tests test_sources )
     set( addscalartest_LINK_LANGUAGE CXX )
   endif()
  if( "${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA" )
-   set_source_files_properties( ${addscalartest_SOURCES}
-     PROPERTIES LANGUAGE CUDA )
+   set_source_files_properties( ${addscalartest_SOURCES} PROPERTIES LANGUAGE CUDA )
  endif()
 
   # Special Cases:

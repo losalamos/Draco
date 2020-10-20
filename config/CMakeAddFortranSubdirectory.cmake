@@ -566,40 +566,37 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
     targetName = ${targetName}
     libName    = ${libName}
     targetPath = ${targetPath}
-    linkLang   = ${linkLang}
-    ")
+    linkLang   = ${linkLang}")
   endif()
 
   get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
   if( targetName STREQUAL verbose_target_name )
     message("
-      find_library( lib
+    find_library( lib
       NAMES ${libName}
       PATHS ${pkgloc}
-      PATH_SUFFIXES Release Debug
-      )
+      PATH_SUFFIXES Release Debug )
   ")
   endif()
   find_library( lib
     NAMES ${libName}
     PATHS ${pkgloc}
-    PATH_SUFFIXES Release Debug
-    )
+    PATH_SUFFIXES Release Debug )
   get_filename_component( libloc ${lib} DIRECTORY )
   if( targetName STREQUAL verbose_target_name )
-    message("libloc = ${libloc}")
+    message("      libloc = ${libloc}")
   endif()
   if( "${libloc}x" STREQUAL "x" )
-    message( FATAL_ERROR, "cafs_create_imported_targets :: Did not find "
-    "library ${lib} at location ${pkgloc} when trying to create import target "
-    "${targetName}")
+    message( FATAL_ERROR "cafs_create_imported_targets :: Did not find library ${lib} at location "
+      "${pkgloc} when trying to create import target ${targetName}.\n"
+      "libName    = ${libName}\n"
+      "targetPath = ${targetPath}")
   endif()
 
   # Debug case?
   find_library( lib_debug
     NAMES ${libName}
-    PATHS ${pkgloc}/Debug
-    )
+    PATHS ${pkgloc}/Debug )
   get_filename_component( libloc_debug ${lib_debug} DIRECTORY )
 
   #
@@ -616,13 +613,33 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   add_library( ${targetName} SHARED IMPORTED GLOBAL)
   set_target_properties( ${targetName} PROPERTIES
     IMPORTED_LOCATION
-      "${dll_loc}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+      "${dll_loc}/${CMAKE_SHARED_LIBRARY_PREFIX}/${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     IMPORTED_LINK_INTERFACE_LANGUAGES ${linkLang}
     )
+  if( targetName STREQUAL verbose_target_name )
+    message("
+  add_library( ${targetName} SHARED IMPORTED GLOBAL )
+  set_target_properties( ${targetName} PROPERTIES
+    IMPORTED_LOCATION
+      ${dll_loc}/${CMAKE_SHARED_LIBRARY_PREFIX}/${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}
+    IMPORTED_LINK_INTERFACE_LANGUAGES ${linkLang}")
+  endif()
   if( lib_debug )
     set_target_properties( ${targetName} PROPERTIES
       IMPORTED_LOCATION_DEBUG
         "${dll_loc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+    if( targetName STREQUAL verbose_target_name )
+      message("    IMPORTED_LOCATION_DEBUG
+      ${dll_loc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
+  endif()
+
+  # Fortran mod files
+  if( linkLang STREQUAL Fortran )
+    set_target_properties( ${targetName} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${targetPath} )
+    if( targetName STREQUAL verbose_target_name )
+      message("    INTERFACE_INCLUDE_DIRECTORIES ${targetPath}")
+    endif()
   endif()
 
   # platform specific properties
@@ -633,18 +650,25 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
       set( CMAKE_IMPORT_LIBRARY_PREFIX "" )
       set( CMAKE_IMPORT_LIBRARY_SUFFIX ".lib" )
     endif()
-    set_target_properties(${targetName}
-      PROPERTIES
-      IMPORTED_IMPLIB
-      "${libloc}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-      )
+    set_target_properties(${targetName} PROPERTIES IMPORTED_IMPLIB
+        "${libloc}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}" )
+    if( targetName STREQUAL verbose_target_name )
+      message("    IMPORTED_IMPLIB
+      ${libloc}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+    endif()
     if( lib_debug )
       set_target_properties(${targetName}
         PROPERTIES
         IMPORTED_IMPLIB_DEBUG
-          "${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-        )
+          "${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}" )
+      if( targetName STREQUAL verbose_target_name )
+        message("    IMPORTED_IMPLIB_DEBUG
+      ${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+      endif()
     endif()
+  endif()
+  if( targetName STREQUAL verbose_target_name )
+    message("  )")
   endif()
   unset(lib CACHE)
   unset(lib_debug CACHE)

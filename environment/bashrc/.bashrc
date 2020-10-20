@@ -204,9 +204,6 @@ if [[ ${INTERACTIVE} == true ]]; then
 
   # shellcheck source=/dev/null
   source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
-  if [[ "${DRACO_ENV_LOAD:-OFF}" == "ON" ]]; then
-    dracoenv
-  fi
 
 fi
 

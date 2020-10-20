@@ -29,8 +29,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef UTIL_CPU_H__
-#define UTIL_CPU_H__ 1
+#ifndef UTIL_CPU_H
+#define UTIL_CPU_H 1
 
 #ifdef __GNUC__
 #if !defined(__ICC) && !defined(NVCC)
@@ -236,4 +236,4 @@ void cpu_done(CPUInfo *tp) {
 #endif
 #endif
 
-#endif /* UTIL_CPU_H__ */
+#endif /* UTIL_CPU_H */
