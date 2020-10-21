@@ -49,7 +49,7 @@ public:
   //--------------------------------------------------------------------------//
 
   // \brief Constructor
-  Compton_Native(std::string filename);
+  Compton_Native(const std::string &filename);
 
   //--------------------------------------------------------------------------//
   // TEMPERATURE INTERPOLATION FUNCTIONS
@@ -207,7 +207,7 @@ private:
   void broadcast_MPI(int errcode);
 
   // read the binary file
-  int read_binary(std::string filename);
+  int read_binary(const std::string &filename);
 };
 
 } // namespace rtt_compton_tools

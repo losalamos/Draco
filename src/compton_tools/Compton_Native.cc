@@ -51,7 +51,7 @@ UINT find_index(const std::vector<FP> &xs, FP &x) {
   UINT len = xs.size();
   FP xmin = xs[0];
   FP xmax = xs[len - 1U];
-  index = std::min(len - 1U, std::max(UINT(1), index)) - 1U;
+  index = std::min(len - 1U, std::max(static_cast<UINT>(1), index)) - 1U;
   x = std::max(xmin, std::min(xmax, x));
   return index;
 }
@@ -97,7 +97,7 @@ std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
  * This function has rank 0 read the binary csk data file, which fills in the class' data members.
  * The data members are then broadcast to other MPI ranks to finish their construction.
  */
-Compton_Native::Compton_Native(std::string filename)
+Compton_Native::Compton_Native(const std::string &filename)
     : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U), num_evals_(0U), num_points_(0U),
       Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U), data_(0U), derivs_(0U) {
   Require(filename.length() > 0U);
@@ -147,11 +147,11 @@ void Compton_Native::broadcast_MPI(int errcode) {
   data_size = pack[p++];
 
   // Derived sizes
-  const auto tsz = int(num_temperatures_);
-  const auto egsz = int(num_groups_ + 1U);
-  const auto fgsz = int(num_temperatures_ * num_groups_);
-  const auto isz = int(fgsz + 1U);
-  const auto dsz = int(data_size);
+  const auto tsz = static_cast<int>(num_temperatures_);
+  const auto egsz = static_cast<int>(num_groups_ + 1U);
+  const auto fgsz = static_cast<int>(num_temperatures_ * num_groups_);
+  const auto isz = static_cast<int>(fgsz + 1U);
+  const auto dsz = static_cast<int>(data_size);
 
   // Broadcast grids
   if (rank != bcast_rank)
@@ -187,7 +187,7 @@ void Compton_Native::broadcast_MPI(int errcode) {
  *
  * Reads a binary csk file by interpreting the characters as 64-bit unsigned ints and doubles
  */
-int Compton_Native::read_binary(std::string filename) {
+int Compton_Native::read_binary(const std::string &filename) {
 
   // Read
   auto fin = std::ifstream(filename, std::ios::in | std::ios::binary);
@@ -210,7 +210,9 @@ int Compton_Native::read_binary(std::string filename) {
     return 1;
   }
 
-  UINT binary_ordering, version_major, version_minor;
+  UINT binary_ordering;
+  UINT version_major;
+  UINT version_minor;
   fin.read(reinterpret_cast<char *>(&version_major), sizeof(UINT));
   fin.read(reinterpret_cast<char *>(&version_minor), sizeof(UINT));
   fin.read(reinterpret_cast<char *>(&binary_ordering), sizeof(UINT));
@@ -356,7 +358,7 @@ void Compton_Native::interp_dense_inscat(vec &inscat, double Te_keV,
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
-  const UINT end_leg = std::min(UINT(num_moments_truncate), num_leg_moments_);
+  const UINT end_leg = std::min(static_cast<UINT>(num_moments_truncate), num_leg_moments_);
   const UINT eval_offset = 0; // in_lin
 
   // Resize and fill with zeros
@@ -461,7 +463,7 @@ void Compton_Native::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
   const UINT eval_offset = sz * (num_leg_moments_ + 1U); // nl_diff
 
   // Precompute constants
-  const FP invscale = scale > 0.0 ? FP(1.0 / scale) : 0.0;
+  const FP invscale = scale > 0.0 ? static_cast<FP>(1.0 / scale) : 0.0;
 
   // Apply Hermite function
   for (UINT gfrom = 0; gfrom < num_groups_; ++gfrom) {
