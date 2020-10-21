@@ -4,7 +4,8 @@
  * \author Andrew Till
  * \date   11 May 2020
  * \brief  Implementation file for native compton bindary-read and temperature interpolation
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ */
 //------------------------------------------------------------------------------------------------//
 
 // C++ standard library dependencies

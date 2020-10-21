@@ -2,9 +2,8 @@
 # file   src/compton_interface/CMakeLists.txt
 # author Kendra Keady
 # date   2017 February 28
-# brief  Instructions for building Compton_Interface and its tests
-# note   Copyright (C) 2017-2020 Triad National Security, LLC.
-#        All rights reserved.
+# brief  Instructions for building CSK_Interface and its tests
+# note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( compton_interface CXX )
@@ -18,10 +17,10 @@ project( compton_interface CXX )
 #--------------------------------------------------------------------------------------------------#
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/compton_interface/config.h )
 
-set( sources "${PROJECT_SOURCE_DIR}/Compton_Interface.cc" )
+set( sources "${PROJECT_SOURCE_DIR}/CSK_Interface.cc" )
 set( headers
   ${PROJECT_BINARY_DIR}/compton_interface/config.h
-  ${PROJECT_SOURCE_DIR}/Compton_Interface.hh )
+  ${PROJECT_SOURCE_DIR}/CSK_Interface.hh )
 
 if( TARGET COMPTON::compton)
 
@@ -63,7 +62,7 @@ if( TARGET COMPTON::compton)
 
 else()
 
-    # If no Compton_Interface library, only install headers (stubs).
+    # If no CSK_Interface library, only install headers (stubs).
   install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton_interface )
 
 endif()

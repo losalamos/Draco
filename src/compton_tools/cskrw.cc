@@ -4,7 +4,8 @@
  * \author Andrew Till
  * \date   11 May 2020
  * \brief  Converter of ASCII to binary csk Compton files
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved.
+ */
 //------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh" //planck integral

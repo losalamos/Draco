@@ -1,13 +1,14 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton_interface/test/tCompton_Interface_dummy_data.cc
+ * \file   compton_interface/test/tCSK_Interface_dummy_data.cc
  * \author Andrew Till
  * \date   2020 Oct 14
- * \brief  Implementation file for tCompton_Interface_dummy_data
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+ * \brief  Implementation file for tCSK_Interface_dummy_data
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ */
 //------------------------------------------------------------------------------------------------//
 
-#include "compton_interface/Compton_Interface.hh"
+#include "compton_interface/CSK_Interface.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -25,7 +26,7 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //------------------------------------------------------------------------------------------------//
 
-//!  Tests the Compton_Interface constructor and a couple of access routines.
+//!  Tests the CSK_Interface constructor and a couple of access routines.
 void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // Make true if golds need updating
@@ -42,13 +43,13 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // open a small mg opacity file:
   const std::string filename = ut.getTestSourcePath() + "../../compton_tools/test/dummy_data";
-  std::cout << "Attempting to construct a Compton_Interface object...\n" << std::endl;
-  std::unique_ptr<rtt_compton_interface::Compton_Interface> compton_test;
+  std::cout << "Attempting to construct a CSK_Interface object...\n" << std::endl;
+  std::unique_ptr<rtt_compton_interface::CSK_Interface> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton_interface::Compton_Interface(filename));
+    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
   } catch (int /*asrt*/) {
-    FAILMSG("Failed to construct a Compton_Interface object!");
+    FAILMSG("Failed to construct a CSK_Interface object!");
     // if construction fails, there is no reason to continue testing...
     return;
   }
@@ -270,19 +271,19 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-//!  Tests Compton_Interface's error-handling on a non-existent file.
+//!  Tests CSK_Interface's error-handling on a non-existent file.
 void compton_fail_test(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n---------------------------------------------------------\n"
-            << "    Test Compton_Interface bad file handling    \n"
+            << "    Test CSK_Interface bad file handling    \n"
             << "---------------------------------------------------------\n";
   // open a small mg opacity file:
   std::string filename = ut.getTestSourcePath() + "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
-  std::unique_ptr<rtt_compton_interface::Compton_Interface> compton_test;
+  std::unique_ptr<rtt_compton_interface::CSK_Interface> compton_test;
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton_interface::Compton_Interface(filename));
+    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
@@ -317,5 +318,5 @@ int main(int argc, char *argv[]) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// End of test/tCompton_Interface.cc
+// End of test/tCSK_Interface.cc
 //------------------------------------------------------------------------------------------------//

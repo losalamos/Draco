@@ -1,15 +1,15 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton_interface/Compton_Interface.hh
+ * \file   compton_interface/CSK_Interface.hh
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
  * \brief  Header file for compton_interface CSK_generator interface
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ */
 //------------------------------------------------------------------------------------------------//
 
-#ifndef rtt_compton_interface_Compton_Interface_hh
-#define rtt_compton_interface_Compton_Interface_hh
+#ifndef rtt_compton_interface_CSK_Interface_hh
+#define rtt_compton_interface_CSK_Interface_hh
 
 #include "compton_interface/config.h"
 
@@ -23,9 +23,9 @@
 namespace rtt_compton_interface {
 //================================================================================================//
 /*!
- * \class Compton_Interface
+ * \class CSK_Interface
  *
- * \brief Provides access to relativistic Compton_Interface scattering angle and
+ * \brief Provides access to relativistic CSK_Interface scattering angle and
  *        multigroup frequency distributions from the CSK_generator project.
  *
  * This interface class allows the client to:
@@ -48,13 +48,13 @@ namespace rtt_compton_interface {
  */
 
 /*!
- * \example compton_interface/test/tCompton_Interface.cc
+ * \example compton_interface/test/tCSK_Interface.cc
  *
- * This unit test demonstrates the two methods for constructing a Compton_Interface
+ * This unit test demonstrates the two methods for constructing a CSK_Interface
  * object, and exercises all routines for interpolation and data access.
 */
 
-class Compton_Interface {
+class CSK_Interface {
 
 private:
   //! Shared pointer to an electron interpolation object:
@@ -65,15 +65,15 @@ private:
 
 public:
   //! Constructor for an existing multigroup library
-  explicit Compton_Interface(const std::string &filehandle, const bool llnl_style = false);
+  explicit CSK_Interface(const std::string &filehandle, const bool llnl_style = false);
 
   //! Constructor to build a multigroup library from an existing pointwise file
-  Compton_Interface(const std::string &file, const std::vector<double> &group_bounds,
-                    const std::string &opac_type, const std::string &wt_func, const bool induced,
-                    const bool det_bal = false, const size_t nxi = 0);
+  CSK_Interface(const std::string &file, const std::vector<double> &group_bounds,
+                const std::string &opac_type, const std::string &wt_func, const bool induced,
+                const bool det_bal = false, const size_t nxi = 0);
 
   //! Dtor - defined in .cc file to prevent incomplete_type issues
-  ~Compton_Interface();
+  ~CSK_Interface();
 
   //! Interpolation of all csk opacity data to a certain electron temperature:
   std::vector<std::vector<std::vector<std::vector<double>>>>
@@ -120,8 +120,8 @@ public:
 
 #endif // COMPTON_FOUND
 
-#endif // rtt_compton_interface_Compton_Interface_hh
+#endif // rtt_compton_interface_CSK_Interface_hh
 
 //------------------------------------------------------------------------------------------------//
-// End compton_interface/Compton_Interface.hh
+// End compton_interface/CSK_Interface.hh
 //------------------------------------------------------------------------------------------------//

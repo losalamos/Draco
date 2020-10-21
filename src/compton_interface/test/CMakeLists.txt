@@ -13,10 +13,10 @@ project( compton_interface_test CXX )
 #--------------------------------------------------------------------------------------------------#
 
 set( interfaces_test_sources
-    ${PROJECT_SOURCE_DIR}/tCompton_Interface_interfaces.cc )
+    ${PROJECT_SOURCE_DIR}/tCSK_Interface_interfaces.cc )
 
 set( dummy_data_test_sources
-    ${PROJECT_SOURCE_DIR}/tCompton_Interface_dummy_data.cc )
+    ${PROJECT_SOURCE_DIR}/tCSK_Interface_dummy_data.cc )
 
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
@@ -35,7 +35,7 @@ if( NOT TARGET Lib_compton_interface )
     MPI_PLUS_OMP )
 
   # generated include directive files (config.h)
-  target_include_directories( Ut_compton_interface_tCompton_Interface_interfaces_exe
+  target_include_directories( Ut_compton_interface_tCSK_Interface_interfaces_exe
     PUBLIC $<BUILD_INTERFACE:${compton_interface_BINARY_DIR}> )
 
 else()
