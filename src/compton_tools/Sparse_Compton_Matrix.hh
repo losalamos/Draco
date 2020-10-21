@@ -11,7 +11,6 @@
 #ifndef rtt_compton_tools_Sparse_Compton_Matrix_hh
 #define rtt_compton_tools_Sparse_Compton_Matrix_hh
 
-// C++ standard library dependencies
 #include <vector>
 
 namespace rtt_compton_tools {

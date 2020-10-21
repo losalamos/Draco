@@ -11,10 +11,8 @@
 #ifndef rtt_compton_tools_Compton_Native_hh
 #define rtt_compton_tools_Compton_Native_hh
 
-// C++ standard library dependencies
 #include <string>
 #include <vector>
-// Draco libraries
 //#include "compton_tools/Sparse_Compton_Matrix.hh"
 
 namespace rtt_compton_tools {

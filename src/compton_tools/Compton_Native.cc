@@ -8,18 +8,15 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-// C++ standard library dependencies
+#include "compton_tools/Compton_Native.hh"
+#include "c4/C4_Functions.hh"
+#include "c4/global.hh"
+#include "ds++/Assert.hh"
 #include <algorithm>
 #include <array>
 #include <cstring>
 #include <fstream>
 #include <iostream>
-
-// headers provided in draco:
-#include "compton_tools/Compton_Native.hh"
-#include "c4/C4_Functions.hh" //node()
-#include "c4/global.hh"
-#include "ds++/Assert.hh"
 
 using UINT = size_t;
 using FP = double;
@@ -53,15 +50,15 @@ UINT find_index(const std::vector<FP> &xs, FP &x) {
 // xL <= x <= xR assumed
 std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
   // Spacing of interval
-  FP h = xR - xL;
+  FP dx = xR - xL;
   // Left/right basis functions
-  FP bL = (xR - x) / h;
-  FP bR = (x - xL) / h;
+  FP bL = (xR - x) / dx;
+  FP bR = (x - xL) / dx;
 
   // Hermite functions
-  std::array<FP, 4> H{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR), -h * bL * bL * (bL - 1),
-                      h * bR * bR * (bR - 1)};
-  return H;
+  std::array<FP, 4> hermite_eval{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR),
+                                 -dx * bL * bL * (bL - 1), dx * bR * bR * (bR - 1)};
+  return hermite_eval;
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -290,7 +287,7 @@ void Compton_Native::interp_dense_inscat(vec &inscat, double Te_keV,
   UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -315,7 +312,7 @@ void Compton_Native::interp_dense_inscat(vec &inscat, double Te_keV,
           const UINT gto = dg + first_gto;
           const UINT ii = dg + offset_ii;
           const UINT jj = gto * num_groups_ + offset_jj;
-          inscat[jj] += H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
+          inscat[jj] += hermite[0U + n] * data_[ii] + hermite[2U + n] * derivs_[ii];
         }
       }
     }
@@ -331,7 +328,7 @@ void Compton_Native::interp_linear_outscat(vec &outscat, double Te_keV) const {
   UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -350,7 +347,7 @@ void Compton_Native::interp_linear_outscat(vec &outscat, double Te_keV) const {
       const UINT offset = indexes_[i] + eval_offset;
       for (UINT dg = 0; dg < num_entries; ++dg) {
         const UINT ii = dg + offset;
-        outscat[gfrom] += H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
+        outscat[gfrom] += hermite[0U + n] * data_[ii] + hermite[2U + n] * derivs_[ii];
       }
     }
   }
@@ -370,7 +367,7 @@ void Compton_Native::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
   UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -391,7 +388,7 @@ void Compton_Native::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
         const UINT gto = dg + first_gto;
         const FP mag = invscale * phi[gto];
         const UINT ii = dg + offset;
-        const FP val = H[0U + n] * data_[ii] + H[2U + n] * derivs_[ii];
+        const FP val = hermite[0U + n] * data_[ii] + hermite[2U + n] * derivs_[ii];
         outscat[gfrom] += mag * val;
       }
     }

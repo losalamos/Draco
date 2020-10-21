@@ -8,7 +8,7 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-#include "cdi/CDI.hh" //planck integral
+#include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -20,11 +20,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-//#include <numeric>
 #include <string>
-//#include <memory>
-//#include <sstream>
-//#include <vector>
 
 using std::cout;
 using std::endl;

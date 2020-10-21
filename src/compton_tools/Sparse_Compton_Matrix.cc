@@ -8,7 +8,6 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-// headers provided in draco:
 #include "compton_tools/Sparse_Compton_Matrix.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
