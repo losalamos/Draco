@@ -51,8 +51,8 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   const std::vector<double> grp_bds = compton_test->get_group_bounds();
   const std::vector<double> etemp_evals = compton_test->get_etemp_pts();
 
-  Ensure(grp_bds.size() == 2);
-  Ensure(etemp_evals.size() == 7);
+  FAIL_IF(grp_bds.size() != 2);
+  FAIL_IF(etemp_evals.size() != 7);
 
   if (!soft_equiv(grp_bds[0], 19.9998996222))
     FAILMSG("Lower group bound read incorrectly!");
@@ -82,11 +82,11 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   std::vector<std::vector<double>> interp_nu_data = compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
-  Ensure(interp_nu_data.size() == 1);
-  Ensure(interp_nu_data[0].size() == 1);
-  Ensure(interp_data.size() == 1);
-  Ensure(interp_data[0].size() == 1);
-  Ensure(interp_data[0][0].size() == 4);
+  FAIL_IF(interp_nu_data.size() != 1);
+  FAIL_IF(interp_nu_data[0].size() != 1);
+  FAIL_IF(interp_data.size() != 1);
+  FAIL_IF(interp_data[0].size() != 1);
+  FAIL_IF(interp_data[0][0].size() != 4);
 
   // Check that the data is actually correct:
   if (!soft_equiv(interp_data[0][0][0], 4.45668383e+00))
@@ -152,8 +152,8 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   const std::vector<double> grp_bds = compton_test->get_group_bounds();
   const std::vector<double> etemp_evals = compton_test->get_etemp_pts();
 
-  Ensure(grp_bds.size() == 2);
-  Ensure(etemp_evals.size() == 7);
+  FAIL_IF(grp_bds.size() != 2);
+  FAIL_IF(etemp_evals.size() != 7);
 
   if (!soft_equiv(grp_bds[0], 19.9998996222))
     FAILMSG("Lower group bound read incorrectly!");
@@ -184,11 +184,11 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   std::vector<std::vector<double>> interp_nu_data = compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
-  Ensure(interp_nu_data.size() == 1);
-  Ensure(interp_nu_data[0].size() == 1);
-  Ensure(interp_data.size() == 1);
-  Ensure(interp_data[0].size() == 1);
-  Ensure(interp_data[0][0].size() == 4);
+  FAIL_IF(interp_nu_data.size() != 1);
+  FAIL_IF(interp_nu_data[0].size() != 1);
+  FAIL_IF(interp_data.size() != 1);
+  FAIL_IF(interp_data[0].size() != 1);
+  FAIL_IF(interp_data[0][0].size() != 4);
 
   // Check that the data is actually correct:
   if (!soft_equiv(interp_data[0][0][0], 4.45668383e+00))
@@ -459,5 +459,5 @@ int main(int argc, char *argv[]) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// End of test/tCSK_Interface.cc
+// End of test/tCSK_Interface_interfaces.cc
 //------------------------------------------------------------------------------------------------//

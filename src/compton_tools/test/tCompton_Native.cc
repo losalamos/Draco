@@ -15,6 +15,7 @@
 #include "units/PhysicalConstants.hh"
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -30,6 +31,22 @@ using rtt_dsxx::soft_equiv;
 void test(rtt_dsxx::UnitTest &ut) {
   // Make true if golds need updating
   const bool do_print = false;
+  auto print_lambda = [](const std::vector<double> &variable, const std::string &variable_name) {
+    auto print = [](double a) { std::cout << a << ", "; };
+    std::cout << std::setprecision(14);
+    std::cout << "\n" << variable_name << "\n";
+    std::for_each(variable.begin(), variable.end(), print);
+    std::cout << std::endl;
+  };
+  auto print_diff_lambda = [](const std::vector<double> &val, const std::vector<double> &ref,
+                              const std::string &val_name, const std::string &ref_name,
+                              double tol) {
+    std::cout << std::setprecision(14);
+    std::cout << "\n" << val_name << "/" << ref_name << " - 1\n";
+    for (size_t i = 0; i < val.size(); ++i)
+      std::cout << (val[i] - ref[i]) / (std::fabs(ref[i]) + tol) << ", ";
+    std::cout << std::endl;
+  };
 
   // Tolerance used for checks
   const double tol = 1e-11;
@@ -59,11 +76,10 @@ void test(rtt_dsxx::UnitTest &ut) {
   const std::vector<double> T_evals = compton_test->get_Ts();
 
   // Unitless (divided by mec2)
-  // NB: These values can be read directly from the ASCII data files
-  // (3rd line)
+  // NB: These values can be read directly from the 3rd line in the ASCII data files
   std::vector<double> grp_bds_gold = {1.57311251e-06, 3.14622503e-04, 7.86556258e-04,
                                       1.57311251e-03, 3.14622503e-02};
-  // (scattered throughout data file)
+  // NB: These values are scattered throughout the ASCII data files as headers
   std::vector<double> T_evals_gold = {1.57311251e-05, 1.57311251e-04, 3.30353629e-04,
                                       6.60707256e-04};
 
@@ -86,14 +102,8 @@ void test(rtt_dsxx::UnitTest &ut) {
   }
 
   ut.check(grp_bds.size() == (num_groups_gold + 1U), "checked size of group bounds vector");
-  ut.check(std::equal(grp_bds.begin(), grp_bds.end(), grp_bds_gold.begin(),
-                      [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-           "checked group boundaries");
-
-  ut.check(T_evals.size() == num_T_evals_gold, "checked size of temperature evals vector");
-  ut.check(std::equal(T_evals.begin(), T_evals.end(), T_evals_gold.begin(),
-                      [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-           "checked temperature grid");
+  ut.check(soft_equiv(grp_bds, grp_bds_gold, tol), "checked group boundaries");
+  ut.check(soft_equiv(T_evals, T_evals_gold, tol), "checked temperature grid");
 
   // Test size accessor functions
   ut.check(compton_test->get_num_temperatures() == num_T_evals_gold,
@@ -136,34 +146,13 @@ void test(rtt_dsxx::UnitTest &ut) {
 
     // Print result (useful if golds need updating)
     if (do_print) {
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\ninscat\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(inscat);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\noutscat\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(outscat);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\nnl_diff\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(nl_diff);
+      print_lambda(inscat, "inscat");
+      print_lambda(outscat, "outscat");
+      print_lambda(nl_diff, "nl_diff");
     }
 
-    // NB: The inscat values come directly from the ASCII in_lin file
-    std::vector<double> inscat_gold = {//in_lin last temperature
-                                       0.077335961983675,
+    // in_lin last temperature
+    std::vector<double> inscat_gold = {0.077335961983675,
                                        0.00086813512403298,
                                        3.7589542861865e-12,
                                        0,
@@ -204,44 +193,15 @@ void test(rtt_dsxx::UnitTest &ut) {
 
     // Print diff (useful if golds need updating)
     if (do_print) {
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\ninscat / inscat_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(inscat, inscat_gold);
-
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\noutscat / outscat_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(outscat, outscat_gold);
-
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\nnl_diff / nl_diff_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(nl_diff, nl_diff_gold);
+      print_diff_lambda(inscat, inscat_gold, "inscat", "inscat_gold", tol);
+      print_diff_lambda(outscat, outscat_gold, "outscat", "outscat_gold", tol);
+      print_diff_lambda(nl_diff, nl_diff_gold, "nl_diff", "nl_diff_gold", tol);
     }
 
-    ut.check(std::equal(inscat.begin(), inscat.end(), inscat_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for inscat");
-
-    ut.check(std::equal(outscat.begin(), outscat.end(), outscat_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for outscat");
-
-    ut.check(std::equal(nl_diff.begin(), nl_diff.end(), nl_diff_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for nl_diff");
+    ut.check(soft_equiv(inscat, inscat_gold, tol), "checked data retrieval for inscat");
+    ut.check(soft_equiv(outscat, outscat_gold, tol), "checked data retrieval for outscat");
+    ut.check(soft_equiv(nl_diff, nl_diff_gold, tol), "checked data retrieval for nl_diff");
   }
-
   // Test interpolation
   {
     const double alpha = 0.4;
@@ -269,33 +229,12 @@ void test(rtt_dsxx::UnitTest &ut) {
 
     // Print result (useful if golds need updating)
     if (do_print) {
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\ninscat\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(inscat);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\noutscat\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(outscat);
-
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << "\nnl_diff\n";
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(nl_diff);
+      print_lambda(inscat, "inscat");
+      print_lambda(outscat, "outscat");
+      print_lambda(nl_diff, "nl_diff");
     }
 
-    std::vector<double> inscat_gold = {//in_lin
-                                       0.11237635504081,
+    std::vector<double> inscat_gold = {0.11237635504081,
                                        0.003892290232165,
                                        0,
                                        0,
@@ -336,42 +275,14 @@ void test(rtt_dsxx::UnitTest &ut) {
 
     // Print diff (useful if golds need updating)
     if (do_print) {
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\ninscat / inscat_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(inscat, inscat_gold);
-
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\noutscat / outscat_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(outscat, outscat_gold);
-
-      [tol](const std::vector<double> &v, const std::vector<double> &r) {
-        std::cout << std::setprecision(14);
-        std::cout << "\nnl_diff / nl_diff_gold - 1\n";
-        for (size_t i = 0; i < v.size(); ++i)
-          std::cout << (v[i] - r[i]) / (std::fabs(r[i]) + tol) << ", ";
-        std::cout << std::endl;
-      }(nl_diff, nl_diff_gold);
+      print_diff_lambda(inscat, inscat_gold, "inscat", "inscat_gold", tol);
+      print_diff_lambda(outscat, outscat_gold, "outscat", "outscat_gold", tol);
+      print_diff_lambda(nl_diff, nl_diff_gold, "nl_diff", "nl_diff_gold", tol);
     }
 
-    ut.check(std::equal(inscat.begin(), inscat.end(), inscat_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for inscat");
-
-    ut.check(std::equal(outscat.begin(), outscat.end(), outscat_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for outscat");
-
-    ut.check(std::equal(nl_diff.begin(), nl_diff.end(), nl_diff_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval for nl_diff");
+    ut.check(soft_equiv(inscat, inscat_gold, tol), "checked data retrieval for inscat");
+    ut.check(soft_equiv(outscat, outscat_gold, tol), "checked data retrieval for outscat");
+    ut.check(soft_equiv(nl_diff, nl_diff_gold, tol), "checked data retrieval for nl_diff");
   }
 }
 
@@ -393,9 +304,11 @@ void bad_file_test(rtt_dsxx::UnitTest &ut) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
     caught = true;
-  } catch (const int & /*asrt*/) {
-    std::cout << "CSK exception thrown. " << std::endl;
-    // We successfully caught the bad file!
+  } catch (const std::ifstream::failure &e) {
+    std::cout << "ifstream failure caught!" << std::endl;
+    caught = true;
+  } catch (...) {
+    std::cout << "Unidentified exception caught!" << std::endl;
     caught = true;
   }
 

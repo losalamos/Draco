@@ -31,6 +31,14 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // Make true if golds need updating
   const bool do_print = false;
+  auto print_lambda = [](const std::vector<double> &variable, const std::string &variable_name) {
+    auto print = [](double a) { std::cout << a << ", "; };
+    std::cout << variable_name << ":\n";
+    std::cout << std::setprecision(14);
+    std::cout << '\n';
+    std::for_each(variable.begin(), variable.end(), print);
+    std::cout << std::endl;
+  };
 
   // Tolerance used for checks
   const double tol = 1e-11;
@@ -60,14 +68,13 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   const std::vector<double> T_evals = compton_test->get_etemp_pts();
 
   // Unitless (divided by mec2)
-  // NB: These values can be read directly from the ASCII data files
-  // (3rd line)
+  // NB: These values can be read directly from the 3rd line of the ASCII csk data files
   std::vector<double> grp_bds_gold = {1.57311251e-06, 3.14622503e-04, 7.86556258e-04,
                                       1.57311251e-03, 3.14622503e-02};
-  // (scattered throughout data file)
+  // NB: These values can be read directly from the ASCII csk data files
   std::vector<double> T_evals_gold = {1.57311251e-05, 1.57311251e-04, 3.30353629e-04,
                                       6.60707256e-04};
-  // First and last temperature from line 2 of the csk input file
+  // NB: First and last temperature from line 2 of the ASCII csk data files
   std::vector<double> line2_Ts_gold = {1.41580126e-05, 7.26777982e-04};
 
   // Sizes
@@ -91,20 +98,14 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   line2_Ts_gold[1] *= mec2;
   */
 
-  Ensure(grp_bds.size() == (num_groups_gold + 1U));
-  ut.check(std::equal(grp_bds.begin(), grp_bds.end(), grp_bds_gold.begin(),
-                      [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-           "checked group boundaries");
+  FAIL_IF(grp_bds.size() != (num_groups_gold + 1U));
+  ut.check(soft_equiv(grp_bds, grp_bds_gold, tol), "checked group boundaries");
 
-  Ensure(T_evals.size() == num_T_evals_gold);
-  ut.check(std::equal(T_evals.begin(), T_evals.end(), T_evals_gold.begin(),
-                      [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-           "checked temperature grid");
+  FAIL_IF(T_evals.size() != num_T_evals_gold);
+  ut.check(soft_equiv(T_evals, T_evals_gold, tol), "checked temperature grid");
 
-  if (!soft_equiv(compton_test->get_min_etemp(), line2_Ts_gold[0]))
-    FAILMSG("Min etemp read incorrectly!");
-  if (!soft_equiv(compton_test->get_max_etemp(), line2_Ts_gold[1]))
-    FAILMSG("Max etemp read incorrectly!");
+  FAIL_IF_NOT(soft_equiv(compton_test->get_min_etemp(), line2_Ts_gold[0]));
+  FAIL_IF_NOT(soft_equiv(compton_test->get_max_etemp(), line2_Ts_gold[1]));
 
   if (ut.numFails == 0) {
     std::cout << "\nCorrectly read group bounds and electron temps!" << std::endl;
@@ -143,13 +144,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
     // Print result (useful if golds need updating)
     if (do_print) {
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << '\n';
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(flat_interp_data);
+      print_lambda(flat_interp_data, "flat_interp_data");
     }
 
     // NB: These values come directly from the ASCII data files
@@ -179,9 +174,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
         2.875946793361e-23, 1.265594484598e-25, 4.274264612141e-25, -9.142968009692e-27, 0, 0, 0, 0,
         5.392751048597e-25, -1.344066881751e-26, 8.87128629256e-25, 3.986007245261e-27};
 
-    ut.check(std::equal(flat_interp_data.begin(), flat_interp_data.end(), flat_interp_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data retrieval");
+    ut.check(soft_equiv(flat_interp_data, flat_interp_gold, tol), "checked data retrieval");
   }
 
   // Test interpolation
@@ -218,13 +211,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
     // Print result (useful if golds need updating)
     if (do_print) {
-      [](const std::vector<double> &v) {
-        auto print = [](double a) { std::cout << a << ", "; };
-        std::cout << std::setprecision(14);
-        std::cout << '\n';
-        std::for_each(v.begin(), v.end(), print);
-        std::cout << std::endl;
-      }(flat_interp_data);
+      print_lambda(flat_interp_data, "flat_interp_data");
     }
 
     std::vector<double> flat_interp_gold = {
@@ -255,9 +242,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
         -2.8485633209286e-27, 0, 0, 0, 0, 7.0910968932275e-25, -2.3423156364316e-26,
         1.4873126610905e-23, 1.8374675563093e-25};
 
-    ut.check(std::equal(flat_interp_data.begin(), flat_interp_data.end(), flat_interp_gold.begin(),
-                        [tol](double a, double b) -> bool { return soft_equiv(a, b, tol); }),
-             "checked data interpolation");
+    ut.check(soft_equiv(flat_interp_data, flat_interp_gold, tol), "checked data interpolation");
   }
 
   if (ut.numFails == 0)
@@ -318,5 +303,5 @@ int main(int argc, char *argv[]) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// End of test/tCSK_Interface.cc
+// End of test/tCSK_Interface_dummy_data.cc
 //------------------------------------------------------------------------------------------------//
