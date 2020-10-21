@@ -1,14 +1,13 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton2/test/tCompton2.cc
+ * \file   compton_tools/test/tCompton_Native.cc
  * \author Andrew Till
  * \date   14 Oct 2020
- * \brief  Implementation file for tCompton2
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Implementation file for tCompton_Native
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
-#include "compton2/Compton2.hh"
+#include "compton_tools/Compton_Native.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -18,13 +17,13 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace rtt_compton2_test {
+namespace rtt_compton_tools_test {
 
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 //!  Simple test
 void test(rtt_dsxx::UnitTest &ut) {
@@ -32,24 +31,23 @@ void test(rtt_dsxx::UnitTest &ut) {
   const bool do_print = false;
 
   // Tolerance used for checks
-  // TODO: Figure out why I can't use 1e-11 for the tol (outscat)
-  const double tol = 2e-6;
+  const double tol = 1e-11;
 
   // Start the test.
 
   std::cout << "\n---------------------------------------------------------\n"
-            << "             Test Draco Compton data routines\n"
+            << "             Test Draco Compton_Native data routines\n"
             << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
   const std::string filename = ut.getTestSourcePath() + "dummy_data_gold_b";
-  std::cout << "Attempting to construct a Compton2 object...\n" << std::endl;
-  std::unique_ptr<rtt_compton2::Compton2> compton_test;
+  std::cout << "Attempting to construct a Compton_Native object...\n" << std::endl;
+  std::unique_ptr<rtt_compton_tools::Compton_Native> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton2::Compton2(filename));
+    compton_test.reset(new rtt_compton_tools::Compton_Native(filename));
   } catch (int /*asrt*/) {
-    FAILMSG("Failed to construct a Compton2 object!");
+    FAILMSG("Failed to construct a Compton_Native object!");
     // if construction fails, there is no reason to continue testing...
     return;
   }
@@ -380,16 +378,16 @@ void test(rtt_dsxx::UnitTest &ut) {
 //!  Tests Compton's error-handling on a non-existent file.
 void bad_file_test(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n---------------------------------------------------------\n"
-            << "    Test Compton2 bad file handling    \n"
+            << "    Test Compton_Native bad file handling    \n"
             << "---------------------------------------------------------\n";
   // open a small mg opacity file:
   std::string filename = ut.getTestSourcePath() + "non_existent_b";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
-  std::unique_ptr<rtt_compton2::Compton2> compton_test;
+  std::unique_ptr<rtt_compton_tools::Compton_Native> compton_test;
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton2::Compton2(filename));
+    compton_test.reset(new rtt_compton_tools::Compton_Native(filename));
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
@@ -409,19 +407,19 @@ void bad_file_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Did not successfully catch a bad file exception.");
   }
 }
-} // namespace rtt_compton2_test
+} // namespace rtt_compton_tools_test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // >>> UNIT TESTS
-    rtt_compton2_test::test(ut);
-    rtt_compton2_test::bad_file_test(ut);
+    rtt_compton_tools_test::test(ut);
+    rtt_compton_tools_test::bad_file_test(ut);
   }
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
-// End of test/tCompton2.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// End of test/tCompton_Native.cc
+//------------------------------------------------------------------------------------------------//

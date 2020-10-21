@@ -1,17 +1,17 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton/Compton.hh
+ * \file   compton_interface/Compton_Interface.hh
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
- * \brief  Header file for compton CSK_generator interface
+ * \brief  Header file for compton_interface CSK_generator interface
  * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
-#ifndef rtt_compton_Compton_hh
-#define rtt_compton_Compton_hh
+#ifndef rtt_compton_interface_Compton_Interface_hh
+#define rtt_compton_interface_Compton_Interface_hh
 
-#include "compton/config.h"
+#include "compton_interface/config.h"
 
 #ifdef COMPTON_FOUND
 
@@ -20,12 +20,12 @@
 #include <memory>
 #include <vector>
 
-namespace rtt_compton {
+namespace rtt_compton_interface {
 //================================================================================================//
 /*!
- * \class Compton
+ * \class Compton_Interface
  *
- * \brief Provides access to relativistic Compton scattering angle and
+ * \brief Provides access to relativistic Compton_Interface scattering angle and
  *        multigroup frequency distributions from the CSK_generator project.
  *
  * This interface class allows the client to:
@@ -36,7 +36,7 @@ namespace rtt_compton {
  *    (electron temperature bounds, frequency group structures, etc)
  *
  * This class is designed to be used with the CSK_generator library and headers.
- * If this is not found at the CMake configure step, the lib_compton portion of
+ * If this is not found at the CMake configure step, the lib_compton_interface portion of
  * draco will not be built.
  *
  * \b User's \b environment
@@ -48,13 +48,13 @@ namespace rtt_compton {
  */
 
 /*!
- * \example compton/test/tCompton.cc
+ * \example compton_interface/test/tCompton_Interface.cc
  *
- * This unit test demonstrates the two methods for constructing a Compton
+ * This unit test demonstrates the two methods for constructing a Compton_Interface
  * object, and exercises all routines for interpolation and data access.
 */
 
-class Compton {
+class Compton_Interface {
 
 private:
   //! Shared pointer to an electron interpolation object:
@@ -65,24 +65,23 @@ private:
 
 public:
   //! Constructor for an existing multigroup library
-  explicit Compton(const std::string &filehandle,
-                   const bool llnl_style = false);
+  explicit Compton_Interface(const std::string &filehandle, const bool llnl_style = false);
 
   //! Constructor to build a multigroup library from an existing pointwise file
-  Compton(const std::string &file, const std::vector<double> &group_bounds,
-          const std::string &opac_type, const std::string &wt_func,
-          const bool induced, const bool det_bal = false, const size_t nxi = 0);
+  Compton_Interface(const std::string &file, const std::vector<double> &group_bounds,
+                    const std::string &opac_type, const std::string &wt_func, const bool induced,
+                    const bool det_bal = false, const size_t nxi = 0);
 
   //! Dtor - defined in .cc file to prevent incomplete_type issues
-  ~Compton();
+  ~Compton_Interface();
 
   //! Interpolation of all csk opacity data to a certain electron temperature:
   std::vector<std::vector<std::vector<std::vector<double>>>>
   interpolate_csk(const double etemp, const bool limit_grps = true) const;
 
   //! Interpolation of all nu_ratio data to an electron temperature:
-  std::vector<std::vector<double>>
-  interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
+  std::vector<std::vector<double>> interpolate_nu_ratio(const double etemp,
+                                                        const bool limit_grps = true) const;
 
   //! Versions for use with on-the-fly temperature interpolation:
   //! Interpolate (E)xpected (R)elative (E)nergy (C)hange:
@@ -97,13 +96,10 @@ public:
   double interpolate_cell_sigc(const int64_t cell, const double freq) const;
 
   //! Interpolate all CSK data in temperature (stored in CSK for each cell):
-  void interpolate_precycle(const std::vector<double> &Tms,
-                            const std::vector<double> &dens) const;
+  void interpolate_precycle(const std::vector<double> &Tms, const std::vector<double> &dens) const;
 
   //! Retrieve group structure for the given library (in kev):
-  std::vector<double> get_group_bounds() const {
-    return ei->get_group_bds_kev();
-  }
+  std::vector<double> get_group_bounds() const { return ei->get_group_bds_kev(); }
 
   //! Retrieve min electron temperature for the given library:
   double get_min_etemp() const { return ei->get_min_etemp(); }
@@ -120,12 +116,12 @@ public:
   //! Retrieve electron temperature eval points (diagnostic use)
   std::vector<double> get_etemp_pts() const { return ei->get_etemp_pts(); }
 };
-} // namespace rtt_compton
+} // namespace rtt_compton_interface
 
 #endif // COMPTON_FOUND
 
-#endif // rtt_compton_Compton_hh
+#endif // rtt_compton_interface_Compton_Interface_hh
 
 //------------------------------------------------------------------------------------------------//
-// End compton/Compton.hh
+// End compton_interface/Compton_Interface.hh
 //------------------------------------------------------------------------------------------------//

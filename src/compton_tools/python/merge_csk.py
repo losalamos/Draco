@@ -1,21 +1,20 @@
 #! /usr/bin/env python
-#-----------------------------*-python-*----------------------------------------#
-# file   src/compton2/python/merge_csk.py
+#---------------------------------------*-python-*-------------------------------------------------#
+# file   src/compton_tools/python/merge_csk.py
 # author Andrew Till <till@lanl.gov>
 # date   19 May 2020
 # brief  This script has functions that merge two sets of CSK files
-# note   Copyright (C) 2020, Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 # STDLIB
 import os
 import sys
 import shutil
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def merge(fileRoot1, fileRoot2, fileRootNew):
     '''Merge contents of files in fileRoot1 and fileRoot2 into fileRootNew    if fileRoot1 is '../cmp' then the files will be '../cmp_in_lin' etc.
     '''
@@ -116,14 +115,14 @@ def merge(fileRoot1, fileRoot2, fileRootNew):
                 else:
                     print('Temperature {} (unitless) encountered in both files. Cannot handle.'.format(T1))
                     exit(1)
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 if __name__ == '__main__':
     if len(sys.argv) < 4 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
         print('Usage: ./merge_csk.py fileRoot1 fileRoot2 fileRootNew')
         print('(if fileRootNew is fileRoot1 or fileRoot2, it will be overwritten)')
         exit(1)
     merge(sys.argv[1], sys.argv[2], sys.argv[3])
-################################################################################
+#--------------------------------------------------------------------------------------------------#

@@ -1,23 +1,22 @@
 #!/usr/bin/env python
-#-----------------------------*-python-*----------------------------------------#
-# file   src/compton2/python/common_compton.py
+#---------------------------------------*-python-*-------------------------------------------------#
+# file   src/compton_tools/python/common_compton.py
 # author Andrew Till <till@lanl.gov>
 # date   14 May 2020
 # brief  This script has functions that parse an ULTRA file with Compton
 #        data and return a dense matrix and energy/temperature grids;
 #        If run as executable, saves grids and data with same base filename
-# note   Copyright (C) 2020, Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 # TPL
 import numpy as np
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
 # These are the common functions that are used to read and write Compton data
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def print_grids(grids, fileroot, verbosity=False):
     '''Print grids to files based on their names'''
 
@@ -27,9 +26,9 @@ def print_grids(grids, fileroot, verbosity=False):
         if verbosity:
             print('Saving {}'.format(filePath))
         np.savetxt(filePath, grids[key])
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def print_mat(mat, fileroot, verbosity=False):
     '''Print mat to files, one for each temperature '''
 
@@ -38,9 +37,9 @@ def print_mat(mat, fileroot, verbosity=False):
         if verbosity:
             print('Saving {}'.format(filePath))
         np.savetxt(filePath, mat[i,:,:])
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def read_data(fileroot, verbosity):
     '''Read mat and grids data'''
 
@@ -84,4 +83,4 @@ def read_data(fileroot, verbosity):
 
     # Return data
     return grids, mat
-################################################################################
+#--------------------------------------------------------------------------------------------------#

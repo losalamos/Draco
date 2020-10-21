@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton2/cskrw.cc
+ * \file   compton_tools/cskrw.cc
  * \author Andrew Till
  * \date   11 May 2020
- * \brief  Basic reader/writer of csk Compton files
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Converter of ASCII to binary csk Compton files
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh" //planck integral
 #include "ds++/Assert.hh"
@@ -810,7 +809,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Basic reader of the csk ASCII file format
  *
@@ -822,7 +821,7 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
  *
  * Will be useful in testing ASCII reader and renormalization!!
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void read_csk_files(std::string const &basename, int verbosity) {
   // csk data base filename (csk ASCII format required)
 
@@ -975,7 +974,7 @@ void read_csk_files(std::string const &basename, int verbosity) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   // Process known command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
@@ -1020,6 +1019,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cskrw.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,10 +1,9 @@
-#-----------------------------*-python-*---------------------------------------#
-# file   c4/test/tstCSKrw.py
-# author Kelly Thompson <kgt@lanl.gov>
-# date   Saturday, Sep 09, 2017, 14:17 pm
-# brief  This is a Python script that is used to test compton2/CSKrw
-# note   Copyright (C) 2017-2020, Triad National Security, LLC.
-#        All rights reserved.
+#---------------------------------------*-python-*-------------------------------------------------#
+# file   compton_tools/test/tstCSKrw.py
+# author Andrew Till
+# date   14 Oct 2020
+# brief  This is a Python script that is used to test compton_tools/CSKrw
+# note   Copyright (C) 2017-2020, Triad National Security, LLC. All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 import sys
 import re

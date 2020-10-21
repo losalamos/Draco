@@ -1,6 +1,6 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton/Compton.cc
+ * \file   compton_interface/Compton_Interface.cc
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton CSK_generator interface
@@ -9,13 +9,13 @@
 //------------------------------------------------------------------------------------------------//
 
 // headers provided in draco:
-#include "compton/Compton.hh"
+#include "compton_interface/Compton_Interface.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 
 #ifdef COMPTON_FOUND
 
-namespace rtt_compton {
+namespace rtt_compton_interface {
 
 // ------------ //
 // Constructors //
@@ -26,27 +26,25 @@ namespace rtt_compton {
  * \brief Constructor for an existing multigroup libfile.
  *
  * This calls CSK_generator methods to read the data file and store everything
- * in a Compton data object, a smart pointer to which is then passed to (and
+ * in a Compton_Interface data object, a smart pointer to which is then passed to (and
  * held by) the CSK_generator etemp_interp class.
  *
  * \param[in] filehandle The name of the Compton multigroup file
  * \param[in] llnl_style Defaults to false. True indicates that data uses LLNL
  *                       format.
  */
-Compton::Compton(const std::string &filehandle, const bool llnl_style) {
+Compton_Interface::Compton_Interface(const std::string &filehandle, const bool llnl_style) {
 
-  // Make a compton file object to read the multigroup data
+  // Make a compton_interface file object to read the multigroup data
   compton_file Cfile(false);
   if (llnl_style) {
     // initialize the etemp/frequency interpolated with the library data:
-    llnli = std::unique_ptr<llnl_interp>(
-        new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    llnli = std::unique_ptr<llnl_interp>(new llnl_interp(Cfile.read_llnl_data(filehandle)));
     // Make sure the SP exists...
     Ensure(llnli);
   } else {
     // initialize the electron temperature interpolator with the mg compton data
-    ei = std::unique_ptr<etemp_interp>(
-        new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    ei = std::unique_ptr<etemp_interp>(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
     // Make sure the SP exists...
     Ensure(ei);
   }
@@ -61,7 +59,7 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
  * if no n_xi argument is passed
  *
  * This calls CSK_generator methods to read the pointwise library and construct
- * a multigroup Compton data object, a smart pointer to which is then passed
+ * a multigroup Compton_Interface data object, a smart pointer to which is then passed
  * to (and held by) the CSK_generator etemp_interp class.
  *
  * \param[in] filehandle The name of the pointwise lib to build MG data from
@@ -78,10 +76,10 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
  * \param[in] det_bal    Bool to toggle detailed balance enforcement off/on
  * \param[in] nxi        The number of angular points/Legendre moments desired
  */
-Compton::Compton(const std::string &filehandle,
-                 const std::vector<double> &grp_bds,
-                 const std::string &opac_type, const std::string &wt_func,
-                 const bool induced, const bool det_bal, const size_t nxi) {
+Compton_Interface::Compton_Interface(const std::string &filehandle,
+                                     const std::vector<double> &grp_bds,
+                                     const std::string &opac_type, const std::string &wt_func,
+                                     const bool induced, const bool det_bal, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -101,7 +99,7 @@ Compton::Compton(const std::string &filehandle,
     // be set to <0,"wien">||<1,"planck">; these are the only valid cases
     Insist(((!induced && wt_func == std::string("wien")) ||
             (induced && wt_func == std::string("planck"))),
-           "Compton error: Detailed balance enforcement (det_bal = 1) \n"
+           "Compton_Interface error: Detailed balance enforcement (det_bal = 1) \n"
            "only valid for induced=0 w/wien -OR- induced=1 w/planck!");
   }
 
@@ -129,7 +127,7 @@ Compton::Compton(const std::string &filehandle,
 }
 
 // Default destructor.
-Compton::~Compton(void) {}
+Compton_Interface::~Compton_Interface(void) {}
 
 // ------------ //
 //  Interfaces  //
@@ -140,7 +138,7 @@ Compton::~Compton(void) {}
  * \brief Interpolate opacity data to a given SCALED electron temperature
  *        \f$ (T / m_e) \f$
  *
- * This method interpolates MG Compton opacity data to a given electron
+ * This method interpolates MG Compton_Interface opacity data to a given electron
  * temperature. It returns the interpolated values for ALL g, g', and angular
  * points in the specified multigroup structure.
  *
@@ -151,7 +149,7 @@ Compton::~Compton(void) {}
  * \return   n_opac x n_grp x n_grp x n_xi interpolated opacity values
  */
 std::vector<std::vector<std::vector<std::vector<double>>>>
-Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
+Compton_Interface::interpolate_csk(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
@@ -177,7 +175,7 @@ Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
  * \return    n_grp x n_grp interpolated nu_ratio values
  */
 std::vector<std::vector<double>>
-Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
+Compton_Interface::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
@@ -198,7 +196,7 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated relative energy change (Delta-E / E)
  */
-double Compton::interpolate_erec(const double Tm, const double freq) const {
+double Compton_Interface::interpolate_erec(const double Tm, const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   return llnli->interpolate_erec(Tm, freq);
@@ -218,7 +216,7 @@ double Compton::interpolate_erec(const double Tm, const double freq) const {
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated opacity (cm^2 / g)
  */
-double Compton::interpolate_sigc(const double Tm, const double freq) const {
+double Compton_Interface::interpolate_sigc(const double Tm, const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   return llnli->interpolate_sigc(Tm, freq);
@@ -238,8 +236,7 @@ double Compton::interpolate_sigc(const double Tm, const double freq) const {
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated relative energy change (Delta-E / E)
  */
-double Compton::interpolate_cell_erec(const int64_t cell,
-                                      const double freq) const {
+double Compton_Interface::interpolate_cell_erec(const int64_t cell, const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   Require(llnli->pre_interped());
@@ -260,8 +257,7 @@ double Compton::interpolate_cell_erec(const int64_t cell,
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated opacity (cm^-1)
  */
-double Compton::interpolate_cell_sigc(const int64_t cell,
-                                      const double freq) const {
+double Compton_Interface::interpolate_cell_sigc(const int64_t cell, const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   Require(llnli->pre_interped());
@@ -279,14 +275,14 @@ double Compton::interpolate_cell_sigc(const int64_t cell,
  * \param[in] Tms  Cell electron temperature (keV)
  * \param[in] dens Cell densities (g/cc)
  */
-void Compton::interpolate_precycle(const std::vector<double> &Tms,
-                                   const std::vector<double> &dens) const {
+void Compton_Interface::interpolate_precycle(const std::vector<double> &Tms,
+                                             const std::vector<double> &dens) const {
   llnli->preinterp_in_temp(Tms, dens);
 }
-} // namespace rtt_compton
+} // namespace rtt_compton_interface
 
 #endif
 
 //------------------------------------------------------------------------------------------------//
-// End compton/Compton.cc
+// End compton_interface/Compton_Interface.cc
 //------------------------------------------------------------------------------------------------//

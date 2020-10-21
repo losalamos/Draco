@@ -1,29 +1,28 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton2/Compton2.hh
+ * \file   compton_tools/Compton_Native.hh
  * \author Andrew Till
  * \date   11 May 2020
- * \brief  Header file for compton interface
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Implementation file for native compton bindary-read and temperature interpolation
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
-#ifndef rtt_compton2_Compton2_hh
-#define rtt_compton2_Compton2_hh
+#ifndef rtt_compton_tools_Compton_Native_hh
+#define rtt_compton_tools_Compton_Native_hh
 
 // C++ standard library dependencies
 #include <string>
 #include <vector>
 // Draco libraries
-#include "compton2/Sparse_Compton_Matrix.hh"
+//#include "compton_tools/Sparse_Compton_Matrix.hh"
 
-namespace rtt_compton2 {
+namespace rtt_compton_tools {
 
-enum Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
+enum class Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
 
-//============================================================================//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \class Compton2
+ * \class Compton_Native
  *
  * \brief Provides access to relativistic Compton scattering angle and
  *        multigroup frequency distributions from csk data files
@@ -36,16 +35,26 @@ enum Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
  */
 
 /*!
- * \example compton2/test/tCompton2.cc
+ * \example compton_tools/test/tCompton_Native.cc
  *
  * This unit test demonstrates the method for constructing a Compton
  * object, and exercises all routines for interpolation and data access.
 */
 
-class Compton2 {
+//------------------------------------------------------------------------------------------------//
+class Compton_Native {
 
 public:
-  Compton2(std::string filename);
+  //--------------------------------------------------------------------------//
+  // SETUP FUNCTIONS
+  //--------------------------------------------------------------------------//
+
+  // \brief Constructor
+  Compton_Native(std::string filename);
+
+  //--------------------------------------------------------------------------//
+  // TEMPERATURE INTERPOLATION FUNCTIONS
+  //--------------------------------------------------------------------------//
 
   // Interpolate csk data in temperature for the linear inscattering
   // and return a flattened dense matrix with ordering
@@ -67,7 +76,10 @@ public:
   void interp_nonlin_diff_and_add(std::vector<double> &outscat, double Te_keV,
                                   const std::vector<double> &phi, double scale) const;
 
-  // The following are for future implementation
+  //--------------------------------------------------------------------------//
+  // UNIMPLEMENTED, POTENTIAL FUTURE FUNCTIONS
+  //--------------------------------------------------------------------------//
+
 #if 0
   // Interpolate in temperature and multiply against a vector in-place
   // x := diag(leftscale) * csk[in_lin](Te_keV) * diag(rightscale) * x
@@ -121,6 +133,10 @@ public:
                              double Te_keV) const;
 #endif
 
+  //--------------------------------------------------------------------------//
+  // GETTER AND SIZE FUNCTIONS
+  //--------------------------------------------------------------------------//
+
   // Accessor functions
   size_t get_num_temperatures() const { return num_temperatures_; }
   size_t get_num_groups() const { return num_groups_; }
@@ -131,6 +147,7 @@ public:
   const std::vector<double> &get_Ts() const { return Ts_; }
   const std::vector<double> &get_Egs() const { return Egs_; }
 
+  //--------------------------------------------------------------------------//
   // Size checks for valid state
   bool check_class_invariants() const {
     bool all_good = (num_temperatures_ > 0U) && (num_groups_ > 0U) && (num_leg_moments_ > 0U) &&
@@ -147,6 +164,10 @@ public:
   }
 
 private:
+  //--------------------------------------------------------------------------//
+  // PRIVATE DATA
+  //--------------------------------------------------------------------------//
+
   size_t num_temperatures_;
   size_t num_groups_;
   size_t num_leg_moments_;
@@ -179,7 +200,9 @@ private:
   // 1D array of [eval, moment, temperature, group-from, group-to]
   std::vector<double> derivs_;
 
-  // helper functions
+  //--------------------------------------------------------------------------//
+  // PRIVATE HELPER FUNCTIONS
+  //--------------------------------------------------------------------------//
 
   // broadcast data over MPI
   void broadcast_MPI(int errcode);
@@ -188,10 +211,10 @@ private:
   int read_binary(std::string filename);
 };
 
-} // namespace rtt_compton2
+} // namespace rtt_compton_tools
 
-#endif // rtt_compton2_Compton2_hh
+#endif // rtt_compton_tools_Compton_Native_hh
 
-//----------------------------------------------------------------------------//
-// End compton2/Compton2.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// End compton_tools/Compton_Native.hh
+//------------------------------------------------------------------------------------------------//

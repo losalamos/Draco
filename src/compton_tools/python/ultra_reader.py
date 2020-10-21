@@ -1,16 +1,15 @@
 #!/usr/bin/env python
-#-----------------------------*-python-*----------------------------------------#
-# file   src/compton2/python/ultra_reader.py
+#---------------------------------------*-python-*-------------------------------------------------#
+# file   src/compton_tools/python/ultra_reader.py
 # author Andrew Till <till@lanl.gov>
 # date   14 May 2020
 # brief  This script has functions that parse an ULTRA file with Compton
 #        data and return a dense matrix and energy/temperature grids;
 #        If run as executable, saves grids and data with same base filename
-# note   Copyright (C) 2020, Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 # STDLIB
 import os
 import sys
@@ -19,12 +18,12 @@ import shutil
 import numpy as np
 # FPL
 import common_compton as cc
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
 # These are the functions that are used to read data from the
 # ASCII ULTRA file, assuming the underlying data is Compton.
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def read_ultra_file(filePath, verbosity=False):
     '''Read LLNL-style ultra file and store as dictionary;
     Assume each data line is of format: 'x y'.
@@ -68,9 +67,9 @@ def read_ultra_file(filePath, verbosity=False):
 
     # Return dict
     return fileroot, fields
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def float_comma(s):
     '''Returns float of string that may or may not have a comma at the end'''
     try:
@@ -78,9 +77,9 @@ def float_comma(s):
     except:
         v = float(s[:-1])
     return v
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def extract_3D_grids(fields, verbosity=False):
     '''Extract grids from ultra fields and data
     Assume fieldnames of a specific format
@@ -170,9 +169,9 @@ def extract_3D_grids(fields, verbosity=False):
 
     # Return dictionary of grids
     return grids
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 def convert_to_matrix(grids, fields, verbosity=False):
     '''Convert data in fields dict to matrix with ordering [T, Eto, Efrom]
     Return mat(rix)'''
@@ -211,9 +210,9 @@ def convert_to_matrix(grids, fields, verbosity=False):
 
     # Return matrix
     return mat
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 
-################################################################################
+#--------------------------------------------------------------------------------------------------#
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
@@ -228,4 +227,4 @@ if __name__ == '__main__':
         cc.print_grids(grids, fileroot, verbosity)
         cc.print_mat(mat, fileroot, verbosity)
         grids, mat = cc.read_data(fileroot, verbosity)
-################################################################################
+#--------------------------------------------------------------------------------------------------#

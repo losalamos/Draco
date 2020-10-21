@@ -1,32 +1,34 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   compton2/Compton2.cc
+ * \file   compton_tools/Compton_Native.cc
  * \author Andrew Till
  * \date   11 May 2020
- * \brief  Implementation file for compton interface
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Implementation file for native compton bindary-read and temperature interpolation
+ * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
-// headers provided in draco:
-#include "compton2/Compton2.hh"
-#include "c4/C4_Functions.hh" //node()
-#include "c4/global.hh"
-#include "ds++/Assert.hh"
-
+// C++ standard library dependencies
 #include <algorithm>
 #include <array>
 #include <cstring>
 #include <fstream>
-#include <iomanip> // RM
-#include <ios>     // RM
 #include <iostream>
+
+// headers provided in draco:
+#include "compton_tools/Compton_Native.hh"
+#include "c4/C4_Functions.hh" //node()
+#include "c4/global.hh"
+#include "ds++/Assert.hh"
 
 using UINT = size_t;
 using FP = double;
 using vec = std::vector<FP>;
 
-namespace rtt_compton2 {
+namespace rtt_compton_tools {
+
+//------------------------------------------------------------------------------------------------//
+// FREE-FLOATING HELPER FUNCTIONS
+//------------------------------------------------------------------------------------------------//
 
 // xs is assumed to be monotonically increasing and unique
 // returns index in [0,len-2] so that xs[index] and xs[index+1] are valid
@@ -61,7 +63,11 @@ std::array<FP, 4> hermite(FP x, FP xL, FP xR) {
   return H;
 }
 
-Compton2::Compton2(std::string filename)
+//------------------------------------------------------------------------------------------------//
+// CONSTRUCTOR
+//------------------------------------------------------------------------------------------------//
+
+Compton_Native::Compton_Native(std::string filename)
     : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U), num_evals_(0U), num_points_(0U),
       Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U), data_(0U), derivs_(0U) {
   Require(filename.length() > 0U);
@@ -77,7 +83,11 @@ Compton2::Compton2(std::string filename)
   Ensure(check_class_invariants());
 }
 
-void Compton2::broadcast_MPI(int errcode) {
+//------------------------------------------------------------------------------------------------//
+// BINARY READING AND BROADCASTING FUNCTIONS
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::broadcast_MPI(int errcode) {
   rtt_c4::global_max(errcode);
   Insist(errcode == 0, "Non-zero errorcode. Exiting.");
 
@@ -129,7 +139,9 @@ void Compton2::broadcast_MPI(int errcode) {
   rtt_c4::broadcast(&derivs_[0], dsz, 0);
 }
 
-int Compton2::read_binary(std::string filename) {
+//------------------------------------------------------------------------------------------------//
+
+int Compton_Native::read_binary(std::string filename) {
   // Read
   auto fin = std::ifstream(filename, std::ios::in | std::ios::binary);
 
@@ -178,7 +190,7 @@ int Compton2::read_binary(std::string filename) {
   num_points_ = num_evals_ + num_leg_moments_ - 1U;
   UINT egsz = gsz + 1;
 
-  if (false) {
+#if 0
     std::cout << "DBG num_temperatures_ " << num_temperatures_ << '\n';
     std::cout << "DBG num_groups_ " << num_groups_ << '\n';
     std::cout << "DBG num_leg_moments_ " << num_leg_moments_ << '\n';
@@ -187,7 +199,7 @@ int Compton2::read_binary(std::string filename) {
     std::cout << "DBG len(first_groups_) " << fgsz << '\n';
     std::cout << "DBG len(indexes_) " << isz << '\n';
     std::cout << "DBG len(data_/derivs_) " << dsz << '\n';
-  }
+#endif
 
   Ts_.resize(tsz);
   for (UINT i = 0; i < tsz; ++i)
@@ -215,7 +227,7 @@ int Compton2::read_binary(std::string filename) {
 
   fin.close();
 
-  if (false) {
+#if 0
     std::cout << '\n';
     std::cout << "-------------------------------------------------\n";
 
@@ -258,23 +270,26 @@ int Compton2::read_binary(std::string filename) {
 
     std::cout << "-------------------------------------------------\n";
     std::cout << '\n';
-  }
+#endif
 
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-void Compton2::interp_dense_inscat(vec &inscat, double Te_keV, size_t num_moments_truncate) const {
+//------------------------------------------------------------------------------------------------//
+// TEMPERATURE INTERPOLATION FUNCTIONS
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_dense_inscat(vec &inscat, double Te_keV,
+                                         size_t num_moments_truncate) const {
   // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
 
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
   // and 0 <= index <= Ts_.size()-2;
   FP Teff = Te_keV;
-  UINT iT = rtt_compton2::find_index(Ts_, Teff);
+  UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -306,14 +321,16 @@ void Compton2::interp_dense_inscat(vec &inscat, double Te_keV, size_t num_moment
   }
 }
 
-void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_linear_outscat(vec &outscat, double Te_keV) const {
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
   // and 0 <= index <= Ts_.size()-2;
   FP Teff = Te_keV;
-  UINT iT = rtt_compton2::find_index(Ts_, Teff);
+  UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -338,18 +355,21 @@ void Compton2::interp_linear_outscat(vec &outscat, double Te_keV) const {
   }
 }
 
-void Compton2::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
-                                          const std::vector<double> &phi, double scale) const {
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
+                                                const std::vector<double> &phi,
+                                                double scale) const {
   // Adds to existing outscat vector
   Require(outscat.size() == num_groups_);
 
   // Finds index and nudges Teff st Ts_[index] <= Teff <= Ts_[index+1]
   // and 0 <= index <= Ts_.size()-2;
   FP Teff = Te_keV;
-  UINT iT = rtt_compton2::find_index(Ts_, Teff);
+  UINT iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<FP, 4> H = rtt_compton2::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<FP, 4> H = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const UINT sz = indexes_[indexes_.size() - 1];
@@ -377,11 +397,12 @@ void Compton2::interp_nonlin_diff_and_add(vec &outscat, double Te_keV,
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------//
+// UNIMPLEMENTED, POTENTIAL FUTURE FUNCTIONS
+//------------------------------------------------------------------------------------------------//
 
 #if 0
-void Compton2::interp_matvec(vec &x, const vec &leftscale,
+void Compton_Native::interp_matvec(vec &x, const vec &leftscale,
                              const vec &rightscale, double Te_keV,
                              bool zeroth_moment_only) const {
   // TODO: Redo interface? Not in-place??
@@ -393,7 +414,9 @@ void Compton2::interp_matvec(vec &x, const vec &leftscale,
   // TODO: implement
 }
 
-void Compton2::interp_matvec_transpose(vec &xT, const vec &leftscale,
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_matvec_transpose(vec &xT, const vec &leftscale,
                                        const vec &rightscale, double Te_keV,
                                        bool zeroth_moment_only) const {
   // TODO: Redo interface? Not in-place??
@@ -405,7 +428,9 @@ void Compton2::interp_matvec_transpose(vec &xT, const vec &leftscale,
   // TODO: implement
 }
 
-void Compton2::interp_sparse_inscat(Sparse_Compton_Matrix &inscat,
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_sparse_inscat(Sparse_Compton_Matrix &inscat,
                                     const vec &leftscale, const vec &rightscale,
                                     double Te_keV,
                                     bool zeroth_moment_only) const {
@@ -418,8 +443,9 @@ void Compton2::interp_sparse_inscat(Sparse_Compton_Matrix &inscat,
   // TODO: implement
 }
 
+//------------------------------------------------------------------------------------------------//
 
-void Compton2::interp_dense_inscat(vec &inscat, const vec &leftscale,
+void Compton_Native::interp_dense_inscat(vec &inscat, const vec &leftscale,
                                    const vec &rightscale, double Te_keV,
                                    bool zeroth_moment_only) const {
   // Ordering of inscat is 1D array (slow) [moment, group-to, group-from] (fast)
@@ -433,7 +459,9 @@ void Compton2::interp_dense_inscat(vec &inscat, const vec &leftscale,
   // TODO: implement
 }
 
-void Compton2::interp_linear_outscat(vec &outscat, const vec &leftscale,
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_linear_outscat(vec &outscat, const vec &leftscale,
                                      const vec &rightscale,
                                      double Te_keV) const {
   outscat.resize(num_groups_);
@@ -445,7 +473,9 @@ void Compton2::interp_linear_outscat(vec &outscat, const vec &leftscale,
   // TODO: implement
 }
 
-void Compton2::interp_nonlinear_diff(vec &nldiff, const vec &leftscale,
+//------------------------------------------------------------------------------------------------//
+
+void Compton_Native::interp_nonlinear_diff(vec &nldiff, const vec &leftscale,
                                      const vec &rightscale, const vec &flux,
                                      double flux_scale, double Te_keV) const {
   // Need "const" that changes based on DBC level?
@@ -467,9 +497,10 @@ void Compton2::interp_nonlinear_diff(vec &nldiff, const vec &leftscale,
   // Ensure(nldiff.len() == num_groups_);
 }
 #endif
+//------------------------------------------------------------------------------------------------//
 
-} // namespace rtt_compton2
+} // namespace rtt_compton_tools
 
-//----------------------------------------------------------------------------//
-// End compton2/Compton2.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// End compton_tools/Compton_Native.cc
+//------------------------------------------------------------------------------------------------//
