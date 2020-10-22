@@ -39,12 +39,12 @@ CSK_Interface::CSK_Interface(const std::string &filehandle, const bool llnl_styl
   compton_file Cfile(false);
   if (llnl_style) {
     // initialize the etemp/frequency interpolated with the library data:
-    llnli = std::unique_ptr<llnl_interp>(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    llnli = std::make_unique<llnl_interp>(Cfile.read_llnl_data(filehandle));
     // Make sure the SP exists...
     Ensure(llnli);
   } else {
     // initialize the electron temperature interpolator with the mg compton data
-    ei = std::unique_ptr<etemp_interp>(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    ei = std::make_unique<etemp_interp>(Cfile.read_mg_csk_data(filehandle));
     // Make sure the SP exists...
     Ensure(ei);
   }
@@ -119,14 +119,14 @@ CSK_Interface::CSK_Interface(const std::string &filehandle, const std::vector<do
   MG_builder.build_library();
 
   // initialize the electron temperature interpolator with the mg compton data
-  ei.reset(new etemp_interp(MG_builder.package_data()));
+  ei = std::make_unique<etemp_interp>(MG_builder.package_data());
 
   // Make sure the SP exists...
   Ensure(ei);
 }
 
 // Default destructor.
-CSK_Interface::~CSK_Interface(void) {}
+CSK_Interface::~CSK_Interface() = default;
 
 // ------------ //
 //  Interfaces  //

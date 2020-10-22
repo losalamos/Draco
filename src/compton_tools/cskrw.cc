@@ -668,8 +668,9 @@ void Dense_Compton_Data::write_binary(std::string fileout, Sparse_Compton_Data &
   auto fout = std::ofstream(fileout, std::ios::out | std::ios::binary);
 
   // binary type
-  char filetype[] = " csk ";
-  fout.write(&filetype[0], sizeof(filetype));
+  // (using vector of char to avoid C-style array of char)
+  std::vector<char> filetype = {' ', 'c', 's', 'k', ' ', '\0'};
+  fout.write(&filetype[0], filetype.size() * sizeof(char));
 
   UINT version_major = 1;
   UINT version_minor = 0;

@@ -8,10 +8,11 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-#include "compton_interface/CSK_Interface.hh"
 #include "c4/ParallelUnitTest.hh"
+#include "compton_interface/CSK_Interface.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -39,7 +40,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   std::unique_ptr<rtt_compton_interface::CSK_Interface> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename);
   } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a CSK_Interface object!");
     // if construction fails, there is no reason to continue testing...
@@ -140,7 +141,7 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   std::unique_ptr<const rtt_compton_interface::CSK_Interface> compton_test;
 
   try {
-    compton_test.reset(new const rtt_compton_interface::CSK_Interface(filename));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename);
   } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a CSK_Interface object!");
     // if construction fails, there is no reason to continue testing...
@@ -259,8 +260,8 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     // (This call has some output of its own, so we print some newlines around
     // it)
     std::cout << "\n\n";
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename, test_groups, opac_type,
-                                                                wt_func, induced, det_bal, nxi));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(
+        filename, test_groups, opac_type, wt_func, induced, det_bal, nxi);
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion & /*asrt*/) {
     FAILMSG("Failed to construct a CSK_Interface object!");
@@ -295,7 +296,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   std::vector<std::vector<double>> nu_gen = compton_test->interpolate_nu_ratio(0.01);
 
   // open generated output files and perform same operation for comparison:
-  compton_test.reset(new rtt_compton_interface::CSK_Interface(libfile));
+  compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(libfile);
   std::vector<std::vector<std::vector<std::vector<double>>>> csk_exist =
       compton_test->interpolate_csk(0.01);
   std::vector<std::vector<double>> nu_exist = compton_test->interpolate_nu_ratio(0.01);
@@ -348,7 +349,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename);
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
@@ -382,7 +383,7 @@ void llnl_compton_test(rtt_dsxx::UnitTest &ut) {
   std::cout << "Attempting to construct a CSK_Interface object...\n" << std::endl;
   std::unique_ptr<rtt_compton_interface::CSK_Interface> compton_test;
   try {
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename, llnl_style));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename, llnl_style);
   } catch (int /*asrt*/) {
     FAILMSG("Failed to construct an LLNL-style CSK_Interface object!");
     // if construction fails, there is no reason to continue testing...
@@ -400,7 +401,7 @@ void llnl_compton_test(rtt_dsxx::UnitTest &ut) {
 
   compton_test->interpolate_precycle(cell_temps, cell_dens);
 
-  const std::vector<double> test_freq = {12.4233, 183.43};
+  const std::array<double, 2> test_freq = {12.4233, 183.43};
 
   // reference sol'n for erec:
   const std::vector<double> ref_sigc = {1.91083e-01, 1.25551e-01, 1.91042e-01, 1.25395e-01};
@@ -413,14 +414,14 @@ void llnl_compton_test(rtt_dsxx::UnitTest &ut) {
 
   size_t i = 0;
   for (size_t k = 0; k < cell_temps.size(); k++) {
-    for (size_t j = 0; j < test_freq.size(); j++) {
+    for (const double freq : test_freq) {
       // sigma_compton value:
-      otf_sigcval = compton_test->interpolate_sigc(cell_temps[k], test_freq[j]);
-      pre_sigcval = compton_test->interpolate_cell_sigc(static_cast<int64_t>(k), test_freq[j]);
+      otf_sigcval = compton_test->interpolate_sigc(cell_temps[k], freq);
+      pre_sigcval = compton_test->interpolate_cell_sigc(static_cast<int64_t>(k), freq);
 
       // expected relative energy change value:
-      otf_erecval = compton_test->interpolate_erec(cell_temps[k], test_freq[j]);
-      pre_erecval = compton_test->interpolate_cell_erec(static_cast<int64_t>(k), test_freq[j]);
+      otf_erecval = compton_test->interpolate_erec(cell_temps[k], freq);
+      pre_erecval = compton_test->interpolate_cell_erec(static_cast<int64_t>(k), freq);
 
       // compare the values to each other for consistency:
       FAIL_IF_NOT(soft_equiv(otf_sigcval, pre_sigcval));

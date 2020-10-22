@@ -8,8 +8,8 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-#include "compton_tools/Compton_Native.hh"
 #include "c4/ParallelUnitTest.hh"
+#include "compton_tools/Compton_Native.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
@@ -63,7 +63,7 @@ void test(rtt_dsxx::UnitTest &ut) {
   std::unique_ptr<rtt_compton_tools::Compton_Native> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton_tools::Compton_Native(filename));
+    compton_test = std::make_unique<rtt_compton_tools::Compton_Native>(filename);
   } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a Compton_Native object!");
     // if construction fails, there is no reason to continue testing...
@@ -94,11 +94,11 @@ void test(rtt_dsxx::UnitTest &ut) {
 
   // Multiply by electron rest-mass energy (keV; using CSK value)
   const double mec2 = 510.998;
-  for (size_t i = 0; i < grp_bds_gold.size(); ++i) {
-    grp_bds_gold[i] *= mec2;
+  for (double &grp_bd : grp_bds_gold) {
+    grp_bd *= mec2;
   }
-  for (size_t i = 0; i < T_evals_gold.size(); ++i) {
-    T_evals_gold[i] *= mec2;
+  for (double &T_eval : T_evals_gold) {
+    T_eval *= mec2;
   }
 
   ut.check(grp_bds.size() == (num_groups_gold + 1U), "checked size of group bounds vector");
@@ -299,7 +299,7 @@ void bad_file_test(rtt_dsxx::UnitTest &ut) {
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton_tools::Compton_Native(filename));
+    compton_test = std::make_unique<rtt_compton_tools::Compton_Native>(filename);
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!

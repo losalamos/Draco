@@ -8,8 +8,8 @@
  */
 //------------------------------------------------------------------------------------------------//
 
-#include "compton_interface/CSK_Interface.hh"
 #include "c4/ParallelUnitTest.hh"
+#include "compton_interface/CSK_Interface.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <fstream>
@@ -55,7 +55,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   std::unique_ptr<rtt_compton_interface::CSK_Interface> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename);
   } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a CSK_Interface object!");
     // if construction fails, there is no reason to continue testing...
@@ -85,8 +85,8 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // Multiply by electron rest-mass energy (keV; using CSK value)
   const double mec2 = 510.998;
-  for (size_t i = 0; i < grp_bds_gold.size(); ++i) {
-    grp_bds_gold[i] *= mec2;
+  for (double &grp_bd : grp_bds_gold) {
+    grp_bd *= mec2;
   }
   // Interface does not scale temperatures, so no multiplication needed:
   /*
@@ -268,7 +268,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton_interface::CSK_Interface(filename));
+    compton_test = std::make_unique<rtt_compton_interface::CSK_Interface>(filename);
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!

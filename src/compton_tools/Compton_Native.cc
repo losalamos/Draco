@@ -196,18 +196,24 @@ int Compton_Native::read_binary(const std::string &filename) {
   try {
     fin.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   } catch (std::fstream::failure &e) {
-    return 2;
+    return 1;
   }
 
   // Ensure valid type
-  char expected[] = " csk ";
-  char file_type[sizeof(expected)];
-  fin.read(file_type, sizeof(file_type));
-  if (std::strcmp(file_type, expected) != 0) {
-    std::cerr << "Expecting binary file " << filename << " to start with '" << expected
-              << "' but got '" << file_type << "'";
-    std::cerr << std::endl;
-    return 1;
+  // (using vector of char to avoid using C-style strings)
+  std::vector<char> expected = {' ', 'c', 's', 'k', ' ', '\0'};
+  std::vector<char> actual(expected.size());
+  for (UINT i = 0; i < expected.size(); ++i)
+    fin.read(&actual[i], sizeof(actual[i]));
+  if (!std::equal(expected.begin(), expected.end(), actual.begin())) {
+    std::cerr << "Expecting binary file " << filename << " to start with '";
+    for (char c : expected)
+      std::cerr << c;
+    std::cerr << "' but got '";
+    for (char c : actual)
+      std::cerr << c;
+    std::cerr << "'" << std::endl;
+    return 2;
   }
 
   UINT binary_ordering;
@@ -221,7 +227,7 @@ int Compton_Native::read_binary(const std::string &filename) {
                  "but got "
               << version_major << " with ordering " << binary_ordering;
     std::cerr << std::endl;
-    return 2;
+    return 3;
   }
 
   constexpr UINT n = 7;
