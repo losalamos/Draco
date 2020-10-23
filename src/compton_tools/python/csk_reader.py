@@ -126,13 +126,12 @@ if __name__ == '__main__':
         print('Usage: csk_reader.py <csk_filePath>')
         exit(1)
     else:
-        #verbosity = False
+        # verbosity = False
         verbosity = True
-        #verbosity = 2
+        # verbosity = 2
         #
         fileroot, grids, mats = read_csk_files(sys.argv[1], verbosity)
         mat = extract_zeroth_out(mats)
-        #exit(0)
         cc.print_grids(grids, fileroot, verbosity)
         cc.print_mat(mat, fileroot, verbosity)
         grids, mat = cc.read_data(fileroot, verbosity)

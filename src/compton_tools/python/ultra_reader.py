@@ -163,7 +163,7 @@ def extract_3D_grids(fields, verbosity=False):
         # Corner case
         try:
             len(grids[key])
-        except:
+        except TypeError:
             grids[key] = grids[key] * np.ones(1)
         # Print extracted grids
         if verbosity:
@@ -187,9 +187,9 @@ def convert_to_matrix(grids, fields, verbosity=False):
     mat = np.zeros((numTs, numEsto, numEsfrom))
 
     # Find mappings
-    Tinv = {T:i for i, T in enumerate(grids['T'])}
-    Efrominv = {Efrom:i for i, Efrom in enumerate(grids['Efrom'])}
-    Etoinv = {Eto:i for i, Eto in enumerate(grids['Eto'])}
+    Tinv = {T: i for i, T in enumerate(grids['T'])}
+    Efrominv = {Efrom: i for i, Efrom in enumerate(grids['Efrom'])}
+    Etoinv = {Eto: i for i, Eto in enumerate(grids['Eto'])}
 
     # Fill matrix
     for key in fields:
