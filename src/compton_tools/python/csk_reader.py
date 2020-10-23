@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#---------------------------------------*-python-*-------------------------------------------------#
+# --------------------------------------*-python-*------------------------------------------------ #
 # file   src/compton_tools/python/csk_reader.py
 # author Andrew Till <till@lanl.gov>
 # date   14 May 2020
@@ -7,23 +7,23 @@
 #        data and return a dense matrix and energy/temperature grids;
 #        If run as executable, saves grids and data with same base filename
 # note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # STDLIB
 import os
 import sys
-import shutil
 # TPL
 import numpy as np
 # FPL
 import common_compton as cc
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
 # These are the functions that are used to read data from the
 # ASCII csk Compton files
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def read_csk_files(filebase, verbosity=False):
     '''Read LANL-style csk file and store into fields and a matrix'''
 
@@ -38,8 +38,8 @@ def read_csk_files(filebase, verbosity=False):
         print('Root is', fileroot)
 
     # normalizations
-    mec2 = 510.998 # keV
-    csk_norm = 2.0 * 0.037558 # currently approximate
+    mec2 = 510.998  # keV
+    csk_norm = 2.0 * 0.037558  # currently approximate
 
     # Try to read all csk files
     mats = {}
@@ -63,15 +63,13 @@ def read_csk_files(filebase, verbosity=False):
 
             G = numGroups
             L = numLegMoments
-            numEsfrom = G
-            numEsto = G
 
             # Allocate
             Tgrid = np.zeros(numTs)
             Ebdrgrid = np.zeros(G+1)
             Eavggrid = np.zeros(G)
-            mats[ending] = np.zeros((L,numTs, G, G))
-            submat = mats[ending] # aliased
+            mats[ending] = np.zeros((L, numTs, G, G))
+            submat = mats[ending]  # aliased
 
             # Skip line 2 (has temperature region boundaries)
             line = fid.readline()
@@ -108,18 +106,20 @@ def read_csk_files(filebase, verbosity=False):
 
     Eavggrid = np.sqrt(Ebdrgrid[1:] * Ebdrgrid[:-1])
     grids = {'T': Tgrid,
-            'Ebdr': Ebdrgrid, 'Efrom': Eavggrid, 'Eto': Eavggrid}
+             'Ebdr': Ebdrgrid, 'Efrom': Eavggrid, 'Eto': Eavggrid}
     return fileroot, grids, mats
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def extract_zeroth_out(mats):
     '''Extract the zeroth Legendre moment of the out_lin evaluation, if present'''
 
     mat = mats['_out_lin'][0, :, :, :].copy()
     return mat
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
@@ -136,4 +136,4 @@ if __name__ == '__main__':
         cc.print_grids(grids, fileroot, verbosity)
         cc.print_mat(mat, fileroot, verbosity)
         grids, mat = cc.read_data(fileroot, verbosity)
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #

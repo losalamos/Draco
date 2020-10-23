@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#---------------------------------------*-python-*-------------------------------------------------#
+# --------------------------------------*-python-*------------------------------------------------ #
 # file   src/compton_tools/python/ultra_reader.py
 # author Andrew Till <till@lanl.gov>
 # date   14 May 2020
@@ -7,9 +7,9 @@
 #        data and return a dense matrix and energy/temperature grids;
 #        If run as executable, saves grids and data with same base filename
 # note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # STDLIB
 import os
 import sys
@@ -18,12 +18,13 @@ import shutil
 import numpy as np
 # FPL
 import common_compton as cc
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
 # These are the functions that are used to read data from the
 # ASCII ULTRA file, assuming the underlying data is Compton.
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def read_ultra_file(filePath, verbosity=False):
     '''Read LLNL-style ultra file and store as dictionary;
     Assume each data line is of format: 'x y'.
@@ -48,38 +49,40 @@ def read_ultra_file(filePath, verbosity=False):
     for line in lines:
         if line.startswith('#'):
             if len(subdata) and len(fieldname):
-                fields[fieldname] = np.reshape(np.concatenate(subdata), (2,-1), 'F').copy()
+                fields[fieldname] = np.reshape(np.concatenate(subdata), (2, -1), 'F').copy()
                 subdata = []
                 fieldname = ''
             fieldname = line[1:].strip()
         elif line:
             subdata.append([float(v) for v in line.strip().split()])
     if len(subdata) and len(fieldname):
-        fields[fieldname] = np.reshape(np.concatenate(subdata), (2,-1), 'F').copy()
+        fields[fieldname] = np.reshape(np.concatenate(subdata), (2, -1), 'F').copy()
 
     # Print parsed dict
     for field in fields:
         if verbosity:
             print(field)
         if verbosity > 1:
-            print(fields[field][0,:])
-            print(fields[field][1,:])
+            print(fields[field][0, :])
+            print(fields[field][1, :])
 
     # Return dict
     return fileroot, fields
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def float_comma(s):
     '''Returns float of string that may or may not have a comma at the end'''
     try:
         v = float(s)
-    except:
+    except ValueError:
         v = float(s[:-1])
     return v
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def extract_3D_grids(fields, verbosity=False):
     '''Extract grids from ultra fields and data
     Assume fieldnames of a specific format
@@ -93,7 +96,7 @@ def extract_3D_grids(fields, verbosity=False):
 
     # Extract last grid from data
     # grid stored in leftmost index of data array
-    Etogrid = np.unique(np.concatenate([dat[0,:] for dat in fields.values()]))
+    Etogrid = np.unique(np.concatenate([dat[0, :] for dat in fields.values()]))
 
     # Make MG boundary grid
     G = max(Efromgrid.size, Etogrid.size)
@@ -169,9 +172,10 @@ def extract_3D_grids(fields, verbosity=False):
 
     # Return dictionary of grids
     return grids
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 def convert_to_matrix(grids, fields, verbosity=False):
     '''Convert data in fields dict to matrix with ordering [T, Eto, Efrom]
     Return mat(rix)'''
@@ -183,21 +187,21 @@ def convert_to_matrix(grids, fields, verbosity=False):
     mat = np.zeros((numTs, numEsto, numEsfrom))
 
     # Find mappings
-    Tinv = {T:i for i,T in enumerate(grids['T'])}
-    Efrominv = {Efrom:i for i,Efrom in enumerate(grids['Efrom'])}
-    Etoinv = {Eto:i for i,Eto in enumerate(grids['Eto'])}
+    Tinv = {T:i for i, T in enumerate(grids['T'])}
+    Efrominv = {Efrom:i for i, Efrom in enumerate(grids['Efrom'])}
+    Etoinv = {Eto:i for i, Eto in enumerate(grids['Eto'])}
 
     # Fill matrix
     for key in fields:
-        # keys of the form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]" with comma optional
+        # keys of form: "kTe1.00 hNu11.124198, sig_C(nu->nu',T_e)/sig_{Th} [1/keV] vs hNu' [keV]" with comma optional
         T = float_comma(key.split()[0][3:])
         Efrom = float_comma(key.split()[1][3:])
         Tloc = Tinv[T]
         Efromloc = Efrominv[Efrom]
 
         # Fill a column
-        colEto = fields[key][0,:]
-        colVal = fields[key][1,:]
+        colEto = fields[key][0, :]
+        colVal = fields[key][1, :]
         for i in range(len(colEto)):
             Eto = colEto[i]
             val = colVal[i]
@@ -210,9 +214,10 @@ def convert_to_matrix(grids, fields, verbosity=False):
 
     # Return matrix
     return mat
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 
-#--------------------------------------------------------------------------------------------------#
+
+# ------------------------------------------------------------------------------------------------ #
 # Allows this script to be run by the command line or imported into other python
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[-1] == '-h' or sys.argv[-1] == '--help':
@@ -227,4 +232,4 @@ if __name__ == '__main__':
         cc.print_grids(grids, fileroot, verbosity)
         cc.print_mat(mat, fileroot, verbosity)
         grids, mat = cc.read_data(fileroot, verbosity)
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
