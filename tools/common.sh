@@ -87,7 +87,8 @@ function machineName
     esac
   fi
   if [[ "$sysName" == "unknown" ]]; then
-    die "Unable to determine machine name, please edit scripts/common.sh."
+    echo "Unable to determine machine name, please edit scripts/common.sh."
+    return 1
   fi
   echo $sysName
 }
@@ -112,7 +113,8 @@ function osName
     fi
   fi
   if [[ "$osName" == "unknown" ]]; then
-    die "Unable to determine system OS, please edit scripts/common.sh."
+    echo "Unable to determine system OS, please edit scripts/common.sh."
+    return 1
   fi
   echo "$osName"
 }
@@ -503,7 +505,7 @@ function install_versions
   # Create install directory
   install_dir="$install_prefix/$rttversion"
   if ! [[ -d $install_dir ]]; then
-    run "mkdir -p $install_dir" || die "Could not create $install_dir"
+    run "mkdir -p $install_dir" || (echo "Could not create $install_dir" && return 1)
   fi
 
   # try to locate the souce directory
@@ -535,17 +537,17 @@ function install_versions
     if [[ -d "${build_dir}" ]]; then
       run "rm -rf ${build_dir}"
     fi
-    run "mkdir -p $build_dir" || die "Could not create directory $build_dir."
+    run "mkdir -p $build_dir" || (echo "Could not create directory $build_dir." && return 2)
   fi
 
   run "cd $build_dir"
   if [[ "$config_step" == 1 ]]; then
     run "cmake -DCMAKE_INSTALL_PREFIX=$install_dir $options $CONFIG_EXTRA $source_dir" \
-      || die "Could not configure in $build_dir from source at $source_dir"
+      || (echo "Could not configure in $build_dir from source at $source_dir" && return 3)
   fi
   if [[ "$build_step" == 1 ]]; then
     run "${MAKE_COMMAND:-make} -j $build_pe -l $build_pe install"  \
-      || die "Could not build code/tests in $build_dir"
+      || (echo "Could not build code/tests in $build_dir" && return 4)
   fi
   if [[ "$test_step" == 1 ]]; then
     # run all tests
@@ -743,13 +745,13 @@ function relcreatesymlinks() {
   machfam=$(machineFamily)
 
   if ! [[ -d $source_prefix ]]; then
-    die "relcreatesymlinks:: Expected variable source_prefix to be set"
+    echo "relcreatesymlinks:: Expected variable source_prefix to be set" && return 1
   fi
   if [[ ${siblings:=notset} == "notset" ]]; then
-    die "relcreatesymlinks:: Expected variable siblings to be set"
+    echo "relcreatesymlinks:: Expected variable siblings to be set" && return 2
   fi
   if [[ ${environments:=notset} == "notset" ]]; then
-    die "relcreatesymlinks:: Expected variable environments to be set"
+    echo "relcreatesymlinks:: Expected variable environments to be set" && return 3
   fi
 
   run "cd $source_prefix"
@@ -757,7 +759,8 @@ function relcreatesymlinks() {
   for env in $environments; do
 
     if ! [[ $(fn_exists "$env") ]]; then
-      die "relcreatesymlinks:: Attempted to load environment $env, but this function is not defined".
+      echo -n "relcreatesymlinks:: Attempted to load environment $env, but this function is "
+      echo "not defined". && return 4
     fi
     # establish environment
     $env
