@@ -62,7 +62,7 @@ public:
 template <typename T> class Viz_Traits<std::vector<std::vector<T>>> {
 public:
   // Type traits
-  typedef T elementType;
+  using elementType = T;
 
 private:
   // Reference to vector<vector> field.
