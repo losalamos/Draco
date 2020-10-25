@@ -132,8 +132,10 @@ do
     tmpfile1=/tmp/f90-format-$file_nameonly
     debugprint "cp -f $file $tmpfile1"
     cp -f "${file}" "${tmpfile1}"
-    debugprint "$EMACS -batch ${tmpfile1} -l ${SCRIPTPATH}/f90-format.el -f emacs-format-f90-sources"
-    $EMACS -batch "${tmpfile1}" -l "${SCRIPTPATH}/f90-format.el" -f emacs-format-f90-sources
+    debugprint "$EMACS -batch ${tmpfile1} --no-site-file -q  -l ${SCRIPTPATH}/f90-format.el " \
+               "-f emacs-format-f90-sources"
+    $EMACS -batch "${tmpfile1}" --no-site-file -q -l "${SCRIPTPATH}/f90-format.el" \
+           -f emacs-format-f90-sources
     diff -u "${file}" "${tmpfile1}" | \
         sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
     debugprint "rm $tmpfile1"
