@@ -105,7 +105,7 @@ public:
   Ensight_Stream &operator<<(const std::string &s);
   Ensight_Stream &operator<<(FP f);
 
-  friend DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
+  friend Ensight_Stream &endl(Ensight_Stream &s);
 
 private:
   // Does binary write of v.
