@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Save Draco configuration information for installation (cmake export)
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}" )
 get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
@@ -22,41 +21,25 @@ set( DRACO_CONFIGURATION_TYPES "@DRACO_CONFIGURATION_TYPES@" CACHE STRING
 include( FeatureSummary )
 set_package_properties( draco PROPERTIES
    URL "https://rtt.lanl.gov/redmine/projects/draco"
-   DESCRIPTION
-"Draco is a comprehensive, radiation transport framework that provides key,
-   reusable components for serial and parallel computational physics
-   codes."
+   DESCRIPTION "Draco is a comprehensive, radiation transport framework that provides key, reusable
+ components for serial and parallel computational physics codes."
    TYPE REQUIRED
-   PURPOSE
-"Provides underlying capabilities required by Capsaicin and Jayenne (smart
-   pointers, data access, random number generators, etc.)"
-   )
+   PURPOSE "Provides underlying capabilities required by Capsaicin and Jayenne (smart pointers,
+ data access, random number generators, etc.)" )
 
-## ---------------------------------------------------------------------------
-## Compilers used by Draco build (also: see ds++/config.h)
-## ---------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
+# Basic build information
+#--------------------------------------------------------------------------------------------------#
 
 set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
-
-## ---------------------------------------------------------------------------
-## Set library specifications and paths
-## ---------------------------------------------------------------------------
-
-## The project version number
 set(Draco_VERSION "@Draco_VERSION@")
 
-## The project libraries.
-set(Draco_LIBRARIES "@Draco_LIBRARIES@" )
-
-## The project's exported executables
-set( Draco_EXECUTABLES "@Draco_EXECUTABLES@" )
-
-## ---------------------------------------------------------------------------
-## MPI specific variables
-##   These variables are provided to make it easier to get the mpi libraries
-##   and includes on systems that do not use the mpi wrappers for compiling
-## ---------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
+# MPI specific variables
+#   These variables are provided to make it easier to get the mpi libraries and includes on systems
+#   that do not use the mpi wrappers for compiling
+#--------------------------------------------------------------------------------------------------#
 
 set(DRACO_C4 "@DRACO_C4@" )
 set(Draco_MPIEXEC_EXECUTABLE "@MPIEXEC_EXECUTABLE@")
@@ -80,22 +63,19 @@ set( Draco_CUDA_ARCH "@Draco_CUDA_ARCH@")
 set( Python_Interpreter_FOUND "@Python_Interpreter_FOUND@" )
 set( Python_EXECUTABLE "@Python_EXECUTABLE@" )
 
-## ---------------------------------------------------------------------------
-## Set useful general variables
-## ---------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
+# Set useful general variables
+#--------------------------------------------------------------------------------------------------#
 
-## Draco vendor's for this machine
+# Draco vendor's for this machine
 set(VENDOR_DIR "@VENDOR_DIR@")
 
-## The packages enabled for this project
-set(Draco_PACKAGE_LIST "@Draco_PACKAGE_LIST@" )
-
-## The TPLs enabled for this project
+# The TPLs enabled for this project
 set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 
-## ---------------------------------------------------------------------------
-## Save per target properties for importing into other projects.
-## ---------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
+# Save per target properties for importing into other projects.
+#--------------------------------------------------------------------------------------------------#
 
 @Draco_EXPORT_TARGET_PROPERTIES@
 
@@ -107,8 +87,8 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 # CMake macros to query the availability of TPLs.
 include( vendor_libraries )
 
-# If DRACO_CALIPER is 1, then this build of Draco requires the CALIPER::caliper
-# target. If the CALIPER::caliper target is not defined, then create it.
+# If DRACO_CALIPER is 1, then this build of Draco requires the CALIPER::caliper target. If the
+# CALIPER::caliper target is not defined, then create it.
 set( DRACO_CALIPER @DRACO_CALIPER@ )
 if( DRACO_CALIPER AND NOT TARGET CALIPER::caliper)
   setupCaliper()

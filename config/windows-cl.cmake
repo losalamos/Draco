@@ -18,7 +18,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   #           default to /W2. Use /W0 to disable all warnings.
   string( APPEND CMAKE_C_FLAGS " /W2")
   string( APPEND CMAKE_CXX_FLAGS " /W2")
-  
+
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using Draco settings." )
 endif()
 
@@ -27,7 +27,7 @@ endif()
 deduplicate_flags(CMAKE_C_FLAGS)
 deduplicate_flags(CMAKE_CXX_FLAGS)
 set( DRACO_LINK_OPTIONS "${DRACO_LINK_OPTIONS}" CACHE STRING "link flags" FORCE)
-force_compiler_flags_to_cache()
+force_compiler_flags_to_cache("C;CXX")
 
 #--------------------------------------------------------------------------------------------------#
 # End windows-cl.cmake

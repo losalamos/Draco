@@ -6,15 +6,6 @@
 # note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
-# History
-# ----------------------------------------
-# 07/20/2011 - Use -O3 for Release builds but reduce -fp-model from strict to
-#              precise to eliminate warning 1678.
-# 11/18/2013 - For RELEASE builds, begin using -fp-model precise -fp-speculation
-#              safe.  Jayenne sees about 10% performance bump.
-# 06/13/2016 - IPO settings moved to compilerEnv.cmake
-#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
-
 #
 # Compiler Flags
 #
@@ -65,21 +56,9 @@ mark_as_advanced( INTEL_LIBM )
 
 #--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-#--------------------------------------------------------------------------------------------------#
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags"
-  FORCE )
-
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" CACHE STRING "compiler flags"
-  FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING
-  "compiler flags" FORCE )
+deduplicate_flags(CMAKE_C_FLAGS)
+deduplicate_flags(CMAKE_CXX_FLAGS)
+force_compiler_flags_to_cache("C;CXX")
 
 # If this is a Cray, the compile wrappers take care of any xHost flags that are needed.
 if( NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )

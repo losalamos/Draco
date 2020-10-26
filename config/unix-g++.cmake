@@ -168,7 +168,7 @@ endif()
 # Ensure cache values always match current selection
 deduplicate_flags(CMAKE_C_FLAGS)
 deduplicate_flags(CMAKE_CXX_FLAGS)
-force_compiler_flags_to_cache()
+force_compiler_flags_to_cache("C;CXX")
 
 #
 # Toggle compiler flags for optional features
