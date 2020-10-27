@@ -57,11 +57,11 @@ namespace rtt_cdi_analytic {
 class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity {
 public:
   // Useful typedefs.
-  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef std::shared_ptr<const Analytic_Opacity_Model> const_SP_Model;
-  typedef std::vector<double> sf_double;
-  typedef std::string std_string;
-  typedef std::vector<char> sf_char;
+  using SP_Analytic_Model = std::shared_ptr<Analytic_Opacity_Model>;
+  using const_SP_Model = std::shared_ptr<const Analytic_Opacity_Model>;
+  using sf_double = std::vector<double>;
+  using std_string = std::string;
+  using sf_char = std::vector<char>;
 
 private:
   // Analytic opacity model.

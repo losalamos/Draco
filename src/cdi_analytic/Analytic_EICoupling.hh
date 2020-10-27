@@ -45,10 +45,10 @@ namespace rtt_cdi_analytic {
 class Analytic_EICoupling : public rtt_cdi::EICoupling {
 public:
   // Useful typedefs.
-  typedef std::shared_ptr<Analytic_EICoupling_Model> SP_Analytic_Model;
-  typedef std::shared_ptr<const Analytic_EICoupling_Model> const_SP_Model;
-  typedef std::vector<double> sf_double;
-  typedef std::vector<char> sf_char;
+  using SP_Analytic_Model = std::shared_ptr<Analytic_EICoupling_Model>;
+  using const_SP_Model = std::shared_ptr<const Analytic_EICoupling_Model>;
+  using sf_double = std::vector<double>;
+  using sf_char = std::vector<char>;
 
 private:
   // Analytic EICoupling model.

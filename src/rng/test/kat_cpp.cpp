@@ -91,7 +91,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace std;
 
-typedef map<pair<method_e, unsigned>, void (*)(kat_instance *)> genmap_t;
+using genmap_t = map<pair<method_e, unsigned int>, void (*)(kat_instance *)>;
 genmap_t genmap;
 
 void dev_execute_tests(kat_instance *tests, unsigned ntests) {

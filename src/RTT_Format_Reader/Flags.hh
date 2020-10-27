@@ -28,10 +28,10 @@ namespace rtt_RTT_Format_Reader {
 class Flags {
 
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<string> vector_str;
-  typedef std::vector<int> vector_int;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_str = std::vector<string>;
+  using vector_int = std::vector<int>;
 
   size_t nflags;
   string name;

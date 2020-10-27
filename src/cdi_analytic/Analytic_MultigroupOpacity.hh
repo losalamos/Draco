@@ -47,10 +47,10 @@ namespace rtt_cdi_analytic {
 class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 public:
   // Useful typedefs.
-  typedef std::vector<double> sf_double;
-  typedef std::vector<sf_double> vf_double;
-  typedef std::string std_string;
-  typedef std::vector<char> sf_char;
+  using sf_double = std::vector<double>;
+  using vf_double = std::vector<sf_double>;
+  using std_string = std::string;
+  using sf_char = std::vector<char>;
 
 private:
   // Group structure.

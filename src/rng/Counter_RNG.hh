@@ -206,7 +206,7 @@ class Counter_RNG {
   friend class Rnd_Control;
 
 public:
-  typedef ctr_type::const_iterator const_iterator;
+  using const_iterator = ctr_type::const_iterator;
 
   /*! \brief Default constructor.
    *

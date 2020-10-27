@@ -25,8 +25,8 @@ namespace rtt_RTT_Format_Reader {
 //================================================================================================//
 class NodeFlags {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
+  using ifstream = std::ifstream;
+  using string = std::string;
 
   const Dims &dims;
   std::vector<std::shared_ptr<Flags>> flagTypes;

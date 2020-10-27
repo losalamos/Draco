@@ -66,13 +66,13 @@ namespace rtt_cdi_analytic {
 class Compound_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity {
 public:
   // Useful typedefs.
-  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef std::shared_ptr<const Analytic_Opacity_Model> const_Model;
-  typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
-  typedef std::vector<double> sf_double;
-  typedef std::vector<sf_double> vf_double;
-  typedef std::string std_string;
-  typedef std::vector<char> sf_char;
+  using SP_Analytic_Model = std::shared_ptr<Analytic_Opacity_Model>;
+  using const_Model = std::shared_ptr<const Analytic_Opacity_Model>;
+  using sf_Analytic_Model = std::vector<SP_Analytic_Model>;
+  using sf_double = std::vector<double>;
+  using vf_double = std::vector<sf_double>;
+  using std_string = std::string;
+  using sf_char = std::vector<char>;
 
 private:
   // Analytic models for each group.

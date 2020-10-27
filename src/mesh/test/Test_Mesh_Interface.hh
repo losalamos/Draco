@@ -30,7 +30,7 @@ namespace rtt_mesh_test {
 
 class Test_Mesh_Interface {
 public:
-  typedef rtt_mesh::Draco_Mesh::Layout Layout;
+  using Layout = rtt_mesh::Draco_Mesh::Layout;
 
   // >>> DATA
 

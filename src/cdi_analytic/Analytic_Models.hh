@@ -89,8 +89,8 @@ enum EICoupling_Models { CONSTANT_ANALYTIC_EICOUPLING_MODEL };
 class Analytic_Opacity_Model {
 public:
   // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
@@ -320,8 +320,8 @@ public:
 class Analytic_EoS_Model {
 public:
   // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
@@ -598,8 +598,8 @@ struct find_elec_temperature_functor {
 class Analytic_EICoupling_Model {
 public:
   // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
@@ -681,8 +681,8 @@ public:
 class Analytic_Eloss_Model {
 public:
   // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.

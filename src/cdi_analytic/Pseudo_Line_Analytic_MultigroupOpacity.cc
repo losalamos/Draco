@@ -20,13 +20,13 @@ using namespace rtt_ode;
 using namespace rtt_dsxx;
 using namespace rtt_cdi;
 
-typedef Analytic_MultigroupOpacity::sf_double sf_double;
-typedef Analytic_MultigroupOpacity::vf_double vf_double;
+using sf_double = Analytic_MultigroupOpacity::sf_double;
+using vf_double = Analytic_MultigroupOpacity::vf_double;
 
 //------------------------------------------------------------------------------------------------//
 class PLP_Functor {
 public:
-  typedef double return_type;
+  using return_type = double;
 
   PLP_Functor(Pseudo_Line_Base const *ptr, double const T) : ptr_(ptr), T_(T) {}
 
@@ -44,7 +44,7 @@ double PLP_Functor::operator()(double x) {
 //------------------------------------------------------------------------------------------------//
 class PLPW_Functor {
 public:
-  typedef double return_type;
+  using return_type = double;
 
   PLPW_Functor(double const T) : T_(T) {}
 
@@ -61,7 +61,7 @@ double PLPW_Functor::operator()(double x) {
 //------------------------------------------------------------------------------------------------//
 class PLR_Functor {
 public:
-  typedef double return_type;
+  using return_type = double;
 
   PLR_Functor(Pseudo_Line_Base const *ptr, double const T) : ptr_(ptr), T_(T) {}
 
@@ -79,7 +79,7 @@ double PLR_Functor::operator()(double x) {
 //------------------------------------------------------------------------------------------------//
 class PLRW_Functor {
 public:
-  typedef double return_type;
+  using return_type = double;
 
   PLRW_Functor(double const T) : T_(T) {}
 

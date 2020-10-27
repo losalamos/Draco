@@ -48,7 +48,7 @@ private:
   // TYPEDEFS
 
   // FP is a function pointer.  This is usd for stream manipulators, such as rtt_viz::endl.
-  typedef Ensight_Stream &(*FP)(Ensight_Stream &);
+  using FP = Ensight_Stream &(*)(Ensight_Stream &);
 
   // DATA
 

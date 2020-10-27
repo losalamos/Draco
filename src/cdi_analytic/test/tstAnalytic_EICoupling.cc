@@ -28,7 +28,7 @@ using std::dynamic_pointer_cast;
 //------------------------------------------------------------------------------------------------//
 
 void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   // make an analytic model (constant ei_coupling)
   shared_ptr<Constant_Model> model(new Constant_Model(1.1));
@@ -115,7 +115,7 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void CDI_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   // cdi object
   CDI eiCouplingData;
@@ -207,7 +207,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   vector<char> packed;
 

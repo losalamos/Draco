@@ -25,7 +25,7 @@ template <> class Class_Parse_Table<Quadrature> {
 public:
   // TYPEDEFS
 
-  typedef Quadrature Return_Class;
+  using Return_Class = Quadrature;
 
   // MANAGEMENT
 

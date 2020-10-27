@@ -28,7 +28,7 @@ using std::dynamic_pointer_cast;
 //------------------------------------------------------------------------------------------------//
 
 void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   // make an analytic model (polynomial specific heats)
   // elec specific heat = a + bT^c
@@ -247,7 +247,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void CDI_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   // cdi object
   CDI eosdata;
@@ -399,7 +399,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   vector<char> packed;
 

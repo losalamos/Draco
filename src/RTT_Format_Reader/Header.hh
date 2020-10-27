@@ -22,9 +22,9 @@ namespace rtt_RTT_Format_Reader {
  */
 class Header {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<string> vector_str;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_str = std::vector<string>;
 
   string version;
   string title;
