@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:41:12 2002
  * \brief  RTT_Mesh_Reader test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
@@ -25,8 +24,7 @@ using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 
 enum Meshes { DEFINED, MESHES_LASTENTRY };
 
-bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
-                   Meshes const &meshtype);
+bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh, Meshes const &meshtype);
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -39,28 +37,26 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   // Find the mesh file
   string const inpPath = ut.getTestSourcePath();
 
-  // New meshes added to this test will have to be added to the enumeration
-  // Meshes in the header file.
+  // New meshes added to this test will have to be added to the enumeration Meshes in the header
+  // file.
   const int MAX_MESHES = 1;
   string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
   Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
-    // Construct an RTT_Mesh_Reader class object from the data in the
-    // specified mesh file.
+    // Construct an RTT_Mesh_Reader class object from the data in the specified mesh file.
     RTT_Mesh_Reader mesh(filename[mesh_number]);
     {
       ostringstream m;
-      m << "Read " << filename[mesh_number]
-        << " without coreing in or firing an assertion." << endl;
+      m << "Read " << filename[mesh_number] << " without coreing in or firing an assertion."
+        << endl;
       PASSMSG(m.str());
     }
     bool all_passed = true;
-    // The following switch allows addition of other meshes for testing,
-    // with the "DEFINED" mesh providing an example.
+    // The following switch allows addition of other meshes for testing, with the "DEFINED" mesh
+    // providing an example.
     switch (mesh_number) {
-    // Test all nested class accessor functions for a very simplistic
-    // mesh file (enum DEFINED).
+    // Test all nested class accessor functions for a very simplistic mesh file (enum DEFINED).
     case (0):
       mesh_type = DEFINED;
       all_passed = all_passed && check_virtual(ut, mesh, mesh_type);
@@ -89,8 +85,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
-                   Meshes const &meshtype) {
+bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh, Meshes const &meshtype) {
   // Save and reset at end of function
   bool unit_test_status(ut.numFails == 0 && ut.numPasses > 0);
   bool passed(true);
@@ -123,8 +118,8 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
     node_coords.push_back(coords);
     // set the coordinate units used for the nodes.
     node_coord_units = "cm";
-    // load the node numbers for the single tet cell defined in the input
-    // file (note that the node numbers are zero indexed).
+    // load the node numbers for the single tet cell defined in the input file (note that the node
+    // numbers are zero indexed).
     side_nodes.push_back(1);
     side_nodes.push_back(2);
     side_nodes.push_back(3);
@@ -151,15 +146,15 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
     side_nodes.push_back(3);
     element_nodes.push_back(side_nodes);
     side_nodes.resize(0);
-    // load the element types defined for RTT_Format according to the
-    // corresponding Element_Definition::Element_Type.
+    // load the element types defined for RTT_Format according to the corresponding
+    // Element_Definition::Element_Type.
     element_types.push_back(Element_Definition::TRI_3);
     element_types.push_back(Element_Definition::TRI_3);
     element_types.push_back(Element_Definition::TRI_3);
     element_types.push_back(Element_Definition::TRI_3);
     element_types.push_back(Element_Definition::TETRA_4);
-    // load the unique element types defined for RTT_Format according to
-    // the corresponding Element_Definition::Element_Type.
+    // load the unique element types defined for RTT_Format according to the corresponding
+    // Element_Definition::Element_Type.
     unique_element_types.push_back(Element_Definition::NODE);
     unique_element_types.push_back(Element_Definition::BAR_2);
     unique_element_types.push_back(Element_Definition::TRI_3);
@@ -199,23 +194,19 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh,
     flag_elements.insert(1);
     flag_elements.insert(2);
     flag_elements.insert(3);
-    element_sets.insert(
-        make_pair(string("boundary/reflective"), flag_elements));
+    element_sets.insert(make_pair(string("boundary/reflective"), flag_elements));
     flag_elements.erase(flag_elements.begin(), flag_elements.end());
     flag_elements.insert(0);
     element_sets.insert(make_pair(string("boundary/vacuum"), flag_elements));
     flag_elements.erase(flag_elements.begin(), flag_elements.end());
     flag_elements.insert(4);
-    element_sets.insert(
-        make_pair(string("material/control_rod"), flag_elements));
+    element_sets.insert(make_pair(string("material/control_rod"), flag_elements));
     flag_elements.erase(flag_elements.begin(), flag_elements.end());
     element_sets.insert(make_pair(string("material/shield"), flag_elements));
     flag_elements.erase(flag_elements.begin(), flag_elements.end());
-    element_sets.insert(
-        make_pair(string("rad_source/src_name1"), flag_elements));
+    element_sets.insert(make_pair(string("rad_source/src_name1"), flag_elements));
     flag_elements.insert(4);
-    element_sets.insert(
-        make_pair(string("rad_source/src_name2"), flag_elements));
+    element_sets.insert(make_pair(string("rad_source/src_name2"), flag_elements));
     flag_elements.erase(flag_elements.begin(), flag_elements.end());
     // set the mesh title
     title = "RTT_format mesh file definition, version 7.";

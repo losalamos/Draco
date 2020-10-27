@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_RTT_Format_Reader_hh
@@ -23,13 +22,12 @@ namespace rtt_RTT_Format_Reader {
 
 //================================================================================================//
 /*!
- * \brief  A generalized input routine to parse an RTT Format mesh file.
+ * \brief A generalized input routine to parse an RTT Format mesh file.
  *
- *\sa The RTT_Format_Reader class constructor automatically instantiates and
- *    executes the readMesh member function used to parse the mesh data.
- *    Accessor functions are provided for all of the remaining member classes to
- *    allow data retrieval. The \ref overview_rtt_format_reader page presents a
- *    summary of the capabilities provided by the class.
+ * \sa The RTT_Format_Reader class constructor automatically instantiates and executes the readMesh
+ *     member function used to parse the mesh data.  Accessor functions are provided for all of the
+ *     remaining member classes to allow data retrieval. The \ref overview_rtt_format_reader page
+ *     presents a summary of the capabilities provided by the class.
  */
 //================================================================================================//
 
@@ -178,18 +176,14 @@ public:
    * \brief Returns the number of node flag types.
    * \return The number of node flag types.
    */
-  size_t get_dims_nnode_flag_types() const {
-    return dims.get_nnode_flag_types();
-  }
+  size_t get_dims_nnode_flag_types() const { return dims.get_nnode_flag_types(); }
 
   /*!
    * \brief Returns the number of node flags for the specified node flag type.
    * \param i Node flag type number.
    * \return The number of node flags.
    */
-  size_t get_dims_nnode_flags(size_t i) const {
-    return dims.get_nnode_flags(i);
-  }
+  size_t get_dims_nnode_flags(size_t i) const { return dims.get_nnode_flags(i); }
 
   /*!
    * \brief Returns the number of node data fields.
@@ -205,71 +199,61 @@ public:
   size_t get_dims_nsides() const { return dims.get_nsides(); }
 
   /*!
- * \brief Returns the number of side types that are present in the "sides"
- *        block.
- * \return The number of side types.
- */
+   * \brief Returns the number of side types that are present in the "sides" block.
+   * \return The number of side types.
+   */
   size_t get_dims_nside_types() const { return dims.get_nside_types(); }
   /*!
- * \brief Returns the side type index for the specified side type.
- * \param i Side type number.
- * \return The side type index.
- */
+   * \brief Returns the side type index for the specified side type.
+   * \param i Side type number.
+   * \return The side type index.
+   */
   int get_dims_side_types(size_t i) const { return dims.get_side_types(i); }
   /*!
- * \brief Returns the number of side flag types.
- * \return The number of side flag types.
- */
-  size_t get_dims_nside_flag_types() const {
-    return dims.get_nside_flag_types();
-  }
+   * \brief Returns the number of side flag types.
+   * \return The number of side flag types.
+   */
+  size_t get_dims_nside_flag_types() const { return dims.get_nside_flag_types(); }
   /*!
- * \brief Returns the number of side flags for the specified side flag type.
- * \param i Side flag type number.
- * \return The number of side flags.
- */
-  size_t get_dims_nside_flags(size_t i) const {
-    return dims.get_nside_flags(i);
-  }
+   * \brief Returns the number of side flags for the specified side flag type.
+   * \param i Side flag type number.
+   * \return The number of side flags.
+   */
+  size_t get_dims_nside_flags(size_t i) const { return dims.get_nside_flags(i); }
   /*!
- * \brief Returns the number of side data fields.
- * \return The number of side data fields.
- */
+   * \brief Returns the number of side data fields.
+   * \return The number of side data fields.
+   */
   size_t get_dims_nside_data() const { return dims.get_nside_data(); }
 
   // dimensions cell data access
   /*!
- * \brief Returns the number of cells.
- */
+   * \brief Returns the number of cells.
+   */
   size_t get_dims_ncells() const { return dims.get_ncells(); }
   /*!
- * \brief Returns the number of cell types that are present in the "cells"
- *        block.
- * \return The number of cell types.
- */
+   * \brief Returns the number of cell types that are present in the "cells" block.
+   * \return The number of cell types.
+   */
   size_t get_dims_ncell_types() const { return dims.get_ncell_types(); }
   /*!
- * \brief Returns the cell type index for the specified cell type.
- * \param i Cell type number.
- * \return The cell type index.
- */
+   * \brief Returns the cell type index for the specified cell type.
+   * \param i Cell type number.
+   * \return The cell type index.
+   */
   int get_dims_cell_types(size_t i) const { return dims.get_cell_types(i); }
   /*!
- * \brief Returns the number of cell flag types.
- * \return The number of cell flag types.
- */
-  size_t get_dims_ncell_flag_types() const {
-    return dims.get_ncell_flag_types();
-  }
+   * \brief Returns the number of cell flag types.
+   * \return The number of cell flag types.
+   */
+  size_t get_dims_ncell_flag_types() const { return dims.get_ncell_flag_types(); }
 
   /*!
    * \brief Returns the number of cell flags for the specified cell flag type.
    * \param i Cell flag type number.
    * \return The number of cell flags.
    */
-  size_t get_dims_ncell_flags(size_t i) const {
-    return dims.get_ncell_flags(i);
-  }
+  size_t get_dims_ncell_flags(size_t i) const { return dims.get_ncell_flags(i); }
 
   /*!
    * \brief Returns the number of cell data fields.
@@ -288,9 +272,7 @@ public:
   }
 
   /*!
-   * \brief Returns the index to the node flag type that contains the
-   * specified
-   *        string.
+   * \brief Returns the index to the node flag type that contains the specified string.
    * \param desired_flag_type Flag type.
    * \return The node flag type index.
    */
@@ -299,9 +281,8 @@ public:
   }
 
   /*!
-   * \brief Returns the node flag number associated with the specified node
-   * flag
-   *        type and node flag index.
+   * \brief Returns the node flag number associated with the specified node flag type and node flag
+   *        index.
    * \param flagtype Node flag type number.
    * \param flag_index Node flag index.
    * \return The node flag number.
@@ -320,8 +301,8 @@ public:
   }
 
   /*!
-   * \brief Returns the node flag name associated with the specified node flag
-   *        type and node flag type index.
+   * \brief Returns the node flag name associated with the specified node flag type and node flag
+   *        type index.
    * \param flagtype Node flag type number.
    * \param flag_index Node flag index.
    * \return The node flag name.
@@ -341,8 +322,7 @@ public:
   }
 
   /*!
-   * \brief Returns the index to the side flag type that contains the
-   *        specified string.
+   * \brief Returns the index to the side flag type that contains the specified string.
    * \param desired_flag_type Flag type.
    * \return The side flag type index.
    */
@@ -351,8 +331,8 @@ public:
   }
 
   /*!
-   * \brief Returns the side flag number associated with the specified side
-   *        flag type and side flag index.
+   * \brief Returns the side flag number associated with the specified side flag type and side flag
+   *        index.
    * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag number.
@@ -371,8 +351,8 @@ public:
   }
 
   /*!
-   * \brief Returns the side flag name associated with the specified side flag
-   *        index and side flag type.
+   * \brief Returns the side flag name associated with the specified side flag index and side flag
+   *        type.
    * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag name.
@@ -392,8 +372,7 @@ public:
   }
 
   /*!
-   * \brief Returns the index to the cell flag type that contains the
-   *        specified string.
+   * \brief Returns the index to the cell flag type that contains the specified string.
    * \param desired_flag_type Flag type.
    * \return The cell flag type index.
    */
@@ -402,8 +381,8 @@ public:
   }
 
   /*!
-   * \brief Returns the cell flag number associated with the specified cell
-   *        flag type and cell flag index.
+   * \brief Returns the cell flag number associated with the specified cell flag type and cell flag
+   *        index.
    * \param flagtype Cell flag type number.
    * \param flag_index Cell flag index.
    * \return The cell flag number.
@@ -422,12 +401,12 @@ public:
   }
 
   /*!
- * \brief Returns the cell flag name associated with the specified cell flag
- *        type and cell flag index.
- * \param flagtype Cell flag type number.
- * \param flag_index Cell flag index.
- * \return The cell flag name.
- */
+   * \brief Returns the cell flag name associated with the specified cell flag type and cell flag
+   *        index.
+   * \param flagtype Cell flag type number.
+   * \param flag_index Cell flag index.
+   * \return The cell flag name.
+   */
   string get_cell_flags_flag_name(size_t flagtype, size_t flag_index) const {
     return spCellFlags->get_flag_name(flagtype, flag_index);
   }
@@ -502,36 +481,26 @@ public:
    * \param i Cell definition index number.
    * \return The cell definition.
    */
-  const CellDef &get_cell_defs_cell_def(int i) const {
-    return spCellDefs->get_cell_def(i);
-  }
+  const CellDef &get_cell_defs_cell_def(int i) const { return spCellDefs->get_cell_def(i); }
 
-  std::shared_ptr<CellDef> get_cell_defs_def(int i) const {
-    return spCellDefs->get_def(i);
-  }
+  std::shared_ptr<CellDef> get_cell_defs_def(int i) const { return spCellDefs->get_def(i); }
   /*!
- * \brief Returns the number of nodes associated with the specified cell
- *        definition.
- * \param i Cell definition index number.
- * \return The number of nodes comprising the cell definition.
- */
-  size_t get_cell_defs_nnodes(size_t i) const {
-    return spCellDefs->get_nnodes(i);
-  }
+   * \brief Returns the number of nodes associated with the specified cell definition.
+   * \param i Cell definition index number.
+   * \return The number of nodes comprising the cell definition.
+   */
+  size_t get_cell_defs_nnodes(size_t i) const { return spCellDefs->get_nnodes(i); }
 
   /*!
-   * \brief Returns the number of sides associated with the specified cell
-   *        definition.
+   * \brief Returns the number of sides associated with the specified cell definition.
    * \param i Cell definition index number.
    * \return The number of sides comprising the cell definition.
    */
-  size_t get_cell_defs_nsides(size_t i) const {
-    return spCellDefs->get_nsides(i);
-  }
+  size_t get_cell_defs_nsides(size_t i) const { return spCellDefs->get_nsides(i); }
 
   /*!
-   * \brief Returns the side type number associated with the specified side
-   *        index and cell definition.
+   * \brief Returns the side type number associated with the specified side index and cell
+   *        definition.
    * \param i Cell definition index number.
    * \param s Side index number.
    * \return The side type number.
@@ -541,43 +510,37 @@ public:
   }
 
   /*!
-   * \brief Returns the side definition associated with the specified cell
-   *        definition and side index with the returned cell-node indexes in
-   *        sorted order.
+   * \brief Returns the side definition associated with the specified cell definition and side index
+   *        with the returned cell-node indexes in sorted order.
    * \param i Cell definition index number.
    * \param s Side index number.
-   * \return The side definition (i.e., the cell-node indexes that comprise
-   *         the side).
+   * \return The side definition (i.e., the cell-node indexes that comprise the side).
    */
   vector_uint const &get_cell_defs_side(size_t i, size_t s) const {
     return spCellDefs->get_side(i, s);
   }
 
   /*!
-   * \brief Returns the side definition associated with the specified cell
-   *        definition and side index with the returned cell-node indexes
-   *        ordered to preserve the right hand rule for the outward-directed
-   *        normal.
+   * \brief Returns the side definition associated with the specified cell definition and side index
+   *        with the returned cell-node indexes ordered to preserve the right hand rule for the
+   *        outward-directed normal.
    * \param i Cell definition index number.
    * \param s Side index number.
-   * \return The side definition (i.e., the cell-node indexes that comprise
-   *         the side).
+   * \return The side definition (i.e., the cell-node indexes that comprise the side).
    */
   vector_uint const &get_cell_defs_ordered_side(size_t i, size_t s) const {
     return spCellDefs->get_ordered_side(i, s);
   }
 
   /*!
-   * \brief Returns the status of the flag indicating that the cell
-   * definitions
-   *        have been redefined.
+   * \brief Returns the status of the flag indicating that the cell definitions have been redefined.
    * \return The status of the redefined flag.
    */
   bool get_cell_defs_redefined() const { return spCellDefs->get_redefined(); }
 
   /*!
-   * \brief Returns the new node map for the specified cell definition when
-   *        redefinition has been performed.
+   * \brief Returns the new node map for the specified cell definition when redefinition has been
+   *        performed.
    * \param cell_def Cell definition index.
    * \return New cell definition node map.
    */
@@ -596,13 +559,10 @@ public:
    * \param node_numb Node number.
    * \return The node coordinate values.
    */
-  vector_dbl get_nodes_coords(size_t node_numb) const {
-    return spNodes->get_coords(node_numb);
-  }
+  vector_dbl get_nodes_coords(size_t node_numb) const { return spNodes->get_coords(node_numb); }
 
   /*!
-   * \brief Returns the coordinate value for the specified node and direction
-   *        (i.e., x, y, and z).
+   * \brief Returns the coordinate value for the specified node and direction (i.e., x, y, and z).
    * \param node_numb Node number.
    * \param coord_index Coordinate index number (x = 0, y = 1, z = 2).
    * \return The node coordinate value.
@@ -616,9 +576,7 @@ public:
    * \param node_numb Node number.
    * \return The node parent.
    */
-  int get_nodes_parents(size_t node_numb) const {
-    return spNodes->get_parents(node_numb);
-  }
+  int get_nodes_parents(size_t node_numb) const { return spNodes->get_parents(node_numb); }
 
   /*!
    * \brief Returns the node flag for the specified node and flag.
@@ -636,9 +594,7 @@ public:
    * \param side_numb Side number.
    * \return The side type.
    */
-  int get_sides_type(size_t side_numb) const {
-    return spSides->get_type(side_numb);
-  }
+  int get_sides_type(size_t side_numb) const { return spSides->get_type(side_numb); }
 
   /*!
    * \brief Returns the node numbers associated with each side.
@@ -651,13 +607,10 @@ public:
    * \param side_numb Side number.
    * \return The side node numbers.
    */
-  vector_uint get_sides_nodes(size_t side_numb) const {
-    return spSides->get_nodes(side_numb);
-  }
+  vector_uint get_sides_nodes(size_t side_numb) const { return spSides->get_nodes(side_numb); }
 
   /*!
-   * \brief Returns the node number associated with the specified side and
-   *        side-node index.
+   * \brief Returns the node number associated with the specified side and side-node index.
    * \param side_numb Side number.
    * \param node_numb Side-node index number.
    * \return The side node number.
@@ -682,9 +635,7 @@ public:
    * \param cell_numb Cell number.
    * \return The cell type.
    */
-  int get_cells_type(size_t cell_numb) const {
-    return spCells->get_type(cell_numb);
-  }
+  int get_cells_type(size_t cell_numb) const { return spCells->get_type(cell_numb); }
 
   /*!
    * \brief Returns all of the node numbers for each of the cells.
@@ -693,18 +644,14 @@ public:
   vector_vector_uint get_cells_nodes() const { return spCells->get_nodes(); }
 
   /*!
-   * \brief Returns all of the node numbers associated with the specified
-   *        cell.
+   * \brief Returns all of the node numbers associated with the specified cell.
    * \param cell_numb Cell number.
    * \return The cell node numbers.
    */
-  vector_uint get_cells_nodes(size_t cell_numb) const {
-    return spCells->get_nodes(cell_numb);
-  }
+  vector_uint get_cells_nodes(size_t cell_numb) const { return spCells->get_nodes(cell_numb); }
 
   /*!
-   * \brief Returns the node number associated with the specified cell and
-   *        cell-node index.
+   * \brief Returns the node number associated with the specified cell and cell-node index.
    * \param cell_numb Cell number.
    * \param node_numb Cell-node index number.
    * \return The node number.
@@ -735,9 +682,7 @@ public:
    * \param node_numb Node number.
    * \return The node data field values.
    */
-  vector_dbl get_node_data(size_t node_numb) const {
-    return spNodeData->get_data(node_numb);
-  }
+  vector_dbl get_node_data(size_t node_numb) const { return spNodeData->get_data(node_numb); }
 
   /*!
    * \brief Returns the specified data field value for the specified node.
@@ -761,9 +706,7 @@ public:
    * \param side_numb Side number.
    * \return The side data field values.
    */
-  vector_dbl get_side_data(size_t side_numb) const {
-    return spSideData->get_data(side_numb);
-  }
+  vector_dbl get_side_data(size_t side_numb) const { return spSideData->get_data(side_numb); }
 
   /*!
    * \brief Returns the specified data field value for the specified side.
@@ -787,9 +730,7 @@ public:
    * \param cell_numb Cell number.
    * \return The cell data field values.
    */
-  vector_dbl get_cell_data(size_t cell_numb) const {
-    return spCellData->get_data(cell_numb);
-  }
+  vector_dbl get_cell_data(size_t cell_numb) const { return spCellData->get_data(cell_numb); }
 
   /*!
    * \brief Returns the specified data field value for the specified cell.

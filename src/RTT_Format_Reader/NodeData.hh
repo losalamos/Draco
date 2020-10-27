@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/NodeData class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_NodeData_hh
@@ -15,8 +14,8 @@
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the
- *        nodedata block of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data specific to the nodedata block of the
+ *        mesh file.
  */
 class NodeData {
   // typedefs
@@ -30,8 +29,7 @@ class NodeData {
 
 public:
   NodeData(const Dims &dims_)
-      : dims(dims_),
-        data(dims.get_nnodes(), vector_dbl(dims.get_nnode_data())) {}
+      : dims(dims_), data(dims.get_nnodes(), vector_dbl(dims.get_nnode_data())) {}
   ~NodeData() {}
 
   void readNodeData(ifstream &meshfile);
@@ -61,9 +59,7 @@ public:
    * \param data_index Data field.
    * \return The node data field value.
    */
-  double get_data(size_t node_numb, size_t data_index) const {
-    return data[node_numb][data_index];
-  }
+  double get_data(size_t node_numb, size_t data_index) const { return data[node_numb][data_index]; }
 };
 
 } // end namespace rtt_RTT_Format_Reader

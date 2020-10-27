@@ -24,7 +24,7 @@ namespace rtt_viz {
 class Ensight_Stream;
 
 //! A specific "endl" manipulator for Ensight_Stream.
-DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
+Ensight_Stream &endl(Ensight_Stream &s);
 
 //================================================================================================//
 /*!
@@ -59,7 +59,7 @@ private:
   std::unique_ptr<std::ofstream> d_serial_stream;
 
   //! The standard stream for writing
-  std::ostream *d_stream;
+  std::ostream *d_stream{};
 
   //! If true, in binary mode.  Otherwise, ascii mode.
   bool d_binary;
@@ -105,7 +105,7 @@ public:
   Ensight_Stream &operator<<(const std::string &s);
   Ensight_Stream &operator<<(FP f);
 
-  friend DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
+  friend Ensight_Stream &endl(Ensight_Stream &s);
 
 private:
   // Does binary write of v.

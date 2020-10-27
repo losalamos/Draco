@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Dims class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_Dims_hh
@@ -22,8 +21,8 @@ namespace rtt_RTT_Format_Reader {
 //================================================================================================//
 /*!
  * \class Dims
- * \brief Controls parsing, storing, and accessing the data contained in the
- *        dimensions block of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data contained in the dimensions block of the
+ *        mesh file.
  */
 //================================================================================================//
 
@@ -66,14 +65,12 @@ class Dims {
 
 public:
   Dims(void)
-      : coor_units(std::string()), prob_time_units(std::string()),
-        ncell_defs(0), nnodes_max(0), nsides_max(0), nnodes_side_max(0),
-        ndim(0), ndim_topo(0), nnodes(0), nnode_flag_types(0),
-        nnode_flags(std::vector<int>()), nnode_data(0), nsides(0),
-        nside_types(0), side_types(std::vector<int>()), nside_flag_types(0),
-        nside_flags(std::vector<int>()), nside_data(0), ncells(0),
-        ncell_types(0), cell_types(std::vector<int>()), ncell_flag_types(0),
-        ncell_flags(std::vector<int>()), ncell_data(0) { /* empty */
+      : coor_units(std::string()), prob_time_units(std::string()), ncell_defs(0), nnodes_max(0),
+        nsides_max(0), nnodes_side_max(0), ndim(0), ndim_topo(0), nnodes(0), nnode_flag_types(0),
+        nnode_flags(std::vector<int>()), nnode_data(0), nsides(0), nside_types(0),
+        side_types(std::vector<int>()), nside_flag_types(0), nside_flags(std::vector<int>()),
+        nside_data(0), ncells(0), ncell_types(0), cell_types(std::vector<int>()),
+        ncell_flag_types(0), ncell_flags(std::vector<int>()), ncell_data(0) { /* empty */
   }
   ~Dims(void) { /*empty*/
   }
@@ -232,8 +229,8 @@ public:
    * \return The existence of the side type.
    */
   bool allowed_side_type(size_t sidetype) const {
-    return side_types.end() != std::find(side_types.begin(), side_types.end(),
-                                         static_cast<int>(sidetype));
+    return side_types.end() !=
+           std::find(side_types.begin(), side_types.end(), static_cast<int>(sidetype));
   }
   /*!
    * \brief Validates the specified cell type.
@@ -241,8 +238,8 @@ public:
    * \return The existence of the cell type.
    */
   bool allowed_cell_type(size_t celltype) const {
-    return cell_types.end() != std::find(cell_types.begin(), cell_types.end(),
-                                         static_cast<int>(celltype));
+    return cell_types.end() !=
+           std::find(cell_types.begin(), cell_types.end(), static_cast<int>(celltype));
   }
 };
 

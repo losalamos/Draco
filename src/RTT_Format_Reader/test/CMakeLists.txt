@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for RTT_Format_Reader/test.
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( RTT_Format_Reader_test CXX )
 
