@@ -156,25 +156,34 @@ void Compton_Native::broadcast_MPI(int errcode) {
   // Broadcast grids
   if (rank != bcast_rank)
     Ts_.resize(tsz);
+  Check(Ts_.size() == tsz);
   rtt_c4::broadcast(&Ts_[0], tsz, 0);
+
   if (rank != bcast_rank)
     Egs_.resize(egsz);
+  Check(Egs_.size() == egsz);
   rtt_c4::broadcast(&Egs_[0], egsz, 0);
 
   // Broadcast sparse data structures
   if (rank != bcast_rank)
     first_groups_.resize(fgsz);
+  Check(first_groups_.size() == fgsz);
   rtt_c4::broadcast(&first_groups_[0], fgsz, 0);
+
   if (rank != bcast_rank)
     indexes_.resize(isz);
+  Check(indexes_.size() == isz);
   rtt_c4::broadcast(&indexes_[0], isz, 0);
 
   // Broadcast data itself
   if (rank != bcast_rank)
     data_.resize(dsz);
+  Check(data_.size() == dsz);
   rtt_c4::broadcast(&data_[0], dsz, 0);
+
   if (rank != bcast_rank)
     derivs_.resize(dsz);
+  Check(derivs_.size() == dsz);
   rtt_c4::broadcast(&derivs_[0], dsz, 0);
 }
 

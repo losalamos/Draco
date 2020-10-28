@@ -70,35 +70,36 @@ if( USE_MDSPAN )
 endif()
 add_dir_if_exists( cdi_eospac )   # needs parser, ode, cdi
 add_dir_if_exists( cdi_ipcress )  # needs cdi
+add_dir_if_exists( compton_interface ) # needs c4, CSK
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4, mesh_element
+add_dir_if_exists( rng )          # needs ds++, device
 add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( VendorChecks ) # needs c4
 add_dir_if_exists( viz )          # needs c4
 
-if( NOT CI_CLANG_TIDY )
-add_dir_if_exists( compton_interface ) # needs c4, CSK
-add_dir_if_exists( rng )               # needs ds++, device
-add_dir_if_exists( viz )               # needs c4
 
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
+if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi_ndi )           # needs ds++, rng, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 add_dir_if_exists( special_functions ) # needs roots, units, GSL
+endif( NOT CI_CLANG_TIDY )
 
 # Level 5
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
+add_dir_if_exists( compton_tools )  # needs ds++, units, cdi_analtyic
+if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( mesh )           # needs c4, ds++, mesh_element
 add_dir_if_exists( quadrature )     # needs mesh_element, parser, special_functions
-add_dir_if_exists( compton_tools )  # needs ds++, units, cdi_analtyic
 
 # Deprecated
 add_dir_if_exists( plot2D )
