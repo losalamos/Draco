@@ -20,11 +20,11 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix, bool 
                                bool const geom, bool const decomposed) {
 
   // short-cuts
-  typedef std::vector<std::string> vec_s;
-  typedef std::vector<IT> vec_i;
-  typedef std::vector<vec_i> vec2_i;
-  typedef std::vector<double> vec_d;
-  typedef std::vector<vec_d> vec2_d;
+  using vec_s = std::vector<std::string>;
+  using vec_i = std::vector<IT>;
+  using vec2_i = std::vector<vec_i>;
+  using vec_d = std::vector<double>;
+  using vec2_d = std::vector<vec_d>;
 
   if (binary)
     std::cout << "\nGenerating binary files...\n" << std::endl;
@@ -92,10 +92,9 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix, bool 
   if (!input)
     ITFAILS;
 
-  for (size_t i = 0; i < pt_coor.size(); i++) {
-    for (size_t j = 0; j < pt_coor[i].size(); j++)
-      input >> pt_coor[i][j];
-  }
+  for (auto &vec1d : pt_coor)
+    for (auto &elem : vec1d)
+      input >> elem;
   for (size_t i = 0; i < ipar.size(); i++) {
     for (size_t j = 0; j < ipar[i].size(); j++)
       input >> ipar[i][j];

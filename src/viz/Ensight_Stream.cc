@@ -47,7 +47,7 @@ Ensight_Stream &endl(Ensight_Stream &s) {
  */
 Ensight_Stream::Ensight_Stream(const std::string &file_name, const bool binary,
                                const bool geom_file, const bool decomposed)
-    : d_decomposed_stream(), d_serial_stream(), d_stream(), d_binary(binary) {
+    : d_decomposed_stream(), d_serial_stream(), d_binary(binary) {
   if (!file_name.empty())
     open(file_name, d_binary, geom_file, decomposed);
 }
@@ -58,7 +58,7 @@ Ensight_Stream::Ensight_Stream(const std::string &file_name, const bool binary,
  *
  * Automatically closes stream, if open.
  */
-Ensight_Stream::~Ensight_Stream(void) { close(); }
+Ensight_Stream::~Ensight_Stream() { close(); }
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -82,18 +82,18 @@ void Ensight_Stream::open(const std::string &file_name, const bool binary, const
   // Open the stream.
   if (decomposed) {
     if (binary)
-      d_decomposed_stream.reset(new rtt_c4::ofpstream(file_name, std::ios::binary));
+      d_decomposed_stream = std::make_unique<rtt_c4::ofpstream>(file_name, std::ios::binary);
     else
-      d_decomposed_stream.reset(new rtt_c4::ofpstream(file_name));
+      d_decomposed_stream = std::make_unique<rtt_c4::ofpstream>(file_name);
     // set to a generic ostream
     d_stream = &*d_decomposed_stream;
   } else {
     Insist(rtt_c4::node() == 0, "Ensight_Stream, called by nonzero rank without "
                                 "the domain decomposed flag");
     if (binary)
-      d_serial_stream.reset(new std::ofstream(file_name, std::ios::binary));
+      d_serial_stream = std::make_unique<std::ofstream>(file_name, std::ios::binary);
     else
-      d_serial_stream.reset(new std::ofstream(file_name));
+      d_serial_stream = std::make_unique<std::ofstream>(file_name);
     // set to a generic ostream
     d_stream = &*d_serial_stream;
   }
@@ -122,7 +122,7 @@ void Ensight_Stream::close() {
   if (d_serial_stream) {
     d_serial_stream->close();
   }
-  d_stream = NULL;
+  d_stream = nullptr;
 }
 
 //------------------------------------------------------------------------------------------------//

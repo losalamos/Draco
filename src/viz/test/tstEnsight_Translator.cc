@@ -33,13 +33,13 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
   size_t nhexvert = 8;
   size_t nrgn = 2;
 
-  typedef vector<string> vec_s;
-  typedef vector<IT> vec_i;
-  typedef vector<vec_i> vec2_i;
-  typedef vector<vec2_i> vec3_i;
-  typedef vector<double> vec_d;
-  typedef vector<vec_d> vec2_d;
-  typedef vector<vec2_d> vec3_d;
+  using vec_s = vector<string>;
+  using vec_i = vector<IT>;
+  using vec2_i = vector<vec_i>;
+  using vec3_i = vector<vec2_i>;
+  using vec_d = vector<double>;
+  using vec2_d = vector<vec_d>;
+  using vec3_d = vector<vec2_d>;
 
   // do an Ensight Dump
   vec2_i ipar(ncells, vec_i(nhexvert));
@@ -98,9 +98,9 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
   if (!input)
     ITFAILS;
 
-  for (size_t i = 0; i < pt_coor.size(); i++)
-    for (size_t j = 0; j < pt_coor[i].size(); j++)
-      input >> pt_coor[i][j];
+  for (auto &vec1d : pt_coor)
+    for (auto &elem : vec1d)
+      input >> elem;
   for (size_t i = 0; i < ipar.size(); i++)
     for (size_t j = 0; j < ipar[i].size(); j++)
       input >> ipar[i][j];
@@ -117,11 +117,10 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, string prefix, bool const binary,
       tmp_vrtx[ipart].insert(ipar[i][j] - 1);
   }
 
-  typedef set<int>::const_iterator set_iter;
   vec2_i g_vrtx_indices(nrgn);
   for (size_t i = 0; i < nrgn; i++) {
-    for (set_iter s = tmp_vrtx[i].begin(); s != tmp_vrtx[i].end(); ++s)
-      g_vrtx_indices[i].push_back(*s);
+    for (auto &s : tmp_vrtx[i])
+      g_vrtx_indices[i].push_back(s);
   }
 
   // Create the equivalent data arrays for the write_part() versions.
