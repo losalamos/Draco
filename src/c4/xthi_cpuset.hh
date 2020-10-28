@@ -73,9 +73,9 @@ namespace rtt_c4 {
 
 #define SYSCTL_CORE_COUNT "machdep.cpu.core_count"
 
-typedef struct cpu_set {
+using cpu_set_t = struct cpu_set {
   uint64_t count;
-} cpu_set_t;
+};
 
 static inline void CPU_ZERO(cpu_set_t *cs) { cs->count = 0; }
 

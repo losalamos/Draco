@@ -161,7 +161,7 @@ template <typename T> R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue() {
 //  If W<=M then the largest value returned is the largest Ftype less than 1.0.
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
-  typedef typename make_unsigned<Itype>::type Utype;
+  using Utype = typename make_unsigned<Itype>::type;
   R123_CONSTEXPR Ftype factor =
       Ftype(1.) / (static_cast<Ftype>(maxTvalue<Utype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
@@ -189,7 +189,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
 //    and the smallest value returned is the smallest Ftype greater than -1.0.
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
-  typedef typename make_signed<Itype>::type Stype;
+  using Stype = typename make_signed<Itype>::type;
   R123_CONSTEXPR Ftype factor =
       Ftype(1.) / (Ftype(maxTvalue<Stype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
@@ -216,7 +216,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
 //   - are balanced around 0.5
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
-  typedef typename make_unsigned<Itype>::type Utype;
+  using Utype = typename make_unsigned<Itype>::type;
   R123_CONSTEXPR int excess =
       std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
   if (excess >= 0) {

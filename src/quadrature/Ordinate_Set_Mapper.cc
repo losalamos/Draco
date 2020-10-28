@@ -45,7 +45,7 @@ bool check_2(Ordinate const &ordinate) {
 #endif
 
 //------------------------------------------------------------------------------------------------//
-typedef std::pair<double, size_t> dsp;
+using dsp = std::pair<double, size_t>;
 bool bigger_pair(const dsp &d1, const dsp &d2) { return (d1.first > d2.first); }
 
 } // end anonymous namespace

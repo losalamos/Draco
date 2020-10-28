@@ -48,10 +48,8 @@ namespace rtt_mesh {
 class Draco_Mesh {
 public:
   // >>> TYPEDEFS
-  typedef rtt_mesh_element::Geometry Geometry;
-  typedef std::map<unsigned,
-                   std::vector<std::pair<unsigned, std::vector<unsigned>>>>
-      Layout;
+  using Geometry = rtt_mesh_element::Geometry;
+  using Layout = std::map<unsigned int, std::vector<std::pair<unsigned int, std::vector<unsigned int>>>>;
 
 protected:
   // >>> DATA

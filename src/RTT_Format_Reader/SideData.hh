@@ -20,10 +20,10 @@ namespace rtt_RTT_Format_Reader {
  */
 class SideData {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<double> vector_dbl;
-  typedef std::vector<std::vector<double>> vector_vector_dbl;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_dbl = std::vector<double>;
+  using vector_vector_dbl = std::vector<std::vector<double>>;
 
   const Dims &dims;
   vector_vector_dbl data;

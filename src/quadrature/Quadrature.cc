@@ -15,7 +15,7 @@
 namespace rtt_quadrature {
 
 using std::make_shared;
-typedef Ordinate_Set::Ordering Ordering;
+using Ordering = Ordinate_Set::Ordering;
 using rtt_dsxx::soft_equiv;
 
 //------------------------------------------------------------------------------------------------//

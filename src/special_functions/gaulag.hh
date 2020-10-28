@@ -36,7 +36,7 @@ template <class FieldVector>
 void gaulag(FieldVector &x, FieldVector &w, double const alf, unsigned const n) {
   using namespace std;
 
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   const unsigned MAXITS = 10;
 
