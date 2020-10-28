@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/CellData class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_CellData_hh
@@ -15,8 +14,8 @@
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the
- *        celldata block of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data specific to the celldata block of the
+ *        mesh file.
  */
 class CellData {
   // typedefs
@@ -30,8 +29,7 @@ class CellData {
 
 public:
   CellData(const Dims &dims_)
-      : dims(dims_),
-        data(dims.get_ncells(), vector_dbl(dims.get_ncell_data())) {}
+      : dims(dims_), data(dims.get_ncells(), vector_dbl(dims.get_ncell_data())) {}
   ~CellData() {}
 
   void readCellData(ifstream &meshfile);
@@ -61,9 +59,7 @@ public:
    * \param data_index Data field.
    * \return The cell data field value.
    */
-  double get_data(size_t cell_numb, size_t data_index) const {
-    return data[cell_numb][data_index];
-  }
+  double get_data(size_t cell_numb, size_t data_index) const { return data[cell_numb][data_index]; }
 };
 
 } // end namespace rtt_RTT_Format_Reader

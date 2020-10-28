@@ -31,6 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rng/config.h"
 
+/* Not our code: disable clang-tidy checks */
+#if !defined(__clang_analyzer__)
+
 #ifdef _MSC_FULL_VER
 // - 4521: Engines have multiple copy constructors, quite legal C++, disable
 //         MSVC complaint.
@@ -189,3 +192,5 @@ int main(int, char **) {
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
+
+#endif /* !defined(__clang_analyzer__) */

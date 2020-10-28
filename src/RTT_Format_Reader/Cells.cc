@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*--------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/Cells.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Cells class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Cells.hh"
@@ -14,9 +13,8 @@ namespace rtt_RTT_Format_Reader {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the cells block data from the mesh file via calls to private
- *        member functions.
- * \param meshfile Mesh file name.
+ * \brief Parses the cells block data from the mesh file via calls to private member functions.
+  * \param meshfile Mesh file name.
  */
 void Cells::readCells(ifstream &meshfile) {
   readKeyword(meshfile);
@@ -49,13 +47,11 @@ void Cells::readData(ifstream &meshfile) {
   for (size_t i = 0; i < static_cast<size_t>(dims.get_ncells()); ++i) {
     cellNum = Nodes::readNextInt(meshfile);
     // meshfile >> cellNum;
-    Insist(static_cast<size_t>(cellNum) == i + 1,
-           "Invalid mesh file: cell index out of order");
+    Insist(static_cast<size_t>(cellNum) == i + 1, "Invalid mesh file: cell index out of order");
     Check(i < cellType.size());
     meshfile >> cellType[i];
     --cellType[i];
-    Insist(dims.allowed_cell_type(cellType[i]),
-           "Invalid mesh file: illegal cell type");
+    Insist(dims.allowed_cell_type(cellType[i]), "Invalid mesh file: illegal cell type");
     Check(i < nodes.size());
     nodes[i].resize(cellDefs.get_nnodes(cellType[i]));
     for (unsigned j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j) {
@@ -63,13 +59,8 @@ void Cells::readData(ifstream &meshfile) {
       meshfile >> nodes[i][j];
       --nodes[i][j];
     }
-    // std::cout << " Read the following nodes for cell " << i << std::endl;
-    // for (unsigned j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
-    //    std::cout << " " << nodes[i][j];
-    // std::cout << std::endl;
 
-    for (size_t j = 0; j < static_cast<size_t>(dims.get_ncell_flag_types());
-         ++j) {
+    for (size_t j = 0; j < static_cast<size_t>(dims.get_ncell_flag_types()); ++j) {
       Check(j < flags[i].size());
       meshfile >> flags[i][j];
       Check(j < INT_MAX);
@@ -89,24 +80,21 @@ void Cells::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_cells",
-         "Invalid mesh file: cells block missing end");
+  Insist(dummyString == "end_cells", "Invalid mesh file: cells block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Changes the cell nodes when the cell definitions specified in the
- *        RTT_Format file have been transformed into an alternative cell
- *        definition (e.g., CYGNUS).
+ * \brief Changes the cell nodes when the cell definitions specified in the RTT_Format file have
+ *        been transformed into an alternative cell definition (e.g., CYGNUS).
  */
 void Cells::redefineCells() {
   vector_uint temp_nodes;
   for (size_t ct = 0; ct < dims.get_ncell_types(); ct++) {
     int this_cell_type = dims.get_cell_types(ct);
     vector_uint node_map(cellDefs.get_node_map(this_cell_type));
-    Insist(node_map.size() == cellDefs.get_nnodes(this_cell_type),
-           "Error in Cells redefinition.");
+    Insist(node_map.size() == cellDefs.get_nnodes(this_cell_type), "Error in Cells redefinition.");
 
     // Check to see if the nodes need to be rearranged for this cell type.
     bool redefined = false;

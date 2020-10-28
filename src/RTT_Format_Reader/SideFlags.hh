@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/SideFlags class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_SideFlags_hh
@@ -17,8 +16,8 @@
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the
- *        side flags block of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data specific to the side flags block of the
+ *        mesh file.
  */
 class SideFlags {
   // typedefs
@@ -29,8 +28,7 @@ class SideFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  SideFlags(const Dims &dims_)
-      : dims(dims_), flagTypes(dims.get_nside_flag_types()) {}
+  SideFlags(const Dims &dims_) : dims(dims_), flagTypes(dims.get_nside_flag_types()) {}
   ~SideFlags() {}
 
   void readSideFlags(ifstream &meshfile);
@@ -48,8 +46,7 @@ public:
    * \return The existance of the side flag type and number.
    */
   bool allowed_flag(size_t flagtype, int flag) const {
-    Insist(flagtype <= dims.get_nside_flag_types() - 1,
-           "Invalid side flag type number!");
+    Insist(flagtype <= dims.get_nside_flag_types() - 1, "Invalid side flag type number!");
     return flagTypes[flagtype]->allowed_flag(flag);
   }
 
@@ -59,23 +56,21 @@ public:
    * \return The side flag type name.
    */
   string get_flag_type(size_t flagtype) const {
-    Insist(flagtype <= dims.get_nside_flag_types() - 1,
-           "Invalid side flag type number!");
+    Insist(flagtype <= dims.get_nside_flag_types() - 1, "Invalid side flag type number!");
     return flagTypes[flagtype]->getFlagType();
   }
 
   int get_flag_type_index(string &desired_flag_type) const;
 
   /*!
-   * \brief Returns the side flag number associated with the specified side flag
-   *        type and side flag index.
+   * \brief Returns the side flag number associated with the specified side flag type and side flag
+   *        index.
    * \param flagtype Side flag type number.
    * \param flag_index Side flag index.
    * \return The side flag number.
    */
   int get_flag_number(size_t flagtype, size_t flag_index) const {
-    Insist(flagtype <= dims.get_nside_flag_types() - 1,
-           "Invalid side flag type number!");
+    Insist(flagtype <= dims.get_nside_flag_types() - 1, "Invalid side flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,
            "Invalid side flag number index number!");
     return flagTypes[flagtype]->getFlagNumber(flag_index);
@@ -87,20 +82,18 @@ public:
    * \return The number of side flags.
    */
   size_t get_flag_size(size_t flagtype) const {
-    Insist(flagtype <= dims.get_nside_flag_types() - 1,
-           "Invalid side flag type number!");
+    Insist(flagtype <= dims.get_nside_flag_types() - 1, "Invalid side flag type number!");
     return flagTypes[flagtype]->getFlagSize();
   }
   /*!
- * \brief Returns the side flag name associated with the specified side flag
- *        index and side flag type.
- * \param flagtype Side flag type number.
- * \param flag_index Side flag index.
- * \return The side flag name.
- */
+   * \brief Returns the side flag name associated with the specified side flag index and side flag
+   *        type.
+   * \param flagtype Side flag type number.
+   * \param flag_index Side flag index.
+   * \return The side flag name.
+   */
   string get_flag_name(size_t flagtype, size_t flag_index) const {
-    Insist(flagtype <= dims.get_nside_flag_types() - 1,
-           "Invalid side flag type number!");
+    Insist(flagtype <= dims.get_nside_flag_types() - 1, "Invalid side flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,
            "Invalid side flag name index number!");
     return flagTypes[flagtype]->getFlagName(flag_index);

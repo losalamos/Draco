@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
  * \brief  Definition of class Halton_Sequence
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rng_Halton_Sequence_hh
@@ -21,17 +20,15 @@ namespace rtt_rng {
  * \class Halton_Sequence
  * \brief Generator for a sequence of subrandom (pseudorandom) numbers.
  *
- * The Halton sequence is similar to the Sobol' sequence, but unlike the
- * Sobol' sequence, the Halton sequence does not decorrelate successive
- * iterates by using a gray code. Thus, it is not really subrandom: The
- * approximation of an integral using this sequence to generate quadrature
- * point converges as 1/N like the Sobol' sequence, but it does not do so
- * smoothly for a strongly peaked function. On the other hand, it is easy to
- * generate a Halton sequence of arbitrarily high dimension and to restart a
- * Halton sequence.
+ * The Halton sequence is similar to the Sobol' sequence, but unlike the Sobol' sequence, the Halton
+ * sequence does not decorrelate successive iterates by using a gray code. Thus, it is not really
+ * subrandom: The approximation of an integral using this sequence to generate quadrature point
+ * converges as 1/N like the Sobol' sequence, but it does not do so smoothly for a strongly peaked
+ * function. On the other hand, it is easy to generate a Halton sequence of arbitrarily high
+ * dimension and to restart a Halton sequence.
  *
- * A Halton sequence exists on the interval (0,1) for every prime integer
- * \f$p\f$. The sequence takes the form
+ * A Halton sequence exists on the interval (0,1) for every prime integer \f$p\f$. The sequence
+ * takes the form
  *
  * \f$1/p, 2/p, ..., (p-1)/p,\f$<br>
  * \f$1/p^2, (1+p)/p^2, (1+2p)/p^2, ... (1+(p-1)p)/p^2,\f$<br>
@@ -57,21 +54,17 @@ namespace rtt_rng {
  * \f$2/81, 11/81, 20/81, 29/81, 38/81, 47/81, 56/81, 65/81, 74/81,\f$
  * \f$...\f$
  *
- * These are the same points mapped by the corresponding Sobol' sequence, but
- * they are not scrambled at the lowest level using a gray code. Hence the
- * sequence is easier to generate but not truly subrandom.
- *
- */
+ * These are the same points mapped by the corresponding Sobol' sequence, but they are not scrambled
+ * at the lowest level using a gray code. Hence the sequence is easier to generate but not truly
+ * subrandom. */
 //================================================================================================//
 
-class DLL_PUBLIC_rng Halton_Sequence {
+class Halton_Sequence {
 public:
-  // NESTED CLASSES AND TYPEDEFS
-
   // CREATORS
 
   //! Default constructor for declaring arrays et al.
-  Halton_Sequence() : base_(0), count_(0), value_(0.0), n_() { /*empty*/
+  Halton_Sequence() : n_() { /*empty*/
   }
 
   //! Normal constructor.
@@ -93,15 +86,11 @@ public:
   bool check_class_invariants() const;
 
 private:
-  // NESTED CLASSES AND TYPEDEFS
-
-  // IMPLEMENTATION
-
   // DATA
 
-  unsigned base_;  // Base of the sequence
-  unsigned count_; // Current element of the sequence
-  double value_;   // Value of current element of the sequence
+  unsigned base_{0};  // Base of the sequence
+  unsigned count_{0}; // Current element of the sequence
+  double value_{0.0}; // Value of current element of the sequence
 
   std::vector<unsigned> n_; // Digits in base of current element of sequence
 };

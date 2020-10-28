@@ -20,13 +20,13 @@ using rtt_viz::Viz_Traits;
 
 template <typename T> class Test_Field {
 public:
-  typedef T value_type;
+  using value_type = T;
 
 private:
   vector<vector<T>> data;
 
 public:
-  Test_Field(const vector<vector<T>> &data_in) : data(data_in) {}
+  Test_Field(vector<vector<T>> data_in) : data(std::move(data_in)) {}
 
   T operator()(size_t i, size_t j) const { return data[i][j]; }
   size_t nrows() const { return data.size(); }
@@ -44,7 +44,7 @@ bool compare_vdf_field(int const &v1, int const &v2) { return v1 == v2; }
 // test vector traits specialization
 
 template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
-  typedef typename Viz_Traits<VVF>::elementType VVFet;
+  using VVFet = typename Viz_Traits<VVF>::elementType;
 
   VVF field(3);
 

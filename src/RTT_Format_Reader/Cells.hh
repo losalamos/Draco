@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Cells class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_Cells_hh
@@ -16,10 +15,8 @@
 #include "Nodes.hh"
 
 namespace rtt_RTT_Format_Reader {
-/*!
- * \brief Controls parsing, storing, and accessing the data specific to the
- *        cells block of the mesh file.
- */
+
+//! Controls parsing, storing, and accessing the data specific to the cells block of the mesh file.
 class Cells {
   // typedefs
   typedef std::ifstream ifstream;
@@ -37,10 +34,9 @@ class Cells {
   vector_vector_int flags;
 
 public:
-  Cells(const CellFlags &cellFlags_, const Dims &dims_,
-        const CellDefs &cellDefs_)
-      : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
-        cellType(dims.get_ncells()), nodes(dims.get_ncells()),
+  Cells(const CellFlags &cellFlags_, const Dims &dims_, const CellDefs &cellDefs_)
+      : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_), cellType(dims.get_ncells()),
+        nodes(dims.get_ncells()),
         flags(dims.get_ncells(), vector_int(dims.get_ncell_flag_types())) {}
   ~Cells() {}
 
@@ -74,15 +70,12 @@ public:
   vector_uint get_nodes(size_t cell_numb) const { return nodes[cell_numb]; }
 
   /*!
-   * \brief Returns the node number associated with the specified cell and
-   *        cell-node index.
+   * \brief Returns the node number associated with the specified cell and cell-node index.
    * \param cell_numb Cell number.
    * \param node_numb Cell-node index number.
    * \return The cell node number.
    */
-  int get_nodes(size_t cell_numb, size_t node_numb) const {
-    return nodes[cell_numb][node_numb];
-  }
+  int get_nodes(size_t cell_numb, size_t node_numb) const { return nodes[cell_numb][node_numb]; }
 
   /*!
    * \brief Returns the cell flag for the specified cell and flag index
@@ -90,9 +83,7 @@ public:
    * \param flag_numb Cell flag index.
    * \return The cell flag.
    */
-  int get_flags(size_t cell_numb, size_t flag_numb) const {
-    return flags[cell_numb][flag_numb];
-  }
+  int get_flags(size_t cell_numb, size_t flag_numb) const { return flags[cell_numb][flag_numb]; }
 };
 
 } // end namespace rtt_RTT_Format_Reader

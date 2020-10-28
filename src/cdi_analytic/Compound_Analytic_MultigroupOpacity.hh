@@ -66,13 +66,13 @@ namespace rtt_cdi_analytic {
 class Compound_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity {
 public:
   // Useful typedefs.
-  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef std::shared_ptr<const Analytic_Opacity_Model> const_Model;
-  typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
-  typedef std::vector<double> sf_double;
-  typedef std::vector<sf_double> vf_double;
-  typedef std::string std_string;
-  typedef std::vector<char> sf_char;
+  using SP_Analytic_Model = std::shared_ptr<Analytic_Opacity_Model>;
+  using const_Model = std::shared_ptr<const Analytic_Opacity_Model>;
+  using sf_Analytic_Model = std::vector<SP_Analytic_Model>;
+  using sf_double = std::vector<double>;
+  using vf_double = std::vector<sf_double>;
+  using std_string = std::string;
+  using sf_char = std::vector<char>;
 
 private:
   // Analytic models for each group.
@@ -80,10 +80,9 @@ private:
 
 public:
   // Constructor.
-  Compound_Analytic_MultigroupOpacity(
-      const sf_double &groups, const sf_Analytic_Model &models,
-      rtt_cdi::Reaction reaction_in,
-      rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
+  Compound_Analytic_MultigroupOpacity(const sf_double &groups, const sf_Analytic_Model &models,
+                                      rtt_cdi::Reaction reaction_in,
+                                      rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
 
   // Constructor for packed Analytic_Multigroup_Opacities
   explicit Compound_Analytic_MultigroupOpacity(const sf_char &packed);
@@ -97,19 +96,19 @@ public:
   // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
   // Get the group opacities.
-  sf_double getOpacity(double temperature, double density) const;
+  sf_double getOpacity(double temperature, double density) const override;
 
   // Get the group opacity fields given a field of temperatures.
-  vf_double getOpacity(const sf_double &temperature, double density) const;
+  vf_double getOpacity(const sf_double &temperature, double density) const override;
 
   // Get the group opacity fields given a field of densities.
-  vf_double getOpacity(double temperature, const sf_double &density) const;
+  vf_double getOpacity(double temperature, const sf_double &density) const override;
 
   // Get the data description of the opacity.
-  inline std_string getDataDescriptor(void) const;
+  inline std_string getDataDescriptor() const override;
 
   // Pack the Compound_Analytic_MultigroupOpacity into a character string.
-  sf_char pack(void) const;
+  sf_char pack() const override;
 };
 
 //------------------------------------------------------------------------------------------------//
@@ -129,8 +128,7 @@ Compound_Analytic_MultigroupOpacity::getDataDescriptor() const {
   else if (rxn == rtt_cdi::SCATTERING)
     descriptor = "Compound Multigroup Scattering";
   else {
-    Insist(rxn == rtt_cdi::TOTAL || rxn == rtt_cdi::ABSORPTION ||
-               rxn == rtt_cdi::SCATTERING,
+    Insist(rxn == rtt_cdi::TOTAL || rxn == rtt_cdi::ABSORPTION || rxn == rtt_cdi::SCATTERING,
            "Invalid Compound multigroup model opacity!");
   }
 

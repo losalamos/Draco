@@ -26,7 +26,7 @@ namespace rtt_cdi_analytic {
  *        rtt_cdi_analytic::Analytic_EICoupling_Model object
  */
 Analytic_EICoupling::Analytic_EICoupling(SP_Analytic_Model model_in)
-    : analytic_model(model_in) {
+    : analytic_model(std::move(model_in)) {
   Ensure(analytic_model);
 }
 
@@ -39,8 +39,7 @@ Analytic_EICoupling::Analytic_EICoupling(SP_Analytic_Model model_in)
  * that have been registered in the rtt_cdi_analytic::EICoupling_Models
  * enumeration.
  */
-Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed)
-    : analytic_model() {
+Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed) : analytic_model() {
   // the packed size must be at least 2 integers (size,
   // analytic model indicator)
   Require(packed.size() >= 2 * sizeof(int));
@@ -73,8 +72,7 @@ Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed)
 
   // now determine which analytic model we need to build
   if (indicator == CONSTANT_ANALYTIC_EICOUPLING_MODEL) {
-    analytic_model.reset(
-        new Constant_Analytic_EICoupling_Model(packed_analytic));
+    analytic_model = std::make_shared<Constant_Analytic_EICoupling_Model>(packed_analytic);
   } else {
     Insist(0, "Unregistered analytic EICoupling model!");
   }
@@ -93,7 +91,7 @@ Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed)
  *     opacity value is being requested (keV).
  * \param[in] iTemperature The electron temperature value for which an
  *     opacity value is being requested (keV).
- * \param[in] density The density value for which an opacity 
+ * \param[in] density The density value for which an opacity
  *     value is being requested (g/cm^3).
  * \param[in] w_e is the plasma electron frequency (as defined by Eq. 3.41 in
  *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
@@ -102,18 +100,16 @@ Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed)
  * \return A electron-ion coupling coeffiecent (1/s).
  */
 double Analytic_EICoupling::getElectronIonCoupling(const double eTemperature,
-                                                   const double iTemperature,
-                                                   const double density,
-                                                   const double w_e,
-                                                   const double w_i) const {
+                                                   const double iTemperature, const double density,
+                                                   const double w_e, const double w_i) const {
   Require(eTemperature >= 0.0);
   Require(iTemperature >= 0.0);
   Require(density >= 0.0);
   Require(w_e >= 0.0);
   Require(w_i >= 0.0);
 
-  double ei_coupling = analytic_model->calculate_ei_coupling(
-      eTemperature, iTemperature, density, w_e, w_i);
+  double ei_coupling =
+      analytic_model->calculate_ei_coupling(eTemperature, iTemperature, density, w_e, w_i);
 
   Ensure(ei_coupling >= 0.0);
   return ei_coupling;
@@ -127,7 +123,7 @@ double Analytic_EICoupling::getElectronIonCoupling(const double eTemperature,
  *     opacity value is being requested (keV).
  * \param[in] vitemperature The electron temperature value for which an
  *     opacity value is being requested (keV).
- * \param[in] vdensity The density value for which an opacity 
+ * \param[in] vdensity The density value for which an opacity
  *     value is being requested (g/cm^3).
  * \param[in] vw_e is the plasma electron frequency (as defined by Eq. 3.41 in
  *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
@@ -137,8 +133,7 @@ double Analytic_EICoupling::getElectronIonCoupling(const double eTemperature,
 
  */
 Analytic_EICoupling::sf_double Analytic_EICoupling::getElectronIonCoupling(
-    const std::vector<double> &vetemperature,
-    const std::vector<double> &vitemperature,
+    const std::vector<double> &vetemperature, const std::vector<double> &vitemperature,
     const std::vector<double> &vdensity, const std::vector<double> &vw_e,
     const std::vector<double> &vw_i) const {
   Require(vetemperature.size() == vdensity.size());
@@ -157,8 +152,8 @@ Analytic_EICoupling::sf_double Analytic_EICoupling::getElectronIonCoupling(
     Check(vw_e[i] >= 0.0);
     Check(vw_i[i] >= 0.0);
 
-    ei_coupling[i] = analytic_model->calculate_ei_coupling(
-        vetemperature[i], vitemperature[i], vdensity[i], vw_e[i], vw_i[i]);
+    ei_coupling[i] = analytic_model->calculate_ei_coupling(vetemperature[i], vitemperature[i],
+                                                           vdensity[i], vw_e[i], vw_i[i]);
 
     Check(ei_coupling[i] >= 0.0);
   }
@@ -199,8 +194,8 @@ Analytic_EICoupling::sf_char Analytic_EICoupling::pack() const {
   packer << static_cast<int>(anal_model.size());
 
   // now pack the anal model
-  for (size_t i = 0; i < anal_model.size(); i++)
-    packer << anal_model[i];
+  for (auto &am : anal_model)
+    packer << am;
 
   Ensure(packer.get_ptr() == &packed[0] + size);
   return packed;

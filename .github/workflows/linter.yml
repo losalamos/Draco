@@ -53,7 +53,7 @@ jobs:
         env:
           DEFAULT_BRANCH: develop
           ERROR_ON_MISSING_EXEC_BIT: true
-          FILTER_REGEX_EXCLUDE: .*/.*.cc
+          FILTER_REGEX_EXCLUDE: .*.cc
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYTHON_FLAKE8_CONFIG_FILE: .flake8
           VALIDATE_ALL_CODEBASE: false

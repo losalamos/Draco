@@ -25,8 +25,7 @@ namespace rtt_cdi_analytic {
  * \param model_in shared_ptr to a derived
  *        rtt_cdi_analytic::Analytic_EoS_Model object
  */
-Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
-    : analytic_model(model_in) {
+Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in) : analytic_model(std::move(model_in)) {
   Ensure(analytic_model);
 }
 
@@ -71,8 +70,7 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed) : analytic_model() {
 
   // now determine which analytic model we need to build
   if (indicator == POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL) {
-    analytic_model.reset(
-        new Polynomial_Specific_Heat_Analytic_EoS_Model(packed_analytic));
+    analytic_model = std::make_shared<Polynomial_Specific_Heat_Analytic_EoS_Model>(packed_analytic);
   } else {
     Insist(0, "Unregistered analytic EoS model!");
   }
@@ -96,13 +94,11 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed) : analytic_model() {
  * \param rho density in g/cm^3
  * \return electron internal energy in kJ/g
  */
-double Analytic_EoS::getSpecificElectronInternalEnergy(double T,
-                                                       double rho) const {
+double Analytic_EoS::getSpecificElectronInternalEnergy(double T, double rho) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
 
-  double internal_energy =
-      analytic_model->calculate_electron_internal_energy(T, rho);
+  double internal_energy = analytic_model->calculate_electron_internal_energy(T, rho);
 
   Ensure(internal_energy >= 0.0);
   return internal_energy;
@@ -124,8 +120,7 @@ double Analytic_EoS::getSpecificElectronInternalEnergy(double T,
  * \return electron internal energy field in kJ/g
  */
 Analytic_EoS::sf_double
-Analytic_EoS::getSpecificElectronInternalEnergy(const sf_double &T,
-                                                const sf_double &rho) const {
+Analytic_EoS::getSpecificElectronInternalEnergy(const sf_double &T, const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return electron internal energy field
@@ -136,8 +131,7 @@ Analytic_EoS::getSpecificElectronInternalEnergy(const sf_double &T,
     Check(T[i] >= 0.0);
     Check(rho[i] >= 0.0);
 
-    internal_energy[i] =
-        analytic_model->calculate_electron_internal_energy(T[i], rho[i]);
+    internal_energy[i] = analytic_model->calculate_electron_internal_energy(T[i], rho[i]);
 
     Check(internal_energy[i] >= 0.0);
   }
@@ -163,8 +157,7 @@ double Analytic_EoS::getSpecificIonInternalEnergy(double T, double rho) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
 
-  double internal_energy =
-      analytic_model->calculate_ion_internal_energy(T, rho);
+  double internal_energy = analytic_model->calculate_ion_internal_energy(T, rho);
 
   Ensure(internal_energy >= 0.0);
   return internal_energy;
@@ -185,9 +178,8 @@ double Analytic_EoS::getSpecificIonInternalEnergy(double T, double rho) const {
  * \param rho density field in g/cm^3
  * \return ion internal energy field in kJ/g
  */
-Analytic_EoS::sf_double
-Analytic_EoS::getSpecificIonInternalEnergy(const sf_double &T,
-                                           const sf_double &rho) const {
+Analytic_EoS::sf_double Analytic_EoS::getSpecificIonInternalEnergy(const sf_double &T,
+                                                                   const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return ion internal energy field
@@ -198,8 +190,7 @@ Analytic_EoS::getSpecificIonInternalEnergy(const sf_double &T,
     Check(T[i] >= 0.0);
     Check(rho[i] >= 0.0);
 
-    internal_energy[i] =
-        analytic_model->calculate_ion_internal_energy(T[i], rho[i]);
+    internal_energy[i] = analytic_model->calculate_ion_internal_energy(T[i], rho[i]);
 
     Check(internal_energy[i] >= 0.0);
   }
@@ -225,8 +216,7 @@ double Analytic_EoS::getElectronHeatCapacity(double T, double rho) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
 
-  double heat_capacity =
-      analytic_model->calculate_electron_heat_capacity(T, rho);
+  double heat_capacity = analytic_model->calculate_electron_heat_capacity(T, rho);
 
   Ensure(heat_capacity >= 0.0);
   return heat_capacity;
@@ -247,9 +237,8 @@ double Analytic_EoS::getElectronHeatCapacity(double T, double rho) const {
  * \param rho density field in g/cm^3
  * \return electron heat capacity field in kJ/g/keV
  */
-Analytic_EoS::sf_double
-Analytic_EoS::getElectronHeatCapacity(const sf_double &T,
-                                      const sf_double &rho) const {
+Analytic_EoS::sf_double Analytic_EoS::getElectronHeatCapacity(const sf_double &T,
+                                                              const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return electron heat capacity field
@@ -260,8 +249,7 @@ Analytic_EoS::getElectronHeatCapacity(const sf_double &T,
     Check(T[i] >= 0.0);
     Check(rho[i] >= 0.0);
 
-    heat_capacity[i] =
-        analytic_model->calculate_electron_heat_capacity(T[i], rho[i]);
+    heat_capacity[i] = analytic_model->calculate_electron_heat_capacity(T[i], rho[i]);
 
     Check(heat_capacity[i] >= 0.0);
   }
@@ -308,9 +296,8 @@ double Analytic_EoS::getIonHeatCapacity(double T, double rho) const {
  * \param rho density field in g/cm^3
  * \return ion heat capacity field in kJ/g/keV
  */
-Analytic_EoS::sf_double
-Analytic_EoS::getIonHeatCapacity(const sf_double &T,
-                                 const sf_double &rho) const {
+Analytic_EoS::sf_double Analytic_EoS::getIonHeatCapacity(const sf_double &T,
+                                                         const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return ion heat capacity field
@@ -321,8 +308,7 @@ Analytic_EoS::getIonHeatCapacity(const sf_double &T,
     Check(T[i] >= 0.0);
     Check(rho[i] >= 0.0);
 
-    heat_capacity[i] =
-        analytic_model->calculate_ion_heat_capacity(T[i], rho[i]);
+    heat_capacity[i] = analytic_model->calculate_ion_heat_capacity(T[i], rho[i]);
 
     Check(heat_capacity[i] >= 0.0);
   }
@@ -370,9 +356,8 @@ double Analytic_EoS::getNumFreeElectronsPerIon(double T, double rho) const {
  * \param rho density field in g/cm^3
  * \return number of free electrons per ion
  */
-Analytic_EoS::sf_double
-Analytic_EoS::getNumFreeElectronsPerIon(const sf_double &T,
-                                        const sf_double &rho) const {
+Analytic_EoS::sf_double Analytic_EoS::getNumFreeElectronsPerIon(const sf_double &T,
+                                                                const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return ion heat capacity field
@@ -406,13 +391,11 @@ Analytic_EoS::getNumFreeElectronsPerIon(const sf_double &T,
  * \param rho density in g/cm^3
  * \return electron thermal conductivity in /s/cm
  */
-double Analytic_EoS::getElectronThermalConductivity(double T,
-                                                    double rho) const {
+double Analytic_EoS::getElectronThermalConductivity(double T, double rho) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
 
-  double thermal_conductivity =
-      analytic_model->calculate_elec_thermal_conductivity(T, rho);
+  double thermal_conductivity = analytic_model->calculate_elec_thermal_conductivity(T, rho);
 
   Ensure(thermal_conductivity >= 0.0);
   return thermal_conductivity;
@@ -434,9 +417,8 @@ double Analytic_EoS::getElectronThermalConductivity(double T,
  * \param rho density field in g/cm^3
  * \return electron heat capacity field in /s/cm
  */
-Analytic_EoS::sf_double
-Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
-                                             const sf_double &rho) const {
+Analytic_EoS::sf_double Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
+                                                                     const sf_double &rho) const {
   Require(T.size() == rho.size());
 
   // define the return electron thermal conductivity field
@@ -447,8 +429,7 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
     Check(T[i] >= 0.0);
     Check(rho[i] >= 0.0);
 
-    thermal_conductivity[i] =
-        analytic_model->calculate_elec_thermal_conductivity(T[i], rho[i]);
+    thermal_conductivity[i] = analytic_model->calculate_elec_thermal_conductivity(T[i], rho[i]);
 
     Check(thermal_conductivity[i] >= 0.0);
   }
@@ -467,12 +448,11 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
  *
  * \param rho density field in g/cm^3 (unused by the current analytic models)
  * \param Ue specific electron energy (kJ/g)
- * \param Tguess An electron temperature (keV) guess that can be used to help 
+ * \param Tguess An electron temperature (keV) guess that can be used to help
  *        the root finder.
  * \return electron temperature in keV.
  */
-double Analytic_EoS::getElectronTemperature(double rho, double Ue,
-                                            double Tguess) const {
+double Analytic_EoS::getElectronTemperature(double rho, double Ue, double Tguess) const {
   Require(Tguess >= 0.0);
   Require(Ue >= 0.0);
   Require(rho > 0.0);
@@ -498,8 +478,7 @@ double Analytic_EoS::getElectronTemperature(double rho, double Ue,
  *        root finder.
  * \return ion temperature in keV.
  */
-double Analytic_EoS::getIonTemperature(double rho, double Uic,
-                                       double Tguess) const {
+double Analytic_EoS::getIonTemperature(double rho, double Uic, double Tguess) const {
   Require(Tguess >= 0.0);
   Require(Uic >= 0.0);
   Require(rho > 0.0);
@@ -543,8 +522,8 @@ Analytic_EoS::sf_char Analytic_EoS::pack() const {
   packer << static_cast<int>(anal_model.size());
 
   // now pack the anal model
-  for (size_t i = 0; i < anal_model.size(); i++)
-    packer << anal_model[i];
+  for (auto &am : anal_model)
+    packer << am;
 
   Ensure(packer.get_ptr() == &packed[0] + size);
   return packed;

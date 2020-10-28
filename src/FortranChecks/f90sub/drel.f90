@@ -1,12 +1,11 @@
-!----------------------------------*-F90-*----------------------------------
+!---------------------------------------------*-F90-*---------------------------------------------!
 !
 ! file   FortranCheck/f90sub/drel.f90
 ! author Kelly Thompson
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 main linking against C++ library and calling a C++ function.
-! note   Copyright (c) 2016-2020 Triad National Security, LLC.
-!        All rights reserved.
-!---------------------------------------------------------------------------
+! note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
+!-------------------------------------------------------------------------------------------------!
 
 ! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 !      http://fortranwiki.org/fortran/show/Generating+C+Interfaces
@@ -134,6 +133,6 @@ subroutine drelf90(nf) bind(c, name="drelf90")
 
 end subroutine drelf90
 
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!
 ! end of drel.f90
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!

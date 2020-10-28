@@ -1,160 +1,37 @@
 ##-*- Mode: sh -*-
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##
 ## .bashrc_darwin_fe - my bash configuration file upon bash login
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##
 
 #verbose=true
 if test -n "$verbose"; then
   echo "In .bashrc_darwin_fe"
 fi
 
-# sfeatures | grep <feature:=knl> <-- look for "idle" (not "down" and not "drain")
-# salloc -N 1 -p power8+
-# salloc -N 1 -p knl-quad_flat
-
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##
 ## ENVIRONMENTS
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##
 
 if [[ ! ${VENDOR_DIR} ]]; then
   export VENDOR_DIR=/usr/projects/draco/vendors
   export PATH=$PATH:$VENDOR_DIR/bin
 fi
 
-# modules
-export DRACO_ARCH=`/usr/projects/draco/vendors/bin/target_arch`
-
-if test -n "$MODULESHOME"; then
-
-    module use --append ${VENDOR_DIR}/user_contrib
-    module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
-    module load user_contrib
-
-    echo -e "\nLoading modules for architecture type $DRACO_ARCH. \n"
-
-    case $DRACO_ARCH in
-      arm)
-        cflavor="gcc-8.2.0"
-        mflavor="$cflavor-openmpi-3.1.3"
-        lflavor="lapack-3.8.0"
-        noflavor="git gcc/8.2.0 ndi"
-        compflavor="cmake/3.17.0 gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.3-gcc_8.2.0"
-        mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lflavor trilinos/12.14.1-$mflavor-$lflavor"
-        ec_mf="csk/0.5.0-$cflavor ndi/2.1.3-$cflavor"
-        # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
-        export OMPI_MCA_btl=^openib
-        export UCX_NET_DEVICES=mlx5_0:1
-      ;;
-
-      x86_64)
-        cflavor="gcc-7.3.0"
-        mflavor="$cflavor-openmpi-3.1.3"
-        lapackflavor="lapack-3.8.0"
-        noflavor="emacs git ack gcc/7.3.0 python/3.5.1"
-        if [[ ${SLURM_JOB_PARTITION} =~ "volta" || ${SLURM_JOB_PARTITION} =~ "gpu" ]]; then
-          # If we have GPUs on this node, then load the cuda toolkit module by default
-          noflavor+=" cuda/10.1"
-          cudaflavor="-cuda-10.1"
-        fi
-        compflavor="cmake/3.17.0 gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.3-gcc_7.3.0"
-        mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lapackflavor trilinos/12.14.1-$mflavor-$lapackflavor"
-        ec_mf="ndi csk/0.5.0-$cflavor"
-        # Add clang-format (version 6) to the default environment.
-        if [[ -x /projects/opt/centos7/clang/6.0.0/bin/clang-format ]]; then
-          export PATH=$PATH:/projects/opt/centos7/clang/6.0.0/bin
-        fi
-      ;;
-
-      knl)
-        module unuse ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
-        module use --append ${VENDOR_DIR}-ec/Modules/x86_64
-        cflavor="gcc-7.3.0"
-        mflavor="$cflavor-openmpi-3.1.3"
-        lapackflavor="lapack-3.8.0"
-        noflavor="git random123 cmake gcc/7.3.0"
-        compflavor="cmake/3.17.0 gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.4.0-$cflavor openmpi/3.1.3-gcc_7.3.0"
-        mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-$lapackflavor trilinos/12.14.1-$mflavor-$lapackflavor"
-        ec_mf="ndi csk/0.5.0-$cflavor"
-        # Add clang-format (version 6) to the default environment.
-        if [[ -x /projects/opt/centos7/clang/6.0.0/bin/clang-format ]]; then
-          export PATH=$PATH:/projects/opt/centos7/clang/6.0.0/bin
-        fi
-        ;;
-#       power8*)
-#         cflavor="gcc-7.1.0"
-#         mflavor="$cflavor-openmpi-2.1.0"
-#         noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
-#         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
-#         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
-#         superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
-#         ;;
-      power9*)
-        cflavor="gcc-7.3.0"
-        mflavor="$cflavor-openmpi-3.1.3"
-        lflavor="lapack-3.8.0"
-        noflavor="git gcc/7.3.0 cuda/11.0 cmake/3.17.3 random123 numdiff"
-        compflavor="eospac/6.4.0-$cflavor gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor openmpi/p9/3.1.3-gcc_7.3.0"
-        mpiflavor="libquo/1.3-$mflavor parmetis/4.0.3-$mflavor superlu-dist/5.4.0-${mflavor}-$lflavor trilinos/12.14.1-${mflavor}-$lflavor caliper/2.0.1-$mflavor"
-        # These aren't built for power architectures?
-        ec_mf="csk/0.5.0-$cflavor ndi"
-
-        # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
-        # eliminates warnings: "there are more than one active ports on host"
-        # export OMPI_MCA_btl=^openib
-        export UCX_NET_DEVICES=mlx5_0:1
-        export UCX_WARN_UNUSED_ENV_VARS=n
-        export OMPI_MCA_pml=ob1
-        export OMPI_MCA_btl=self,vader
-        ;;
-    esac
-    export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
-
-  function dracoenv ()
-  {
-    for m in $dracomodules; do
-      module load $m
-    done
-    export CXX=`which g++`
-    export CC=`which gcc`
-    export FC=`which gfortran`
-    export MPIEXEC_EXECUTABLE=`which mpirun`
-
-    # CMake-3.12+ doesn't want X_ROOT variables
-    unset MPI_ROOT
-
-    # Previously, we used Darwin for nightly regressions with Intel-MPI.  When
-    # Intel-MPI is selected, these variables must be set:
-
-    #export CXX=`which mpiicpc`
-    #export CC=`which mpiicc`
-    #export FC=`which mpiifort`
-
-    # only for Intel-MPI
-    #echo "mpd --daemon"
-    #mpd --daemon
-  }
-
-  function rmdracoenv ()
-  {
-    unset CXX
-    unset CC
-    unset FC
-    unset MPIEXEC_EXECUTABLE
-    # unload in reverse order.
-    mods=( ${dracomodules} )
-    for ((i=${#mods[@]}-1; i>=0; i--)); do
-      loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
-      if test $loaded = 1; then
-        module unload ${mods[$i]}
+export DRACO_ARCH=$(/usr/projects/draco/vendors/bin/target_arch)
+if [[ -n "$MODULESHOME" ]]; then
+  module use --append /projects/draco/Modules
+  case $DRACO_ARCH in
+    arm)     module load draco/arm-gcc820 ;;
+    power9*) module load draco/power9-gcc730 ;;
+    x86_64)
+      module load draco/x64-gcc730
+      if [[ "${SLURM_JOB_PARTITION}" =~ "volta" || "${SLURM_JOB_PARTITION}" =~ "gpu" ]]; then
+        module load cuda/10.2
       fi
-    done
-  }
-
+      ;;
+  esac
 fi
 
-# Avoid printing trigraph chars to the screen (eg: ���)
-export LANG=en_US
-
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##
 ## end of .bashrc_darwin_fe
-##---------------------------------------------------------------------------##
+##-----------------------------------------------------------------------------------------------##

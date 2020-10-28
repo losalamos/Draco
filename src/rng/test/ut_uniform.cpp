@@ -30,7 +30,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/* ut_uniform.cpp:   unit test for uniform.hpp.  
+/* ut_uniform.cpp:   unit test for uniform.hpp.
 
     This is a "sanity test" of u01, uneg11 and u01fixedpt.  We confirm
     that a histogram of few thousand calls to each of the functions
@@ -48,6 +48,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "rng/config.h"
+
+/* suppress clang-tidy warnings from this file imported from R123 */
+#if !defined(__clang_analyzer__)
 
 #ifdef _MSC_FULL_VER
 // - 4521: Engines have multiple copy constructors, quite legal C++, disable
@@ -208,6 +211,8 @@ int main(int argc, char **argv) {
 
   return !!nfail;
 }
+
+#endif /* !defined(__clang_analyzer__) */
 
 //------------------------------------------------------------------------------------------------//
 // end ut_uniform.cpp

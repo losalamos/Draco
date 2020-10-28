@@ -3,8 +3,7 @@
  * \file   rng/test/tstRnd_Control_Inline.cc
  * \author Paul Henning
  * \brief  Rnd_Control test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -27,21 +26,15 @@ void test_control(UnitTest &ut) {
   Rnd_Control control1(seed1);
   Rnd_Control control2(seed2);
 
-  if (control1.get_max_streams() != std::numeric_limits<uint64_t>::max())
-    ITFAILS;
-  if (control2.get_max_streams() != std::numeric_limits<uint64_t>::max())
-    ITFAILS;
-  if (control1.get_seed() != seed1)
-    ITFAILS;
-  if (control2.get_seed() != seed2)
-    ITFAILS;
-  if (control1.get_num() != 0)
-    ITFAILS;
-  if (control2.get_num() != 0)
-    ITFAILS;
+  FAIL_IF_NOT(control1.get_max_streams() == std::numeric_limits<uint64_t>::max());
+  FAIL_IF_NOT(control2.get_max_streams() == std::numeric_limits<uint64_t>::max());
+  FAIL_IF_NOT(control1.get_seed() == seed1);
+  FAIL_IF_NOT(control2.get_seed() == seed2);
+  FAIL_IF_NOT(control1.get_num() == 0);
+  FAIL_IF_NOT(control2.get_num() == 0);
 
-  // Create a third controller with the same seed as controller1, but starting
-  // with a different stream number.
+  // Create a third controller with the same seed as controller1, but starting with a different
+  // stream number.
   uint64_t streamnum = 2000;
   Rnd_Control control3(seed1, streamnum);
 
@@ -53,74 +46,48 @@ void test_control(UnitTest &ut) {
     control2.initialize(rng2);
     control3.initialize(rng3);
 
-    // Both rng1 and rng2 should be on stream number i.  control1 and control2
-    // should be on stream number i+1.  rng3 should be on stream number
-    // i+streamnum.  control3 should be on stream number i+streamnum+1.  Other
-    // controller state should not have changed.  None of the generators should
-    // match each other.
-    if (rng1.get_num() != i)
-      ITFAILS;
-    if (rng2.get_num() != i)
-      ITFAILS;
-    if (rng3.get_num() != i + streamnum)
-      ITFAILS;
+    // Both rng1 and rng2 should be on stream number i.  control1 and control2 should be on stream
+    // number i+1.  rng3 should be on stream number i+streamnum.  control3 should be on stream
+    // number i+streamnum+1.  Other controller state should not have changed.  None of the
+    // generators should match each other.
+    FAIL_IF_NOT(rng1.get_num() == i);
+    FAIL_IF_NOT(rng2.get_num() == i);
+    FAIL_IF_NOT(rng3.get_num() == i + streamnum);
 
-    if (rng1 == rng2)
-      ITFAILS;
-    if (rng1 == rng3)
-      ITFAILS;
-    if (rng2 == rng3)
-      ITFAILS;
+    FAIL_IF(rng1 == rng2);
+    FAIL_IF(rng1 == rng3);
+    FAIL_IF(rng2 == rng3);
 
-    if (control1.get_num() != i + 1)
-      ITFAILS;
-    if (control2.get_num() != i + 1)
-      ITFAILS;
-    if (control3.get_num() != i + streamnum + 1)
-      ITFAILS;
+    FAIL_IF_NOT(control1.get_num() == i + 1);
+    FAIL_IF_NOT(control2.get_num() == i + 1);
+    FAIL_IF_NOT(control3.get_num() == i + streamnum + 1);
 
-    if (control1.get_max_streams() != std::numeric_limits<uint64_t>::max())
-      ITFAILS;
-    if (control2.get_max_streams() != std::numeric_limits<uint64_t>::max())
-      ITFAILS;
-    if (control3.get_max_streams() != std::numeric_limits<uint64_t>::max())
-      ITFAILS;
-    if (control1.get_seed() != seed1)
-      ITFAILS;
-    if (control2.get_seed() != seed2)
-      ITFAILS;
-    if (control3.get_seed() != seed1)
-      ITFAILS;
+    FAIL_IF_NOT(control1.get_max_streams() == std::numeric_limits<uint64_t>::max());
+    FAIL_IF_NOT(control2.get_max_streams() == std::numeric_limits<uint64_t>::max());
+    FAIL_IF_NOT(control3.get_max_streams() == std::numeric_limits<uint64_t>::max());
+    FAIL_IF_NOT(control1.get_seed() == seed1);
+    FAIL_IF_NOT(control2.get_seed() == seed2);
+    FAIL_IF_NOT(control3.get_seed() == seed1);
   }
 
-  // Create another controller with the same seed and control number as the
-  // original controller.
+  // Create another controller with the same seed and control number as the original controller.
   Rnd_Control control4(seed1);
-
-  if (control4.get_num() != 0)
-    ITFAILS;
+  FAIL_IF_NOT(control4.get_num() == 0);
 
   // Set control4's next stream number manually.
   control4.set_num(numiter - 1);
-
-  if (control4.get_num() != numiter - 1)
-    ITFAILS;
+  FAIL_IF_NOT(control4.get_num() == numiter - 1);
 
   // Initialize a generator.
   Counter_RNG rng4;
   control4.initialize(rng4);
 
   // rng4 should match rng1 but not rng2 or rng3.
-  if (rng4.get_num() != numiter - 1)
-    ITFAILS;
-  if (rng4 != rng1)
-    ITFAILS;
-  if (rng4 == rng2)
-    ITFAILS;
-  if (rng4 == rng3)
-    ITFAILS;
-  if (control4.get_num() != numiter)
-    ITFAILS;
+  FAIL_IF_NOT(rng4.get_num() == numiter - 1);
+  FAIL_IF_NOT(rng4 == rng1);
+  FAIL_IF(rng4 == rng2);
+  FAIL_IF(rng4 == rng3);
+  FAIL_IF_NOT(control4.get_num() == numiter);
 
   if (ut.numFails == 0)
     PASSMSG("test_control passed");
@@ -140,11 +107,10 @@ void test_exceptions(UnitTest &ut) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF(!caught);
 
-  // Try to create a controller with an initial stream number greater than its
-  // maximum number of streams.
+  // Try to create a controller with an initial stream number greater than its maximum number of
+  // streams.
   caught = false;
   try {
     Rnd_Control control(0, 1001, 1000);
@@ -152,8 +118,7 @@ void test_exceptions(UnitTest &ut) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF(!caught);
 
   // Create a controller.
   Rnd_Control control(0, 0);
@@ -166,11 +131,10 @@ void test_exceptions(UnitTest &ut) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF(!caught);
 
-  // Set the stream number to std::numeric_limits<uint64_t>::max() - 1, then try
-  // to initialize two generators.  One should succeed.
+  // Set the stream number to std::numeric_limits<uint64_t>::max() - 1, then try to initialize two
+  // generators.  One should succeed.
   control.set_num(std::numeric_limits<uint64_t>::max() - 1);
   caught = false;
   uint64_t num_rngs = 0;
@@ -179,23 +143,18 @@ void test_exceptions(UnitTest &ut) {
       Counter_RNG rng;
       control.initialize(rng);
 
-      if (rng.get_num() != std::numeric_limits<uint64_t>::max() - 1)
-        ITFAILS;
+      FAIL_IF_NOT(rng.get_num() == std::numeric_limits<uint64_t>::max() - 1);
     }
   } catch (rtt_dsxx::assertion &err) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
-  if (num_rngs != 1)
-    ITFAILS;
+  FAIL_IF(!caught);
+  FAIL_IF_NOT(num_rngs == 1);
 
   // Create a controller that allows 10 streams.
   Rnd_Control control2(0, 0, 10);
-
-  if (control2.get_max_streams() != 10)
-    ITFAILS;
+  FAIL_IF_NOT(control2.get_max_streams() == 10);
 
   // Try to create a generator on stream 10.
   caught = false;
@@ -206,28 +165,23 @@ void test_exceptions(UnitTest &ut) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
+  FAIL_IF_NOT(caught);
 
   // Try to create 11 generators.  The first 10 should succeed.
   num_rngs = 0;
   caught = false;
   try {
-    for (num_rngs = 0; num_rngs < 11; ++num_rngs) {
+    for (; num_rngs < 11; ++num_rngs) {
       Counter_RNG rng;
       control2.initialize(rng);
-
-      if (rng.get_num() != num_rngs)
-        ITFAILS;
+      FAIL_IF_NOT(rng.get_num() == num_rngs);
     }
   } catch (rtt_dsxx::assertion &err) {
     cout << "Good, caught assertion: " << err.what() << endl;
     caught = true;
   }
-  if (!caught)
-    ITFAILS;
-  if (num_rngs != 10)
-    ITFAILS;
+  FAIL_IF(!caught);
+  FAIL_IF_NOT(num_rngs == 10);
 #endif
 #endif
 

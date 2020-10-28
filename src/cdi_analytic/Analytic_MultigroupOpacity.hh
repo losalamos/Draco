@@ -47,10 +47,10 @@ namespace rtt_cdi_analytic {
 class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity {
 public:
   // Useful typedefs.
-  typedef std::vector<double> sf_double;
-  typedef std::vector<sf_double> vf_double;
-  typedef std::string std_string;
-  typedef std::vector<char> sf_char;
+  using sf_double = std::vector<double>;
+  using vf_double = std::vector<sf_double>;
+  using std_string = std::string;
+  using sf_char = std::vector<char>;
 
 private:
   // Group structure.
@@ -64,8 +64,7 @@ private:
 
 protected:
   // Constructor.
-  Analytic_MultigroupOpacity(const sf_double &groups,
-                             rtt_cdi::Reaction reaction_in,
+  Analytic_MultigroupOpacity(sf_double groups, rtt_cdi::Reaction reaction_in,
                              rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
 
   // Constructor for packed Analytic_Multigroup_Opacities
@@ -79,70 +78,65 @@ public:
 
   // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
-  virtual ~Analytic_MultigroupOpacity() { /*empty*/
-  }
+  ~Analytic_MultigroupOpacity() override = default;
 
   // Get the group opacities.
-  virtual sf_double getOpacity(double, double) const = 0;
+  sf_double getOpacity(double, double) const override = 0;
 
   // Get the group opacity fields given a field of temperatures.
-  virtual vf_double getOpacity(const sf_double &, double) const = 0;
+  vf_double getOpacity(const sf_double &, double) const override = 0;
 
   // Get the group opacity fields given a field of densities.
-  virtual vf_double getOpacity(double, const sf_double &) const = 0;
+  vf_double getOpacity(double, const sf_double &) const override = 0;
 
   //! Query to see if data is in tabular or functional form (false).
-  bool data_in_tabular_form() const { return false; }
+  bool data_in_tabular_form() const override { return false; }
 
   //! Query to get the reaction type.
-  rtt_cdi::Reaction getReactionType() const { return reaction; }
+  rtt_cdi::Reaction getReactionType() const override { return reaction; }
 
   //! Query for model type.
-  rtt_cdi::Model getModelType() const { return model; }
+  rtt_cdi::Model getModelType() const override { return model; }
 
   //! Return the energy policy descriptor (mg).
-  inline std_string getEnergyPolicyDescriptor() const {
-    return std_string("mg");
-  }
+  inline std_string getEnergyPolicyDescriptor() const override { return std_string("mg"); }
 
   // Get the data description of the opacity.
-  virtual std_string getDataDescriptor() const = 0;
+  std_string getDataDescriptor() const override = 0;
 
   // Get the name of the associated data file.
-  inline std_string getDataFilename() const { return std_string(); }
+  inline std_string getDataFilename() const override { return std_string(); }
 
   //! Get the temperature grid (size 0 for function-based analytic data).
-  sf_double getTemperatureGrid() const { return sf_double(0); }
+  sf_double getTemperatureGrid() const override { return sf_double(0); }
 
   //! Get the density grid (size 0 for function-based analytic data).
-  sf_double getDensityGrid() const { return sf_double(0); }
+  sf_double getDensityGrid() const override { return sf_double(0); }
 
   //! Get the group boundaries (keV) of the multigroup set.
-  sf_double getGroupBoundaries() const { return group_boundaries; }
+  sf_double getGroupBoundaries() const override { return group_boundaries; }
 
   //! Get the size of the temperature grid (size 0).
-  size_t getNumTemperatures() const { return 0; }
+  size_t getNumTemperatures() const override { return 0; }
 
   //! Get the size of the density grid (size 0).
-  size_t getNumDensities() const { return 0; }
+  size_t getNumDensities() const override { return 0; }
 
   //! Get the number of frequency group boundaries.
-  size_t getNumGroupBoundaries() const { return group_boundaries.size(); }
+  size_t getNumGroupBoundaries() const override { return group_boundaries.size(); }
 
   //! Get the number of frequency group boundaries.
-  size_t getNumGroups() const { return group_boundaries.size() - 1; }
+  size_t getNumGroups() const override { return group_boundaries.size() - 1; }
 
   // Pack the Analytic_MultigroupOpacity into a character string.
-  virtual sf_char pack() const = 0;
+  sf_char pack() const override = 0;
 
   /*!
    * \brief Returns the general opacity model type, defined in OpacityCommon.hh
    *
    * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
    */
-  rtt_cdi::OpacityModelType getOpacityModelType() const {
-    return rtt_cdi::ANALYTIC_TYPE;
-  }
+  rtt_cdi::OpacityModelType getOpacityModelType() const override { return rtt_cdi::ANALYTIC_TYPE; }
 };
 
 } // end namespace rtt_cdi_analytic

@@ -33,7 +33,7 @@ namespace rtt_cdi_analytic {
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
                                              rtt_cdi::Reaction reaction_in,
                                              rtt_cdi::Model cdi_model_in)
-    : analytic_model(model_in), reaction(reaction_in), model(cdi_model_in) {
+    : analytic_model(std::move(model_in)), reaction(reaction_in), model(cdi_model_in) {
   Require(reaction == rtt_cdi::TOTAL || reaction == rtt_cdi::ABSORPTION ||
           reaction == rtt_cdi::SCATTERING);
 
@@ -92,10 +92,9 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
 
   // now determine which analytic model we need to build
   if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL) {
-    analytic_model.reset(new Constant_Analytic_Opacity_Model(packed_analytic));
+    analytic_model = std::make_shared<Constant_Analytic_Opacity_Model>(packed_analytic);
   } else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL) {
-    analytic_model.reset(
-        new Polynomial_Analytic_Opacity_Model(packed_analytic));
+    analytic_model = std::make_shared<Polynomial_Analytic_Opacity_Model>(packed_analytic);
   } else {
     Insist(0, "Unregistered analytic opacity model!");
   }
@@ -118,8 +117,7 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
  * \return opacity (coefficient) in cm^2/g
  *
  */
-double Analytic_Gray_Opacity::getOpacity(double temperature,
-                                         double density) const {
+double Analytic_Gray_Opacity::getOpacity(double temperature, double density) const {
   Require(temperature >= 0.0);
   Require(density >= 0.0);
 
@@ -147,20 +145,18 @@ double Analytic_Gray_Opacity::getOpacity(double temperature,
  * \param density material density in g/cm^3
  * \return std::vector of opacities (coefficients) in cm^2/g
  */
-Analytic_Gray_Opacity::sf_double
-Analytic_Gray_Opacity::getOpacity(const sf_double &temperature,
-                                  double density) const {
+Analytic_Gray_Opacity::sf_double Analytic_Gray_Opacity::getOpacity(const sf_double &temperature,
+                                                                   double density) const {
   Require(density >= 0.0);
 
   // define the return opacity field (same size as temperature field)
   sf_double opacity(temperature.size(), 0.0);
 
   // define an opacity iterator
-  sf_double::iterator sig = opacity.begin();
+  auto sig = opacity.begin();
 
   // loop through temperatures and solve for opacity
-  for (sf_double::const_iterator T = temperature.begin();
-       T != temperature.end(); T++, sig++) {
+  for (auto T = temperature.begin(); T != temperature.end(); T++, sig++) {
     Check(*T >= 0.0);
 
     // define opacity
@@ -189,20 +185,18 @@ Analytic_Gray_Opacity::getOpacity(const sf_double &temperature,
  * \param density std::vector of material densities in g/cc
  * \return std::vector of opacities (coefficients) in cm^2/g
  */
-Analytic_Gray_Opacity::sf_double
-Analytic_Gray_Opacity::getOpacity(double temperature,
-                                  const sf_double &density) const {
+Analytic_Gray_Opacity::sf_double Analytic_Gray_Opacity::getOpacity(double temperature,
+                                                                   const sf_double &density) const {
   Require(temperature >= 0.0);
 
   // define the return opacity field (same size as density field)
   sf_double opacity(density.size(), 0.0);
 
   // define an opacity iterator
-  sf_double::iterator sig = opacity.begin();
+  auto sig = opacity.begin();
 
   // loop through densities and solve for opacity
-  for (sf_double::const_iterator rho = density.begin(); rho != density.end();
-       rho++, sig++) {
+  for (auto rho = density.begin(); rho != density.end(); rho++, sig++) {
     Check(*rho >= 0.0);
 
     // define opacity
@@ -248,8 +242,8 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const {
   packer << static_cast<int>(anal_model.size());
 
   // now pack the anal model
-  for (size_t i = 0; i < anal_model.size(); i++)
-    packer << anal_model[i];
+  for (auto &am : anal_model)
+    packer << am;
 
   // pack the reaction and model type
   packer << static_cast<int>(reaction) << static_cast<int>(model);

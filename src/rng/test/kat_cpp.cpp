@@ -98,7 +98,7 @@ void dev_execute_tests(kat_instance *tests, unsigned ntests) {
   unsigned i;
   for (i = 0; i < ntests; ++i) {
     kat_instance *ti = &tests[i];
-    genmap_t::iterator p = genmap.find(make_pair(ti->method, ti->nrounds));
+    auto p = genmap.find(make_pair(ti->method, ti->nrounds));
     if (p == genmap.end())
       throw std::runtime_error("pair<generator, nrounds> not in map.  You probably need to add "
                                "more genmap entries in kat_cpp.cpp");
@@ -133,7 +133,7 @@ template <typename GEN> void do_test(kat_instance *ti) {
   int errs = 0;
 
   // MicroURNG: throws if the top 32 bits of the high word of ctr are non-zero.
-  typedef typename GEN::ctr_type::value_type value_type;
+  typedef typename GEN::ctr_type::value_type value_type; //NOLINT
 
   value_type hibits =
       data.ctr[data.ctr.size() - 1] >> (std::numeric_limits<value_type>::digits - 32);
@@ -157,8 +157,8 @@ template <typename GEN> void do_test(kat_instance *ti) {
 
   // Engine
   // N.B.  exercising discard() arguably belongs in ut_Engine.cpp
-  typedef r123::Engine<GEN> Etype;
-  typedef typename GEN::ctr_type::value_type value_type;
+  typedef r123::Engine<GEN> Etype;                       // NOLINT
+  typedef typename GEN::ctr_type::value_type value_type; // NOLINT
   Etype e(data.ukey);
   typename GEN::ctr_type c = data.ctr;
   value_type c0;

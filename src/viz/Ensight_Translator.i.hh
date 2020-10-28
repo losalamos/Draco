@@ -42,16 +42,15 @@ namespace rtt_viz {
  * check and is left for a future exercise).
  */
 template <typename SSF>
-Ensight_Translator::Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
-                                       const SSF &vdata_names, const SSF &cdata_names,
-                                       const bool overwrite, const bool static_geom,
-                                       const bool binary, const bool decomposed,
-                                       const double reset_time)
-    : d_static_geom(static_geom), d_binary(binary), d_dump_dir(gd_wpath), d_num_cell_types(0),
-      d_cell_names(), d_vrtx_cnt(0), d_cell_type_index(), d_dump_times(), d_prefix(),
-      d_vdata_names(vdata_names), d_cdata_names(cdata_names), d_case_filename(), d_geo_dir(),
-      d_vdata_dirs(), d_cdata_dirs(), d_geom_out(), d_cell_out(), d_vertex_out(),
-      d_decomposed(decomposed) {
+Ensight_Translator::Ensight_Translator(const std_string &prefix, std_string gd_wpath,
+                                       SSF vdata_names, SSF cdata_names, const bool overwrite,
+                                       const bool static_geom, const bool binary,
+                                       const bool decomposed, const double reset_time)
+    : d_static_geom(static_geom), d_binary(binary), d_dump_dir(std::move(gd_wpath)),
+      d_num_cell_types(0), d_cell_names(), d_vrtx_cnt(0), d_cell_type_index(), d_dump_times(),
+      d_prefix(), d_vdata_names(std::move(vdata_names)), d_cdata_names(std::move(cdata_names)),
+      d_case_filename(), d_geo_dir(), d_vdata_dirs(), d_cdata_dirs(), d_geom_out(), d_cell_out(),
+      d_vertex_out(), d_decomposed(decomposed) {
   Require(d_dump_times.empty());
   create_filenames(prefix);
 
@@ -287,8 +286,8 @@ void Ensight_Translator::ensight_dump(int icycle, double time, double dt, const 
     set_int &v = vertices_of_part[ipart];
     sf_int vertices;
 
-    for (set_const_iterator iv = v.begin(); iv != v.end(); ++iv)
-      vertices.push_back(*iv);
+    for (auto &iv : v)
+      vertices.push_back(iv);
 
     // write the geometry data
     Check(ipart + 1 < INT_MAX);

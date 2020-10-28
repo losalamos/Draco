@@ -115,19 +115,17 @@ enum Ensight_Cell_Types {
 class Ensight_Translator {
 public:
   // Ensight_Translator typedefs.
-  typedef std::vector<int> sf_int;
-  typedef std::vector<double> sf_double;
-  typedef std::vector<std::string> sf_string;
-  typedef std::string std_string;
+  using sf_int = std::vector<int>;
+  using sf_double = std::vector<double>;
+  using sf_string = std::vector<std::string>;
+  using std_string = std::string;
+  using sf2_int = std::vector<sf_int>;
+  using sf3_int = std::vector<sf2_int>;
+  using set_int = std::set<int>;
+  using vec_set_int = std::vector<set_int>;
 
-  typedef std::vector<sf_int> sf2_int;
-  typedef std::vector<sf2_int> sf3_int;
-  typedef std::set<int> set_int;
-  typedef std::vector<set_int> vec_set_int;
-
-  typedef set_int::const_iterator set_const_iterator;
-
-  typedef std::vector<std::shared_ptr<Ensight_Stream>> vec_stream;
+  using set_const_iterator = set_int::const_iterator;
+  using vec_stream = std::vector<std::shared_ptr<Ensight_Stream>>;
 
 private:
   // >>> DATA
@@ -218,10 +216,10 @@ private:
 public:
   // Constructor.
   template <typename SSF>
-  Ensight_Translator(const std_string &prefix, const std_string &gd_wpath, const SSF &vdata_names,
-                     const SSF &cdata_names, const bool overwrite = false,
-                     const bool static_geom = false, const bool binary = false,
-                     const bool decomposed = false, const double reset_time = -1.0);
+  Ensight_Translator(const std_string &prefix, std_string gd_wpath, SSF vdata_names,
+                     SSF cdata_names, const bool overwrite = false, const bool static_geom = false,
+                     const bool binary = false, const bool decomposed = false,
+                     const double reset_time = -1.0);
 
   // Do an Ensight_Dump.
   template <typename ISF, typename IVF, typename SSF, typename FVF>

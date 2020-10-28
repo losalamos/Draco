@@ -4,8 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Mesh_Reader library.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_RTT_Mesh_Reader_hh
@@ -19,16 +18,14 @@ namespace rtt_RTT_Format_Reader {
 /*!
  * \class RTT_Mesh_Reader
  *
- * \brief An input routine to parse an RTT Format mesh file using the DRACO
- *        meshReaders standard interface.
+ * \brief An input routine to parse an RTT Format mesh file using the DRACO meshReaders standard
+ *        interface.
  *
- *\sa The RTT_Mesh_Reader class is a derived-type of the Mesh_Reader abstract
- *    base class specified in the meshReaders package. Packages using the
- *    RTT_Mesh_Reader should thus include the RTT_Mesh_Reader.hh decorator file
- *    located in the meshReaders directory to resolve the namespace.
- *    RTT_Mesh_Reader contains a RTT_Format_Reader as a private data member, so
- *    none of the RTT_Format_Reader class public accessor functions are
- *    accessible.
+ * \sa The RTT_Mesh_Reader class is a derived-type of the Mesh_Reader abstract base class specified
+ *     in the meshReaders package. Packages using the RTT_Mesh_Reader should thus include the
+ *     RTT_Mesh_Reader.hh decorator file located in the meshReaders directory to resolve the
+ *     namespace. RTT_Mesh_Reader contains a RTT_Format_Reader as a private data member, so none of
+ *     the RTT_Format_Reader class public accessor functions are accessible.
  */
 //================================================================================================//
 
@@ -43,18 +40,15 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader {
   typedef std::set<unsigned> set_uint;
   typedef std::vector<unsigned> vector_uint;
   typedef std::vector<std::vector<unsigned>> vector_vector_uint;
-  typedef std::vector<std::vector<std::vector<unsigned>>>
-      vector_vector_vector_uint;
+  typedef std::vector<std::vector<std::vector<unsigned>>> vector_vector_vector_uint;
 
   // DATA
 
 private:
   std::shared_ptr<RTT_Format_Reader> rttMesh;
-  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
-      element_defs;
+  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>> element_defs;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> element_types;
-  std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-      unique_element_types;
+  std::vector<rtt_mesh_element::Element_Definition::Element_Type> unique_element_types;
 
 public:
   /*!
@@ -62,8 +56,8 @@ public:
    * \param RTT_File Mesh file name.
    */
   explicit RTT_Mesh_Reader(string RTT_File)
-      : rttMesh(new RTT_Format_Reader(std::move(RTT_File))), element_defs(),
-        element_types(), unique_element_types() {
+      : rttMesh(new RTT_Format_Reader(std::move(RTT_File))), element_defs(), element_types(),
+        unique_element_types() {
     transform2CGNS();
   }
 
@@ -72,24 +66,19 @@ public:
 
   // ACCESSORS
 
-  // Virutal accessor function definitions based on the Mesh_Readers abstract
-  // base class.
+  // Virutal accessor function definitions based on the Mesh_Readers abstract base class.
 
   /*!
    * \brief Returns the coordinate values for each of the nodes.
    * \return The coordinate values for the nodes.
    */
-  virtual vector_vector_dbl get_node_coords() const {
-    return rttMesh->get_nodes_coords();
-  }
+  virtual vector_vector_dbl get_node_coords() const { return rttMesh->get_nodes_coords(); }
 
   /*!
    * \brief Returns the problem coordinate units (e.g, cm).
    * \return Coordinate units.
    */
-  virtual string get_node_coord_units() const {
-    return rttMesh->get_dims_coor_units();
-  }
+  virtual string get_node_coord_units() const { return rttMesh->get_dims_coor_units(); }
 
   /*!
    * \brief Returns the topological dimenstion (1, 2 or 3).
@@ -104,8 +93,7 @@ public:
   virtual vector_vector_uint get_element_nodes() const;
 
   /*!
-   * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and
-   *        TETRA_4).
+   * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and TETRA_4).
    * \return Element definitions.
    */
   virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
@@ -119,8 +107,8 @@ public:
   }
 
   /*!
-   * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that are
-   *        defined in the mesh file.
+   * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that are defined in the mesh
+   *        file.
    * \return Element definitions.
    */
   virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>

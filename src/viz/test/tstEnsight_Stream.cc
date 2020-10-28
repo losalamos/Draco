@@ -12,6 +12,7 @@
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "viz/Ensight_Stream.hh"
+#include <array>
 
 using namespace std;
 using rtt_viz::Ensight_Stream;
@@ -93,31 +94,26 @@ void test_simple(rtt_dsxx::UnitTest &ut, bool const binary, bool const geom,
       cout << "Testing ascii mode." << endl;
 
     ifstream in(file.c_str(), mode);
-    //read out the "C Binary" data
-    // this doesn't work quite right can someone help with this?
+    // read out the "C Binary" data
     if (binary && geom) {
-      char buf[8];
-      in.read(buf, sizeof(char) * 8);
-      if (!strcmp(buf, "C Binary"))
-        ITFAILS;
+      std::array<char, 8> buf;
+      in.read(buf.data(), sizeof(char) * buf.size());
+      FAIL_IF_NOT(std::string("C Binary") == std::string(buf.begin(), buf.end()));
     }
 
     int i_in;
     readit(in, binary, i_in);
-    if (i != i_in)
-      ITFAILS;
+    FAIL_IF_NOT(i == i_in);
 
     double d_in;
     readit(in, binary, d_in);
     // floats are inaccurate
-    if (!rtt_dsxx::soft_equiv(d, d_in, 0.01))
-      ITFAILS;
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(d, d_in, 0.01));
 
     string s_in;
     readit(in, binary, s_in);
     for (size_t k = 0; k < s.size(); ++k)
-      if (s[k] != s_in[k])
-        ITFAILS;
+      FAIL_IF_NOT(s[k] == s_in[k]);
   }
 
   if (ut.numFails == 0)

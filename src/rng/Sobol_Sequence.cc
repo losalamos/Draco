@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
  * \brief  Implementation file for Sobol Sequence.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Sobol_Sequence.hh"
@@ -33,7 +32,7 @@ void Sobol_Sequence::shift() {
 Sobol_Sequence::~Sobol_Sequence() { gsl_qrng_free(gsl_); }
 
 //------------------------------------------------------------------------------------------------//
-bool Sobol_Sequence::check_class_invariants() const { return gsl_ != NULL; }
+bool Sobol_Sequence::check_class_invariants() const { return gsl_ != nullptr; }
 
 } // end namespace rtt_rng
 

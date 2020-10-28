@@ -3,9 +3,7 @@
  * \file   rng/Sobol_Sequence.hh
  * \author Kent Budge
  * \brief  Definition of class Sobol_Sequence
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rng_Sobol_Sequence_hh
@@ -22,18 +20,16 @@ namespace rtt_rng {
  * \class Sobol_Sequence
  * \brief Generator for a sequence of subrandom (pseudorandom) numbers.
  *
- * The Sobol' sequence is a subrandom sequence. This means two things. First,
- * when it is used to generate quadrature points for integrating a function,
- * the error for large N goes as 1/N rather than the 1/sqrt(N) of a true Monte
- * Carlo integration. Second, the convergence is smooth, unlike the
- * convergence for the Halton sequence, which for highly peaked functions
- * shows severe oscillations as the sequence marches through the peaked
- * region. The down side is that the Sobol' sequence is difficult to compute
- * and to restart for arbitrarily large random vectors.
+ * The Sobol' sequence is a subrandom sequence. This means two things. First, when it is used to
+ * generate quadrature points for integrating a function, the error for large N goes as 1/N rather
+ * than the 1/sqrt(N) of a true Monte Carlo integration. Second, the convergence is smooth, unlike
+ * the convergence for the Halton sequence, which for highly peaked functions shows severe
+ * oscillations as the sequence marches through the peaked region. The down side is that the Sobol'
+ * sequence is difficult to compute and to restart for arbitrarily large random vectors.
  */
 //================================================================================================//
 
-class DLL_PUBLIC_rng Sobol_Sequence {
+class Sobol_Sequence {
 public:
   // CREATORS
 
@@ -42,6 +38,10 @@ public:
 
   //! Destructor
   ~Sobol_Sequence();
+
+  //! Not implemented (disable)
+  Sobol_Sequence(Sobol_Sequence const &) = delete;
+  Sobol_Sequence &operator=(Sobol_Sequence const &) = delete;
 
   // MANIPULATORS
 
@@ -56,14 +56,6 @@ public:
   bool check_class_invariants() const;
 
 private:
-  // IMPLEMENTATION
-
-  //! Not implemented (disable)
-  Sobol_Sequence(Sobol_Sequence const &);
-
-  //! Not implemented (disable)
-  Sobol_Sequence &operator=(Sobol_Sequence const &);
-
   // DATA
 
   gsl_qrng *gsl_;

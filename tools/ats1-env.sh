@@ -48,15 +48,15 @@ fi
 
 case "$ddir" in
 
-  #--------------------------------------------------------------------------------------------------#
+  #------------------------------------------------------------------------------------------------#
   draco-7_8*)
     function intel1904env()
     {
       unset partition
       unset jobnameext
 
-      sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
-      module use --append /usr/projects/draco/Modules/$sysname
+      sysname=$(/usr/projects/hpcsoft/utilities/bin/sys_name)
+      module use --append "/usr/projects/draco/Modules/${sysname}"
 
       if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
         run "module swap craype-mic-knl craype-haswell"
@@ -75,8 +75,8 @@ case "$ddir" in
       export partition="-p knl --exclude=nid00192"
       export jobnameext="-knl"
 
-      sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
-      module use --append /usr/projects/draco/Modules/$sysname
+      sysname=$(/usr/projects/hpcsoft/utilities/bin/sys_name)
+      module use --append "/usr/projects/draco/Modules/${sysname}"
 
       if ! [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
         run "module swap craype-haswell craype-mic-knl"
@@ -91,14 +91,14 @@ case "$ddir" in
     }
     ;;
 
-  #--------------------------------------------------------------------------------------------------#
+  #------------------------------------------------------------------------------------------------#
 
   *)
     die "ats1-env.sh:: did not set any build environments, ddir = $ddir."
     ;;
 
 
-  #--------------------------------------------------------------------------------------------------#
+  #------------------------------------------------------------------------------------------------#
 esac
 
 #--------------------------------------------------------------------------------------------------#
@@ -108,8 +108,9 @@ esac
 for env in $environments; do
   if [[ $(fn_exists "$env") -gt 0 ]]; then
     if [[ ${verbose:-false} != false ]]; then echo "export -f $env"; fi
-    # exporting these environment is required on CTS-1, but breaks the module
-    # system on trinitite.  Ugh.
+    # exporting these environment is required on CTS-1, but breaks the module system on trinitite.
+    # Ugh.
+    #
     # export -f $env
   else
     die "Requested environment $env is not defined."
