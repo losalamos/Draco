@@ -23,11 +23,11 @@ if( NOT Fortran_FLAGS_INITIALIZED )
   # [KT 2018-03-14] '-assume nostd_mod_proc_name' -- discussion with G.  Rockefeller and S. Nolen
   #    aobut ifort's non-standard name mangling for module procedures. Not sure if we need this yet.
 
-  string( APPEND CMAKE_Fortran_FLAGS " -warn -fpp -implicitnone -diag-disable 11060" )
+  string( APPEND CMAKE_Fortran_FLAGS " -warn -fpp -implicitnone -diag-disable=11060" )
   string( CONCAT CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -traceback -ftrapuv -check"
     " -fno-omit-frame-pointer -DDEBUG" )
   string( CONCAT CMAKE_Fortran_FLAGS_RELEASE "-O2 -inline-level=2 -fp-speculation fast"
-    " -fp-model fast -align array32byte -funroll-loops -diag-disable 11021 -DNDEBUG" )
+    " -fp-model=fast -align array32byte -funroll-loops -diag-disable=11021 -DNDEBUG" )
   set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O2 -inline-level=2 -funroll-loops -DDEBUG" )
 
