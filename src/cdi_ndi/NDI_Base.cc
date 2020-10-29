@@ -4,8 +4,7 @@
  * \author Ben R. Ryan
  * \date   2020 Feb 4
  * \brief  NDI_Base member definitions.
- * \note   Copyright (C) 2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "NDI_Base.hh"
@@ -41,15 +40,14 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const &gendir) {
     std::cout << "\n"
               << Term::ccolor(DT::error) << "WARNING: In the cdi_ndi/NDI_Base "
               << "constructor, the NDI library version (" << ndi_ver << ") is "
-              << "different than the NDI GENDIR version (" << gendir_ver
-              << "). \n"
+              << "different than the NDI GENDIR version (" << gendir_ver << "). \n"
               << Term::ccolor(DT::reset) << std::endl;
   }
 }
 #else
 /*!
- * \brief Warn if NDI library version doesn't match GENDIR version to 2 digits.
- *        No-op when NDI_FOUND is false. */
+ * \brief Warn if NDI library version doesn't match GENDIR version to 2 digits.  No-op when
+ *        NDI_FOUND is false. */
 void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
 #endif
 
@@ -58,12 +56,11 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
 //------------------------------------------------------------------------------------------------//
 
 /*!
- * \brief Constructor for generic NDI reader, to be inherited by readers for
- *        specific gendir file path and dataset.
+ * \brief Constructor for generic NDI reader, to be inherited by readers for specific gendir file
+ *        path and dataset.
  *
- * This base constructor only sets some data members based on constructor input.
- * For more details on NDI, see
- * https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
+ * This base constructor only sets some data members based on constructor input.  For more details
+ * on NDI, see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
  *
  * \param[in] gendir_in path to non-standard NDI gendir file
  * \param[in] dataset_in name of requested dataset (provided by inherited class)
@@ -72,11 +69,10 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
  * \param[in] mg_e_bounds_in multigroup energy bin boundaries (keV)
  */
 NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in,
-                   const std::string &reaction_in,
+                   const std::string &library_in, const std::string &reaction_in,
                    const std::vector<double> mg_e_bounds_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in),
-      reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
+    : gendir(gendir_in), dataset(dataset_in), library(library_in), reaction(reaction_in),
+      mg_e_bounds(mg_e_bounds_in) {
 
   Require(rtt_dsxx::fileExists(gendir));
 
@@ -105,8 +101,7 @@ NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
 #ifndef NDI_FOUND
 
 //! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*dataset_in*/,
-                   const std::string & /*library_in*/,
+NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*library_in*/,
                    const std::string & /*reaction_in*/,
                    const std::vector<double> /*mg_e_bounds_in*/) {
   Insist(0, "NDI default gendir path only available when NDI is found.");
@@ -119,12 +114,10 @@ NDI_Base::NDI_Base(const std::string & /*dataset_in*/,
 //================================================================================================//
 
 /*!
- * \brief Constructor for generic NDI reader, to be inherited by readers for
- *        specific dataset.
+ * \brief Constructor for generic NDI reader, to be inherited by readers for specific dataset.
  *
- * This base constructor only sets some data members based on constructor input.
- * For more details on NDI, see
- * https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
+ * This base constructor only sets some data members based on constructor input.  For more details
+ * on NDI, see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
  *
  * \param[in] dataset_in name of requested dataset (provided by inherited class)
  * \param[in] library_in name of requested NDI data library
@@ -132,11 +125,9 @@ NDI_Base::NDI_Base(const std::string & /*dataset_in*/,
  * \param[in] mg_e_bounds_in multigroup energy bin boundaries (keV)
  */
 NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in,
-                   const std::string &reaction_in,
-                   const std::vector<double> mg_e_bounds_in)
-    : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second),
-      dataset(dataset_in), library(library_in), reaction(reaction_in),
-      mg_e_bounds(mg_e_bounds_in) {
+                   const std::string &reaction_in, const std::vector<double> mg_e_bounds_in)
+    : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second), dataset(dataset_in),
+      library(library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
 
   Require(rtt_dsxx::fileExists(gendir));
 
@@ -152,8 +143,7 @@ NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in,
   }
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(),
-                                                   mg_e_bounds.end()));
+  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()));
   Require(mg_e_bounds.back() > 0);
 }
 

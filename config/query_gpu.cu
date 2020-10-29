@@ -4,12 +4,10 @@
  * \author Alex Long
  * \brief  Small CUDA code that prints the architecture version, used by CMake
  * \date   Thu Mat 21 15:53:51 2019
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved.
+ *
+ * This code is from wagonhelm.github.io/articles/2018-03/detecting-cuda-capability-with-cmake */
 //------------------------------------------------------------------------------------------------//
-
-// NOTE: This code is from
-// wagonhelm.github.io/articles/2018-03/detecting-cuda-capability-with-cmake
 
 #include <stdio.h>
 
@@ -24,8 +22,7 @@ int main(int argc, char **argv) {
     return rc; /* Failure */
   }
   if ((dP.major + (dP.minor / 10)) < min_cc) {
-    printf("Min Compute Capability of %2.1f required:  %d.%d found\n Not "
-           "Building CUDA Code",
+    printf("Min Compute Capability of %2.1f required:  %d.%d found\n Not Building CUDA Code",
            min_cc, dP.major, dP.minor);
     return 1; /* Failure */
   } else {
@@ -33,6 +30,7 @@ int main(int argc, char **argv) {
     return 0; /* Success */
   }
 }
+
 //------------------------------------------------------------------------------------------------//
-//  end of query_gpu.cu
+// end of query_gpu.cu
 //------------------------------------------------------------------------------------------------//

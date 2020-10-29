@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 19 13:41:01 2001
  * \brief  Datatypes needed in GrayOpacity and MultigroupOpacity
- * \note   Copyright (C) 2016-2019 Los Alamos National Securty, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2019 Los Alamos National Securty, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_OpacityCommon_hh
@@ -31,8 +30,8 @@ unsigned int const num_Reactions(3);
 /*!
  * \brief Physics model used to compute the opacity values.
  *
- * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The
- * number of models is given by rtt_cdi::constants::num_Models.
+ * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The number of models is given
+ * by rtt_cdi::constants::num_Models.
  */
 enum Model {
   ROSSELAND, /*!< use Rosseland mean opacities. */
@@ -48,8 +47,8 @@ enum Model {
 /*!
  * \brief Opacity reaction type stored in this opacity object.
  *
- * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The
- * number of readtion types is given by rtt_cdi::constants::num_Reactions.
+ * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The number of readtion types
+ * is given by rtt_cdi::constants::num_Reactions.
  */
 enum Reaction {
   TOTAL,      /*!< Total opacity value (scattering plus absorption). */
@@ -62,8 +61,8 @@ enum Reaction {
 /*!
  * \brief Type of opacity model: analytic, or gandolf.
  *
- * Used in Milagro Material_Data in packing the objects, returned by each
- * opacity type. It was previously defined as
+ * Used in Milagro Material_Data in packing the objects, returned by each opacity type. It was
+ * previously defined as
  * \code
  *   typeid(rtt_cdi_analytic::Analytic_Odfmg_Opacity)
  * \endcode
@@ -74,12 +73,11 @@ enum Reaction {
  * mapping to 2.
  */
 enum OpacityModelType {
-  UNASSIGNED_TYPE =
-      0, /*!< unassigned type; used as a placeholder before deciding type */
-  ANALYTIC_TYPE = 1, /*!< an Analytic opacity model */
-  GANDOLF_TYPE = 2,  /*!< a Gandolf opacity model */
-  IPCRESS_TYPE = 3,  /*!< an Ipcress opacity model */
-  DUMMY_TYPE = 99    /*!< a dummy opacity model */
+  UNASSIGNED_TYPE = 0, /*!< unassigned type; used as a placeholder before deciding type */
+  ANALYTIC_TYPE = 1,   /*!< an Analytic opacity model */
+  GANDOLF_TYPE = 2,    /*!< a Gandolf opacity model */
+  IPCRESS_TYPE = 3,    /*!< an Ipcress opacity model */
+  DUMMY_TYPE = 99      /*!< a dummy opacity model */
 };
 } // end namespace rtt_cdi
 

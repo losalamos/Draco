@@ -29,6 +29,7 @@ fi
 # shell options
 # Do not escape $ for bash completion
 shopt -s direxpand
+shopt -u progcomp
 
 # alias salloc='salloc --gres=craynetwork:0'
 
@@ -92,20 +93,17 @@ fi
 
 function dracoenv ()
 {
+  sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
   if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+    # Capulin/Thunder
     module unload gcc cray-libsci intel
     module load intel/19.0.4
   else
-    module unload PrgEnv-cray gcc
-    module load PrgEnv-gnu
+    # module unload PrgEnv-cray gcc
+    # module load PrgEnv-gnu
+    module use --append /usr/projects/draco/Modules/$sysname
+    module load draco/intel19
   fi
-  for m in $dracomodules; do
-    module load $m
-  done
-#  if [[ `echo $LOADEDMODULES | grep -c hugepages` != 0 ]]; then
-#    modname=`echo $LOADEDMODULES | sed -e 's/.*craype-hugepages/craype-hugepages/' | sed -e 's/[:].*//'`
-#    module unload $modname
-#  fi
   export CXX=CC
   export CC=cc
   export FC=ftn
@@ -123,23 +121,22 @@ export -f dracoenv
 
 function rmdracoenv ()
 {
-  # this setting recommended by Sam Guiterrez to allow correct core binding for
-  # C++ threads (maybe OpeNMP threads also) on KNLs.
+  # this setting recommended by Sam Guiterrez to allow correct core binding for C++ threads (maybe
+  # OpeNMP threads also) on KNLs.
   export KMP_AFFINITY=disabled
   export LD_LIBRARY_PATH=$DRACO_OLD_LD_LIBRARY_PATH
   # unload in reverse order.
   mods=( ${dracomodules} )
-  for ((i=${#mods[@]}-1; i>=0; i--)); do
-    # loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
-    #if test $loaded = 1; then
-    module unload ${mods[$i]}
-    #fi
-  done
+  #for ((i=${#mods[@]}-1; i>=0; i--)); do
+  #  module unload ${mods[$i]}
+  #done
   if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
+    # Capulin/Thunder
     module unload intel
     module unload PrgEnv-intel
     module load PrgEnv-intel
   else
+    # Trinitite/Trinity
     module unload PrgEnv-gnu gcc
     module load PrgEnv-cray
   fi
