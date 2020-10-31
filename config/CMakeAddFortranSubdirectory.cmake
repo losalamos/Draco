@@ -460,34 +460,30 @@ endforeach()
 
 endfunction()
 
-#-----------------------------------------------------------------------------#
-# When generating Visual Studio projects and using MSYS/MinGW gfortran for CAFS
-# -based Fortran subprojects, you must link to an MSYS/MinGW style '.a' library
-# instead of msmpi.lib (implementation portion of msmpi.dll). This macro
-# provides this fix (call this from the CMakeLists.txt found in the CAFS
-# subproject.
+#--------------------------------------------------------------------------------------------------#
+# When generating Visual Studio projects and using MSYS/MinGW gfortran for CAFS -based Fortran
+# subprojects, you must link to an MSYS/MinGW style '.a' library instead of msmpi.lib
+# (implementation portion of msmpi.dll). This macro provides this fix (call this from the
+# CMakeLists.txt found in the CAFS subproject.
 #
-# Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
-# Instead, link to libmsmpi.a that was created via gendef.exe and dlltool.exe
-# from msmpi.dll.  Ref:
+# Don't link to the C++ MS-MPI library when compiling with MinGW gfortran. Instead, link to
+# libmsmpi.a that was created via gendef.exe and dlltool.exe from msmpi.dll.  Ref:
 # - https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment,
 # - http://www.geuz.org/pipermail/getdp/2012/001519.html
 #
-# There are also issues with MS-MPI's mpif.h when using gfortran's
-# '-frange-check' compiler flag.  If this compiler option is enabled, remove
-# it.
-#-----------------------------------------------------------------------------#
+# There are also issues with MS-MPI's mpif.h when using gfortran's '-frange-check' compiler flag.
+# If this compiler option is enabled, remove it.
+#--------------------------------------------------------------------------------------------------#
 function( cafs_fix_mpi_library )
 
-  set(verbose FALSE)
+  set(verbose false)
 
   # MS-MPI and gfortran do not play nice together...
   if(WIN32 AND "${DRACO_C4}" STREQUAL "MPI")
     if(verbose)
       message("CAFS: MPI_Fortran_LIBRARIES= ${MPI_Fortran_LIBRARIES}")
     endif()
-    if( NOT MPI_Fortran_LIBRARIES OR
-        "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
+    if( NOT MPI_Fortran_LIBRARIES OR "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
       # msmpi.lib should be located one of:
       # - C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\[x86|x64]
       # - %vcpkg%/installed/x64-windows/[debug]/lib
@@ -514,49 +510,42 @@ function( cafs_fix_mpi_library )
 
     # Sanity check
     if( MPI_gfortran_LIBRARIES )
-      set( MPI_gfortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-        "msmpi for gfortran" FORCE )
+      set( MPI_gfortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH "msmpi for gfortran"
+        FORCE )
     else()
-      message( FATAL_ERROR "Unable to find libmsmpi.a. This library must "
-      "be created from msmpi.dll and saved as a MinGW library. "
-      "For more help see https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment")
+      message( FATAL_ERROR "Unable to find libmsmpi.a. This library must be created from msmpi.dll"
+        " and saved as a MinGW library. For more help see "
+        "https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment")
     endif()
 
     # 1. Create a new imported target to represent MPI::CAFS
     add_library(MPI::MPI_cafs SHARED IMPORTED)
     set_target_properties(MPI::MPI_cafs PROPERTIES
       IMPORTED_CONFIGURATIONS RELEASE
-      INTERFACE_INCLUDE_DIRECTORIES
-      "${MPI_C_HEADER_DIR};${MPI_mpifptr_INCLUDE_DIR}"
+      INTERFACE_INCLUDE_DIRECTORIES   "${MPI_C_HEADER_DIR};${MPI_mpifptr_INCLUDE_DIR}"
       IMPORTED_IMPLIB_RELEASE         "${MPI_gfortran_LIBRARIES}"
       IMPORTED_LOCATION_RELEASE       "${MPI_gfortran_LIBRARIES}" )
     # 2. Strip MPI deps from Lib_c4
-    set_target_properties( Lib_c4 PROPERTIES
-      INTERFACE_LINK_LIBRARIES "Lib_dsxx;MPI::MPI_cafs" )
+    set_target_properties( Lib_c4 PROPERTIES INTERFACE_LINK_LIBRARIES "Lib_dsxx;MPI::MPI_cafs" )
 
     # Force '-fno-range-check' gfortran compiler flag
-    foreach( comp_opt FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_RELWITHDEBINFO
-      MINSIZEREL )
-      if( "${CMAKE_Fortran_${comp_opt}}" MATCHES "frange-check" )
-        string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_${comp_opt}
-          ${CMAKE_Fortran_${comp_opt}} )
-      else()
-        set( CMAKE_Fortran_${comp_opt}
-          "${CMAKE_Fortran_${comp_opt}} -fno-range-check")
-      endif()
-      set( CMAKE_Fortran_${comp_opt} "${CMAKE_Fortran_${comp_opt}}"
-        CACHE STRING "Compiler flags." FORCE )
-    endforeach()
+    if( "${CMAKE_Fortran_FLAGS_DEBUG}" MATCHES "frange-check" )
+      string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
+        ${CMAKE_Fortran_FLAGS_DEBUG} )
+    else()
+      string( APPEND CMAKE_Fortran_FLAGS_DEBUG " -fno-range-check")
+    endif()
+    set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}" PARENT_SCOPE )
     if(verbose)
-      message("CAFS: MPI_gfortran_LIBRARIES= ${MPI_gfortran_LIBRARIES}")
+      message("CAFS: MPI_gfortran_LIBRARIES= ${MPI_gfortran_LIBRARIES}"
+      "\n      CMAKE_Fortran_FLAGS_DEBUG = ${CMAKE_Fortran_FLAGS_DEBUG}")
     endif()
   endif()
 
 endfunction(cafs_fix_mpi_library)
 
 #--------------------------------------------------------------------------------------------------#
-# Create imported libraries owned by the Visual Studio project to be used in the
-# CAFS subproject.
+# Create imported libraries owned by the Visual Studio project to be used in the CAFS subproject.
 #--------------------------------------------------------------------------------------------------#
 function( cafs_create_imported_targets targetName libName targetPath linkLang)
 
@@ -687,30 +676,27 @@ function(init_build_system_state)
   set(options)
   set(oneValueArgs PROJECT )
   set(multiValueArgs)
-  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}"
-    ${ARGN})
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if( NOT ARGS_PROJECT )
     set(ARGS_PROJECT "Draco")
     set( draco_DIR ${Draco_SOURCE_DIR}/config )
   endif()
 
-  # If the current generator/system already supports Fortran, then simply add
-  # the requested directory to the project.
+  # If the current generator/system already supports Fortran, then simply add the requested
+  # directory to the project.
   if( _LANGUAGES_ MATCHES Fortran OR
       (MSVC AND "${CMAKE_Fortran_COMPILER}" MATCHES ifort ) )
     return()
   endif()
 
-  # CMake does not support storing a list of lists when sending data to a macro.
-  # Because Draco_TPL_INCLUDE_DIRS is a list and we want to stuff it into the
-  # list build_system_state, recode Draco_TPL_INCLUDE_DIRS by replacing
-  # semicolons with triple underscores.  The list will be reconstructed in the
-  # subdirectory's CMakeLists.txt.
-  string( REGEX REPLACE ";" "___" tmp
-    "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
+  # CMake does not support storing a list of lists when sending data to a macro. Because
+  # Draco_TPL_INCLUDE_DIRS is a list and we want to stuff it into the list build_system_state,
+  # recode Draco_TPL_INCLUDE_DIRS by replacing semicolons with triple underscores.  The list will be
+  # reconstructed in the subdirectory's CMakeLists.txt.
+  string( REGEX REPLACE ";" "___" tmp "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
 
-  # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
-  # will need some of the current build system parameters:
+  # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja) will need some of the
+  # current build system parameters:
   set( build_system_state
     "-DDRACO_C4=${DRACO_C4}"
     "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
@@ -718,17 +704,16 @@ function(init_build_system_state)
     "-Ddraco_DIR=${draco_DIR}")
   if( ${DRACO_C4} MATCHES "MPI" )
     list( APPEND build_system_state
-    "-DMPI_C_LIBRARIES=${MPI_C_LIBRARIES}"
-    "-DMPI_C_INCLUDE_DIRS=${MPI_C_INCLUDE_DIRS}" )
+      "-DMPI_C_LIBRARIES=${MPI_C_LIBRARIES}"
+      "-DMPI_C_INCLUDE_DIRS=${MPI_C_INCLUDE_DIRS}" )
   endif()
   if( WIN32 )
-    # For Win32 builds, DLL and applications are built in the directory
-    # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+    # For Win32 builds, DLL and applications are built in the directory specified by
+    # CMAKE_RUNTIME_OUTPUT_DIRECTORY.
     list( APPEND build_system_state
       "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${${ARGS_PROJECT}_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
     if(CMAKE_TOOLCHAIN_FILE)
-      list( APPEND build_system_state
-        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+      list( APPEND build_system_state "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
     endif()
   else()
     list( APPEND build_system_state "-DHAVE_CUDA=${HAVE_CUDA}" )
@@ -741,11 +726,10 @@ endfunction()
 #--------------------------------------------------------------------------------------------------#
 # Capture boilerplate setup for Fortran-only directories built with CAFS
 # 1. Ensure that draco/config is listed in CMAKE_MODULE_PATH
-# 2. Include basic build system setup routines that define helper macros used
-#    by the main Draco build system (do platoform_checks, compilerEnv, vendors,
-#    etc.)
-# 3. Define draco_BINARY_DIR and create local import targets for common
-#    dependencies like Lib_dsxx and Lib_c4.
+# 2. Include basic build system setup routines that define helper macros used by the main Draco
+#    build system (do platoform_checks, compilerEnv, vendors, etc.)
+# 3. Define draco_BINARY_DIR and create local import targets for common dependencies like Lib_dsxx
+#    and Lib_c4.
 # 4. Include extra directories to find header files.
 #--------------------------------------------------------------------------------------------------#
 macro(CAFS_Fortran_dir_boilerplate_setup)
@@ -754,8 +738,7 @@ macro(CAFS_Fortran_dir_boilerplate_setup)
   set(options)
   set(oneValueArgs PROJECT )
   set(multiValueArgs)
-  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}"
-    ${ARGN})
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if( NOT ARGS_PROJECT )
     set(ARGS_PROJECT "Draco")
   endif()
@@ -764,15 +747,13 @@ macro(CAFS_Fortran_dir_boilerplate_setup)
 
     # Build system configuration files are located here.
     if( NOT DEFINED draco_DIR OR NOT EXISTS ${draco_DIR} )
-      message( FATAL_ERROR "can't find draco/config directory at draco_DIR = "
-        "\"${draco_DIR}\"" )
+      message( FATAL_ERROR "can't find draco/config directory at draco_DIR = \"${draco_DIR}\"" )
     endif()
 
-    # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see
-    # api/CMakeLists.txt) by replacing triple underscores with a semicolon.
-    # This must be done before calling find_package(draco)
-    string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
-      "${Draco_TPL_INCLUDE_DIRS}" )
+    # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see api/CMakeLists.txt) by
+    # replacing triple underscores with a semicolon. This must be done before calling
+    # find_package(draco)
+    string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS "${Draco_TPL_INCLUDE_DIRS}" )
 
     if( NOT ARGS_PROJECT STREQUAL "Draco" )
       set(CROD "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -781,21 +762,18 @@ macro(CAFS_Fortran_dir_boilerplate_setup)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CROD}")
       unset(CROD)
     else()
-      get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../..
-        ABSOLUTE )
-      cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
-        "${draco_BINARY_DIR}/src/ds++" CXX )
-      cafs_create_imported_targets( Lib_c4 "rtt_c4"
-        "${draco_BINARY_DIR}/src/c4" CXX )
+      get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
+      cafs_create_imported_targets( Lib_dsxx "rtt_ds++" "${draco_BINARY_DIR}/src/ds++" CXX )
+      cafs_create_imported_targets( Lib_c4 "rtt_c4" "${draco_BINARY_DIR}/src/c4" CXX )
 
-      # If we get here, we also need to use the Draco scripts to setup compiler
-      # flags and MPI options
+      # If we get here, we also need to use the Draco scripts to setup compiler flags and MPI
+      # options.
       include( buildEnv )
       dbsSetDefaults()
       # On Win32, set the default top level output directory:
       if(WIN32)
-        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE}
-          CACHE PATH "Build runtime objects at this location.")
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE} CACHE PATH
+          "Build runtime objects at this location.")
       endif()
       include( platform_checks )
       include( compilerEnv )
@@ -809,43 +787,23 @@ macro(CAFS_Fortran_dir_boilerplate_setup)
 endmacro(CAFS_Fortran_dir_boilerplate_setup)
 
 #--------------------------------------------------------------------------------------------------#
-# Capture MPI-specific boilerplate setup for Fortran-only directories built
-# with CAFS
+# Capture MPI-specific boilerplate setup for Fortran-only directories built with CAFS
 # 1. Call Draco's setupMPILibraries() to discover and configure MPI for use.
-# 2. For MSVC+MSYS-gfortran, do some extra MPI setup to help this project
-#    find MPI's headers and libraries.
+# 2. For MSVC+MSYS-gfortran, do some extra MPI setup to help this project find MPI's headers and
+#    libraries.
 # 3. Sets and returns CAFS_MPI_DEPS
 #--------------------------------------------------------------------------------------------------#
 macro(CAFS_Fortran_dir_MPI_setup)
 
   if( "${DRACO_C4}" STREQUAL "MPI")
-    # unset( CAFS_MPI_DEPS )
     # CAFS setup unique to this directory; vendor discovery
     setupMPILibraries()
 
-    # Link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll,
-    # and ensure that the compiler option '-frange-check' is disabled.
+    # Link to msys64 formatted msmpi.a instead of VS formatted msmpi.lib/dll, and ensure that the
+    # compiler option '-frange-check' is disabled.
     cafs_fix_mpi_library()
 
-    # Directories to search for include directives
-    # if( DEFINED MPI_Fortran_INCLUDE_PATH )
-    #   # Only include directories if mpif.h is found.
-    #   set( mpifh_found FALSE )
-    #   foreach( dir ${MPI_Fortran_INCLUDE_PATH} )
-    #     if( EXISTS ${dir}/mpif.h )
-    #       set( mpifh_found TRUE )
-    #     endif()
-    #   endforeach()
-    #   if( mpifh_found )
-    #     include_directories( "${MPI_Fortran_INCLUDE_PATH}" )
-    #   endif()
-    # endif()
     add_definitions( -DC4_MPI )
-    # if(MPI_gfortran_LIBRARIES)
-    #   set( CAFS_MPI_DEPS ${MPI_gfortran_LIBRARIES} )
-    # else()
-    #   set( CAFS_MPI_DEPS ${MPI_Fortran_LIBRARIES} )
-    # endif()
   endif()
 
 endmacro(CAFS_Fortran_dir_MPI_setup)

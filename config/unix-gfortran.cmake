@@ -8,17 +8,6 @@
 
 include_guard(GLOBAL)
 
-if( NOT Fortran_FLAGS_INITIALIZED )
-  # gfortran < 4.7 won't compile Jayenne
-  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE STRING
-  "Fortran compiler version string" FORCE )
-  if( "${CMAKE_Fortran_COMPILER_VERSION}" VERSION_LESS "4.7" )
-    message( FATAL_ERROR "*** Compiler incompatibility: gfortran < 4.7 will not compile this "
-      "code. You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}." )
-  endif()
-  mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
-endif()
-
 #
 # Compiler Flags
 #
