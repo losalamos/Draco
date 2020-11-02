@@ -457,6 +457,7 @@ endmacro()
 # Refs:
 # - https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/
 # - https://github.com/KratosMultiphysics/Kratos/wiki/How-to-use-Clang-Tidy-to-automatically-correct-code
+# - https://www.kdab.com/clang-tidy-part-1-modernize-source-code-using-c11c14/
 #--------------------------------------------------------------------------------------------------#
 macro(dbsSetupStaticAnalyzers)
 
