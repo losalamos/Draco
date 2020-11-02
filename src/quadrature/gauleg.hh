@@ -62,7 +62,7 @@ void gauleg(
   using std::cos;
   using std::numeric_limits;
 
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   Require(n > 0);
   Require(x2 > x1);

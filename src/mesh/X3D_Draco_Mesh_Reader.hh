@@ -45,8 +45,8 @@ namespace rtt_mesh {
 class X3D_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 public:
   // >>> TYPEDEFS
-  typedef std::pair<std::string, std::vector<std::string>> Parsed_Element;
-  typedef std::vector<Parsed_Element> Parsed_Elements;
+  using Parsed_Element = std::pair<std::string, std::vector<std::string>>;
+  using Parsed_Elements = std::vector<Parsed_Element>;
 
 private:
   // >>> DATA

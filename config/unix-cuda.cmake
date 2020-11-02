@@ -45,8 +45,9 @@ endif()
 if( NOT CUDA_FLAGS_INITIALIZED )
 
   set( CUDA_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-  set( CMAKE_CUDA_FLAGS "${Draco_CUDA_ARCH} --expt-relaxed-constexpr")
-    string(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda")
+
+  string(APPEND CMAKE_CUDA_FLAGS " ${Draco_CUDA_ARCH} --expt-relaxed-constexpr")
+  string(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda")
   if( CMAKE_CXX_COMPILER_ID MATCHES "XL")
     string(APPEND CMAKE_CUDA_FLAGS " -DCUB_IGNORE_DEPRECATED_CPP_DIALECT -DTHRUST_IGNORE_DEPRECATED_CPP_DIALECT")
     string(APPEND CMAKE_CUDA_FLAGS " -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -std=c++14")
@@ -65,19 +66,10 @@ if( NOT CUDA_FLAGS_INITIALIZED )
 
 endif()
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_CUDA_FLAGS                "${CMAKE_CUDA_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_DEBUG          "${CMAKE_CUDA_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_RELEASE        "${CMAKE_CUDA_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_MINSIZEREL     "${CMAKE_CUDA_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_RELWITHDEBINFO "${CMAKE_CUDA_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
+deduplicate_flags(CMAKE_CUDA_FLAGS)
+force_compiler_flags_to_cache("CUDA")
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-cuda.cmake

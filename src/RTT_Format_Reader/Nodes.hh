@@ -19,12 +19,12 @@ namespace rtt_RTT_Format_Reader {
  */
 class Nodes {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::vector<double> vector_dbl;
-  typedef std::vector<std::vector<double>> vector_vector_dbl;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_int = std::vector<int>;
+  using vector_vector_int = std::vector<std::vector<int>>;
+  using vector_dbl = std::vector<double>;
+  using vector_vector_dbl = std::vector<std::vector<double>>;
 
   const NodeFlags &nodeFlags;
   const Dims &dims;

@@ -65,8 +65,11 @@ endmacro()
 #--------------------------------------------------------------------------------------------------#
 # Force save compiler flags to CMakeCache.txt
 #--------------------------------------------------------------------------------------------------#
-function(force_compiler_flags_to_cache)
-  foreach(lang C CXX)
+function(force_compiler_flags_to_cache lang_list)
+  if( "${lang_list}x" STREQUAL "x")
+    message(FATAL_ERROR "argument lang_list is required. eg. \"C;CXX\"")
+  endif()
+  foreach(lang ${lang_list})
     foreach( flag FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO )
       set( CMAKE_${lang}_${flag} "${CMAKE_${lang}_${flag}}" CACHE STRING "compiler flags" FORCE )
     endforeach()

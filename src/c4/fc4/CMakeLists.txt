@@ -67,7 +67,7 @@ install( TARGETS Lib_c4_fc4 EXPORT draco-targets
   PUBLIC_HEADER DESTINATION "${DBSCFGDIR}include/fc4" )
 install( DIRECTORY ${fc4_BINARY_DIR}
   DESTINATION "${DBSCFGDIR}include"
-  FILES_MATCHING PATTERN "*.mod" 
+  FILES_MATCHING PATTERN "*.mod"
   PATTERN CMakeFiles EXCLUDE)
 
 #--------------------------------------------------------------------------------------------------#

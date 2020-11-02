@@ -33,15 +33,15 @@ namespace rtt_RTT_Format_Reader {
 
 class RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<double> vector_dbl;
-  typedef std::vector<std::vector<double>> vector_vector_dbl;
-  typedef std::vector<string> vector_str;
-  typedef std::set<unsigned> set_uint;
-  typedef std::vector<unsigned> vector_uint;
-  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_int = std::vector<int>;
+  using vector_dbl = std::vector<double>;
+  using vector_vector_dbl = std::vector<std::vector<double>>;
+  using vector_str = std::vector<string>;
+  using set_uint = std::set<unsigned int>;
+  using vector_uint = std::vector<unsigned int>;
+  using vector_vector_uint = std::vector<std::vector<unsigned int>>;
 
   // DATA
 private:

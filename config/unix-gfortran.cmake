@@ -8,17 +8,6 @@
 
 include_guard(GLOBAL)
 
-if( NOT Fortran_FLAGS_INITIALIZED )
-  # gfortran < 4.7 won't compile Jayenne
-  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE STRING
-  "Fortran compiler version string" FORCE )
-  if( "${CMAKE_Fortran_COMPILER_VERSION}" VERSION_LESS "4.7" )
-    message( FATAL_ERROR "*** Compiler incompatibility: gfortran < 4.7 will not compile this "
-      "code. You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}." )
-  endif()
-  mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
-endif()
-
 #
 # Compiler Flags
 #
@@ -38,18 +27,12 @@ if( NOT Fortran_FLAGS_INITIALIZED )
    endif()
 endif()
 
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-#-------------------------------------------------------------------------------------------------#
-set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+deduplicate_flags(CMAKE_Fortran_FLAGS)
+force_compiler_flags_to_cache("Fortran")
 
-#
 # Toggle compiler flags for optional features
-#
 if( OpenMP_Fortran_FLAGS )
   toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 endif()

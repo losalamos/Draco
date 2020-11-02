@@ -3,10 +3,8 @@
  * \file   cdi_eospac/SesameTables.hh
  * \author Kelly Thompson
  * \date   Fri Apr  6 08:57:48 2001
- * \brief  Header file for SesameTables (mapping material IDs
- *         to Sesame table indexes).
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \brief  Header file for SesameTables (mapping material IDs to Sesame table indexes).
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_eospac_SesameTables_hh
@@ -23,18 +21,16 @@ namespace rtt_cdi_eospac {
 /*!
  * \class SesameTables
  *
- * \brief This is a helper class for Eospac.  It tells Eospac what Sesame data
- *        is being requested and what lookup tables to use.
+ * \brief This is a helper class for Eospac.  It tells Eospac what Sesame data is being requested
+ *        and what lookup tables to use.
  *
- * \sa The web page for <a
- *     href="http://xweb.lanl.gov/PROJECTS/DATA/eos/">EOSPAC</a>.
+ * \sa The web page for <a href="http://xweb.lanl.gov/PROJECTS/DATA/eos/">EOSPAC</a>.
  *
- * Each sesame material definition has 16 data tables (actually material
- * identifiers) that define its state.  At least one table must be defined for
- * this to be a valid object.  This list of tables is used by the Eospac
- * constructor to determine what Sesame table data to cache.  There are 37
- * return types defined by EOSPAC.  Some data tables provide information for
- * more than one return type.
+ * Each sesame material definition has 16 data tables (actually material identifiers) that define
+ * its state.  At least one table must be defined for this to be a valid object.  This list of
+ * tables is used by the Eospac constructor to determine what Sesame table data to cache.  There are
+ * 37 return types defined by EOSPAC.  Some data tables provide information for more than one return
+ * type.
  *
  * \sa cdi_eospac/test/tEospac.cc
  */
@@ -49,14 +45,12 @@ class SesameTables {
   /*!
    * \brief Map from EOSPAC data type to material identifier.
    *
-   * Each of the enumerated EOSPAC data types can have a different SesameTable
-   * material identifier.  This vector contains a list of these material IDs.
+   * Each of the enumerated EOSPAC data types can have a different SesameTable material identifier.
+   * This vector contains a list of these material IDs.
    */
   std::map<EOS_INTEGER, unsigned> matMap;
-  // std::vector< unsigned > matMap;
 
-  //! Toggle list to identify which data types have been requested
-  // (materialID, data type)
+  //! Toggle list to identify which data types have been requested (materialID, data type)
   std::map<unsigned, std::vector<EOS_INTEGER>> rtMap;
 
 public:
@@ -74,8 +68,7 @@ public:
   SesameTables()
       : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
         matMap(), rtMap(), tableName(initializeTableNames(numReturnTypes)),
-        tableDescription(
-            initializeTableDescriptions(numReturnTypes)) { /* empty */
+        tableDescription(initializeTableDescriptions(numReturnTypes)) { /* empty */
   }
 
   //! Construct by unpacking a vector<char> stream.
@@ -178,8 +171,7 @@ public:
   //! Return the enumerated data type associated with the integer index.
   std::vector<EOS_INTEGER> returnTypes(unsigned const index) const;
 
-  //! Return a list of table/material identifiers associated with this
-  //! SesameTables object.
+  //! Return a list of table/material identifiers associated with this SesameTables object.
   std::vector<unsigned> matList() const {
     std::vector<unsigned> mlist;
     for (auto const &it : rtMap)
@@ -195,8 +187,7 @@ public:
 
   // implementation
   static std::vector<std::string> initializeTableNames(size_t const datasize);
-  static std::vector<std::string>
-  initializeTableDescriptions(size_t const datasize);
+  static std::vector<std::string> initializeTableDescriptions(size_t const datasize);
 
 }; // end class SesameTables
 

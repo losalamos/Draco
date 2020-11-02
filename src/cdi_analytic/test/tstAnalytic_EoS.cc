@@ -28,7 +28,7 @@ using std::dynamic_pointer_cast;
 //------------------------------------------------------------------------------------------------//
 
 void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   // make an analytic model (polynomial specific heats)
   // elec specific heat = a + bT^c

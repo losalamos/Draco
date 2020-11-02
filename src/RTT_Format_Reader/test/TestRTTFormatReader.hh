@@ -15,7 +15,7 @@
 #include <map>
 
 using rtt_dsxx::UnitTest;
-typedef rtt_RTT_Format_Reader::RTT_Format_Reader RTT_Format_Reader;
+using RTT_Format_Reader = rtt_RTT_Format_Reader::RTT_Format_Reader;
 
 enum Meshes { DEFINED, MESHES_LASTENTRY };
 
