@@ -68,16 +68,14 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
   vector<double> values = {0.3247333291470, 0.3224333221471, 0.3324333522912};
   vector<double> const reference(values);
 
-  if (soft_equiv(values.begin(), values.end(), reference.begin(),
-                 reference.end()))
+  if (soft_equiv(values.begin(), values.end(), reference.begin(), reference.end()))
     PASSMSG("Passed vector equivalence test.");
   else
     ITFAILS;
 
   // modify one value (delta < tolerance )
   values[1] += 1.0e-13;
-  if (!soft_equiv(values.begin(), values.end(), reference.begin(),
-                  reference.end(), 1.e-13))
+  if (!soft_equiv(values.begin(), values.end(), reference.begin(), reference.end(), 1.e-13))
     PASSMSG("Passed vector equivalence precision test.");
   else
     ITFAILS;
@@ -93,26 +91,21 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
   else
     ITFAILS;
 
-  FAIL_IF_NOT(
-      soft_equiv(reference.begin(), reference.end(), v.begin(), v.end()));
+  FAIL_IF_NOT(soft_equiv(reference.begin(), reference.end(), v.begin(), v.end()));
 
   // Check incompatible size
-  FAIL_IF(
-      soft_equiv(reference.begin(), reference.end(), v.begin() + 1, v.end()));
+  FAIL_IF(soft_equiv(reference.begin(), reference.end(), v.begin() + 1, v.end()));
 
   // modify one value (delta < tolerance )
   v[1] += 1.0e-13;
-  if (!soft_equiv(v.begin(), v.end(), reference.begin(), reference.end(),
-                  1.e-13))
+  if (!soft_equiv(v.begin(), v.end(), reference.begin(), reference.end(), 1.e-13))
     PASSMSG("Passed vector-pointer equivalence precision test.");
   else
     ITFAILS;
 
   // C++ std::array containers
-  std::array<double, 3> cppa_vals{
-      {0.3247333291470, 0.3224333221471, 0.3324333522912}};
-  if (soft_equiv(cppa_vals.begin(), cppa_vals.end(), reference.begin(),
-                 reference.end()))
+  std::array<double, 3> cppa_vals{{0.3247333291470, 0.3224333221471, 0.3324333522912}};
+  if (soft_equiv(cppa_vals.begin(), cppa_vals.end(), reference.begin(), reference.end()))
     PASSMSG("Passed std::array<int,3> equivalence test.");
   else
     ITFAILS;
@@ -134,22 +127,20 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
 
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest &ut) {
 
-  vector<vector<double>> values = {
-      {0.3247333291470, 0.3224333221471, 0.3324333522912},
-      {0.3247333292470, 0.3224333222471, 0.3324333523912},
-      {0.3247333293470, 0.3224333223471, 0.3324333524912}};
+  vector<vector<double>> values = {{0.3247333291470, 0.3224333221471, 0.3324333522912},
+                                   {0.3247333292470, 0.3224333222471, 0.3324333523912},
+                                   {0.3247333293470, 0.3224333223471, 0.3324333524912}};
   vector<vector<double>> const reference = values;
 
-  if (soft_equiv_deep<2>().equiv(values.begin(), values.end(),
-                                 reference.begin(), reference.end()))
+  if (soft_equiv_deep<2>().equiv(values.begin(), values.end(), reference.begin(), reference.end()))
     PASSMSG("Passed vector<vector<double>> equivalence test.");
   else
     ITFAILS;
 
   // Soft_Equiv should still pass
   values[0][1] += 1.0e-13;
-  if (!soft_equiv_deep<2>().equiv(values.begin(), values.end(),
-                                  reference.begin(), reference.end(), 1.e-13))
+  if (!soft_equiv_deep<2>().equiv(values.begin(), values.end(), reference.begin(), reference.end(),
+                                  1.e-13))
     PASSMSG("Passed vector<vector<double>> equivalence precision test.");
   else
     ITFAILS;
@@ -171,19 +162,16 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest &ut) {
   //     ITFAILS;
 
   // Test 3-D array
-  vector<vector<vector<double>>> const ref = {{{0.1, 0.2}, {0.3, 0.4}},
-                                              {{1.1, 1.2}, {1.3, 1.4}},
-                                              {{2.1, 2.2}, {2.3, 2.4}}};
+  vector<vector<vector<double>>> const ref = {
+      {{0.1, 0.2}, {0.3, 0.4}}, {{1.1, 1.2}, {1.3, 1.4}}, {{2.1, 2.2}, {2.3, 2.4}}};
   vector<vector<vector<double>>> val = ref;
 
-  if (soft_equiv_deep<3>().equiv(val.begin(), val.end(), ref.begin(),
-                                 ref.end()))
+  if (soft_equiv_deep<3>().equiv(val.begin(), val.end(), ref.begin(), ref.end()))
     PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
   else
     ITFAILS;
 
-  if (!soft_equiv_deep<3>().equiv(val.begin(), val.end(), ref.begin() + 1,
-                                  ref.end()))
+  if (!soft_equiv_deep<3>().equiv(val.begin(), val.end(), ref.begin() + 1, ref.end()))
     PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
   else
     ITFAILS;

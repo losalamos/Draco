@@ -60,11 +60,9 @@ String_Token_Stream::String_Token_Stream(string &&text)
  *        breaking whitespace. This has the effect of forcing all keywords to
  *        consist of a single identifier.
  */
-String_Token_Stream::String_Token_Stream(string const &text,
-                                         set<char> const &ws,
+String_Token_Stream::String_Token_Stream(string const &text, set<char> const &ws,
                                          bool const no_nonbreaking_ws)
-    : Text_Token_Stream(ws, no_nonbreaking_ws), text_(text), pos_(0),
-      messages_(std::string()) {
+    : Text_Token_Stream(ws, no_nonbreaking_ws), text_(text), pos_(0), messages_(std::string()) {
   Ensure(check_class_invariants());
   Ensure(whitespace() == ws);
   Ensure(this->text() == text);
@@ -169,9 +167,7 @@ void String_Token_Stream::rewind() {
 }
 
 //------------------------------------------------------------------------------------------------//
-bool String_Token_Stream::check_class_invariants() const {
-  return pos_ <= text_.length();
-}
+bool String_Token_Stream::check_class_invariants() const { return pos_ <= text_.length(); }
 
 //------------------------------------------------------------------------------------------------//
 /*!

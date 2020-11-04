@@ -25,8 +25,7 @@ using namespace rtt_parser;
 void tstExpression(UnitTest &ut) {
   // Create an expression as a String_Token_Stream.
 
-  string const expression_text =
-      "(((+1 && 1.3)||!(y<-m))/5+(2>1)*(r/m)*(2.7-1.1*(z/m))^2)*(t/s)";
+  string const expression_text = "(((+1 && 1.3)||!(y<-m))/5+(2>1)*(r/m)*(2.7-1.1*(z/m))^2)*(t/s)";
 
   String_Token_Stream tokens(expression_text);
 
@@ -44,8 +43,7 @@ void tstExpression(UnitTest &ut) {
   vars[2] = "z";
   vars[3] = "t";
 
-  std::shared_ptr<Expression const> expression =
-      Expression::parse(4, variable_map, tokens);
+  std::shared_ptr<Expression const> expression = Expression::parse(4, variable_map, tokens);
 
   if (tokens.error_count() == 0 && tokens.lookahead().type() == EXIT) {
     PASSMSG("expression successfully parsed");
@@ -57,8 +55,7 @@ void tstExpression(UnitTest &ut) {
   ostringstream expression_text_copy;
   expression->write(vars, expression_text_copy);
 
-  char const *expression_text_raw =
-      "((1&&1.3||!(y<-m))/5+(2>1)*r/m*pow(2.7-1.1*z/m,2))*t/s";
+  char const *expression_text_raw = "((1&&1.3||!(y<-m))/5+(2>1)*r/m*pow(2.7-1.1*z/m,2))*t/s";
   // changes slightly due to stripping of extraneous whitespace, parentheses,
   // and positive prefix
   if (expression_text_copy.str() == expression_text_raw) {
@@ -143,8 +140,7 @@ void tstExpression(UnitTest &ut) {
     FAILMSG("expression NOT successfully parsed");
 
   if (soft_equiv((*expression)(xs),
-                 20.0 *
-                     ((r >= 1.1) && ((z <= 1.5) || (r >= 2.0 && r <= 7.0))))) {
+                 20.0 * ((r >= 1.1) && ((z <= 1.5) || (r >= 2.0 && r <= 7.0))))) {
     PASSMSG("expression successfully evaluated");
   } else {
     FAILMSG("expression NOT successfully evaluated");
@@ -154,8 +150,7 @@ void tstExpression(UnitTest &ut) {
     ostringstream lexpression_text_copy;
     expression->write(vars, lexpression_text_copy);
 
-    char const *lexpression_text_raw =
-        "20*(r>=1.1*m&&z<=1.5*m||r>=2*m&&r<=7*m)";
+    char const *lexpression_text_raw = "20*(r>=1.1*m&&z<=1.5*m||r>=2*m&&r<=7*m)";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
     if (lexpression_text_copy.str() == lexpression_text_raw) {
@@ -184,8 +179,7 @@ void tstExpression(UnitTest &ut) {
   else
     FAILMSG("expression NOT successfully evaluated");
 
-  if (!expression->is_constant() && !expression->is_constant(0) &&
-      expression->is_constant(1))
+  if (!expression->is_constant() && !expression->is_constant(0) && expression->is_constant(1))
     PASSMSG("is_constant good");
   else
     FAILMSG("is_constant NOT good");
@@ -199,8 +193,7 @@ void tstExpression(UnitTest &ut) {
   else
     FAILMSG("expression NOT successfully parsed");
 
-  if (soft_equiv((*expression)(xs),
-                 exp(-0.5 * r) * (3 * cos(2 * y) + 5 * sin(3 * y)))) {
+  if (soft_equiv((*expression)(xs), exp(-0.5 * r) * (3 * cos(2 * y) + 5 * sin(3 * y)))) {
     PASSMSG("expression successfully evaluated");
   } else {
     FAILMSG("expression NOT successfully evaluated");
@@ -210,8 +203,7 @@ void tstExpression(UnitTest &ut) {
     ostringstream lexpression_text_copy;
     expression->write(vars, lexpression_text_copy);
 
-    char const *lexpression_text_raw =
-        "exp(-0.5*r/m)*(3*cos(2*y/m)+5*sin(3*y/m))";
+    char const *lexpression_text_raw = "exp(-0.5*r/m)*(3*cos(2*y/m)+5*sin(3*y/m))";
     // changes slightly due to stripping of extraneous whitespace, parentheses,
     // and positive prefix
     if (lexpression_text_copy.str() == lexpression_text_raw) {
@@ -256,8 +248,7 @@ void tstExpression(UnitTest &ut) {
   {
     tokens = String_Token_Stream("log(1.0) + cos(2.0) + exp(3.0) + sin(4.0)");
 
-    std::shared_ptr<Expression> lexpression =
-        Expression::parse(4, variable_map, tokens);
+    std::shared_ptr<Expression> lexpression = Expression::parse(4, variable_map, tokens);
 
     if (lexpression->is_constant(0))
       PASSMSG("expression successfully const tested");
@@ -272,11 +263,9 @@ void tstExpression(UnitTest &ut) {
   }
 
   {
-    tokens = String_Token_Stream(
-        "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
+    tokens = String_Token_Stream("(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
 
-    std::shared_ptr<Expression> lexpression =
-        Expression::parse(4, variable_map, tokens);
+    std::shared_ptr<Expression> lexpression = Expression::parse(4, variable_map, tokens);
 
     if (lexpression->is_constant(0))
       PASSMSG("expression successfully const tested");
@@ -307,14 +296,11 @@ void tstExpression(UnitTest &ut) {
   }
 
   {
-    tokens = String_Token_Stream(
-        "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(jerk*sh)");
+    tokens = String_Token_Stream("(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(jerk*sh)");
 
-    std::shared_ptr<Expression> lexpression =
-        Expression::parse(4, variable_map, tokens);
+    std::shared_ptr<Expression> lexpression = Expression::parse(4, variable_map, tokens);
 
-    ut.check(soft_equiv((*lexpression)(xs),
-                        (cos(2.0) + exp(3.0) + sin(4.0)) / (1e9 * 1e-8)),
+    ut.check(soft_equiv((*lexpression)(xs), (cos(2.0) + exp(3.0) + sin(4.0)) / (1e9 * 1e-8)),
              "parse of exotic units");
   }
 }

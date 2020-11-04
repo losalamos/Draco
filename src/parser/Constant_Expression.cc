@@ -16,15 +16,14 @@ namespace {
 using namespace std;
 
 //------------------------------------------------------------------------------------------------//
-void upper(ostream &out, char const *const label, double const power,
-           bool &first, unsigned &icount) {
+void upper(ostream &out, char const *const label, double const power, bool &first,
+           unsigned &icount) {
   if (power > 0.0) {
     if (!first) {
       out << '*';
     }
     first = false;
-    if (rtt_dsxx::soft_equiv(power, trunc(power),
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(power, trunc(power), std::numeric_limits<double>::epsilon())) {
       out << label;
       for (unsigned i = 1; i < power; ++i) {
         out << '*' << label;
@@ -38,8 +37,7 @@ void upper(ostream &out, char const *const label, double const power,
 }
 
 //------------------------------------------------------------------------------------------------//
-void lower(ostream &out, char const *const label, double const power,
-           bool &first) {
+void lower(ostream &out, char const *const label, double const power, bool &first) {
   if (power < 0.0) {
     if (!first) {
       out << '*';

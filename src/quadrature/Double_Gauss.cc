@@ -78,21 +78,18 @@ unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
 
 //------------------------------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const {
-  string Result = indent + "type = double gauss" + indent +
-                  "  order = " + to_string(sn_order()) + indent + "end";
+  string Result = indent + "type = double gauss" + indent + "  order = " + to_string(sn_order()) +
+                  indent + "end";
 
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
-bool Double_Gauss::check_class_invariants() const {
-  return sn_order() > 0 && sn_order() % 2 == 0;
-}
+bool Double_Gauss::check_class_invariants() const { return sn_order() > 0 && sn_order() % 2 == 0; }
 
 //------------------------------------------------------------------------------------------------//
 /* virtual */
-vector<Ordinate>
-Double_Gauss::create_level_ordinates_(double const norm) const {
+vector<Ordinate> Double_Gauss::create_level_ordinates_(double const norm) const {
   // Preconditions checked in create_ordinate_set
 
   unsigned const numPoints(sn_order());

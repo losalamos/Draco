@@ -73,9 +73,7 @@ namespace rtt_c4 {
 
 #define SYSCTL_CORE_COUNT "machdep.cpu.core_count"
 
-typedef struct cpu_set {
-  uint64_t count;
-} cpu_set_t;
+using cpu_set_t = struct cpu_set { uint64_t count; };
 
 static inline void CPU_ZERO(cpu_set_t *cs) { cs->count = 0; }
 
@@ -86,8 +84,7 @@ static inline bool CPU_ISSET(int num, cpu_set_t *cs) {
   return (cs->count & teh_bit) != 0;
 }
 
-inline int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/,
-                             cpu_set_t *cpu_set) {
+inline int sched_getaffinity(pid_t /*pid*/, size_t /*cpu_size*/, cpu_set_t *cpu_set) {
   int64_t core_count = 0;
   size_t len = sizeof(core_count);
   int ret = sysctlbyname(SYSCTL_CORE_COUNT, &core_count, &len, 0, 0);
@@ -113,14 +110,11 @@ inline std::string cpuset_to_string(unsigned const num_cpu) {
   // return value;
   std::ostringstream cpuset;
   // The thread affinity bitmask functions used below are limited to 64.
-  Insist(
-      num_cpu <= 64,
-      "Might need to use alternate cpu-groups information with this fuction!");
+  Insist(num_cpu <= 64, "Might need to use alternate cpu-groups information with this fuction!");
 
   DWORD_PTR dwProcessAffinity;
   DWORD_PTR dwSystemAffinity;
-  bool ok = GetProcessAffinityMask(GetCurrentProcess(), &dwProcessAffinity,
-                                   &dwSystemAffinity);
+  bool ok = GetProcessAffinityMask(GetCurrentProcess(), &dwProcessAffinity, &dwSystemAffinity);
   Insist(ok, "GetProcessAffinityMask() failed!");
 
   // Convert the bitmask to an array of bools and then to a string to represent a CPU range

@@ -37,8 +37,7 @@ void tstgetfoobar(rtt_dsxx::UnitTest &ut) {
   bool def_foobar{false};
   std::string foobar;
 
-  std::tie(def_foobar, foobar) =
-      rtt_dsxx::get_env_val<std::string>("FOOBAR", foobar);
+  std::tie(def_foobar, foobar) = rtt_dsxx::get_env_val<std::string>("FOOBAR", foobar);
 
   FAIL_IF(def_foobar);
   FAIL_IF(foobar.size() > 1);

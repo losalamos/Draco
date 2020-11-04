@@ -17,8 +17,8 @@
 namespace rtt_linear {
 //! Update the QR decomposition of a square matrix.
 template <class RandomContainer>
-void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
-            RandomContainer &u, RandomContainer &v);
+void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n, RandomContainer &u,
+            RandomContainer &v);
 
 } // end namespace rtt_linear
 

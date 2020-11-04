@@ -30,9 +30,8 @@ using rtt_parser::Expression;
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
  */
-class Pseudo_Line_Analytic_MultigroupOpacity
-    : public Analytic_MultigroupOpacity,
-      public Pseudo_Line_Base {
+class Pseudo_Line_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity,
+                                               public Pseudo_Line_Base {
 private:
   Averaging averaging_;
   //! value of 0 indicates to use adaptive Romberg integration
@@ -42,30 +41,31 @@ private:
   friend class PLP_Functor; //!< used in calculation of Planck averages
 
 public:
-  Pseudo_Line_Analytic_MultigroupOpacity(
-      sf_double const &group_bounds, rtt_cdi::Reaction reaction,
-      std::shared_ptr<Expression const> const &cont, unsigned number_of_lines,
-      double line_peak, double line_width, unsigned number_of_edges,
-      double edge_ratio, double Tref, double Tpow, double emin, double emax,
-      Averaging averaging, unsigned qpoints, unsigned seed);
+  Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds, rtt_cdi::Reaction reaction,
+                                         std::shared_ptr<Expression const> const &cont,
+                                         unsigned number_of_lines, double line_peak,
+                                         double line_width, unsigned number_of_edges,
+                                         double edge_ratio, double Tref, double Tpow, double emin,
+                                         double emax, Averaging averaging, unsigned qpoints,
+                                         unsigned seed);
 
   //! Constructor for packed state.
   explicit Pseudo_Line_Analytic_MultigroupOpacity(const sf_char &packed);
 
   //! Get the group opacities.
-  virtual sf_double getOpacity(double, double) const;
+  sf_double getOpacity(double, double) const override;
 
   //! Get the group opacity fields given a field of temperatures.
-  virtual vf_double getOpacity(const sf_double &, double) const;
+  vf_double getOpacity(const sf_double &, double) const override;
 
   //! Get the group opacity fields given a field of densities.
-  virtual vf_double getOpacity(double, const sf_double &) const;
+  vf_double getOpacity(double, const sf_double &) const override;
 
   //! Get the data description of the opacity.
-  virtual std_string getDataDescriptor() const;
+  std_string getDataDescriptor() const override;
 
   //! Pack up the class for persistence.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 } // end namespace rtt_cdi_analytic

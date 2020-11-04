@@ -48,8 +48,7 @@ void tstofpstream_bin(UnitTest &ut) {
 
   int pid = rtt_c4::node();
 
-  std::string filename("tstofpstream_" + std::to_string(rtt_c4::nodes()) +
-                       ".bin");
+  std::string filename("tstofpstream_" + std::to_string(rtt_c4::nodes()) + ".bin");
 
   // Binary write rank ids to file using ofpstream:
   {
@@ -67,8 +66,7 @@ void tstofpstream_bin(UnitTest &ut) {
       in.read(reinterpret_cast<char *>(&this_pid), sizeof(int));
       if (this_pid != a) {
         std::ostringstream msg;
-        msg << "Unexpected value for this_pid = " << this_pid
-            << ". Expected value a = " << a;
+        msg << "Unexpected value for this_pid = " << this_pid << ". Expected value a = " << a;
         FAILMSG(msg.str());
       }
     }

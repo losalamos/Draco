@@ -44,10 +44,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
 
   // Attempt to open the ipcress file.  Open at end of file (ate) so that we can
   // know the size of the binary file.
-  ipcressFileHandle.open(dataFilename.c_str(),
-                         std::ios::in | std::ios::binary | std::ios::ate);
-  Insist(ipcressFileHandle.is_open(),
-         "IpcressFile: Unable to open ipcress file.");
+  ipcressFileHandle.open(dataFilename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+  Insist(ipcressFileHandle.is_open(), "IpcressFile: Unable to open ipcress file.");
 
   // Save the size of the file (bytes) to check against value of toc[21].
   Remember(std::ifstream::pos_type sizeOfFile(ipcressFileHandle.tellg()););
@@ -148,10 +146,8 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
 
   // ensure a name is provided
   Insist(ipcressFile.size() > 0,
-         std::string("You must provide a filename when constructing an") +
-             " IpcressFile object.");
-  Insist(rtt_dsxx::fileExists(ipcressFile),
-         "Could not located requested ipcress file.");
+         std::string("You must provide a filename when constructing an") + " IpcressFile object.");
+  Insist(rtt_dsxx::fileExists(ipcressFile), "Could not located requested ipcress file.");
 
   // if the provided filename looks okay then use it.
   return ipcressFile;
@@ -164,8 +160,7 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
  * \param[in]  byte_offset offset into the ipcress file where the data exists.
  * \param[out] vdata       return value
  */
-void IpcressFile::read_strings(size_t const byte_offset,
-                               std::vector<std::string> &vdata) const {
+void IpcressFile::read_strings(size_t const byte_offset, std::vector<std::string> &vdata) const {
   Require(ipcressFileHandle.is_open());
 
   size_t const nitems(vdata.size());

@@ -15,6 +15,9 @@ set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
 project( Draco DESCRIPTION ${ddesc} VERSION 7.8 LANGUAGES CXX C)
 
+# Export compile commands for compiler tools
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 # Do not look for Fortran/CUDA for
 # 1. XCode based Generators, or
 # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will look for Fortran).

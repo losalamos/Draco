@@ -20,8 +20,7 @@ namespace rtt_c4 {
 #ifdef C4_MPI
 
 //------------------------------------------------------------------------------------------------//
-template <typename RandomAccessContainer>
-void Processor_Group::sum(RandomAccessContainer &x) {
+template <typename RandomAccessContainer> void Processor_Group::sum(RandomAccessContainer &x) {
   using T = typename RandomAccessContainer::value_type;
 
   // copy data into send buffer
@@ -29,9 +28,8 @@ void Processor_Group::sum(RandomAccessContainer &x) {
 
   // do global MPI reduction (result is on all processors) into x
   Check(y.size() < INT_MAX);
-  int status =
-      MPI_Allreduce(&y[0], &x[0], static_cast<int>(y.size()),
-                    rtt_c4::MPI_Traits<T>::element_type(), MPI_SUM, comm_);
+  int status = MPI_Allreduce(&y[0], &x[0], static_cast<int>(y.size()),
+                             rtt_c4::MPI_Traits<T>::element_type(), MPI_SUM, comm_);
 
   Insist(status == 0, "MPI_Allreduce failed");
 }
@@ -44,16 +42,14 @@ void Processor_Group::sum(RandomAccessContainer &x) {
  * \param[out] global Points to a region of storage of size N*this->size()
  */
 template <typename T>
-void Processor_Group::assemble_vector(std::vector<T> const &local,
-                                      std::vector<T> &global) const {
+void Processor_Group::assemble_vector(std::vector<T> const &local, std::vector<T> &global) const {
   global.resize(local.size() * size());
 
   Check(local.size() < INT_MAX);
   int status =
       MPI_Allgather(const_cast<T *>(&local[0]), static_cast<int>(local.size()),
                     rtt_c4::MPI_Traits<T>::element_type(), &global[0],
-                    static_cast<int>(local.size()),
-                    rtt_c4::MPI_Traits<T>::element_type(), comm_);
+                    static_cast<int>(local.size()), rtt_c4::MPI_Traits<T>::element_type(), comm_);
 
   Insist(status == 0, "MPI_Gather failed");
 }
@@ -67,11 +63,9 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
  * \param[in]  N      Number of local quantities to assemble.
  */
 template <typename T>
-void Processor_Group::assemble_vector(T const *local, T *global,
-                                      unsigned const N) const {
-  int status = MPI_Allgather(const_cast<T *>(local), N,
-                             rtt_c4::MPI_Traits<T>::element_type(), global, N,
-                             rtt_c4::MPI_Traits<T>::element_type(), comm_);
+void Processor_Group::assemble_vector(T const *local, T *global, unsigned const N) const {
+  int status = MPI_Allgather(const_cast<T *>(local), N, rtt_c4::MPI_Traits<T>::element_type(),
+                             global, N, rtt_c4::MPI_Traits<T>::element_type(), comm_);
 
   Insist(status == 0, "MPI_Gather failed");
 }
@@ -79,8 +73,7 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 #else // not C4_MPI
 
 //------------------------------------------------------------------------------------------------//
-template <typename RandomAccessContainer>
-void Processor_Group::sum(RandomAccessContainer & /*x*/) {
+template <typename RandomAccessContainer> void Processor_Group::sum(RandomAccessContainer & /*x*/) {
   // noop
 }
 
@@ -92,8 +85,7 @@ void Processor_Group::sum(RandomAccessContainer & /*x*/) {
  * \param[out] global Points to a region of storage of size N*this->size()
  */
 template <typename T>
-void Processor_Group::assemble_vector(std::vector<T> const &local,
-                                      std::vector<T> &global) const {
+void Processor_Group::assemble_vector(std::vector<T> const &local, std::vector<T> &global) const {
   global = local;
 }
 
@@ -106,8 +98,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
  * \param[in]  N      Number of local quantities to assemble.
  */
 template <typename T>
-void Processor_Group::assemble_vector(T const *local, T *global,
-                                      unsigned const N) const {
+void Processor_Group::assemble_vector(T const *local, T *global, unsigned const N) const {
   std::copy(local, local + N, global);
 }
 

@@ -25,8 +25,7 @@ using rtt_dsxx::soft_equiv;
 
 void test_fileio(rtt_dsxx::UnitTest &ut, const bool is_fformat_binary) {
 
-  string const filename("file_streams." +
-                        string(is_fformat_binary ? "binary" : "ascii"));
+  string const filename("file_streams." + string(is_fformat_binary ? "binary" : "ascii"));
 
   int i = 5;
   string s = "  a string with spaces  ";

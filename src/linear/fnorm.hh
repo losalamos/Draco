@@ -30,8 +30,7 @@ namespace rtt_linear {
  * \pre \c fvec.size()==x.size()
  */
 template <typename RandomContainer, typename Function_N_to_N>
-typename RandomContainer::value_type fnorm(const RandomContainer &x,
-                                           RandomContainer &fvec,
+typename RandomContainer::value_type fnorm(const RandomContainer &x, RandomContainer &fvec,
                                            const Function_N_to_N &vecfunc) {
   using rtt_dsxx::conj;
 

@@ -87,27 +87,22 @@ void tstutilities(UnitTest &ut) {
   std::array<double, 3> v;
   parse_vector(tokens, v.data());
   Token token = tokens.shift();
-  if (rtt_dsxx::soft_equiv(v[0], 3.0, eps) &&
-      rtt_dsxx::soft_equiv(v[1], 0.0, eps) &&
-      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD &&
-      token.text() == "stop")
+  if (rtt_dsxx::soft_equiv(v[0], 3.0, eps) && rtt_dsxx::soft_equiv(v[1], 0.0, eps) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD && token.text() == "stop")
     PASSMSG("1-D vector successfully parsed");
   else
     FAILMSG("1-D vector NOT successfully parsed");
 
   parse_vector(tokens, v.data());
   token = tokens.shift();
-  if (rtt_dsxx::soft_equiv(v[0], 1.0, eps) &&
-      rtt_dsxx::soft_equiv(v[1], 2.0, eps) &&
-      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD &&
-      token.text() == "stop")
+  if (rtt_dsxx::soft_equiv(v[0], 1.0, eps) && rtt_dsxx::soft_equiv(v[1], 2.0, eps) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD && token.text() == "stop")
     PASSMSG("2-D vector successfully parsed");
   else
     FAILMSG("2-D vector NOT successfully parsed");
 
   parse_vector(tokens, v.data());
-  if (rtt_dsxx::soft_equiv(v[0], 4.0, eps) &&
-      rtt_dsxx::soft_equiv(v[1], 3.0, eps) &&
+  if (rtt_dsxx::soft_equiv(v[0], 4.0, eps) && rtt_dsxx::soft_equiv(v[1], 3.0, eps) &&
       rtt_dsxx::soft_equiv(v[2], 2.0, eps) && tokens.shift().text() == "stop")
     PASSMSG("3-D vector successfully parsed");
   else
@@ -116,8 +111,7 @@ void tstutilities(UnitTest &ut) {
   std::array<unsigned, 3> w;
   parse_unsigned_vector(tokens, w.data(), 3);
   token = tokens.shift();
-  if (w[0] == 3 && w[1] == 2 && w[2] == 1 && token.type() == KEYWORD &&
-      token.text() == "stop")
+  if (w[0] == 3 && w[1] == 2 && w[2] == 1 && token.type() == KEYWORD && token.text() == "stop")
     PASSMSG("Vector of unsigned successfully parsed");
   else
     FAILMSG("Vector of unsigned NOT successfully parsed");
@@ -310,8 +304,7 @@ void tstutilities(UnitTest &ut) {
     PASSMSG("temperature successfully parsed");
 
   Temp = parse_temperature(tokens);
-  if (tokens.error_count() != old_error_count ||
-      !soft_equiv(Temp, rtt_units::EV2K))
+  if (tokens.error_count() != old_error_count || !soft_equiv(Temp, rtt_units::EV2K))
     FAILMSG("temperature NOT successfully parsed");
   else
     PASSMSG("temperature successfully parsed");
@@ -567,8 +560,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit unity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, unity);
-    std::shared_ptr<Expression> lTemp =
-        parse_temperature(string, 1, variable_map);
+    std::shared_ptr<Expression> lTemp = parse_temperature(string, 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*lTemp)(x), 278.))
       PASSMSG("parsed temperature correctly");
@@ -580,8 +572,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit unity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, unity);
-    std::shared_ptr<Expression> lTemp =
-        parse_temperature(string, 1, variable_map);
+    std::shared_ptr<Expression> lTemp = parse_temperature(string, 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*lTemp)(x), 1.0 / rtt_units::boltzmannSI))
       PASSMSG("parsed temperature correctly");
@@ -593,8 +584,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit unity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, unity);
-    std::shared_ptr<Expression> lTemp =
-        parse_quantity(string, K, "temperature", 1, variable_map);
+    std::shared_ptr<Expression> lTemp = parse_quantity(string, K, "temperature", 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*lTemp)(x), 278.))
       PASSMSG("parsed temperature correctly");
@@ -725,8 +715,7 @@ void tstutilities(UnitTest &ut) {
     set_internal_unit_system(UnitSystem(UnitSystemType().X4()));
 
     local_Temp = parse_temperature(quantity_with_units);
-    if (quantity_with_units.error_count() == 0 &&
-        soft_equiv(local_Temp, 273.e-3 / EV2K))
+    if (quantity_with_units.error_count() == 0 && soft_equiv(local_Temp, 273.e-3 / EV2K))
       PASSMSG("parsed quantity with units to X4 correctly");
     else
       FAILMSG("did NOT quantity with units to X4 correctly");
@@ -743,8 +732,7 @@ void tstutilities(UnitTest &ut) {
     set_unit_expressions_are_required(false);
 
     local_Temp = parse_temperature(quantity_with_units);
-    if (quantity_with_units.error_count() == 0 &&
-        soft_equiv(local_Temp, 273.e-3 / EV2K))
+    if (quantity_with_units.error_count() == 0 && soft_equiv(local_Temp, 273.e-3 / EV2K))
       PASSMSG("parsed quantity with units to X4 correctly");
     else
       FAILMSG("did NOT quantity with units to X4 correctly");
@@ -865,8 +853,7 @@ void tstutilities(UnitTest &ut) {
 
     c = parse_quantity(expression_appending_units, erg * s, "action", 2U, vmap);
 
-    if (expression_with_units.error_count() == 0 &&
-        soft_equiv((*c)(var), 3.7 * 1e-7))
+    if (expression_with_units.error_count() == 0 && soft_equiv((*c)(var), 3.7 * 1e-7))
       PASSMSG("parsed expression appending units to SI correctly");
     else
       FAILMSG("did NOT expression appending units to SI correctly");
@@ -892,16 +879,14 @@ void tstutilities(UnitTest &ut) {
 
     c = parse_quantity(expression_appending_units, erg * s, "action", 2U, vmap);
 
-    if (expression_with_units.error_count() == 0 &&
-        soft_equiv((*c)(var), 3.7 * 1e-7))
+    if (expression_with_units.error_count() == 0 && soft_equiv((*c)(var), 3.7 * 1e-7))
       PASSMSG("parsed expression appending units to SI correctly");
     else
       FAILMSG("did NOT expression appending units to SI correctly");
     expression_appending_units.rewind();
 
     c = parse_quantity(bare_expression, erg * s, "action", 2U, vmap);
-    if (bare_expression.error_count() == 0 &&
-        soft_equiv((*c)(var), 0.5 * (1. + 2 * 1.)))
+    if (bare_expression.error_count() == 0 && soft_equiv((*c)(var), 0.5 * (1. + 2 * 1.)))
       PASSMSG("parsed bare expression to SI correctly");
     else
       FAILMSG("did NOT parse bare expression to SI correctly");
@@ -954,8 +939,7 @@ void tstutilities(UnitTest &ut) {
     expression_appending_units.rewind();
 
     c = parse_quantity(bare_expression, erg * s, "action", 2U, vmap);
-    if (bare_expression.error_count() == 0 &&
-        soft_equiv((*c)(var), 0.5 * (1. + 2 * 1.)))
+    if (bare_expression.error_count() == 0 && soft_equiv((*c)(var), 0.5 * (1. + 2 * 1.)))
       PASSMSG("parsed bare expression to SI correctly");
     else
       FAILMSG("did NOT parse bare expression to SI correctly");

@@ -58,8 +58,7 @@ void ipcress_file_read(std::string const &op_data_file) {
   try {
     spGF = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const & /*excpt*/) {
-    std::cerr << "Error: Can't open file " << op_data_file << ". Aborting"
-              << endl;
+    std::cerr << "Error: Can't open file " << op_data_file << ". Aborting" << endl;
     throw;
   }
 
@@ -76,8 +75,8 @@ void ipcress_file_read(std::string const &op_data_file) {
   cout << "=========================================\n"
        << "For Material " << i + 1 << " with ID number " << matIDs[i]
        << "\n=========================================" << endl;
-  auto spMgOp = std::make_shared<IpcressMultigroupOpacity>(
-      spGF, matIDs[i], rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
+  auto spMgOp = std::make_shared<IpcressMultigroupOpacity>(spGF, matIDs[i], rtt_cdi::ROSSELAND,
+                                                           rtt_cdi::TOTAL);
 
   // set precision
   cout.precision(7);
@@ -123,15 +122,14 @@ void ipcress_file_read(std::string const &op_data_file) {
     Insist((matID < numMaterials), "Invalid material index");
 
     double density(0.0);
-    cout << "Please enter a density from " << dens[0] << " to "
-         << dens[dens.size() - 1] << endl;
+    cout << "Please enter a density from " << dens[0] << " to " << dens[dens.size() - 1] << endl;
     std::cin >> density;
     if (density <= 0.0)
       break;
 
     double temperature(0.0);
-    cout << "Please select a temperature from " << temps[0] << " to "
-         << temps[temps.size() - 1] << endl;
+    cout << "Please select a temperature from " << temps[0] << " to " << temps[temps.size() - 1]
+         << endl;
     std::cin >> temperature;
     if (temperature <= 0.0)
       break;
@@ -147,50 +145,50 @@ void ipcress_file_read(std::string const &op_data_file) {
     Insist((selID < 6), "Invalid choice.");
 
     if (selID == 1) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::ROSSELAND,
+                                                        rtt_cdi::ABSORPTION);
       cout << "The Gray Rosseland Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
     } else if (selID == 2) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::PLANCK,
+                                                        rtt_cdi::ABSORPTION);
       cout << "The Gray Planck Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
 
     } else if (selID == 3) {
       auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(
           spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
       cout << "The Multigroup Rosseland Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is: " << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is: " << endl;
       std::vector<double> opData = spMGOp->getOpacity(temperature, density);
       cout << "Index \t Group Center \t\t Opacity" << endl;
       for (size_t g = 0; g < opData.size(); ++g)
-        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t "
-             << opData[g] << endl;
+        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t " << opData[g]
+             << endl;
     } else if (selID == 4) {
-      auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(
-          spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
+      auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(spGF, matIDs[matID], rtt_cdi::PLANCK,
+                                                               rtt_cdi::ABSORPTION);
       cout << "The Multigroup Planck Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is: " << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is: " << endl;
       std::vector<double> opData = spMGOp->getOpacity(temperature, density);
       cout << "Index \t Group Center  \t\t Opacity" << endl;
       for (size_t g = 0; g < opData.size(); ++g)
-        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t "
-             << opData[g] << endl;
+        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t " << opData[g]
+             << endl;
     }
     if (selID == 5) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::ROSSELAND,
+                                                        rtt_cdi::TOTAL);
       cout << "The Gray Rosseland Total Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
     }
   }
 
@@ -213,10 +211,9 @@ int main(int argc, char *argv[]) {
   help_strings['v'] = "print version information and exit.";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
-  std::string const helpstring(
-      "\nUsage: IpcressInterpreter [-hv] "
-      "<ipcress file>\nFollow the prompts to print opacity data to the "
-      "screen.");
+  std::string const helpstring("\nUsage: IpcressInterpreter [-hv] "
+                               "<ipcress file>\nFollow the prompts to print opacity data to the "
+                               "screen.");
 
   int c(0);
   while ((c = program_options()) != -1) {
@@ -226,8 +223,7 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'h': // --help
-      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring
-           << endl;
+      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring << endl;
       return 0;
     }
   }
@@ -239,8 +235,7 @@ int main(int argc, char *argv[]) {
     // >>> UNIT TESTS
     ipcress_file_read(filename);
   } catch (rtt_dsxx::assertion &excpt) {
-    cout << "While attempting to read an opacity file, " << excpt.what()
-         << endl;
+    cout << "While attempting to read an opacity file, " << excpt.what() << endl;
     return 1;
   }
 

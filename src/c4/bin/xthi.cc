@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
 
 #pragma omp critical
     {
-      std::cout << hostname << " :: Rank " << std::setfill('0') << std::setw(5)
-                << rank << ", Thread " << std::setfill('0') << std::setw(3)
-                << thread << ", core affinity = " << cpuset << std::endl;
+      std::cout << hostname << " :: Rank " << std::setfill('0') << std::setw(5) << rank
+                << ", Thread " << std::setfill('0') << std::setw(3) << thread
+                << ", core affinity = " << cpuset << std::endl;
     } // end omp critical
   }   // end omp parallel
 

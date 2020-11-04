@@ -4,8 +4,7 @@
  * \author James S. Warsa
  * \date   Fri Aug 19 12:31:47 2016
  * \brief  Testing the POLYHEDRON Element_Definition
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
@@ -25,12 +24,11 @@ public:
   //! Construct the predicate for a specified dimensionality.
   is_cell(size_t const dimensionality_in) : dimensionality(dimensionality_in) {}
 
-  /*! \brief Returns \c true if the specified type index has the predicate
-   *         dimensionality; \c false otherwise.
+  /*! \brief Returns \c true if the specified type index has the predicate dimensionality; \c false
+   *         otherwise.
    */
   bool operator()(Element_Definition::Element_Type const type) {
-    return (static_cast<unsigned>(Element_Definition(type).get_dimension()) ==
-            dimensionality);
+    return (static_cast<unsigned>(Element_Definition(type).get_dimension()) == dimensionality);
   }
 
 private:
@@ -59,21 +57,19 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       FAILMSG("Unexpected dimension.");
     }
 
-    vector<shared_ptr<Element_Definition>> const element_defs(
-        mesh->get_element_defs());
+    vector<shared_ptr<Element_Definition>> const element_defs(mesh->get_element_defs());
     for (size_t j = 0; j < element_defs.size(); ++j) {
       cout << "Element definition for element " << j << endl;
       element_defs[j]->print(cout);
     }
   }
 
-  //------------------------------------------------------------------------------------------------//
-  // Read polyhedron mesh file - this is the mesh that is of most interest in
-  // this test
+  //----------------------------------------------------------------------------------------------//
+  // Read polyhedron mesh file - this is the mesh that is of most interest in this test
   {
-    vector<string> more_filenames = {
-        "rttpolyhedron.mesh", "rttpolyhedron.2.mesh", "rttpolyhedron.2o.mesh",
-        "rttpolyhedron.3.mesh", "rttpolyhedron.4.mesh"};
+    vector<string> more_filenames = {"rttpolyhedron.mesh", "rttpolyhedron.2.mesh",
+                                     "rttpolyhedron.2o.mesh", "rttpolyhedron.3.mesh",
+                                     "rttpolyhedron.4.mesh"};
 
     for (unsigned i = 0; i < more_filenames.size(); ++i) {
       string filename(inpPath + more_filenames[i]);
@@ -91,12 +87,10 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       // full dimensionality of the mesh.
 
       size_t const ndim = mesh->get_dims_ndim();
-      vector<Element_Definition::Element_Type> const element_types(
-          mesh->get_element_types());
+      vector<Element_Definition::Element_Type> const element_types(mesh->get_element_types());
       vector<vector<unsigned>> const element_nodes(mesh->get_element_nodes());
       map<string, set<unsigned>> element_sets(mesh->get_element_sets());
-      vector<shared_ptr<Element_Definition>> const element_defs(
-          mesh->get_element_defs());
+      vector<shared_ptr<Element_Definition>> const element_defs(mesh->get_element_defs());
 
       if (ndim != 3) {
         FAILMSG("Unexpected dimension.");
@@ -111,8 +105,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
       // typeof(auto) =
       // iterator_traits<vector<Element_Definition::Element_Type>>::difference_type
-      auto const ncells =
-          count_if(element_types.begin(), element_types.end(), is_cell(ndim));
+      auto const ncells = count_if(element_types.begin(), element_types.end(), is_cell(ndim));
       size_t const mcells = mesh->get_dims_ncells();
       Check(ncells >= 0);
       Check(mcells < INT_MAX);
@@ -120,20 +113,17 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         FAILMSG("Unexpected number of cells.");
       } else {
         PASSMSG("Correct number of cells.");
-        std::cout << " There are " << ncells << " cells in the mesh"
-                  << std::endl;
+        std::cout << " There are " << ncells << " cells in the mesh" << std::endl;
       }
 
       Check(element_types.size() - ncells < UINT_MAX);
-      unsigned const nsides =
-          static_cast<unsigned>(element_types.size() - ncells);
+      unsigned const nsides = static_cast<unsigned>(element_types.size() - ncells);
       size_t const msides = mesh->get_dims_nsides();
       if (nsides != msides) {
         FAILMSG("Unexpected number of sides.");
       } else {
         PASSMSG("Correct number of sides.");
-        std::cout << " There are " << nsides << " sides in the mesh"
-                  << std::endl;
+        std::cout << " There are " << nsides << " sides in the mesh" << std::endl;
       }
 
       for (map<string, set<unsigned>>::const_iterator it = element_sets.begin();
@@ -143,24 +133,19 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         unsigned const representative_element = *it->second.begin();
 
         Element_Definition::Element_Type const type_index =
-            static_cast<Element_Definition::Element_Type>(
-                element_types[representative_element]);
+            static_cast<Element_Definition::Element_Type>(element_types[representative_element]);
 
-        shared_ptr<Element_Definition const> type(
-            new Element_Definition(type_index));
+        shared_ptr<Element_Definition const> type(new Element_Definition(type_index));
 
         if (type->get_dimension() == ndim) {
-          std::cout << " Elements with flags " + it->first
-                    << " are cell elements " << std::endl;
+          std::cout << " Elements with flags " + it->first << " are cell elements " << std::endl;
         } else {
           // It has to be a side flag.
           if (type->get_dimension() + 1 != ndim) {
-            throw invalid_argument(
-                " Elements with flags " + it->first +
-                " have the wrong dimension for a side element");
+            throw invalid_argument(" Elements with flags " + it->first +
+                                   " have the wrong dimension for a side element");
           } else {
-            std::cout << " Elements with flags " + it->first
-                      << " are side elements" << std::endl;
+            std::cout << " Elements with flags " + it->first << " are side elements" << std::endl;
           }
         }
       }

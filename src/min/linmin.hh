@@ -64,8 +64,7 @@ private:
  */
 
 template <typename RandomContainer, typename Function>
-void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
-            Function func) {
+void linmin(RandomContainer &p, RandomContainer &xi, double &fret, Function func) {
   using std::numeric_limits;
 
   double const TOL = sqrt(numeric_limits<double>::epsilon());

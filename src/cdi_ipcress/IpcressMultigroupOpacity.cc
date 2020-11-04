@@ -29,13 +29,11 @@ namespace rtt_cdi_ipcress {
  * See IpcressMultigroupOpacity.hh for details.
  */
 IpcressMultigroupOpacity::IpcressMultigroupOpacity(
-    std::shared_ptr<IpcressFile const> const &spIpcressFile,
-    size_t in_materialID, rtt_cdi::Model in_opacityModel,
-    rtt_cdi::Reaction in_opacityReaction)
-    : ipcressFilename(spIpcressFile->getDataFilename()),
-      materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
-      opacityReaction(in_opacityReaction), energyPolicyDescriptor("mg"),
-      spIpcressDataTable() {
+    std::shared_ptr<IpcressFile const> const &spIpcressFile, size_t in_materialID,
+    rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction)
+    : ipcressFilename(spIpcressFile->getDataFilename()), materialID(in_materialID), fieldNames(),
+      opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
+      energyPolicyDescriptor("mg"), spIpcressDataTable() {
   // Verify that the requested material ID is available in the specified IPCRESS
   // file.
   Insist(spIpcressFile->materialFound(materialID),
@@ -49,8 +47,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
   // Create the data table object and fill it with the table data from the
   // IPCRESS file.
   spIpcressDataTable = std::make_shared<IpcressDataTable>(
-      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile);
+      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames, materialID, spIpcressFile);
 
 } // end of IpcressData constructor
 
@@ -60,10 +57,9 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
  *
  * See IpcressMultigroupOpacity.hh for details.
  */
-IpcressMultigroupOpacity::IpcressMultigroupOpacity(
-    std::vector<char> const &packed)
-    : ipcressFilename(), materialID(0), fieldNames(), opacityModel(),
-      opacityReaction(), energyPolicyDescriptor("mg"), spIpcressDataTable() {
+IpcressMultigroupOpacity::IpcressMultigroupOpacity(std::vector<char> const &packed)
+    : ipcressFilename(), materialID(0), fieldNames(), opacityModel(), opacityReaction(),
+      energyPolicyDescriptor("mg"), spIpcressDataTable() {
   Require(packed.size() >= 5 * sizeof(int));
 
   // make an unpacker
@@ -85,8 +81,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
   rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
   // make sure it is "gray"
-  Insist(descriptor == "mg",
-         "Tried to unpack a non-mg opacity in IpcressMultigroupOpacity.");
+  Insist(descriptor == "mg", "Tried to unpack a non-mg opacity in IpcressMultigroupOpacity.");
 
   // unpack the size of the packed filename
   int packed_filename_size(0);
@@ -132,8 +127,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
   // Create the data table object and fill it with the table data from the
   // IPCRESS file.
   spIpcressDataTable = std::make_shared<IpcressDataTable>(
-      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile);
+      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames, materialID, spIpcressFile);
 
   Ensure(spIpcressFile);
   Ensure(spIpcressDataTable);
@@ -149,9 +143,8 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
  *     opacities for the multigroup EnergyPolicy) that corresponds to the
  *     provided temperature and density.
  */
-std::vector<double>
-IpcressMultigroupOpacity::getOpacity(double targetTemperature,
-                                     double targetDensity) const {
+std::vector<double> IpcressMultigroupOpacity::getOpacity(double targetTemperature,
+                                                         double targetDensity) const {
   // number of groups in this multigroup set.
   size_t const numGroups = spIpcressDataTable->getNumGroupBoundaries() - 1;
 
@@ -161,8 +154,7 @@ IpcressMultigroupOpacity::getOpacity(double targetTemperature,
 
   // logarithmic interpolation:
   for (size_t g = 0; g < numGroups; ++g) {
-    opacity[g] =
-        spIpcressDataTable->interpOpac(targetTemperature, targetDensity, g);
+    opacity[g] = spIpcressDataTable->interpOpac(targetTemperature, targetDensity, g);
     Check(opacity[g] >= 0.0);
   }
   return opacity;
@@ -174,8 +166,9 @@ IpcressMultigroupOpacity::getOpacity(double targetTemperature,
  *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
  *     the provided vector of temperatures and a single density value.
  */
-std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
-    std::vector<double> const &targetTemperature, double targetDensity) const {
+std::vector<std::vector<double>>
+IpcressMultigroupOpacity::getOpacity(std::vector<double> const &targetTemperature,
+                                     double targetDensity) const {
   std::vector<std::vector<double>> opacity(targetTemperature.size());
   for (size_t i = 0; i < targetTemperature.size(); ++i)
     opacity[i] = getOpacity(targetTemperature[i], targetDensity);
@@ -188,8 +181,9 @@ std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
  *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
  *     the provided vector of densities and a single temperature value.
  */
-std::vector<std::vector<double>> IpcressMultigroupOpacity::getOpacity(
-    double targetTemperature, const std::vector<double> &targetDensity) const {
+std::vector<std::vector<double>>
+IpcressMultigroupOpacity::getOpacity(double targetTemperature,
+                                     const std::vector<double> &targetDensity) const {
   std::vector<std::vector<double>> opacity(targetDensity.size());
   for (size_t i = 0; i < targetDensity.size(); ++i)
     opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
@@ -223,8 +217,7 @@ std::vector<char> IpcressMultigroupOpacity::pack() const {
   // determine the total size: 3 ints (reaction, model, material id) + 2 ints
   // for packed_filename size and packed_descriptor size + char in
   // packed_filename and packed_descriptor
-  size_t size =
-      5 * sizeof(int) + packed_filename.size() + packed_descriptor.size();
+  size_t size = 5 * sizeof(int) + packed_filename.size() + packed_descriptor.size();
 
   // make a container to hold packed data
   vector<char> packed(size);

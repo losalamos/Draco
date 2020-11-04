@@ -24,8 +24,7 @@ using namespace rtt_dsxx;
 
 void tstString_Token_Stream(UnitTest &ut) {
   // Build path for the input file "scanner_test.inp"
-  string const stInputFile(ut.getTestSourcePath() +
-                           std::string("scanner_test.inp"));
+  string const stInputFile(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
   ifstream infile(stInputFile.c_str());
   string contents;
@@ -216,8 +215,7 @@ void tstString_Token_Stream(UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    FAIL_IF(token.type() != STRING ||
-            token.text() != R"("manifest \"string\"")");
+    FAIL_IF(token.type() != STRING || token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
     if (token.type() != OTHER || token.text() != "@")
@@ -256,8 +254,7 @@ void tstString_Token_Stream(UnitTest &ut) {
   //-------------------------------------------------------------------------//
   {
     // Build path for the input file "scanner_recovery.inp"
-    string const srInputFile(ut.getTestSourcePath() +
-                             std::string("scanner_recovery.inp"));
+    string const srInputFile(ut.getTestSourcePath() + std::string("scanner_recovery.inp"));
 
     ifstream linfile(srInputFile.c_str());
     string lcontents;
@@ -379,8 +376,7 @@ void tstString_Token_Stream(UnitTest &ut) {
     String_Token_Stream tokens("\"quote");
     try {
       tokens.shift();
-      ut.failure(
-          "Did NOT correctly report missing closing quote as syntax error");
+      ut.failure("Did NOT correctly report missing closing quote as syntax error");
     } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("missing closing quote correctly thrown and caught");
     }

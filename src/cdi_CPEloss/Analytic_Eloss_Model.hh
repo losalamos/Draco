@@ -42,16 +42,13 @@ public:
   virtual ~Analytic_Eloss_Model() = default;
 
   //! Interface for derived analytic eloss models.
-  virtual double calculate_eloss(const double T, const double rho,
-                                 const double v0) const = 0;
+  virtual double calculate_eloss(const double T, const double rho, const double v0) const = 0;
 
 protected:
   //! Constructor initializes generically useful physical quantities.
-  Analytic_Eloss_Model(const rtt_cdi::CParticle &target,
-                       const rtt_cdi::CParticle &projectile)
-      : zaidt(target.get_zaid()), mt(target.get_mass()),
-        qtabs(std::abs(target.get_z()) * pc.e()), zaidp(target.get_zaid()),
-        mp(projectile.get_mass()),
+  Analytic_Eloss_Model(const rtt_cdi::CParticle &target, const rtt_cdi::CParticle &projectile)
+      : zaidt(target.get_zaid()), mt(target.get_mass()), qtabs(std::abs(target.get_z()) * pc.e()),
+        zaidp(target.get_zaid()), mp(projectile.get_mass()),
         qpabs(std::abs(projectile.get_z()) * pc.e()) {}
 
 protected:

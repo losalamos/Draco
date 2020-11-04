@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 16:25:09 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.  */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.  */
 //------------------------------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
@@ -21,8 +20,8 @@ namespace rtt_cdi_test {
 /*!
  * \brief Constructor for DummyEoS object.
  *
- * The constructor assigns fixed values for all of the member data.  Every
- * instance of this object has the same member data.
+ * The constructor assigns fixed values for all of the member data.  Every instance of this object
+ * has the same member data.
  */
 DummyEoS::DummyEoS() = default;
 
@@ -30,8 +29,7 @@ DummyEoS::DummyEoS() = default;
 /*!
  * \brief Default DummyEoS() destructor.
  *
- * This is required to correctly release memory when a DummyEoS object is
- * destroyed.
+ * This is required to correctly release memory when a DummyEoS object is destroyed.
  */
 DummyEoS::~DummyEoS() = default;
 
@@ -41,39 +39,34 @@ DummyEoS::~DummyEoS() = default;
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief EoS accessor that returns a single specific electron internal energy
- *        that corresponds to the provided temperature and density.
+ * \brief EoS accessor that returns a single specific electron internal energy that corresponds to
+ *        the provided temperature and density.
  *
  *    internal energy = temperature + 1000*density
  *
- * \param temperature The temperature value for which an opacity value is being
- *     requested (Kelvin).
- * \param density The density value for which an opacity value is being
- *     requested (g/cm^3).
+ * \param temperature The temperature value for which an opacity value is being requested (Kelvin).
+ * \param density The density value for which an opacity value is being requested (g/cm^3).
  * \return A specific electron internal energy (kJ/g).
  */
-double DummyEoS::getSpecificElectronInternalEnergy(double temperature,
-                                                   double density) const {
+double DummyEoS::getSpecificElectronInternalEnergy(double temperature, double density) const {
   return temperature + 1000.0 * density;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief EoS accessor that returns a vector of specific electron internal
- *     energies that correspond to the provided vectors of temperatures and
- *     densities.
+ * \brief EoS accessor that returns a vector of specific electron internal energies that correspond
+ *     to the provided vectors of temperatures and densities.
  *
  *    internal energy[i] = temperature[i] + 1000*density[i]
  *
- * \param vtemperature A vector of temperature values for which the EoS values
- *     are being requested (Kelvin).
- * \param vdensity A vector of density values for which the EoS values are being
- *     requested (g/cm^3).
+ * \param vtemperature A vector of temperature values for which the EoS values are being requested
+ *           (Kelvin).
+ * \param vdensity A vector of density values for which the EoS values are being requested (g/cm^3).
  * \return A vector of specific electron internal energies (kJ/g).
  */
-std::vector<double> DummyEoS::getSpecificElectronInternalEnergy(
-    const std::vector<double> &vtemperature,
-    const std::vector<double> &vdensity) const {
+std::vector<double>
+DummyEoS::getSpecificElectronInternalEnergy(const std::vector<double> &vtemperature,
+                                            const std::vector<double> &vdensity) const {
   std::vector<double> seie(vdensity.size());
   for (unsigned i = 0; i < vdensity.size(); ++i)
     seie[i] = vtemperature[i] + 1000.0 * vdensity[i];
@@ -82,8 +75,8 @@ std::vector<double> DummyEoS::getSpecificElectronInternalEnergy(
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve the electron based heat capacity for this material at the
- *        provided density and temperature.
+ * \brief Retrieve the electron based heat capacity for this material at the provided density and
+ *        temperature.
  *
  *     heat capacity = temperature + density/1000
  *
@@ -91,16 +84,14 @@ std::vector<double> DummyEoS::getSpecificElectronInternalEnergy(
  * \param temperature Temperature of the material in Kelvin.
  * \return The electron based heat capacity in kJ/g/K.
  */
-double DummyEoS::getElectronHeatCapacity(double temperature,
-                                         double density) const {
+double DummyEoS::getElectronHeatCapacity(double temperature, double density) const {
   return temperature + density / 1000.0;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve a set of electron based heat capacities for this material
- *        that correspond to the tuple list of provided densities and
- *        temperatures.
+ * \brief Retrieve a set of electron based heat capacities for this material that correspond to the
+ *        tuple list of provided densities and temperatures.
  *
  *     heat capacity = temperature + density/1000
  *
@@ -108,9 +99,8 @@ double DummyEoS::getElectronHeatCapacity(double temperature,
  * \param vtemperature Temperature of the material in Kelvin.
  * \return The electron based heat capacity in kJ/g/K.
  */
-std::vector<double>
-DummyEoS::getElectronHeatCapacity(const std::vector<double> &vtemperature,
-                                  const std::vector<double> &vdensity) const {
+std::vector<double> DummyEoS::getElectronHeatCapacity(const std::vector<double> &vtemperature,
+                                                      const std::vector<double> &vdensity) const {
   std::vector<double> ehc(vdensity.size());
   for (unsigned i = 0; i < vdensity.size(); ++i)
     ehc[i] = vtemperature[i] + vdensity[i] / 1000.0;
@@ -119,8 +109,8 @@ DummyEoS::getElectronHeatCapacity(const std::vector<double> &vtemperature,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve the specific ion internal energy for this material at the
- *        provided density and temperature.
+ * \brief Retrieve the specific ion internal energy for this material at the provided density and
+ *        temperature.
  *
  *     internal energy = temperature + 1000*density
  *
@@ -128,16 +118,14 @@ DummyEoS::getElectronHeatCapacity(const std::vector<double> &vtemperature,
  * \param temperature Temperature of the material in Kelvin.
  * \return The specific ion internal energy in kJ/g.
  */
-double DummyEoS::getSpecificIonInternalEnergy(double temperature,
-                                              double density) const {
+double DummyEoS::getSpecificIonInternalEnergy(double temperature, double density) const {
   return getSpecificElectronInternalEnergy(density, temperature);
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve a set of specific ion internal energies for this material
- *        that correspond to the tuple list of provided densities and
- *        temperatures.
+ * \brief Retrieve a set of specific ion internal energies for this material that correspond to the
+ *        tuple list of provided densities and temperatures.
  *
  *     internal energy = temperature + 1000*density
  *
@@ -145,16 +133,16 @@ double DummyEoS::getSpecificIonInternalEnergy(double temperature,
  * \param vtemperature Temperature of the material in Kelvin.
  * \return A vector of specific ion internal energies in kJ/g.
  */
-std::vector<double> DummyEoS::getSpecificIonInternalEnergy(
-    const std::vector<double> &vtemperature,
-    const std::vector<double> &vdensity) const {
+std::vector<double>
+DummyEoS::getSpecificIonInternalEnergy(const std::vector<double> &vtemperature,
+                                       const std::vector<double> &vdensity) const {
   return getSpecificElectronInternalEnergy(vdensity, vtemperature);
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve the ion based heat capacity for this material at the provided
- *        density and temperature.
+ * \brief Retrieve the ion based heat capacity for this material at the provided density and
+ *        temperature.
  *
  *     heat capacity   = temperature + density/1000
  *
@@ -168,8 +156,8 @@ double DummyEoS::getIonHeatCapacity(double temperature, double density) const {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve a set of ion based heat capacities for this material that
- *        correspond to the tuple list of provided densities and temperatures.
+ * \brief Retrieve a set of ion based heat capacities for this material that correspond to the tuple
+ *        list of provided densities and temperatures.
  *
  *     heat capacity   = temperature + density/1000
  *
@@ -177,16 +165,15 @@ double DummyEoS::getIonHeatCapacity(double temperature, double density) const {
  * \param vtemperature Temperature of the material in Kelvin.
  * \return A vector of ion based heat capacities in kJ/g/K.
  */
-std::vector<double>
-DummyEoS::getIonHeatCapacity(const std::vector<double> &vtemperature,
-                             const std::vector<double> &vdensity) const {
+std::vector<double> DummyEoS::getIonHeatCapacity(const std::vector<double> &vtemperature,
+                                                 const std::vector<double> &vdensity) const {
   return getElectronHeatCapacity(vdensity, vtemperature);
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve the number of free electrons per ion for this material at the
- *        provided density and temperature.
+ * \brief Retrieve the number of free electrons per ion for this material at the provided density
+ *        and temperature.
  *
  *     num free electrons = temperature/100
  *
@@ -194,24 +181,21 @@ DummyEoS::getIonHeatCapacity(const std::vector<double> &vtemperature,
  * \param temperature Temperature of the material in Kelvin.
  * \return The number of free electrons per ion.
  */
-double DummyEoS::getNumFreeElectronsPerIon(double temperature,
-                                           double /*density*/) const {
+double DummyEoS::getNumFreeElectronsPerIon(double temperature, double /*density*/) const {
   return temperature / 100.0;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve a set of free electrons per ion averages for this material
- *        that correspond to the tuple list of provided densities and
- *        temperatures.
+ * \brief Retrieve a set of free electrons per ion averages for this material that correspond to the
+ *        tuple list of provided densities and temperatures.
  *
  * \param vdensity Density of the material in g/cm^3
  * \param vtemperature Temperature of the material in Kelvin.
  * \return A vector of the number of free electrons per ion.
  */
-std::vector<double>
-DummyEoS::getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
-                                    const std::vector<double> &vdensity) const {
+std::vector<double> DummyEoS::getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
+                                                        const std::vector<double> &vdensity) const {
   std::vector<double> nfepi(vdensity.size());
   for (unsigned i = 0; i < vdensity.size(); ++i)
     nfepi[i] = vtemperature[i] / 100.0;
@@ -220,8 +204,8 @@ DummyEoS::getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve the electron based thermal conductivity for this material at
- *        the provided density and temperature.
+ * \brief Retrieve the electron based thermal conductivity for this material at the provided density
+ *        and temperature.
  *
  *     thermal conductivity = 1000*temperature + density
  *
@@ -229,16 +213,14 @@ DummyEoS::getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
  * \param temperature Temperature of the material in Kelvin.
  * \return The electron based thermal conductivity in 1/s/cm.
  */
-double DummyEoS::getElectronThermalConductivity(double temperature,
-                                                double density) const {
+double DummyEoS::getElectronThermalConductivity(double temperature, double density) const {
   return 1000.0 * temperature + density;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Retrieve a set of electron based thermal conductivities for this
- *        material that correspond to the tuple list of provided densities and
- *        temperatures.
+ * \brief Retrieve a set of electron based thermal conductivities for this material that correspond
+ *        to the tuple list of provided densities and temperatures.
  *
  *     thermal conductivity = 1000*temperature + density
  *
@@ -246,9 +228,9 @@ double DummyEoS::getElectronThermalConductivity(double temperature,
  * \param vtemperature Temperature of the material in Kelvin.
  * \return A vector of electron based thermal conductivities in 1/s/cm.
  */
-std::vector<double> DummyEoS::getElectronThermalConductivity(
-    const std::vector<double> &vtemperature,
-    const std::vector<double> &vdensity) const {
+std::vector<double>
+DummyEoS::getElectronThermalConductivity(const std::vector<double> &vtemperature,
+                                         const std::vector<double> &vdensity) const {
   std::vector<double> ebtc(vdensity.size());
   for (unsigned i = 0; i < vdensity.size(); ++i)
     ebtc[i] = 1000.0 * vtemperature[i] + vdensity[i];
@@ -256,17 +238,14 @@ std::vector<double> DummyEoS::getElectronThermalConductivity(
 }
 
 //------------------------------------------------------------------------------------------------//
-//! Return Electron Temperature (keV) given Specific Electron Internal Energy
-//! (kJ/g).
-double DummyEoS::getElectronTemperature(double /*density*/,
-                                        double SpecificElectronInternalEnergy,
+//! Return Electron Temperature (keV) given Specific Electron Internal Energy (kJ/g).
+double DummyEoS::getElectronTemperature(double /*density*/, double SpecificElectronInternalEnergy,
                                         double /*Tguess*/) const {
   return 10.0 * SpecificElectronInternalEnergy;
 }
 
 //! Return Ion Temperature (keV) given Specific Ion Internal Energy (kJ/g).
-double DummyEoS::getIonTemperature(double /*density*/,
-                                   double SpecificIonInternalEnergy,
+double DummyEoS::getIonTemperature(double /*density*/, double SpecificIonInternalEnergy,
                                    double /*Tguess*/) const {
   return std::sqrt(SpecificIonInternalEnergy);
 }

@@ -37,8 +37,7 @@ void maintest(UnitTest &ut) {
       FAILMSG("releaseString len == 0");
 
     bool verbose(false);
-    std::map<std::string, unsigned> wc =
-        rtt_dsxx::get_word_count(releaseString, verbose);
+    std::map<std::string, unsigned> wc = rtt_dsxx::get_word_count(releaseString, verbose);
 
     FAIL_IF_NOT(wc[string("DRACO_DIAGNOSTICS")] == 1);
     FAIL_IF_NOT(wc[string("build")] == 2);
@@ -56,8 +55,7 @@ void maintest(UnitTest &ut) {
       FAILMSG("copyrightString len == 0");
 
     bool verbose(false);
-    std::map<std::string, unsigned> wc =
-        rtt_dsxx::get_word_count(copyrightString, verbose);
+    std::map<std::string, unsigned> wc = rtt_dsxx::get_word_count(copyrightString, verbose);
 
     FAIL_IF_NOT(wc[string("CCS-2")] == 1);
     FAIL_IF_NOT(wc[string("Copyright")] == 1);

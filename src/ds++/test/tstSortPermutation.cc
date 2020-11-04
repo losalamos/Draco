@@ -40,8 +40,7 @@ void printStatus(const std::string &name, bool passed) {
 }
 
 //------------------------------------------------------------------------------------------------//
-template <typename IT>
-inline bool testit(const std::string & /*name*/, IT first, IT last) {
+template <typename IT> inline bool testit(const std::string & /*name*/, IT first, IT last) {
   rtt_dsxx::SortPermutation lfsp(first, last);
 
   using value_type = typename std::iterator_traits<IT>::value_type;
@@ -61,25 +60,21 @@ inline bool testit(const std::string & /*name*/, IT first, IT last) {
   std::copy(lfsp.begin(), lfsp.end(), std::ostream_iterator<int>(cout, " "));
   cout << endl;
 
-  std::copy(vv2.begin(), vv2.end(),
-            std::ostream_iterator<value_type>(cout, " "));
+  std::copy(vv2.begin(), vv2.end(), std::ostream_iterator<value_type>(cout, " "));
   cout << endl;
 
-  std::copy(lfsp.inv_begin(), lfsp.inv_end(),
-            std::ostream_iterator<int>(cout, " "));
+  std::copy(lfsp.inv_begin(), lfsp.inv_end(), std::ostream_iterator<int>(cout, " "));
   cout << endl;
 
   using rtt_dsxx::isSorted;
-  bool passed =
-      isSorted(vv2.begin(), vv2.end()) && isSorted(vv1.begin(), vv1.end());
+  bool passed = isSorted(vv2.begin(), vv2.end()) && isSorted(vv1.begin(), vv1.end());
 
   return passed;
 }
 
 //------------------------------------------------------------------------------------------------//
 template <typename IT, typename CMP>
-inline bool testit(const std::string & /*name*/, IT first, IT last,
-                   const CMP &comp) {
+inline bool testit(const std::string & /*name*/, IT first, IT last, const CMP &comp) {
   rtt_dsxx::SortPermutation lfsp(first, last, comp);
 
   using value_type = typename std::iterator_traits<IT>::value_type;
@@ -99,13 +94,11 @@ inline bool testit(const std::string & /*name*/, IT first, IT last,
   std::copy(lfsp.begin(), lfsp.end(), std::ostream_iterator<int>(cout, " "));
   cout << endl;
 
-  std::copy(vv2.begin(), vv2.end(),
-            std::ostream_iterator<value_type>(cout, " "));
+  std::copy(vv2.begin(), vv2.end(), std::ostream_iterator<value_type>(cout, " "));
   cout << endl;
 
   using rtt_dsxx::isSorted;
-  bool passed = isSorted(vv2.begin(), vv2.end(), comp) &&
-                isSorted(vv1.begin(), vv1.end(), comp);
+  bool passed = isSorted(vv2.begin(), vv2.end(), comp) && isSorted(vv1.begin(), vv1.end(), comp);
 
   return passed;
 }
@@ -118,9 +111,7 @@ struct Foo {
   Foo(double d_) : d(d_) { /* empty */
   }
   bool operator<(const Foo &rhs) const { return d < rhs.d; }
-  friend std::ostream &operator<<(std::ostream &os, const Foo &f) {
-    return os << f.d;
-  }
+  friend std::ostream &operator<<(std::ostream &os, const Foo &f) { return os << f.d; }
 };
 
 //------------------------------------------------------------------------------------------------//
@@ -129,9 +120,7 @@ struct FooGT {
   FooGT(double d_) : d(d_) { /* empty */
   }
   bool operator>(const FooGT &rhs) const noexcept { return d > rhs.d; }
-  friend std::ostream &operator<<(std::ostream &os, const FooGT &f) {
-    return os << f.d;
-  }
+  friend std::ostream &operator<<(std::ostream &os, const FooGT &f) { return os << f.d; }
 };
 
 //------------------------------------------------------------------------------------------------//
@@ -140,8 +129,7 @@ template <typename F> struct evenIsLess {
     auto i1 = static_cast<int>(f1.d);
     auto i2 = static_cast<int>(f2.d);
 
-    return i1 % 2 == 0 ? ((i2 % 2 == 0 ? i1 < i2 : true))
-                       : (i2 % 2 == 0 ? false : i1 < i2);
+    return i1 % 2 == 0 ? ((i2 % 2 == 0 ? i1 < i2 : true)) : (i2 % 2 == 0 ? false : i1 < i2);
   }
 };
 
@@ -177,8 +165,7 @@ int main(int /*argc*/, char * /*argv*/ []) {
 
     name = "SortPermutation(const list<Foo>, evenIsLess<Foo>)";
     const std::list<Foo> lfeven(caf.begin(), caf.end());
-    passed = testit("const list<Foo>", lfeven.begin(), lfeven.end(),
-                    evenIsLess<Foo>());
+    passed = testit("const list<Foo>", lfeven.begin(), lfeven.end(), evenIsLess<Foo>());
     printStatus(name, passed);
 
     array<FooGT, 8> const cafg = {64, 89, 64, 73, 14, 90, 63, 14};
@@ -190,13 +177,12 @@ int main(int /*argc*/, char * /*argv*/ []) {
 
     name = "SortPermutation(const vector<FooGT>, greater<FooGT>)";
     const std::vector<FooGT> vfg(cafg.begin(), cafg.end());
-    passed =
-        testit("const vector<FooGT>", vfg.begin(), vfg.end(), std::greater<>());
+    passed = testit("const vector<FooGT>", vfg.begin(), vfg.end(), std::greater<>());
     printStatus(name, passed);
 
     name = "SortPermutation(const C-Array<FooGT>, greater<FooGT>)";
-    passed = testit("const C-Array<FooGT>", cafg.begin(),
-                    cafg.begin() + caf.size(), std::greater<>());
+    passed =
+        testit("const C-Array<FooGT>", cafg.begin(), cafg.begin() + caf.size(), std::greater<>());
     printStatus(name, passed);
 
   } catch (rtt_dsxx::assertion &a) {

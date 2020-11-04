@@ -32,29 +32,21 @@ using rtt_dsxx::soft_equiv;
 
 void multigroup_test(rtt_dsxx::UnitTest &ut) {
   // group structure
-  vector<double> groups(4, 0.0);
-  {
-    groups[0] = 0.05;
-    groups[1] = 0.5;
-    groups[2] = 5.0;
-    groups[3] = 50.0;
-  }
-
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
   vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
-  models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
+  models[0] = std::make_shared<rtt_cdi_analytic_test::Marshak_Model>(100.0);
 
   // make a Polynomial model for the second group
-  models[1].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-      1.5, 0.0, 0.0, 0.0));
+  models[1] =
+      std::make_shared<rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model>(1.5, 0.0, 0.0, 0.0);
 
   // make a Constant model for the third group
-  models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
+  models[2] = std::make_shared<rtt_cdi_analytic::Constant_Analytic_Opacity_Model>(3.0);
 
   // make an analytic multigroup opacity object for absorption
-  Compound_Analytic_MultigroupOpacity opacity(groups, models,
-                                              rtt_cdi::ABSORPTION);
+  Compound_Analytic_MultigroupOpacity opacity(groups, models, rtt_cdi::ABSORPTION);
 
   // check the interface to multigroup opacity
   {
@@ -89,14 +81,12 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
   }
   {
-    Compound_Analytic_MultigroupOpacity anal_opacity(groups, models,
-                                                     rtt_cdi::SCATTERING);
+    Compound_Analytic_MultigroupOpacity anal_opacity(groups, models, rtt_cdi::SCATTERING);
     if (anal_opacity.getDataDescriptor() != "Compound Multigroup Scattering")
       ITFAILS;
   }
   {
-    Compound_Analytic_MultigroupOpacity anal_opacity(groups, models,
-                                                     rtt_cdi::TOTAL);
+    Compound_Analytic_MultigroupOpacity anal_opacity(groups, models, rtt_cdi::TOTAL);
     if (anal_opacity.getDataDescriptor() != "Compound Multigroup Total")
       ITFAILS;
   }
@@ -104,8 +94,7 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
   // check the group structure
   vector<double> mg_groups = opacity.getGroupBoundaries();
 
-  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(),
-                 groups.end())) {
+  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(), groups.end())) {
     PASSMSG("Group boundaries match.");
   } else {
     FAILMSG("Group boundaries do not match.");
@@ -170,15 +159,13 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
 
   // Test the get_Analytic_Model() member function.
   {
-    shared_ptr<Analytic_Opacity_Model const> my_mg_opacity_model =
-        opacity.get_Analytic_Model(1);
+    shared_ptr<Analytic_Opacity_Model const> my_mg_opacity_model = opacity.get_Analytic_Model(1);
     shared_ptr<Analytic_Opacity_Model const> expected_model(models[0]);
 
     if (expected_model == my_mg_opacity_model)
       PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.");
     else
-      FAILMSG(
-          "get_Analytic_Model() did not return the expected MG Opacity model.");
+      FAILMSG("get_Analytic_Model() did not return the expected MG Opacity model.");
   }
 
   return;
@@ -188,30 +175,22 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
 
 void test_CDI(rtt_dsxx::UnitTest &ut) {
   // group structure
-  vector<double> groups(4, 0.0);
-  {
-    groups[0] = 0.05;
-    groups[1] = 0.5;
-    groups[2] = 5.0;
-    groups[3] = 50.0;
-  }
-
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
   vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
-  models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
+  models[0] = std::make_shared<rtt_cdi_analytic_test::Marshak_Model>(100.0);
 
   // make a Polynomial model for the second group
-  models[1].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-      1.5, 0.0, 0.0, 0.0));
+  models[1] =
+      std::make_shared<rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model>(1.5, 0.0, 0.0, 0.0);
 
   // make a Constant model for the third group
-  models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
+  models[2] = std::make_shared<rtt_cdi_analytic::Constant_Analytic_Opacity_Model>(3.0);
 
   // make an analytic multigroup opacity object for absorption
   shared_ptr<const MultigroupOpacity> mg(
-      new Compound_Analytic_MultigroupOpacity(groups, models,
-                                              rtt_cdi::ABSORPTION));
+      new Compound_Analytic_MultigroupOpacity(groups, models, rtt_cdi::ABSORPTION));
 
   // make a CDI object
   CDI cdi;
@@ -222,8 +201,7 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   // check the energy groups from CDI
   vector<double> mg_groups = CDI::getFrequencyGroupBoundaries();
 
-  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(),
-                 groups.end())) {
+  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(), groups.end())) {
     PASSMSG("CDI Group boundaries match.");
   } else {
     FAILMSG("CDI Group boundaries do not match.");
@@ -232,8 +210,7 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   // do a quick access test for getOpacity
 
   // scalar density and temperature
-  vector<double> sigma =
-      cdi.mg(rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION)->getOpacity(2.0, 3.0);
+  vector<double> sigma = cdi.mg(rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION)->getOpacity(2.0, 3.0);
   vector<double> ref(3, 0.0);
   {
     ref[0] = 100.0 / 8.0;
@@ -259,32 +236,24 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   vector<char> packed;
 
   // group structure
-  vector<double> groups(4, 0.0);
-  {
-    groups[0] = 0.05;
-    groups[1] = 0.5;
-    groups[2] = 5.0;
-    groups[3] = 50.0;
-  }
-
+  vector<double> groups = {0.05, 0.5, 5.0, 50.0};
   {
     vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Polynomial model for the first group
-    models[0].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-        0.0, 100.0, -3.0, 0.0));
+    models[0] = std::make_shared<rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model>(0.0, 100.0,
+                                                                                      -3.0, 0.0);
 
     // make a Polynomial model for the second group
-    models[1].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-        1.5, 0.0, 0.0, 0.0));
+    models[1] =
+        std::make_shared<rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model>(1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
-    models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
+    models[2] = std::make_shared<rtt_cdi_analytic::Constant_Analytic_Opacity_Model>(3.0);
 
     // make an analytic multigroup opacity object for absorption
     shared_ptr<const MultigroupOpacity> mg(
-        new Compound_Analytic_MultigroupOpacity(groups, models,
-                                                rtt_cdi::ABSORPTION));
+        new Compound_Analytic_MultigroupOpacity(groups, models, rtt_cdi::ABSORPTION));
 
     // pack it
     packed = mg->pack();
@@ -328,8 +297,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   // check the group structure
   vector<double> mg_groups = opacity.getGroupBoundaries();
 
-  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(),
-                 groups.end())) {
+  if (soft_equiv(mg_groups.begin(), mg_groups.end(), groups.begin(), groups.end())) {
     PASSMSG("Group boundaries for unpacked MG opacity match.");
   } else {
     FAILMSG("Group boundaries for unpacked MG do not match.");
@@ -365,19 +333,18 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Marshak (user-defined) model for the first group
-    models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
+    models[0] = std::make_shared<rtt_cdi_analytic_test::Marshak_Model>(100.0);
 
     // make a Polynomial model for the second group
-    models[1].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-        1.5, 0.0, 0.0, 0.0));
+    models[1] =
+        std::make_shared<rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model>(1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
-    models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
+    models[2] = std::make_shared<rtt_cdi_analytic::Constant_Analytic_Opacity_Model>(3.0);
 
     // make an analytic multigroup opacity object for absorption
     shared_ptr<const MultigroupOpacity> mg(
-        new Compound_Analytic_MultigroupOpacity(groups, models,
-                                                rtt_cdi::ABSORPTION));
+        new Compound_Analytic_MultigroupOpacity(groups, models, rtt_cdi::ABSORPTION));
 
     packed = mg->pack();
   }

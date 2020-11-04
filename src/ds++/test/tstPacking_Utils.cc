@@ -27,8 +27,7 @@ using rtt_dsxx::Unpacker;
 // TESTS
 //------------------------------------------------------------------------------------------------//
 
-void do_some_packing(Packer &p, vector<double> const &vd,
-                     vector<int> const &vi) {
+void do_some_packing(Packer &p, vector<double> const &vd, vector<int> const &vi) {
   for (const auto &item : vd)
     p << item;
   for (const auto &item : vi)
@@ -43,9 +42,8 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   vector<double> vd = {2.3432, 2.3432, 2.3432, 22.4, 2.3432};
   vector<int> vi = {7, 22, 6};
   std::string const test_string = "test";
-  size_t const total_size = vi.size() * sizeof(int) +
-                            vd.size() * sizeof(double) + test_string.length() +
-                            1;
+  size_t const total_size =
+      vi.size() * sizeof(int) + vd.size() * sizeof(double) + test_string.length() + 1;
 
   // includes one padding byte
   Packer p;
@@ -104,8 +102,7 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
     vector<char> lbuffer(buffer_size);
     bool byte_swap = false;
     Check(vd.size() < UINT32_MAX);
-    rtt_dsxx::pack_vec_double(&vd[0], &lbuffer[0],
-                              static_cast<uint32_t>(vd.size()), byte_swap);
+    rtt_dsxx::pack_vec_double(&vd[0], &lbuffer[0], static_cast<uint32_t>(vd.size()), byte_swap);
 
     Unpacker localUnpacker;
     localUnpacker.set_buffer(lbuffer.size(), &lbuffer[0]);
@@ -262,8 +259,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     u.extract(4, cc.data());
 
     FAIL_IF_NOT(u.get_ptr() == buffer + size);
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()));
     FAIL_IF_NOT(c[0] == 'c');
     FAIL_IF_NOT(c[1] == 'h');
     FAIL_IF_NOT(c[2] == 'a');
@@ -303,8 +299,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 void packing_test_c90(rtt_dsxx::UnitTest &ut) {
   using std::vector;
 
-  std::cout << "\nTesting packing/unpacking size_t and uint64_t..."
-            << std::endl;
+  std::cout << "\nTesting packing/unpacking size_t and uint64_t..." << std::endl;
   size_t const numFails(ut.numFails);
 
   // make some data
@@ -595,8 +590,7 @@ void endian_conversion_test(rtt_dsxx::UnitTest &ut) {
     up >> unpacked_letter;
 
   // Check
-  FAIL_IF_NOT(std::string(unpacked_letters.begin(), unpacked_letters.end()) ==
-              letters);
+  FAIL_IF_NOT(std::string(unpacked_letters.begin(), unpacked_letters.end()) == letters);
   return;
 }
 

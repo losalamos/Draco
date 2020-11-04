@@ -67,19 +67,13 @@ public:
   void init();
 
   //! Indicate that a certain number of units of work have been performed.
-  void update_work_count(unsigned units_of_work) {
-    work_count_ += units_of_work;
-  }
+  void update_work_count(unsigned units_of_work) { work_count_ += units_of_work; }
 
   //! Indicate that a certain number of messages have been received.
-  void update_receive_count(unsigned messages_received) {
-    receive_count_ += messages_received;
-  }
+  void update_receive_count(unsigned messages_received) { receive_count_ += messages_received; }
 
   //! Indicate that a certain number of messages have been sent.
-  void update_send_count(unsigned messages_sent) {
-    send_count_ += messages_sent;
-  }
+  void update_send_count(unsigned messages_sent) { send_count_ += messages_sent; }
 
   //! See if the algorithm has terminated.
   bool is_terminated();

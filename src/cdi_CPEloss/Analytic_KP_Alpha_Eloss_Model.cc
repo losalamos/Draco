@@ -29,8 +29,7 @@ namespace rtt_cdi_cpeloss {
  * \return eloss stopping power in keV shk^-1
  *
  */
-double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
-                                                      const double rho,
+double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T, const double rho,
                                                       const double v) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);

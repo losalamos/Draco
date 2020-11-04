@@ -50,10 +50,9 @@ void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
 //! Helper function for mrqmin
 
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
-void mrqcof(RandomContainer const &x, RandomContainer const &y,
-            RandomContainer const &sig, unsigned const ndata, unsigned const m,
-            RandomContainer &a, RandomBoolContainer &ia, RandomContainer &alpha,
-            RandomContainer &beta, unsigned const ma, double &chisq,
+void mrqcof(RandomContainer const &x, RandomContainer const &y, RandomContainer const &sig,
+            unsigned const ndata, unsigned const m, RandomContainer &a, RandomBoolContainer &ia,
+            RandomContainer &alpha, RandomContainer &beta, unsigned const ma, double &chisq,
             ModelFunction funcs) {
   vector<double> dyda(ma);
   unsigned mfit = 0;
@@ -133,10 +132,9 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
  *             value that was returned by a previous iteration.
  */
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
-void mrqmin(RandomContainer const &x, RandomContainer const &y,
-            RandomContainer const &sig, unsigned const n, unsigned const m,
-            RandomContainer &a, RandomBoolContainer &ia, RandomContainer &covar,
-            RandomContainer &alpha, unsigned const ma, double &chisq,
+void mrqmin(RandomContainer const &x, RandomContainer const &y, RandomContainer const &sig,
+            unsigned const n, unsigned const m, RandomContainer &a, RandomBoolContainer &ia,
+            RandomContainer &covar, RandomContainer &alpha, unsigned const ma, double &chisq,
             ModelFunction funcs, double &alamda) {
   static unsigned mfit;
   static vector<double> oneda;

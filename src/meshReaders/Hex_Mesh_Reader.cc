@@ -20,10 +20,9 @@ using rtt_mesh_element::Element_Definition;
 
 //------------------------------------------------------------------------------------------------//
 Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
-    : meshfile_name(filename), version("unknown"), npoints(0), ncells(0),
-      nvrtx(0), nvrpf(0), ndim(0), nvb_faces(0), nrb_faces(0), nmat(0),
-      point_coords(), ipar(), imat_index(), irgn_vb_index(), ipar_vb(),
-      ipar_rb(), node_sets() {
+    : meshfile_name(filename), version("unknown"), npoints(0), ncells(0), nvrtx(0), nvrpf(0),
+      ndim(0), nvb_faces(0), nrb_faces(0), nmat(0), point_coords(), ipar(), imat_index(),
+      irgn_vb_index(), ipar_vb(), ipar_rb(), node_sets() {
 
   // Open the mesh file for read.
   std::ifstream meshfile(filename.c_str(), std::ios::in);
@@ -37,8 +36,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     Insist(false, "Not a CIC-19 Hex Mesh File!");
 
   // Read in the dimensions of the problem.
-  meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces >>
-      nrb_faces >> nmat;
+  meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces >> nrb_faces >> nmat;
   Insist(check_dims(), "Error in Mesh Dimension data!");
 
   // Read the point coordinates data.
@@ -50,8 +48,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> point_coords[i][0] >> point_coords[i][1];
     else if (ndim == 3)
-      meshfile >> point_coords[i][0] >> point_coords[i][1] >>
-          point_coords[i][2];
+      meshfile >> point_coords[i][0] >> point_coords[i][1] >> point_coords[i][2];
     else
       Insist(false, "Dimension index out of range!");
   }
@@ -65,8 +62,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3];
     else if (ndim == 3)
-      meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3] >>
-          ipar[i][4] >> ipar[i][5] >> ipar[i][6] >> ipar[i][7];
+      meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3] >> ipar[i][4] >>
+          ipar[i][5] >> ipar[i][6] >> ipar[i][7];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrtx; j++)
@@ -88,8 +85,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> irgn_vb_index[i];
     else if (ndim == 3)
-      meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> ipar_vb[i][2] >>
-          ipar_vb[i][3] >> irgn_vb_index[i];
+      meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> ipar_vb[i][2] >> ipar_vb[i][3] >>
+          irgn_vb_index[i];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrpf; j++)
@@ -105,8 +102,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar_rb[i][0] >> ipar_rb[i][1];
     else if (ndim == 3)
-      meshfile >> ipar_rb[i][0] >> ipar_rb[i][1] >> ipar_rb[i][2] >>
-          ipar_rb[i][3];
+      meshfile >> ipar_rb[i][0] >> ipar_rb[i][1] >> ipar_rb[i][2] >> ipar_rb[i][3];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrpf; j++)
@@ -159,8 +155,7 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
  * - rtt_mesh_element::Element_Definition::QUAD_4, or
  * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type>
-Hex_Mesh_Reader::get_element_types() const {
+std::vector<Element_Definition::Element_Type> Hex_Mesh_Reader::get_element_types() const {
   Element_Definition::Element_Type d1, d2;
   switch (ndim) {
   case (1):
@@ -194,8 +189,7 @@ Hex_Mesh_Reader::get_element_types() const {
  * - rtt_mesh_element::Element_Definition::QUAD_4, or
  * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type>
-Hex_Mesh_Reader::get_unique_element_types() const {
+std::vector<Element_Definition::Element_Type> Hex_Mesh_Reader::get_unique_element_types() const {
   std::vector<Element_Definition::Element_Type> tmp;
   tmp.push_back(Element_Definition::NODE);
   tmp.push_back(Element_Definition::BAR_2);
@@ -226,8 +220,7 @@ Hex_Mesh_Reader::get_unique_element_types() const {
  * - "Reflective_Boundary" -- All the (ndim-1) dimensional reflective boundary
  *   faces.
  */
-std::map<std::string, std::set<unsigned>>
-Hex_Mesh_Reader::get_element_sets() const {
+std::map<std::string, std::set<unsigned>> Hex_Mesh_Reader::get_element_sets() const {
   // Alternatively, the private data of the class could be changed so that the
   // work done here is done in the constructor. This would be more efficient if
   // this is going to be used repetively.
@@ -292,8 +285,7 @@ Hex_Mesh_Reader::get_element_sets() const {
   // being stored in a specific order.
   if (nrb_faces > 0) {
     stmp.clear();
-    for (unsigned i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces;
-         i++)
+    for (unsigned i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces; i++)
       stmp.insert(i);
     result.insert(resultT::value_type("Reflective_Boundary", stmp));
   }
@@ -304,9 +296,8 @@ Hex_Mesh_Reader::get_element_sets() const {
 //------------------------------------------------------------------------------------------------//
 //! Checks the internal consistancy of the Hex_Mesh_Reader private data.
 bool Hex_Mesh_Reader::invariant() const {
-  bool ldum = check_dims() && (point_coords.size() == npoints) &&
-              (ipar.size() == ncells) && (imat_index.size() == ncells) &&
-              (irgn_vb_index.size() == nvb_faces) &&
+  bool ldum = check_dims() && (point_coords.size() == npoints) && (ipar.size() == ncells) &&
+              (imat_index.size() == ncells) && (irgn_vb_index.size() == nvb_faces) &&
               (ipar_vb.size() == nvb_faces) && (ipar_rb.size() == nrb_faces);
 
   for (unsigned i = 0; i < ncells; ++i) {
@@ -329,8 +320,7 @@ bool Hex_Mesh_Reader::invariant() const {
 
 bool Hex_Mesh_Reader::check_dims() const {
   bool ldum = (npoints > 0) && (ncells > 0) &&
-              ((ndim == 3 && nvrtx == 8 && nvrpf == 4) ||
-               (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
+              ((ndim == 3 && nvrtx == 8 && nvrpf == 4) || (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
                (ndim == 1 && nvrtx == 2 && nvrpf == 1)) &&
               nmat > 0;
   return ldum;

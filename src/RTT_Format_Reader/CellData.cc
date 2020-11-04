@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*--------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellData.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellData class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "CellData.hh"
@@ -14,8 +13,7 @@ namespace rtt_RTT_Format_Reader {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the cell_data block data from the mesh file via calls to
- *        private member functions.
+ * \brief Parses the cell_data block data from the mesh file via calls to private member functions.
  * \param meshfile Mesh file name.
  */
 void CellData::readCellData(ifstream &meshfile) {
@@ -66,8 +64,7 @@ void CellData::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_celldat",
-         "Invalid mesh file: celldat block missing end");
+  Insist(dummyString == "end_celldat", "Invalid mesh file: celldat block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 

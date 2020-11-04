@@ -22,8 +22,7 @@ namespace rtt_c4 {
  *
  * /param local_set Local set to be globally merged.
  */
-template <typename ElementType>
-void global_merge(std::set<ElementType> &local_set);
+template <typename ElementType> void global_merge(std::set<ElementType> &local_set);
 
 //------------------------------------------------------------------------------------------------//
 /*! Merge local maps into a global map
@@ -38,8 +37,7 @@ void global_merge(std::map<IndexType, ElementType> &local_map);
 
 //------------------------------------------------------------------------------------------------//
 //! Specialization for bool
-template <typename IndexType>
-void global_merge(std::map<IndexType, bool> &local_map);
+template <typename IndexType> void global_merge(std::map<IndexType, bool> &local_map);
 
 } // end namespace rtt_c4
 

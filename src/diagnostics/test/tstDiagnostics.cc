@@ -52,8 +52,7 @@ void test_floats(rtt_dsxx::UnitTest &ut) {
 
   // make a fraction entry
   Diagnostics::doubles["A_of_B"] =
-      Diagnostics::integers["A"] /
-      static_cast<double>(Diagnostics::integers["B"]);
+      Diagnostics::integers["A"] / static_cast<double>(Diagnostics::integers["B"]);
 
   // check it
   if (!soft_equiv(Diagnostics::doubles["A_of_B"], 22.0 / 51.0))
@@ -95,8 +94,8 @@ void test_vectors(rtt_dsxx::UnitTest &ut) {
 
   vector<double> ref(2, 1.1);
   ref[1] = 2.4;
-  if (!soft_equiv(Diagnostics::vec_doubles["B"].begin(),
-                  Diagnostics::vec_doubles["B"].end(), ref.begin(), ref.end()))
+  if (!soft_equiv(Diagnostics::vec_doubles["B"].begin(), Diagnostics::vec_doubles["B"].end(),
+                  ref.begin(), ref.end()))
     ITFAILS;
 
   Diagnostics::vec_doubles["B"].clear();

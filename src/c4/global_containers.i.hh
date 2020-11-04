@@ -27,8 +27,7 @@ namespace rtt_c4 {
  * \param local_set On entry, contains a local set. On exit, contains a set consisting of the union
  *        of all the local sets that came into the function on all processors.
  */
-template <typename ElementType>
-void global_merge(std::set<ElementType> &local_set) {
+template <typename ElementType> void global_merge(std::set<ElementType> &local_set) {
   using namespace std;
 
   // Break out promptly if not running in parallel.
@@ -116,12 +115,10 @@ void global_merge(std::map<IndexType, ElementType> &local_map) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<ElementType> const &other_elements = global_elements[p];
       Check(other_index.size() < UINT_MAX);
-      auto const number_of_other_elements =
-          static_cast<unsigned>(other_index.size());
+      auto const number_of_other_elements = static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
       for (unsigned k = 0; k < number_of_other_elements; ++k) {
-        local_map.insert(
-            pair<IndexType, ElementType>(other_index[k], other_elements[k]));
+        local_map.insert(pair<IndexType, ElementType>(other_index[k], other_elements[k]));
       }
     }
     Check(local_map.size() < UINT_MAX);
@@ -157,8 +154,7 @@ void global_merge(std::map<IndexType, ElementType> &local_map) {
  * communication. Char might work as well and be more efficient; we can experiment with this if this
  * code ever proves a computational bottleneck.
  */
-template <typename IndexType>
-void global_merge(std::map<IndexType, bool> &local_map) {
+template <typename IndexType> void global_merge(std::map<IndexType, bool> &local_map) {
   using namespace std;
 
   unsigned number_of_processors = nodes();
@@ -197,8 +193,7 @@ void global_merge(std::map<IndexType, bool> &local_map) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<int> const &other_elements = global_elements[p];
       Check(other_index.size() < UINT_MAX);
-      auto const number_of_other_elements =
-          static_cast<unsigned>(other_index.size());
+      auto const number_of_other_elements = static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
       for (unsigned k = 0; k < number_of_other_elements; ++k) {
         IndexType const &oindex = other_index[k];

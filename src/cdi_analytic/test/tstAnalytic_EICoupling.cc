@@ -28,7 +28,7 @@ using std::dynamic_pointer_cast;
 //------------------------------------------------------------------------------------------------//
 
 void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   // make an analytic model (constant ei_coupling)
   shared_ptr<Constant_Model> model(new Constant_Model(1.1));
@@ -50,8 +50,7 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
     double ei_coupling = 1.1;
 
     // specific heats
-    if (!soft_equiv(analytic.getElectronIonCoupling(Te, Ti, rho, w_e, w_i),
-                    ei_coupling))
+    if (!soft_equiv(analytic.getElectronIonCoupling(Te, Ti, rho, w_e, w_i), ei_coupling))
       ITFAILS;
   }
 
@@ -64,8 +63,7 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
     vector<double> w_i = {0.993, 0.882, 0.590, 0.112, 0.051, 0.001};
     double ei_coupling_ref = 1.1;
 
-    vector<double> ei_coupling =
-        analytic.getElectronIonCoupling(Te, Ti, rho, w_e, w_i);
+    vector<double> ei_coupling = analytic.getElectronIonCoupling(Te, Ti, rho, w_e, w_i);
 
     if (ei_coupling.size() != 6)
       ITFAILS;
@@ -79,15 +77,13 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
   // Test the get_Analytic_Model() member function.
   {
     shared_ptr<Constant_Model const> myEICoupling_model =
-        dynamic_pointer_cast<Constant_Model const>(
-            analytic.get_Analytic_Model());
+        dynamic_pointer_cast<Constant_Model const>(analytic.get_Analytic_Model());
     shared_ptr<Constant_Model const> expected_model(model);
 
     if (expected_model == myEICoupling_model)
       PASSMSG("get_Analytic_Model() returned the expected EICoupling model.");
     else
-      FAILMSG(
-          "get_Analytic_Model() did not return the expected EICoupling model.");
+      FAILMSG("get_Analytic_Model() did not return the expected EICoupling model.");
   }
 
   // Test the get_parameters() members function
@@ -101,10 +97,8 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
     if (params.size() != expectedValue.size())
       ITFAILS;
 
-    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(),
-                   expectedValue.end(), tol))
-      PASSMSG(
-          "get_parameters() returned the analytic expression coefficients.");
+    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(), expectedValue.end(), tol))
+      PASSMSG("get_parameters() returned the analytic expression coefficients.");
     else
       FAILMSG("get_parameters() did not return the analytic expression "
               "coefficients.");
@@ -115,7 +109,7 @@ void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void CDI_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   // cdi object
   CDI eiCouplingData;
@@ -124,8 +118,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   shared_ptr<Analytic_EICoupling_Model> model(new Constant_Model(1.1));
 
   // assign the electron-ion coupling object
-  shared_ptr<Analytic_EICoupling> analytic_ei_coupling(
-      new Analytic_EICoupling(model));
+  shared_ptr<Analytic_EICoupling> analytic_ei_coupling(new Analytic_EICoupling(model));
 
   // EICoupling object
   shared_ptr<const EICoupling> ei_coupling = analytic_ei_coupling;
@@ -151,8 +144,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   // test the data
   {
 
-    EICoupling = eiCouplingData.ei_coupling()->getElectronIonCoupling(
-        Te, Ti, rho, w_e, w_i);
+    EICoupling = eiCouplingData.ei_coupling()->getElectronIonCoupling(Te, Ti, rho, w_e, w_i);
 
     if (EICoupling.size() != 6)
       ITFAILS;
@@ -189,8 +181,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
 
   // test the data
   {
-    EICoupling = eiCouplingData.ei_coupling()->getElectronIonCoupling(
-        Te, Ti, rho, w_e, w_i);
+    EICoupling = eiCouplingData.ei_coupling()->getElectronIonCoupling(Te, Ti, rho, w_e, w_i);
 
     if (EICoupling.size() != 6)
       ITFAILS;
@@ -207,7 +198,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
-  typedef Constant_Analytic_EICoupling_Model Constant_Model;
+  using Constant_Model = Constant_Analytic_EICoupling_Model;
 
   vector<char> packed;
 
@@ -234,8 +225,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     double ei_coupling_ref = 1.1;
 
     // specific heats
-    if (!soft_equiv(n_ei_coupling.getElectronIonCoupling(Te, Ti, rho, w_e, w_i),
-                    ei_coupling_ref))
+    if (!soft_equiv(n_ei_coupling.getElectronIonCoupling(Te, Ti, rho, w_e, w_i), ei_coupling_ref))
       ITFAILS;
   }
 

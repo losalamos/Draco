@@ -30,8 +30,7 @@ Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
 */
 //------------------------------------------------------------------------------------------------//
 template <typename Index_t>
-void Norms_Index<Index_t>::add(const double v, const Index_t &index,
-                               const double weight) {
+void Norms_Index<Index_t>::add(const double v, const Index_t &index, const double weight) {
   double vabs = std::fabs(v);
 
   d_sum_weights += weight;
@@ -107,8 +106,7 @@ template <typename Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
 
 //------------------------------------------------------------------------------------------------//
 //! Equality operator.
-template <typename Index_t>
-bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
+template <typename Index_t> bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
   bool b = Norms_Base::operator==(n);
   return b && (d_index_Linf == n.d_index_Linf);
 }

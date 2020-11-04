@@ -6,15 +6,6 @@
 # note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
-# History
-# ----------------------------------------
-# 07/20/2011 - Use -O3 for Release builds but reduce -fp-model from strict to
-#              precise to eliminate warning 1678.
-# 11/18/2013 - For RELEASE builds, begin using -fp-model precise -fp-speculation
-#              safe.  Jayenne sees about 10% performance bump.
-# 06/13/2016 - IPO settings moved to compilerEnv.cmake
-#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
-
 #
 # Compiler Flags
 #
@@ -28,26 +19,26 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is issued when
   #    '-ip' is turned on and a library has no symbols (this occurs when
   #    capsaicin links some trilinos libraries.)
-  string( APPEND CMAKE_C_FLAGS " -w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -fma"
-    " -diag-disable 11060" )
+  string( APPEND CMAKE_C_FLAGS " -w1 -vec-report0 -diag-disable=remark -shared-intel -no-ftz -fma"
+    " -diag-disable=11060" )
   if( DBS_GENERATE_OBJECT_LIBRARIES )
     string( APPEND CMAKE_C_FLAGS " -ipo" )
   endif()
   string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -O0 -inline-level=0 -ftrapuv -check=uninit"
-    " -fp-model precise -fp-speculation safe -debug inline-debug-info -fno-omit-frame-pointer"
+    " -fp-model=precise -fp-speculation=safe -debug inline-debug-info -fno-omit-frame-pointer"
     " -DDEBUG")
-  string( CONCAT CMAKE_C_FLAGS_RELEASE "-O3 -fp-speculation fast -fp-model precise -pthread"
+  string( CONCAT CMAKE_C_FLAGS_RELEASE "-O3 -fp-speculation=fast -fp-model=precise -pthread"
     " -DNDEBUG" )
-  # [KT 2017-01-19] On KNL, -fp-model fast changes behavior significantly for
-  # IMC. Revert to -fp-model precise.
+  # [KT 2017-01-19] On KNL, -fp-model=fast changes behavior significantly for
+  # IMC. Revert to -fp-model=precise.
   if( "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
-    string( REPLACE "-fp-model fast" "-fp-model precise" CMAKE_C_FLAGS_RELEASE
+    string( REPLACE "-fp-model=fast" "-fp-model=precise" CMAKE_C_FLAGS_RELEASE
       ${CMAKE_C_FLAGS_RELEASE} )
   endif()
 
   set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_RELEASE}" )
   string( CONCAT CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -pthread"
-    " -fp-model precise -fp-speculation safe -fno-omit-frame-pointer" )
+    " -fp-model=precise -fp-speculation=safe -fno-omit-frame-pointer" )
 
   string( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
@@ -65,21 +56,9 @@ mark_as_advanced( INTEL_LIBM )
 
 #--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-#--------------------------------------------------------------------------------------------------#
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags"
-  FORCE )
-
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" CACHE STRING "compiler flags"
-  FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING
-  "compiler flags" FORCE )
+deduplicate_flags(CMAKE_C_FLAGS)
+deduplicate_flags(CMAKE_CXX_FLAGS)
+force_compiler_flags_to_cache("C;CXX")
 
 # If this is a Cray, the compile wrappers take care of any xHost flags that are needed.
 if( NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )

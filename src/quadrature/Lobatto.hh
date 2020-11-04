@@ -30,7 +30,7 @@ namespace rtt_quadrature {
 class Lobatto : public Interval_Quadrature {
 public:
   // CREATORS
-  DLL_PUBLIC_quadrature explicit Lobatto(unsigned sn_order);
+  explicit Lobatto(unsigned sn_order);
 
   // ACCESSORS
 

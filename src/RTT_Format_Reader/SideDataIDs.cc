@@ -1,22 +1,18 @@
-//----------------------------------*-C++-*--------------------------------//
-/*! 
+//--------------------------------------------*-C++-*---------------------------------------------//
+/*!
  * \file   RTT_Format_Reader/SideDataIDs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideDataIDs class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "SideDataIDs.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Parses the side_data_ids data block from the mesh file via calls 
- *        to private member functions.
+ * \brief Parses the side_data_ids data block from the mesh file via calls to private member
+ *        functions.
  * \param meshfile Mesh file name.
  */
 void SideDataIDs::readDataIDs(ifstream &meshfile) {
@@ -32,8 +28,7 @@ void SideDataIDs::readKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "side_data_ids",
-         "Invalid mesh file: side_data_ids block missing");
+  Insist(dummyString == "side_data_ids", "Invalid mesh file: side_data_ids block missing");
   std::getline(meshfile, dummyString);
 }
 /*!
@@ -44,8 +39,7 @@ void SideDataIDs::readData(ifstream &meshfile) {
   int dataIDNum;
   string dummyString;
 
-  for (unsigned i = 0; i < static_cast<unsigned int>(dims.get_nside_data());
-       ++i) {
+  for (unsigned i = 0; i < static_cast<unsigned int>(dims.get_nside_data()); ++i) {
     Check(i < names.size() && i < units.size());
     meshfile >> dataIDNum >> names[i] >> units[i];
     Insist(static_cast<unsigned int>(dataIDNum) == i + 1,
@@ -61,8 +55,7 @@ void SideDataIDs::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_side_data_ids",
-         "Invalid mesh file: side_data_ids block missing end");
+  Insist(dummyString == "end_side_data_ids", "Invalid mesh file: side_data_ids block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 

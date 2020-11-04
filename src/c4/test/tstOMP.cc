@@ -112,16 +112,11 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
 
     if (tid == 0) {
       std::cout << "Using OMP threads."
-                << "\n   MPI node       : " << node()
-                << "\n   MPI max nodes  : " << nodes()
-                << "\n   OMP thread     : " << tid
-                << "\n   OMP num threads: " << nthreads
-                << "\n   OMP max threads: " << maxthreads
-                << "\n   procname(IO)   : " << procname
+                << "\n   MPI node       : " << node() << "\n   MPI max nodes  : " << nodes()
+                << "\n   OMP thread     : " << tid << "\n   OMP num threads: " << nthreads
+                << "\n   OMP max threads: " << maxthreads << "\n   procname(IO)   : " << procname
                 << "\n   Dynamic theads : "
-                << (num_dynamic_threads == 0 ? std::string("OFF")
-                                             : std::string("ON"))
-                << "\n"
+                << (num_dynamic_threads == 0 ? std::string("OFF") : std::string("ON")) << "\n"
                 << std::endl;
     }
     FAIL_IF(tid < 0 || tid >= nthreads);
@@ -129,8 +124,7 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool &one_mpi_rank_per_node) {
 #else
   { // not OMP
     std::cout << "OMP thread use is disabled."
-              << "\n   MPI node       : " << node()
-              << "\n   MPI max nodes  : " << nodes()
+              << "\n   MPI node       : " << node() << "\n   MPI max nodes  : " << nodes()
               << "\n   procname(IO)   : " << procname << "\n"
               << std::endl;
     PASSMSG("OMP is disabled.  No checks made.");
@@ -194,8 +188,7 @@ void sample_sum(rtt_dsxx::UnitTest &ut, bool const omrpn) {
     {
       if (node() == 0 && omp_get_thread_num() == 0) {
         nthreads = omp_get_num_threads();
-        std::cout << "\nNow computing sum using " << nthreads << " OMP threads."
-                  << std::endl;
+        std::cout << "\nNow computing sum using " << nthreads << " OMP threads." << std::endl;
       }
     }
 
@@ -234,8 +227,8 @@ void sample_sum(rtt_dsxx::UnitTest &ut, bool const omrpn) {
                 << "\n\t             \tSerial Time \tOMP Time"
                 << "\n\tbuild      = \t" << t1_serial_build.wall_clock() << "\t"
                 << t1_omp_build.wall_clock() << "\n\taccumulate = \t"
-                << t2_serial_accumulate.wall_clock() << "\t"
-                << t2_omp_accumulate.wall_clock() << std::endl;
+                << t2_serial_accumulate.wall_clock() << "\t" << t2_omp_accumulate.wall_clock()
+                << std::endl;
     }
 
     // [2015-11-17 KT] The accumulate test no longer provides enough work
@@ -298,9 +291,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
   {
     if (node() == 0 && omp_get_thread_num() == 0) {
       nthreads = omp_get_num_threads();
-      cout << "\nNow Generating Mandelbrot image (" << nthreads
-           << " OMP threads)...\n"
-           << endl;
+      cout << "\nNow Generating Mandelbrot image (" << nthreads << " OMP threads)...\n" << endl;
     }
   }
 
@@ -310,8 +301,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
     const int y = pix / width;
 
     complex<double> c =
-        begin + complex<double>(x * span.real() / (width + 1.0),
-                                y * span.imag() / (height + 1.0));
+        begin + complex<double>(x * span.real() / (width + 1.0), y * span.imag() / (height + 1.0));
 
     int n = MandelbrotCalculate(c, maxiter);
     if (n == maxiter)
@@ -321,9 +311,8 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
     {
       char cc = ' ';
       if (n > 0) {
-        array<char, 19> const charset = {'.', ',', 'c', '8', 'M', '@', 'j',
-                                         'a', 'w', 'r', 'p', 'o', 'g', 'O',
-                                         'Q', 'E', 'P', 'G', 'J'};
+        array<char, 19> const charset = {'.', ',', 'c', '8', 'M', '@', 'j', 'a', 'w', 'r',
+                                         'p', 'o', 'g', 'O', 'Q', 'E', 'P', 'G', 'J'};
         cc = charset[n % (charset.size() - 1)];
       }
       image1 << cc;
@@ -348,8 +337,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
     const int y = pix / width;
 
     complex<double> c =
-        begin + complex<double>(x * span.real() / (width + 1.0),
-                                y * span.imag() / (height + 1.0));
+        begin + complex<double>(x * span.real() / (width + 1.0), y * span.imag() / (height + 1.0));
 
     int n = MandelbrotCalculate(c, maxiter);
     if (n == maxiter)
@@ -358,9 +346,8 @@ void MandelbrotDriver(rtt_dsxx::UnitTest &ut) {
     {
       char cc = ' ';
       if (n > 0) {
-        array<char, 19> const charset = {'.', ',', 'c', '8', 'M', '@', 'j',
-                                         'a', 'w', 'r', 'p', 'o', 'g', 'O',
-                                         'Q', 'E', 'P', 'G', 'J'};
+        array<char, 19> const charset = {'.', ',', 'c', '8', 'M', '@', 'j', 'a', 'w', 'r',
+                                         'p', 'o', 'g', 'O', 'Q', 'E', 'P', 'G', 'J'};
         cc = charset[n % (charset.size() - 1)];
       }
       // putchar(c);

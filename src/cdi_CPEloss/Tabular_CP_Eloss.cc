@@ -46,13 +46,12 @@ using std::experimental::layout_left;
  * \param[in] z    z coordinate of interpolation point
  * \return The function value linearly interpolated to (x,y,z)
  */
-inline double
-linear_interpolate_3(double const x0, double const x1, double const y0,
-                     double const y1, double const z0, double const z1,
-                     double const f000, double const f100, double const f001,
-                     double const f101, double const f010, double const f110,
-                     double const f011, double const f111, double const x,
-                     double const y, double const z) {
+inline double linear_interpolate_3(double const x0, double const x1, double const y0,
+                                   double const y1, double const z0, double const z1,
+                                   double const f000, double const f100, double const f001,
+                                   double const f101, double const f010, double const f110,
+                                   double const f011, double const f111, double const x,
+                                   double const y, double const z) {
   Require(std::abs(x1 - x0) > std::numeric_limits<double>::epsilon());
   Require(std::abs(y1 - y0) > std::numeric_limits<double>::epsilon());
   Require(std::abs(z1 - z0) > std::numeric_limits<double>::epsilon());
@@ -100,12 +99,10 @@ linear_interpolate_3(double const x0, double const x1, double const y0,
  *                 separating the stopping power approximation from analog
  *                 scattering
  */
-Tabular_CP_Eloss::Tabular_CP_Eloss(
-    std::string filename_in, rtt_cdi::CParticle target_in,
-    rtt_cdi::CParticle projectile_in,
-    rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
-    : rtt_cdi::CPEloss(target_in, projectile_in,
-                       rtt_cdi::CPModelType::TABULAR_ETYPE,
+Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle target_in,
+                                   rtt_cdi::CParticle projectile_in,
+                                   rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
                        model_angle_cutoff_in),
       filename(std::move(filename_in)) {
   using std::stod;
@@ -131,8 +128,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
   n_density = stoi(line_entries[1]);
   n_temperature = stoi(line_entries[2]);
 
-  line_entries =
-      read_line(); // Bin spacing for energy, density, temperature (log)
+  line_entries = read_line(); // Bin spacing for energy, density, temperature (log)
   Check(line_entries.size() >= 3);
   d_log_energy = stod(line_entries[0]);
   d_log_density = stod(line_entries[1]);
@@ -177,10 +173,9 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
   stopping_data_1d.resize(n_energy * n_density * n_temperature);
 
   bool target_found = false;
-  nlines =
-      (n_energy * n_density * n_temperature + max_entries - 1) /
-      max_entries; // The number of lines taken up by stopping power data for
-                   // one target
+  nlines = (n_energy * n_density * n_temperature + max_entries - 1) /
+           max_entries; // The number of lines taken up by stopping power data for
+                        // one target
   if (target.get_zaid() == -1) {
     // Target is free electrons
     target_found = true;
@@ -196,10 +191,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
     skip_lines(nlines);
 
     // Find ion target, if it exists
-    const uint32_t n_target_ions =
-        stoi(read_line()[0]); // Number of target ions in file
-    for (uint32_t n_target_ion = 0; n_target_ion < n_target_ions;
-         n_target_ion++) {
+    const uint32_t n_target_ions = stoi(read_line()[0]); // Number of target ions in file
+    for (uint32_t n_target_ion = 0; n_target_ion < n_target_ions; n_target_ion++) {
       int zaid_target_ion = stoi(read_line()[0]); // ZAID
       read_line();                                // Z, A, mass
       if (zaid_target_ion == target.get_zaid()) {
@@ -222,15 +215,12 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
   }
   file.close();
 
-  Insist(target_found, "Error finding target ZAID \"" +
-                           std::to_string(target.get_zaid()) +
+  Insist(target_found, "Error finding target ZAID \"" + std::to_string(target.get_zaid()) +
                            "\" in DEDX file \"" + filename + "\"");
 
   stopping_data =
-      basic_mdspan<double,
-                   extents<dynamic_extent, dynamic_extent, dynamic_extent>,
-                   layout_left>(stopping_data_1d.data(), n_energy, n_density,
-                                n_temperature);
+      basic_mdspan<double, extents<dynamic_extent, dynamic_extent, dynamic_extent>, layout_left>(
+          stopping_data_1d.data(), n_energy, n_density, n_temperature);
 
   // Convert units on table to match those of getEloss:
   //   energy:      MeV -> cm/shk (using target particle mass)
@@ -242,9 +232,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
   //   temperature: keV -> keV
   // Note that d log x = dx / x is not affected by unit conversion factors
   for (auto &energy : energies) {
-    energy =
-        sqrt(2. * (energy * 1.e6 * pc.electronVolt()) / target.get_mass()) *
-        1.e-8;
+    energy = sqrt(2. * (energy * 1.e6 * pc.electronVolt()) / target.get_mass()) * 1.e-8;
   }
   for (auto &density : densities) {
     density *= target.get_mass();
@@ -256,8 +244,7 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(
   min_density = exp(min_log_density);
   max_density = exp(min_log_density + d_log_density * (n_density));
   min_temperature = exp(min_log_temperature);
-  max_temperature =
-      exp(min_log_temperature + d_log_temperature * (n_temperature));
+  max_temperature = exp(min_log_temperature + d_log_temperature * (n_temperature));
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -291,34 +278,30 @@ std::vector<std::string> const Tabular_CP_Eloss::read_line() {
  * \param[in] density Material density [g cm^-3]
  * \param[in] partSpeed Particle speed [cm shk^-1]
  */
-double Tabular_CP_Eloss::getEloss(const double temperature,
-                                  const double density,
+double Tabular_CP_Eloss::getEloss(const double temperature, const double density,
                                   const double partSpeed) const {
-  if (temperature <= min_temperature || temperature >= max_temperature ||
-      density <= min_density || density >= max_density ||
-      partSpeed <= min_energy || partSpeed >= max_energy) {
+  if (temperature <= min_temperature || temperature >= max_temperature || density <= min_density ||
+      density >= max_density || partSpeed <= min_energy || partSpeed >= max_energy) {
     // Outside of the table
     return 0.;
   }
 
-  const int pt0_energy = static_cast<int>(
-      std::floor((log(partSpeed) - min_log_energy) / d_log_energy));
+  const int pt0_energy =
+      static_cast<int>(std::floor((log(partSpeed) - min_log_energy) / d_log_energy));
   const int pt1_energy = pt0_energy + 1;
-  const int pt0_density = static_cast<int>(
-      std::floor((log(density) - min_log_density) / d_log_density));
+  const int pt0_density =
+      static_cast<int>(std::floor((log(density) - min_log_density) / d_log_density));
   const int pt1_density = pt0_density + 1;
-  const int pt0_temperature = static_cast<int>(
-      std::floor((log(temperature) - min_log_temperature) / d_log_temperature));
+  const int pt0_temperature =
+      static_cast<int>(std::floor((log(temperature) - min_log_temperature) / d_log_temperature));
   const int pt1_temperature = pt0_temperature + 1;
 
   const double x0 = exp(min_log_energy + pt0_energy * d_log_energy);
   const double x1 = exp(min_log_energy + pt1_energy * d_log_energy);
   const double y0 = exp(min_log_density + pt0_density * d_log_density);
   const double y1 = exp(min_log_density + pt1_density * d_log_density);
-  const double z0 =
-      exp(min_log_temperature + pt0_temperature * d_log_temperature);
-  const double z1 =
-      exp(min_log_temperature + pt1_temperature * d_log_temperature);
+  const double z0 = exp(min_log_temperature + pt0_temperature * d_log_temperature);
+  const double z1 = exp(min_log_temperature + pt1_temperature * d_log_temperature);
 
   const double f000 = stopping_data(pt0_energy, pt0_density, pt0_temperature);
   const double f100 = stopping_data(pt1_energy, pt0_density, pt0_temperature);
@@ -328,9 +311,8 @@ double Tabular_CP_Eloss::getEloss(const double temperature,
   const double f110 = stopping_data(pt1_energy, pt1_density, pt0_temperature);
   const double f011 = stopping_data(pt0_energy, pt1_density, pt1_temperature);
   const double f111 = stopping_data(pt1_energy, pt1_density, pt1_temperature);
-  const double dedx = exp(
-      linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010,
-                           f110, f011, f111, partSpeed, density, temperature));
+  const double dedx = exp(linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010,
+                                               f110, f011, f111, partSpeed, density, temperature));
   const double number_density = density / target.get_mass();
   return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }

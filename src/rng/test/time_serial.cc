@@ -35,6 +35,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * different permutations of RNGs and NxW and R.
  */
 
+/* Not our code: disable clang-tidy checks */
+#if !defined(__clang_analyzer__)
+
 #include "util.h"
 
 #include "time_serial.h"
@@ -175,6 +178,8 @@ int main(int argc, char **argv) {
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
+
+#endif /* !defined(__clang_analyzer__) */
 
 //------------------------------------------------------------------------------------------------//
 // end time_serial.c

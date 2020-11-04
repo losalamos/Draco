@@ -55,7 +55,7 @@ double constexpr NORM_FACTOR = 0.25 * coeff; // 15/(4*pi^4);
  * The taylor expansion of the planckian integral looks as follows:
  *
  * \code
- * I(x) = c0 ( c3 x^3 + c4 x^4 + c5 x^5 + c7 x^7 + c9 x^9 + c11 x^11 + c13 x^13 + c15 x^15 
+ * I(x) = c0 ( c3 x^3 + c4 x^4 + c5 x^5 + c7 x^7 + c9 x^9 + c11 x^11 + c13 x^13 + c15 x^15
  *      + c17 x^17 + c19 x^19 + c21 x^21 )
  * \endcode
  *
@@ -65,7 +65,7 @@ double constexpr NORM_FACTOR = 0.25 * coeff; // 15/(4*pi^4);
  * If you express the polynomial as follows:
  *
  * \code
- * I(x) = c0 x^3 ( c3 + x ( c4 + x (c5 + x^2 ( c7 + x^2 ( c9 + x^2 ( c11 + x^2 ( c13 + x^2 
+ * I(x) = c0 x^3 ( c3 + x ( c4 + x (c5 + x^2 ( c7 + x^2 ( c9 + x^2 ( c11 + x^2 ( c13 + x^2
  *      * ( c15 + x^2 ( c17 + x^2 ( c19 + x^2 c21 ) ) ) ) ) ) ) ) ) )
  * \endcode
  *
@@ -205,7 +205,7 @@ static double polylog_series_minus_one_planck(double const x, double const eix) 
  * ==> The underlying function x^4/(exp(x) - 1) can be difficult to evaluate with double precision
  *     when x is very small. Instead, when x < 1.e-5, we use the first 2 terms in the expansion
  *     x^4/(exp(x) - 1) ~ x^3(1-x/2), remaining terms are x^5/12 + O(x^7).
- * 
+ *
  * ==> When x is large, e^x reaches floating point overflow rapidly, thus the function is
  *     modified to the form exp(-x)*x^4/(1-exp(-x)). Accuracy of 1-exp(-x) suffers when x is large.
  *     However, std::expm1 should improve the accuracy of that evaluation.
@@ -346,7 +346,7 @@ namespace rtt_cdi {
  * except in the low-x limit, where we use a 21-term Taylor series expansion.
  *
  * The user is responsible for applying the appropriate constants to the result of this integration.
- * For example, to make the result of this integration equivalent to 
+ * For example, to make the result of this integration equivalent to
  * \f[
  *      \int_{\nu_{low}}^{\nu_{high}} B(\nu,T) d\nu
  * \f]
@@ -423,7 +423,6 @@ namespace rtt_cdi {
  *
  * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we return a hard zero for a
  * temperature equal to a hard zero.
- *
  */
 /*!
  * \example cdi/test/tCDI.cc

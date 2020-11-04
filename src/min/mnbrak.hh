@@ -37,8 +37,7 @@ namespace rtt_min {
  */
 
 template <class Function>
-void mnbrak(double &ax, double &bx, double &cx, double &fa, double &fb,
-            double &fc, Function func) {
+void mnbrak(double &ax, double &bx, double &cx, double &fa, double &fb, double &fc, Function func) {
   using namespace std;
   using namespace rtt_dsxx;
 
@@ -57,8 +56,7 @@ void mnbrak(double &ax, double &bx, double &cx, double &fa, double &fb,
   while (fb > fc) {
     double const r = (bx - ax) * (fb - fc);
     double const q = (bx - cx) * (fb - fa);
-    double u = bx - ((bx - cx) * q - (bx - ax) * r) /
-                        (2 * sign(max(fabs(q - r), TINY), q - r));
+    double u = bx - ((bx - cx) * q - (bx - ax) * r) / (2 * sign(max(fabs(q - r), TINY), q - r));
     double const ulim = bx + GLIMIT * (cx - bx);
     double fu;
     if ((bx - u) * (u - cx) > 0.0) {

@@ -52,8 +52,8 @@ void unit_test(UnitTest &ut) {
       PASSMSG("correct text representation of J");
     else {
       FAILMSG("NOT correct text representation of J");
-      std::cout << "\tfound buffer.str() = " << buffer.str()
-                << "\n\texpected '1 m^2-kg-s^-2'" << std::endl;
+      std::cout << "\tfound buffer.str() = " << buffer.str() << "\n\texpected '1 m^2-kg-s^-2'"
+                << std::endl;
     }
   }
 

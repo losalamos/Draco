@@ -1,6 +1,6 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   special_functions/factorial_pt.cc
+ * \file   special_functions/Factorial_pt.cc
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide explicit instantiations of templatized factorial function.

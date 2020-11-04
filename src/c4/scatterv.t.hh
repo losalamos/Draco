@@ -24,8 +24,7 @@ using std::vector;
 
 //------------------------------------------------------------------------------------------------//
 template <typename T>
-void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
-                            vector<T> &incoming_data) {
+void indeterminate_scatterv(vector<vector<T>> &outgoing_data, vector<T> &incoming_data) {
 #ifdef C4_MPI
   { // This block is a no-op for with-c4=scalar
 
@@ -49,12 +48,10 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
       vector<T> sendbuf(total_count);
       for (unsigned p = 0; p < N; ++p) {
         Check(outgoing_data[p].size() + displs[p] <= sendbuf.size());
-        copy(outgoing_data[p].begin(), outgoing_data[p].end(),
-             sendbuf.begin() + displs[p]);
+        copy(outgoing_data[p].begin(), outgoing_data[p].end(), sendbuf.begin() + displs[p]);
       }
       Remember(check =) rtt_c4::scatterv(
-          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr),
-          (counts.size() > 0 ? &counts[0] : nullptr),
+          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr), (counts.size() > 0 ? &counts[0] : nullptr),
           (displs.size() > 0 ? &displs[0] : nullptr),
           (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
       Check(check == MPI_SUCCESS);
@@ -64,8 +61,7 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
       Check(check == MPI_SUCCESS);
       incoming_data.resize(count);
       Remember(check =) rtt_c4::scatterv(
-          static_cast<T *>(nullptr), static_cast<int *>(nullptr),
-          static_cast<int *>(nullptr),
+          static_cast<T *>(nullptr), static_cast<int *>(nullptr), static_cast<int *>(nullptr),
           (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
       Check(check == MPI_SUCCESS);
     }
@@ -82,8 +78,7 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
 
 //------------------------------------------------------------------------------------------------//
 template <typename T>
-void determinate_scatterv(vector<vector<T>> &outgoing_data,
-                          vector<T> &incoming_data) {
+void determinate_scatterv(vector<vector<T>> &outgoing_data, vector<T> &incoming_data) {
   Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());
 
 #ifdef C4_MPI
@@ -106,12 +101,10 @@ void determinate_scatterv(vector<vector<T>> &outgoing_data,
 
       vector<T> sendbuf(total_count);
       for (unsigned p = 0; p < N; ++p) {
-        copy(outgoing_data[p].begin(), outgoing_data[p].end(),
-             sendbuf.begin() + displs[p]);
+        copy(outgoing_data[p].begin(), outgoing_data[p].end(), sendbuf.begin() + displs[p]);
       }
-      rtt_c4::scatterv(
-          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr), &counts[0], &displs[0],
-          (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
+      rtt_c4::scatterv((sendbuf.size() > 0 ? &sendbuf[0] : nullptr), &counts[0], &displs[0],
+                       (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
     } else {
       Check(incoming_data.size() < INT_MAX);
       auto count = static_cast<int>(incoming_data.size());

@@ -62,7 +62,7 @@ namespace rtt_dsxx {
  * - With C++11, some of these features can easily be implemented in code. See
  *   http://en.cppreference.com/w/cpp/numeric/fenv/FE_exceptions .
  */
-class DLL_PUBLIC_dsxx fpe_trap {
+class fpe_trap {
 public:
   //! constructor
   fpe_trap(bool const abortWithInsist_in = true) : abortWithInsist(abortWithInsist_in){/* emtpy */};
@@ -114,7 +114,7 @@ private:
 #include <Windows.h> // EXCEPTION_POINTERS
 
 namespace rtt_dsxx {
-class DLL_PUBLIC_dsxx CCrashHandler {
+class CCrashHandler {
 public:
   // Constructor
   CCrashHandler(){/*empty*/};

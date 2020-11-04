@@ -27,15 +27,13 @@ double foo_exp(double x) { return exp(x); }
 //------------------------------------------------------------------------------------------------//
 
 void tstquad(UnitTest &ut) {
-  using Rule =
-      void (*)(vector<double> & y, const vector<double> &dydx, double &x,
-               const double htry, const double eps, const vector<double> &yscal,
-               double &hdid, double &hnext, Quad_To_ODE<double (*)(double)>);
+  using Rule = void (*)(vector<double> & y, const vector<double> &dydx, double &x,
+                        const double htry, const double eps, const vector<double> &yscal,
+                        double &hdid, double &hnext, Quad_To_ODE<double (*)(double)>);
   using fpdd = double (*)(double);
   fpdd exp_fpdd = &foo_exp;
   double eps = 1.0e-12;
-  double const integral =
-      rtt_ode::quad<fpdd, Rule>(exp_fpdd, 0.0, 1.0, eps, &rkqs);
+  double const integral = rtt_ode::quad<fpdd, Rule>(exp_fpdd, 0.0, 1.0, eps, &rkqs);
   UT_MSG(soft_equiv(integral, exp(1.0) - 1.0, eps), "quad accurate");
 }
 

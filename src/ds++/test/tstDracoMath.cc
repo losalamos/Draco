@@ -23,8 +23,7 @@ void tstconj(rtt_dsxx::UnitTest &ut) {
     FAILMSG("conj(double) is NOT correct");
 
   std::complex<double> c(2.7, -1.4);
-  if (rtt_dsxx::soft_equiv((rtt_dsxx::conj(c) * c).real(),
-                           rtt_dsxx::square(abs(c))))
+  if (rtt_dsxx::soft_equiv((rtt_dsxx::conj(c) * c).real(), rtt_dsxx::square(abs(c))))
     PASSMSG("conj(std::complex) is correct");
   else
     FAILMSG("conj(std::complex) is NOT correct");

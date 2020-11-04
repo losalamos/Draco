@@ -112,8 +112,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     FAIL_IF_NOT(rtt_c4::node() == 0);
   } catch (exception & /*error*/) {
     ostringstream mymsg;
-    mymsg << "Successfully caught a range violation in broadcast on PE "
-          << rtt_c4::node();
+    mymsg << "Successfully caught a range violation in broadcast on PE " << rtt_c4::node();
     PASSMSG(mymsg.str());
   }
 

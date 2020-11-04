@@ -18,7 +18,7 @@ endif()
 if( NOT Fortran_FLAGS_INITIALIZED )
    set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_Fortran_FLAGS "-cpp" )
+   string(APPEND CMAKE_Fortran_FLAGS " -cpp" )
    set( CMAKE_Fortran_FLAGS_DEBUG "-g -gdwarf-3 -DDEBUG" )
    set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -DNDEBUG" )
    set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
@@ -26,18 +26,12 @@ if( NOT Fortran_FLAGS_INITIALIZED )
 
 endif()
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+deduplicate_flags(CMAKE_Fortran_FLAGS)
+force_compiler_flags_to_cache("Fortran")
 
-#
 # Toggle compiler flags for optional features
-#
 if( OpenMP_Fortran_FLAGS )
   toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 endif()

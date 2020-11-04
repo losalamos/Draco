@@ -57,9 +57,7 @@ void testInstantiation0(UnitTest & /*ut*/) {
 //------------------------------------------------------------------------------------------------//
 /**\brief Exercise two arg ctor with the join action. */
 void testInstantiation2(UnitTest &ut) {
-  {
-    Thread_Wrapper tw(std::thread(quick_action), Thread_Wrapper::action::join);
-  }
+  { Thread_Wrapper tw(std::thread(quick_action), Thread_Wrapper::action::join); }
   // Construting a thread and move it into a Thread_Wrapper
   // NB: cannot copy a std::thread.
   {
@@ -99,8 +97,8 @@ void testDetach(UnitTest &ut) {
   std::this_thread::sleep_for(so_long);
   bool ok = s.str() == "host thread: done\nslow_action: done\n";
   if (!ok) {
-    printf("%s:%i s.str = '%s', expected '%s'\n", __FUNCTION__, __LINE__,
-           s.str().c_str(), "host thread: done\nslow_action: done\n");
+    printf("%s:%i s.str = '%s', expected '%s'\n", __FUNCTION__, __LINE__, s.str().c_str(),
+           "host thread: done\nslow_action: done\n");
   }
   FAIL_IF_NOT(ok);
   return;
@@ -122,10 +120,8 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     run_a_test(ut, testInstantiation0, "Thread_Wrapper::ctor() ok.");
-    run_a_test(ut, testInstantiation2,
-               "Thread_Wrapper::ctor(std::thread && t, join) ok.");
-    run_a_test(ut, testDetach,
-               "Thread_Wrapper::ctor(std::thread && t, detach) ok.");
+    run_a_test(ut, testInstantiation2, "Thread_Wrapper::ctor(std::thread && t, join) ok.");
+    run_a_test(ut, testDetach, "Thread_Wrapper::ctor(std::thread && t, detach) ok.");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }

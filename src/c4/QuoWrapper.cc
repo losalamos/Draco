@@ -32,8 +32,7 @@ QUO_context QuoWrapper::quo = nullptr;
  * function.
  */
 QuoWrapper::QuoWrapper() {
-  Insist(isMpiInit(),
-         "Cannot create a QuoWrapper unless MPI is already initialized");
+  Insist(isMpiInit(), "Cannot create a QuoWrapper unless MPI is already initialized");
 #ifdef HAVE_LIBQUO
   if (quo == nullptr) {
     Remember(auto retval =) QUO_create(&quo, MPI_COMM_WORLD);

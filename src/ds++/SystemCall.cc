@@ -171,8 +171,7 @@ draco_getstat::draco_getstat(std::string const &fqName)
   }
 }
 #else
-draco_getstat::draco_getstat(std::string const &fqName)
-    : stat_return_code(0), buf() {
+draco_getstat::draco_getstat(std::string const &fqName) : stat_return_code(0), buf() {
   stat_return_code = stat(fqName.c_str(), &buf);
 }
 #endif
@@ -206,8 +205,7 @@ bool draco_getstat::isdir() {
 #ifdef WIN32
 bool draco_getstat::has_permission_bit(int /*mask*/) {
   Insist(isreg(), "Can only check permission bit for regular files.");
-  Insist(false,
-         "draco_getstat::hsa_permission_bit() not implemented for WIN32");
+  Insist(false, "draco_getstat::hsa_permission_bit() not implemented for WIN32");
   return false;
 }
 #else
@@ -225,8 +223,7 @@ std::string draco_getrealpath(std::string const &path) {
   buffer.fill('a');
 #ifdef WIN32
   // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
-  Insist(_fullpath(&buffer[0], path.c_str(), MAXPATHLEN) != nullptr,
-         "Invalid path.");
+  Insist(_fullpath(&buffer[0], path.c_str(), MAXPATHLEN) != nullptr, "Invalid path.");
   std::string retVal(buffer.data());
 #else
   Insist((realpath(path.c_str(), &buffer[0])) != nullptr, "Invalid path.");
@@ -263,19 +260,16 @@ void draco_mkdir(std::string const &path) {
     if (errorCode == -1) {
       switch (errno) {
       case EEXIST:
-        Insist(errno != EEXIST, "ERROR: Unable to create directory," +
-                                    clean_fqName +
+        Insist(errno != EEXIST, "ERROR: Unable to create directory," + clean_fqName +
                                     ", because it already exists.");
         break;
       case ENOENT:
-        Insist(errno != ENOENT, "ERROR: Unable to create directory," +
-                                    clean_fqName +
+        Insist(errno != ENOENT, "ERROR: Unable to create directory," + clean_fqName +
                                     ", because the path is not found.");
         break;
       default:
         /* should never get here */
-        Insist(errno == 0,
-               "ERROR: Unable to create directory, " + clean_fqName);
+        Insist(errno == 0, "ERROR: Unable to create directory, " + clean_fqName);
       }
     }
   }
@@ -310,8 +304,7 @@ void draco_remove(std::string const &dirpath) {
     if (!ok) {
       int myerr = ::GetLastError();
       std::ostringstream msg;
-      msg << "ERROR: File attribute not normal. myerr = " << myerr
-          << ", file = " << dirpath;
+      msg << "ERROR: File attribute not normal. myerr = " << myerr << ", file = " << dirpath;
       Insist(ok, msg.str());
     }
 
@@ -320,8 +313,7 @@ void draco_remove(std::string const &dirpath) {
     if (!ok) {
       int myerr = ::GetLastError();
       std::ostringstream msg;
-      msg << "ERROR: Error deteting file, myerr = " << myerr
-          << ", file = " << dirpath;
+      msg << "ERROR: Error deteting file, myerr = " << myerr << ", file = " << dirpath;
       Insist(ok, msg.str());
     }
 #else

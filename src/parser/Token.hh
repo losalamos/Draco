@@ -128,8 +128,7 @@ bool operator==(Token const &, Token const &);
  * \param text Text of the Token.
  * \param location The token location.
  */
-inline Token::Token(Token_Type const type, string const &text,
-                    string const &location)
+inline Token::Token(Token_Type const type, string const &text, string const &location)
     : type_(type), text_(text), location_(location) {
   Require(Is_Text_Token(type));
   Require(type != KEYWORD || Is_Keyword_Text(text.c_str()));

@@ -94,9 +94,8 @@ struct Keyword {
 
   Keyword() = default;
 
-  Keyword(char const *moniker_in, void (*func_in)(Token_Stream &, int),
-          int const index_in, char const *module_in,
-          char const *description_in = nullptr)
+  Keyword(char const *moniker_in, void (*func_in)(Token_Stream &, int), int const index_in,
+          char const *module_in, char const *description_in = nullptr)
       : moniker(moniker_in), func(func_in), index(index_in), module(module_in),
         description(description_in) {}
 };
@@ -260,8 +259,8 @@ private:
  *	a.module == b.module </code>
  */
 inline bool operator==(Keyword const &a, Keyword const &b) {
-  return strcmp(a.moniker, b.moniker) == 0 && a.func == b.func &&
-         a.index == b.index && strcmp(a.module, b.module) == 0;
+  return strcmp(a.moniker, b.moniker) == 0 && a.func == b.func && a.index == b.index &&
+         strcmp(a.module, b.module) == 0;
 }
 
 //------------------------------------------------------------------------------------------------//

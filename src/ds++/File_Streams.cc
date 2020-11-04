@@ -14,8 +14,7 @@ namespace {
 
 // Define a string to indicate that a file was written in binary mode. This string should be one
 // that is unlikely to be used by a client.
-static const std::string BINARY_FILE_HEADER =
-    "bInArYfIlE_rtt_dsxx_File_Streams";
+static const std::string BINARY_FILE_HEADER = "bInArYfIlE_rtt_dsxx_File_Streams";
 } // namespace
 
 namespace rtt_dsxx {
@@ -110,8 +109,7 @@ File_Output &File_Output::operator<<(const char c) {
  * \param filename The file name to open for reading.  If empty, open() must be used later to open a
  *                 file.
  */
-File_Input::File_Input(std::string const &filename)
-    : d_stream(), d_line(std::string()) {
+File_Input::File_Input(std::string const &filename) : d_stream(), d_line(std::string()) {
   if (!filename.empty())
     open(filename);
 }

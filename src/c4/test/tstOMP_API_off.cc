@@ -81,8 +81,7 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
 int main(int argc, char **argv) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    run_a_test(ut, check_set_get,
-               "Check getting/setting OpenMP number threads, API unavailable");
+    run_a_test(ut, check_set_get, "Check getting/setting OpenMP number threads, API unavailable");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }

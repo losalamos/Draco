@@ -151,8 +151,7 @@ void test_string_to_numvec(UnitTest &ut) {
 
   vector<int> const case1v = string_to_numvec<int>(case1);
   vector<double> const case2v = string_to_numvec<double>(case2);
-  vector<double> const case3v =
-      string_to_numvec<double>(case3, string("[)"), string(" "));
+  vector<double> const case3v = string_to_numvec<double>(case3, string("[)"), string(" "));
 
   vector<int> const case1ref = {1, 2, 3};
   vector<double> const case2ref = {1.1, 2.2, 3.3};

@@ -20,8 +20,7 @@ using namespace rtt_c4;
 //------------------------------------------------------------------------------------------------//
 
 template <typename T>
-void test_equivalence(rtt_dsxx::UnitTest &ut, const T value,
-                      const T alt_value) {
+void test_equivalence(rtt_dsxx::UnitTest &ut, const T value, const T alt_value) {
   T local_value = value;
 
   // Test requires more than one node:
@@ -85,8 +84,7 @@ void test_equivalence(rtt_dsxx::UnitTest &ut, const T value,
 
   if (ut.numFails == 0) {
     std::ostringstream msg;
-    msg << "No failures detected for test_equivalence(ut," << value << ","
-        << alt_value << ").";
+    msg << "No failures detected for test_equivalence(ut," << value << "," << alt_value << ").";
     PASSMSG(msg.str());
   }
   return;
@@ -102,12 +100,9 @@ int main(int argc, char *argv[]) {
     test_equivalence(ut, 10.0001, 10.0002); // double
     test_equivalence(ut, static_cast<unsigned long long>(10000000000),
                      static_cast<unsigned long long>(200000000000));
-    test_equivalence(ut, static_cast<long long>(10000000000),
-                     static_cast<long long>(200000000000));
-    test_equivalence(ut, static_cast<long>(1000000),
-                     static_cast<long>(2000000));
-    test_equivalence(ut, static_cast<unsigned long>(1000000),
-                     static_cast<unsigned long>(2000000));
+    test_equivalence(ut, static_cast<long long>(10000000000), static_cast<long long>(200000000000));
+    test_equivalence(ut, static_cast<long>(1000000), static_cast<long>(2000000));
+    test_equivalence(ut, static_cast<unsigned long>(1000000), static_cast<unsigned long>(2000000));
   }
   UT_EPILOG(ut);
 }

@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 10:52:50 2001
  * \brief  EoS class test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
@@ -45,10 +44,9 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   // EoS Tests //
   // --------- //
 
-  double temperature = 5800.0; // Kelvin
-  double density = 27.0;       // g/cm^3
-  double tabulatedSpecificElectronInternalEnergy =
-      temperature + 1000.0 * density; // kJ/g
+  double temperature = 5800.0;                                                     // Kelvin
+  double density = 27.0;                                                           // g/cm^3
+  double tabulatedSpecificElectronInternalEnergy = temperature + 1000.0 * density; // kJ/g
 
   double seie = spEoS->getSpecificElectronInternalEnergy(temperature, density);
 
@@ -64,8 +62,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  // try using a vectors of temps. and densities vtemperature.size() ==
-  // vdensity.size()
+  // try using a vectors of temps. and densities vtemperature.size() == vdensity.size()
 
   std::vector<double> vtemperature(3);
   vtemperature[0] = 5000.0; // Kelvin
@@ -82,8 +79,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   for (size_t i = 0; i < vtemperature.size(); ++i)
     vRefCve[i] = vtemperature[i] + vdensity[i] / 1000.0;
 
-  std::vector<double> vCve =
-      spEoS->getElectronHeatCapacity(vtemperature, vdensity);
+  std::vector<double> vCve = spEoS->getElectronHeatCapacity(vtemperature, vdensity);
 
   if (soft_equiv(vCve.begin(), vCve.end(), vRefCve.begin(), vRefCve.end())) {
     ostringstream message;

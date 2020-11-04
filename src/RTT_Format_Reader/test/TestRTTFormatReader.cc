@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:26:42 2002
  * \brief  RTT_Format_Reader test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
@@ -29,32 +28,29 @@ void runTest(UnitTest &ut) {
   // Find the mesh file
   string const inpPath = ut.getTestSourcePath();
 
-  // New meshes added to this test will have to be added to the enumeration
-  // Meshes in the header file.
+  // New meshes added to this test will have to be added to the enumeration Meshes in the header
+  // file.
   int const MAX_MESHES = 1;
   std::string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
   Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
-    // Construct an RTT_Format_Reader class object from the data in the
-    // specified mesh file.
+    // Construct an RTT_Format_Reader class object from the data in the specified mesh file.
     RTT_Format_Reader mesh(filename[mesh_number]);
     {
       ostringstream m;
-      m << "Read " << filename[mesh_number]
-        << " without coreing in or firing an assertion." << std::endl;
+      m << "Read " << filename[mesh_number] << " without coreing in or firing an assertion."
+        << std::endl;
       PASSMSG(m.str());
     }
     bool all_passed = true;
-    // The following switch allows addition of other meshes for testing, with
-    // the "DEFINED" mesh providing an example. Only the check_dims tests is
-    // required and it will be automatically called by the other tests (with the
-    // exception of check header) if not invoked herein.  The comparison data
-    // must also be provided for additional meshes within the switch structure
+    // The following switch allows addition of other meshes for testing, with the "DEFINED" mesh
+    // providing an example. Only the check_dims tests is required and it will be automatically
+    // called by the other tests (with the exception of check header) if not invoked herein.  The
+    // comparison data must also be provided for additional meshes within the switch structure
     // residing in the test functions.
     switch (mesh_number) {
-    // Test all nested class accessor functions for a very simplistic mesh file
-    // (enum DEFINED).
+    // Test all nested class accessor functions for a very simplistic mesh file (enum DEFINED).
     case (0):
       mesh_type = DEFINED;
       all_passed = all_passed && check_header(mesh, mesh_type, ut);
@@ -105,8 +101,7 @@ void runTest(UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Verify that the Dims data was previously validated.
   if (!Dims_validated.count(meshtype))
     check_dims(mesh, meshtype, ut);
@@ -115,8 +110,7 @@ bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                  UnitTest &ut) {
+bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Exercise the header accessor functions for this mesh.
   bool all_passed = true;
   std::string version, title, date;
@@ -192,8 +186,7 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                UnitTest &ut) {
+bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Exercise the dims accessor functions for this mesh.
   bool all_passed = true;
   std::string coor_units, prob_time_units;
@@ -238,16 +231,14 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     nnode_data = 3;
     nsides = 4;
     nside_types = 1;
-    // All side types are decremented relative to the value in the
-    // input file for zero indexing.
+    // All side types are decremented relative to the value in the input file for zero indexing.
     side_types.push_back(2);
     nside_flag_types = 1;
     nside_flags.push_back(2);
     nside_data = 2;
     ncells = 1;
     ncell_types = 1;
-    // All cell types are decremented relative to the value in the
-    // input file for zero indexing.
+    // All cell types are decremented relative to the value in the input file for zero indexing.
     cell_types.push_back(5);
     ncell_flag_types = 2;
     ncell_flags.push_back(2);
@@ -414,8 +405,7 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -525,8 +515,7 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -583,8 +572,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check number of flags for each side flag type.
   bool got_side_flag_size = true;
   for (size_t i = 0; i < mesh.get_dims_nside_flag_types(); i++) {
-    if (flag_num_name[i].size() !=
-        static_cast<size_t>(mesh.get_side_flags_flag_size(i)))
+    if (flag_num_name[i].size() != static_cast<size_t>(mesh.get_side_flags_flag_size(i)))
       got_side_flag_size = false;
   }
   if (!got_side_flag_size) {
@@ -614,8 +602,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -713,8 +700,7 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -772,8 +758,7 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -829,8 +814,7 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -887,8 +871,7 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 //!\brief Test reading of the cell defs block from an RTT file
 //------------------------------------------------------------------------------------------------//
 
-bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -904,8 +887,8 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    // Size std::vectors and load data consistent between both the standard
-    //  and sorted cell definitions (names, nnodes, nsides).
+    // Size std::vectors and load data consistent between both the standard and sorted cell
+    //  definitions (names, nnodes, nsides).
     side_types.resize(8);
     sides.resize(8);
     ordered_sides.resize(8);
@@ -1059,10 +1042,9 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     ordered_sides[7][5].push_back(4);
     ordered_sides[7][5].push_back(7);
     ordered_sides[7][5].push_back(3);
-    // Load the (sorted) sides data from the ordered_sides data specified
-    // above. The first element of ordered_sides and sides std::vectors
-    // corresponds to a point (no sides, and thus the second "array"
-    // size is zero) so start at cell definition one.
+    // Load the (sorted) sides data from the ordered_sides data specified above. The first element
+    // of ordered_sides and sides std::vectors corresponds to a point (no sides, and thus the second
+    // "array" size is zero) so start at cell definition one.
     for (size_t c = 1; c < ordered_sides.size(); c++)
       for (size_t s = 0; s < ordered_sides[c].size(); s++)
         for (size_t n = 0; n < ordered_sides[c][s].size(); n++)
@@ -1088,13 +1070,10 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   // Check cell definition access
   {
-    rtt_RTT_Format_Reader::CellDef const myCellDef(
-        mesh.get_cell_defs_cell_def(0));
-    if (myCellDef.get_name() == std::string("point") &&
-        myCellDef.get_nnodes() == 1 && myCellDef.get_nsides() == 0 &&
-        myCellDef.get_all_side_types().size() == 0 &&
-        myCellDef.get_all_sides().size() == 0 &&
-        myCellDef.get_all_ordered_sides().size() == 0) {
+    rtt_RTT_Format_Reader::CellDef const myCellDef(mesh.get_cell_defs_cell_def(0));
+    if (myCellDef.get_name() == std::string("point") && myCellDef.get_nnodes() == 1 &&
+        myCellDef.get_nsides() == 0 && myCellDef.get_all_side_types().size() == 0 &&
+        myCellDef.get_all_sides().size() == 0 && myCellDef.get_all_ordered_sides().size() == 0) {
       PASSMSG("mesh.get_cell_defs_cell_def() works.");
     } else {
       FAILMSG("mesh.get_cell_defs_cell_def() failed.");
@@ -1119,12 +1098,6 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       std::cout << " }." << std::endl;
     }
   }
-
-  // Check get_cell_defs_node_map(int,int)
-  //      {
-  //      int myNode = mesh.get_cell_defs_node_map(0,0);
-  //      std::cout << "myNode = " << myNode << std::endl;
-  //      }
 
   // Check get_cell_defs_redefined()
   {
@@ -1202,19 +1175,18 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-//
+// check_nodes
 //------------------------------------------------------------------------------------------------//
 
-bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the nodes accessor functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> coords(
-      mesh.get_dims_nnodes(), std::vector<double>(mesh.get_dims_ndim(), 0.0));
+  std::vector<std::vector<double>> coords(mesh.get_dims_nnodes(),
+                                          std::vector<double>(mesh.get_dims_ndim(), 0.0));
   std::vector<size_t> parents(mesh.get_dims_nnodes());
   std::vector<std::vector<int>> flags(mesh.get_dims_nnodes());
 
@@ -1307,8 +1279,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -1378,8 +1349,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check a single node for a single side.
   bool got_side_node = true;
   for (size_t i = 0; i < mesh.get_dims_nsides(); i++) {
-    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_sides_type(i));
-         n++)
+    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_sides_type(i)); n++)
       if (nodes[i][n] != mesh.get_sides_nodes(i, n))
         got_side_node = false;
   }
@@ -1409,8 +1379,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -1469,8 +1438,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check a single node for a single cell.
   bool got_cell_node = true;
   for (size_t i = 0; i < mesh.get_dims_ncells(); i++) {
-    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_cells_type(i));
-         n++)
+    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_cells_type(i)); n++)
       if (nodes[i][n] != mesh.get_cells_nodes(i, n))
         got_cell_node = false;
   }
@@ -1503,17 +1471,15 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the node_data functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> data(
-      mesh.get_dims_nnodes(),
-      std::vector<double>(mesh.get_dims_nnode_data(), 0.0));
+  std::vector<std::vector<double>> data(mesh.get_dims_nnodes(),
+                                        std::vector<double>(mesh.get_dims_nnode_data(), 0.0));
 
   switch (meshtype) {
   case DEFINED:
@@ -1565,17 +1531,15 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the side_data functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> data(
-      mesh.get_dims_nsides(),
-      std::vector<double>(mesh.get_dims_nside_data(), 0.0));
+  std::vector<std::vector<double>> data(mesh.get_dims_nsides(),
+                                        std::vector<double>(mesh.get_dims_nside_data(), 0.0));
 
   switch (meshtype) {
   case DEFINED:
@@ -1626,8 +1590,7 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;

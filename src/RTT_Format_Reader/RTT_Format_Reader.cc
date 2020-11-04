@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*--------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/RTT_Format_Reader.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader library.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "RTT_Format_Reader.hh"
@@ -13,20 +12,23 @@
 #include <sstream>
 
 namespace rtt_RTT_Format_Reader {
+
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructs an RTT_Format_Reader object and parses the mesh data.
  * \param RTT_File Mesh file name.
  */
 RTT_Format_Reader::RTT_Format_Reader(string RTT_File)
-    : header(), dims(), spNodeFlags(), spSideFlags(), spCellFlags(),
-      spNodeDataIds(), spSideDataIds(), spCellDataIds(), spCellDefs(),
-      spNodes(), spSides(), spCells(), spNodeData(), spSideData(),
-      spCellData() {
+    : header(), dims(), spNodeFlags(), spSideFlags(), spCellFlags(), spNodeDataIds(),
+      spSideDataIds(), spCellDataIds(), spCellDefs(), spNodes(), spSides(), spCells(), spNodeData(),
+      spSideData(), spCellData() {
   readMesh(std::move(RTT_File));
 }
+
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the mesh file data via calls to the member data class objects
- *        public "read" member functions.
+ * \brief Parses the mesh file data via calls to the member data class objects public "read" member
+ *        functions.
  * \param RTT_File Mesh file name.
  * \throw invalid_argument If the file cannot be opened
  */
@@ -59,10 +61,11 @@ void RTT_Format_Reader::readMesh(const string &RTT_File) {
     Insist(false, as.what());
   }
 }
+
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Reads and validates the magic cookie at the beginning of the mesh
- *        file.
- * \param meshfile Mesh file name.
+ * \brief Reads and validates the magic cookie at the beginning of the mesh file.
+  * \param meshfile Mesh file name.
  */
 void RTT_Format_Reader::readKeyword(ifstream &meshfile) {
   string dummyString;
@@ -72,9 +75,9 @@ void RTT_Format_Reader::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Instantiates the majority of the RTT_Format_Reader member data class
- *        objects.
+ * \brief Instantiates the majority of the RTT_Format_Reader member data class objects.
  */
 void RTT_Format_Reader::createMembers() {
   spNodeFlags.reset(new NodeFlags(dims));
@@ -92,6 +95,7 @@ void RTT_Format_Reader::createMembers() {
   spCellData.reset(new CellData(dims));
 }
 
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads the node, side, and cell flag blocks from the mesh file.
  * \param meshfile Mesh file name.
@@ -101,6 +105,8 @@ void RTT_Format_Reader::readFlagBlocks(ifstream &meshfile) {
   spSideFlags->readSideFlags(meshfile);
   spCellFlags->readCellFlags(meshfile);
 }
+
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads the node, side, and cell data_id blocks from the mesh file.
  * \param meshfile Mesh file name.
@@ -110,30 +116,28 @@ void RTT_Format_Reader::readDataIDs(ifstream &meshfile) {
   spSideDataIds->readDataIDs(meshfile);
   spCellDataIds->readDataIDs(meshfile);
 }
+
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Reads and validates the end_rtt_mesh keyword at the end of the mesh
- *        file.
+ * \brief Reads and validates the end_rtt_mesh keyword at the end of the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format_Reader::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_rtt_mesh",
-         "Invalid mesh file: RTT file missing end");
+  Insist(dummyString == "end_rtt_mesh", "Invalid mesh file: RTT file missing end");
   std::getline(meshfile, dummyString);
 }
+
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Transforms the RTT_Format data to an alternative coordinate-system
- *        independent format.
- * \param cell_side_types New side types for each of the existing cell
- *        definitions.
- * \param cell_ordered_sides New ordered sides for each of the existing cell
- *        definitions.
+ * \brief Transforms the RTT_Format data to an alternative coordinate-system independent format.
+ * \param cell_side_types New side types for each of the existing cell definitions.
+ * \param cell_ordered_sides New ordered sides for each of the existing cell definitions.
  */
-void RTT_Format_Reader::reformatData(
-    vector_vector_uint const &cell_side_types,
-    std::vector<vector_vector_uint> const &cell_ordered_sides) {
+void RTT_Format_Reader::reformatData(vector_vector_uint const &cell_side_types,
+                                     std::vector<vector_vector_uint> const &cell_ordered_sides) {
   spCellDefs->redefineCellDefs(cell_side_types, cell_ordered_sides);
   spSides->redefineSides();
   spCells->redefineCells();

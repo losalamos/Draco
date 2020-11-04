@@ -18,10 +18,9 @@ using std::vector;
 // T=vector<double>
 //------------------------------------------------------------------------------------------------//
 
-template DLL_PUBLIC_linear void
-svbksb(const vector<double> &u, const vector<double> &w,
-       const vector<double> &v, const unsigned m, const unsigned n,
-       const vector<double> &b, vector<double> &x);
+template void svbksb(const vector<double> &u, const vector<double> &w, const vector<double> &v,
+                     const unsigned m, const unsigned n, const vector<double> &b,
+                     vector<double> &x);
 
 } // end namespace rtt_linear
 

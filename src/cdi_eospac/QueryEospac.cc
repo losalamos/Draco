@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Nov 09, 2012, 13:02 pm
  * \brief  An interactive program for querying data from EOSPAC.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Eospac.hh"
@@ -26,8 +25,7 @@ void query_eospac() {
   using std::cout;
   using std::endl;
 
-  cout << "Starting QueryEospac...\n\n"
-       << "Material tables are published at "
+  cout << "Starting QueryEospac...\n\nMaterial tables are published at "
        << "http://xweb.lanl.gov/projects/data.\n"
        << endl;
 
@@ -60,11 +58,9 @@ void query_eospac() {
     }
 
     // Register some EOS tables...
-    if (eosprop == std::string("Uic_DT") ||
-        eosprop == std::string("EOS_Uic_DT"))
+    if (eosprop == std::string("Uic_DT") || eosprop == std::string("EOS_Uic_DT"))
       SesameTab.Uic_DT(tableID);
-    else if (eosprop == std::string("Ktc_DT") ||
-             eosprop == std::string("EOS_Ktc_DT"))
+    else if (eosprop == std::string("Ktc_DT") || eosprop == std::string("EOS_Ktc_DT"))
       SesameTab.Ktc_DT(tableID);
     else {
       cout << "Requested EOS property unknown or currently unsupported.  "
@@ -74,33 +70,29 @@ void query_eospac() {
     }
 
     // Generate EOS Table
-    std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(
-        new rtt_cdi_eospac::Eospac(SesameTab));
+    std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(new rtt_cdi_eospac::Eospac(SesameTab));
 
     // Parameters
     double temp(0.0);
     double dens(0.0);
-    cout << "Evaluate at\n"
-         << "  Temperature (keV): ";
+    cout << "Evaluate at\n  Temperature (keV): ";
     std::cin >> temp;
     cout << "  Density (g/cm^3): ";
     std::cin >> dens;
 
     // Result
-    cout
-        << "For table "
-        << tableID
-        // << " (" << SesameTab.tableName[ SesameTab.returnTypes(tableID) ] << ")"
-        << endl;
+    cout << "For table "
+         << tableID
+         // << " (" << SesameTab.tableName[ SesameTab.returnTypes(tableID) ] << ")"
+         << endl;
     if (eosprop == std::string("Uic_DT")) {
       cout << "  Specific Ion Internal Energy = "
            << spEospac->getSpecificIonInternalEnergy(temp, dens) << " kJ/g\n"
-           << "  Ion Heat Capacity            = "
-           << spEospac->getIonHeatCapacity(temp, dens) << "kJ/g/keV" << endl;
+           << "  Ion Heat Capacity            = " << spEospac->getIonHeatCapacity(temp, dens)
+           << "kJ/g/keV" << endl;
     } else if (eosprop == std::string("Ktc_DT")) {
       cout << "  Electron thermal conductivity = "
-           << spEospac->getElectronThermalConductivity(temp, dens) << " /s/cm."
-           << endl;
+           << spEospac->getElectronThermalConductivity(temp, dens) << " /s/cm." << endl;
     }
   }
 
@@ -108,7 +100,6 @@ void query_eospac() {
 }
 
 //------------------------------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   // Process command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
@@ -127,10 +118,8 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'h': // --help
-      std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                << "\nUsage: QueryEospac\n"
-                << "Follow the prompts to print equation-of-state data to the "
-                << "screen." << std::endl;
+      std::cout << argv[0] << ": version " << rtt_dsxx::release() << "\nUsage: QueryEospac\n"
+                << "Follow the prompts to print equation-of-state data to the screen." << std::endl;
       return 0;
 
     default:
@@ -142,12 +131,11 @@ int main(int argc, char *argv[]) {
     // >>> Run the application
     query_eospac();
   } catch (rtt_cdi_eospac::EospacException &err) {
-    std::cout << "EospacException ERROR: While running " << argv[0] << ", "
-              << err.what() << std::endl;
+    std::cout << "EospacException ERROR: While running " << argv[0] << ", " << err.what()
+              << std::endl;
     return 1;
   } catch (rtt_dsxx::assertion &err) {
-    std::cout << "ERROR: While running " << argv[0] << ", " << err.what()
-              << std::endl;
+    std::cout << "ERROR: While running " << argv[0] << ", " << err.what() << std::endl;
     return 1;
   } catch (...) {
     std::cout << "ERROR: While running " << argv[0] << ", "

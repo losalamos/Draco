@@ -31,8 +31,7 @@ namespace rtt_linear {
  * \pre \c a.size()==indx.size()*indx.size()
  */
 template <class FieldVector, class IntVector>
-void ludcmp(FieldVector &a, IntVector &indx,
-            typename FieldVector::value_type &d) {
+void ludcmp(FieldVector &a, IntVector &indx, typename FieldVector::value_type &d) {
   Require(a.size() == indx.size() * indx.size());
 
   using Field = typename FieldVector::value_type;

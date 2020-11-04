@@ -29,14 +29,12 @@ namespace rtt_cdi_cpeloss {
 class Analytic_TR_Eloss_Model : public Analytic_Eloss_Model {
 public:
   //! Constructor
-  Analytic_TR_Eloss_Model(const rtt_cdi::CParticle &target,
-                          const rtt_cdi::CParticle &projectile)
+  Analytic_TR_Eloss_Model(const rtt_cdi::CParticle &target, const rtt_cdi::CParticle &projectile)
       : Analytic_Eloss_Model(target, projectile) {}
 
   //! Calculate the eloss rate in units of shk^-1; T given in keV, rho in g/cc,
   //! v0 in cm/shk
-  double calculate_eloss(const double T, const double rho,
-                         const double v0) const override;
+  double calculate_eloss(const double T, const double rho, const double v0) const override;
 };
 
 } // namespace rtt_cdi_cpeloss

@@ -33,18 +33,16 @@
 //------------------------------------------------------------------------------------------------//
 int main(int argc, char **argv) {
   rtt_c4::SLURM_Task_Info sti;
-  uint32_t const numthreads =
-      sti.is_cpus_per_task_set() ? sti.get_cpus_per_task() : 1;
-  uint32_t const YTHI_NUM_WORKERS =
-      (argc > 1) ? std::stoi(argv[1]) : numthreads - 1;
+  uint32_t const numthreads = sti.is_cpus_per_task_set() ? sti.get_cpus_per_task() : 1;
+  uint32_t const YTHI_NUM_WORKERS = (argc > 1) ? std::stoi(argv[1]) : numthreads - 1;
   unsigned const num_cpus = std::thread::hardware_concurrency();
 
   rtt_c4::initialize(argc, argv);
   {
     uint32_t const myrank = rtt_c4::rank();
     if (myrank == 0)
-      std::cout << "Found " << num_cpus
-                << " logical CPUs (hardware therads) per node." << std::endl;
+      std::cout << "Found " << num_cpus << " logical CPUs (hardware therads) per node."
+                << std::endl;
 
     rtt_c4::report_bindings(YTHI_NUM_WORKERS);
   }

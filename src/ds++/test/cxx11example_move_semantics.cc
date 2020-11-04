@@ -20,8 +20,7 @@
 #include <vector>
 
 // forward declaration
-void report_memory_locations(std::vector<double> const &v,
-                             std::string const &name);
+void report_memory_locations(std::vector<double> const &v, std::string const &name);
 
 // Classes used by the example
 
@@ -169,8 +168,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-void report_memory_locations(std::vector<double> const &v,
-                             std::string const &name) {
+void report_memory_locations(std::vector<double> const &v, std::string const &name) {
   using namespace std;
   cout << name << " @ " << &v << ", " << name << " data @ ";
   if (!v.empty())

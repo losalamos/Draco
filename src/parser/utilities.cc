@@ -105,9 +105,7 @@ void free_internal_unit_system() {
  * consistency of Expressions. This is a powerful error checking capability that
  * should not be discarded lightly.
  */
-void set_unit_expressions_are_required(bool const b) {
-  require_unit_expressions = b;
-}
+void set_unit_expressions_are_required(bool const b) { require_unit_expressions = b; }
 
 //------------------------------------------------------------------------------------------------//
 /*! Get the default unit system
@@ -138,8 +136,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens) {
   char *endptr;
   unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
 
-  tokens.check_semantics(Result == static_cast<unsigned>(Result) &&
-                             errno != ERANGE,
+  tokens.check_semantics(Result == static_cast<unsigned>(Result) && errno != ERANGE,
                          "integer value overflows");
 
   Check(endptr != nullptr);
@@ -322,8 +319,7 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned *x, unsigned size) {
       x[i] = parse_unsigned_integer(tokens);
     } else {
       ostringstream str;
-      str << "unsigned integer sequence too short; expected " << size
-          << " values.";
+      str << "unsigned integer sequence too short; expected " << size << " values.";
 
       tokens.report_semantic_error(str.str().c_str());
       return;
@@ -748,8 +744,7 @@ Unit parse_unit(Token_Stream &tokens) {
  *
  * \return The parsed value, converted to the desired unit system.
  */
-double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
-                      char const *const name) {
+double parse_quantity(Token_Stream &tokens, Unit const &target_unit, char const *const name) {
   double const value = parse_real(tokens);
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
     return value;
@@ -760,8 +755,7 @@ double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
       buffer << "expected quantity with dimensions of " << name;
       tokens.report_semantic_error(buffer.str().c_str());
     }
-    return value * unit.conv *
-           conversion_factor(unit, get_internal_unit_system());
+    return value * unit.conv * conversion_factor(unit, get_internal_unit_system());
   }
 }
 
@@ -795,8 +789,7 @@ double parse_temperature(Token_Stream &tokens) {
       // no action needed
     } else if (is_compatible(u, J)) {
       Temp *= get_internal_unit_system().T() /
-              (rtt_units::boltzmannSI *
-               conversion_factor(u, get_internal_unit_system()));
+              (rtt_units::boltzmannSI * conversion_factor(u, get_internal_unit_system()));
     } else {
       tokens.report_semantic_error("expected quantity with units of "
                                    "temperature");
@@ -831,8 +824,7 @@ double parse_temperature(Token_Stream &tokens) {
 std::shared_ptr<Expression>
 parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &variable_map) {
-  std::shared_ptr<Expression> Temp =
-      Expression::parse(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> Temp = Expression::parse(number_of_variables, variable_map, tokens);
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
     return Temp;
@@ -844,8 +836,7 @@ parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
       // no action needed
       Temp->set_units(conv * u);
     } else if (is_compatible(u, J)) {
-      double const boltzmann =
-          rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
+      double const boltzmann = rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
 
       Temp->set_units(conv * u / boltzmann);
     } else {
@@ -888,22 +879,19 @@ std::string parse_manifest_string(Token_Stream &tokens) {
  *         parsed_geometry == rtt_mesh_element::CARTESIAN    ||
  *         parsed_geometry == rtt_mesh_element::SPHERICAL </code>
  */
-void parse_geometry(Token_Stream &tokens,
-                    rtt_mesh_element::Geometry &parsed_geometry) {
+void parse_geometry(Token_Stream &tokens, rtt_mesh_element::Geometry &parsed_geometry) {
   tokens.check_semantics(parsed_geometry == rtt_mesh_element::END_GEOMETRY,
                          "geometry specified twice");
 
   Token const token = tokens.shift();
   if (token.text() == "axisymmetric" || token.text() == "cylindrical") {
     parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
-  } else if (token.text() == "cartesian" || token.text() == "xy" ||
-             token.text() == "slab") {
+  } else if (token.text() == "cartesian" || token.text() == "xy" || token.text() == "slab") {
     parsed_geometry = rtt_mesh_element::CARTESIAN;
   } else if (token.text() == "spherical") {
     parsed_geometry = rtt_mesh_element::SPHERICAL;
   } else {
-    tokens.report_syntax_error(token, "expected a geometry option, but saw " +
-                                          token.text());
+    tokens.report_syntax_error(token, "expected a geometry option, but saw " + token.text());
   }
   Ensure(parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
          parsed_geometry == rtt_mesh_element::CARTESIAN ||
@@ -945,11 +933,10 @@ bool parse_bool(Token_Stream &tokens) {
  * \return The parsed value, converted to the desired unit system.
  */
 std::shared_ptr<Expression>
-parse_quantity(Token_Stream &tokens, Unit const &target_unit,
-               char const *const name, unsigned const number_of_variables,
+parse_quantity(Token_Stream &tokens, Unit const &target_unit, char const *const name,
+               unsigned const number_of_variables,
                std::map<string, pair<unsigned, Unit>> const &variable_map) {
-  std::shared_ptr<Expression> value =
-      Expression::parse(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> value = Expression::parse(number_of_variables, variable_map, tokens);
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
     return value;

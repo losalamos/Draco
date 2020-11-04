@@ -29,12 +29,11 @@ namespace rtt_parser {
  * used.
  */
 //================================================================================================//
-template <typename Abstract_Class, typename Context,
-          Context const &get_context()>
+template <typename Abstract_Class, typename Context, Context const &get_context()>
 class Contextual_Parse_Functor {
 public:
-  Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
-      Token_Stream &, Context const &));
+  Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(Token_Stream &,
+                                                                          Context const &));
 
   std::shared_ptr<Abstract_Class> operator()(Token_Stream &) const;
 
@@ -87,8 +86,7 @@ private:
 //================================================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Abstract_Class> &get_parsed_object(),
-          typename Parse_Function =
-              std::function<std::shared_ptr<Abstract_Class>(Token_Stream &)>>
+          typename Parse_Function = std::function<std::shared_ptr<Abstract_Class>(Token_Stream &)>>
 class Abstract_Class_Parser {
 public:
   // TYPES
@@ -96,13 +94,11 @@ public:
   // STATIC members
 
   //! Register children of the abstract class
-  static void register_child(std::string const &keyword,
-                             Parse_Function parse_function);
+  static void register_child(std::string const &keyword, Parse_Function parse_function);
 
   //! Register children of the abstract class
-  static void register_child(
-      std::string const &keyword,
-      std::shared_ptr<Abstract_Class> parse_function(Token_Stream &));
+  static void register_child(std::string const &keyword,
+                             std::shared_ptr<Abstract_Class> parse_function(Token_Stream &));
 
   //! Check the class invariants
   static bool check_static_class_invariants();

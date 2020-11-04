@@ -51,16 +51,15 @@ double unary_log(double x) { return std::log(x); }
  *     IpcressOpacity (and thus IpcressDataTable) objects may point to the
  *     same IpcressFile object.
  */
-IpcressDataTable::IpcressDataTable(
-    std::string in_opacityEnergyDescriptor, rtt_cdi::Model in_opacityModel,
-    rtt_cdi::Reaction in_opacityReaction,
-    std::vector<std::string> const &in_fieldNames, size_t in_matID,
-    std::shared_ptr<const IpcressFile> const &spIpcressFile)
+IpcressDataTable::IpcressDataTable(std::string in_opacityEnergyDescriptor,
+                                   rtt_cdi::Model in_opacityModel,
+                                   rtt_cdi::Reaction in_opacityReaction,
+                                   std::vector<std::string> const &in_fieldNames, size_t in_matID,
+                                   std::shared_ptr<const IpcressFile> const &spIpcressFile)
     : ipcressDataTypeKey(""), dataDescriptor(""),
-      opacityEnergyDescriptor(std::move(in_opacityEnergyDescriptor)),
-      opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
-      fieldNames(in_fieldNames), matID(in_matID), logTemperatures(),
-      temperatures(), logDensities(), densities(), groupBoundaries(),
+      opacityEnergyDescriptor(std::move(in_opacityEnergyDescriptor)), opacityModel(in_opacityModel),
+      opacityReaction(in_opacityReaction), fieldNames(in_fieldNames), matID(in_matID),
+      logTemperatures(), temperatures(), logDensities(), densities(), groupBoundaries(),
       logOpacities() {
   // Obtain the Ipcress keyword for the opacity data type specified by the
   // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords are:
@@ -183,22 +182,17 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
  *     tables from the IPCRESS file.  Convert all tables (except energy
  *     boundaries) to log values.
  */
-void IpcressDataTable::loadDataTable(
-    std::shared_ptr<const IpcressFile> const &spIpcressFile) {
+void IpcressDataTable::loadDataTable(std::shared_ptr<const IpcressFile> const &spIpcressFile) {
   // The interpolation routines expect everything to be in log form so we only
   // store the logorithmic temperature, density and opacity data.
   logTemperatures.resize(temperatures.size());
-  std::transform(temperatures.begin(), temperatures.end(),
-                 logTemperatures.begin(), unary_log);
+  std::transform(temperatures.begin(), temperatures.end(), logTemperatures.begin(), unary_log);
   logDensities.resize(densities.size());
-  std::transform(densities.begin(), densities.end(), logDensities.begin(),
-                 unary_log);
+  std::transform(densities.begin(), densities.end(), logDensities.begin(), unary_log);
 
-  std::vector<double> opacities =
-      spIpcressFile->getData(matID, ipcressDataTypeKey);
+  std::vector<double> opacities = spIpcressFile->getData(matID, ipcressDataTypeKey);
   logOpacities.resize(opacities.size());
-  std::transform(opacities.begin(), opacities.end(), logOpacities.begin(),
-                 unary_log);
+  std::transform(opacities.begin(), opacities.end(), logOpacities.begin(), unary_log);
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -207,8 +201,7 @@ void IpcressDataTable::loadDataTable(
  *        This is a static member function.
  */
 template <typename T>
-bool IpcressDataTable::key_available(T const &key,
-                                     std::vector<T> const &keys) const {
+bool IpcressDataTable::key_available(T const &key, std::vector<T> const &keys) const {
   // Loop over all available keys.  If the requested key matches one in the list
   // return true.  If we reach the end of the list without a match return false.
   for (size_t i = 0; i < keys.size(); ++i)
@@ -229,17 +222,14 @@ bool IpcressDataTable::key_available(T const &key,
  * \note The opacity array is a 1D array.  group id is the fastest moving index
  *       and temperatures are the slowest moving index.
  */
-double IpcressDataTable::interpOpac(double const targetTemperature,
-                                    double const targetDensity,
+double IpcressDataTable::interpOpac(double const targetTemperature, double const targetDensity,
                                     size_t const group) const {
   double logT = std::log(targetTemperature);
   double logrho = std::log(targetDensity);
 
   size_t const numrho = logDensities.size();
   size_t const numT = logTemperatures.size();
-  size_t const ng = opacityEnergyDescriptor == std::string("gray")
-                        ? 1
-                        : groupBoundaries.size() - 1;
+  size_t const ng = opacityEnergyDescriptor == std::string("gray") ? 1 : groupBoundaries.size() - 1;
 
   // Check if we are off the table boundaries.  We don't allow extrapolation,
   // so move the target temperature or density to the table boundary.
@@ -300,36 +290,31 @@ double IpcressDataTable::interpOpac(double const targetTemperature,
 
   // 1. Normal path
   if (irho + 1 < numrho && iT + 1 < numT) {
-    double logsig12 =
-        logOpacities[i] + (logrho - logDensities[irho]) /
-                              (logDensities[irho + 1] - logDensities[irho]) *
-                              (logOpacities[i + ng] - logOpacities[i]);
+    double logsig12 = logOpacities[i] + (logrho - logDensities[irho]) /
+                                            (logDensities[irho + 1] - logDensities[irho]) *
+                                            (logOpacities[i + ng] - logOpacities[i]);
 
-    double logsig32 =
-        logOpacities[k] + (logrho - logDensities[irho]) /
-                              (logDensities[irho + 1] - logDensities[irho]) *
-                              (logOpacities[k + ng] - logOpacities[k]);
+    double logsig32 = logOpacities[k] + (logrho - logDensities[irho]) /
+                                            (logDensities[irho + 1] - logDensities[irho]) *
+                                            (logOpacities[k + ng] - logOpacities[k]);
 
-    logOpacity =
-        logsig12 + (logT - logTemperatures[iT]) /
-                       (logTemperatures[iT + 1] - logTemperatures[iT]) *
-                       (logsig32 - logsig12);
+    logOpacity = logsig12 + (logT - logTemperatures[iT]) /
+                                (logTemperatures[iT + 1] - logTemperatures[iT]) *
+                                (logsig32 - logsig12);
   }
 
   // 2. rho is at high side of table, T is in the table
   else if (irho + 1 >= numrho && iT + 1 < numT) {
-    logOpacity =
-        logOpacities[i] + (logT - logTemperatures[iT]) /
-                              (logTemperatures[iT + 1] - logTemperatures[iT]) *
-                              (logOpacities[k] - logOpacities[i]);
+    logOpacity = logOpacities[i] + (logT - logTemperatures[iT]) /
+                                       (logTemperatures[iT + 1] - logTemperatures[iT]) *
+                                       (logOpacities[k] - logOpacities[i]);
   }
 
   // 3. T is at high side of table, rho is in the table
   else if (irho + 1 < numrho && iT + 1 >= numT) {
-    logOpacity =
-        logOpacities[i] + (logrho - logDensities[irho]) /
-                              (logDensities[irho + 1] - logDensities[irho]) *
-                              (logOpacities[i + ng] - logOpacities[i]);
+    logOpacity = logOpacities[i] + (logrho - logDensities[irho]) /
+                                       (logDensities[irho + 1] - logDensities[irho]) *
+                                       (logOpacities[i + ng] - logOpacities[i]);
   }
 
   // 4. Both T and rho are on the high side of the table.

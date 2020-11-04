@@ -17,8 +17,7 @@
 namespace rtt_quadrature {
 
 using rtt_dsxx::UnitTest;
-void quadrature_test(UnitTest &ut, Quadrature &quadrature,
-                     bool const cartesian_tests_only = false);
+void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_tests_only = false);
 void quadrature_integration_test(UnitTest &ut, Quadrature &quadrature);
 
 } // end namespace rtt_quadrature

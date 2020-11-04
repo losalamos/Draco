@@ -32,8 +32,7 @@ namespace rtt_mesh {
  * \param[in] reader_ shared pointer to a mesh reader object
  */
 template <typename FRT>
-Draco_Mesh_Builder<FRT>::Draco_Mesh_Builder(std::shared_ptr<FRT> reader_)
-    : reader(reader_) {
+Draco_Mesh_Builder<FRT>::Draco_Mesh_Builder(std::shared_ptr<FRT> reader_) : reader(reader_) {
   Require(reader_ != nullptr);
 }
 
@@ -76,8 +75,7 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
 
     // insert the vector of node indices
     const std::vector<unsigned> cell_nodes = reader->get_cellnodes(cell);
-    cell_to_node_linkage.insert(cell_to_node_linkage.end(), cell_nodes.begin(),
-                                cell_nodes.end());
+    cell_to_node_linkage.insert(cell_to_node_linkage.end(), cell_nodes.begin(), cell_nodes.end());
   }
 
   // get the number of sides
@@ -113,8 +111,7 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
 
     // insert the vector of node indices
     const std::vector<unsigned> side_nodes = reader->get_sidenodes(side);
-    side_to_node_linkage.insert(side_to_node_linkage.end(), side_nodes.begin(),
-                                side_nodes.end());
+    side_to_node_linkage.insert(side_to_node_linkage.end(), side_nodes.begin(), side_nodes.end());
   }
 
   // get the number of nodes
@@ -141,8 +138,8 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
 
   // reserve some space for num_nodes_per_face_per_cell
   std::vector<unsigned> num_nodes_per_face_per_cell;
-  num_nodes_per_face_per_cell.reserve(std::accumulate(
-      num_faces_per_cell.begin(), num_faces_per_cell.end(), 0u));
+  num_nodes_per_face_per_cell.reserve(
+      std::accumulate(num_faces_per_cell.begin(), num_faces_per_cell.end(), 0u));
 
   // generate num_nodes_per_face_per_cell vector
   unsigned cf_counter = 0;
@@ -158,22 +155,20 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
     }
   }
 
-  Remember(auto cn_minmax = std::minmax_element(cell_to_node_linkage.begin(),
-                                                cell_to_node_linkage.end()));
-  Remember(auto sn_minmax = std::minmax_element(side_to_node_linkage.begin(),
-                                                side_to_node_linkage.end()));
+  Remember(auto cn_minmax =
+               std::minmax_element(cell_to_node_linkage.begin(), cell_to_node_linkage.end()));
+  Remember(auto sn_minmax =
+               std::minmax_element(side_to_node_linkage.begin(), side_to_node_linkage.end()));
   Ensure(*cn_minmax.first >= 0);
   Ensure(*cn_minmax.second < num_nodes);
   Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.first >= 0 : true);
-  Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.second < num_nodes
-                                         : true);
+  Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.second < num_nodes : true);
 
   // >>> CONSTRUCT THE MESH
 
   std::shared_ptr<Draco_Mesh> mesh(new Draco_Mesh(
-      dimension, geometry, num_faces_per_cell, cell_to_node_linkage,
-      side_set_flag, side_node_count, side_to_node_linkage, coordinates,
-      global_node_number, num_nodes_per_face_per_cell));
+      dimension, geometry, num_faces_per_cell, cell_to_node_linkage, side_set_flag, side_node_count,
+      side_to_node_linkage, coordinates, global_node_number, num_nodes_per_face_per_cell));
 
   return mesh;
 }

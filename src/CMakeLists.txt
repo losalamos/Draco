@@ -82,7 +82,6 @@ add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( VendorChecks ) # needs c4
 add_dir_if_exists( viz )          # needs c4
 
-
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )

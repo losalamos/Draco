@@ -27,8 +27,7 @@ namespace rtt_cdi_ipcress {
  * \return void
  */
 template <typename T>
-void IpcressFile::read_v(size_t const byte_offset,
-                         std::vector<T> &vdata) const {
+void IpcressFile::read_v(size_t const byte_offset, std::vector<T> &vdata) const {
   Require(ipcressFileHandle.is_open());
 
   size_t const nitems(vdata.size());

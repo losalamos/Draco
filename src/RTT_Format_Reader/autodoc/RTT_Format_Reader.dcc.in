@@ -13,16 +13,15 @@
 
 \section Introduction
 
-The RTT_Format_Reader class consists of member functions that are used to parse
-a mesh file in the rtt_format_defined and to access the data.
+The RTT_Format_Reader class consists of member functions that are used to parse a mesh file in the
+rtt_format_defined and to access the data.
 
 \section Intended Usage
 
-The RTT_Format_Reader class constructor automatically parses the specified input
-file via a call to the private member functions readMesh. The mesh data can then
-be accessed using the public member accessor functions. The RTT_Format_Reader
-class contains several data members that are classes corresponding to the
-organization of the data blocks in the rtt_format_defined, with the addition of
+The RTT_Format_Reader class constructor automatically parses the specified input file via a call to
+the private member functions readMesh. The mesh data can then be accessed using the public member
+accessor functions. The RTT_Format_Reader class contains several data members that are classes
+corresponding to the organization of the data blocks in the rtt_format_defined, with the addition of
 two member data classes:
 
 <ul>
@@ -47,21 +46,19 @@ two member data classes:
  <li> rtt_RTT_Format_Reader::Connectivity
 </ul>
 
-These classes provide a convenient grouping of the mesh data, and the
-RTT_Format_Reader public accessor member functions reflect the name of the
-associated class. Alternatively, the provided RTT_Mesh_Reader class is a derived
-type of the DRACO meshReaders package which utilizes the RTT_Format_Reader
-directly. A standard mesh reader interface has been specified for the
-meshReaders package and, thus, future packages should incorporate this interface
-rather than the RTT_Format_Reader interface.
+These classes provide a convenient grouping of the mesh data, and the RTT_Format_Reader public
+accessor member functions reflect the name of the associated class. Alternatively, the provided
+RTT_Mesh_Reader class is a derived type of the DRACO meshReaders package which utilizes the
+RTT_Format_Reader directly. A standard mesh reader interface has been specified for the meshReaders
+package and, thus, future packages should incorporate this interface rather than the
+RTT_Format_Reader interface.
 
 <!---------------------------------------------------------------------------->
 
 \page rtt_format_defined RTT Format File Structure
 
-The following example "mesh" documents the format of the RTT file and explains
-the associated nomenclature. A graphical depiction of the \ref rtt_stdcell is
-provided via the links.
+The following example "mesh" documents the format of the RTT file and explains the associated
+nomenclature. A graphical depiction of the \ref rtt_stdcell is provided via the links.
 
 \code
 

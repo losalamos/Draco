@@ -52,8 +52,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   double const wcr(rtt_c4::wall_clock_resolution());
   if (wcr > 0.0 && wcr <= 1000.0) {
     ostringstream msg;
-    msg << "The timer has a wall clock resoution of " << wcr << " ticks."
-        << endl;
+    msg << "The timer has a wall clock resoution of " << wcr << " ticks." << endl;
     PASSMSG(msg.str());
   } else {
     ostringstream msg;
@@ -118,10 +117,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
     ostringstream msg;
     msg << "t.wall_clock() value does not match the expected value."
         << "\n\tend            = " << end << "\n\tbegin          = " << begin
-        << "\n\tend-begin      = " << end - begin
-        << "\n\tt.wall_clock() = " << t.wall_clock()
-        << "\n\terror          = " << error << "\n\tprec           = " << prec
-        << endl;
+        << "\n\tend-begin      = " << end - begin << "\n\tt.wall_clock() = " << t.wall_clock()
+        << "\n\terror          = " << error << "\n\tprec           = " << prec << endl;
     FAILMSG(msg.str());
   }
 
@@ -141,8 +138,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   if (deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution) {
     ostringstream msg;
     msg << "The sum of cpu and user time is less than or equal to the\n\t"
-        << "reported wall clock time (within error bars = " << time_resolution
-        << " secs.)." << endl;
+        << "reported wall clock time (within error bars = " << time_resolution << " secs.)."
+        << endl;
     PASSMSG(msg.str());
   } else {
     ostringstream msg;
@@ -189,11 +186,9 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 #else
     if (timingsingleline.str().length() == 26)
 #endif
-      PASSMSG(string("printline() returned a single line of the") +
-              " expected length.");
+      PASSMSG(string("printline() returned a single line of the") + " expected length.");
     else
-      FAILMSG(string("printline() did not return a line of the ") +
-              "expected length.");
+      FAILMSG(string("printline() did not return a line of the ") + "expected length.");
   }
 
   //------------------------------------------------------//

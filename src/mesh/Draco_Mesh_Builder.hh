@@ -41,12 +41,11 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
+  explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh std::shared_ptr<Draco_Mesh>
-  build_mesh(rtt_mesh_element::Geometry geometry);
+  std::shared_ptr<Draco_Mesh> build_mesh(rtt_mesh_element::Geometry geometry);
 };
 
 } // end namespace rtt_mesh

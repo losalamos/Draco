@@ -89,13 +89,12 @@ enum EICoupling_Models { CONSTANT_ANALYTIC_EICOUPLING_MODEL };
 class Analytic_Opacity_Model {
 public:
   // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_Opacity_Model() { /*...*/
-  }
+  virtual ~Analytic_Opacity_Model() = default;
 
   //! Interface for derived analytic opacity models.
   virtual double calculate_opacity(double T, double rho) const = 0;
@@ -106,8 +105,7 @@ public:
   };
 
   //! Interface for derived analytic opacity models.
-  virtual double calculate_opacity(double T, double rho, double /*nu0*/,
-                                   double /*nu1*/) const {
+  virtual double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const {
     return calculate_opacity(T, rho);
   };
 
@@ -138,32 +136,30 @@ private:
 
 public:
   //! Constructor, sig has units of cm^2/g.
-  explicit Constant_Analytic_Opacity_Model(double sig) : sigma(sig) {
-    Require(sigma >= 0.0);
-  }
+  explicit Constant_Analytic_Opacity_Model(double sig) : sigma(sig) { Require(sigma >= 0.0); }
 
   //! Constructor for packed state.
   explicit Constant_Analytic_Opacity_Model(const sf_char &packed);
 
   //! Calculate the opacity in units of cm^2/g.
-  double calculate_opacity(double /*T*/, double /*rho*/) const { return sigma; }
+  double calculate_opacity(double /*T*/, double /*rho*/) const override { return sigma; }
 
   //! Calculate the opacity in units of cm^2/g.
-  double calculate_opacity(double /*T*/, double /*rho*/, double /*nu*/) const {
+  double calculate_opacity(double /*T*/, double /*rho*/, double /*nu*/) const override {
     return sigma;
   }
 
   //! Calculate the opacity in units of cm^2/g.
   double calculate_opacity(double /*T*/, double /*rho*/, double /*nu0*/,
-                           double /*nu1*/) const {
+                           double /*nu1*/) const override {
     return sigma;
   }
 
   //! Return the model parameters.
-  sf_double get_parameters() const;
+  sf_double get_parameters() const override;
 
   //! Pack up the class for persistence.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 //------------------------------------------------------------------------------------------------//
@@ -220,12 +216,10 @@ public:
    * \param[in] j_ edge strength (default = 0 [cm^2/g])
    * \param[in] k_ edge location (default = 0 [keV])
    */
-  Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_, double d_,
-                                    double e_ = 0, double f_ = 1, double g_ = 1,
-                                    double h_ = 1, double i_ = 0, double j_ = 0,
-                                    double k_ = 0)
-      : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_), g(g_), h(h_), i(i_), j(j_),
-        k(k_) {
+  Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_, double d_, double e_ = 0,
+                                    double f_ = 1, double g_ = 1, double h_ = 1, double i_ = 0,
+                                    double j_ = 0, double k_ = 0) noexcept
+      : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_), g(g_), h(h_), i(i_), j(j_), k(k_) {
     /*...*/
   }
 
@@ -233,7 +227,7 @@ public:
   explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
 
   //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double T, double rho, double nu) const {
+  double calculate_opacity(double T, double rho, double nu) const override {
     using std::pow;
     Require(c < 0.0 ? T > 0.0 : T >= 0.0);
     Require(i > 0.0 ? T > 0.0 : T >= 0.0);
@@ -253,7 +247,7 @@ public:
   }
 
   //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double T, double rho, double nu0, double nu1) const {
+  double calculate_opacity(double T, double rho, double nu0, double nu1) const override {
     Require(nu1 > nu0);
 
     //double nu = 0.5*(nu0+nu1);
@@ -262,7 +256,7 @@ public:
   }
 
   //! Calculate the opacity in units of cm^2/g
-  double calculate_opacity(double T, double rho) const {
+  double calculate_opacity(double T, double rho) const override {
     using std::pow;
     Require(c < 0.0 ? T > 0.0 : T >= 0.0);
     Require(rho >= 0.0);
@@ -274,10 +268,10 @@ public:
   }
 
   //! Return the model parameters.
-  sf_double get_parameters() const;
+  sf_double get_parameters() const override;
 
   //! Pack up the class for persistence.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 //================================================================================================//
@@ -319,22 +313,19 @@ public:
 
 class Analytic_EoS_Model {
 public:
-  // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  //
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_EoS_Model() { /*...*/
-  }
+  virtual ~Analytic_EoS_Model() = default;
 
   //! Calculate the electron internal energy
-  virtual double calculate_electron_internal_energy(double T,
-                                                    double rho) const = 0;
+  virtual double calculate_electron_internal_energy(double T, double rho) const = 0;
 
   //! Calculate the electron heat capacity.
-  virtual double calculate_electron_heat_capacity(double T,
-                                                  double rho) const = 0;
+  virtual double calculate_electron_heat_capacity(double T, double rho) const = 0;
 
   //! Calculate the ion internal energy.
   virtual double calculate_ion_internal_energy(double T, double rho) const = 0;
@@ -343,24 +334,20 @@ public:
   virtual double calculate_ion_heat_capacity(double T, double rho) const = 0;
 
   //! Calculate the number of electrons per ion.
-  virtual double calculate_num_free_elec_per_ion(double T,
-                                                 double rho) const = 0;
+  virtual double calculate_num_free_elec_per_ion(double T, double rho) const = 0;
 
   //! Calculate the electron thermal conductivity.
-  virtual double calculate_elec_thermal_conductivity(double T,
-                                                     double rho) const = 0;
+  virtual double calculate_elec_thermal_conductivity(double T, double rho) const = 0;
 
   /*! \brief Calculate the electron temperature given density, Electron
    *         internal energy and the starting electron temperature.
    */
-  virtual double calculate_elec_temperature(double rho, double Ue,
-                                            double Tguess) const = 0;
+  virtual double calculate_elec_temperature(double rho, double Ue, double Tguess) const = 0;
 
   /*! \brief Calculate the ion temperature given density, Ion internal
    *         energy and the starting ion temperature.
    */
-  virtual double calculate_ion_temperature(double rho, double Uic,
-                                           double Tguess) const = 0;
+  virtual double calculate_ion_temperature(double rho, double Uic, double Tguess) const = 0;
 
   //! Return the model parameters.
   virtual sf_double get_parameters() const = 0;
@@ -412,8 +399,8 @@ public:
    * \param e_ ion Cv temperature multiplier [kJ/g/keV^(c+1)]
    * \param f_ ion Cv temperature power
    */
-  Polynomial_Specific_Heat_Analytic_EoS_Model(double a_, double b_, double c_,
-                                              double d_, double e_, double f_)
+  Polynomial_Specific_Heat_Analytic_EoS_Model(double a_, double b_, double c_, double d_, double e_,
+                                              double f_)
       : a(a_), b(b_), c(c_), d(d_), e(e_), f(f_) {
     Insist(c >= 0.0, "The Cve temperature exponent must be nonnegative");
     Insist(f >= 0.0, "The Cvi temperature exponent must be nonnegative");
@@ -425,8 +412,7 @@ public:
   explicit Polynomial_Specific_Heat_Analytic_EoS_Model(const sf_char &);
 
   //! Calculate the electron heat capacity in kJ/g/keV.
-  double calculate_electron_heat_capacity(double T,
-                                          double Remember(rho)) const override {
+  double calculate_electron_heat_capacity(double T, double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -438,8 +424,7 @@ public:
   }
 
   //! Calculate the ion heat capacity in kJ/g/keV.
-  double calculate_ion_heat_capacity(double T,
-                                     double Remember(rho)) const override {
+  double calculate_ion_heat_capacity(double T, double Remember(rho)) const override {
     Require(T >= 0.0);
     Require(rho >= 0.0);
 
@@ -464,8 +449,7 @@ public:
    * \pre \c rho>=0
    * \post \c U>=0
    */
-  double calculate_electron_internal_energy(double T,
-                                            double /*rho*/) const override {
+  double calculate_electron_internal_energy(double T, double /*rho*/) const override {
     Require(T >= 0.0);
 
     Check(c >= 0.0);
@@ -490,8 +474,7 @@ public:
    * \pre \c rho>=0
    * \post \c U>=0
    */
-  double calculate_ion_internal_energy(double T,
-                                       double /*rho*/) const override {
+  double calculate_ion_internal_energy(double T, double /*rho*/) const override {
     Require(T >= 0.0);
 
     Check(f >= 0.0);
@@ -503,14 +486,12 @@ public:
   }
 
   //! Return 0 for the number of electrons per ion.
-  double calculate_num_free_elec_per_ion(double /*T*/,
-                                         double /*rho*/) const override {
+  double calculate_num_free_elec_per_ion(double /*T*/, double /*rho*/) const override {
     return 0.0;
   }
 
   //! Return 0 for the electron thermal conductivity.
-  double calculate_elec_thermal_conductivity(double /*T*/,
-                                             double /*rho*/) const override {
+  double calculate_elec_thermal_conductivity(double /*T*/, double /*rho*/) const override {
     return 0.0;
   }
 
@@ -553,8 +534,8 @@ public:
  */
 struct find_elec_temperature_functor {
   //! ctor
-  find_elec_temperature_functor(double const in_dUe, double const in_a,
-                                double const in_b, double const in_c)
+  find_elec_temperature_functor(double const in_dUe, double const in_a, double const in_b,
+                                double const in_c)
       : dUe(in_dUe), a(in_a), b(in_b), c(in_c) { /*empty*/
   }
 
@@ -565,9 +546,7 @@ struct find_elec_temperature_functor {
   double const b;   //!< \f$ C_{v_e} = a + bT^c \f$
   double const c;   //!< \f$ C_{v_e} = a + bT^c \f$
 
-  double operator()(double T) {
-    return dUe - a * T - b / (c + 1) * std::pow(T, c + 1);
-  }
+  double operator()(double T) { return dUe - a * T - b / (c + 1) * std::pow(T, c + 1); }
 };
 
 //================================================================================================//
@@ -597,18 +576,16 @@ struct find_elec_temperature_functor {
 
 class Analytic_EICoupling_Model {
 public:
-  // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  //
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_EICoupling_Model() { /*...*/
-  }
+  virtual ~Analytic_EICoupling_Model() = default;
 
   //! Interface for derived analytic opacity models.
-  virtual double calculate_ei_coupling(double /*Te*/, double /*Ti*/,
-                                       double /*rho*/, double /*w_e*/,
+  virtual double calculate_ei_coupling(double /*Te*/, double /*Ti*/, double /*rho*/, double /*w_e*/,
                                        double /*w_i*/) const = 0;
 
   //! Return parameters.
@@ -638,8 +615,7 @@ private:
 
 public:
   //! Constructor, alpha has units of kJ/g/K/s.
-  explicit Constant_Analytic_EICoupling_Model(double alpha)
-      : ei_coupling(alpha) {
+  explicit Constant_Analytic_EICoupling_Model(double alpha) : ei_coupling(alpha) {
     Require(ei_coupling >= 0.0);
   }
 
@@ -647,16 +623,16 @@ public:
   explicit Constant_Analytic_EICoupling_Model(const sf_char &packed);
 
   //! Calculate the ei_coupling in units of kJ/cc/keV/s.
-  double calculate_ei_coupling(double /*Te*/, double /*Ti*/, double /*rho*/,
-                               double /*w_e*/, double /*w_i*/) const {
+  double calculate_ei_coupling(double /*Te*/, double /*Ti*/, double /*rho*/, double /*w_e*/,
+                               double /*w_i*/) const override {
     return ei_coupling;
   }
 
   //! Return the model parameters.
-  sf_double get_parameters() const;
+  sf_double get_parameters() const override;
 
   //! Pack up the class for persistence.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 //================================================================================================//
@@ -680,18 +656,16 @@ public:
 
 class Analytic_Eloss_Model {
 public:
-  // Typedefs.
-  typedef std::vector<char> sf_char;
-  typedef std::vector<double> sf_double;
+  //
+  using sf_char = std::vector<char>;
+  using sf_double = std::vector<double>;
 
 public:
   //! Virtual destructor for proper inheritance destruction.
-  virtual ~Analytic_Eloss_Model() { /*...*/
-  }
+  virtual ~Analytic_Eloss_Model() = default;
 
   //! Interface for derived analytic eloss models.
-  virtual double calculate_eloss(const double T, const double rho,
-                                 const double v0) const = 0;
+  virtual double calculate_eloss(const double T, const double rho, const double v0) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------//
@@ -714,12 +688,11 @@ class Analytic_KP_Alpha_Eloss_Model : public Analytic_Eloss_Model {
 private:
 public:
   //! Constructor
-  Analytic_KP_Alpha_Eloss_Model(){};
+  Analytic_KP_Alpha_Eloss_Model() = default;
 
   //! Calculate the eloss rate in units of shk^-1;
   //! T given in keV, rho in g/cc, v0 in cm/shk
-  double calculate_eloss(const double T, const double rho,
-                         const double v0) const;
+  double calculate_eloss(const double T, const double rho, const double v0) const override;
 };
 
 } // end namespace rtt_cdi_analytic

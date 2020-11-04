@@ -17,8 +17,7 @@ namespace rtt_c4 {
 //------------------------------------------------------------------------------------------------//
 // MPI version of get_num_recv()
 #ifdef C4_MPI
-int get_num_recv(Invert_Comm_Map_t::const_iterator first,
-                 Invert_Comm_Map_t::const_iterator last) {
+int get_num_recv(Invert_Comm_Map_t::const_iterator first, Invert_Comm_Map_t::const_iterator last) {
   const int my_proc = rtt_c4::node();
   Remember(const int num_procs = rtt_c4::nodes());
   const int one = 1;
@@ -26,8 +25,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
 
   // Create the RMA memory windows for each value
   MPI_Win win;
-  MPI_Win_create(&num_recv, 1 * sizeof(int), sizeof(int), MPI_INFO_NULL,
-                 MPI_COMM_WORLD, &win);
+  MPI_Win_create(&num_recv, 1 * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
   // Assertion value for fences.  Currently, we effectively don't set anything (zero).
   const int fence_assert = 0;
@@ -66,8 +64,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator /*first*/,
 #endif // ifdef C4_MPI
 
 //------------------------------------------------------------------------------------------------//
-void invert_comm_map(Invert_Comm_Map_t const &to_map,
-                     Invert_Comm_Map_t &from_map) {
+void invert_comm_map(Invert_Comm_Map_t const &to_map, Invert_Comm_Map_t &from_map) {
   const int my_proc = rtt_c4::node();
   Remember(const int num_procs = rtt_c4::nodes());
 

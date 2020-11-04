@@ -266,7 +266,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
   size_t nvdata = d_vdata_names.size();
   size_t ncdata = d_cdata_names.size();
 
-  typedef std::vector<sf_string::iterator> SFS_iter_vec;
+  using SFS_iter_vec = std::vector<sf_string::iterator>;
   // Create a name list for testing.
   sf_string name_tmp(nvdata + ncdata);
   for (size_t i = 0; i < nvdata; i++)

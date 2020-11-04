@@ -164,8 +164,7 @@ int main(int argc, char *argv[]) {
   } catch (rtt_dsxx::assertion &err) {
     std::string msg = err.what();
     if (msg != std::string("Success")) {
-      cout << "ERROR: DBC assertion while testing " << argv[0] << ", "
-           << err.what() << endl;
+      cout << "ERROR: DBC assertion while testing " << argv[0] << ", " << err.what() << endl;
       // ut.numFails++;
       return 1;
     }
@@ -186,9 +185,8 @@ int main(int argc, char *argv[]) {
   string msg(output.str());
   int retval(0);
   if (numnodes_gt_1 && node_is_0) {
-    string const expectedOutput = string("tstParallelUnitTestFailMode") +
-                                  rtt_dsxx::exeExtension +
-                                  string(" Test: FAILED.");
+    string const expectedOutput =
+        string("tstParallelUnitTestFailMode") + rtt_dsxx::exeExtension + string(" Test: FAILED.");
     size_t found = msg.find(expectedOutput);
     if (found != string::npos)
       tstTwoPass = true;

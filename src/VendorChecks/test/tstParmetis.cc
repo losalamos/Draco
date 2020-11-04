@@ -19,8 +19,7 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   using std::cout;
   using std::endl;
 
-  Insist(rtt_c4::nodes() == 3,
-         "test_parmetis must be called with 3 MPI ranks exactly.");
+  Insist(rtt_c4::nodes() == 3, "test_parmetis must be called with 3 MPI ranks exactly.");
 
   // MPI VARIABLES
   size_t const MPI_PROC_ID = rtt_c4::node();
@@ -157,20 +156,17 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   if (MPI_PROC_ID == 0)
     cout << "parmetis initialized." << '\n';
 
-  int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt,
-                                    adjwgt, &wgtflag, &numflag, &ncon, &nparts,
-                                    &tpwgts[0], &ubvec, &options[0], &edgecut,
-                                    &part[0], &rtt_c4::communicator);
+  int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag,
+                                    &numflag, &ncon, &nparts, &tpwgts[0], &ubvec, &options[0],
+                                    &edgecut, &part[0], &rtt_c4::communicator);
 
   if (result == METIS_OK) {
     std::ostringstream msg;
-    msg << "[" << MPI_PROC_ID
-        << "] ParMETIS_V3_AdaptiveRepart did not return an error.";
+    msg << "[" << MPI_PROC_ID << "] ParMETIS_V3_AdaptiveRepart did not return an error.";
     PASSMSG(msg.str());
   } else {
     std::ostringstream msg;
-    msg << "[" << MPI_PROC_ID
-        << "] ParMETIS_V3_AdaptiveRepart returned an error code.";
+    msg << "[" << MPI_PROC_ID << "] ParMETIS_V3_AdaptiveRepart returned an error code.";
     FAILMSG(msg.str());
   }
 

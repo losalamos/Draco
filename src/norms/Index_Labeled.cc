@@ -21,8 +21,7 @@ Index_Labeled::Index_Labeled(const size_t index_, std::string label_)
 //------------------------------------------------------------------------------------------------//
 //! Equality operator.
 bool Index_Labeled::operator==(const Index_Labeled &rhs) const {
-  return (index == rhs.index) && (processor == rhs.processor) &&
-         (label == rhs.label);
+  return (index == rhs.index) && (processor == rhs.processor) && (label == rhs.label);
 }
 
 } // end namespace rtt_norms

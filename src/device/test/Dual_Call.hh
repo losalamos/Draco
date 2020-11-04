@@ -16,14 +16,14 @@
 namespace rtt_device_test {
 
 __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
-    const double part_per_e, unsigned max_particles_pspc,
-    const size_t cell_start, const size_t cell_end, const double *e_field,
-    const double *src_cell_bias, int *n_field);
+    const double part_per_e, unsigned max_particles_pspc, const size_t cell_start,
+    const size_t cell_end, const double *e_field, const double *src_cell_bias, int *n_field);
 
-__global__ void cuda_conserve_calc_num_src_particles(
-    const double part_per_e, unsigned max_particles_pspc, int cont_size,
-    const double *e_field, const double *src_cell_bias, int *n_field,
-    unsigned long long *ntot);
+__global__ void cuda_conserve_calc_num_src_particles(const double part_per_e,
+                                                     unsigned max_particles_pspc, int cont_size,
+                                                     const double *e_field,
+                                                     const double *src_cell_bias, int *n_field,
+                                                     unsigned long long *ntot);
 
 } // namespace rtt_device_test
 

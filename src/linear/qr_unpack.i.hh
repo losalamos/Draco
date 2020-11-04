@@ -56,8 +56,7 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
   Require(n == d.size());
 
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
   qt.resize(n * n);
 
   for (unsigned i = 0; i < n; ++i) {

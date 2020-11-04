@@ -17,8 +17,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # - /W[0-4] Warning levels. Draco is currently using /W4 (see src/CMakeLists.txt), but clients
   #           default to /W2 for cl.exe and /W2 for clang-cl.exe. /W0 suppresses all warnings.
   string( APPEND CMAKE_C_FLAGS " /W4")
-  string( APPEND CMAKE_CXX_FLAGS " /W4")  
-  
+  string( APPEND CMAKE_CXX_FLAGS " /W4")
+
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using Draco settings." )
 endif()
 
@@ -27,7 +27,7 @@ endif()
 deduplicate_flags(CMAKE_C_FLAGS)
 deduplicate_flags(CMAKE_CXX_FLAGS)
 set( DRACO_LINK_OPTIONS "${DRACO_LINK_OPTIONS}" CACHE STRING "link flags" FORCE)
-force_compiler_flags_to_cache()
+force_compiler_flags_to_cache("C;CXX")
 
 #--------------------------------------------------------------------------------------------------#
 # End windows-clang.cmake

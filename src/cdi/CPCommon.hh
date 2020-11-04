@@ -4,8 +4,7 @@
  * \author Kendra Long
  * \date   Mon Jan 19 13:41:01 2001
  * \brief  Datatypes needed in CPEloss classes
- * \note   Copyright (C) 2016-2019 Los Alamos National Securty, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2019 Los Alamos National Securty, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_CPCommon_hh
@@ -25,15 +24,14 @@ constexpr double max_eloss = 1.e15;
 
 enum class CPModelAngleCutoff {
   NONE = 0,  /*!< no angle cutoff */
-  TNBURN = 1 /*!< cutoff angle formula from "TN Burn Project: Minimum Impact
-             parameter Scattering Angle Cutoff/Nuclear Interactions */
+  TNBURN = 1 /*!< cutoff angle formula from "TN Burn Project: Minimum Impact parameter Scattering
+                  Angle Cutoff/Nuclear Interactions */
 };
 
 enum class CPModelType {
-  UNASSIGNED_ETYPE =
-      0, /*!< unassigned type; used as a placeholder before deciding type */
-  ANALYTIC_ETYPE = 1, /*!< an Analytic eloss model */
-  TABULAR_ETYPE = 2   /*!< a Tabular eloss model */
+  UNASSIGNED_ETYPE = 0, /*!< unassigned type; used as a placeholder before deciding type */
+  ANALYTIC_ETYPE = 1,   /*!< an Analytic eloss model */
+  TABULAR_ETYPE = 2     /*!< a Tabular eloss model */
 };
 
 // Basic data required to describe a charged particle
@@ -56,10 +54,13 @@ public:
   int32_t get_a() const { return zaid % 1000; }
   double get_mass() const { return mass; }
 
-  CParticle(const int32_t zaid_in, const double mass_in)
-      : zaid(zaid_in), mass(mass_in) {}
+  CParticle(const int32_t zaid_in, const double mass_in) : zaid(zaid_in), mass(mass_in) {}
 };
 
 } // namespace rtt_cdi
 
 #endif
+
+//------------------------------------------------------------------------------------------------//
+// End cdi/CPCommon.hh
+//------------------------------------------------------------------------------------------------//

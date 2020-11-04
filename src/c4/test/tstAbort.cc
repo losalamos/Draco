@@ -45,8 +45,7 @@ int main(int argc, char *argv[]) {
   long_options["runtest"] = 'r';
 
   int c(0);
-  while ((c = rtt_dsxx::xgetopt(argc, argv, (char *)"vt:", long_options)) !=
-         -1) {
+  while ((c = rtt_dsxx::xgetopt(argc, argv, (char *)"vt:", long_options)) != -1) {
     {
       switch (c) {
       case 'v': // --version
@@ -67,8 +66,7 @@ int main(int argc, char *argv[]) {
   bool runtest = false;
 
   c = 0;
-  while ((c = rtt_dsxx::xgetopt(argc, argv, (char *)"r:", long_options)) !=
-         -1) {
+  while ((c = rtt_dsxx::xgetopt(argc, argv, (char *)"r:", long_options)) != -1) {
     switch (c) {
     case 'r': // --runtest
       truntest = true;

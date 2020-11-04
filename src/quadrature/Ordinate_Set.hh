@@ -40,10 +40,8 @@ public:
 
   // CREATORS
 
-  Ordinate_Set(unsigned const dimension,
-               rtt_mesh_element::Geometry const geometry,
-               std::vector<Ordinate> const &ordinates,
-               bool const has_starting_directions = true,
+  Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry const geometry,
+               std::vector<Ordinate> const &ordinates, bool const has_starting_directions = true,
                bool const has_extra_starting_directions = false,
                Ordering const ordering = LEVEL_ORDERED);
 
@@ -73,9 +71,7 @@ public:
   bool has_starting_directions() const { return has_starting_directions_; }
 
   //! Does this set include extra starting directions?
-  bool has_extra_starting_directions() const {
-    return has_extra_starting_directions_;
-  }
+  bool has_extra_starting_directions() const { return has_extra_starting_directions_; }
 
   Ordering ordering() const { return ordering_; }
 

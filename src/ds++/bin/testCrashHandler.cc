@@ -36,8 +36,7 @@ void sigfpe_test() {
   //Set the exception masks off for exceptions that you want to
   //trap.  When a mask bit is set, the corresponding floating-point
   //exception is //blocked from being generating.
-  cw &=
-      ~(EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE | EM_DENORMAL | EM_INVALID);
+  cw &= ~(EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE | EM_DENORMAL | EM_INVALID);
   //For any bit in the second parameter (mask) that is 1, the
   //corresponding bit in the first parameter is used to update
   //the control word.
@@ -151,7 +150,7 @@ int main(int argc, char *argv[]) {
     char *formatString;
     // Call printf_s with invalid parameters.
     formatString = NULL;
-#pragma warning(                                                               \
+#pragma warning(                                                                                   \
     disable : 6387) // warning C6387: 'argument 1' might be '0': this does not adhere to the specification for the function 'printf'
     printf(formatString);
 #pragma warning(default : 6387)
