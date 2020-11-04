@@ -53,16 +53,15 @@ namespace rtt_quadrature {
  * \param n Number of points in quadrature.
  */
 template <typename FieldVector>
-void gauleg(
-    double const x1, // expect FieldVector::value_type to be promoted to double.
-    double const x2, // expect FieldVector::value_type to be promoted to double.
-    FieldVector &x, FieldVector &w, unsigned const n) {
+void gauleg(double const x1, // expect FieldVector::value_type to be promoted to double.
+            double const x2, // expect FieldVector::value_type to be promoted to double.
+            FieldVector &x, FieldVector &w, unsigned const n) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
   using std::cos;
   using std::numeric_limits;
 
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   Require(n > 0);
   Require(x2 > x1);
@@ -86,8 +85,7 @@ void gauleg(
   // Loop over the desired roots.
   for (size_t iroot = 0; iroot < numHrGaussPoints; ++iroot) {
     // Approximate the i-th root.
-    Field z(cos(PI * (static_cast<double>(iroot) + 0.75) /
-                (static_cast<double>(n) + 0.5)));
+    Field z(cos(PI * (static_cast<double>(iroot) + 0.75) / (static_cast<double>(n) + 0.5)));
 
     // Temporary storage;
     Field z1, pp;

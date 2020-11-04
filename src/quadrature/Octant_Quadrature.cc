@@ -22,16 +22,15 @@ using namespace rtt_dsxx;
 
 //------------------------------------------------------------------------------------------------//
 
-bool Octant_Quadrature::has_axis_assignments() const {
-  return has_axis_assignments_;
-}
+bool Octant_Quadrature::has_axis_assignments() const { return has_axis_assignments_; }
 
 //------------------------------------------------------------------------------------------------//
-vector<Ordinate> Octant_Quadrature::create_ordinates_(
-    unsigned const dimension, Geometry const geometry, double const norm,
-    unsigned const mu_axis, unsigned const eta_axis,
-    bool const include_starting_directions,
-    bool const include_extra_directions) const {
+vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned const dimension,
+                                                      Geometry const geometry, double const norm,
+                                                      unsigned const mu_axis,
+                                                      unsigned const eta_axis,
+                                                      bool const include_starting_directions,
+                                                      bool const include_extra_directions) const {
   using rtt_dsxx::soft_equiv;
 
   // We build the 3-D first, then edit as appropriate.
@@ -81,8 +80,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
 
   // Evaluate mu and eta for octants 5-8
   for (size_t n = 0; n <= 4 * octantOrdinates - 1; ++n) {
-    Check(n + 4 * octantOrdinates < mu.size() &&
-          n + 4 * octantOrdinates < eta.size() &&
+    Check(n + 4 * octantOrdinates < mu.size() && n + 4 * octantOrdinates < eta.size() &&
           n + 4 * octantOrdinates < wt.size());
     mu[n + 4 * octantOrdinates] = mu[n];
     eta[n + 4 * octantOrdinates] = eta[n];
@@ -126,8 +124,8 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
     Result.resize(m);
 
     // Add starting directions if appropriate
-    add_2D_starting_directions_(geometry, include_starting_directions,
-                                include_extra_directions, Result);
+    add_2D_starting_directions_(geometry, include_starting_directions, include_extra_directions,
+                                Result);
   } else {
     Check(dimension == 1 && geometry != rtt_mesh_element::AXISYMMETRIC);
     Check(mu_axis == 2);
@@ -171,8 +169,8 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
     Result.resize(numOrdinates);
 
     // Add starting directions if appropriate
-    add_1D_starting_directions_(geometry, include_starting_directions,
-                                include_extra_directions, Result);
+    add_1D_starting_directions_(geometry, include_starting_directions, include_extra_directions,
+                                Result);
   }
 
   numOrdinates = Result.size();
@@ -187,16 +185,16 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
       Result[n] = Ordinate(Result[n].mu(), Result[n].wt() * (norm / wsum));
   } else {
     for (size_t n = 0; n <= numOrdinates - 1; ++n)
-      Result[n] = Ordinate(Result[n].mu(), Result[n].eta(), Result[n].xi(),
-                           Result[n].wt() * (norm / wsum));
+      Result[n] =
+          Ordinate(Result[n].mu(), Result[n].eta(), Result[n].xi(), Result[n].wt() * (norm / wsum));
   }
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Ordinate> Octant_Quadrature::create_ordinates_(
-    unsigned dimension, Geometry geometry, double norm,
-    bool include_starting_directions, bool include_extra_directions) const {
+vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension, Geometry geometry,
+                                                      double norm, bool include_starting_directions,
+                                                      bool include_extra_directions) const {
   unsigned mu_axis(0), eta_axis(0);
   if (has_axis_assignments_) {
     mu_axis = mu_axis_;
@@ -241,8 +239,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
     }
   }
   return create_ordinates_(dimension, geometry, norm, mu_axis, eta_axis,
-                           include_starting_directions,
-                           include_extra_directions);
+                           include_starting_directions, include_extra_directions);
 }
 
 //------------------------------------------------------------------------------------------------//

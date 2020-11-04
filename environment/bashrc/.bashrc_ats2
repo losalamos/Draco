@@ -51,35 +51,35 @@ else
 
 fi
 
-function dracoenv()
-{
-  module --force purge
-  module load StdEnv
-  module unload spectrum-mpi xl cuda
-  for m in $dracomodules; do
-    module load $m
-  done
-  unset MPI_ROOT
-  export CXX=`which g++`
-  export CC=`which gcc`
-  export FC=`which gfortran`
-  export MPIRUN="lrun"
-  export OMP_NUM_THREADS=10
-}
+# function dracoenv()
+# {
+#   module --force purge
+#   module load StdEnv
+#   module unload spectrum-mpi xl cuda
+#   for m in $dracomodules; do
+#     module load $m
+#   done
+#   unset MPI_ROOT
+#   export CXX=`which g++`
+#   export CC=`which gcc`
+#   export FC=`which gfortran`
+#   export MPIRUN="lrun"
+#   export OMP_NUM_THREADS=10
+# }
 
-function rmdracoenv()
-{
-  unset MPIRUN
-  unset FC
-  unset CC
-  unset CXX
+# function rmdracoenv()
+# {
+#   unset MPIRUN
+#   unset FC
+#   unset CC
+#   unset CXX
 
-  # unload in reverse order.
-  mods=( ${dracomodules} )
-  for ((i=${#mods[@]}-1; i>=0; i--)); do
-    module unload ${mods[$i]}
-  done
-}
+#   # unload in reverse order.
+#   mods=( ${dracomodules} )
+#   for ((i=${#mods[@]}-1; i>=0; i--)); do
+#     module unload ${mods[$i]}
+#   done
+# }
 
 # Do not escape $ for bash completion
 shopt -s direxpand

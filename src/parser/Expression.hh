@@ -124,23 +124,20 @@ public:
   void write(Precedence p, vector<string> const &, ostream &out) const;
 
   //! Write a representation of the expression in C syntax.
-  void write(vector<string> const &vars, ostream &out) const {
-    write(COMMA_PRECEDENCE, vars, out);
-  }
+  void write(vector<string> const &vars, ostream &out) const { write(COMMA_PRECEDENCE, vars, out); }
 
   // STATIC
 
   //! Parse an Expression from a Token_Stream.
-  static std::shared_ptr<Expression>
-  parse(unsigned number_of_variables,
-        map<string, pair<unsigned, Unit>> const &variables, Token_Stream &);
+  static std::shared_ptr<Expression> parse(unsigned number_of_variables,
+                                           map<string, pair<unsigned, Unit>> const &variables,
+                                           Token_Stream &);
 
   //! Parse an Expression with specified dimensions from a Token_Stream.
-  static std::shared_ptr<Expression>
-  parse(unsigned number_of_variables,
-        map<string, pair<unsigned, Unit>> const &variables,
-        Unit const &expected_units, string const &expected_units_text,
-        Token_Stream &);
+  static std::shared_ptr<Expression> parse(unsigned number_of_variables,
+                                           map<string, pair<unsigned, Unit>> const &variables,
+                                           Unit const &expected_units,
+                                           string const &expected_units_text, Token_Stream &);
 
 protected:
   // IMPLEMENTATION
@@ -154,8 +151,7 @@ protected:
       : number_of_variables_(number_of_variables), units_(units) {}
 
   //! allow child classes access to Expression::evaluate
-  static double evaluate_def_(std::shared_ptr<Expression const> const &e,
-                              double const *const x) {
+  static double evaluate_def_(std::shared_ptr<Expression const> const &e, double const *const x) {
     Require(e != std::shared_ptr<Expression>());
     return e->evaluate_(x);
   }
@@ -170,8 +166,7 @@ private:
   virtual bool is_constant_(unsigned) const = 0;
 
   //! virtual hook for write
-  virtual void write_(Precedence precedence, vector<string> const &vars,
-                      ostream &) const = 0;
+  virtual void write_(Precedence precedence, vector<string> const &vars, ostream &) const = 0;
 
   // DATA
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#--------------------------------------------------------------------------------------------------#
 # git pre-commit hook that runs an clang-format stylecheck.
 # Features:
 #  - abort commit when commit does not comply with the style guidelines
@@ -10,7 +11,7 @@
 # Link:    https://github.com/githubbrowser/Pre-commit-hooks
 # Contact: David Martin, david.martin.mailbox@googlemail.com
 
-##################################################################
+#--------------------------------------------------------------------------------------------------#
 # SETTINGS
 # set path to clang-format binary. If clang-format is not available, then don't run this hook. Style
 # issues will be caught during by the pull request process.
@@ -19,6 +20,13 @@ function version_gt()
 {
   test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
 }
+
+git_min_ver=2.0.0
+git_ver=$(git --version | sed -e 's/[[:alpha:]|(|[:space:]|-]//g')
+if version_gt "${git_min_ver}" "${git_ver}"; then
+  echo "ERROR: Your version of git is too old. Expecting v2.0+. The pre-commit-hook disabled."
+  exit 0
+fi
 
 CLANG_FORMAT=$(which clang-format)
 if ! [[ -x "$CLANG_FORMAT" ]]; then
@@ -57,8 +65,9 @@ FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .cu"
 # file endings for files to exclude from parsing when PARSE_EXTS is true.
 FILE_ENDINGS="_f.h _f77.h _f90.h"
 
-##################################################################
+#--------------------------------------------------------------------------------------------------#
 # There should be no need to change anything below this line.
+
 # shellcheck source=environment/git/canonicalize_filename.sh
 source "$(dirname -- "$0")/canonicalize_filename.sh"
 
@@ -107,8 +116,8 @@ $DELETE_OLD_PATCHES && rm -f /tmp/$prefix*.patch
 # shellcheck disable=SC2162
 git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
 do
-    # ignore file if we do check for file extensions and the file
-    # does not match any of the extensions specified in $FILE_EXTS
+    # ignore file if we do check for file extensions and the file does not match any of the
+    # extensions specified in $FILE_EXTS
     if $PARSE_EXTS && ! matches_extension "$file"; then
         continue;
     fi
@@ -159,3 +168,7 @@ printf "Aborting commit. Apply changes and commit again or skip checking with --
 printf "recommended).\n\nYou can also manually update format by running clang-format -i <file>. "
 
 exit 1
+
+#--------------------------------------------------------------------------------------------------#
+# End pre-commit-clang-format
+#--------------------------------------------------------------------------------------------------#

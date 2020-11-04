@@ -36,8 +36,7 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
   if (rtt_c4::node() == 0) {
     mesh_iface.reset(new Test_Mesh_Interface(num_xdir, num_ydir, {0, 1, 3, 4}));
   } else {
-    mesh_iface.reset(
-        new Test_Mesh_Interface(num_xdir, num_ydir, {1, 2, 4, 5}, 1.0, 0.0));
+    mesh_iface.reset(new Test_Mesh_Interface(num_xdir, num_ydir, {1, 2, 4, 5}, 1.0, 0.0));
   }
 
   // set ghost data
@@ -55,19 +54,16 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
 
   // short-cut to some arrays
   const std::vector<unsigned> &cell_type = mesh_iface->cell_type;
-  const std::vector<unsigned> &cell_to_node_linkage =
-      mesh_iface->cell_to_node_linkage;
+  const std::vector<unsigned> &cell_to_node_linkage = mesh_iface->cell_to_node_linkage;
   const std::vector<unsigned> &side_node_count = mesh_iface->side_node_count;
-  const std::vector<unsigned> &side_to_node_linkage =
-      mesh_iface->side_to_node_linkage;
+  const std::vector<unsigned> &side_to_node_linkage = mesh_iface->side_to_node_linkage;
 
   // instantiate the mesh
   std::shared_ptr<Draco_Mesh> mesh(new Draco_Mesh(
-      mesh_iface->dim, geometry, cell_type, cell_to_node_linkage,
-      mesh_iface->side_set_flag, side_node_count, side_to_node_linkage,
-      mesh_iface->coordinates, mesh_iface->global_node_number,
-      mesh_iface->face_type, ghost_cell_type, ghost_cell_to_node_linkage,
-      ghost_cell_number, ghost_cell_rank));
+      mesh_iface->dim, geometry, cell_type, cell_to_node_linkage, mesh_iface->side_set_flag,
+      side_node_count, side_to_node_linkage, mesh_iface->coordinates,
+      mesh_iface->global_node_number, mesh_iface->face_type, ghost_cell_type,
+      ghost_cell_to_node_linkage, ghost_cell_number, ghost_cell_rank));
 
   // check that the scalar data is correct
   FAIL_IF_NOT(mesh->get_dimension() == 2);
@@ -103,15 +99,12 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
         mesh_iface->flatten_cn_linkage(layout, bd_layout, go_layout);
 
     // check that cn_linkage is a permutation of the original cell-node linkage
-    std::vector<unsigned>::const_iterator cn_first =
-        cell_to_node_linkage.begin();
-    std::vector<unsigned>::const_iterator test_cn_first =
-        test_cn_linkage.begin();
+    std::vector<unsigned>::const_iterator cn_first = cell_to_node_linkage.begin();
+    std::vector<unsigned>::const_iterator test_cn_first = test_cn_linkage.begin();
     for (unsigned cell = 0; cell < mesh_iface->num_cells; ++cell) {
 
       // nodes must only be permuted at the cell level
-      FAIL_IF_NOT(std::is_permutation(test_cn_first,
-                                      test_cn_first + cell_type[cell], cn_first,
+      FAIL_IF_NOT(std::is_permutation(test_cn_first, test_cn_first + cell_type[cell], cn_first,
                                       cn_first + cell_type[cell]));
 
       // update the iterators
@@ -122,21 +115,17 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
 
   // check that ghost-cell-to-node linkage data is correct
   {
-    std::vector<unsigned> test_gn_linkage =
-        mesh_iface->flatten_sn_linkage(go_layout);
+    std::vector<unsigned> test_gn_linkage = mesh_iface->flatten_sn_linkage(go_layout);
 
     // check that cn_linkage is a permutation of the original cell-node linkage
-    std::vector<unsigned>::const_iterator gn_first =
-        ghost_cell_to_node_linkage.begin();
-    std::vector<unsigned>::const_iterator test_gn_first =
-        test_gn_linkage.begin();
+    std::vector<unsigned>::const_iterator gn_first = ghost_cell_to_node_linkage.begin();
+    std::vector<unsigned>::const_iterator test_gn_first = test_gn_linkage.begin();
     size_t const num_ghost_cells = ghost_cell_type.size();
     for (unsigned ghost = 0; ghost < num_ghost_cells; ++ghost) {
 
       // check that sn_linkage is a permutation of original ghost-node linkage
-      FAIL_IF_NOT(std::is_permutation(
-          test_gn_first, test_gn_first + ghost_cell_type[ghost], gn_first,
-          gn_first + ghost_cell_type[ghost]));
+      FAIL_IF_NOT(std::is_permutation(test_gn_first, test_gn_first + ghost_cell_type[ghost],
+                                      gn_first, gn_first + ghost_cell_type[ghost]));
 
       // update the iterators
       gn_first += ghost_cell_type[ghost];

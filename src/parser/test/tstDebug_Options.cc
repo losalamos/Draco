@@ -49,8 +49,7 @@ void debug_options_test(UnitTest &ut) {
   {
     unsigned bit = add_debug_option("EXTENDED");
     // duplicate okay
-    ut.check(add_debug_option("EXTENDED") == bit,
-             "duplicate definition benign");
+    ut.check(add_debug_option("EXTENDED") == bit, "duplicate definition benign");
     string out = "EXTENDED";
     String_Token_Stream tokens(out);
     ut.check(parse_debug_options(tokens) == bit, "added debug option");
@@ -73,8 +72,7 @@ void debug_options_test(UnitTest &ut) {
     } catch (std::invalid_argument &) {
       done = false;
     }
-    ut.check(!done,
-             "catches illegal argument error for inconsistent duplicate");
+    ut.check(!done, "catches illegal argument error for inconsistent duplicate");
   }
 }
 

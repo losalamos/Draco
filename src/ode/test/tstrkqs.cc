@@ -26,10 +26,7 @@ using namespace rtt_dsxx;
 // TESTS
 //------------------------------------------------------------------------------------------------//
 
-static void ederivs(double /*x*/, const vector<double> &y,
-                    vector<double> &dydx) {
-  dydx[0] = y[0];
-}
+static void ederivs(double /*x*/, const vector<double> &y, vector<double> &dydx) { dydx[0] = y[0]; }
 
 void tstrkqs(UnitTest &ut) {
   vector<double> y(1, 1.0);
@@ -49,8 +46,7 @@ void tstrkqs(UnitTest &ut) {
   x = 0.0;
   vector<double> yscal(1, 1.0);
   double hdid, hnext;
-  rkqs(y, dydx, x, 1.0, numeric_limits<double>::epsilon(), yscal, hdid, hnext,
-       ederivs);
+  rkqs(y, dydx, x, 1.0, numeric_limits<double>::epsilon(), yscal, hdid, hnext, ederivs);
 
   if (fabs(y[0] - exp(x)) > 1.0e-9) {
     ut.failure("rkqs NOT accurate");

@@ -1,31 +1,29 @@
 #!/bin/bash
-##-*- Mode: bash -*-
-##---------------------------------------------------------------------------##
-## File  : environment/bashrc/.bashrc
-## Date  : Tuesday, May 31, 2016, 14:48 pm
-## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
-##         All rights are reserved.
-##
-## Bash configuration file upon bash shell startup
-##
-## Instructions (customization):
-##
-## 1. Setup
-##    - Copy logic from draco/environment/bashrc/sample.bashrc and
-##      draco/environment/bashrc/sample.bash_profile.
-## 2. Override settings using the code found in the sample.bashrc.
-##---------------------------------------------------------------------------##
+#-*- Mode: bash -*-
+#--------------------------------------------------------------------------------------------------#
+# File  : environment/bashrc/.bashrc
+# Date  : Tuesday, May 31, 2016, 14:48 pm
+# Author: Kelly Thompson
+# Note  : Copyright (C) 2016-2020, Triad National Security, LLC., All rights are reserved.
+#
+# Bash configuration file upon bash shell startup
+#
+# Instructions (customization):
+#
+# 1. Setup
+#    - Copy logic from draco/environment/bashrc/sample.bashrc and
+#      draco/environment/bashrc/sample.bash_profile.
+# 2. Override settings using the code found in the sample.bashrc.
+#--------------------------------------------------------------------------------------------------#
 
 #uncomment to debug this script.
 #export verbose=true
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS for interactive sessions
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# ENVIRONMENTS for interactive sessions
+#--------------------------------------------------------------------------------------------------#
 
-# If this is an interactive shell then the environment variable $- should
-# contain an "i":
+# If this is an interactive shell then the environment variable $- should contain an "i":
 case ${-} in
   *i*)
     export INTERACTIVE=true
@@ -38,10 +36,10 @@ case ${-} in
     shopt -s cdspell      # autocorrect spelling errors on cd command line.
     shopt -s histappend   # append to the history file, don't overwrite it
 
-    # More environment setup --------------------------------------------------#
+    # More environment setup ----------------------------------------------------------------------#
 
-    # don't put duplicate lines or lines starting with space in the history. See
-    # bash(1) for more options
+    # don't put duplicate lines or lines starting with space in the history. See bash(1) for more
+    # options
     HISTCONTROL=ignoreboth
 
     # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
@@ -63,9 +61,9 @@ case ${-} in
       export DRACO_ENV_DIR="${DRACO_SRC_DIR}/environment"
     fi
 
-    ##------------------------------------------------------------------------##
-    ## Common aliases
-    ##------------------------------------------------------------------------##
+    #----------------------------------------------------------------------------------------------#
+    # Common aliases
+    #----------------------------------------------------------------------------------------------#
 
     # help shellcheck linter.
     # shellcheck source=/dev/null
@@ -78,18 +76,18 @@ case ${-} in
     esac
     ;; # end case 'interactive'
 
-  ##---------------------------------------------------------------------------##
-  ## ENVIRONMENTS for non interactive sessions
-  ##---------------------------------------------------------------------------##
+  #------------------------------------------------------------------------------------------------#
+  # ENVIRONMENTS for non interactive sessions
+  #------------------------------------------------------------------------------------------------#
 
   *) # Not an interactive shell (e.g. A PBS shell?)
     export INTERACTIVE=false
     ;;
 esac
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS - bash functions (all interactive sessions)
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# ENVIRONMENTS - bash functions (all interactive sessions)
+#--------------------------------------------------------------------------------------------------#
 
 # Bash functions are not inherited by subshells.
 if [[ ${INTERACTIVE} ]]; then
@@ -108,9 +106,9 @@ if [[ ${INTERACTIVE} ]]; then
   fi
 fi
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS - once per login
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# ENVIRONMENTS - once per login
+#--------------------------------------------------------------------------------------------------#
 
 if [[ ${INTERACTIVE} == true ]]; then
 
@@ -140,8 +138,8 @@ if [[ ${INTERACTIVE} == true ]]; then
   # Possible values: ON, TRUE, OFF, FALSE, DIFF (the default value is ON).
   export DRACO_AUTO_CLANG_FORMAT=ON
 
-  # Parse the setup scripts, but don't actually load any modules.  This allows
-  # the developer to run 'dracoenv' or 'rdde' later to load modules.
+  # Parse the setup scripts, but don't actually load any modules.  This allows the developer to run
+  # 'dracoenv' or 'rdde' later to load modules.
   if [[ -z "$DRACO_ENV_LOAD" ]]; then
     export DRACO_ENV_LOAD=ON
   fi
@@ -149,9 +147,9 @@ if [[ ${INTERACTIVE} == true ]]; then
   # Silence warnings from GTK/Gnome
   export NO_AT_BRIDGE=1
 
-  ##---------------------------------------------------------------------------##
-  ## ENVIRONMENTS - machine specific settings
-  ##---------------------------------------------------------------------------##
+  #------------------------------------------------------------------------------------------------#
+  # ENVIRONMENTS - machine specific settings
+  #------------------------------------------------------------------------------------------------#
   target=$(uname -n | sed -e s/[.].*//)
 
   case ${target} in
@@ -217,6 +215,6 @@ if [[ "${verbose:=false}" == "true" ]]; then
   echo "in draco/environment/bashrc/.bashrc ... done";
 fi
 
-##---------------------------------------------------------------------------##
-## end of .bashrc
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# end of .bashrc
+#--------------------------------------------------------------------------------------------------#

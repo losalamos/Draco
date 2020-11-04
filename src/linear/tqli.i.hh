@@ -53,8 +53,7 @@ void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z) {
   using namespace rtt_dsxx;
 
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename FieldVector1::value_type>::min();
+  double const mrv = std::numeric_limits<typename FieldVector1::value_type>::min();
 
   for (unsigned i = 1; i < n; ++i) {
     e[i - 1] = e[i];

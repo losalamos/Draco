@@ -45,8 +45,7 @@ void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
 
   int pid = rtt_c4::node();
 
-  std::string filename =
-      "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".txt";
+  std::string filename = "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".txt";
   if (mode == std::ofstream::binary)
     filename = "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".bin";
 
@@ -78,8 +77,7 @@ void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
     ITFAILS;
 
   // read second strings on each rank
-  compare_string =
-      "MPI rank " + to_string(pid) + " reporting a second time ...\n";
+  compare_string = "MPI rank " + to_string(pid) + " reporting a second time ...\n";
   std::string second_string(second_buffer_size, '\0');
   in.fill_buffers(second_buffer_size);
   in.read(&second_string[0], second_buffer_size);
@@ -87,8 +85,7 @@ void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
     ITFAILS;
 
   if (pid == 0)
-    PASSMSG("completed serialized read of " + filename +
-            " without hanging or segfaulting");
+    PASSMSG("completed serialized read of " + filename + " without hanging or segfaulting");
 }
 
 //------------------------------------------------------------------------------------------------//

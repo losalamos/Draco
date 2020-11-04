@@ -44,8 +44,7 @@ public:
   Console_Token_Stream();
 
   //! Construct a Console_Token_Stream.
-  explicit Console_Token_Stream(set<char> const &whitespace,
-                                bool no_nonbreaking_ws = false);
+  explicit Console_Token_Stream(set<char> const &whitespace, bool no_nonbreaking_ws = false);
 
   // MANIPULATORS
 

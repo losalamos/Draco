@@ -63,8 +63,7 @@ void t2(rtt_dsxx::UnitTest &ut) {
   }
 
   // Make sure we can extract the error message.
-  std::string const compare_value(
-      "Assertion: hello1, failed in myfile, line 42.");
+  std::string const compare_value("Assertion: hello1, failed in myfile, line 42.");
   std::regex rgx(std::string(".*") + compare_value + ".*");
   std::smatch match;
 
@@ -140,8 +139,7 @@ void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "tcheck_cookies test: ";
     try {
-      rtt_dsxx::check_cookies(false, "testing check_cookies()", "DummyFile.ext",
-                              55);
+      rtt_dsxx::check_cookies(false, "testing check_cookies()", "DummyFile.ext", 55);
       throw "Bogus!";
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Caught assertion thrown by check_cookies with false condition.");
@@ -152,8 +150,7 @@ void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
   {
     std::cout << "tcheck_cookies test: ";
     try {
-      rtt_dsxx::check_cookies(true, "testing check_cookies()", "DummyFile.ext",
-                              55);
+      rtt_dsxx::check_cookies(true, "testing check_cookies()", "DummyFile.ext", 55);
       PASSMSG("Passed check_cookies with true condition.");
     } catch (rtt_dsxx::assertion const & /* error */) {
       PASSMSG("Bogus!");
@@ -446,8 +443,7 @@ void tinsist_ptr(rtt_dsxx::UnitTest &ut) {
 //------------------------------------------------------------------------------------------------//
 
 void tverbose_error(rtt_dsxx::UnitTest &ut) {
-  std::string const message(
-      rtt_dsxx::verbose_error(std::string("This is an error.")));
+  std::string const message(rtt_dsxx::verbose_error(std::string("This is an error.")));
   std::cout << "verbose_error() test: ";
   if (message.find(std::string("Host")) == std::string::npos ||
       message.find(std::string("PID")) == std::string::npos)
@@ -469,8 +465,7 @@ void t_catch_bad_alloc(rtt_dsxx::UnitTest &ut) {
     //FAILMSG("failed to catch std::bad_alloc exception.");
   } catch (std::bad_alloc & /*err*/) {
     PASSMSG("caught a manually thrown std::bad_alloc exception.");
-    std::cout << rtt_dsxx::print_stacktrace("Caught a std::bad_alloc")
-              << std::endl;
+    std::cout << rtt_dsxx::print_stacktrace("Caught a std::bad_alloc") << std::endl;
   } catch (...) {
     FAILMSG("failed to catch std::bad_alloc exception.");
   }
@@ -485,8 +480,7 @@ bool no_exception_c() NOEXCEPT_C(true);
 void tnoexcept(rtt_dsxx::UnitTest &ut) {
 #if DBC
   ut.check(!noexcept(no_exception()), "with DBC on, NOEXCEPT has no effect");
-  ut.check(!noexcept(no_exception_c()),
-           "with DBC on, NOEXCEPT_C has no effect");
+  ut.check(!noexcept(no_exception_c()), "with DBC on, NOEXCEPT_C has no effect");
 #else
   ut.check(noexcept(no_exception()), "with DBC off, NOEXCEPT has effect");
   ut.check(noexcept(no_exception_c()), "with DBC off, NOEXCEPT_C has effect");

@@ -33,8 +33,7 @@ namespace rtt_c4 {
  *          return, contains the gathered data.
  */
 template <class T>
-void determinate_gatherv(std::vector<T> &outgoing_data,
-                         std::vector<std::vector<T>> &incoming_data);
+void determinate_gatherv(std::vector<T> &outgoing_data, std::vector<std::vector<T>> &incoming_data);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -52,8 +51,7 @@ template <class T>
 void indeterminate_gatherv(std::vector<T> &outgoing_data,
                            std::vector<std::vector<T>> &incoming_data);
 
-void indeterminate_gatherv(std::string &outgoing_data,
-                           std::vector<std::string> &incoming_data);
+void indeterminate_gatherv(std::string &outgoing_data, std::vector<std::string> &incoming_data);
 
 } // end namespace rtt_c4
 

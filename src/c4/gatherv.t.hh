@@ -23,12 +23,10 @@ namespace rtt_c4 {
 // GATHER
 //------------------------------------------------------------------------------------------------//
 
-void indeterminate_gatherv(std::string &outgoing_data,
-                           std::vector<std::string> &incoming_data) {
+void indeterminate_gatherv(std::string &outgoing_data, std::vector<std::string> &incoming_data) {
   // convert from string to vector<char>
   std::vector<char> outgoing_data_vc(outgoing_data.size());
-  std::copy(outgoing_data.begin(), outgoing_data.end(),
-            outgoing_data_vc.begin());
+  std::copy(outgoing_data.begin(), outgoing_data.end(), outgoing_data_vc.begin());
 
   // create container for return value
   std::vector<std::vector<char>> incoming_data_vvc(nodes());
@@ -42,8 +40,7 @@ void indeterminate_gatherv(std::string &outgoing_data,
     for (size_t i = 0; i < static_cast<size_t>(nodes()); ++i) {
       size_t const len = incoming_data_vvc[i].size();
       incoming_data[i].resize(len);
-      std::copy(incoming_data_vvc[i].begin(), incoming_data_vvc[i].end(),
-                incoming_data[i].begin());
+      std::copy(incoming_data_vvc[i].begin(), incoming_data_vvc[i].end(), incoming_data[i].begin());
       Check(incoming_data[i].size() > 0);
     }
   }
@@ -78,9 +75,8 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
         total_count_64 += counts[p];
       }
       // Require that total_count_64 can be expressed as a 32-bit integer.
-      Insist(total_count_64 < UINT32_MAX,
-             "The size of the array (nranks*vector.size()) exceeds "
-             "32-bit unsigned integer limit.");
+      Insist(total_count_64 < UINT32_MAX, "The size of the array (nranks*vector.size()) exceeds "
+                                          "32-bit unsigned integer limit.");
       auto total_count = static_cast<unsigned>(total_count_64);
 
       // We can only use the &vector[0] notation if the vector is non-zero in length.  An
@@ -88,22 +84,19 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
       std::vector<T> recbuf(total_count, 42);
       Check(outgoing_data.size() < INT_MAX);
       Remember(check =) rtt_c4::gatherv(
-          (count > 0 ? &outgoing_data[0] : nullptr),
-          static_cast<int>(outgoing_data.size()),
+          (count > 0 ? &outgoing_data[0] : nullptr), static_cast<int>(outgoing_data.size()),
           (total_count > 0 ? &recbuf[0] : nullptr), &counts[0], &displs[0]);
       Check(check == MPI_SUCCESS);
 
       for (unsigned p = 0; p < N; ++p) {
-        incoming_data[p].assign(recbuf.begin() + displs[p],
-                                recbuf.begin() + displs[p] + counts[p]);
+        incoming_data[p].assign(recbuf.begin() + displs[p], recbuf.begin() + displs[p] + counts[p]);
       }
 
     } else {
       Remember(int check =) gather(&count, static_cast<int *>(nullptr), 1);
       Check(check == MPI_SUCCESS);
-      Remember(check =) gatherv((count > 0 ? &outgoing_data[0] : nullptr),
-                                count, static_cast<T *>(nullptr), nullptr,
-                                static_cast<int *>(nullptr));
+      Remember(check =) gatherv((count > 0 ? &outgoing_data[0] : nullptr), count,
+                                static_cast<T *>(nullptr), nullptr, static_cast<int *>(nullptr));
       Check(check == MPI_SUCCESS);
     }
   }
@@ -149,19 +142,17 @@ void determinate_gatherv(std::vector<T> &outgoing_data,
       std::vector<T> recbuf(total_count, 42);
       // &vec[0] is only valid if vector has non-zero length
       rtt_c4::gatherv((count > 0 ? &outgoing_data[0] : nullptr), count,
-                      (total_count > 0 ? &recbuf[0] : nullptr), &counts[0],
-                      &displs[0]);
+                      (total_count > 0 ? &recbuf[0] : nullptr), &counts[0], &displs[0]);
 
       for (unsigned p = 0; p < N; ++p) {
         incoming_data[p].resize(counts[p]);
-        std::copy(recbuf.begin() + displs[p],
-                  recbuf.begin() + displs[p] + counts[p],
+        std::copy(recbuf.begin() + displs[p], recbuf.begin() + displs[p] + counts[p],
                   incoming_data[p].begin());
       }
 
     } else {
-      gatherv((count > 0 ? &outgoing_data[0] : nullptr), count,
-              static_cast<T *>(nullptr), nullptr, static_cast<int *>(nullptr));
+      gatherv((count > 0 ? &outgoing_data[0] : nullptr), count, static_cast<T *>(nullptr), nullptr,
+              static_cast<int *>(nullptr));
     }
   }
 #else

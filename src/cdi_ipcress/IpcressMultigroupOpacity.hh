@@ -168,10 +168,9 @@ public:
    * \param in_opacityReaction The type of reaction rate that the current data set
    *     represents.
    */
-  IpcressMultigroupOpacity(
-      std::shared_ptr<IpcressFile const> const &spIpcressFile,
-      size_t in_materialID, rtt_cdi::Model in_opacityModel,
-      rtt_cdi::Reaction in_opacityReaction);
+  IpcressMultigroupOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
+                           size_t in_materialID, rtt_cdi::Model in_opacityModel,
+                           rtt_cdi::Reaction in_opacityReaction);
 
   /*!
    * \brief Unpacking constructor.
@@ -221,12 +220,10 @@ public:
    *     opacities correspond to the temperature and density values provied in
    *     the two InputIterators.
    */
-  template <class TemperatureIterator, class DensityIterator,
-            class OpacityIterator>
-  OpacityIterator
-  getOpacity(TemperatureIterator temperatureFirst,
-             TemperatureIterator temperatureLast, DensityIterator densityFirst,
-             DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  template <class TemperatureIterator, class DensityIterator, class OpacityIterator>
+  OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
+                             TemperatureIterator temperatureLast, DensityIterator densityFirst,
+                             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
@@ -251,8 +248,7 @@ public:
    */
   template <class TemperatureIterator, class OpacityIterator>
   OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
-                             TemperatureIterator temperatureLast,
-                             double targetDensity,
+                             TemperatureIterator temperatureLast, double targetDensity,
                              OpacityIterator opacityFirst) const;
 
   /*!
@@ -276,9 +272,8 @@ public:
    *     the single temperature value.
    */
   template <class DensityIterator, class OpacityIterator>
-  OpacityIterator
-  getOpacity(double targetTemperature, DensityIterator densityFirst,
-             DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  OpacityIterator getOpacity(double targetTemperature, DensityIterator densityFirst,
+                             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that returns a vector of opacities that corresponds
@@ -290,8 +285,7 @@ public:
    *     requested.
    * \return A vector of opacities.
    */
-  std::vector<double> getOpacity(double targetTemperature,
-                                 double targetDensity) const override;
+  std::vector<double> getOpacity(double targetTemperature, double targetDensity) const override;
 
   /*!
    * \brief Opacity accessor that returns a vector of vectors of opacities that
@@ -304,9 +298,8 @@ public:
    *     requested.
    * \return A vector of vectors of opacities.
    */
-  std::vector<std::vector<double>>
-  getOpacity(std::vector<double> const &targetTemperature,
-             double targetDensity) const override;
+  std::vector<std::vector<double>> getOpacity(std::vector<double> const &targetTemperature,
+                                              double targetDensity) const override;
 
   /*!
    * \brief Opacity accessor that returns a vector of vectors of opacities that
@@ -320,8 +313,7 @@ public:
    * \return A vector of vectors of opacities.
    */
   std::vector<std::vector<double>>
-  getOpacity(double targetTemperature,
-             std::vector<double> const &targetDensity) const override;
+  getOpacity(double targetTemperature, std::vector<double> const &targetDensity) const override;
 
   //! Query whether the data is in tables or functional form.
   bool data_in_tabular_form() const override { return true; }
@@ -336,9 +328,7 @@ public:
    * \brief Returns a string that describes the templated EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
    */
-  std::string getEnergyPolicyDescriptor() const override {
-    return energyPolicyDescriptor;
-  };
+  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; };
 
   /*!
    * \brief Returns a "plain English" description of the opacity data that this
@@ -347,9 +337,7 @@ public:
    *     The definition of this function is not included here to prevent the
    *     inclusion of the IpcressFile.hh definitions within this header file.
    */
-  std::string getDataDescriptor() const override {
-    return spIpcressDataTable->getDataDescriptor();
-  }
+  std::string getDataDescriptor() const override { return spIpcressDataTable->getDataDescriptor(); }
 
   /*!
    * \brief Returns the name of the associated IPCRESS file.
@@ -377,9 +365,7 @@ public:
    * We do not return a const reference because this function must construct
    *     this information from more fundamental tables.
    */
-  std::vector<double> getDensityGrid() const override {
-    return spIpcressDataTable->getDensities();
-  }
+  std::vector<double> getDensityGrid() const override { return spIpcressDataTable->getDensities(); }
 
   /*!
    * \brief Returns a vector of energy values (keV) that define the energy
@@ -390,14 +376,10 @@ public:
   }
 
   //! Returns the size of the temperature grid.
-  size_t getNumTemperatures() const override {
-    return spIpcressDataTable->getNumTemperatures();
-  }
+  size_t getNumTemperatures() const override { return spIpcressDataTable->getNumTemperatures(); }
 
   //! Returns the size of the density grid.
-  size_t getNumDensities() const override {
-    return spIpcressDataTable->getNumDensities();
-  }
+  size_t getNumDensities() const override { return spIpcressDataTable->getNumDensities(); }
 
   /*!
    * \brief Returns the number of group boundaries found in the current
@@ -425,9 +407,7 @@ public:
    *
    * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
    */
-  rtt_cdi::OpacityModelType getOpacityModelType() const override {
-    return rtt_cdi::IPCRESS_TYPE;
-  }
+  rtt_cdi::OpacityModelType getOpacityModelType() const override { return rtt_cdi::IPCRESS_TYPE; }
 
 }; // end of class IpcressMultigroupOpacity
 
@@ -443,15 +423,13 @@ public:
 // getOpacity with Tuple of (T,rho) arguments //
 // ------------------------------------------ //
 
-template <class TemperatureIterator, class DensityIterator,
-          class OpacityIterator>
-OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    TemperatureIterator tempIter, TemperatureIterator tempLast,
-    DensityIterator densIter, DensityIterator Remember(densLast),
-    OpacityIterator opIter) const {
+template <class TemperatureIterator, class DensityIterator, class OpacityIterator>
+OpacityIterator
+IpcressMultigroupOpacity::getOpacity(TemperatureIterator tempIter, TemperatureIterator tempLast,
+                                     DensityIterator densIter, DensityIterator Remember(densLast),
+                                     OpacityIterator opIter) const {
   // assert that the two input iterators have compatible sizes.
-  Require(std::distance(tempIter, tempLast) ==
-          std::distance(densIter, densLast));
+  Require(std::distance(tempIter, tempLast) == std::distance(densIter, densLast));
 
   // number of groups in this multigroup set.
   size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
@@ -468,9 +446,9 @@ OpacityIterator IpcressMultigroupOpacity::getOpacity(
 // ------------------------------------ //
 
 template <class TemperatureIterator, class OpacityIterator>
-OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    TemperatureIterator tempIter, TemperatureIterator tempLast,
-    double targetDensity, OpacityIterator opIter) const {
+OpacityIterator
+IpcressMultigroupOpacity::getOpacity(TemperatureIterator tempIter, TemperatureIterator tempLast,
+                                     double targetDensity, OpacityIterator opIter) const {
   // number of groups in this multigroup set.
   size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
 
@@ -486,9 +464,9 @@ OpacityIterator IpcressMultigroupOpacity::getOpacity(
 // ---------------------------------------- //
 
 template <class DensityIterator, class OpacityIterator>
-OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    double targetTemperature, DensityIterator densIter,
-    DensityIterator densLast, OpacityIterator opIter) const {
+OpacityIterator
+IpcressMultigroupOpacity::getOpacity(double targetTemperature, DensityIterator densIter,
+                                     DensityIterator densLast, OpacityIterator opIter) const {
   // number of groups in this multigroup set.
   size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
 

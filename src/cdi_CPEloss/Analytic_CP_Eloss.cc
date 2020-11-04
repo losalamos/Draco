@@ -33,12 +33,11 @@ namespace rtt_cdi_cpeloss {
  *                 separating the stopping power approximation from analog
  *                 scattering
  */
-Analytic_CP_Eloss::Analytic_CP_Eloss(
-    SP_Analytic_Model model_in, rtt_cdi::CParticle target_in, // NOLINT
-    rtt_cdi::CParticle projectile_in,
-    rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
-    : rtt_cdi::CPEloss(target_in, projectile_in,
-                       rtt_cdi::CPModelType::ANALYTIC_ETYPE,
+Analytic_CP_Eloss::Analytic_CP_Eloss(SP_Analytic_Model model_in,
+                                     rtt_cdi::CParticle target_in, // NOLINT
+                                     rtt_cdi::CParticle projectile_in,
+                                     rtt_cdi::CPModelAngleCutoff model_angle_cutoff_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::ANALYTIC_ETYPE,
                        model_angle_cutoff_in),
       analytic_model(model_in) {
   Ensure(analytic_model);
@@ -61,8 +60,7 @@ Analytic_CP_Eloss::Analytic_CP_Eloss(
  * \return eloss (time coefficient) in shk^-1
  *
  */
-double Analytic_CP_Eloss::getEloss(double temperature, double density,
-                                   double v0) const {
+double Analytic_CP_Eloss::getEloss(double temperature, double density, double v0) const {
   Require(temperature >= 0.0);
   Require(density >= 0.0);
   Require(v0 >= 0.0);

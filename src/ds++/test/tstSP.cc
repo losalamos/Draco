@@ -27,24 +27,24 @@ int nbars = 0;
 int nbazs = 0;
 int nbats = 0;
 
-#define CHECK_0_OBJECTS                                                        \
-  if (nfoos != 0)                                                              \
-    ITFAILS;                                                                   \
-  if (nbars != 0)                                                              \
-    ITFAILS;                                                                   \
-  if (nbazs != 0)                                                              \
-    ITFAILS;                                                                   \
-  if (nbats != 0)                                                              \
+#define CHECK_0_OBJECTS                                                                            \
+  if (nfoos != 0)                                                                                  \
+    ITFAILS;                                                                                       \
+  if (nbars != 0)                                                                                  \
+    ITFAILS;                                                                                       \
+  if (nbazs != 0)                                                                                  \
+    ITFAILS;                                                                                       \
+  if (nbats != 0)                                                                                  \
     ITFAILS;
 
-#define CHECK_N_OBJECTS(nf, nb, nbz, nbt)                                      \
-  if (nfoos != nf)                                                             \
-    ITFAILS;                                                                   \
-  if (nbars != nb)                                                             \
-    ITFAILS;                                                                   \
-  if (nbazs != nbz)                                                            \
-    ITFAILS;                                                                   \
-  if (nbats != nbt)                                                            \
+#define CHECK_N_OBJECTS(nf, nb, nbz, nbt)                                                          \
+  if (nfoos != nf)                                                                                 \
+    ITFAILS;                                                                                       \
+  if (nbars != nb)                                                                                 \
+    ITFAILS;                                                                                       \
+  if (nbazs != nbz)                                                                                \
+    ITFAILS;                                                                                       \
+  if (nbats != nbt)                                                                                \
     ITFAILS;
 
 //------------------------------------------------------------------------------------------------//

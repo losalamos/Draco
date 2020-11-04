@@ -88,9 +88,8 @@ double zeroth_moment(const vector<double> &weights, const Ordinate_Set &os) {
 // neighbor interpolation scheme. This test harness does not account
 // for the removal of "starting directions" in the Ordinate_Set.
 // -----------------------------------------------------------------------------
-void nearest_neighbor_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord,
-                           const Ordinate_Set &os, const vector<double> &wts,
-                           const size_t index) {
+void nearest_neighbor_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord, const Ordinate_Set &os,
+                           const vector<double> &wts, const size_t index) {
   Require(index < wts.size());
   Require(wts.size() == os.ordinates().size());
 
@@ -140,8 +139,8 @@ void nearest_neighbor_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord,
 // three ordinates interpolation scheme. This test harness does not account
 // for the removal of "starting directions" in the Ordinate_Set.
 // -----------------------------------------------------------------------------
-void nearest_three_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord,
-                        const Ordinate_Set &os, const vector<double> &wts) {
+void nearest_three_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord, const Ordinate_Set &os,
+                        const vector<double> &wts) {
   const vector<Ordinate> &ordinates(os.ordinates());
 
   if (wts.size() != ordinates.size())
@@ -169,14 +168,10 @@ void nearest_three_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord,
 
   // Find the maximum 3 dot products and their locations
   vector<double> dpcopy(dps);
-  std::partial_sort(dps.begin(), dps.begin() + 3, dps.end(),
-                    std::greater<double>());
-  size_t i1 = std::distance(dpcopy.begin(),
-                            std::find(dpcopy.begin(), dpcopy.end(), dps[0]));
-  size_t i2 = std::distance(dpcopy.begin(),
-                            std::find(dpcopy.begin(), dpcopy.end(), dps[1]));
-  size_t i3 = std::distance(dpcopy.begin(),
-                            std::find(dpcopy.begin(), dpcopy.end(), dps[2]));
+  std::partial_sort(dps.begin(), dps.begin() + 3, dps.end(), std::greater<double>());
+  size_t i1 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[0]));
+  size_t i2 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[1]));
+  size_t i3 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[2]));
 
   // These 3 indices should provide the ordered weight values in the test
   // weight vector
@@ -216,8 +211,7 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 3);
@@ -233,8 +227,7 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(sqrt(3.0) / 3.0, -sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 1);
@@ -250,8 +243,7 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(1.0 / dp2, -1.0 / dp2, 0.1 / dp2, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 1);
@@ -269,8 +261,7 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     bool caught(false);
 
     try {
-      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                   wt_distribute);
+      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
     } catch (const rtt_dsxx::assertion &error) {
       ostringstream message;
       message << "Good, we caught the following exception\n" << error.what();
@@ -318,8 +309,7 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(sqrt(3.0) / 3.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS4, wt_distribute, 2);
@@ -334,8 +324,7 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS4, wt_distribute, 0);
@@ -350,8 +339,7 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.01, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS4, wt_distribute, 1);
@@ -369,8 +357,7 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     // perform some sanity checks
     bool caught(false);
     try {
-      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                   wt_distribute);
+      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
     } catch (const rtt_dsxx::assertion &error) {
       ostringstream message;
       message << "Good, we caught the following exception\n" << error.what();
@@ -416,8 +403,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, 0.8 / no1, 0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 23);
@@ -433,8 +419,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, 0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 22);
@@ -450,8 +435,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9 / no1, 0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 20);
@@ -467,8 +451,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9 / no1, -0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 8);
@@ -484,8 +467,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, -0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
 
     // perform some sanity checks
     nearest_neighbor_test(ut, o1, *os_LS2, wt_distribute, 10);
@@ -529,8 +511,7 @@ void ordinate_set_1D_sph_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
     // The first and last ordinates are "extra"
     vector<double> wts(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                 wts);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wts);
 
     if (wts.size() != ordinates.size())
       ut.failure("Weight/size mismatch");
@@ -580,8 +561,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(1.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS4, wt_distribute);
@@ -596,8 +576,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS4, wt_distribute);
@@ -612,8 +591,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.01, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS4, wt_distribute);
@@ -628,8 +606,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.52553240991632899, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS4, wt_distribute);
@@ -644,8 +621,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.53, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS4, wt_distribute);
@@ -663,8 +639,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     // perform some sanity checks
     bool caught(false);
     try {
-      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
-                                   wt_distribute);
+      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR, wt_distribute);
     } catch (const rtt_dsxx::assertion &error) {
       ostringstream message;
       message << "Good, we caught the following exception\n" << error.what();
@@ -709,8 +684,7 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute);
@@ -726,8 +700,7 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(sqrt(3.0) / 3.0, -sqrt(3.0) / 3.0, sqrt(3.0) / 3.0, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute);
@@ -743,8 +716,7 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(1.0 / dp2, -1.0 / dp2, 0.1 / dp2, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute);
@@ -762,8 +734,7 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     bool caught(false);
 
     try {
-      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                   wt_distribute);
+      osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
     } catch (const rtt_dsxx::assertion &error) {
       ostringstream message;
       message << "Good, we caught the following exception\n" << error.what();
@@ -811,8 +782,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, 0.8 / no1, 0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute); // 23
@@ -828,8 +798,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, 0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute); //22
@@ -845,8 +814,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9 / no1, 0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute); // 20
@@ -862,8 +830,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(-0.9 / no1, -0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute); // 8
@@ -879,8 +846,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
     Ordinate o1(0.9 / no1, -0.8 / no1, -0.1 / no1, w);
     vector<double> wt_distribute(ordinates.size(), 0.0);
 
-    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE,
-                                 wt_distribute);
+    osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_THREE, wt_distribute);
 
     // perform some sanity checks
     nearest_three_test(ut, o1, *os_LS2, wt_distribute); // 10

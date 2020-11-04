@@ -155,8 +155,7 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
 
     delete[] pBigArray;
   } catch (std::bad_alloc & /*error*/) {
-    std::cout << "Successfully caught an expected std::bad_alloc exception."
-              << std::endl;
+    std::cout << "Successfully caught an expected std::bad_alloc exception." << std::endl;
   } catch (...) {
     FAILMSG("Failed to catch a bad_alloc.");
   }
@@ -175,9 +174,7 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
 // away member, and so they will refuse to compile the code. We have to use a
 // bit of indirection to get such compilers to swallow the huge allocation meant
 // to deliberately blow away memory.
-size_t get_really_big_size_t() {
-  return numeric_limits<std::ptrdiff_t>::max() / sizeof(size_t);
-}
+size_t get_really_big_size_t() { return numeric_limits<std::ptrdiff_t>::max() / sizeof(size_t); }
 
 //------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {

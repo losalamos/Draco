@@ -494,8 +494,7 @@ int main(int argc, char *argv[]) {
   try {
     std::cout << "This is " << rtt_c4::get_processor_name() << std::endl;
 
-    Insist(rtt_c4::nodes() == 2,
-           "This designed is designed for exactly 2 Processors.");
+    Insist(rtt_c4::nodes() == 2, "This designed is designed for exactly 2 Processors.");
 
     blocking_ping_pong(ut);
     non_blocking_ping_pong(ut);

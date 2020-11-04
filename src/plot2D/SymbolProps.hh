@@ -64,8 +64,8 @@ struct SymbolProps {
 
   /// Constructor, uses Grace defaults for a set.
   SymbolProps()
-      : shape(SHAPE_NONE), color(COLOR_BLACK), size(1.0), width(1.0),
-        fillColor(COLOR_BLACK), fillPattern(0) {}
+      : shape(SHAPE_NONE), color(COLOR_BLACK), size(1.0), width(1.0), fillColor(COLOR_BLACK),
+        fillPattern(0) {}
 };
 
 } // namespace rtt_plot2D

@@ -30,11 +30,9 @@ public:
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
-    UT_MSG(typeid(Function_Traits<double (*)(double)>::return_type) ==
-               typeid(double),
+    UT_MSG(typeid(Function_Traits<double (*)(double)>::return_type) == typeid(double),
            "return_type correct");
-    UT_MSG(typeid(Function_Traits<Test_Functor>::return_type) ==
-               typeid(Test_Functor::return_type),
+    UT_MSG(typeid(Function_Traits<Test_Functor>::return_type) == typeid(Test_Functor::return_type),
            "return_type NOT correct");
   }
   UT_EPILOG(ut);

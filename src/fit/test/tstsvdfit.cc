@@ -43,8 +43,7 @@ void tstsvdfit(UnitTest &ut) {
 
   svdfit(x, y, sig, a, u, v, w, chisq, funcs, 1.0e-12);
 
-  if (chisq < 1.0e-25 && soft_equiv(a[0], 3.2) && soft_equiv(a[1], 1.7) &&
-      soft_equiv(a[2], 2.1)) {
+  if (chisq < 1.0e-25 && soft_equiv(a[0], 3.2) && soft_equiv(a[1], 1.7) && soft_equiv(a[2], 2.1)) {
     ut.passes("fit is good");
   } else {
     ut.failure("fit is NOT good");
@@ -56,8 +55,8 @@ void tstsvdfit(UnitTest &ut) {
 
   svdfit(x, y, sig, a, u, v, w, chisq, funcs, 1.0e-12);
 
-  if (chisq < 1.0e-8 && soft_equiv(a[0], 3.2, 1.0e-5) &&
-      soft_equiv(a[1], 1.7, 1.0e-5) && soft_equiv(a[2], 2.1, 1.0e-5)) {
+  if (chisq < 1.0e-8 && soft_equiv(a[0], 3.2, 1.0e-5) && soft_equiv(a[1], 1.7, 1.0e-5) &&
+      soft_equiv(a[2], 2.1, 1.0e-5)) {
     ut.passes("fit is good");
   } else {
     ut.failure("fit is NOT good");

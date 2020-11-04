@@ -71,25 +71,15 @@ public:
   //! How many GPU devices are found on the bus?
   size_t numDevicesAvailable() const { return deviceCount; }
   //! maximum number of threads per block
-  int maxThreadsPerBlock(int devId = 0) const {
-    return m_maxthreadsperblock[devId];
-  }
+  int maxThreadsPerBlock(int devId = 0) const { return m_maxthreadsperblock[devId]; }
   //! maxThreadsDim[3] is the maximum sizes of each dimension of a block.
-  int maxThreadsDim(int dim, int devId = 0) const {
-    return m_maxthreadsdim[devId][dim];
-  }
+  int maxThreadsDim(int dim, int devId = 0) const { return m_maxthreadsdim[devId][dim]; }
   //! maxGridSize[3] is the maximum sizes of each dimension of a grid;
-  int maxGridSize(int dim, int devId = 0) const {
-    return m_maxgridsize[devId][dim];
-  }
+  int maxGridSize(int dim, int devId = 0) const { return m_maxgridsize[devId][dim]; }
   //! the total amount of shared memory available per block in bytes
-  size_t sharedMemPerBlock(size_t devId = 0) const {
-    return m_sharedmemperblock[devId];
-  }
+  size_t sharedMemPerBlock(size_t devId = 0) const { return m_sharedmemperblock[devId]; }
   //! the total amount of constant memory available on the device in bytes;
-  int totalConstantMemory(int devId = 0) const {
-    return m_totalconstantmemory[devId];
-  }
+  int totalConstantMemory(int devId = 0) const { return m_totalconstantmemory[devId]; }
   //! the warp size
   int SIMDWidth(int devId = 0) const { return m_simdwidth[devId]; }
   /*! the maximum pitch allowed by the memory copy functions that involve memory
@@ -105,8 +95,7 @@ public:
 
   // SERVICES
   //! Print a summary of idevice's features to ostream out.
-  void printDeviceSummary(int const idevice,
-                          std::ostream &out = std::cout) const;
+  void printDeviceSummary(int const idevice, std::ostream &out = std::cout) const;
 
   // STATICS
   inline static int align(int offset, int alignment) {

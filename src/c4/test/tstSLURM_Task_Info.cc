@@ -28,8 +28,8 @@ using env_store_t = std::map<std::string, env_store_value>;
 env_store_t clean_env() {
   // for each key, is it defined? If so, record the value, then unset it. If
   // not, note that.
-  std::array<std::string, 3> slurm_keys = {
-      "SLURM_CPUS_PER_TASK", "SLURM_NTASKS", "SLURM_JOB_NUM_NODES"};
+  std::array<std::string, 3> slurm_keys = {"SLURM_CPUS_PER_TASK", "SLURM_NTASKS",
+                                           "SLURM_JOB_NUM_NODES"};
   env_store_t store{};
   for (auto &k : slurm_keys) {
     // We're assuming none of those flags were set to something like 2 billion
@@ -43,8 +43,8 @@ env_store_t clean_env() {
       store.insert({k, {true, storestr.str()}});
       int unset_ok = draco_unsetenv(k.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
-               __FUNCTION__, __LINE__, k.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n", __FUNCTION__,
+               __LINE__, k.c_str(), errno);
         // throw something?
       }
     } else {
@@ -67,16 +67,15 @@ void restore_env(env_store_t const &store) {
       std::string const &val_str{val.second};
       int set_ok = draco_setenv(key.c_str(), val_str.c_str());
       if (0 != set_ok) {
-        printf(
-            "%s:%i Failed to set environment variable %s to %s, errno = %d\n",
-            __FUNCTION__, __LINE__, key.c_str(), val_str.c_str(), errno);
+        printf("%s:%i Failed to set environment variable %s to %s, errno = %d\n", __FUNCTION__,
+               __LINE__, key.c_str(), val_str.c_str(), errno);
         // throw something
       }
     } else {
       int unset_ok = draco_unsetenv(key.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
-               __FUNCTION__, __LINE__, key.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n", __FUNCTION__,
+               __LINE__, key.c_str(), errno);
         // throw something?
       }
     }
@@ -106,8 +105,7 @@ void test_SLURM_Info(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
   auto orig_env = clean_env();
   int const iset_cpus_per_task{21}, iset_ntasks{341}, iset_job_num_nodes{1001};
-  const char *set_cpus_per_task{"21"}, *set_ntasks{"341"},
-      *set_job_num_nodes{"1001"};
+  const char *set_cpus_per_task{"21"}, *set_ntasks{"341"}, *set_job_num_nodes{"1001"};
   env_store_t test_env = {{"SLURM_CPUS_PER_TASK", {true, set_cpus_per_task}},
                           {"SLURM_NTASKS", {true, set_ntasks}},
                           {"SLURM_JOB_NUM_NODES", {true, set_job_num_nodes}}};
@@ -161,8 +159,7 @@ int main(int argc, char *argv[]) {
   try {
     run_a_test(ut, test_instantiate_SLURM_Info, "SLURM_Info (clean env) ok.");
     run_a_test(ut, test_SLURM_Info, "SLURM_Info (SLURM vars set) ok.");
-    run_a_test(ut, test_SLURM_Info_partial,
-               "SLURM_Info (partial SLURM vars set) ok.");
+    run_a_test(ut, test_SLURM_Info_partial, "SLURM_Info (partial SLURM vars set) ok.");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }

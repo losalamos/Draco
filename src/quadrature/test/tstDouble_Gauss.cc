@@ -41,8 +41,7 @@ int main(int argc, char *argv[]) {
         PASSMSG("assertion caught for unlisted QIM == SVD.");
       }
       try {
-        FAIL_IF_NOT(quadrature_interpolation_model_as_text(END_QIM) ==
-                    "END_QIM");
+        FAIL_IF_NOT(quadrature_interpolation_model_as_text(END_QIM) == "END_QIM");
       } catch (rtt_dsxx::assertion const & /*error*/) {
         PASSMSG("assertion caught for invalid QIM == END_QIM.");
       }

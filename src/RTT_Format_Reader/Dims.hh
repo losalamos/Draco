@@ -29,9 +29,9 @@ namespace rtt_RTT_Format_Reader {
 class Dims {
 
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<int> vector_int;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_int = std::vector<int>;
 
   string coor_units;
   string prob_time_units;

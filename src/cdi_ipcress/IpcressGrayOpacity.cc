@@ -26,14 +26,12 @@ namespace rtt_cdi_ipcress {
  *
  * See IpcressGrayOpacity.hh for details.
  */
-IpcressGrayOpacity::IpcressGrayOpacity(
-    std::shared_ptr<IpcressFile const> const &spIpcressFile,
-    size_t in_materialID, rtt_cdi::Model in_opacityModel,
-    rtt_cdi::Reaction in_opacityReaction)
-    : ipcressFilename(spIpcressFile->getDataFilename()),
-      materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
-      opacityReaction(in_opacityReaction), energyPolicyDescriptor("gray"),
-      spIpcressDataTable() {
+IpcressGrayOpacity::IpcressGrayOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
+                                       size_t in_materialID, rtt_cdi::Model in_opacityModel,
+                                       rtt_cdi::Reaction in_opacityReaction)
+    : ipcressFilename(spIpcressFile->getDataFilename()), materialID(in_materialID), fieldNames(),
+      opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
+      energyPolicyDescriptor("gray"), spIpcressDataTable() {
   // Verify that the requested material ID is available in the specified IPCRESS
   // file.
   Insist(spIpcressFile->materialFound(materialID),
@@ -47,8 +45,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(
   // Create the data table object and fill it with the table data from the
   // IPCRESS file.
   spIpcressDataTable = std::make_shared<IpcressDataTable>(
-      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile);
+      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames, materialID, spIpcressFile);
 
 } // end of IpcressData constructor
 
@@ -59,8 +56,8 @@ IpcressGrayOpacity::IpcressGrayOpacity(
  * See IpcressGrayOpacity.hh for details.
  */
 IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
-    : ipcressFilename(), materialID(0), fieldNames(), opacityModel(),
-      opacityReaction(), energyPolicyDescriptor("gray"), spIpcressDataTable() {
+    : ipcressFilename(), materialID(0), fieldNames(), opacityModel(), opacityReaction(),
+      energyPolicyDescriptor("gray"), spIpcressDataTable() {
   Require(packed.size() >= 5 * sizeof(int));
 
   // make an unpacker
@@ -82,8 +79,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
   rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
   // make sure it is "gray"
-  Insist(descriptor == "gray",
-         "Tried to unpack a non-gray opacity in IpcressGrayOpacity.");
+  Insist(descriptor == "gray", "Tried to unpack a non-gray opacity in IpcressGrayOpacity.");
 
   // unpack the size of the packed filename
   int packed_filename_size(0);
@@ -129,8 +125,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
   // Create the data table object and fill it with the table data from the
   // IPCRESS file.
   spIpcressDataTable = std::make_shared<IpcressDataTable>(
-      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames,
-      materialID, spIpcressFile);
+      energyPolicyDescriptor, opacityModel, opacityReaction, fieldNames, materialID, spIpcressFile);
 
   Ensure(spIpcressFile);
   Ensure(spIpcressDataTable);
@@ -146,10 +141,8 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
  *     opacities for the multigroup EnergyPolicy) that corresponds to the
  *     provided temperature and density.
  */
-double IpcressGrayOpacity::getOpacity(double targetTemperature,
-                                      double targetDensity) const {
-  double opacity =
-      spIpcressDataTable->interpOpac(targetTemperature, targetDensity);
+double IpcressGrayOpacity::getOpacity(double targetTemperature, double targetDensity) const {
+  double opacity = spIpcressDataTable->interpOpac(targetTemperature, targetDensity);
   Check(opacity > 0.0);
   return opacity;
 }
@@ -160,15 +153,13 @@ double IpcressGrayOpacity::getOpacity(double targetTemperature,
  *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
  *     the provided vector of temperatures and a single density value.
  */
-std::vector<double>
-IpcressGrayOpacity::getOpacity(std::vector<double> const &targetTemperature,
-                               double targetDensity) const {
+std::vector<double> IpcressGrayOpacity::getOpacity(std::vector<double> const &targetTemperature,
+                                                   double targetDensity) const {
   std::vector<double> opacity(targetTemperature.size(),
                               -99.0 * targetTemperature[0] * targetDensity);
   for (size_t i = 0; i < targetTemperature.size(); ++i) {
     // logorithmic interpolation:
-    opacity[i] =
-        spIpcressDataTable->interpOpac(targetTemperature[i], targetDensity);
+    opacity[i] = spIpcressDataTable->interpOpac(targetTemperature[i], targetDensity);
     Check(opacity[i] > 0.0);
   }
   return opacity;
@@ -180,14 +171,12 @@ IpcressGrayOpacity::getOpacity(std::vector<double> const &targetTemperature,
  *     vectors of opacities for the multigroup EnergyPolicy) that correspond to
  *     the provided vector of densities and a single temperature value.
  */
-std::vector<double>
-IpcressGrayOpacity::getOpacity(double targetTemperature,
-                               std::vector<double> const &targetDensity) const {
+std::vector<double> IpcressGrayOpacity::getOpacity(double targetTemperature,
+                                                   std::vector<double> const &targetDensity) const {
   std::vector<double> opacity(targetDensity.size(), -99 * targetTemperature);
   for (size_t i = 0; i < targetDensity.size(); ++i) {
     // logorithmic interpolation:
-    opacity[i] =
-        spIpcressDataTable->interpOpac(targetTemperature, targetDensity[i]);
+    opacity[i] = spIpcressDataTable->interpOpac(targetTemperature, targetDensity[i]);
     Check(opacity[i] > 0.0);
   }
   return opacity;
@@ -220,8 +209,7 @@ std::vector<char> IpcressGrayOpacity::pack() const {
   // determine the total size: 3 ints (reaction, model, material id) + 2 ints
   // for packed_filename size and packed_descriptor size + char in
   // packed_filename and packed_descriptor
-  size_t size =
-      5 * sizeof(int) + packed_filename.size() + packed_descriptor.size();
+  size_t size = 5 * sizeof(int) + packed_filename.size() + packed_descriptor.size();
 
   // make a container to hold packed data
   vector<char> packed(size);

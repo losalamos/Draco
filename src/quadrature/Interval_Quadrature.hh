@@ -57,16 +57,15 @@ protected:
   using Quadrature::create_ordinates_;
 
   //! Virtual hook for create_ordinate_set
-  virtual vector<Ordinate>
-  create_ordinates_(unsigned dimension, Geometry, double norm, unsigned mu_axis,
-                    unsigned eta_axis, bool include_starting_directions,
-                    bool include_extra_directions) const;
+  virtual vector<Ordinate> create_ordinates_(unsigned dimension, Geometry, double norm,
+                                             unsigned mu_axis, unsigned eta_axis,
+                                             bool include_starting_directions,
+                                             bool include_extra_directions) const;
 
   //! Virtual hook for create_ordinate_set
-  virtual vector<Ordinate>
-  create_ordinates_(unsigned dimension, Geometry, double norm,
-                    bool include_starting_directions,
-                    bool include_extra_directions) const;
+  virtual vector<Ordinate> create_ordinates_(unsigned dimension, Geometry, double norm,
+                                             bool include_starting_directions,
+                                             bool include_extra_directions) const;
 
   //! Virtual hook for create_ordinate_set
   virtual vector<Ordinate> create_level_ordinates_(double norm) const = 0;

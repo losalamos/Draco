@@ -30,9 +30,7 @@ private:
 
 namespace rtt_parser {
 //------------------------------------------------------------------------------------------------//
-template <>
-class Class_Parse_Table<DummyClass>
-    : public Class_Parse_Table_Base<DummyClass, false> {
+template <> class Class_Parse_Table<DummyClass> : public Class_Parse_Table_Base<DummyClass, false> {
 public:
   // TYPEDEFS
 
@@ -62,20 +60,17 @@ private:
 
 //------------------------------------------------------------------------------------------------//
 template <>
-std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
-                                                    bool const &context) {
+std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens, bool const &context) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens, context);
 }
 
 //------------------------------------------------------------------------------------------------//
-template <>
-std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
+template <> std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens, false);
 }
 
 //------------------------------------------------------------------------------------------------//
-void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
-                                                       int) {
+void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens, int) {
   tokens.check_semantics(current_->parsed_insouciance < 0.0,
                          "duplicate specification of insouciance");
 
@@ -94,15 +89,13 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
 Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const context_in)
     : context(context_in) // sentinel value
 {
-  std::array<Keyword, 1> const keywords{
-      Keyword{"insouciance", parse_insouciance_, 0, ""}};
+  std::array<Keyword, 1> const keywords{Keyword{"insouciance", parse_insouciance_, 0, ""}};
   initialize(keywords.data(), sizeof(keywords));
 }
 
 //------------------------------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
-  tokens.check_semantics(context || parsed_insouciance >= 0,
-                         "insouciance was not specified");
+  tokens.check_semantics(context || parsed_insouciance >= 0, "insouciance was not specified");
 }
 
 //------------------------------------------------------------------------------------------------//

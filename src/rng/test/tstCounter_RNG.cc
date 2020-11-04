@@ -708,14 +708,14 @@ void test_spawn(UnitTest &ut) {
     uint64_t child_id = child.begin()[3];
 
     if (spawn_id.find(parent_id) != spawn_id.end()) {
-      std::cout << "Found parent among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found parent among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 
     if (spawn_id.find(child_id) != spawn_id.end()) {
-      std::cout << "Found child among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found child among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 
@@ -762,14 +762,14 @@ void test_spawn(UnitTest &ut) {
     uint64_t child_id = child.begin()[3];
 
     if (spawn_id.find(parent_id) != spawn_id.end()) {
-      std::cout << "Found parent among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found parent among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 
     if (spawn_id.find(child_id) != spawn_id.end()) {
-      std::cout << "Found child among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found child among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 
@@ -830,14 +830,14 @@ void test_spawn(UnitTest &ut) {
     uint64_t grandchild_id = grandchild.begin()[3];
 
     if (spawn_id.find(child_id) != spawn_id.end()) {
-      std::cout << "Found child among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found child among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 
     if (spawn_id.find(grandchild_id) != spawn_id.end()) {
-      std::cout << "Found grandchild among previous generators after " << gen
-                << " generations." << std::endl;
+      std::cout << "Found grandchild among previous generators after " << gen << " generations."
+                << std::endl;
       break;
     }
 

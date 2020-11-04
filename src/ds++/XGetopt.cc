@@ -119,14 +119,12 @@ void XGetopt::match_args_to_options() {
     // try to match a short option ('-a')
     if (cmd_line_args[iarg].size() == 2) {
       char const shortarg = cmd_line_args[iarg][1];
-      if (std::find(vshortopts.begin(), vshortopts.end(), shortarg) !=
-          vshortopts.end()) {
+      if (std::find(vshortopts.begin(), vshortopts.end(), shortarg) != vshortopts.end()) {
         matched_arguments.push_back(cmd_line_args[iarg][1]);
         if (vshortopts_hasarg[shortarg]) {
           bool cmd_line_option_requires_value(iarg + 1 < cmd_line_args.size());
-          Insist(cmd_line_option_requires_value,
-                 std::string("The command argument '-") + shortarg +
-                     "' expected a value to be provided.");
+          Insist(cmd_line_option_requires_value, std::string("The command argument '-") + shortarg +
+                                                     "' expected a value to be provided.");
           matched_arguments_values[shortarg] = cmd_line_args[++iarg];
         }
       } else {
@@ -137,8 +135,7 @@ void XGetopt::match_args_to_options() {
     // consider string-based optons here.
     else if (cmd_line_args[iarg].substr(0, 2) == std::string("--")) {
       // The command line argument w/o the leading '--'
-      std::string const longarg =
-          cmd_line_args[iarg].substr(2, cmd_line_args[iarg].size());
+      std::string const longarg = cmd_line_args[iarg].substr(2, cmd_line_args[iarg].size());
       char shortarg('\0');
 
       // Find long argument match and its associated shortarg key.
@@ -149,11 +146,10 @@ void XGetopt::match_args_to_options() {
           // Save the match and associated data.
           matched_arguments.push_back(shortarg);
           if (vshortopts_hasarg[shortarg]) {
-            bool cmd_line_option_requires_value(iarg + 1 <
-                                                cmd_line_args.size());
-            Insist(cmd_line_option_requires_value,
-                   std::string("The command argument '--") + longarg +
-                       "' expected a value to be provided.");
+            bool cmd_line_option_requires_value(iarg + 1 < cmd_line_args.size());
+            Insist(cmd_line_option_requires_value, std::string("The command argument '--") +
+                                                       longarg +
+                                                       "' expected a value to be provided.");
             matched_arguments_values[shortarg] = cmd_line_args[++iarg];
           }
           break;
@@ -239,8 +235,7 @@ std::string XGetopt::display_help(std::string const &appName) const {
         longopt = longopt + std::string(max_len - longopt.length(), ' ');
 
       if (!hasarg)
-        msg << "   -" << shortopt << " | --" << longopt << " : " << helpmsg
-            << "\n";
+        msg << "   -" << shortopt << " | --" << longopt << " : " << helpmsg << "\n";
     }
 
     // find the longest longopt string, including args with options:
@@ -279,8 +274,7 @@ std::string XGetopt::display_help(std::string const &appName) const {
         }
 
         msg << "   -" << shortopt << " | --" << longopt << " <value>"
-            << std::string(max_len - longopt.length(), ' ') << " : "
-            << formatted_help_msg << "\n";
+            << std::string(max_len - longopt.length(), ' ') << " : " << formatted_help_msg << "\n";
       }
     }
   } else {

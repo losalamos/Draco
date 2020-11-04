@@ -49,9 +49,7 @@ public:
     return rtt_reader->get_nodes_coords(node);
   }
   size_t get_numsides() const { return rtt_reader->get_dims_nsides(); }
-  unsigned get_sideflag(size_t side) const {
-    return rtt_reader->get_sides_flags(side, 0);
-  }
+  unsigned get_sideflag(size_t side) const { return rtt_reader->get_sides_flags(side, 0); }
   std::vector<unsigned> get_sidenodes(size_t side) const {
     return rtt_reader->get_sides_nodes(side);
   }

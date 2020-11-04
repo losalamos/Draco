@@ -52,11 +52,9 @@ public:
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
-  Galerkin_Ordinate_Space(unsigned const dimension,
-                          rtt_mesh_element::Geometry const geometry,
-                          std::vector<Ordinate> const &ordinates,
-                          Quadrature_Class quadrature_class, unsigned sn_order,
-                          unsigned const expansion_order, QIM const method,
+  Galerkin_Ordinate_Space(unsigned const dimension, rtt_mesh_element::Geometry const geometry,
+                          std::vector<Ordinate> const &ordinates, Quadrature_Class quadrature_class,
+                          unsigned sn_order, unsigned const expansion_order, QIM const method,
                           bool const extra_starting_directions = false,
                           Ordering const ordering = LEVEL_ORDERED);
 
@@ -91,20 +89,15 @@ private:
 
   // IMPLEMENTATION
 
-  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
 
 private:
   // NESTED CLASSES AND TYPEDEFS
@@ -121,11 +114,9 @@ private:
                                       std::vector<double> const &Ain);
 
   std::vector<double> augment_D(std::vector<unsigned> const &indexes,
-                                unsigned const numCartesianOrdinates,
-                                std::vector<double> const &D);
+                                unsigned const numCartesianOrdinates, std::vector<double> const &D);
 
-  std::vector<double> augment_M(std::vector<unsigned> const &indexes,
-                                std::vector<double> const &M);
+  std::vector<double> augment_M(std::vector<unsigned> const &indexes, std::vector<double> const &M);
   // DATA
 
   QIM const method_;

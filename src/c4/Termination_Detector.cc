@@ -21,17 +21,14 @@ namespace rtt_c4 {
  *                other message tags that may simultaneously be in use.
  */
 Termination_Detector::Termination_Detector(int const tag)
-    : tag_(tag), number_of_processors_(nodes()), pid_(node()),
-      parent_pid_((pid_ - 1) / 2), son_pid_(2 * pid_ + 1),
-      daughter_pid_(son_pid_ + 1), ptype_(), state_(UP), send_count_(0),
-      receive_count_(0), work_count_(0), subtree_send_count_(0),
-      subtree_receive_count_(0), subtree_work_count_(0),
-      old_global_work_count_(0) {
+    : tag_(tag), number_of_processors_(nodes()), pid_(node()), parent_pid_((pid_ - 1) / 2),
+      son_pid_(2 * pid_ + 1), daughter_pid_(son_pid_ + 1), ptype_(), state_(UP), send_count_(0),
+      receive_count_(0), work_count_(0), subtree_send_count_(0), subtree_receive_count_(0),
+      subtree_work_count_(0), old_global_work_count_(0) {
   if (pid_ == 0) {
     ptype_ = ROOT;
   } else {
-    if (son_pid_ >= number_of_processors_ &&
-        daughter_pid_ >= number_of_processors_) {
+    if (son_pid_ >= number_of_processors_ && daughter_pid_ >= number_of_processors_) {
       ptype_ = LEAF;
     } else {
       ptype_ = INTERNAL;
@@ -80,8 +77,8 @@ bool Termination_Detector::is_terminated() {
 #endif
       receive(buffer.data(), num_counts, son_pid_, tag_);
 #ifdef PRINTF_DEBUG
-      cout << "0/" << tag_ << ": received " << son_pid_ << ": " << buffer[0]
-           << ' ' << buffer[1] << ' ' << buffer[2] << endl;
+      cout << "0/" << tag_ << ": received " << son_pid_ << ": " << buffer[0] << ' ' << buffer[1]
+           << ' ' << buffer[2] << endl;
 #endif
 
       subtree_send_count_ = buffer[0];
@@ -94,8 +91,8 @@ bool Termination_Detector::is_terminated() {
 #endif
       receive(buffer.data(), num_counts, daughter_pid_, tag_);
 #ifdef PRINTF_DEBUG
-      cout << "0/" << tag_ << ": received " << daughter_pid_ << ": "
-           << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
+      cout << "0/" << tag_ << ": received " << daughter_pid_ << ": " << buffer[0] << ' '
+           << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
       // If the daughter exists, the son also exists, and the subtree counts are already
@@ -108,28 +105,25 @@ bool Termination_Detector::is_terminated() {
     unsigned global_send_count = subtree_send_count_ + send_count_;
 
 #ifdef PRINTF_DEBUG
-    cout << "0/" << tag_ << ": global send count: " << global_send_count
-         << endl;
+    cout << "0/" << tag_ << ": global send count: " << global_send_count << endl;
 #endif
 
     unsigned global_receive_count = subtree_receive_count_ + receive_count_;
 
 #ifdef PRINTF_DEBUG
-    cout << "0/" << tag_ << ": global receive count: " << global_receive_count
-         << endl;
+    cout << "0/" << tag_ << ": global receive count: " << global_receive_count << endl;
 #endif
 
     unsigned global_work_count = subtree_work_count_ + work_count_;
 
 #ifdef PRINTF_DEBUG
-    cout << "0/" << tag_ << ": global work count: " << global_work_count
-         << endl;
+    cout << "0/" << tag_ << ": global work count: " << global_work_count << endl;
 #endif
 
-    buffer[0] = (global_work_count == old_global_work_count_ &&
-                 global_send_count == global_receive_count)
-                    ? TERMINATE
-                    : SEND_DATA;
+    buffer[0] =
+        (global_work_count == old_global_work_count_ && global_send_count == global_receive_count)
+            ? TERMINATE
+            : SEND_DATA;
 
     old_global_work_count_ = global_work_count;
 
@@ -137,16 +131,14 @@ bool Termination_Detector::is_terminated() {
       send(buffer.data(), 1, son_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-      cout << "0/" << tag_ << ": sent " << son_pid_ << ": " << buffer[0]
-           << endl;
+      cout << "0/" << tag_ << ": sent " << son_pid_ << ": " << buffer[0] << endl;
 #endif
     }
     if (daughter_pid_ < number_of_processors_) {
       send(buffer.data(), 1, daughter_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-      cout << "0/" << tag_ << ": sent " << daughter_pid_ << ": " << buffer[0]
-           << endl;
+      cout << "0/" << tag_ << ": sent " << daughter_pid_ << ": " << buffer[0] << endl;
 #endif
     }
     if (buffer[0] == TERMINATE) {
@@ -166,9 +158,8 @@ bool Termination_Detector::is_terminated() {
       state_ = DOWN;
 
 #ifdef PRINTF_DEBUG
-      cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": "
-           << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2]
-           << ", state now DOWN" << endl;
+      cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": " << buffer[0] << ' '
+           << buffer[1] << ' ' << buffer[2] << ", state now DOWN" << endl;
 #endif
     } else {
 #ifdef PRINTF_DEBUG
@@ -176,8 +167,7 @@ bool Termination_Detector::is_terminated() {
 #endif
       receive(buffer.data(), 1, parent_pid_, tag_);
 #ifdef PRINTF_DEBUG
-      cout << pid_ << '/' << tag_ << ": received " << parent_pid_ << ": "
-           << buffer[0] << endl;
+      cout << pid_ << '/' << tag_ << ": received " << parent_pid_ << ": " << buffer[0] << endl;
 #endif
 
       if (buffer[0] == TERMINATE) {
@@ -193,9 +183,8 @@ bool Termination_Detector::is_terminated() {
         send(buffer.data(), num_counts, parent_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": "
-             << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2]
-             << ", state still DOWN" << endl;
+        cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": " << buffer[0] << ' '
+             << buffer[1] << ' ' << buffer[2] << ", state still DOWN" << endl;
 #endif
       }
     }
@@ -209,8 +198,8 @@ bool Termination_Detector::is_terminated() {
 #endif
         receive(buffer.data(), num_counts, son_pid_, tag_);
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": received " << son_pid_ << ": "
-             << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
+        cout << pid_ << '/' << tag_ << ": received " << son_pid_ << ": " << buffer[0] << ' '
+             << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
         subtree_send_count_ = buffer[0];
@@ -219,13 +208,12 @@ bool Termination_Detector::is_terminated() {
       }
       if (daughter_pid_ < number_of_processors_) {
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": expecting from " << daughter_pid_
-             << endl;
+        cout << pid_ << '/' << tag_ << ": expecting from " << daughter_pid_ << endl;
 #endif
         receive(buffer.data(), num_counts, daughter_pid_, tag_);
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": received " << daughter_pid_ << ": "
-             << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2] << endl;
+        cout << pid_ << '/' << tag_ << ": received " << daughter_pid_ << ": " << buffer[0] << ' '
+             << buffer[1] << ' ' << buffer[2] << endl;
 #endif
 
         // If the daughter exists, the son also exists, and the subtree counts
@@ -242,9 +230,8 @@ bool Termination_Detector::is_terminated() {
       send(buffer.data(), num_counts, parent_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-      cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": "
-           << buffer[0] << ' ' << buffer[1] << ' ' << buffer[2]
-           << ", state now DOWN" << endl;
+      cout << pid_ << '/' << tag_ << ": sent " << parent_pid_ << ": " << buffer[0] << ' '
+           << buffer[1] << ' ' << buffer[2] << ", state now DOWN" << endl;
 #endif
 
       state_ = DOWN;
@@ -256,24 +243,21 @@ bool Termination_Detector::is_terminated() {
 #endif
       receive(buffer.data(), 1, parent_pid_, tag_);
 #ifdef PRINTF_DEBUG
-      cout << pid_ << '/' << tag_ << ": received " << parent_pid_ << ": "
-           << buffer[0] << endl;
+      cout << pid_ << '/' << tag_ << ": received " << parent_pid_ << ": " << buffer[0] << endl;
 #endif
 
       if (son_pid_ < number_of_processors_) {
         send(buffer.data(), 1, son_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": sent " << son_pid_ << ": "
-             << buffer[0] << endl;
+        cout << pid_ << '/' << tag_ << ": sent " << son_pid_ << ": " << buffer[0] << endl;
 #endif
       }
       if (daughter_pid_ < number_of_processors_) {
         send(buffer.data(), 1, daughter_pid_, tag_);
 
 #ifdef PRINTF_DEBUG
-        cout << pid_ << '/' << tag_ << ": sent " << daughter_pid_ << ": "
-             << buffer[0] << endl;
+        cout << pid_ << '/' << tag_ << ": sent " << daughter_pid_ << ": " << buffer[0] << endl;
 #endif
       }
       state_ = UP;

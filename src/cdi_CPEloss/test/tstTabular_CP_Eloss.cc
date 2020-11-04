@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
-#include "cdi_CPEloss/Tabular_CP_Eloss.hh"
 #include "cdi/CDI.hh"
+#include "cdi_CPEloss/Tabular_CP_Eloss.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/dbc.hh"
@@ -45,8 +45,7 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(eloss_mod.is_data_in_tabular_form());
 
   // Check that grid accessors agree
-  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() ==
-              eloss_mod.getNumTemperatures());
+  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() == eloss_mod.getNumTemperatures());
   FAIL_IF_NOT(eloss_mod.getDensityGrid().size() == eloss_mod.getNumDensities());
   FAIL_IF_NOT(eloss_mod.getEnergyGrid().size() == eloss_mod.getNumEnergies());
 
@@ -63,9 +62,8 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double energy = 1.384272;
     double density = 3.344490e-01;
     double temperature = 3.981051e-04;
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
-                             0.1958064213742134, 1.e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
+                                     0.1958064213742134, 1.e-8));
   }
 
   // Get eloss value for almost last (2,3,4) grid point
@@ -73,9 +71,8 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double energy = 1.384273e+01;
     double density = 3.344495e+03;
     double temperature = 2.511868e+01;
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
-                             8.502486928162006370e+04, 1.e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
+                                     8.502486928162006370e+04, 1.e-8));
   }
 
   // Get eloss value for a point between grid points (1.5,2.5,3.5, i.e. requiring linear interpolation)
@@ -83,9 +80,8 @@ void dedx_table_test(rtt_dsxx::UnitTest &ut) {
     double energy = 4.377453e+00;
     double density = 3.344494e+02;
     double temperature = 3.981044e+00;
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
-                             139104.1982932578, 1.e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(temperature, density, energy),
+                                     139104.1982932578, 1.e-8));
   }
 
   if (ut.numFails == 0) {

@@ -27,14 +27,14 @@ class CellDefs;
 class CellDef {
   /* TYPEDEFS */
 
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::set<int> set_int;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::set<unsigned> set_uint;
-  typedef std::vector<unsigned> vector_uint;
-  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using set_int = std::set<int>;
+  using vector_int = std::vector<int>;
+  using vector_vector_int = std::vector<std::vector<int>>;
+  using set_uint = std::set<unsigned int>;
+  using vector_uint = std::vector<unsigned int>;
+  using vector_vector_uint = std::vector<std::vector<unsigned int>>;
 
   /* DATA */
 
@@ -124,15 +124,15 @@ public:
  */
 class CellDefs {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::set<int> set_int;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
-  typedef std::set<unsigned> set_uint;
-  typedef std::vector<unsigned> vector_uint;
-  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using set_int = std::set<int>;
+  using vector_int = std::vector<int>;
+  using vector_vector_int = std::vector<std::vector<int>>;
+  using vector_vector_vector_int = std::vector<std::vector<std::vector<int>>>;
+  using set_uint = std::set<unsigned int>;
+  using vector_uint = std::vector<unsigned int>;
+  using vector_vector_uint = std::vector<std::vector<unsigned int>>;
 
   const Dims &dims;
   std::vector<std::shared_ptr<CellDef>> defs;

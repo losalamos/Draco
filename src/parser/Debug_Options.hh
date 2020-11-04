@@ -37,28 +37,26 @@ enum Debug_Options {
 
 //------------------------------------------------------------------------------------------------//
 //! Parse debug options in uniform way
-DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &,
-                                               unsigned parent_mask = 0);
+unsigned parse_debug_options(rtt_parser::Token_Stream &, unsigned parent_mask = 0);
 
 //------------------------------------------------------------------------------------------------//
 //! Add an application-specific debug option.
-DLL_PUBLIC_parser void add_debug_option(string const &option_name,
-                                        unsigned const bit);
+void add_debug_option(string const &option_name, unsigned const bit);
 
 //------------------------------------------------------------------------------------------------//
 //! Add an application-specific debug option.
-DLL_PUBLIC_parser unsigned add_debug_option(string const &option_name);
+unsigned add_debug_option(string const &option_name);
 
 //------------------------------------------------------------------------------------------------//
-DLL_PUBLIC_parser unsigned get_debug_option(string const &option_name);
+unsigned get_debug_option(string const &option_name);
 
 //------------------------------------------------------------------------------------------------//
 //! Flush application-specific debug options.
-DLL_PUBLIC_parser void flush_debug_options();
+void flush_debug_options();
 
 //------------------------------------------------------------------------------------------------//
 //! Write debug options in a manner that can be parsed
-DLL_PUBLIC_parser std::string debug_options_as_text(unsigned debug_options);
+std::string debug_options_as_text(unsigned debug_options);
 
 } // namespace rtt_parser
 

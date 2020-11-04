@@ -33,7 +33,7 @@ namespace rtt_quadrature {
 class Double_Gauss : public Interval_Quadrature {
 public:
   // CREATORS
-  DLL_PUBLIC_quadrature explicit Double_Gauss(unsigned sn_order);
+  explicit Double_Gauss(unsigned sn_order);
 
   // ACCESSORS
 

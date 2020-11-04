@@ -119,15 +119,13 @@ public:
   virtual void rewind() = 0;
 
   //! Report a syntax error to the user.
-  [[noreturn]] void report_syntax_error(Token const &token,
-                                        std::string const &message);
+  [[noreturn]] void report_syntax_error(Token const &token, std::string const &message);
 
   //! Report a syntax error to the user.
   [[noreturn]] void report_syntax_error(std::string const &message);
 
   //! Report a semantic error to the user.
-  virtual void report_semantic_error(Token const &token,
-                                     std::string const &message);
+  virtual void report_semantic_error(Token const &token, std::string const &message);
 
   //! Report a semantic error to the user.
   virtual void report_semantic_error(std::string const &message);

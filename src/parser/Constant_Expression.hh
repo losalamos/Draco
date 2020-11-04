@@ -61,8 +61,7 @@ private:
 
   double evaluate_(double const *const) const override { return units().conv; }
 
-  void write_(Precedence const, vector<string> const &,
-              ostream &out) const override {
+  void write_(Precedence const, vector<string> const &, ostream &out) const override {
     if (is_compatible(units(), dimensionless)) {
       out << units().conv;
     } else {

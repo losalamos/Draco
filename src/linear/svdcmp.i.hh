@@ -39,8 +39,8 @@ namespace rtt_linear {
  * \todo Templatize on container element type
  */
 template <typename RandomContainer>
-void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
-            RandomContainer &w, RandomContainer &v) {
+void svdcmp(RandomContainer &a, const unsigned m, const unsigned n, RandomContainer &w,
+            RandomContainer &v) {
   Require(a.size() == m * n);
 
   using namespace rtt_dsxx;
@@ -53,10 +53,8 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
   // happen even for very large matrices.
   const unsigned MAX_ITERATIONS = 30;
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
-  double const eps =
-      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const eps = std::numeric_limits<typename RandomContainer::value_type>::epsilon();
 
   w.resize(n);
   v.resize(n * n);

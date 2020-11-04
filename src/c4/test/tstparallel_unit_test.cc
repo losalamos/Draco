@@ -19,8 +19,7 @@ using namespace rtt_c4;
 
 //------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  return do_parallel_unit_test(argc, argv, release,
-                               [](UnitTest &ut) { ut.passes("basic run"); });
+  return do_parallel_unit_test(argc, argv, release, [](UnitTest &ut) { ut.passes("basic run"); });
 }
 
 //------------------------------------------------------------------------------------------------//

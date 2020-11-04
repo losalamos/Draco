@@ -87,14 +87,12 @@ public:
 
   Parse_Table const &parse_table() const { return parse_table_; }
 
-  static void register_model(
-      string const &keyword,
-      std::shared_ptr<Parent> parse_function(Token_Stream &, int const &)) {
+  static void register_model(string const &keyword,
+                             std::shared_ptr<Parent> parse_function(Token_Stream &, int const &)) {
     Abstract_Class_Parser<Parent, get_parse_table_, get_parsed_object_,
                           Contextual_Parse_Functor<Parent, int, get_context_>>::
         register_child(keyword,
-                       Contextual_Parse_Functor<Parent, int, get_context_>(
-                           parse_function));
+                       Contextual_Parse_Functor<Parent, int, get_context_>(parse_function));
     // This function allows downstream developers to add new daughter classes to
     // the parser without having to modify upstream code.
   }
@@ -132,8 +130,7 @@ Parse_Table Class_Parse_Table<Parent>::parse_table_;
 /*
  * Specialization of the parse_class template function for T=Parent
  */
-template <>
-std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
+template <> std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
   return parse_class_from_table<Class_Parse_Table<Parent>>(tokens, context);
 }
 
@@ -170,8 +167,7 @@ public:
 
   // MANAGEMENT
 
-  explicit Class_Parse_Table(int const context_in)
-      : Class_Parse_Table<Parent>(context_in) {
+  explicit Class_Parse_Table(int const context_in) : Class_Parse_Table<Parent>(context_in) {
     if (!parse_table_is_initialized_) {
       // The parser class must populate the parse_table_ with the keywords and
       // parse functions needed to parse a specification. This is done once the
@@ -204,8 +200,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (rtt_dsxx::soft_equiv(snips_and_snails, -1.0,
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(snips_and_snails, -1.0, std::numeric_limits<double>::epsilon())) {
       tokens.report_semantic_error("no snips and snails specified");
     }
   }
@@ -249,9 +244,7 @@ Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
 //------------------------------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
-                                      int const &context) {
+template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens, int const &context) {
   return parse_class_from_table<Class_Parse_Table<Son>>(tokens, context);
 }
 
@@ -305,8 +298,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (rtt_dsxx::soft_equiv(sugar_and_spice, -1.0,
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(sugar_and_spice, -1.0, std::numeric_limits<double>::epsilon())) {
       tokens.report_semantic_error("no sugar and spice specified");
     }
   }
@@ -345,8 +337,7 @@ Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
 //------------------------------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
+template <> std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 

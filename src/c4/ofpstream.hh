@@ -54,8 +54,7 @@ namespace rtt_c4 {
 class ofpstream : public std::ostream {
 public:
   //! Constructor -- default to standard output mode (ASCII)
-  ofpstream(std::string const &filename,
-            ios_base::openmode const mode = ios_base::out);
+  ofpstream(std::string const &filename, ios_base::openmode const mode = ios_base::out);
 
   //! Write all buffered output to the file stream, in MPI rank order.
   void send() { sb_.send(); }

@@ -46,8 +46,8 @@ using std::sqrt;
  * \post \c qt.size()==n*n
  */
 template <class RandomContainer>
-void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
-            unsigned i, double a, double b) {
+void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n, unsigned i, double a,
+            double b) {
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
   Require(i + 1 < n);
@@ -57,8 +57,7 @@ void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
   // cosine and sine of rotation
   double c, s;
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
 
   if (std::abs(a) < mrv) {
     c = 0.0;

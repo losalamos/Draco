@@ -64,12 +64,10 @@ public:
 
   // STATICS
 
-  static void
-  register_model(string const &keyword,
-                 std::shared_ptr<Parent> parse_function(Token_Stream &)) {
-    Abstract_Class_Parser<Parent, get_parse_table_,
-                          get_parsed_object_>::register_child(keyword,
-                                                              parse_function);
+  static void register_model(string const &keyword,
+                             std::shared_ptr<Parent> parse_function(Token_Stream &)) {
+    Abstract_Class_Parser<Parent, get_parse_table_, get_parsed_object_>::register_child(
+        keyword, parse_function);
   }
 
 private:
@@ -265,8 +263,7 @@ Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
 //------------------------------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
+template <> std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 
@@ -277,17 +274,12 @@ std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
 std::shared_ptr<Parent> parent;
 
 //static
-void parse_parent(Token_Stream &tokens, int) {
-  parent = parse_class<Parent>(tokens);
-}
+void parse_parent(Token_Stream &tokens, int) { parent = parse_class<Parent>(tokens); }
 
-std::array<Keyword, 1> const top_keywords{
-    Keyword{"parent", parse_parent, 0, ""}};
+std::array<Keyword, 1> const top_keywords{Keyword{"parent", parse_parent, 0, ""}};
 Parse_Table top_parse_table(top_keywords.data(), top_keywords.size());
 
-std::shared_ptr<Parent> parse_son(Token_Stream &tokens) {
-  return parse_class<Son>(tokens);
-}
+std::shared_ptr<Parent> parse_son(Token_Stream &tokens) { return parse_class<Son>(tokens); }
 
 std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens) {
   return parse_class<Daughter>(tokens);
@@ -302,8 +294,7 @@ void test(UnitTest &ut) {
   Class_Parse_Table<Parent>::register_model("daughter", parse_daughter);
 
   // Build path for the input file
-  string const sadInputFile(ut.getTestSourcePath() +
-                            std::string("sons_and_daughters.inp"));
+  string const sadInputFile(ut.getTestSourcePath() + std::string("sons_and_daughters.inp"));
 
   File_Token_Stream tokens(sadInputFile);
 
@@ -311,8 +302,7 @@ void test(UnitTest &ut) {
 
   cout << parent->name() << endl;
 
-  if (tokens.error_count() == 0 && parent != std::shared_ptr<Parent>() &&
-      parent->name() == "son") {
+  if (tokens.error_count() == 0 && parent != std::shared_ptr<Parent>() && parent->name() == "son") {
     PASSMSG("Parsed son correctly");
   } else {
     FAILMSG("Did NOT parse son correctly");

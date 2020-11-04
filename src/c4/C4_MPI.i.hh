@@ -26,27 +26,23 @@ void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
   // set the request
   request.set();
 
-  Remember(int const retval =)
-      MPI_Issend(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag,
-                 communicator, &request.r());
+  Remember(int const retval =) MPI_Issend(const_cast<T *>(buffer), size, T::MPI_Type, destination,
+                                          tag, communicator, &request.r());
   Check(retval == MPI_SUCCESS);
 
   return;
 }
 
 //------------------------------------------------------------------------------------------------//
-template <typename T>
-int send_custom(const T *buffer, int size, int destination, int tag) {
+template <typename T> int send_custom(const T *buffer, int size, int destination, int tag) {
   Require(buffer != nullptr);
-  MPI_Send(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag,
-           communicator);
+  MPI_Send(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag, communicator);
   return C4_SUCCESS;
 }
 
 //------------------------------------------------------------------------------------------------//
 template <typename T>
-void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
-                          int tag) {
+void receive_async_custom(C4_Req &request, T *buffer, int size, int source, int tag) {
   Require(!request.inuse());
   Require(buffer != nullptr);
   Remember(int custom_mpi_type_size);
@@ -57,22 +53,20 @@ void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
   request.set();
 
   // post an MPI_Irecv
-  Remember(int const retval =) MPI_Irecv(buffer, size, T::MPI_Type, source, tag,
-                                         communicator, &request.r());
+  Remember(int const retval =)
+      MPI_Irecv(buffer, size, T::MPI_Type, source, tag, communicator, &request.r());
   Check(retval == MPI_SUCCESS);
   return;
 }
 
 //------------------------------------------------------------------------------------------------//
-template <typename T>
-int receive_custom(T *buffer, int size, int source, int tag) {
+template <typename T> int receive_custom(T *buffer, int size, int source, int tag) {
   Require(buffer != nullptr);
   // get a handle to the MPI_Status
   MPI_Status status;
 
   // do the blocking receive
-  Remember(int check =)
-      MPI_Recv(buffer, size, T::MPI_Type, source, tag, communicator, &status);
+  Remember(int check =) MPI_Recv(buffer, size, T::MPI_Type, source, tag, communicator, &status);
   Check(check == MPI_SUCCESS);
 
   // get the count of received data
@@ -82,8 +76,7 @@ int receive_custom(T *buffer, int size, int source, int tag) {
 }
 
 //------------------------------------------------------------------------------------------------//
-template <typename T>
-int message_size_custom(C4_Status status, const T &mpi_type) {
+template <typename T> int message_size_custom(C4_Status status, const T &mpi_type) {
   int receive_count = 0;
   MPI_Get_count(status.get_status_obj(), mpi_type, &receive_count);
   return receive_count;

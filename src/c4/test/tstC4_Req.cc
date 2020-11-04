@@ -68,8 +68,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut) {
     using rtt_c4::MPI_Traits;
     FAIL_IF_NOT(MPI_Traits<unsigned char>::element_type() == MPI_UNSIGNED_CHAR);
     FAIL_IF_NOT(MPI_Traits<short>::element_type() == MPI_SHORT);
-    FAIL_IF_NOT(MPI_Traits<unsigned short>::element_type() ==
-                MPI_UNSIGNED_SHORT);
+    FAIL_IF_NOT(MPI_Traits<unsigned short>::element_type() == MPI_UNSIGNED_SHORT);
     FAIL_IF_NOT(MPI_Traits<unsigned int>::element_type() == MPI_UNSIGNED);
     FAIL_IF_NOT(MPI_Traits<unsigned long>::element_type() == MPI_UNSIGNED_LONG);
     FAIL_IF_NOT(MPI_Traits<long double>::element_type() == MPI_LONG_DOUBLE);

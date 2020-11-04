@@ -87,8 +87,7 @@ File_Token_Stream::letter::letter(string const &file_name)
  *
  * \throw invalid_argument If the input stream cannot be opened.
  */
-File_Token_Stream::File_Token_Stream(string const &file_name,
-                                     set<char> const &ws,
+File_Token_Stream::File_Token_Stream(string const &file_name, set<char> const &ws,
                                      bool const no_nonbreaking_ws)
     : Text_Token_Stream(ws, no_nonbreaking_ws), letters_(),
       letter_(make_shared<letter>(file_name)) {
@@ -199,9 +198,7 @@ bool File_Token_Stream::error_() const {
  * \return \c true if the end of the text file has been reached; \c false
  * otherwise.
  */
-bool File_Token_Stream::end_() const {
-  return letter_ != nullptr ? letter_->infile_.eof() : true;
-}
+bool File_Token_Stream::end_() const { return letter_ != nullptr ? letter_->infile_.eof() : true; }
 
 //------------------------------------------------------------------------------------------------//
 //! This function sends a message by writing it to the error console stream.

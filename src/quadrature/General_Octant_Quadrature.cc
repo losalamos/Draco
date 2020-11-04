@@ -21,14 +21,12 @@ using namespace rtt_dsxx;
 
 //------------------------------------------------------------------------------------------------//
 General_Octant_Quadrature::General_Octant_Quadrature(
-    unsigned const sn_order, vector<double> const &mu,
-    vector<double> const &eta, vector<double> const &xi,
-    vector<double> const &wt, unsigned number_of_levels,
+    unsigned const sn_order, vector<double> const &mu, vector<double> const &eta,
+    vector<double> const &xi, vector<double> const &wt, unsigned number_of_levels,
     Quadrature_Class const quadrature_class)
     : Octant_Quadrature(sn_order), mu_(mu), eta_(eta), xi_(xi), wt_(wt),
       number_of_levels_(number_of_levels), quadrature_class_(quadrature_class),
-      is_open_interval_(
-          soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0)) {
+      is_open_interval_(soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0)) {
   Require(mu.size() > 0 && eta.size() == mu.size() && xi.size() == mu.size() &&
           wt.size() == mu.size());
 
@@ -54,8 +52,8 @@ General_Octant_Quadrature::General_Octant_Quadrature(
 
 //------------------------------------------------------------------------------------------------//
 bool General_Octant_Quadrature::check_class_invariants() const {
-  return (mu_.size() > 0 && eta_.size() == mu_.size() &&
-          xi_.size() == mu_.size() && wt_.size() == mu_.size()) &&
+  return (mu_.size() > 0 && eta_.size() == mu_.size() && xi_.size() == mu_.size() &&
+          wt_.size() == mu_.size()) &&
 
          (quadrature_class_ != INTERVAL_QUADRATURE) &&
 
@@ -67,24 +65,16 @@ bool General_Octant_Quadrature::check_class_invariants() const {
 }
 
 //------------------------------------------------------------------------------------------------//
-string General_Octant_Quadrature::name() const {
-  return "General Octant Quadrature";
-}
+string General_Octant_Quadrature::name() const { return "General Octant Quadrature"; }
 
 //------------------------------------------------------------------------------------------------//
-string General_Octant_Quadrature::parse_name() const {
-  return "general octant quadrature";
-}
+string General_Octant_Quadrature::parse_name() const { return "general octant quadrature"; }
 
 //------------------------------------------------------------------------------------------------//
-Quadrature_Class General_Octant_Quadrature::quadrature_class() const {
-  return quadrature_class_;
-}
+Quadrature_Class General_Octant_Quadrature::quadrature_class() const { return quadrature_class_; }
 
 //------------------------------------------------------------------------------------------------//
-unsigned General_Octant_Quadrature::number_of_levels() const {
-  return number_of_levels_;
-}
+unsigned General_Octant_Quadrature::number_of_levels() const { return number_of_levels_; }
 
 //------------------------------------------------------------------------------------------------//
 string General_Octant_Quadrature::as_text(string const &indent) const {
@@ -107,17 +97,15 @@ string General_Octant_Quadrature::as_text(string const &indent) const {
 }
 
 //------------------------------------------------------------------------------------------------//
-void General_Octant_Quadrature::create_octant_ordinates_(
-    vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
+void General_Octant_Quadrature::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                                                         vector<double> &wt) const {
   mu = mu_;
   eta = eta_;
   wt = wt_;
 }
 
 //------------------------------------------------------------------------------------------------//
-bool General_Octant_Quadrature::is_open_interval() const {
-  return is_open_interval_;
-}
+bool General_Octant_Quadrature::is_open_interval() const { return is_open_interval_; }
 
 } // end namespace rtt_quadrature
 

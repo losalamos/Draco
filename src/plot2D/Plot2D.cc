@@ -22,11 +22,9 @@ namespace rtt_plot2D {
 
 //------------------------------------------------------------------------------------------------//
 //! Constructor that calls open(); see open() for arguments.
-Plot2D::Plot2D(const int numGraphs, const std::string &paramFile,
-               const bool batch)
-    : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0),
-      d_batch(batch), d_graceVersion(), d_numSets(std::vector<int>()),
-      d_setsBeenRead(std::vector<bool>()) {
+Plot2D::Plot2D(const int numGraphs, const std::string &paramFile, const bool batch)
+    : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0), d_batch(batch),
+      d_graceVersion(), d_numSets(std::vector<int>()), d_setsBeenRead(std::vector<bool>()) {
   // is_supported must be checked for all constructors.
   Insist(is_supported(), "Plot2D unsupported on this platform!");
 
@@ -89,8 +87,7 @@ Plot2D::VersionNumber Plot2D::graceVersion() {
 
     if (i < 2) {
       size_t dot = s.find(".");
-      Insist(dot != std::string::npos,
-             "plot2D::graceVersion: Version string wrong format.");
+      Insist(dot != std::string::npos, "plot2D::graceVersion: Version string wrong format.");
       sn = s.substr(0, dot);
       s = s.substr(dot + 1);
     }
@@ -116,8 +113,7 @@ Plot2D::VersionNumber Plot2D::graceVersion() {
  *                  generated and then saved with the save() function.
  */
 //------------------------------------------------------------------------------------------------//
-void Plot2D::open(const int numGraphs, const std::string &paramFile,
-                  const bool batch) {
+void Plot2D::open(const int numGraphs, const std::string &paramFile, const bool batch) {
   Require(numGraphs > 0);
   Require(!GraceIsOpen());
 
@@ -145,10 +141,8 @@ void Plot2D::open(const int numGraphs, const std::string &paramFile,
     char *exe = new char[9];
     std::strcpy(exe, "gracebat");
 
-    if (d_graceVersion.v[0] >= 5 && d_graceVersion.v[1] >= 1 &&
-        d_graceVersion.v[2] >= 8) {
-      openStatus =
-          GraceOpenVA(exe, bufferSize, "-noprint", "-nosafe", "-noask", NULL);
+    if (d_graceVersion.v[0] >= 5 && d_graceVersion.v[1] >= 1 && d_graceVersion.v[2] >= 8) {
+      openStatus = GraceOpenVA(exe, bufferSize, "-noprint", "-nosafe", "-noask", NULL);
     } else {
       openStatus = GraceOpenVA(exe, bufferSize, "-noprint", NULL);
     }
@@ -273,8 +267,7 @@ void Plot2D::save(const std::string filename) {
  *  \param iG The graph number to apply the titles to.
  */
 //------------------------------------------------------------------------------------------------//
-void Plot2D::setTitles(const std::string title, const std::string subTitle,
-                       const int iG) {
+void Plot2D::setTitles(const std::string title, const std::string subTitle, const int iG) {
   Require(GraceIsOpen());
 
   GracePrintf("focus g%d", graphNum(iG));
@@ -293,8 +286,8 @@ void Plot2D::setTitles(const std::string title, const std::string subTitle,
  *  \param charSize The character size in [0,1].
 */
 //------------------------------------------------------------------------------------------------//
-void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel,
-                           const int iG, const double charSize) {
+void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel, const int iG,
+                           const double charSize) {
   Require(GraceIsOpen());
 
   GracePrintf("focus g%d", graphNum(iG));

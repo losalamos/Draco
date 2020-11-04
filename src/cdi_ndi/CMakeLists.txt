@@ -1,8 +1,7 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 # file   cdi_ndi/CMakeLists.txt
 # brief  Instructions for building cdi_ndi Makefiles.
-# note   Copyright (C) 2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
 project( cdi_ndi CXX )
@@ -15,8 +14,8 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ndi/config.h )
 set(deps Lib_cdi Lib_rng Lib_units)
 
-# If NDI is found, set the associated variables. Otherwise, the cdi_ndi lib will
-# be built with stubbed-out routines.
+# If NDI is found, set the associated variables. Otherwise, the cdi_ndi lib will be built with
+# stubbed-out routines.
 if(TARGET NDI::ndi)
   list(APPEND deps NDI::ndi)
 
@@ -25,8 +24,7 @@ if(TARGET NDI::ndi)
   endif()
 
   if( NOT DEFINED NDI_ROOT_DIR )
-    # if not set in the environment (by modulefile?), set NDI_ROOT_DIR to the
-    # prefix_path for NDI
+    # if not set in the environment (by modulefile?), set NDI_ROOT_DIR to the prefix_path for NDI
     get_filename_component(NDI_ROOT_DIR "${NDI_LIBRARY}" DIRECTORY)
     get_filename_component(NDI_ROOT_DIR "${NDI_LIBRARY}" DIRECTORY CACHE)
   endif()

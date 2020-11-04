@@ -37,8 +37,8 @@ namespace rtt_min {
  */
 
 template <class RandomContainer, class Function>
-void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
-            unsigned &iter, double &fret, Function func) {
+void powell(RandomContainer &p, RandomContainer &xi, double const ftol, unsigned &iter,
+            double &fret, Function func) {
   using rtt_dsxx::square;
   using std::vector;
 
@@ -82,8 +82,8 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
     }
     fptt = func(ptt);
     if (fptt < fp) {
-      double const t = 2 * (fp - 2 * fret + fptt) * square(fp - fret - del) -
-                       del * square(fp - fptt);
+      double const t =
+          2 * (fp - 2 * fret + fptt) * square(fp - fret - del) - del * square(fp - fptt);
       if (t < 0.0) {
         linmin(p, xit, fret, func);
         for (unsigned j = 0; j < n; ++j) {

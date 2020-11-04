@@ -54,8 +54,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     for (size_t j = 0; j < 6; ++j) {
       for (size_t i = 0; i < 4; ++i) {
         if (i >= 1 && i <= 2 && j >= 2 && j <= 4) {
-          if (!rtt_dsxx::soft_equiv(myarray[i + 4 * j],
-                                    static_cast<double>(10 * i + j))) {
+          if (!rtt_dsxx::soft_equiv(myarray[i + 4 * j], static_cast<double>(10 * i + j))) {
             FAILMSG("did NOT transmit correct subarray");
             return;
           }

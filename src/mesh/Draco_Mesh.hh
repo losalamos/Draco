@@ -48,10 +48,9 @@ namespace rtt_mesh {
 class Draco_Mesh {
 public:
   // >>> TYPEDEFS
-  typedef rtt_mesh_element::Geometry Geometry;
-  typedef std::map<unsigned,
-                   std::vector<std::pair<unsigned, std::vector<unsigned>>>>
-      Layout;
+  using Geometry = rtt_mesh_element::Geometry;
+  using Layout =
+      std::map<unsigned int, std::vector<std::pair<unsigned int, std::vector<unsigned int>>>>;
 
 protected:
   // >>> DATA
@@ -125,25 +124,16 @@ public:
   std::vector<unsigned> get_side_set_flag() const { return side_set_flag; }
   std::vector<int> get_ghost_cell_numbers() const { return ghost_cell_number; }
   std::vector<int> get_ghost_cell_ranks() const { return ghost_cell_rank; }
-  std::vector<std::vector<double>> get_node_coord_vec() const {
-    return node_coord_vec;
-  }
-  std::vector<unsigned> get_num_faces_per_cell() const {
-    return m_num_faces_per_cell;
-  }
+  std::vector<std::vector<double>> get_node_coord_vec() const { return node_coord_vec; }
+  std::vector<unsigned> get_num_faces_per_cell() const { return m_num_faces_per_cell; }
   std::vector<unsigned> get_num_nodes_per_face_per_cell() const {
     return m_num_nodes_per_face_per_cell;
   }
-  std::vector<std::vector<std::vector<unsigned>>>
-  get_cell_to_node_linkage() const {
+  std::vector<std::vector<std::vector<unsigned>>> get_cell_to_node_linkage() const {
     return m_cell_to_node_linkage;
   }
-  std::vector<unsigned> get_side_node_count() const {
-    return m_side_node_count;
-  }
-  std::vector<unsigned> get_side_to_node_linkage() const {
-    return m_side_to_node_linkage;
-  }
+  std::vector<unsigned> get_side_node_count() const { return m_side_node_count; }
+  std::vector<unsigned> get_side_to_node_linkage() const { return m_side_to_node_linkage; }
   Layout get_cc_linkage() const { return cell_to_cell_linkage; }
   Layout get_cs_linkage() const { return cell_to_side_linkage; }
   Layout get_cg_linkage() const { return cell_to_ghost_cell_linkage; }
@@ -161,30 +151,29 @@ private:
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
   //! Convert cell-node linkage into tensor for easier indexing by cell, face
-  std::vector<std::vector<std::vector<unsigned>>> compute_cell_to_node_tensor(
-      const std::vector<unsigned> &num_faces_per_cell,
-      const std::vector<unsigned> &num_nodes_per_face_per_cell,
-      const std::vector<unsigned> &cell_to_node_linkage) const;
+  std::vector<std::vector<std::vector<unsigned>>>
+  compute_cell_to_node_tensor(const std::vector<unsigned> &num_faces_per_cell,
+                              const std::vector<unsigned> &num_nodes_per_face_per_cell,
+                              const std::vector<unsigned> &cell_to_node_linkage) const;
 
   //! Calculate the cell-to-cell linkage with face type vector
-  void compute_cell_to_cell_linkage(
-      const std::vector<unsigned> &num_faces_per_cell,
-      const std::vector<unsigned> &cell_to_node_linkage,
-      const std::vector<unsigned> &num_nodes_per_face_per_cell,
-      const std::vector<unsigned> &side_node_count,
-      const std::vector<unsigned> &side_to_node_linkage,
-      const std::vector<unsigned> &ghost_cell_type,
-      const std::vector<unsigned> &ghost_cell_to_node_linkage);
+  void compute_cell_to_cell_linkage(const std::vector<unsigned> &num_faces_per_cell,
+                                    const std::vector<unsigned> &cell_to_node_linkage,
+                                    const std::vector<unsigned> &num_nodes_per_face_per_cell,
+                                    const std::vector<unsigned> &side_node_count,
+                                    const std::vector<unsigned> &side_to_node_linkage,
+                                    const std::vector<unsigned> &ghost_cell_type,
+                                    const std::vector<unsigned> &ghost_cell_to_node_linkage);
 
   //! Calculate a map of node to vectors of indices (cells, sides, ghost cells)
-  std::map<unsigned, std::vector<unsigned>> compute_node_indx_map(
-      const std::vector<unsigned> &indx_type,
-      const std::vector<unsigned> &indx_to_node_linkage) const;
+  std::map<unsigned, std::vector<unsigned>>
+  compute_node_indx_map(const std::vector<unsigned> &indx_type,
+                        const std::vector<unsigned> &indx_to_node_linkage) const;
 
   //! Calculate a map of node vectors to indices (sides, ghost cells)
-  std::map<std::set<unsigned>, unsigned> compute_node_vec_indx_map(
-      const std::vector<unsigned> &indx_type,
-      const std::vector<unsigned> &indx_to_node_linkage) const;
+  std::map<std::set<unsigned>, unsigned>
+  compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
+                            const std::vector<unsigned> &indx_to_node_linkage) const;
 };
 
 } // end namespace rtt_mesh

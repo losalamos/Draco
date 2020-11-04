@@ -25,8 +25,7 @@ namespace rtt_device {
  * - Set device and context handles.
  * - Query the devices for features.
  */
-GPU_Device::GPU_Device(void)
-    : deviceCount(0), computeCapability(), deviceName() {
+GPU_Device::GPU_Device(void) : deviceCount(0), computeCapability(), deviceName() {
 
   // Get a device count, determine compute capability
   cudaError_t err = cudaGetDeviceCount(&deviceCount);
@@ -62,25 +61,22 @@ GPU_Device::GPU_Device(void)
     {
       int tmp(0);
       m_maxthreadsperblock.push_back(device_properties.maxThreadsPerBlock);
-      m_maxthreadsdim.push_back(
-          std::array<int, 3>{device_properties.maxThreadsDim[0],
-                             device_properties.maxThreadsDim[1],
-                             device_properties.maxThreadsDim[2]});
-      m_maxgridsize.push_back(std::array<int, 3>{
-          device_properties.maxGridSize[0], device_properties.maxGridSize[1],
-          device_properties.maxGridSize[2]});
+      m_maxthreadsdim.push_back(std::array<int, 3>{device_properties.maxThreadsDim[0],
+                                                   device_properties.maxThreadsDim[1],
+                                                   device_properties.maxThreadsDim[2]});
+      m_maxgridsize.push_back(std::array<int, 3>{device_properties.maxGridSize[0],
+                                                 device_properties.maxGridSize[1],
+                                                 device_properties.maxGridSize[2]});
       m_sharedmemperblock.push_back(device_properties.sharedMemPerBlock);
 
-      err =
-          cudaDeviceGetAttribute(&tmp, cudaDevAttrTotalConstantMemory, device);
+      err = cudaDeviceGetAttribute(&tmp, cudaDevAttrTotalConstantMemory, device);
       checkForCudaError(err);
       m_totalconstantmemory.push_back(tmp);
 
       m_simdwidth.push_back(device_properties.warpSize);
       m_mempitch.push_back(device_properties.memPitch);
 
-      err =
-          cudaDeviceGetAttribute(&tmp, cudaDevAttrMaxRegistersPerBlock, device);
+      err = cudaDeviceGetAttribute(&tmp, cudaDevAttrMaxRegistersPerBlock, device);
       checkForCudaError(err);
       m_regsperblock.push_back(tmp);
 
@@ -105,17 +101,15 @@ GPU_Device::~GPU_Device() {}
  * \arg idevice device index
  * \arg out Send output to this ostream (cout by default).
  */
-void GPU_Device::printDeviceSummary(int const idevice,
-                                    std::ostream &out) const {
-  out << "Device: " << idevice
-      << "\n   Name               : " << deviceName[idevice]
+void GPU_Device::printDeviceSummary(int const idevice, std::ostream &out) const {
+  out << "Device: " << idevice << "\n   Name               : " << deviceName[idevice]
       << "\n   Compute capability : " << computeCapability[idevice][0] << "."
       << computeCapability[idevice][1]
       << "\n   maxThreadsPerBlock : " << maxThreadsPerBlock(idevice)
       << "\n   maxThreadsDim      : " << maxThreadsDim(0, idevice) << " x "
       << maxThreadsDim(1, idevice) << " x " << maxThreadsDim(2, idevice)
-      << "\n   maxGridSize        : " << maxGridSize(0, idevice) << " x "
-      << maxGridSize(1, idevice) << " x " << maxGridSize(2, idevice)
+      << "\n   maxGridSize        : " << maxGridSize(0, idevice) << " x " << maxGridSize(1, idevice)
+      << " x " << maxGridSize(2, idevice)
       << "\n   sharedMemPerBlock  : " << sharedMemPerBlock(idevice)
       << "\n   totalConstantMemory: " << totalConstantMemory(idevice)
       << "\n   SIMDWidth          : " << SIMDWidth(idevice)
@@ -140,8 +134,7 @@ void GPU_Device::printDeviceSummary(int const idevice,
  */
 void GPU_Device::checkForCudaError(cudaError_t const errorCode) {
   std::ostringstream msg;
-  msg << "A CUDA call returned the error: \"" << getErrorMessage(errorCode)
-      << "\"";
+  msg << "A CUDA call returned the error: \"" << getErrorMessage(errorCode) << "\"";
   Insist(errorCode == cudaSuccess, msg.str());
 }
 

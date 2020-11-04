@@ -42,25 +42,20 @@ namespace rtt_ode {
  * \post \c yerr.size()==y.size();
  */
 template <typename Field, typename Function>
-void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
-          double h, std::vector<Field> &yout, std::vector<Field> &yerr,
-          Function derivs) {
+void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x, double h,
+          std::vector<Field> &yout, std::vector<Field> &yerr, Function derivs) {
   Require(dydx.size() == y.size());
 
   using std::vector;
 
-  static double const a2 = 0.2, a3 = 0.3, a4 = 0.6, a5 = 1.0, a6 = 0.875,
-                      b21 = 0.2, b31 = 3.0 / 40.0, b32 = 9.0 / 40.0, b41 = 0.3,
-                      b42 = -0.9, b43 = 1.2, b51 = -11.0 / 54.0, b52 = 2.5,
-                      b53 = -70.0 / 27.0, b54 = 35.0 / 27.0,
-                      b61 = 1631.0 / 55296.0, b62 = 175.0 / 512.0,
-                      b63 = 575.0 / 13824.0, b64 = 44275.0 / 110592.0,
-                      b65 = 253.0 / 4096.0, c1 = 37.0 / 378.0,
-                      c3 = 250.0 / 621.0, c4 = 125.0 / 594.0,
-                      c6 = 512.0 / 1771.0, dc1 = c1 - 2825.0 / 27648.0,
-                      dc3 = c3 - 18575.0 / 48384.0,
-                      dc4 = c4 - 13525.0 / 55296.0, dc5 = -277.0 / 14336.0,
-                      dc6 = c6 - 0.25;
+  static double const a2 = 0.2, a3 = 0.3, a4 = 0.6, a5 = 1.0, a6 = 0.875, b21 = 0.2,
+                      b31 = 3.0 / 40.0, b32 = 9.0 / 40.0, b41 = 0.3, b42 = -0.9, b43 = 1.2,
+                      b51 = -11.0 / 54.0, b52 = 2.5, b53 = -70.0 / 27.0, b54 = 35.0 / 27.0,
+                      b61 = 1631.0 / 55296.0, b62 = 175.0 / 512.0, b63 = 575.0 / 13824.0,
+                      b64 = 44275.0 / 110592.0, b65 = 253.0 / 4096.0, c1 = 37.0 / 378.0,
+                      c3 = 250.0 / 621.0, c4 = 125.0 / 594.0, c6 = 512.0 / 1771.0,
+                      dc1 = c1 - 2825.0 / 27648.0, dc3 = c3 - 18575.0 / 48384.0,
+                      dc4 = c4 - 13525.0 / 55296.0, dc5 = -277.0 / 14336.0, dc6 = c6 - 0.25;
 
   Check(y.size() < UINT_MAX);
   const auto n = static_cast<unsigned>(y.size());
@@ -88,22 +83,19 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
   }
   derivs(x + a4 * h, ytemp, ak4);
   for (unsigned i = 0; i < n; i++) {
-    ytemp[i] =
-        y[i] + h * (b51 * dydx[i] + b52 * ak2[i] + b53 * ak3[i] + b54 * ak4[i]);
+    ytemp[i] = y[i] + h * (b51 * dydx[i] + b52 * ak2[i] + b53 * ak3[i] + b54 * ak4[i]);
   }
   derivs(x + a5 * h, ytemp, ak5);
   for (unsigned i = 0; i < n; i++) {
-    ytemp[i] = y[i] + h * (b61 * dydx[i] + b62 * ak2[i] + b63 * ak3[i] +
-                           b64 * ak4[i] + b65 * ak5[i]);
+    ytemp[i] =
+        y[i] + h * (b61 * dydx[i] + b62 * ak2[i] + b63 * ak3[i] + b64 * ak4[i] + b65 * ak5[i]);
   }
   derivs(x + a6 * h, ytemp, ak6);
   for (unsigned i = 0; i < n; i++) {
-    yout[i] =
-        y[i] + h * (c1 * dydx[i] + c3 * ak3[i] + c4 * ak4[i] + c6 * ak6[i]);
+    yout[i] = y[i] + h * (c1 * dydx[i] + c3 * ak3[i] + c4 * ak4[i] + c6 * ak6[i]);
   }
   for (unsigned i = 0; i < n; i++) {
-    yerr[i] = h * (dc1 * dydx[i] + dc3 * ak3[i] + dc4 * ak4[i] + dc5 * ak5[i] +
-                   dc6 * ak6[i]);
+    yerr[i] = h * (dc1 * dydx[i] + dc3 * ak3[i] + dc4 * ak4[i] + dc5 * ak5[i] + dc6 * ak6[i]);
   }
 }
 
@@ -145,9 +137,8 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
  */
 
 template <typename Field, typename Function>
-void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
-          double htry, double eps, std::vector<Field> const &yscal,
-          double &hdid, double &hnext, Function derivs) {
+void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x, double htry, double eps,
+          std::vector<Field> const &yscal, double &hdid, double &hnext, Function derivs) {
   Require(yscal.size() == y.size());
   Require(dydx.size() == y.size());
   Require(eps >= 0);

@@ -21,12 +21,10 @@ namespace rtt_cdi_ipcress_test {
 // COMPARISON FUNCTIONS USED IN IPCRESS OPACITY TESTS
 //------------------------------------------------------------------------------------------------//
 
-template <typename temperatureType, typename densityType,
-          typename testValueType, typename opacityClassType>
-bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut,
-                           opacityClassType const spOpacity,
-                           temperatureType const temperature,
-                           densityType const density,
+template <typename temperatureType, typename densityType, typename testValueType,
+          typename opacityClassType>
+bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut, opacityClassType const spOpacity,
+                           temperatureType const temperature, densityType const density,
                            testValueType const tabulatedValue) {
   using std::ostringstream;
 
@@ -37,14 +35,12 @@ bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut,
 
   if (rtt_dsxx::soft_equiv(grayOpacity, tabulatedValue)) {
     ostringstream message;
-    message << spOpacity->getDataDescriptor()
-            << " opacity computation was good for \n\t"
+    message << spOpacity->getDataDescriptor() << " opacity computation was good for \n\t"
             << "\"" << spOpacity->getDataFilename() << "\" data.";
     ut.passes(message.str());
   } else {
     ostringstream message;
-    message << spOpacity->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
+    message << spOpacity->getDataDescriptor() << " opacity value is out of spec. for \n\t"
             << "\"" << spOpacity->getDataFilename() << "\" data.";
     return ut.failure(message.str());
   }
@@ -56,8 +52,7 @@ bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest &ut,
 //------------------------------------------------------------------------------------------------//
 
 template <typename opacityClassType>
-void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
-                                 opacityClassType const spOpacity) {
+void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut, opacityClassType const spOpacity) {
   using std::ostringstream;
 
   // Read the temperature grid from the IPCRESS file.
@@ -98,8 +93,7 @@ void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
 //------------------------------------------------------------------------------------------------//
 
 template <typename opacityClassType>
-void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
-                             opacityClassType const spOpacity) {
+void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut, opacityClassType const spOpacity) {
   using std::ostringstream;
 
   // Read the grid from the IPCRESS file.
@@ -139,8 +133,7 @@ void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest &ut,
 
 //------------------------------------------------------------------------------------------------//
 template <typename opacityClassType>
-void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut,
-                                opacityClassType const spOpacity) {
+void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut, opacityClassType const spOpacity) {
   using std::ostringstream;
 
   // Read the grid from the IPCRESS file.
@@ -149,8 +142,7 @@ void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest &ut,
   // Verify that the size of the group boundary grid looks right.  If
   // it is the right size then compare the energy groups grid data to
   // the data specified when we created the IPCRESS file using TOPS.
-  if (ebounds.size() == 13 &&
-      ebounds.size() == spOpacity->getNumGroupBoundaries()) {
+  if (ebounds.size() == 13 && ebounds.size() == spOpacity->getNumGroupBoundaries()) {
     ostringstream message;
     message << "The number of energy boundary points found in the data\n\t"
             << "grid matches the number returned by the\n\t"

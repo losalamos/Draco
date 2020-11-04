@@ -22,8 +22,7 @@ using std::vector;
 namespace rtt_quadrature {
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
-                                                         unsigned const N) {
+vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class, unsigned const N) {
   vector<Moment> result;
 
   // Choose: l= 0, ..., N-1, k = 0
@@ -36,8 +35,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
-                                                          unsigned const N) {
+vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class, unsigned const N) {
   std::vector<Moment> result;
 
   // Choose: l= 0, ..., N, k = 0, ..., l to eliminate moments even in xi
@@ -54,8 +52,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
-                                                         unsigned const N) {
+vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class, unsigned const N) {
   std::vector<Moment> result;
 
   // X-Y symmetry
@@ -72,8 +69,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class,
-                                                          unsigned const N) {
+vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class, unsigned const N) {
   std::vector<Moment> result;
 
   // R-Z symmetry
@@ -95,8 +91,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class,
 /*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
-                                                         unsigned const N) {
+vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsigned const N) {
   vector<Moment> result;
 
   // Choose: l= 0, ..., N-1, k = -l, ..., l
@@ -152,11 +147,11 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
  */
 Galerkin_Ordinate_Space::Galerkin_Ordinate_Space(
     unsigned const dimension, rtt_mesh_element::Geometry const geometry,
-    vector<Ordinate> const &ordinates, Quadrature_Class quadrature_class,
-    unsigned sn_order, unsigned const expansion_order, QIM const method,
-    bool const extra_starting_directions, Ordering const ordering)
-    : Ordinate_Space(dimension, geometry, ordinates, expansion_order,
-                     extra_starting_directions, ordering),
+    vector<Ordinate> const &ordinates, Quadrature_Class quadrature_class, unsigned sn_order,
+    unsigned const expansion_order, QIM const method, bool const extra_starting_directions,
+    Ordering const ordering)
+    : Ordinate_Space(dimension, geometry, ordinates, expansion_order, extra_starting_directions,
+                     ordering),
       method_(method), D_(), M_() {
   Require(dimension > 0 && dimension < 4);
   Require(geometry != rtt_mesh_element::END_GEOMETRY);
@@ -242,8 +237,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
   // fill cartesian_ordinates
   unsigned count(0);
   for (unsigned i = 0; i < numOrdinates; ++i) {
-    if (std::abs(ordinates[i].wt()) >
-        std::numeric_limits<decltype(ordinates[i].wt())>::min()) {
+    if (std::abs(ordinates[i].wt()) > std::numeric_limits<decltype(ordinates[i].wt())>::min()) {
       cartesian_ordinates.push_back(ordinates[i]);
       indexes.push_back(count++);
     } else
@@ -269,8 +263,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
     Check(numMoments < UINT_MAX);
     Check(numCartesianOrdinates < UINT_MAX);
     cartesian_D = compute_inverse(static_cast<unsigned>(numMoments),
-                                  static_cast<unsigned>(numCartesianOrdinates),
-                                  cartesian_M);
+                                  static_cast<unsigned>(numCartesianOrdinates), cartesian_M);
 
     // set cartesian_ordinate weights to the first row of D
 
@@ -282,10 +275,8 @@ void Galerkin_Ordinate_Space::compute_operators() {
 
     vector<Ordinate> &lordinates(this->ordinates());
     for (unsigned i = 0; i < numOrdinates; ++i) {
-      if (std::abs(lordinates[i].wt()) >
-          std::numeric_limits<decltype(lordinates[i].wt())>::min()) {
-        lordinates[i].set_wt(
-            cartesian_D[indexes[i] + 0 * numCartesianOrdinates]);
+      if (std::abs(lordinates[i].wt()) > std::numeric_limits<decltype(lordinates[i].wt())>::min()) {
+        lordinates[i].set_wt(cartesian_D[indexes[i] + 0 * numCartesianOrdinates]);
       }
     }
   } else if (method_ == 2) {
@@ -309,25 +300,22 @@ void Galerkin_Ordinate_Space::compute_operators() {
     M_ = augment_M(indexes, cartesian_M);
 
     Check(numCartesianOrdinates < UINT_MAX);
-    D_ = augment_D(indexes, static_cast<unsigned>(numCartesianOrdinates),
-                   cartesian_D);
+    D_ = augment_D(indexes, static_cast<unsigned>(numCartesianOrdinates), cartesian_D);
   }
 
   for (unsigned n = 0; n < numMoments; ++n) {
     unsigned const ell(moments()[n].L());
     int const k(moments()[n].M());
 
-    std::cout << " moment " << n << "     l = " << ell << " k = " << k
-              << std::endl;
+    std::cout << " moment " << n << "     l = " << ell << " k = " << k << std::endl;
   }
 }
 
 //------------------------------------------------------------------------------------------------//
 // Augment the matrix for curvilinear coordinates
-vector<double>
-Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
-                                   unsigned const numCartesianOrdinates,
-                                   vector<double> const &D) {
+vector<double> Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
+                                                  unsigned const numCartesianOrdinates,
+                                                  vector<double> const &D) {
   vector<Ordinate> const &ordinates(this->ordinates());
   size_t const numOrdinates(ordinates.size());
 
@@ -339,8 +327,7 @@ Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
 
   for (unsigned m = 0; m < numOrdinates; ++m) {
     for (unsigned n = 0; n < numMoments; ++n) {
-      if (std::abs(ordinates[m].wt()) >
-          std::numeric_limits<decltype(ordinates[m].wt())>::min()) {
+      if (std::abs(ordinates[m].wt()) > std::numeric_limits<decltype(ordinates[m].wt())>::min()) {
         D_new[m + n * numOrdinates] = D[indexes[m] + n * numCartesianOrdinates];
       }
     }
@@ -350,9 +337,8 @@ Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
 
 //------------------------------------------------------------------------------------------------//
 // Augment the matrix for curvilinear coordinates
-vector<double>
-Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
-                                   vector<double> const &M) {
+vector<double> Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
+                                                  vector<double> const &M) {
   using rtt_sf::Ylm;
 
   vector<Ordinate> const &ordinates(this->ordinates());
@@ -372,8 +358,7 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
     int const k(n2lk[n].M());
 
     for (unsigned m = 0; m < numOrdinates; ++m) {
-      if (std::abs(ordinates[m].wt()) >
-          std::numeric_limits<decltype(ordinates[m].wt())>::min()) {
+      if (std::abs(ordinates[m].wt()) > std::numeric_limits<decltype(ordinates[m].wt())>::min()) {
         M_new[n + m * numMoments] = M[n + indexes[m] * numMoments];
       } else {
         double mu(ordinates[m].mu());
@@ -389,8 +374,7 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<double>
-Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
+vector<double> Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
   using rtt_sf::Ylm;
 
   rtt_mesh_element::Geometry const geometry(this->geometry());
@@ -410,8 +394,7 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
     int const k(n2lk[n].M());
 
     for (unsigned m = 0; m < numOrdinates; ++m) {
-      if (dim == 1 &&
-          geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature
+      if (dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature
       {
         double mu(ordinates[m].mu());
         M[n + m * numMoments] = Ylm(ell, k, mu, 0.0, sumwt);
@@ -456,9 +439,8 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<double>
-Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
-                                         vector<double> const &Ain) {
+vector<double> Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
+                                                        vector<double> const &Ain) {
   // Invert an (m x n) matrix A
 
   Insist(!Ain.empty(), "The GQ ordinate space computation for D requires "

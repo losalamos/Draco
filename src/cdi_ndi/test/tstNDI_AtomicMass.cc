@@ -4,8 +4,7 @@
  * \author Ben R. Ryan
  * \date   2020 Mar 6
  * \brief  NDI_AtomicMass test
- * \note   Copyright (C) 2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
@@ -41,8 +40,7 @@ void amw_test(rtt_dsxx::UnitTest &ut) {
   gendir_tmp_file << "    f=fake/data/path\n";
   gendir_tmp_file << "    ft=asc  ln=2  o=28\n";
   gendir_tmp_file << "    ng=618  t=2.5300642359999999e-08  s0=10000000000\n";
-  gendir_tmp_file
-      << "    aw=1.0078249887344399  awr=0.99916729999999998  end\n";
+  gendir_tmp_file << "    aw=1.0078249887344399  awr=0.99916729999999998  end\n";
   gendir_tmp_file.close();
 
   NDI_AtomicMass ndi_amw(gendir_tmp_path);
@@ -94,8 +92,7 @@ int main(int argc, char *argv[]) {
     amw_test(ut);
     std::string gendir_default;
     bool def_gendir{false};
-    std::tie(def_gendir, gendir_default) =
-        rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH");
+    std::tie(def_gendir, gendir_default) = rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH");
 
     if (def_gendir && rtt_dsxx::fileExists(gendir_default)) {
       amw_default_test(ut);

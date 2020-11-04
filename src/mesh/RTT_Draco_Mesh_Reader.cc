@@ -20,8 +20,7 @@ namespace rtt_mesh {
  *
  * \param[in] filename_ name of file to be parsed
  */
-RTT_Draco_Mesh_Reader::RTT_Draco_Mesh_Reader(const std::string filename_)
-    : filename(filename_) {
+RTT_Draco_Mesh_Reader::RTT_Draco_Mesh_Reader(const std::string filename_) : filename(filename_) {
   // check for valid file name
   Insist(filename_.size() > 0, "No file name supplied.");
 
@@ -61,8 +60,7 @@ unsigned RTT_Draco_Mesh_Reader::get_celltype(size_t cell) const {
 
   // for Draco_Mesh, cell_type is number of nodes (in 1-2D, this is # of faces)
   Check(rtt_reader->get_cell_defs_nnodes(cell_def) < UINT_MAX);
-  unsigned cell_type =
-      static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
+  unsigned cell_type = static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
 
   return cell_type;
 }
@@ -126,8 +124,7 @@ std::vector<unsigned> RTT_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   return cellface_node;
 }
 
-std::vector<unsigned>
-RTT_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size_t face) const {
+std::vector<unsigned> RTT_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size_t face) const {
 
   // get the number of dimensions
   unsigned num_dim = rtt_reader->get_dims_ndim();

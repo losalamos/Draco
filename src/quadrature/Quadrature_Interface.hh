@@ -33,8 +33,8 @@ struct quadrature_data {
 
   //! Default constructor for quadrature_data
   quadrature_data()
-      : dimension(0), type(0), order(0), azimuthal_order(0), geometry(0),
-        mu(nullptr), eta(nullptr), xi(nullptr), weights(nullptr) { /* empty */
+      : dimension(0), type(0), order(0), azimuthal_order(0), geometry(0), mu(nullptr), eta(nullptr),
+        xi(nullptr), weights(nullptr) { /* empty */
   }
 };
 

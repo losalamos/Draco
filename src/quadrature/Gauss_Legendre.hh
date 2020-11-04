@@ -29,7 +29,7 @@ namespace rtt_quadrature {
 class Gauss_Legendre : public Interval_Quadrature {
 public:
   // CREATORS
-  DLL_PUBLIC_quadrature explicit Gauss_Legendre(unsigned sn_order);
+  explicit Gauss_Legendre(unsigned sn_order);
 
   // ACCESSORS
 

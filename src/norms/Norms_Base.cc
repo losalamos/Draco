@@ -15,8 +15,7 @@ using namespace rtt_norms;
 
 //------------------------------------------------------------------------------------------------//
 //! Default constructor.
-Norms_Base::Norms_Base()
-    : d_sum_L1(-42.0), d_sum_L2(-42.0), d_Linf(-42.0), d_sum_weights(-42.0) {
+Norms_Base::Norms_Base() : d_sum_L1(-42.0), d_sum_L2(-42.0), d_Linf(-42.0), d_sum_weights(-42.0) {
   Norms_Base::reset();
 }
 
@@ -31,8 +30,7 @@ void Norms_Base::reset() {
 //------------------------------------------------------------------------------------------------//
 //! Equality operator.
 bool Norms_Base::operator==(const Norms_Base &n) const {
-  return rtt_dsxx::soft_equiv(d_sum_L1, n.d_sum_L1) &&
-         rtt_dsxx::soft_equiv(d_sum_L2, n.d_sum_L2) &&
+  return rtt_dsxx::soft_equiv(d_sum_L1, n.d_sum_L1) && rtt_dsxx::soft_equiv(d_sum_L2, n.d_sum_L2) &&
          rtt_dsxx::soft_equiv(d_Linf, n.d_Linf) &&
          rtt_dsxx::soft_equiv(d_sum_weights, n.d_sum_weights);
 }

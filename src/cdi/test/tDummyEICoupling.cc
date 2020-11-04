@@ -4,8 +4,7 @@
  * \author Mathew Cleveland
  * \date   March 2019
  * \brief  EICoupling class test.
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "DummyEICoupling.hh"
@@ -34,8 +33,7 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<EICoupling> spEICoupling;
 
   // The actual instatniate is specific (dummyEoS).
-  if ((spEICoupling = std::make_shared<rtt_cdi_test::DummyEICoupling>()),
-      spEICoupling) {
+  if ((spEICoupling = std::make_shared<rtt_cdi_test::DummyEICoupling>()), spEICoupling) {
     // If we get here then the object was successfully instantiated.
     PASSMSG("Smart Pointer to new EICoupling object created.");
   } else {
@@ -51,11 +49,11 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   double density = 3.0;      // g/cm^3
   double w_e = 4.0;
   double w_i = 5.0;
-  double ei_coupling_ref = etemperature + 10.0 * itemperature +
-                           100.0 * density + 1000.0 * w_e + 10000.0 * w_i;
+  double ei_coupling_ref =
+      etemperature + 10.0 * itemperature + 100.0 * density + 1000.0 * w_e + 10000.0 * w_i;
 
-  double ei_coupling = spEICoupling->getElectronIonCoupling(
-      etemperature, itemperature, density, w_e, w_i);
+  double ei_coupling =
+      spEICoupling->getElectronIonCoupling(etemperature, itemperature, density, w_e, w_i);
 
   if (soft_equiv(ei_coupling, ei_coupling_ref)) {
     ostringstream message;
@@ -81,12 +79,11 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   // Retrieve electron based heat capacities.
   std::vector<double> vRefEICoupling(vetemperature.size());
   for (size_t i = 0; i < vetemperature.size(); ++i)
-    vRefEICoupling[i] = vetemperature[i] + 10.0 * vitemperature[i] +
-                        100.0 * vdensity[i] + 1000.0 * vw_e[i] +
-                        10000.0 * vw_i[i];
+    vRefEICoupling[i] = vetemperature[i] + 10.0 * vitemperature[i] + 100.0 * vdensity[i] +
+                        1000.0 * vw_e[i] + 10000.0 * vw_i[i];
 
-  std::vector<double> vEICoupling = spEICoupling->getElectronIonCoupling(
-      vetemperature, vitemperature, vdensity, vw_e, vw_i);
+  std::vector<double> vEICoupling =
+      spEICoupling->getElectronIonCoupling(vetemperature, vitemperature, vdensity, vw_e, vw_i);
 
   if (soft_equiv(vEICoupling.begin(), vEICoupling.end(), vRefEICoupling.begin(),
                  vRefEICoupling.end())) {

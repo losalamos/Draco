@@ -11,10 +11,10 @@
 #ifndef ode_quad_i_hh
 #define ode_quad_i_hh
 
+#include "ds++/Assert.hh"
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include "ds++/Assert.hh"
 
 namespace rtt_ode {
 //------------------------------------------------------------------------------------------------//
@@ -44,8 +44,8 @@ namespace rtt_ode {
  * \exception range_error Thrown if the step size becomes too small.
  */
 template <typename Function, typename Rule>
-typename Function_Traits<Function>::return_type
-quad(Function func, double x1, double x2, double &eps, Rule rule) {
+typename Function_Traits<Function>::return_type quad(Function func, double x1, double x2,
+                                                     double &eps, Rule rule) {
   Require(x2 > x1);
   Require(eps >= 0);
 
@@ -70,8 +70,7 @@ quad(Function func, double x1, double x2, double &eps, Rule rule) {
     if ((x - x2) * (x2 - x1) >= 0) {
       return y[0];
     }
-    if (std::fabs(hnext) <=
-        std::numeric_limits<double>::epsilon() * (x2 - x1)) {
+    if (std::fabs(hnext) <= std::numeric_limits<double>::epsilon() * (x2 - x1)) {
       throw std::range_error("step size too small in quad");
     }
     h = hnext;

@@ -99,13 +99,11 @@ public:
    * \param in_values a vector<double> of values that represent the data loaded
    *        from the IPCRESS file.
    */
-  void add_field(std::string &in_fieldName,
-                 std::vector<double> const &in_values) {
+  void add_field(std::string &in_fieldName, std::vector<double> const &in_values) {
     // Remove white space from in_fieldName before saving it.
     // NOTE: ::isspace forces the use of c namespace rather than std::isspace
-    in_fieldName.erase(
-        std::remove_if(in_fieldName.begin(), in_fieldName.end(), ::isspace),
-        in_fieldName.end());
+    in_fieldName.erase(std::remove_if(in_fieldName.begin(), in_fieldName.end(), ::isspace),
+                       in_fieldName.end());
 
     // Check if the field name is already registered.
     auto itr = std::find(fieldNames.begin(), fieldNames.end(), in_fieldName);
@@ -133,8 +131,7 @@ public:
   //! return the vector of data associated with a field name.
   std::vector<double> data(std::string const &fieldName) const {
     Require(fieldName.size() > 0);
-    Require(find(fieldNames.begin(), fieldNames.end(), fieldName) !=
-            fieldNames.end());
+    Require(find(fieldNames.begin(), fieldNames.end(), fieldName) != fieldNames.end());
     return fieldValues[getFieldIndex(fieldName)];
   }
 
@@ -149,9 +146,8 @@ private:
     Require(fieldName.size() > 0);
     Remember(auto pos = find(fieldNames.begin(), fieldNames.end(), fieldName));
     Check(pos != fieldNames.end());
-    size_t fieldIndex = std::distance(
-        fieldNames.begin(),
-        std::find(fieldNames.begin(), fieldNames.end(), fieldName));
+    size_t fieldIndex = std::distance(fieldNames.begin(),
+                                      std::find(fieldNames.begin(), fieldNames.end(), fieldName));
     Ensure(fieldIndex < fieldNames.size());
     return fieldIndex;
   }

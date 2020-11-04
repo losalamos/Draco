@@ -16,8 +16,7 @@ namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature>
-Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
+std::shared_ptr<Quadrature> Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   // Takes two numbers, first the number of Gauss-Legendre points, which is the
   // SN order
   Token token = tokens.shift();
@@ -30,8 +29,7 @@ Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   // corresponding to the Gauss-Legendre points
 
   unsigned azimuthal_order = parse_positive_integer(tokens);
-  tokens.check_semantics(azimuthal_order > 0,
-                         "order must be greater than zero");
+  tokens.check_semantics(azimuthal_order > 0, "order must be greater than zero");
   tokens.check_semantics(azimuthal_order % 2 == 0, "order must be even");
 
   bool has_axis_assignments;
@@ -39,11 +37,10 @@ Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
 
   if (has_axis_assignments)
-    return std::shared_ptr<Quadrature>(new Product_Chebyshev_Legendre(
-        sn_order, azimuthal_order, mu_axis, eta_axis));
-  else
     return std::shared_ptr<Quadrature>(
-        new Product_Chebyshev_Legendre(sn_order, azimuthal_order));
+        new Product_Chebyshev_Legendre(sn_order, azimuthal_order, mu_axis, eta_axis));
+  else
+    return std::shared_ptr<Quadrature>(new Product_Chebyshev_Legendre(sn_order, azimuthal_order));
 }
 
 } // end namespace rtt_quadrature

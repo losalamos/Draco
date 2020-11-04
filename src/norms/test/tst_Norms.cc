@@ -19,8 +19,8 @@
 #include "norms/Norms_Proc.hh"
 #include <sstream>
 
-#define UNIT_TEST(A)                                                           \
-  if (!(A))                                                                    \
+#define UNIT_TEST(A)                                                                               \
+  if (!(A))                                                                                        \
   ITFAILS
 
 using namespace std;

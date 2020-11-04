@@ -19,12 +19,12 @@ namespace rtt_RTT_Format_Reader {
 //! Controls parsing, storing, and accessing the data specific to the cells block of the mesh file.
 class Cells {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::vector<unsigned> vector_uint;
-  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_int = std::vector<int>;
+  using vector_vector_int = std::vector<std::vector<int>>;
+  using vector_uint = std::vector<unsigned int>;
+  using vector_vector_uint = std::vector<std::vector<unsigned int>>;
 
   const CellFlags &cellFlags;
   const Dims &dims;

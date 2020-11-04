@@ -31,16 +31,13 @@ template <typename T> void tst_copy(rtt_dsxx::UnitTest &ut) {
     x[i] = static_cast<T>(1.2) + static_cast<T>(i);
 
   blas_copy(10, &x[0], 1, &y[0], 1);
-  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
-                         static_cast<T>(1.0e-12)));
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(), static_cast<T>(1.0e-12)));
 
   std::fill(y.begin(), y.end(), static_cast<T>(0.0));
-  FAIL_IF(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
-                     static_cast<T>(1.0e-12)));
+  FAIL_IF(soft_equiv(x.begin(), x.end(), y.begin(), y.end(), static_cast<T>(1.0e-12)));
 
   blas_copy(x, 1, y, 1);
-  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(),
-                         static_cast<T>(1.0e-12)));
+  FAIL_IF_NOT(soft_equiv(x.begin(), x.end(), y.begin(), y.end(), static_cast<T>(1.0e-12)));
 
   string ttype(typeid(T).name());
   if (ut.numFails == 0)

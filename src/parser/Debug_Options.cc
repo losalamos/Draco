@@ -69,8 +69,7 @@ unsigned get_debug_option(string const &option_name) {
     return DEBUG_RESET_TIMING;
   } else {
     // parse extension to debug options
-    if (extended_debug_option.find(option_name) ==
-        extended_debug_option.end()) {
+    if (extended_debug_option.find(option_name) == extended_debug_option.end()) {
       return 0;
     } else {
       return extended_debug_option[option_name];
@@ -159,9 +158,8 @@ string debug_options_as_text(unsigned debug_options) {
   }
   // Mask out standard options and see if any extensions are active
   debug_options =
-      debug_options &
-      ~(DEBUG_SUMMARY | DEBUG_BALANCE | DEBUG_TIMESTEP | DEBUG_TIMING |
-        DEBUG_ALGORITHM | DEBUG_MEMORY | DEBUG_PROBLEM | DEBUG_RESET_TIMING);
+      debug_options & ~(DEBUG_SUMMARY | DEBUG_BALANCE | DEBUG_TIMESTEP | DEBUG_TIMING |
+                        DEBUG_ALGORITHM | DEBUG_MEMORY | DEBUG_PROBLEM | DEBUG_RESET_TIMING);
 
   if (debug_options) {
     for (const auto &i : extended_debug_option) {
@@ -187,8 +185,8 @@ unsigned add_debug_option(string const &option_name) {
     // option already exists; regard as benign
     return extended_debug_option[option_name];
   } else {
-    while (available != 0 && extended_debug_back_option.find(available) !=
-                                 extended_debug_back_option.end()) {
+    while (available != 0 &&
+           extended_debug_back_option.find(available) != extended_debug_back_option.end()) {
       available <<= 1U;
     }
     if (available == 0) {
@@ -222,8 +220,7 @@ void add_debug_option(string const &option_name, unsigned const bit) {
       throw std::invalid_argument("debug option redefined");
     }
     // else duplicate identical definition acceptable
-  } else if (extended_debug_back_option.find(bit) !=
-             extended_debug_back_option.end()) {
+  } else if (extended_debug_back_option.find(bit) != extended_debug_back_option.end()) {
     throw std::invalid_argument("bitflag already allocated");
   } else {
     extended_debug_option[option_name] = bit;

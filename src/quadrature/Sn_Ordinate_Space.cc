@@ -21,8 +21,7 @@ namespace rtt_quadrature {
 using std::vector;
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
-                                                   unsigned /*N*/) {
+vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class, unsigned /*N*/) {
   vector<Moment> result;
 
   unsigned const L = expansion_order();
@@ -37,8 +36,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
-                                                    unsigned /*N*/) {
+vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class, unsigned /*N*/) {
   vector<Moment> result;
 
   unsigned const L = expansion_order();
@@ -53,8 +51,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
-                                                   unsigned /*N*/) {
+vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class, unsigned /*N*/) {
   vector<Moment> result;
 
   unsigned const L = expansion_order();
@@ -68,17 +65,14 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment>
-Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class,
-                                     unsigned N) {
+vector<Moment> Sn_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class quadrature_class, unsigned N) {
   // This is the same as the X-Y moment mapping
   vector<Moment> result = compute_n2lk_2D_(quadrature_class, N);
   return result;
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
-                                                   unsigned /*N*/) {
+vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsigned /*N*/) {
   vector<Moment> result;
 
   unsigned const L = expansion_order();
@@ -113,8 +107,7 @@ void Sn_Ordinate_Space::compute_M() {
       unsigned const ell(n2lk[n].L());
       int const k(n2lk[n].M());
 
-      if (dim == 1 &&
-          geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature
+      if (dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature
       {
         double mu(ordinates[m].mu());
         M_[n + m * numMoments] = Ylm(ell, k, mu, 0.0, sumwt);
@@ -166,9 +159,7 @@ void Sn_Ordinate_Space::compute_M() {
  */
 void Sn_Ordinate_Space::compute_D() {
 
-  Insist(
-      !M_.empty(),
-      "The SN ordinate space computation for D requires that M be available.");
+  Insist(!M_.empty(), "The SN ordinate space computation for D requires that M be available.");
 
   vector<Ordinate> const &ordinates = this->ordinates();
   size_t const numOrdinates = ordinates.size();
@@ -191,15 +182,13 @@ void Sn_Ordinate_Space::compute_D() {
 
   std::vector<double> M(M_);
   Check(M.size() == numOrdinates * numMoments);
-  gsl_matrix_view gsl_M =
-      gsl_matrix_view_array(&M[0], numOrdinates, numMoments);
+  gsl_matrix_view gsl_M = gsl_matrix_view_array(&M[0], numOrdinates, numMoments);
 
   std::vector<double> D(numMoments * numOrdinates); // rows x cols
-  gsl_matrix_view gsl_D =
-      gsl_matrix_view_array(&D[0], numMoments, numOrdinates);
+  gsl_matrix_view gsl_D = gsl_matrix_view_array(&D[0], numMoments, numOrdinates);
 
-  unsigned ierr = gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &gsl_M.matrix,
-                                 gsl_W, 0.0, &gsl_D.matrix);
+  unsigned ierr =
+      gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &gsl_M.matrix, gsl_W, 0.0, &gsl_D.matrix);
   Insist(!ierr, "GSL BLAS interface error");
 
   gsl_matrix_free(gsl_W);
@@ -237,12 +226,10 @@ void Sn_Ordinate_Space::compute_D() {
 
 Sn_Ordinate_Space::Sn_Ordinate_Space(unsigned const dimension,
                                      rtt_mesh_element::Geometry const geometry,
-                                     vector<Ordinate> const &ordinates,
-                                     int const expansion_order,
-                                     bool const extra_starting_directions,
-                                     Ordering const ordering)
-    : Ordinate_Space(dimension, geometry, ordinates, expansion_order,
-                     extra_starting_directions, ordering),
+                                     vector<Ordinate> const &ordinates, int const expansion_order,
+                                     bool const extra_starting_directions, Ordering const ordering)
+    : Ordinate_Space(dimension, geometry, ordinates, expansion_order, extra_starting_directions,
+                     ordering),
       D_(), M_() {
   Require(dimension > 0 && dimension < 4);
   Require(geometry != rtt_mesh_element::END_GEOMETRY);

@@ -15,8 +15,7 @@ namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature>
-Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
+std::shared_ptr<Quadrature> Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "order", "expected an order");
 
@@ -28,8 +27,7 @@ Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
 
   if (has_axis_assignments)
-    return std::shared_ptr<Quadrature>(
-        new Tri_Chebyshev_Legendre(sn_order, mu_axis, eta_axis));
+    return std::shared_ptr<Quadrature>(new Tri_Chebyshev_Legendre(sn_order, mu_axis, eta_axis));
   else
     return std::shared_ptr<Quadrature>(new Tri_Chebyshev_Legendre(sn_order));
 }

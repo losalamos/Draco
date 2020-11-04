@@ -3,8 +3,7 @@
 # author Ben. R. Ryan <brryan@lanl.gov>
 # date   2020 Feb 4
 # brief  Generate build project files for cdi_ndi/test.
-# note   Copyright (C) 2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( cdi_ndi_test CXX )
 
@@ -20,9 +19,8 @@ set( test_sources
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
 
-# Both tests read a local test data file, 'ndi_data'. To avoid resource issues,
-# tell ctest to avoid running these two test at the same time with the keyword
-# RESOURCE_LOCK.
+# Both tests read a local test data file, 'ndi_data'. To avoid resource issues, tell ctest to avoid
+# running these two test at the same time with the keyword RESOURCE_LOCK.
 if(TARGET NDI::ndi)
 
 add_scalar_tests(

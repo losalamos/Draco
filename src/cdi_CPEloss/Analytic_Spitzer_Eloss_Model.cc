@@ -24,8 +24,7 @@ namespace rtt_cdi_cpeloss {
  * \param v incident particle speed in cm/shk
  * \return eloss stopping power in keV shk^-1
  */
-double Analytic_Spitzer_Eloss_Model::calculate_eloss(const double T,
-                                                     const double rho,
+double Analytic_Spitzer_Eloss_Model::calculate_eloss(const double T, const double rho,
                                                      const double v) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
@@ -40,18 +39,15 @@ double Analytic_Spitzer_Eloss_Model::calculate_eloss(const double T,
   const double vt = sqrt(2. * pc.k() * Tt / mt);
   const double Ep = 1. / 2. * mp * vp * vp;
 
-  const double prefac =
-      4. * pc.pi() * nt * qtabs * qtabs * qpabs * qpabs / (mt * vp * vp);
+  const double prefac = 4. * pc.pi() * nt * qtabs * qtabs * qpabs * qpabs / (mt * vp * vp);
 
   // Spitzer approach: Argument of the Coulomb logarithm is the ratio of Debye
   // length to distance of closest approach
-  const double debye_length =
-      sqrt(pc.k() * Tt / (4. * pc.pi() * nt * qtabs * qtabs));
+  const double debye_length = sqrt(pc.k() * Tt / (4. * pc.pi() * nt * qtabs * qtabs));
   const double vrel = sqrt(vp * vp + vt * vt);
   const double mreduced = (mt * mp) / (mt + mp);
   const double bmin = qtabs * qpabs / (mreduced * vrel * vrel);
-  const double coulomb_log =
-      log(std::max<double>(exp(1.), debye_length / bmin));
+  const double coulomb_log = log(std::max<double>(exp(1.), debye_length / bmin));
 
   double eloss = prefac * coulomb_log;
 

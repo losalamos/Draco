@@ -29,12 +29,10 @@ using namespace std;
  * \note See documentation for \c Parse_Table::add for an explanation of the
  *       low-level argument list.
  */
-Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
-                         unsigned const flags)
+Parse_Table::Parse_Table(Keyword const *const table, size_t const count, unsigned const flags)
     : vec(), flags_(static_cast<unsigned char>(flags)) {
   Require(count == 0 || table != nullptr);
-  Require(count == 0 ||
-          std::find_if(table, table + count, Is_Well_Formed_Keyword));
+  Require(count == 0 || std::find_if(table, table + count, Is_Well_Formed_Keyword));
 
   add(table, count);
 
@@ -53,8 +51,7 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
  * tables as static C arrays.  This justifies a low-level interface in place of,
  * say, vector<Keyword>.
  */
-void Parse_Table::add(Keyword const *const table,
-                      size_t const count) noexcept(false) {
+void Parse_Table::add(Keyword const *const table, size_t const count) noexcept(false) {
   Require(count == 0 || table != nullptr);
   // Additional precondition checked in loop below
 
@@ -114,8 +111,7 @@ void Parse_Table::add(Parse_Table const &source) noexcept(false) {
 
 //------------------------------------------------------------------------------------------------//
 /* private */
-void Parse_Table::sort_table_() noexcept(
-    false) // apparently std::sort can throw
+void Parse_Table::sort_table_() noexcept(false) // apparently std::sort can throw
 {
   if (vec.size() == 0)
     return;
@@ -212,8 +208,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const {
     // hosed, but it allows some error recovery from within a nested parse
     // table.
 
-    if (token.type() == END || token.type() == EXIT ||
-        token.type() == rtt_parser::ERROR) {
+    if (token.type() == END || token.type() == EXIT || token.type() == rtt_parser::ERROR) {
       return token;
     }
 
@@ -233,8 +228,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const {
       vector<Keyword>::const_iterator const match =
           lower_bound(vec.begin(), vec.end(), token, comp);
 
-      if (match == vec.end() ||
-          comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
+      if (match == vec.end() || comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
         // The token was not lexically equal to anything in the keyword table.
         // In other words, the keyword is unrecognized by the Parse_Table.  The
         // error recovery procedure is to generate a diagnostic, then pull
@@ -248,8 +242,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const {
           // We are not recovering from a previous error.  Generate a
           // diagnostic, and flag that we are now in error recovery mode.
 
-          tokens.report_semantic_error(token, ": unrecognized keyword: " +
-                                                  token.text());
+          tokens.report_semantic_error(token, ": unrecognized keyword: " + token.text());
 
           // Give the user the possibilities.
           tokens.comment("Perhaps you meant one of:");
@@ -276,8 +269,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const {
           // The match is ambiguous.  This is diagnosed whether or not we are
           // already in recovery mode, but it does put us into recovery mode.
 
-          tokens.report_semantic_error(token,
-                                       "ambiguous keyword: " + token.text());
+          tokens.report_semantic_error(token, "ambiguous keyword: " + token.text());
           is_recovering = true;
         } else {
           is_recovering = false;
@@ -368,8 +360,7 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
     // hosed, but it allows some error recovery from within a nested parse
     // table.
 
-    if (token.type() == END || token.type() == EXIT ||
-        token.type() == rtt_parser::ERROR) {
+    if (token.type() == END || token.type() == EXIT || token.type() == rtt_parser::ERROR) {
       return token;
     }
 
@@ -389,8 +380,7 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
       vector<Keyword>::const_iterator const match =
           lower_bound(vec.begin(), vec.end(), token, comp);
 
-      if (match == vec.end() ||
-          comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
+      if (match == vec.end() || comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
         // The token was not lexically equal to anything in the keyword table.
         // In other words, the keyword is unrecognized by the Parse_Table.  The
         // error recovery procedure is to generate a diagnostic, then pull
@@ -411,8 +401,7 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
           // The match is ambiguous.  This is diagnosed whether or not we are
           // already in recovery mode, but it does put us into recovery mode.
 
-          tokens.report_semantic_error(token,
-                                       "ambiguous keyword: " + token.text());
+          tokens.report_semantic_error(token, "ambiguous keyword: " + token.text());
         } else {
           // We successfully processed something, so we are no longer in
           // recovery mode.
@@ -433,8 +422,7 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
             // should call tokens.Report_Syntax_Error which generates a
             // diagnostic and throws a Syntax_Error exception. This puts the
             // main parser into recovery mode.
-            tokens.report_semantic_error(token,
-                                         "syntax error: " + token.text());
+            tokens.report_semantic_error(token, "syntax error: " + token.text());
           }
         }
       }
@@ -468,8 +456,7 @@ void Parse_Table::set_flags(unsigned char const f) {
  *
  * \param flags The flags controlling this comparator's operations.
  */
-Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
-    : flags_(flags) {}
+Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags) : flags_(flags) {}
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -494,16 +481,14 @@ Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
  *
  * \return <CODE>kk_comparison(k1.moniker, k2.moniker)<0 </CODE>
  */
-bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
-                                               Keyword const &k2) const {
+bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1, Keyword const &k2) const {
   Require(k1.moniker != nullptr);
   Require(k2.moniker != nullptr);
 
   return kk_comparison(k1.moniker, k2.moniker) < 0;
 }
 
-int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
-                                                 char const *m2) const {
+int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1, char const *m2) const {
   using namespace std;
 
   Require(m1 != nullptr);
@@ -557,16 +542,13 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
  * \return <CODE>comparison(keyword.moniker,
  *                          token.text().c_str())<0 </CODE>
  */
-bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
-                                               Token const &k2) const noexcept {
+bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1, Token const &k2) const noexcept {
   Require(k1.moniker != nullptr);
 
   return kt_comparison(k1.moniker, k2.text().c_str()) < 0;
 }
 
-int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
-                                                 char const *m2) const
-    noexcept {
+int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1, char const *m2) const noexcept {
   using namespace std;
 
   Require(m1 != nullptr);

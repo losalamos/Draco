@@ -89,9 +89,8 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
         spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message
-        << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
-        << "two-mats.ipcress data.\n\t" << excpt.what();
+    message << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
+            << "two-mats.ipcress data.\n\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -158,8 +157,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < vtemperature.size(); ++i)
     vRefOpacity[i] = density * pow(vtemperature[i], 4);
 
-  vector<double> vOpacity =
-      spCDI_Analytic->gray(r, a)->getOpacity(vtemperature, density);
+  vector<double> vOpacity = spCDI_Analytic->gray(r, a)->getOpacity(vtemperature, density);
 
   if (rtt_dsxx::soft_equiv(vOpacity, vRefOpacity)) {
     ostringstream message;
@@ -230,18 +228,15 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
     tabulatedMGOpacity[i] = density * pow(temperature, 4); // cm^2/gm
 
   // Request the multigroup opacity vector.
-  vector<double> mgOpacity =
-      spCDI_Analytic->mg(r, a)->getOpacity(temperature, density);
+  vector<double> mgOpacity = spCDI_Analytic->mg(r, a)->getOpacity(temperature, density);
 
   if (rtt_dsxx::soft_equiv(mgOpacity, tabulatedMGOpacity)) {
     ostringstream message;
-    message << spCDI_Analytic->mg(r, a)->getDataDescriptor()
-            << " getOpacity computation was good.";
+    message << spCDI_Analytic->mg(r, a)->getDataDescriptor() << " getOpacity computation was good.";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spCDI_Analytic->mg(r, a)->getDataDescriptor()
-            << " getOpacity value is out of spec.";
+    message << spCDI_Analytic->mg(r, a)->getDataDescriptor() << " getOpacity value is out of spec.";
     FAILMSG(message.str());
   }
 

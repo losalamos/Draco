@@ -19,8 +19,7 @@
 namespace rtt_linear {
 //! Compute the QR decomposition of a square matrix.
 template <class RandomContainer>
-bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
-            RandomContainer &d);
+bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c, RandomContainer &d);
 
 } // end namespace rtt_linear
 

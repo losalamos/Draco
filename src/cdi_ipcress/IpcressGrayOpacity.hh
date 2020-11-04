@@ -166,9 +166,8 @@ public:
    * \param in_opacityReaction The type of reaction rate that the current data
    *     set represents.
    */
-  IpcressGrayOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
-                     size_t in_materialID, rtt_cdi::Model in_opacityModel,
-                     rtt_cdi::Reaction in_opacityReaction);
+  IpcressGrayOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile, size_t in_materialID,
+                     rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction);
 
   /*!
    * \brief Unpacking constructor.
@@ -215,12 +214,10 @@ public:
    *     opacities correspond to the temperature and density values provied in
    *     the two InputIterators.
    */
-  template <typename TemperatureIterator, typename DensityIterator,
-            typename OpacityIterator>
-  OpacityIterator
-  getOpacity(TemperatureIterator temperatureFirst,
-             TemperatureIterator temperatureLast, DensityIterator densityFirst,
-             DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  template <typename TemperatureIterator, typename DensityIterator, typename OpacityIterator>
+  OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
+                             TemperatureIterator temperatureLast, DensityIterator densityFirst,
+                             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
@@ -242,8 +239,7 @@ public:
    */
   template <typename TemperatureIterator, typename OpacityIterator>
   OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
-                             TemperatureIterator temperatureLast,
-                             double targetDensity,
+                             TemperatureIterator temperatureLast, double targetDensity,
                              OpacityIterator opacityFirst) const;
 
   /*!
@@ -265,9 +261,8 @@ public:
    *     opacities correspond to the temperature and density values provied.
    */
   template <typename DensityIterator, typename OpacityIterator>
-  OpacityIterator
-  getOpacity(double targetTemperature, DensityIterator densityFirst,
-             DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  OpacityIterator getOpacity(double targetTemperature, DensityIterator densityFirst,
+                             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that returns a single opacity that corresponds to
@@ -279,8 +274,7 @@ public:
    *     requested.
    * \return A single opacity.
    */
-  double getOpacity(double targetTemperature,
-                    double targetDensity) const override;
+  double getOpacity(double targetTemperature, double targetDensity) const override;
 
   /*!
    * \brief Opacity accessor that returns a vector of opacities that correspond
@@ -305,9 +299,8 @@ public:
    *     are being requested.
    * \return A vector of opacities.
    */
-  std::vector<double>
-  getOpacity(double targetTemperature,
-             std::vector<double> const &targetDensity) const override;
+  std::vector<double> getOpacity(double targetTemperature,
+                                 std::vector<double> const &targetDensity) const override;
 
   /*!
    * \brief Query whether the data is in tables or functional form.
@@ -336,9 +329,7 @@ public:
    * \brief Returns a string that describes the templated EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
    */
-  std::string getEnergyPolicyDescriptor() const override {
-    return energyPolicyDescriptor;
-  }
+  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; }
 
   /*!
    * \brief Returns a "plain English" description of the opacity data that this
@@ -347,9 +338,7 @@ public:
    * The definition of this function is not included here to prevent the
    * inclusion of the IpcressFile.hh definitions within this header file.
    */
-  std::string getDataDescriptor() const override {
-    return spIpcressDataTable->getDataDescriptor();
-  }
+  std::string getDataDescriptor() const override { return spIpcressDataTable->getDataDescriptor(); }
 
   /*!
    * \brief Returns the name of the associated IPCRESS file.
@@ -377,23 +366,17 @@ public:
    * We do not return a const reference because this function must construct
    * this information from more fundamental tables.
    */
-  std::vector<double> getDensityGrid() const override {
-    return spIpcressDataTable->getDensities();
-  }
+  std::vector<double> getDensityGrid() const override { return spIpcressDataTable->getDensities(); }
 
   /*!
    * \brief Returns the size of the temperature grid.
    */
-  size_t getNumTemperatures() const override {
-    return spIpcressDataTable->getNumTemperatures();
-  }
+  size_t getNumTemperatures() const override { return spIpcressDataTable->getNumTemperatures(); }
 
   /*!
    * \brief Returns the size of the density grid.
    */
-  size_t getNumDensities() const override {
-    return spIpcressDataTable->getNumDensities();
-  }
+  size_t getNumDensities() const override { return spIpcressDataTable->getNumDensities(); }
 
   /*!
    * \brief Pack a IpcressGrayOpacity object.
@@ -406,9 +389,7 @@ public:
    * \brief Returns the general opacity model type, defined in OpacityCommon.hh.
    *     Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
    */
-  rtt_cdi::OpacityModelType getOpacityModelType() const override {
-    return rtt_cdi::IPCRESS_TYPE;
-  }
+  rtt_cdi::OpacityModelType getOpacityModelType() const override { return rtt_cdi::IPCRESS_TYPE; }
 
 }; // end of class IpcressGrayOpacity
 
@@ -424,15 +405,13 @@ public:
 // getOpacity with Tuple of (T,rho) arguments //
 // ------------------------------------------ //
 
-template <typename TemperatureIterator, typename DensityIterator,
-          typename OpacityIterator>
-OpacityIterator IpcressGrayOpacity::getOpacity(
-    TemperatureIterator tempIter, TemperatureIterator tempLast,
-    DensityIterator densIter, DensityIterator Remember(densLast),
-    OpacityIterator opIter) const {
+template <typename TemperatureIterator, typename DensityIterator, typename OpacityIterator>
+OpacityIterator
+IpcressGrayOpacity::getOpacity(TemperatureIterator tempIter, TemperatureIterator tempLast,
+                               DensityIterator densIter, DensityIterator Remember(densLast),
+                               OpacityIterator opIter) const {
   // assert that the two input iterators have compatible sizes.
-  Require(std::distance(tempIter, tempLast) ==
-          std::distance(densIter, densLast));
+  Require(std::distance(tempIter, tempLast) == std::distance(densIter, densLast));
 
   // Loop over all (temperature,density) tuple values.
   for (; tempIter != tempLast; ++tempIter, ++densIter, ++opIter)
@@ -447,8 +426,7 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
 
 template <typename TemperatureIterator, typename OpacityIterator>
 OpacityIterator IpcressGrayOpacity::getOpacity(TemperatureIterator tempIter,
-                                               TemperatureIterator tempLast,
-                                               double targetDensity,
+                                               TemperatureIterator tempLast, double targetDensity,
                                                OpacityIterator opIter) const {
   // loop over all the entries the temperature container and calculate an
   // opacity value for each.
@@ -463,8 +441,7 @@ OpacityIterator IpcressGrayOpacity::getOpacity(TemperatureIterator tempIter,
 // ---------------------------------------- //
 
 template <typename DensityIterator, typename OpacityIterator>
-OpacityIterator IpcressGrayOpacity::getOpacity(double targetTemperature,
-                                               DensityIterator densIter,
+OpacityIterator IpcressGrayOpacity::getOpacity(double targetTemperature, DensityIterator densIter,
                                                DensityIterator densLast,
                                                OpacityIterator opIter) const {
   // loop over all the entries the density container and calculate an opacity

@@ -139,23 +139,19 @@ void global_barrier();
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send.
 template <typename T>
-int send(const T *buffer, int size, int destination,
-         int tag = C4_Traits<T *>::tag);
+int send(const T *buffer, int size, int destination, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send.
-template <typename T>
-int send_custom(const T *buffer, int size, int destination, int tag);
+template <typename T> int send_custom(const T *buffer, int size, int destination, int tag);
 
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
-template <typename T>
-int receive(T *buffer, int size, int source, int tag = C4_Traits<T *>::tag);
+template <typename T> int receive(T *buffer, int size, int source, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive with a custom MPI type
-template <typename T>
-int receive_custom(T *buffer, int size, int source, int tag);
+template <typename T> int receive_custom(T *buffer, int size, int source, int tag);
 
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send of a user-defined type.
@@ -166,15 +162,14 @@ int send_udt(const T *buffer, int size, int destination, C4_Datatype &,
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send-receive.
 template <typename TS, typename TR>
-int send_receive(TS *sendbuf, int sendcount, int destination, TR *recvbuf,
-                 int recvcount, int source, int sendtag = C4_Traits<TS *>::tag,
+int send_receive(TS *sendbuf, int sendcount, int destination, TR *recvbuf, int recvcount,
+                 int source, int sendtag = C4_Traits<TS *>::tag,
                  int recvtag = C4_Traits<TR *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive of a user-defined type.
 template <typename T>
-int receive_udt(T *buffer, int size, int source, C4_Datatype &,
-                int tag = C4_Traits<T *>::tag);
+int receive_udt(T *buffer, int size, int source, C4_Datatype &, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
@@ -185,8 +180,7 @@ int receive_udt(T *buffer, int size, int source, C4_Datatype &,
  * \return C4_Req object to handle communication requests
  */
 template <typename T>
-C4_Req send_async(T const *buffer, int size, int destination,
-                  int tag = C4_Traits<T *>::tag);
+C4_Req send_async(T const *buffer, int size, int destination, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -201,10 +195,8 @@ void send_async(C4_Req &request, T const *buffer, int size, int destination,
  * \brief Do a point-to-point, non-blocking synchronous send.
  */
 template <typename T>
-void send_is(C4_Req &request, T const *buffer, int size, int destination,
-             int tag);
-template <typename T>
-void send_is(C4_Req &request, T const *buffer, int size, int destination) {
+void send_is(C4_Req &request, T const *buffer, int size, int destination, int tag);
+template <typename T> void send_is(C4_Req &request, T const *buffer, int size, int destination) {
   int tag = C4_Traits<T *>::tag;
   send_is(request, buffer, size, destination, tag);
   return;
@@ -218,8 +210,7 @@ void send_is(C4_Req &request, T const *buffer, int size, int destination) {
  * \param[in] mpi_type The signature of the special type.
  * \return number of type T objects in the completed message
  */
-template <typename T>
-int message_size_custom(C4_Status status, const T &mpi_type);
+template <typename T> int message_size_custom(C4_Status status, const T &mpi_type);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -242,16 +233,14 @@ void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
  * \return C4_Req object to handle communication requests
  */
 template <typename T>
-C4_Req receive_async(T *buffer, int size, int source,
-                     int tag = C4_Traits<T *>::tag);
+C4_Req receive_async(T *buffer, int size, int source, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Do a point-to-point, non-blocking receive.
  */
 template <typename T>
-void receive_async(C4_Req &request, T *buffer, int size, int source,
-                   int tag = C4_Traits<T *>::tag);
+void receive_async(C4_Req &request, T *buffer, int size, int source, int tag = C4_Traits<T *>::tag);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -297,18 +286,17 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 
 template <typename T> int gather(T *send_buffer, T *receive_buffer, int size);
 
-template <typename T>
-int allgather(T *send_buffer, T *receive_buffer, int size);
+template <typename T> int allgather(T *send_buffer, T *receive_buffer, int size);
 
 template <typename T>
-int gatherv(T *send_buffer, int send_size, T *receive_buffer,
-            int *receive_sizes, int *receive_displs);
+int gatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
+            int *receive_displs);
 
 template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size);
 
 template <typename T>
-int scatterv(T *send_buffer, int *send_sizes, int *send_displs,
-             T *receive_buffer, int receive_size);
+int scatterv(T *send_buffer, int *send_sizes, int *send_displs, T *receive_buffer,
+             int receive_size);
 
 //------------------------------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
@@ -326,8 +314,7 @@ template <typename T> void global_sum(T &x);
  * \param[in,out] recv_buffer scalar value summed across all ranks
  * \param[in,out] request C4_Requst handle for testing completed message
  */
-template <typename T>
-void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
+template <typename T> void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -445,8 +432,7 @@ void wait_all(const unsigned count, C4_Req *const requests);
  * Set of requests to wait on.
  * \return A vector containing the source rank IDs for received messages.
  */
-std::vector<int> wait_all_with_source(const unsigned count,
-                                      C4_Req *const requests);
+std::vector<int> wait_all_with_source(const unsigned count, C4_Req *const requests);
 
 //------------------------------------------------------------------------------------------------//
 /*!

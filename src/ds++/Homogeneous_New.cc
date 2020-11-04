@@ -14,22 +14,17 @@
 namespace rtt_dsxx {
 
 //------------------------------------------------------------------------------------------------//
-Homogeneous_New::Homogeneous_New(unsigned const object_size,
-                                 unsigned const default_block_size)
+Homogeneous_New::Homogeneous_New(unsigned const object_size, unsigned const default_block_size)
     : object_size_(object_size), default_block_size_(default_block_size),
-      total_number_of_segments_(0), first_block_(nullptr),
-      first_segment_(nullptr) {
+      total_number_of_segments_(0), first_block_(nullptr), first_segment_(nullptr) {
 
   Require(object_size >= sizeof(void *));
   Require(default_block_size > sizeof(void *));
 
   if ((default_block_size_ - sizeof(void *)) % object_size != 0) {
-    unsigned count =
-        (default_block_size_ - static_cast<unsigned>(sizeof(void *))) /
-        object_size;
+    unsigned count = (default_block_size_ - static_cast<unsigned>(sizeof(void *))) / object_size;
     ++count;
-    default_block_size_ =
-        count * object_size + static_cast<unsigned>(sizeof(void *));
+    default_block_size_ = count * object_size + static_cast<unsigned>(sizeof(void *));
   }
 
   Ensure(check_class_invariants());

@@ -35,10 +35,9 @@ public:
     Ensure(this->azimuthal_order() == azimuthal_order);
   }
 
-  Product_Chebyshev_Legendre(unsigned sn_order, unsigned azimuthal_order,
-                             unsigned const mu_axis, unsigned const eta_axis)
-      : Octant_Quadrature(sn_order, mu_axis, eta_axis),
-        azimuthal_order_(azimuthal_order) {
+  Product_Chebyshev_Legendre(unsigned sn_order, unsigned azimuthal_order, unsigned const mu_axis,
+                             unsigned const eta_axis)
+      : Octant_Quadrature(sn_order, mu_axis, eta_axis), azimuthal_order_(azimuthal_order) {
     Require(sn_order > 0 && sn_order % 2 == 0);
     Require(azimuthal_order > 0 && azimuthal_order % 2 == 0);
 
@@ -59,15 +58,14 @@ public:
   // These functions override the virtual member functions specifed in the
   // parent class Quadrature.
 
-  DLL_PUBLIC_quadrature string name() const;
+  string name() const;
 
-  DLL_PUBLIC_quadrature string parse_name() const;
+  string parse_name() const;
+  Quadrature_Class quadrature_class() const;
 
-  DLL_PUBLIC_quadrature Quadrature_Class quadrature_class() const;
+  unsigned number_of_levels() const;
 
-  DLL_PUBLIC_quadrature unsigned number_of_levels() const;
-
-  DLL_PUBLIC_quadrature string as_text(string const &indent) const;
+  string as_text(string const &indent) const;
 
   // STATICS
 
@@ -77,9 +75,8 @@ private:
   // IMPLEMENTATION
 
   //! Virtual hook for create_ordinate_set
-  DLL_PUBLIC_quadrature virtual void
-  create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
-                           vector<double> &wt) const;
+  virtual void create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                                        vector<double> &wt) const;
 
   unsigned const azimuthal_order_;
 

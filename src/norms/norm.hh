@@ -24,8 +24,7 @@ template <typename Field> double norm(Field const &x) { return x * x; }
 
 //------------------------------------------------------------------------------------------------//
 //! Compute the norm of the difference of two scalars.
-template <typename Field1, typename Field2>
-double norm_diff(Field1 const &x, Field2 const &y) {
+template <typename Field1, typename Field2> double norm_diff(Field1 const &x, Field2 const &y) {
   return rtt_dsxx::square(x - y);
 }
 

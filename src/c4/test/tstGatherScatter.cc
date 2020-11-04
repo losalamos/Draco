@@ -73,8 +73,7 @@ void tstDeterminateGatherScatter(UnitTest &ut) {
     gather(&c, &vc[0], 1);
 
     if (pid == 0)
-      FAIL_IF_NOT(
-          std::equal(vc.begin(), vc.end(), alphabet.begin(), alphabet.end()));
+      FAIL_IF_NOT(std::equal(vc.begin(), vc.end(), alphabet.begin(), alphabet.end()));
   }
 
   return;
@@ -205,8 +204,7 @@ void tstIndeterminateGatherScatterv(UnitTest &ut) {
     vector<vector<unsigned>> emptyreceive;
 
     indeterminate_gatherv(emptysend, emptyreceive);
-    PASSMSG(
-        "No exception thrown for indeterminate_gatherv with empty containers.");
+    PASSMSG("No exception thrown for indeterminate_gatherv with empty containers.");
 
     if (emptysend.size() != 0)
       ITFAILS;
@@ -457,8 +455,7 @@ void topology_report(UnitTest &ut) {
 
     std::cout << "\nMPI ranks per node:";
     for (size_t j = 0; j < unique_processor_names.size(); ++j) {
-      std::cout << "\n  - Node " << j << " (" << unique_processor_names[j]
-                << "): ";
+      std::cout << "\n  - Node " << j << " (" << unique_processor_names[j] << "): ";
       for (auto const i : map_proc_to_ranks[j])
         std::cout << map_proc_to_ranks[j][i] << ",";
     }
