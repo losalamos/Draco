@@ -23,11 +23,6 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 rscriptdir="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-# load some common bash functions
-# rscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" )
-# if ! [[ -d "${rscriptdir}" ]]; then
-#   rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# fi
 if [[ -f "${rscriptdir}/common.sh" ]]; then
   # shellcheck source=tools/common.sh
   source "${rscriptdir}/common.sh"
