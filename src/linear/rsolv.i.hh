@@ -4,11 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:01:02 2004
  * \brief  Solve an upper triangular system of equations
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef linear_rsolv_i_hh
@@ -19,15 +15,15 @@
 namespace rtt_linear {
 
 //------------------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Solve an upper triangular system of equations.
- * 
+ *
  * \arg \a RandomContainer A random access container.
  *
- * \param R Upper triangular matrix 
+ * \param R Upper triangular matrix
  * \param n Rank of the matrix
- * \param b Right-hand side of the system of equations.  On exit, contains
- * the solution of the system.  
+ * \param b Right-hand side of the system of equations.  On exit, contains the solution of the
+ *          system.
  *
  * \pre \c R.size()==n*n
  * \pre \c b.size()==n

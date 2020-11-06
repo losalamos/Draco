@@ -3,9 +3,7 @@
  * \file   fit/test/tstsvdfit.cc
  * \author Kent Budge
  * \date   Tue Aug 26 12:02:36 2008
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"

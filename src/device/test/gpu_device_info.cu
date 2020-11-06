@@ -4,8 +4,7 @@
  * \author Alex Long
  * \date   Thu Mar 21 15:28:48 2019
  * \brief  Simple test of the CUDA Runtime API through the GPU_Device object
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "device/GPU_Device.hh"
@@ -48,8 +47,7 @@ void query_device(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Parse the output
   bool verbose(false);
-  std::map<std::string, unsigned> wordCount =
-      rtt_dsxx::get_word_count(out, verbose);
+  std::map<std::string, unsigned> wordCount = rtt_dsxx::get_word_count(out, verbose);
 
   FAIL_IF_NOT(wordCount[string("Device")] == numDev);
   // successful test output
@@ -61,7 +59,6 @@ void query_device(rtt_dsxx::ScalarUnitTest &ut) {
 //------------------------------------------------------------------------------------------------//
 // Main
 //------------------------------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   using namespace std;
 

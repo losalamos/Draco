@@ -3,8 +3,7 @@
  * \file   device/GPU_Device.hh
  * \author Kelly (KT) Thompson
  * \brief  Define class GPU_Device
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef device_GPU_Device_hh
@@ -24,9 +23,8 @@ namespace rtt_device {
  * \class GPU_Device
  * \brief A wrapper for the CUDA environment.
  *
- * This class encapsulates many features provided by the CUDA programming
- * environment. It can query the hardware for available features, find and load
- * .cubin files for GPU kernel execution, etc.
+ * This class encapsulates many features provided by the CUDA programming environment. It can query
+ * the hardware for available features, find and load .cubin files for GPU kernel execution, etc.
  *
  * \sa GPU_Device.cc for detailed descriptions.
  *
@@ -37,9 +35,7 @@ namespace rtt_device {
  *     // Create and then print a summary of the devices found.
  *     std::ostringstream out;
  *     size_t const numDev( gpu.numDevicesAvailable() );
- *     out << "GPU device summary:\n\n"
- *         << "   Number of devices found: " << numDev
- *         << "\n" << endl;
+ *     out << "GPU device summary:\n\nNumber of devices found: " << numDev << "\n" << endl;
  *     for( size_t device=0; device<numDev; ++device )
  *         gpu.printDeviceSummary( device, out );
  *
@@ -51,7 +47,6 @@ namespace rtt_device {
  * Test of GPU_Device for with CUDA runtime API.
  */
 //================================================================================================//
-
 class GPU_Device {
 public:
   // NESTED CLASSES AND TYPEDEFS
@@ -89,8 +84,8 @@ public:
   int regsPerBlock(int devId = 0) const { return m_regsperblock[devId]; }
   //! the clock frequency in kilohertz
   int clockRate(int devId = 0) const { return m_clockrate[devId]; }
-  /*! the alignment requirement; texture base addresses that are aligned to
-   *  textureAlign bytes do not need an offset applied to texture fetches */
+  /*! the alignment requirement; texture base addresses that are aligned to textureAlign bytes do
+   *  not need an offset applied to texture fetches */
   int textureAlign(int devId = 0) const { return m_texturealign[devId]; }
 
   // SERVICES

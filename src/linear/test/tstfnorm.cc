@@ -3,8 +3,7 @@
 * \file   linear/test/tstfnorm.cc
 * \author Kent Budge
 * \date   Mon Aug  9 13:39:20 2004
-* \note   Copyright (C) 2016-2020 Triad National Security, LLC.
-*         All rights reserved.*/
+* \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.*/
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -19,7 +18,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void func(const vector<double> &x, vector<double> &fvec) {
   fvec.resize(2);
   fvec[0] = x[1] * sin(x[0]);
