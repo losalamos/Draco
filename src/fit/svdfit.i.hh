@@ -58,10 +58,9 @@ using std::vector;
  * \param[in] TOL reset denormalized w-values below TOL*max(w) to a hard-zero.
  */
 template <typename RandomContainer, typename Functor>
-void svdfit(RandomContainer const &x, RandomContainer const &y,
-            RandomContainer const &sig, RandomContainer &a, RandomContainer &u,
-            RandomContainer &v, RandomContainer &w, double &chisq,
-            Functor &funcs, double TOL) {
+void svdfit(RandomContainer const &x, RandomContainer const &y, RandomContainer const &sig,
+            RandomContainer &a, RandomContainer &u, RandomContainer &v, RandomContainer &w,
+            double &chisq, Functor &funcs, double TOL) {
   Require(x.size() == y.size());
   Require(x.size() == sig.size());
   Require(a.size() > 0);

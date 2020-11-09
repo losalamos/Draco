@@ -55,8 +55,7 @@ struct alloc_t {
   unsigned count;   // number of allocations of this size
 
   alloc_t() {}
-  alloc_t(std::size_t my_size, unsigned my_count)
-      : size(my_size), count(my_count) {}
+  alloc_t(std::size_t my_size, unsigned my_count) : size(my_size), count(my_count) {}
 };
 
 struct Unsigned {
@@ -125,8 +124,8 @@ void report_leaks(ostream &out) {
     } else {
       map<void *, alloc_t>::const_iterator i;
       for (i = st.alloc_map.begin(); i != st.alloc_map.end(); ++i) {
-        out << i->second.size << " bytes allocated at address " << i->first
-            << " as allocation " << i->second.count << " of this size" << endl;
+        out << i->second.size << " bytes allocated at address " << i->first << " as allocation "
+            << i->second.count << " of this size" << endl;
       }
     }
 #else
@@ -284,8 +283,7 @@ void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
  */
 void rtt_memory::out_of_memory_handler() {
   std::set_new_handler(nullptr);
-  std::cerr << "Unable to allocate requested memory.\n"
-            << rtt_dsxx::print_stacktrace("bad_alloc");
+  std::cerr << "Unable to allocate requested memory.\n" << rtt_dsxx::print_stacktrace("bad_alloc");
 }
 
 //------------------------------------------------------------------------------------------------//

@@ -25,8 +25,7 @@ using std::sqrt;
 
 //------------------------------------------------------------------------------------------------//
 //! Is a double-subscript random container square?
-template <class DoubleRandomContainer>
-bool is_square(DoubleRandomContainer const &A) {
+template <class DoubleRandomContainer> bool is_square(DoubleRandomContainer const &A) {
   Check(A.size() < UINT_MAX);
   auto const n = static_cast<unsigned>(A.size());
   for (unsigned i = 0; i < n; ++i) {
@@ -49,15 +48,13 @@ bool is_square(DoubleRandomContainer const &A) {
  *          solving m systems of equations.
  */
 template <class RandomContainer>
-void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
-            unsigned const m) {
+void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b, unsigned const m) {
   using namespace std;
   using namespace rtt_dsxx;
 
   Require(A.size() == n * n);
   Require(b.size() == n * m);
-  double const eps =
-      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
+  double const eps = std::numeric_limits<typename RandomContainer::value_type>::epsilon();
 
   vector<int> indxc(n);
   vector<int> indxr(n);
@@ -143,8 +140,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   Require(b.size() == 0 || b.size() == A.size());
 
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
   Check(A.size() < UINT_MAX);
   auto const n = static_cast<unsigned>(A.size());
 

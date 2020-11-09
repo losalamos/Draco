@@ -148,8 +148,7 @@ void tstSubrandom_Sequence(UnitTest &ut) {
   if (myCount == imax) {
     PASSMSG("Member function count returned the expected value (imax=100).");
   } else {
-    FAILMSG(
-        "Member function count did not return the expected value (imax=100).");
+    FAILMSG("Member function count did not return the expected value (imax=100).");
   }
   return;
 }

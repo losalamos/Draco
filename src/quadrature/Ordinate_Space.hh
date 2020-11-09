@@ -137,8 +137,7 @@ public:
   //! Specify the ordinate quadrature with defaults.
   Ordinate_Space(unsigned dimension, rtt_mesh_element::Geometry geometry,
                  std::vector<Ordinate> const &, int expansion_order,
-                 bool extra_starting_directions = false,
-                 Ordering ordering = LEVEL_ORDERED);
+                 bool extra_starting_directions = false, Ordering ordering = LEVEL_ORDERED);
 
   // MANIPULATORS
 
@@ -146,9 +145,7 @@ public:
 
   int expansion_order() const { return expansion_order_; }
 
-  bool has_extra_starting_directions() const {
-    return has_extra_starting_directions_;
-  }
+  bool has_extra_starting_directions() const { return has_extra_starting_directions_; }
 
   unsigned number_of_levels() const { return number_of_levels_; }
 
@@ -186,9 +183,7 @@ public:
   std::vector<Moment> const &moments() const { return moments_; }
 
   //! Return vector containing the number of moments for each L
-  std::vector<unsigned> const &moments_per_order() const {
-    return moments_per_order_;
-  }
+  std::vector<unsigned> const &moments_per_order() const { return moments_per_order_; }
 
   //! Return mu reflection map
   std::vector<unsigned> const &reflect_mu() const { return reflect_mu_; }
@@ -238,20 +233,15 @@ protected:
 
   std::vector<Moment> compute_n2lk_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                               unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order) = 0;
 
-  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                                unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order) = 0;
 
-  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                               unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order) = 0;
 
-  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                                unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order) = 0;
 
-  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                               unsigned sn_order) = 0;
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order) = 0;
 
 private:
   // NESTED CLASSES AND TYPEDEFS

@@ -29,8 +29,7 @@ Console_Token_Stream::Console_Token_Stream() {
  *           has the effect of forcing all keywords to consist of a single
  *           identifier.
  */
-Console_Token_Stream::Console_Token_Stream(set<char> const &ws,
-                                           bool const no_nonbreaking_ws)
+Console_Token_Stream::Console_Token_Stream(set<char> const &ws, bool const no_nonbreaking_ws)
     : Text_Token_Stream(ws, no_nonbreaking_ws) {
   Ensure(check_class_invariants());
   Ensure(Console_Token_Stream::location_() == "input");

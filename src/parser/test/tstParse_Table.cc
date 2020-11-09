@@ -53,13 +53,11 @@ std::array<Keyword, 6> const raw_table{
     Keyword{"BLACK", Parse_Color, 0, "main"},
     Keyword{"BLUE GREEN", Parse_Color, 2, "main"},
     Keyword{"BLUISH GREEN", Parse_Color, 2, "main"},
-    Keyword{"lower blue", Parse_Color, 2, "main",
-            "keyword to test case sensitivity"},
+    Keyword{"lower blue", Parse_Color, 2, "main", "keyword to test case sensitivity"},
     Keyword{"COLOR", Parse_Any_Color, 0, "main"}};
 
-std::array<Keyword, 2> const raw_table_2{
-    Keyword{"BLUE", Parse_Color, 1, "main"},
-    Keyword{"BLACK", Parse_Color, 0, "main"}};
+std::array<Keyword, 2> const raw_table_2{Keyword{"BLUE", Parse_Color, 1, "main"},
+                                         Keyword{"BLACK", Parse_Color, 0, "main"}};
 
 class Error_Token_Stream : public Token_Stream {
 public:
@@ -189,8 +187,7 @@ void tstParse_Table(UnitTest &ut) {
   UT_MSG(table.size() == raw_table.size(), "Found expected table size");
 
   // Build path for the input file "parser_test.inp"
-  string const ptInputFile(ut.getTestSourcePath() +
-                           std::string("parser_test.inp"));
+  string const ptInputFile(ut.getTestSourcePath() + std::string("parser_test.inp"));
 
   File_Token_Stream token_stream(ptInputFile);
 
@@ -236,8 +233,7 @@ void tstParse_Table(UnitTest &ut) {
 
   token_stream.rewind();
 
-  table.set_flags(Parse_Table::CASE_INSENSITIVE |
-                  Parse_Table::PARTIAL_IDENTIFIER_MATCH);
+  table.set_flags(Parse_Table::CASE_INSENSITIVE | Parse_Table::PARTIAL_IDENTIFIER_MATCH);
 
   color_set[0] = color_set[1] = false;
   table.parse(token_stream);
@@ -359,15 +355,13 @@ void tstParse_Table(UnitTest &ut) {
   if (!Is_Well_Formed_Keyword(test_key))
     FAILMSG("test FAILS");
 
-  std::array<Keyword, 2> benign_ambiguous_table{
-      Keyword{"KEY", Parse_Color, 0, nullptr},
-      Keyword{"KEY", Parse_Color, 0, nullptr}};
+  std::array<Keyword, 2> benign_ambiguous_table{Keyword{"KEY", Parse_Color, 0, nullptr},
+                                                Keyword{"KEY", Parse_Color, 0, nullptr}};
   table_2.add(benign_ambiguous_table.data(), benign_ambiguous_table.size());
   token_stream.rewind();
   table_2.parse(token_stream);
 
-  std::array<Keyword, 1> malign_ambiguous_table{
-      Keyword{"KEY", Parse_Color, 1, nullptr}};
+  std::array<Keyword, 1> malign_ambiguous_table{Keyword{"KEY", Parse_Color, 1, nullptr}};
   try {
     table_2.add(malign_ambiguous_table.data(), malign_ambiguous_table.size());
     token_stream.rewind();
@@ -379,8 +373,7 @@ void tstParse_Table(UnitTest &ut) {
   }
 
   // Build path for the input file "recovery.inp"
-  string const recInputFile(ut.getTestSourcePath() +
-                            std::string("recovery.inp"));
+  string const recInputFile(ut.getTestSourcePath() + std::string("recovery.inp"));
 
   File_Token_Stream recover_stream(recInputFile);
   table.parse(recover_stream);
@@ -388,9 +381,8 @@ void tstParse_Table(UnitTest &ut) {
     FAILMSG("test FAILS");
 
   Parse_Table table_3;
-  std::array<Keyword, 2> case_ambiguous_table{
-      Keyword{"key", Parse_Color, 0, nullptr},
-      Keyword{"Key", Parse_Color, 1, nullptr}};
+  std::array<Keyword, 2> case_ambiguous_table{Keyword{"key", Parse_Color, 0, nullptr},
+                                              Keyword{"Key", Parse_Color, 1, nullptr}};
   try {
     table_3.add(case_ambiguous_table.data(), case_ambiguous_table.size());
     table_3.parse(token_stream);
@@ -404,9 +396,8 @@ void tstParse_Table(UnitTest &ut) {
   }
 
   Parse_Table table_3a;
-  std::array<Keyword, 2> casea_ambiguous_table{
-      Keyword{"key", Parse_Color, 0, nullptr},
-      Keyword{"Key", Parse_Any_Color, 0, nullptr}};
+  std::array<Keyword, 2> casea_ambiguous_table{Keyword{"key", Parse_Color, 0, nullptr},
+                                               Keyword{"Key", Parse_Any_Color, 0, nullptr}};
   try {
     table_3a.add(casea_ambiguous_table.data(), casea_ambiguous_table.size());
     table_3a.parse(token_stream);

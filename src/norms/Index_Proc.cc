@@ -21,8 +21,7 @@ namespace rtt_norms {
   \brief Constructor.
 */
 //------------------------------------------------------------------------------------------------//
-Index_Proc::Index_Proc(const size_t index_)
-    : index(index_), processor(rtt_c4::node()) {}
+Index_Proc::Index_Proc(const size_t index_) : index(index_), processor(rtt_c4::node()) {}
 
 //------------------------------------------------------------------------------------------------//
 /*!

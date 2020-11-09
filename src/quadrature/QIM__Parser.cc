@@ -24,8 +24,7 @@ using namespace rtt_parser;
  * beginning his parse.
  */
 void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
-  tokens.check_semantics(qim == END_QIM,
-                         "quadrature interpolation model already specified");
+  tokens.check_semantics(qim == END_QIM, "quadrature interpolation model already specified");
 
   Token token = tokens.shift();
 
@@ -38,8 +37,7 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
   } else if (token.text() == "GQF") {
     qim = GQF;
   } else {
-    tokens.check_semantics(false,
-                           "unrecognized quadrature interpolation model");
+    tokens.check_semantics(false, "unrecognized quadrature interpolation model");
   }
 }
 

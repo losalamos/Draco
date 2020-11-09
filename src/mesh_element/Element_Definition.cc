@@ -17,8 +17,8 @@ namespace rtt_mesh_element {
 
 //------------------------------------------------------------------------------------------------//
 Element_Definition::Element_Definition(Element_Type const &type_)
-    : name(), type(type_), dimension(0), number_of_nodes(0), number_of_sides(0),
-      elem_defs(), side_type(), side_nodes() {
+    : name(), type(type_), dimension(0), number_of_nodes(0), number_of_sides(0), elem_defs(),
+      side_type(), side_nodes() {
   switch (type) {
 
   case NODE:
@@ -91,15 +91,13 @@ Element_Definition::Element_Definition(Element_Type const &type_)
 }
 
 //------------------------------------------------------------------------------------------------//
-Element_Definition::Element_Definition(
-    std::string name_, unsigned dimension_, unsigned number_of_nodes_,
-    unsigned number_of_sides_,
-    std::vector<Element_Definition> const &elem_defs_,
-    std::vector<unsigned> const &side_type_,
-    std::vector<std::vector<unsigned>> const &side_nodes_)
-    : name(name_), type((dimension_ == 2) ? POLYGON : POLYHEDRON),
-      dimension(dimension_), number_of_nodes(number_of_nodes_),
-      number_of_sides(number_of_sides_), elem_defs(elem_defs_),
+Element_Definition::Element_Definition(std::string name_, unsigned dimension_,
+                                       unsigned number_of_nodes_, unsigned number_of_sides_,
+                                       std::vector<Element_Definition> const &elem_defs_,
+                                       std::vector<unsigned> const &side_type_,
+                                       std::vector<std::vector<unsigned>> const &side_nodes_)
+    : name(name_), type((dimension_ == 2) ? POLYGON : POLYHEDRON), dimension(dimension_),
+      number_of_nodes(number_of_nodes_), number_of_sides(number_of_sides_), elem_defs(elem_defs_),
       side_type(side_type_), side_nodes(side_nodes_) {
   //------------------------------------------------------------------------------------------------//
   // Check input first, before any modifications
@@ -115,8 +113,7 @@ Element_Definition::Element_Definition(
   }
   Require(side_nodes_.size() == number_of_sides_);
   for (unsigned i = 0; i < number_of_sides_; ++i) {
-    Require(side_nodes_[i].size() ==
-            elem_defs_[side_type_[i]].get_number_of_nodes());
+    Require(side_nodes_[i].size() == elem_defs_[side_type_[i]].get_number_of_nodes());
 #ifdef REQUIRE_ON
     for (unsigned const side_node : side_nodes_[i])
       Require(side_node < number_of_nodes_);
@@ -124,8 +121,7 @@ Element_Definition::Element_Definition(
   }
 
   // Only time this constructor should be called
-  Ensure(get_type() == Element_Definition::POLYGON ||
-         get_type() == Element_Definition::POLYHEDRON);
+  Ensure(get_type() == Element_Definition::POLYGON || get_type() == Element_Definition::POLYHEDRON);
 
   Ensure(get_name() == name_);
   Ensure(get_dimension() == dimension_);
@@ -164,8 +160,7 @@ bool Element_Definition::invariant_satisfied() const {
 
   for (size_t i = 0; i < side_nodes.size(); i++) {
     ldum = ldum && (side_nodes[i].size() > 0);
-    ldum = ldum &&
-           (side_nodes[i].size() == elem_defs[side_type[i]].number_of_nodes);
+    ldum = ldum && (side_nodes[i].size() == elem_defs[side_type[i]].number_of_nodes);
     for (unsigned int side_node : side_nodes[i]) {
       ldum = ldum && (side_node < number_of_nodes);
     }
@@ -451,8 +446,7 @@ void Element_Definition::construct_penta() {
 void Element_Definition::construct_hexa() {
   dimension = 3;
   number_of_sides = 6;
-  side_nodes = {{0, 3, 2, 1}, {0, 4, 7, 3}, {2, 3, 7, 6},
-                {1, 2, 6, 5}, {0, 1, 5, 4}, {4, 5, 6, 7}};
+  side_nodes = {{0, 3, 2, 1}, {0, 4, 7, 3}, {2, 3, 7, 6}, {1, 2, 6, 5}, {0, 1, 5, 4}, {4, 5, 6, 7}};
 
   switch (type) {
   case HEXA_8:

@@ -25,8 +25,7 @@ namespace rtt_c4 {
  * point operations. These allow us to report the percentage of data cache hits and the number of
  * floating point operations per cache miss.
  */
-int Timer::papi_events_[papi_max_counters_] = {PAPI_L2_DCM, PAPI_L2_DCH,
-                                               PAPI_FP_OPS};
+int Timer::papi_events_[papi_max_counters_] = {PAPI_L2_DCM, PAPI_L2_DCH, PAPI_FP_OPS};
 unsigned Timer::papi_num_counters_ = 0;
 long long Timer::papi_raw_counts_[papi_max_counters_] = {0, 0, 0};
 int selected_cache = 2;
@@ -43,8 +42,7 @@ Timer::Timer()
       posix_clock_ticks_per_second(static_cast<int>(DRACO_CLOCKS_PER_SEC)),
       isMPIWtimeAvailable(setIsMPIWtimeAvailable()) {
 #if defined(WIN32)
-  static_assert(DRACO_CLOCKS_PER_SEC < INT32_MAX,
-                "!(DRACO_CLOCKS_PER_SEC < INT32_MAX)");
+  static_assert(DRACO_CLOCKS_PER_SEC < INT32_MAX, "!(DRACO_CLOCKS_PER_SEC < INT32_MAX)");
 #else
   Check(DRACO_CLOCKS_PER_SEC < INT32_MAX);
 #endif
@@ -100,10 +98,8 @@ void Timer::print(std::ostream &out, int p) const {
   double const miss = sum_cache_misses();
   double const hit = sum_cache_hits();
   out << "PAPI Events:\n"
-      << setw(26) << 'L' << selected_cache
-      << " cache misses  : " << sum_cache_misses() << "\n"
-      << setw(26) << 'L' << selected_cache
-      << " cache hits    : " << sum_cache_hits() << "\n"
+      << setw(26) << 'L' << selected_cache << " cache misses  : " << sum_cache_misses() << "\n"
+      << setw(26) << 'L' << selected_cache << " cache hits    : " << sum_cache_hits() << "\n"
       << setw(26) << "Percent hit      : " << 100.0 * hit / (miss + hit) << "\n"
       << setw(26) << "FP operations    : " << sum_floating_operations() << "\n"
       << setw(26) << "Wall Clock cycles: " << sum_papi_wc_cycles() << "\n"
@@ -118,8 +114,7 @@ void Timer::print(std::ostream &out, int p) const {
 
 //------------------------------------------------------------------------------------------------//
 //! Print out a timing report as a single line summary.
-void Timer::printline(std::ostream &out, unsigned const p,
-                      unsigned const w) const {
+void Timer::printline(std::ostream &out, unsigned const p, unsigned const w) const {
   using std::ios;
   using std::setw;
 
@@ -127,8 +122,8 @@ void Timer::printline(std::ostream &out, unsigned const p,
   out.precision(p);
 
   // Width of first column (intervals) should be set by client before calling this function.
-  out << num_intervals << setw(w) << sum_user_cpu() << setw(w)
-      << sum_system_cpu() << setw(w) << sum_wall_clock();
+  out << num_intervals << setw(w) << sum_user_cpu() << setw(w) << sum_system_cpu() << setw(w)
+      << sum_wall_clock();
 
 #ifdef HAVE_PAPI
   double const miss = sum_cache_misses();
@@ -239,8 +234,7 @@ void Timer::papi_init_() {
   } else {
     int result = PAPI_stop_counters(papi_raw_counts_, papi_num_counters_);
     if (result != PAPI_OK) {
-      std::cout << "Failed to stop hardware counters with error " << result
-                << std::endl;
+      std::cout << "Failed to stop hardware counters with error " << result << std::endl;
 
       exit(EXIT_FAILURE);
     }
@@ -260,11 +254,9 @@ void Timer::papi_init_() {
 
   papi_num_counters_ = PAPI_num_counters();
   if (papi_num_counters_ < sizeof(papi_events_) / sizeof(int)) {
-    std::cout << "PAPI: This system has only " << papi_num_counters_
-              << " hardware counters.\n"
+    std::cout << "PAPI: This system has only " << papi_num_counters_ << " hardware counters.\n"
               << std::endl;
-    std::cout << "Some performance statistics will not be available."
-              << std::endl;
+    std::cout << "Some performance statistics will not be available." << std::endl;
   }
 
   // At present, some platforms *lie* about how many counters they have available, reporting they
@@ -278,8 +270,7 @@ void Timer::papi_init_() {
 
   int result = PAPI_start_counters(papi_events_, papi_num_counters_);
   if (result != PAPI_OK) {
-    std::cout << "Failed to start hardware counters with error " << result
-              << std::endl;
+    std::cout << "Failed to start hardware counters with error " << result << std::endl;
 
     exit(EXIT_FAILURE);
   }
@@ -314,8 +305,8 @@ void Timer::pause(double const pauseSeconds) {
  * \param w Width of the timing number fields. Defaults to each field being 13 characters wide.
  * \param v Width of the variance number fields. Defaults to each field being 5 characters wide.
  */
-void Timer::printline_mean(std::ostream &out, unsigned const p,
-                           unsigned const w, unsigned const v) const {
+void Timer::printline_mean(std::ostream &out, unsigned const p, unsigned const w,
+                           unsigned const v) const {
   using std::ios;
   using std::setw;
 
@@ -356,13 +347,10 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
 
     // Width of first column (intervals) should be set by client before calling this function.
     out << setw(w) << mni << " +/- " << setw(v)
-        << sqrt(fabs(ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
-        << mu << " +/- " << setw(v)
-        << sqrt(fabs(u2 - 2 * mu * u + ranks * mu * mu) / ranks) << setw(w)
-        << ms << " +/- " << setw(v)
-        << sqrt(fabs(s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w)
-        << mww << " +/- " << setw(v)
-        << sqrt(fabs(ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
+        << sqrt(fabs(ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w) << mu << " +/- "
+        << setw(v) << sqrt(fabs(u2 - 2 * mu * u + ranks * mu * mu) / ranks) << setw(w) << ms
+        << " +/- " << setw(v) << sqrt(fabs(s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w)
+        << mww << " +/- " << setw(v) << sqrt(fabs(ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
 
     // Omit PAPI for now.
 

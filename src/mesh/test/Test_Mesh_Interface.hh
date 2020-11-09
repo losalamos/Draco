@@ -53,13 +53,11 @@ public:
   //! Constructor.
   Test_Mesh_Interface(const size_t num_xdir_, const size_t num_ydir_,
                       const std::vector<unsigned> &global_node_number_ = {},
-                      const double xdir_offset_ = 0.0,
-                      const double ydir_offset_ = 0.0);
+                      const double xdir_offset_ = 0.0, const double ydir_offset_ = 0.0);
 
   // >>> SERVICES
 
-  std::vector<unsigned> flatten_cn_linkage(const Layout &layout,
-                                           const Layout &bd_layout,
+  std::vector<unsigned> flatten_cn_linkage(const Layout &layout, const Layout &bd_layout,
                                            const Layout &go_layout) const;
 
   std::vector<unsigned> flatten_sn_linkage(const Layout &bd_layout) const;
@@ -69,14 +67,12 @@ public:
 // CONSTRUCTOR
 //------------------------------------------------------------------------------------------------//
 
-Test_Mesh_Interface::Test_Mesh_Interface(
-    const size_t num_xdir_, const size_t num_ydir_,
-    const std::vector<unsigned> &global_node_number_, const double xdir_offset_,
-    const double ydir_offset_)
-    : dim(2), num_cells(num_xdir_ * num_ydir_),
-      num_nodes((num_xdir_ + 1) * (num_ydir_ + 1)),
-      num_sides(2 * (num_xdir_ + num_ydir_)), num_nodes_per_cell(4),
-      num_faces_per_cell(4), global_node_number(global_node_number_) {
+Test_Mesh_Interface::Test_Mesh_Interface(const size_t num_xdir_, const size_t num_ydir_,
+                                         const std::vector<unsigned> &global_node_number_,
+                                         const double xdir_offset_, const double ydir_offset_)
+    : dim(2), num_cells(num_xdir_ * num_ydir_), num_nodes((num_xdir_ + 1) * (num_ydir_ + 1)),
+      num_sides(2 * (num_xdir_ + num_ydir_)), num_nodes_per_cell(4), num_faces_per_cell(4),
+      global_node_number(global_node_number_) {
 
   // set the number of cells and nodes
   const size_t num_xdir = num_xdir_;
@@ -108,18 +104,14 @@ Test_Mesh_Interface::Test_Mesh_Interface(
 
       // 2nd face
       cell_to_node_linkage[8 * cell + 2] = static_cast<unsigned>(cell + j + 1);
-      cell_to_node_linkage[8 * cell + 3] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
+      cell_to_node_linkage[8 * cell + 3] = static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
 
       // 3rd face
-      cell_to_node_linkage[8 * cell + 4] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
-      cell_to_node_linkage[8 * cell + 5] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j);
+      cell_to_node_linkage[8 * cell + 4] = static_cast<unsigned>(cell + num_xdir + 1 + j + 1);
+      cell_to_node_linkage[8 * cell + 5] = static_cast<unsigned>(cell + num_xdir + 1 + j);
 
       // 4th face
-      cell_to_node_linkage[8 * cell + 6] =
-          static_cast<unsigned>(cell + num_xdir + 1 + j);
+      cell_to_node_linkage[8 * cell + 6] = static_cast<unsigned>(cell + num_xdir + 1 + j);
       cell_to_node_linkage[8 * cell + 7] = static_cast<unsigned>(cell + j);
     }
   }
@@ -140,18 +132,15 @@ Test_Mesh_Interface::Test_Mesh_Interface(
     // top face
     side_set_flag[i + poff] = 3;
     Check(num_nodes < UINT_MAX);
-    side_to_node_linkage[2 * (i + poff)] =
-        static_cast<unsigned>(num_nodes - 1 - i);
-    side_to_node_linkage[2 * (i + poff) + 1] =
-        static_cast<unsigned>(num_nodes - 1 - i - 1);
+    side_to_node_linkage[2 * (i + poff)] = static_cast<unsigned>(num_nodes - 1 - i);
+    side_to_node_linkage[2 * (i + poff) + 1] = static_cast<unsigned>(num_nodes - 1 - i - 1);
   }
   // ... over left and right faces
   for (size_t j = 0; j < num_ydir; ++j) {
     // right face
     side_set_flag[j + num_xdir] = 2;
     Check(num_xdir * (j + 2) + j + 1 < UINT_MAX);
-    side_to_node_linkage[2 * (j + num_xdir)] =
-        static_cast<unsigned>(num_xdir * (j + 1) + j);
+    side_to_node_linkage[2 * (j + num_xdir)] = static_cast<unsigned>(num_xdir * (j + 1) + j);
     side_to_node_linkage[2 * (j + num_xdir) + 1] =
         static_cast<unsigned>(num_xdir * (j + 2) + j + 1);
     // left face
@@ -195,10 +184,9 @@ Test_Mesh_Interface::Test_Mesh_Interface(
 // SERVICES
 //------------------------------------------------------------------------------------------------//
 
-std::vector<unsigned>
-Test_Mesh_Interface::flatten_cn_linkage(const Layout &layout,
-                                        const Layout &bd_layout,
-                                        const Layout &go_layout) const {
+std::vector<unsigned> Test_Mesh_Interface::flatten_cn_linkage(const Layout &layout,
+                                                              const Layout &bd_layout,
+                                                              const Layout &go_layout) const {
   // this function assumes a fixed number of nodes per cell
   std::vector<unsigned> cn_linkage;
   cn_linkage.reserve(num_cells * num_nodes_per_cell);
@@ -209,24 +197,21 @@ Test_Mesh_Interface::flatten_cn_linkage(const Layout &layout,
     // insert node indices from interior cell-to-cell linkage
     if (layout.count(cell) > 0) {
       for (auto lpair : layout.at(cell)) {
-        node_vec.insert(node_vec.end(), lpair.second.begin(),
-                        lpair.second.end());
+        node_vec.insert(node_vec.end(), lpair.second.begin(), lpair.second.end());
       }
     }
 
     // insert node indices from boundary cell-to-side linkage
     if (bd_layout.count(cell) > 0) {
       for (auto lpair : bd_layout.at(cell)) {
-        node_vec.insert(node_vec.end(), lpair.second.begin(),
-                        lpair.second.end());
+        node_vec.insert(node_vec.end(), lpair.second.begin(), lpair.second.end());
       }
     }
 
     // insert node indices from cell-to-ghost-cell linkage
     if (go_layout.count(cell) > 0) {
       for (auto lpair : go_layout.at(cell)) {
-        node_vec.insert(node_vec.end(), lpair.second.begin(),
-                        lpair.second.end());
+        node_vec.insert(node_vec.end(), lpair.second.begin(), lpair.second.end());
       }
     }
 
@@ -240,8 +225,7 @@ Test_Mesh_Interface::flatten_cn_linkage(const Layout &layout,
 
 //------------------------------------------------------------------------------------------------//
 
-std::vector<unsigned>
-Test_Mesh_Interface::flatten_sn_linkage(const Layout &bd_layout) const {
+std::vector<unsigned> Test_Mesh_Interface::flatten_sn_linkage(const Layout &bd_layout) const {
 
   // this function assumes 2 nodes per side
   std::vector<unsigned> sn_linkage(num_sides * 2);

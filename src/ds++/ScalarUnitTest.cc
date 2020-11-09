@@ -29,8 +29,8 @@ namespace rtt_dsxx {
  * It also prints a message that declares this to be a scalar unit test and provides the unit test
  * name.
  */
-ScalarUnitTest::ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
-                               std::ostream &out_, bool const verbose_)
+ScalarUnitTest::ScalarUnitTest(int &argc, char **&argv, string_fp_void release_, std::ostream &out_,
+                               bool const verbose_)
     : UnitTest(argc, argv, release_, out_, verbose_) {
   using std::endl;
   using std::string;

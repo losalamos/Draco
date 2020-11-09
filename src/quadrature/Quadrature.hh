@@ -90,9 +90,8 @@ public:
   //! Is the quadrature an open interval quadrature?
   virtual bool is_open_interval() const;
 
-  vector<Ordinate> create_ordinates(unsigned dimension, Geometry, double norm,
-                                    unsigned mu_axis, unsigned eta_axis,
-                                    bool include_starting_directions,
+  vector<Ordinate> create_ordinates(unsigned dimension, Geometry, double norm, unsigned mu_axis,
+                                    unsigned eta_axis, bool include_starting_directions,
                                     bool include_extra_directions) const;
 
   vector<Ordinate> create_ordinates(unsigned dimension, Geometry, double norm,
@@ -104,51 +103,44 @@ public:
   //    unsigned eta_axis, bool include_starting_directions,
   //    bool include_extra_directions, Ordinate_Set::Ordering ordering) const;
 
-  std::shared_ptr<Ordinate_Set>
-  create_ordinate_set(unsigned dimension, Geometry, double norm,
-                      bool include_starting_directions,
-                      bool include_extra_directions,
-                      Ordinate_Set::Ordering ordering) const;
+  std::shared_ptr<Ordinate_Set> create_ordinate_set(unsigned dimension, Geometry, double norm,
+                                                    bool include_starting_directions,
+                                                    bool include_extra_directions,
+                                                    Ordinate_Set::Ordering ordering) const;
+
+  std::shared_ptr<Ordinate_Space> create_ordinate_space(unsigned dimension, Geometry,
+                                                        int moment_expansion_order,
+                                                        bool include_extra_directions,
+                                                        Ordinate_Set::Ordering ordering,
+                                                        QIM qim) const;
 
   std::shared_ptr<Ordinate_Space>
-  create_ordinate_space(unsigned dimension, Geometry,
-                        int moment_expansion_order,
-                        bool include_extra_directions,
-                        Ordinate_Set::Ordering ordering, QIM qim) const;
-
-  std::shared_ptr<Ordinate_Space>
-  create_ordinate_space(unsigned dimension, Geometry,
-                        unsigned moment_expansion_order, unsigned mu_axis,
-                        unsigned eta_axis, bool include_extra_directions,
+  create_ordinate_space(unsigned dimension, Geometry, unsigned moment_expansion_order,
+                        unsigned mu_axis, unsigned eta_axis, bool include_extra_directions,
                         Ordinate_Set::Ordering ordering, QIM qim) const;
 
 protected:
   // IMPLEMENTATION
 
-  void add_1D_starting_directions_(Geometry geometry,
-                                   bool add_starting_directions,
-                                   bool add_extra_starting_directions,
-                                   vector<Ordinate> &) const;
+  void add_1D_starting_directions_(Geometry geometry, bool add_starting_directions,
+                                   bool add_extra_starting_directions, vector<Ordinate> &) const;
 
-  void add_2D_starting_directions_(Geometry geometry,
-                                   bool add_starting_directions,
-                                   bool add_extra_starting_directions,
-                                   vector<Ordinate> &) const;
+  void add_2D_starting_directions_(Geometry geometry, bool add_starting_directions,
+                                   bool add_extra_starting_directions, vector<Ordinate> &) const;
 
-  void map_axes_(unsigned mu_axis, unsigned eta_axis, vector<double> &mu,
-                 vector<double> &eta, vector<double> &xi) const;
+  void map_axes_(unsigned mu_axis, unsigned eta_axis, vector<double> &mu, vector<double> &eta,
+                 vector<double> &xi) const;
 
   //! Virtual hook for create_ordinates
-  virtual vector<Ordinate>
-  create_ordinates_(unsigned dimension, Geometry, double norm, unsigned mu_axis,
-                    unsigned eta_axis, bool include_starting_directions,
-                    bool include_extra_directions) const = 0;
+  virtual vector<Ordinate> create_ordinates_(unsigned dimension, Geometry, double norm,
+                                             unsigned mu_axis, unsigned eta_axis,
+                                             bool include_starting_directions,
+                                             bool include_extra_directions) const = 0;
 
   //! Virtual hook for create_ordinates
-  virtual vector<Ordinate>
-  create_ordinates_(unsigned dimension, Geometry, double norm,
-                    bool include_starting_directions,
-                    bool include_extra_directions) const = 0;
+  virtual vector<Ordinate> create_ordinates_(unsigned dimension, Geometry, double norm,
+                                             bool include_starting_directions,
+                                             bool include_extra_directions) const = 0;
 
   // data
 

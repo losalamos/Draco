@@ -51,9 +51,8 @@ namespace rtt_linear {
  * \post \c x satisfies \f$UWVx=b\f$
  */
 template <typename RandomContainer>
-void svbksb(const RandomContainer &u, const RandomContainer &w,
-            const RandomContainer &v, const unsigned m, const unsigned n,
-            const RandomContainer &b, RandomContainer &x) {
+void svbksb(const RandomContainer &u, const RandomContainer &w, const RandomContainer &v,
+            const unsigned m, const unsigned n, const RandomContainer &b, RandomContainer &x) {
   Require(u.size() == m * n);
   Require(w.size() == n);
   Require(b.size() == m);

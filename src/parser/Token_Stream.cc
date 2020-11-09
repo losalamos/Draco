@@ -89,8 +89,7 @@ void Token_Stream::pushback(Token const &token) {
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
-void Token_Stream::report_syntax_error(Token const &token,
-                                       string const &message) {
+void Token_Stream::report_syntax_error(Token const &token, string const &message) {
   try {
     error_count_++;
     report(token, message);
@@ -149,8 +148,7 @@ void Token_Stream::report_syntax_error(string const &message) {
  * \param message
  * The message to be passed to the user.
  */
-void Token_Stream::report_semantic_error(Token const &token,
-                                         string const &message) {
+void Token_Stream::report_semantic_error(Token const &token, string const &message) {
   error_count_++;
   report(token, message);
 

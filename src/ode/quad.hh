@@ -19,7 +19,7 @@
 
 namespace rtt_ode {
 //================================================================================================//
-/*! 
+/*!
  * \class Quad_To_ODE
  * \brief Helper class for quad
  *
@@ -35,8 +35,7 @@ template <typename Function> class Quad_To_ODE {
 public:
   Quad_To_ODE(Function &f) : func(f) {}
 
-  void operator()(double x, std::vector<double> const &,
-                  std::vector<double> &dydx) {
+  void operator()(double x, std::vector<double> const &, std::vector<double> &dydx) {
     dydx[0] = func(x);
   }
 
@@ -46,9 +45,8 @@ private:
 
 //! Adaptive quadrature of a function over a specified interval.
 template <typename Function, typename Rule>
-//DLL_PUBLIC_ode
-typename Function_Traits<Function>::return_type
-quad(Function func, double x1, double x2, double &eps, Rule rule);
+typename Function_Traits<Function>::return_type quad(Function func, double x1, double x2,
+                                                     double &eps, Rule rule);
 
 } // end namespace rtt_ode
 

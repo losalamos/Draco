@@ -64,8 +64,7 @@ set<char> const Text_Token_Stream::default_whitespace = {'=', ':', ';', ','};
  * nonbreaking whitespace separating each identifier within a keyword is
  * replaced by a single space character.
  */
-Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
-                                     bool const no_nonbreaking_ws)
+Text_Token_Stream::Text_Token_Stream(set<char> const &ws, bool const no_nonbreaking_ws)
     : buffer_(), whitespace_(ws), no_nonbreaking_ws_(no_nonbreaking_ws) {
   Ensure(check_class_invariants());
   Ensure(ws == whitespace());
@@ -82,8 +81,7 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
  * The default whitespace characters are contained in the set
  * \c Text_Token_Stream::default_whitespace.
  */
-Text_Token_Stream::Text_Token_Stream()
-    : buffer_(), whitespace_(default_whitespace) {
+Text_Token_Stream::Text_Token_Stream() : buffer_(), whitespace_(default_whitespace) {
   Ensure(check_class_invariants());
   Ensure(whitespace() == default_whitespace);
   Ensure(line() == 1);
@@ -718,14 +716,12 @@ Token Text_Token_Stream::scan_manifest_string() {
       c = peek_(ci);
     } else {
       if (c == '\0') {
-        report_syntax_error(Token(EXIT, give(token_location)),
-                            "unexpected end of file; "
-                            "did you forget a closing quote?");
+        report_syntax_error(Token(EXIT, give(token_location)), "unexpected end of file; "
+                                                               "did you forget a closing quote?");
       } else {
         Check(c == '\n');
-        report_syntax_error(Token(EXIT, give(token_location)),
-                            "unexpected end of line; "
-                            "did you forget a closing quote?");
+        report_syntax_error(Token(EXIT, give(token_location)), "unexpected end of line; "
+                                                               "did you forget a closing quote?");
       }
     }
   }
@@ -752,14 +748,12 @@ Token Text_Token_Stream::scan_manifest_string() {
       c = peek_();
     } else {
       if (end_() || error_()) {
-        report_syntax_error(Token(EXIT, give(token_location)),
-                            "unexpected end of file; "
-                            "did you forget a closing quote?");
+        report_syntax_error(Token(EXIT, give(token_location)), "unexpected end of file; "
+                                                               "did you forget a closing quote?");
       } else {
         Check(c == '\n');
-        report_syntax_error(Token(EXIT, give(token_location)),
-                            "unexpected end of line; "
-                            "did you forget a closing quote?");
+        report_syntax_error(Token(EXIT, give(token_location)), "unexpected end of line; "
+                                                               "did you forget a closing quote?");
       }
     }
   }

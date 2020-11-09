@@ -148,8 +148,7 @@ public:
    * \brief Locate the index into the materialData array for provided material
    *        identifier. */
   size_t getMatIndex(size_t const matid) const {
-    size_t pos =
-        std::find(matIDs.begin(), matIDs.end(), matid) - matIDs.begin();
+    size_t pos = std::find(matIDs.begin(), matIDs.end(), matid) - matIDs.begin();
     Ensure(pos < matIDs.size());
     return pos;
   }
@@ -162,8 +161,7 @@ public:
   }
 
   //! Provide access to data arrays
-  std::vector<double> getData(size_t const matid,
-                              std::string const &fieldName) const {
+  std::vector<double> getData(size_t const matid, std::string const &fieldName) const {
     Require(materialFound(matid));
     size_t matidx = getMatIndex(matid);
     return materialData[matidx].data(fieldName);
@@ -186,12 +184,10 @@ private:
   void loadFieldData();
 
   //! Read an array of integers or doubles from the ipcress file.
-  template <typename T>
-  void read_v(size_t const offset_bytes, std::vector<T> &vdata) const;
+  template <typename T> void read_v(size_t const offset_bytes, std::vector<T> &vdata) const;
 
   //! Read strings from the binary file
-  void read_strings(size_t const offset_bytes,
-                    std::vector<std::string> &vdata) const;
+  void read_strings(size_t const offset_bytes, std::vector<std::string> &vdata) const;
 };
 
 } // end namespace rtt_cdi_ipcress

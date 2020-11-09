@@ -21,8 +21,7 @@ using namespace rtt_dsxx;
 
 //-------------------------------------------------------------------------//
 Parallel_File_Token_Stream::letter::letter(string file_name)
-    : filename_(std::move(file_name)), infile_(),
-      is_io_processor_(rtt_c4::node() == 0),
+    : filename_(std::move(file_name)), infile_(), is_io_processor_(rtt_c4::node() == 0),
       // The current implementation always designates processor 0 as the I/O
       // processor.
       at_eof_(false), at_error_(false) {
@@ -75,10 +74,8 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
  *
  * \todo Make this constructor more failsafe.
  */
-Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
-                                                       set<char> const &ws)
-    : Text_Token_Stream(ws), letters_(),
-      letter_(make_shared<letter>(file_name)) {
+Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name, set<char> const &ws)
+    : Text_Token_Stream(ws), letters_(), letter_(make_shared<letter>(file_name)) {
   Ensure(check_class_invariants());
   Ensure(Parallel_File_Token_Stream::location_() == file_name + ", line 1");
   Ensure(whitespace() == ws);
@@ -231,8 +228,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
  * \throw rtt_dsxx::assert If a received message has a length greater than the
  * maximum expected.
  */
-void Parallel_File_Token_Stream::letter::fill_character_buffer_(
-    vector<char> &comm_buffer) {
+void Parallel_File_Token_Stream::letter::fill_character_buffer_(vector<char> &comm_buffer) {
   using rtt_c4::broadcast;
 
   // The first value in the communications buffer will be a status code, which
@@ -313,8 +309,7 @@ bool Parallel_File_Token_Stream::end_() const {
  * Only processor 0 writes the message, to avoid many (possibly thousands) of
  * duplicate messages.
  */
-void Parallel_File_Token_Stream::report(Token const &token,
-                                        string const &message) {
+void Parallel_File_Token_Stream::report(Token const &token, string const &message) {
   if (rtt_c4::node() == 0) {
     cerr << token.location() << ": " << message << endl;
   }

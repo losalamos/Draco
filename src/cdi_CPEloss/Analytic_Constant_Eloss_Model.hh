@@ -28,8 +28,7 @@ class Analytic_Constant_Eloss_Model : public Analytic_Eloss_Model {
 public:
   //! Constructor
   Analytic_Constant_Eloss_Model(const rtt_cdi::CParticle &target,
-                                const rtt_cdi::CParticle &projectile,
-                                const double eloss_value_in)
+                                const rtt_cdi::CParticle &projectile, const double eloss_value_in)
       : Analytic_Eloss_Model(target, projectile), eloss_value(eloss_value_in) {}
 
   //! Calculate the eloss rate in units of shk^-1;

@@ -35,8 +35,7 @@ void thread_action(std::atomic<double> &d, size_t N, size_t tid) {
 
 //------------------------------------------------------------------------------------------------//
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
-void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
-                           size_t const n_iterations) {
+void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads, size_t const n_iterations) {
   std::atomic<double> a_d(0.0);
 
   // launch a number of threads
@@ -66,8 +65,8 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   // check and report
   bool const passed = rtt_dsxx::soft_equiv(result, expected);
   if (!passed) {
-    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__,
-           __LINE__, tsum, sum, result);
+    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__, __LINE__, tsum, sum,
+           result);
   }
   FAIL_IF_NOT(passed);
   return;
@@ -172,8 +171,7 @@ void thread_action_sub(std::atomic<double> &d, size_t N, size_t tid) {
 
 //------------------------------------------------------------------------------------------------//
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
-void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads,
-                           size_t const n_iterations) {
+void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads, size_t const n_iterations) {
   std::atomic<double> a_d(0.0);
 
   // launch a number of threads

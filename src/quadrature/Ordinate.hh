@@ -45,8 +45,7 @@ public:
   }
 
   //! Construct a 1D Ordinate from the specified angle and weight.
-  inline Ordinate(double const mu, double const wt)
-      : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt) {
+  inline Ordinate(double const mu, double const wt) : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt) {
     Require(mu >= -1.0 && mu <= 1.0);
   }
 
@@ -84,10 +83,8 @@ private:
 //------------------------------------------------------------------------------------------------//
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b) {
-  return rtt_dsxx::soft_equiv(a.mu(), b.mu()) &&
-         rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
-         rtt_dsxx::soft_equiv(a.xi(), b.xi()) &&
-         rtt_dsxx::soft_equiv(a.wt(), b.wt());
+  return rtt_dsxx::soft_equiv(a.mu(), b.mu()) && rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
+         rtt_dsxx::soft_equiv(a.xi(), b.xi()) && rtt_dsxx::soft_equiv(a.wt(), b.wt());
 }
 
 } // end namespace rtt_quadrature

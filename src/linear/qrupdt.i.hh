@@ -39,8 +39,8 @@ namespace rtt_linear {
  * \todo Templatize on container element type
  */
 template <class RandomContainer>
-void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
-            RandomContainer &u, RandomContainer &v) {
+void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n, RandomContainer &u,
+            RandomContainer &v) {
 
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
@@ -51,8 +51,7 @@ void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
   using namespace rtt_dsxx;
 
   // minumum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
 
   // Find first nonzero element of u.
   int k;

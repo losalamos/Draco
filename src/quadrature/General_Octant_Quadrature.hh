@@ -26,11 +26,9 @@ namespace rtt_quadrature {
 class General_Octant_Quadrature : public Octant_Quadrature {
 public:
   // CREATORS
-  DLL_PUBLIC_quadrature
   General_Octant_Quadrature(unsigned const sn_order, vector<double> const &mu,
                             vector<double> const &eta, vector<double> const &xi,
-                            vector<double> const &wt, unsigned number_of_levels,
-                            Quadrature_Class);
+                            vector<double> const &wt, unsigned number_of_levels, Quadrature_Class);
 
   General_Octant_Quadrature(); // disable default construction
 

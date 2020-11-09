@@ -33,8 +33,8 @@ namespace rtt_min {
  */
 
 template <class Function>
-double brent(double const ax, double const bx, double const cx, Function f,
-             double const tol, double &xmin) {
+double brent(double const ax, double const bx, double const cx, Function f, double const tol,
+             double &xmin) {
   using rtt_dsxx::sign;
   using std::numeric_limits;
 
@@ -71,8 +71,7 @@ double brent(double const ax, double const bx, double const cx, Function f,
       q = fabs(q);
       double const etemp = e;
       e = d;
-      if (fabs(p) >= fabs(0.5 * q * etemp) || p <= q * (a - x) ||
-          p >= q * (b - x)) {
+      if (fabs(p) >= fabs(0.5 * q * etemp) || p <= q * (a - x) || p >= q * (b - x)) {
         e = (x >= xm ? a - x : b - x);
         d = CGOLD * e;
       } else {
@@ -111,8 +110,7 @@ double brent(double const ax, double const bx, double const cx, Function f,
         w = u;
         fv = fw;
         fw = fu;
-      } else if (fu <= fv || rtt_dsxx::soft_equiv(v, x, eps) ||
-                 rtt_dsxx::soft_equiv(v, w, eps)) {
+      } else if (fu <= fv || rtt_dsxx::soft_equiv(v, x, eps) || rtt_dsxx::soft_equiv(v, w, eps)) {
         v = u;
         fv = fu;
       }

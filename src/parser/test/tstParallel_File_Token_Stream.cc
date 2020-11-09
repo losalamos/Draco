@@ -24,8 +24,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
   using namespace rtt_parser;
 
   // Build path for the input file "scanner_test.inp"
-  string const inputFile(ut.getTestSourcePath() +
-                         std::string("scanner_test.inp"));
+  string const inputFile(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
   {
     Parallel_File_Token_Stream tokens(inputFile);
@@ -179,8 +178,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     FAIL_IF(token.type() != STRING || token.text() != "\"manifest string\"");
 
     token = tokens.shift();
-    FAIL_IF(token.type() != STRING ||
-            token.text() != R"("manifest \"string\"")");
+    FAIL_IF(token.type() != STRING || token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
     FAIL_IF(token.type() != OTHER || token.text() != "@");
@@ -217,10 +215,9 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       Parallel_File_Token_Stream tokens("no such file");
       // The preceeding file does not exist.
       ostringstream errmsg;
-      errmsg
-          << "Parallel_File_Token_Stream did not throw an expected exception.\n"
-          << "\tThe constructor should throw an exception if the requested\n"
-          << "\tfile can not be opened." << endl;
+      errmsg << "Parallel_File_Token_Stream did not throw an expected exception.\n"
+             << "\tThe constructor should throw an exception if the requested\n"
+             << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
       // Token token = tokens.shift();
       // if (token.type()!=ERROR) ITFAILS;
@@ -240,8 +237,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   {
     // Build path for the input file "scanner_test.inp"
-    string const inputFile2(ut.getTestSourcePath() +
-                            std::string("scanner_recovery.inp"));
+    string const inputFile2(ut.getTestSourcePath() + std::string("scanner_recovery.inp"));
 
     Parallel_File_Token_Stream tokens(inputFile2);
     bool exception = false;
@@ -265,8 +261,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     // Try reopening
-    string const inputFile3(ut.getTestSourcePath() +
-                            std::string("scanner_test.inp"));
+    string const inputFile3(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
     tokens.open(inputFile3);
 
@@ -280,8 +275,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   {
     // Test default constructor
-    string const inputFile3(ut.getTestSourcePath() +
-                            std::string("scanner_test.inp"));
+    string const inputFile3(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
     Parallel_File_Token_Stream tokens;
     tokens.open(inputFile3);
@@ -302,32 +296,26 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     Token token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try rewind
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try open of file in middle of include
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
-    tokens.open(ut.getTestSourcePath() +
-                std::string("parallel_include_test.inp"));
+    ut.check(token.text() == "second", "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() + std::string("parallel_include_test.inp"));
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
 
@@ -336,8 +324,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");

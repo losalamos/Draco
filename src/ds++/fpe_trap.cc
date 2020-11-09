@@ -28,8 +28,7 @@
 #include <csignal>
 
 /* Signal handler for floating point exceptions. */
-extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
-                             void * /*psContext*/) {
+extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo, void * /*psContext*/) {
   // generate a message:
   std::string error_type;
 
@@ -38,27 +37,22 @@ extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
   } else {
     switch (psSiginfo->si_code) {
     case FPE_INTDIV:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer divide by zero)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer divide by zero)";
       break;
     case FPE_INTOVF:
       error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer overflow)";
       break;
     case FPE_FLTDIV:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point divide by zero)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point divide by zero)";
       break;
     case FPE_FLTOVF:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point overflow)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point overflow)";
       break;
     case FPE_FLTUND:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point underflow)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point underflow)";
       break;
     case FPE_FLTRES:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point inexact result)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point inexact result)";
       break;
     case FPE_FLTINV:
       error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Invalid floating point "
@@ -99,8 +93,7 @@ bool fpe_trap::enable() {
   act.sa_flags = SA_SIGINFO;   // want 3 args for handler
 
   // specify handler
-  Insist(!sigaction(SIGFPE, &act, nullptr),
-         "Unable to set floating point handler.");
+  Insist(!sigaction(SIGFPE, &act, nullptr), "Unable to set floating point handler.");
 
   // The feenableexcept function is new for glibc 2.2.  See its description in the man page for
   // fenv(3).
@@ -359,8 +352,8 @@ void CCrashHandler::SetThreadExceptionHandlers() {
 }
 
 // The following code gets exception pointers using a workaround found in CRT code.
-void CCrashHandler::GetExceptionPointers(
-    DWORD dwExceptionCode, EXCEPTION_POINTERS **ppExceptionPointers) {
+void CCrashHandler::GetExceptionPointers(DWORD dwExceptionCode,
+                                         EXCEPTION_POINTERS **ppExceptionPointers) {
   // The following code was taken from VC++ 8.0 CRT (invarg.c: line 104)
 
   EXCEPTION_RECORD ExceptionRecord;
@@ -423,15 +416,13 @@ void CCrashHandler::GetExceptionPointers(
 }
 
 //! Action to perform when an exception is found.
-void CCrashHandler::ActionOnException(std::string const &message,
-                                      EXCEPTION_POINTERS *pExcPtrs) {
+void CCrashHandler::ActionOnException(std::string const &message, EXCEPTION_POINTERS *pExcPtrs) {
   std::cout << "In CCrashHandler::ActionOnException" << std::endl;
   CCrashHandler::CreateMiniDump(pExcPtrs);
 
   // Provide a report
   std::ostringstream msg;
-  msg << "\nERROR: " << message
-      << "\nA fatal error has occured and a dump file was generated "
+  msg << "\nERROR: " << message << "\nA fatal error has occured and a dump file was generated "
       << "(crashdump.dmp)."
       << "\nThe dump file can be viewed by loading it into "
       << "Visual Studio." << std::endl;
@@ -471,8 +462,7 @@ void CCrashHandler::CreateMiniDump(EXCEPTION_POINTERS *pExcPtrs) {
   mci.CallbackRoutine = NULL;
   mci.CallbackParam = NULL;
 
-  std::cout << "\nThreadId = " << mei.ThreadId
-            << "\nExceptionPointers = " << mei.ExceptionPointers;
+  std::cout << "\nThreadId = " << mei.ThreadId << "\nExceptionPointers = " << mei.ExceptionPointers;
 
   typedef BOOL(WINAPI * LPMINIDUMPWRITEDUMP)(
       HANDLE hProcess, DWORD ProcessId, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -491,8 +481,8 @@ void CCrashHandler::CreateMiniDump(EXCEPTION_POINTERS *pExcPtrs) {
   std::cout << "\nhProcess = " << hProcess << "\nProcessId = " << dwProcessId
             << "\nhFile = " << hFile << "\nMiniDumpNormal = " << MiniDumpNormal;
 
-  BOOL bWriteDump = pfnMiniDumpWriteDump(hProcess, dwProcessId, hFile,
-                                         MiniDumpNormal, &mei, NULL, &mci);
+  BOOL bWriteDump =
+      pfnMiniDumpWriteDump(hProcess, dwProcessId, hFile, MiniDumpNormal, &mei, NULL, &mci);
 
   if (!bWriteDump)
     return;
@@ -561,9 +551,10 @@ void __cdecl CCrashHandler::PureCallHandler() {
 }
 
 // CRT invalid parameter handler
-void __cdecl CCrashHandler::InvalidParameterHandler(
-    const wchar_t * /*expression*/, const wchar_t * /*function*/,
-    const wchar_t * /*file*/, unsigned int /*line*/, uintptr_t pReserved) {
+void __cdecl CCrashHandler::InvalidParameterHandler(const wchar_t * /*expression*/,
+                                                    const wchar_t * /*function*/,
+                                                    const wchar_t * /*file*/, unsigned int /*line*/,
+                                                    uintptr_t pReserved) {
 
   std::cout << "In CCrashHandler::InvalidParameterHandler" << std::endl;
   pReserved;
@@ -618,8 +609,7 @@ void CCrashHandler::SigfpeHandler(int /*code*/, int /*subcode*/) {
   EXCEPTION_POINTERS *pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
 
   // Write minidump file
-  ActionOnException(std::string("SignalFloatingPointException"),
-                    pExceptionPtrs);
+  ActionOnException(std::string("SignalFloatingPointException"), pExceptionPtrs);
 
   return;
 }
@@ -662,8 +652,7 @@ void CCrashHandler::SigsegvHandler(int) {
   PEXCEPTION_POINTERS pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
 
   // Write minidump file
-  ActionOnException(std::string("SignalInvalidStorageAccess(SIGSEGV)"),
-                    pExceptionPtrs);
+  ActionOnException(std::string("SignalInvalidStorageAccess(SIGSEGV)"), pExceptionPtrs);
 
   return;
 }
@@ -699,8 +688,7 @@ namespace rtt_dsxx {
 //------------------------------------------------------------------------------------------------//
 //! Enable trapping of floating point errors.
 bool fpe_trap::enable() {
-  _mm_setcsr(_MM_MASK_MASK &
-             ~(_MM_MASK_OVERFLOW | _MM_MASK_INVALID | _MM_MASK_DIV_ZERO));
+  _mm_setcsr(_MM_MASK_MASK & ~(_MM_MASK_OVERFLOW | _MM_MASK_INVALID | _MM_MASK_DIV_ZERO));
 
   // This functionality is not currently implemented on the Mac.
   abortWithInsist = false;
@@ -760,9 +748,7 @@ void *fpe_enabler(void *parent) {
   return 0;
 }
 
-static void catch_sigfpe(int sig) {
-  Insist(0, "Floating point exception caught by fpe_trap.")
-}
+static void catch_sigfpe(int sig) { Insist(0, "Floating point exception caught by fpe_trap.") }
 
 } // end of namespace
 

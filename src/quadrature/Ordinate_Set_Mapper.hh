@@ -54,8 +54,7 @@ public:
   bool check_class_invariants() const;
 
   //! Maps an ordinate and weight into the ordinate set
-  void map_angle_into_ordinates(const Ordinate &ord_in,
-                                const Interpolation_Type &interp_in,
+  void map_angle_into_ordinates(const Ordinate &ord_in, const Interpolation_Type &interp_in,
                                 std::vector<double> &weights_in) const;
 
 private:

@@ -46,8 +46,7 @@ bool has_ieee_float_representation() {
   std::memcpy(&char_two, &d_two, size);
 
   // IEEE reference value:
-  std::array<char, size> ieee64_two = {0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x40};
+  std::array<char, size> ieee64_two = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40};
   if (is_big_endian())
     char_byte_swap(&ieee64_two[0], size);
 

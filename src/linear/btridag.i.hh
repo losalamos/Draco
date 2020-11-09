@@ -35,9 +35,8 @@ namespace rtt_linear {
  * \throw std::range_error If the system is not diagonal dominant.
  */
 template <class FieldVector>
-void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
-             FieldVector const &r, unsigned const n, unsigned const m,
-             FieldVector &u) {
+void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c, FieldVector const &r,
+             unsigned const n, unsigned const m, FieldVector &u) {
   Require(a.size() == n * m * m);
   Require(b.size() == n * m * m);
   Require(c.size() == n * m * m);
@@ -60,12 +59,10 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
     Slice<typename FieldVector::iterator> u0(u.begin(), m);
     lubksb(rbet, indx, u0);
     for (unsigned j = 1; j < n; ++j) {
-      std::copy(c.begin() + (j - 1) * m * m, c.begin() + j * m * m,
-                gam.begin() + j * m * m);
+      std::copy(c.begin() + (j - 1) * m * m, c.begin() + j * m * m, gam.begin() + j * m * m);
 
       for (unsigned k = 0; k < m; ++k) {
-        Slice<typename FieldVector::iterator> gamj(
-            gam.begin() + j * m * m + k * m, m);
+        Slice<typename FieldVector::iterator> gamj(gam.begin() + j * m * m + k * m, m);
 
         lubksb(rbet, indx, gamj);
       }

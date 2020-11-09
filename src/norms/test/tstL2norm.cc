@@ -31,16 +31,14 @@ void tstL2norm(UnitTest &ut) {
   vector<double> x(N, rtt_c4::node() + 1);
 
   double norm = L2norm(x);
-  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))),
-           "L2norm is correct");
+  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))), "L2norm is correct");
 
   norm = L2norm_diff(x, x);
   ut.check(soft_equiv(norm, 0.0), "L2norm_diff of vector with self is zero");
 
   vector<double> y(N, 2 * rtt_c4::node() + 2);
   norm = L2norm_diff(x, y);
-  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))),
-           "L2norm_diff is correct");
+  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))), "L2norm_diff is correct");
 
   return;
 }

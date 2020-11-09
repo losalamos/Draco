@@ -40,8 +40,7 @@ void tstMemberFunctions(ParallelUnitTest &ut, stringstream &output) {
       ut.reset();
       output.clear();
     } else {
-      cout << "Test: failed\n\t passes member function failed for failing case."
-           << endl;
+      cout << "Test: failed\n\t passes member function failed for failing case." << endl;
     }
   }
 
@@ -66,8 +65,7 @@ void tstMemberFunctions(ParallelUnitTest &ut, stringstream &output) {
     string const data(output.str());
     size_t const found = data.find(msg);
     if (ut.numPasses == 1 && found != string::npos)
-      cout << "Test: passed\n\t check_all member function works for pass."
-           << endl;
+      cout << "Test: passed\n\t check_all member function works for pass." << endl;
     else
       cout << "Test: failed\n\t check_all member function failed." << endl;
   }

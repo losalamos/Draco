@@ -38,8 +38,7 @@ public:
   //! Specify the ordinate quadrature with defaults.
   Sn_Ordinate_Space(unsigned dimension, rtt_mesh_element::Geometry geometry,
                     std::vector<Ordinate> const &, int expansion_order,
-                    bool extra_starting_directions = false,
-                    Ordering ordering = LEVEL_ORDERED);
+                    bool extra_starting_directions = false, Ordering ordering = LEVEL_ORDERED);
 
   // MANIPULATORS
 
@@ -64,20 +63,15 @@ protected:
 
   // IMPLEMENTATION
 
-  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
 
 private:
   // NESTED CLASSES AND TYPEDEFS

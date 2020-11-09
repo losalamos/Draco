@@ -134,8 +134,7 @@ bool Is_Integer_Text(char const *text) {
  * \return \c true if the two tokens are equal.
  */
 bool operator==(Token const &a, Token const &b) {
-  return a.type() == b.type() && a.text() == b.text() &&
-         a.location() == b.location();
+  return a.type() == b.type() && a.text() == b.text() && a.location() == b.location();
 }
 
 //------------------------------------------------------------------------------------------------//

@@ -528,14 +528,14 @@ function( cafs_fix_mpi_library )
     # 2. Strip MPI deps from Lib_c4
     set_target_properties( Lib_c4 PROPERTIES INTERFACE_LINK_LIBRARIES "Lib_dsxx;MPI::MPI_cafs" )
 
-    # Force '-fno-range-check' gfortran compiler flag
+    # Remove '-fno-range-check' gfortran compiler flag (remove it from Debug flags)
     if( "${CMAKE_Fortran_FLAGS_DEBUG}" MATCHES "frange-check" )
       string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
         ${CMAKE_Fortran_FLAGS_DEBUG} )
-    else()
-      string( APPEND CMAKE_Fortran_FLAGS_DEBUG " -fno-range-check")
+      set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}" PARENT_SCOPE )
     endif()
-    set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}" PARENT_SCOPE )
+    string( APPEND CMAKE_Fortran_FLAGS " -fno-range-check")
+    set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" PARENT_SCOPE )
     if(verbose)
       message("CAFS: MPI_gfortran_LIBRARIES= ${MPI_gfortran_LIBRARIES}"
       "\n      CMAKE_Fortran_FLAGS_DEBUG = ${CMAKE_Fortran_FLAGS_DEBUG}")

@@ -143,20 +143,16 @@ public:
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side));
   }
-  const std::map<size_t, std::vector<unsigned>> &get_bc_node_map() const {
-    return bc_node_map;
-  }
+  const std::map<size_t, std::vector<unsigned>> &get_bc_node_map() const { return bc_node_map; }
 
 private:
   // >>> SUPPORT FUNCTIONS
 
-  Parsed_Elements::const_iterator find_iter_of_key(const Parsed_Elements &pairs,
-                                                   std::string key,
+  Parsed_Elements::const_iterator find_iter_of_key(const Parsed_Elements &pairs, std::string key,
                                                    size_t start = 0);
 
   template <typename KT, typename VT>
-  std::map<KT, std::vector<VT>> map_x3d_block(const std::string &block_name,
-                                              size_t &dist);
+  std::map<KT, std::vector<VT>> map_x3d_block(const std::string &block_name, size_t &dist);
 
   template <typename KT> KT convert_key(const std::string &skey);
 
@@ -168,9 +164,7 @@ private:
 //------------------------------------------------------------------------------------------------//
 // EXPLICIT SPECIALIZATIONS
 //------------------------------------------------------------------------------------------------//
-template <>
-DLL_PUBLIC_mesh std::string
-X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
+template <> std::string X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
 
 } // end namespace rtt_mesh
 

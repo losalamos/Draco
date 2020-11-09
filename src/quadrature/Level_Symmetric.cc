@@ -26,25 +26,22 @@ string Level_Symmetric::name() const { return "Level Symmetric"; }
 string Level_Symmetric::parse_name() const { return "level symmetric"; }
 
 //------------------------------------------------------------------------------------------------//
-Quadrature_Class Level_Symmetric::quadrature_class() const {
-  return TRIANGLE_QUADRATURE;
-}
+Quadrature_Class Level_Symmetric::quadrature_class() const { return TRIANGLE_QUADRATURE; }
 
 //------------------------------------------------------------------------------------------------//
 unsigned Level_Symmetric::number_of_levels() const { return sn_order_; }
 
 //------------------------------------------------------------------------------------------------//
 string Level_Symmetric::as_text(string const &indent) const {
-  string Result = indent + "type = level symmetric" + indent +
-                  "  order = " + to_string(sn_order_) + indent + "end";
+  string Result = indent + "type = level symmetric" + indent + "  order = " + to_string(sn_order_) +
+                  indent + "end";
 
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*virtual*/
-void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
-                                               vector<double> &eta,
+void Level_Symmetric::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
                                                vector<double> &wt) const {
   if (sn_order_ > 24) {
     throw std::range_error("Sn order out of range");
@@ -144,8 +141,7 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
     wtt[2] = 0.0373376737588285824652402;
     wtt[3] = 0.0502819010600571181385765;
     wtt[4] = 0.0258512916557503911218290;
-    size_t wp12[21] = {0, 1, 2, 2, 1, 0, 1, 3, 4, 3, 1,
-                       2, 4, 4, 2, 2, 3, 2, 1, 1, 0};
+    size_t wp12[21] = {0, 1, 2, 2, 1, 0, 1, 3, 4, 3, 1, 2, 4, 4, 2, 2, 3, 2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp12[m]];
     break;
@@ -223,9 +219,8 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
     wtt[7] = 0.0200484595308572875885066;
     wtt[8] = 0.000111409402059638628382279;
     wtt[9] = 0.0163797038522425240494567;
-    size_t wp18[45] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 5, 6, 7, 7, 6,
-                       5, 1, 2, 6, 8, 9, 8, 6, 2, 3, 7, 9, 9, 7, 3,
-                       4, 7, 8, 7, 4, 3, 6, 6, 3, 2, 5, 2, 1, 1, 0};
+    size_t wp18[45] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 5, 6, 7, 7, 6, 5, 1, 2, 6, 8, 9, 8, 6,
+                       2, 3, 7, 9, 9, 7, 3, 4, 7, 8, 7, 4, 3, 6, 6, 3, 2, 5, 2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp18[m]];
     break;
@@ -256,10 +251,9 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
     wtt[9] = 0.00544675187330776223879437;
     wtt[10] = 0.00474564692642379971238396;
     wtt[11] = 0.0277298541009064049325246;
-    size_t wp20[55] = {0, 1,  2,  3,  4, 4, 3, 2, 1,  0,  1, 5, 6, 7,
-                       8, 7,  6,  5,  1, 2, 6, 9, 10, 10, 9, 6, 2, 3,
-                       7, 10, 11, 10, 7, 3, 4, 8, 10, 10, 8, 4, 4, 7,
-                       9, 7,  4,  3,  6, 6, 3, 2, 5,  2,  1, 1, 0};
+    size_t wp20[55] = {0, 1, 2, 3,  4,  4, 3, 2, 1, 0, 1,  5,  6,  7, 8, 7, 6, 5,  1,
+                       2, 6, 9, 10, 10, 9, 6, 2, 3, 7, 10, 11, 10, 7, 3, 4, 8, 10, 10,
+                       8, 4, 4, 7,  9,  7, 4, 3, 6, 6, 3,  2,  5,  2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp20[m]];
     break;
@@ -293,11 +287,10 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
     wtt[11] = 0.0156214785078803432781324;
     wtt[12] = -0.0101774221315738297143270;
     wtt[13] = 0.0135061258938431808485310;
-    size_t wp22[66] = {0,  1, 2, 3, 4,  5,  4,  3,  2, 1,  0,  1,  6,  7,
-                       8,  9, 9, 8, 7,  6,  1,  2,  7, 10, 11, 12, 11, 10,
-                       7,  2, 3, 8, 11, 13, 13, 11, 8, 3,  4,  9,  12, 13,
-                       12, 9, 4, 5, 9,  11, 11, 9,  5, 4,  8,  10, 8,  4,
-                       3,  7, 7, 3, 2,  6,  2,  1,  1, 0};
+    size_t wp22[66] = {0,  1,  2,  3, 4, 5, 4,  3,  2,  1,  0,  1, 6, 7,  8,  9,  9,
+                       8,  7,  6,  1, 2, 7, 10, 11, 12, 11, 10, 7, 2, 3,  8,  11, 13,
+                       13, 11, 8,  3, 4, 9, 12, 13, 12, 9,  4,  5, 9, 11, 11, 9,  5,
+                       4,  8,  10, 8, 4, 3, 7,  7,  3,  2,  6,  2, 1, 1,  0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp22[m]];
     break;
@@ -335,12 +328,10 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
     wtt[13] = 0.00228403610697848813660369;
     wtt[14] = 0.0338971925236628645848112;
     wtt[15] = -0.00644725595698339499416262;
-    size_t wp24[78] = {0,  1,  2,  3,  4,  5,  5,  4,  3,  2,  1,  0,  1,
-                       6,  7,  8,  9,  10, 9,  8,  7,  6,  1,  2,  7,  11,
-                       12, 13, 13, 12, 11, 7,  2,  3,  8,  12, 14, 15, 14,
-                       12, 8,  3,  4,  9,  13, 15, 15, 13, 9,  4,  5,  10,
-                       13, 14, 13, 10, 5,  5,  9,  12, 12, 9,  5,  4,  8,
-                       11, 8,  4,  3,  7,  7,  3,  2,  6,  2,  1,  1,  0};
+    size_t wp24[78] = {0,  1, 2, 3, 4,  5,  5,  4,  3,  2,  1,  0,  1,  6,  7,  8,  9,  10, 9,  8,
+                       7,  6, 1, 2, 7,  11, 12, 13, 13, 12, 11, 7,  2,  3,  8,  12, 14, 15, 14, 12,
+                       8,  3, 4, 9, 13, 15, 15, 13, 9,  4,  5,  10, 13, 14, 13, 10, 5,  5,  9,  12,
+                       12, 9, 5, 4, 8,  11, 8,  4,  3,  7,  7,  3,  2,  6,  2,  1,  1,  0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp24[m]];
     break;

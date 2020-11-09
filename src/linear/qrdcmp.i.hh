@@ -43,8 +43,7 @@ namespace rtt_linear {
  * \todo templatize on container element type
  */
 template <class RandomContainer>
-bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
-            RandomContainer &d) {
+bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c, RandomContainer &d) {
   Require(a.size() == n * n);
 
   using rtt_dsxx::square;
@@ -94,8 +93,7 @@ bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
     }
   }
   d[n - 1] = a[n - 1 + n * (n - 1)];
-  if (std::abs(d[n - 1]) < std::numeric_limits<double>::min() ||
-      !rtt_dsxx::isFinite(d[n - 1]))
+  if (std::abs(d[n - 1]) < std::numeric_limits<double>::min() || !rtt_dsxx::isFinite(d[n - 1]))
     singular = true;
 
   Ensure(a.size() == n * n);

@@ -100,8 +100,7 @@ public:
    */
   static void set_global_activity(bool active);
 
-  static void set_selected_activity(std::set<std::string> const &timer_list,
-                                    bool active);
+  static void set_selected_activity(std::set<std::string> const &timer_list, bool active);
 
   static void reset_all();
 

@@ -16,35 +16,28 @@ namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
 //------------------------------------------------------------------------------------------------//
-string Square_Chebyshev_Legendre::name() const {
-  return "Square Chebyshev Legendre";
-}
+string Square_Chebyshev_Legendre::name() const { return "Square Chebyshev Legendre"; }
 
 //------------------------------------------------------------------------------------------------//
 string Square_Chebyshev_Legendre::parse_name() const { return "square cl"; }
 
 //------------------------------------------------------------------------------------------------//
-Quadrature_Class Square_Chebyshev_Legendre::quadrature_class() const {
-  return SQUARE_QUADRATURE;
-}
+Quadrature_Class Square_Chebyshev_Legendre::quadrature_class() const { return SQUARE_QUADRATURE; }
 
 //------------------------------------------------------------------------------------------------//
-unsigned Square_Chebyshev_Legendre::number_of_levels() const {
-  return sn_order_;
-}
+unsigned Square_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
 //------------------------------------------------------------------------------------------------//
 string Square_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = square cl" + indent +
-                  "  order = " + to_string(sn_order()) +
+  string Result = indent + "type = square cl" + indent + "  order = " + to_string(sn_order()) +
                   Octant_Quadrature::as_text(indent);
 
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
-void Square_Chebyshev_Legendre::create_octant_ordinates_(
-    vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
+void Square_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                                                         vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
   using std::cos;
   using std::fabs;

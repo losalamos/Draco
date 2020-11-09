@@ -55,8 +55,7 @@ void runtest(rtt_dsxx::UnitTest &ut) {
 
   // Check for word counts
   bool const verbose(false);
-  std::map<std::string, unsigned> words =
-      rtt_dsxx::get_word_count(msg, verbose);
+  std::map<std::string, unsigned> words = rtt_dsxx::get_word_count(msg, verbose);
 
   // Expected values.
   FAIL_IF_NOT(words[std::string("PID")] == 1);

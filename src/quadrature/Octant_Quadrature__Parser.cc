@@ -24,8 +24,8 @@ using namespace rtt_parser;
  */
 
 /*static*/
-void Octant_Quadrature::parse(Token_Stream &tokens, bool &has_axis_assignments,
-                              unsigned &mu_axis, unsigned &eta_axis) {
+void Octant_Quadrature::parse(Token_Stream &tokens, bool &has_axis_assignments, unsigned &mu_axis,
+                              unsigned &eta_axis) {
   Token token = tokens.shift();
 
   has_axis_assignments = false;

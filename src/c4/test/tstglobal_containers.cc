@@ -39,8 +39,7 @@ void tstglobal_containers(UnitTest &ut) {
       FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      if (local_set.count(p) != 1 ||
-          local_set.count(number_of_processors + p) != 1) {
+      if (local_set.count(p) != 1 || local_set.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in set");
       }
     }
@@ -59,13 +58,11 @@ void tstglobal_containers(UnitTest &ut) {
       FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      if (local_map.count(p) != 1 ||
-          local_map.count(number_of_processors + p) != 1) {
+      if (local_map.count(p) != 1 || local_map.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in map");
       }
       if (!rtt_dsxx::soft_equiv(local_map[p], static_cast<double>(p)) ||
-          !rtt_dsxx::soft_equiv(local_map[number_of_processors + p],
-                                static_cast<double>(2 * p))) {
+          !rtt_dsxx::soft_equiv(local_map[number_of_processors + p], static_cast<double>(2 * p))) {
         FAILMSG("WRONG element value in map");
       }
     }
@@ -84,8 +81,7 @@ void tstglobal_containers(UnitTest &ut) {
       FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      if (local_map.count(p) != 1 ||
-          local_map.count(number_of_processors + p) != 1) {
+      if (local_map.count(p) != 1 || local_map.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in map");
       }
       if (local_map[p] != static_cast<int>(p) ||
@@ -108,8 +104,7 @@ void tstglobal_containers(UnitTest &ut) {
       FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      if (local_map.count(p) != 1 ||
-          local_map.count(number_of_processors + p) != 1) {
+      if (local_map.count(p) != 1 || local_map.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in map");
       }
       if (local_map[p] != p || local_map[number_of_processors + p] != 2 * p) {
@@ -131,12 +126,10 @@ void tstglobal_containers(UnitTest &ut) {
       FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      if (local_map.count(p) != 1 ||
-          local_map.count(number_of_processors + p) != 1) {
+      if (local_map.count(p) != 1 || local_map.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in map");
       }
-      if (local_map[p] != false ||
-          local_map[number_of_processors + p] != true) {
+      if (local_map[p] != false || local_map[number_of_processors + p] != true) {
         FAILMSG("WRONG element value in map");
       }
     }

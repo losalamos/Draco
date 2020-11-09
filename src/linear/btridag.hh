@@ -36,9 +36,8 @@ namespace rtt_linear {
  * \throw std::range_error If the system is not diagonal dominant.
  */
 template <typename FieldVector>
-void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
-             FieldVector const &r, unsigned const n, unsigned const m,
-             FieldVector &u);
+void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c, FieldVector const &r,
+             unsigned const n, unsigned const m, FieldVector &u);
 
 } // end namespace rtt_linear
 

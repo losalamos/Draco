@@ -20,8 +20,7 @@
 
 namespace rtt_device_test {
 
-__global__ void vector_add(double const *A_dev, double const *B_dev,
-                           double *C_dev, int const N);
+__global__ void vector_add(double const *A_dev, double const *B_dev, double *C_dev, int const N);
 
 __global__ void sum(int *dest, int a, int b);
 

@@ -34,8 +34,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -43,8 +42,7 @@ public:
 private:
   /*virtual*/ double evaluate_(double const *const x) const override {
     double const eps(std::numeric_limits<double>::epsilon());
-    return ((std::abs(evaluate_def_(e1_, x)) > eps) &&
-            (std::abs(evaluate_def_(e2_, x)) > eps));
+    return ((std::abs(evaluate_def_(e1_, x)) > eps) && (std::abs(evaluate_def_(e2_, x)) > eps));
   }
 
   /*virtual*/ bool is_constant_(unsigned const i) const override {
@@ -71,8 +69,7 @@ private:
 class Cos_Expression : public Expression {
 public:
   Cos_Expression(pE const &expression)
-      : Expression(expression->number_of_variables(), dimensionless),
-        expression_(expression) {
+      : Expression(expression->number_of_variables(), dimensionless), expression_(expression) {
     Require(expression);
     Require(is_compatible(expression_->units(), dimensionless));
 
@@ -126,8 +123,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -162,8 +158,7 @@ private:
 class Exp_Expression : public Expression {
 public:
   Exp_Expression(pE const &expression)
-      : Expression(expression->number_of_variables(), dimensionless),
-        expression_(expression) {
+      : Expression(expression->number_of_variables(), dimensionless), expression_(expression) {
     Require(expression);
     Require(is_compatible(expression_->units(), dimensionless));
 
@@ -217,8 +212,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -264,8 +258,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -311,8 +304,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -358,8 +350,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -394,8 +385,7 @@ private:
 class Log_Expression : public Expression {
 public:
   Log_Expression(pE const &expression)
-      : Expression(expression->number_of_variables(), dimensionless),
-        expression_(expression) {
+      : Expression(expression->number_of_variables(), dimensionless), expression_(expression) {
     Require(expression);
     Require(is_compatible(expression_->units(), dimensionless));
 
@@ -479,8 +469,7 @@ private:
 class Not_Expression : public Expression {
 public:
   Not_Expression(pE const &expression)
-      : Expression(expression->number_of_variables(), dimensionless),
-        expression_(expression) {
+      : Expression(expression->number_of_variables(), dimensionless), expression_(expression) {
     Require(expression);
     Ensure(check_class_invariant());
   }
@@ -530,8 +519,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -539,8 +527,7 @@ public:
 private:
   /*virtual*/ double evaluate_(double const *const x) const override {
     double const eps(std::numeric_limits<double>::epsilon());
-    return (std::abs(evaluate_def_(e1_, x)) > eps) ||
-           (std::abs(evaluate_def_(e2_, x)) > eps);
+    return (std::abs(evaluate_def_(e1_, x)) > eps) || (std::abs(evaluate_def_(e2_, x)) > eps);
   }
 
   /*virtual*/ bool is_constant_(unsigned const i) const override {
@@ -568,8 +555,7 @@ class Power_Expression : public Expression {
 public:
   Power_Expression(pE const &e1, pE const &e2)
       : Expression(e1->number_of_variables(),
-                   pow(e1->units(),
-                       (*e2)(vector<double>(e2->number_of_variables(), 0.0)))),
+                   pow(e1->units(), (*e2)(vector<double>(e2->number_of_variables(), 0.0)))),
         e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
@@ -582,8 +568,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -619,8 +604,7 @@ private:
 class Product_Expression : public Expression {
 public:
   Product_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), e1->units() * e2->units()),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), e1->units() * e2->units()), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(e1->number_of_variables() == e2->number_of_variables());
@@ -630,8 +614,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -665,8 +648,7 @@ private:
 class Quotient_Expression : public Expression {
 public:
   Quotient_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), e1->units() / e2->units()),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), e1->units() / e2->units()), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(e1->number_of_variables() == e2->number_of_variables());
@@ -676,8 +658,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -711,8 +692,7 @@ private:
 class Sin_Expression : public Expression {
 public:
   Sin_Expression(pE const &expression)
-      : Expression(expression->number_of_variables(), dimensionless),
-        expression_(expression) {
+      : Expression(expression->number_of_variables(), dimensionless), expression_(expression) {
     Require(expression);
     Require(is_compatible(expression_->units(), dimensionless));
 
@@ -766,8 +746,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != std::shared_ptr<Expression>() &&
-           e2_ != std::shared_ptr<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() && e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -800,8 +779,7 @@ private:
 //------------------------------------------------------------------------------------------------//
 class Variable_Expression : public Expression {
 public:
-  Variable_Expression(unsigned const index, unsigned const number_of_variables,
-                      Unit const &units)
+  Variable_Expression(unsigned const index, unsigned const number_of_variables, Unit const &units)
       : Expression(number_of_variables, units), index_(index) {
     Require(index < number_of_variables);
 
@@ -812,16 +790,11 @@ public:
   bool check_class_invariant() const { return index_ < number_of_variables(); }
 
 private:
-  /*virtual*/ double evaluate_(double const *const x) const override {
-    return x[index_];
-  }
+  /*virtual*/ double evaluate_(double const *const x) const override { return x[index_]; }
 
-  /*virtual*/ bool is_constant_(unsigned const i) const override {
-    return i != index_;
-  }
+  /*virtual*/ bool is_constant_(unsigned const i) const override { return i != index_; }
 
-  /*virtual*/ void write_(Precedence, vector<string> const &vars,
-                          ostream &out) const override {
+  /*virtual*/ void write_(Precedence, vector<string> const &vars, ostream &out) const override {
     Require(index_ < vars.size());
 
     out << vars[index_];
@@ -831,13 +804,11 @@ private:
 };
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_primary(unsigned const number_of_variables,
-                        Variable_Map const &variable_map,
+static pE parse_primary(unsigned const number_of_variables, Variable_Map const &variable_map,
                         Token_Stream &tokens) {
   pE retvalue;
   if (at_real(tokens)) {
-    retvalue =
-        pE(new Constant_Expression(number_of_variables, parse_real(tokens)));
+    retvalue = pE(new Constant_Expression(number_of_variables, parse_real(tokens)));
   } else if (tokens.lookahead().text() == "(") {
     tokens.shift();
     retvalue = Expression::parse(number_of_variables, variable_map, tokens);
@@ -854,8 +825,7 @@ static pE parse_primary(unsigned const number_of_variables,
     // a function call
     {
       string name = variable.text();
-      pE const argument =
-          parse_primary(number_of_variables, variable_map, tokens);
+      pE const argument = parse_primary(number_of_variables, variable_map, tokens);
       switch (name[0]) {
       case 'e':
         if (name == "exp") {
@@ -900,8 +870,7 @@ static pE parse_primary(unsigned const number_of_variables,
       if (i != variable_map.end()) {
         retvalue = pE(new Variable_Expression(
             i->second.first, number_of_variables,
-            (unit_expressions_are_required() ? i->second.second
-                                             : dimensionless)));
+            (unit_expressions_are_required() ? i->second.second : dimensionless)));
       } else {
         static map<string, Unit> unit_map;
         if (unit_map.size() == 0) {
@@ -957,8 +926,7 @@ static pE parse_primary(unsigned const number_of_variables,
           }
           retvalue = pE(new Constant_Expression(number_of_variables, units));
         } else {
-          tokens.report_semantic_error("undefined variable or unit: " +
-                                       variable.text());
+          tokens.report_semantic_error("undefined variable or unit: " + variable.text());
           retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
       }
@@ -968,16 +936,15 @@ static pE parse_primary(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_power(unsigned const number_of_variables,
-                      Variable_Map const &variable_map, Token_Stream &tokens) {
+static pE parse_power(unsigned const number_of_variables, Variable_Map const &variable_map,
+                      Token_Stream &tokens) {
   pE Result = parse_primary(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "^") {
     tokens.shift();
     pE exponent = parse_primary(number_of_variables, variable_map, tokens);
     if (!is_compatible(dimensionless, exponent->units())) {
       tokens.report_semantic_error("exponent must be dimensionless");
-    } else if (!exponent->is_constant() &&
-               !is_compatible(dimensionless, Result->units())) {
+    } else if (!exponent->is_constant() && !is_compatible(dimensionless, Result->units())) {
       tokens.report_semantic_error("base of non-constant exponent must"
                                    " be dimensionless");
     } else {
@@ -988,28 +955,25 @@ static pE parse_power(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_unary(unsigned const number_of_variables,
-                      Variable_Map const &variable_map, Token_Stream &tokens) {
+static pE parse_unary(unsigned const number_of_variables, Variable_Map const &variable_map,
+                      Token_Stream &tokens) {
   if (tokens.lookahead().text() == "+") {
     tokens.shift();
     // a no-op
     return parse_unary(number_of_variables, variable_map, tokens);
   } else if (tokens.lookahead().text() == "-") {
     tokens.shift();
-    return pE(new Negate_Expression(
-        parse_unary(number_of_variables, variable_map, tokens)));
+    return pE(new Negate_Expression(parse_unary(number_of_variables, variable_map, tokens)));
   } else if (tokens.lookahead().text() == "!") {
     tokens.shift();
-    return pE(new Not_Expression(
-        parse_unary(number_of_variables, variable_map, tokens)));
+    return pE(new Not_Expression(parse_unary(number_of_variables, variable_map, tokens)));
   } else {
     return parse_power(number_of_variables, variable_map, tokens);
   }
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_multiplicative(unsigned const number_of_variables,
-                               Variable_Map const &variable_map,
+static pE parse_multiplicative(unsigned const number_of_variables, Variable_Map const &variable_map,
                                Token_Stream &tokens) {
   pE Result = parse_unary(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "*" || tokens.lookahead().text() == "/") {
@@ -1028,15 +992,13 @@ static pE parse_multiplicative(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_additive(unsigned const number_of_variables,
-                         Variable_Map const &variable_map,
+static pE parse_additive(unsigned const number_of_variables, Variable_Map const &variable_map,
                          Token_Stream &tokens) {
   pE Result = parse_multiplicative(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "+" || tokens.lookahead().text() == "-") {
     if (tokens.lookahead().text() == "+") {
       tokens.shift();
-      pE const Right =
-          parse_multiplicative(number_of_variables, variable_map, tokens);
+      pE const Right = parse_multiplicative(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for + operator");
       } else {
@@ -1045,8 +1007,7 @@ static pE parse_additive(unsigned const number_of_variables,
     } else {
       Check(tokens.lookahead().text() == "-");
       tokens.shift();
-      pE const Right =
-          parse_multiplicative(number_of_variables, variable_map, tokens);
+      pE const Right = parse_multiplicative(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for - operator");
       } else {
@@ -1058,8 +1019,7 @@ static pE parse_additive(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_relational(unsigned const number_of_variables,
-                           Variable_Map const &variable_map,
+static pE parse_relational(unsigned const number_of_variables, Variable_Map const &variable_map,
                            Token_Stream &tokens) {
   pE Result = parse_additive(number_of_variables, variable_map, tokens);
 
@@ -1068,8 +1028,7 @@ static pE parse_relational(unsigned const number_of_variables,
          token.text() == ">=") {
     if (token.text() == "<") {
       tokens.shift();
-      pE const Right =
-          parse_additive(number_of_variables, variable_map, tokens);
+      pE const Right = parse_additive(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for <");
       } else {
@@ -1077,8 +1036,7 @@ static pE parse_relational(unsigned const number_of_variables,
       }
     } else if (token.text() == "<=") {
       tokens.shift();
-      pE const Right =
-          parse_additive(number_of_variables, variable_map, tokens);
+      pE const Right = parse_additive(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for <=");
       } else {
@@ -1086,8 +1044,7 @@ static pE parse_relational(unsigned const number_of_variables,
       }
     } else if (token.text() == ">") {
       tokens.shift();
-      pE const Right =
-          parse_additive(number_of_variables, variable_map, tokens);
+      pE const Right = parse_additive(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for >");
       } else {
@@ -1096,8 +1053,7 @@ static pE parse_relational(unsigned const number_of_variables,
     } else {
       Check(token.text() == ">=");
       tokens.shift();
-      pE const Right =
-          parse_additive(number_of_variables, variable_map, tokens);
+      pE const Right = parse_additive(number_of_variables, variable_map, tokens);
       if (!is_compatible(Result->units(), Right->units())) {
         tokens.report_semantic_error("unit incompatibility for >=");
       } else {
@@ -1110,8 +1066,8 @@ static pE parse_relational(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_and(unsigned const number_of_variables,
-                    Variable_Map const &variable_map, Token_Stream &tokens) {
+static pE parse_and(unsigned const number_of_variables, Variable_Map const &variable_map,
+                    Token_Stream &tokens) {
   pE Result = parse_relational(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "&&") {
     tokens.shift();
@@ -1122,13 +1078,13 @@ static pE parse_and(unsigned const number_of_variables,
 }
 
 //------------------------------------------------------------------------------------------------//
-static pE parse_or(unsigned const number_of_variables,
-                   Variable_Map const &variable_map, Token_Stream &tokens) {
+static pE parse_or(unsigned const number_of_variables, Variable_Map const &variable_map,
+                   Token_Stream &tokens) {
   pE Result = parse_and(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "||") {
     tokens.shift();
-    Result = std::make_shared<Or_Expression>(
-        Result, parse_and(number_of_variables, variable_map, tokens));
+    Result = std::make_shared<Or_Expression>(Result,
+                                             parse_and(number_of_variables, variable_map, tokens));
   }
   return Result;
 }
@@ -1142,9 +1098,8 @@ static pE parse_or(unsigned const number_of_variables,
  *         specified by Expression::unit(). The value is returned in SI units.
  */
 double Expression::operator()(vector<double> const &x) const {
-  Insist(x.size() > 0,
-         std::string("Expression::operator() requires a non-zero length ") +
-             std::string("vector as an argument."));
+  Insist(x.size() > 0, std::string("Expression::operator() requires a non-zero length ") +
+                           std::string("vector as an argument."));
   Require(x.size() == number_of_variables());
   return evaluate_(&x[0]);
 }
@@ -1167,21 +1122,20 @@ double Expression::operator()(vector<double> const &x) const {
  * \bug Doxygen doesn't like this definition
  * \cond doxygen_skip_this
  */
-std::shared_ptr<Expression>
-Expression::parse(unsigned const number_of_variables,
-                  Variable_Map const &variable_map, Token_Stream &tokens) {
+std::shared_ptr<Expression> Expression::parse(unsigned const number_of_variables,
+                                              Variable_Map const &variable_map,
+                                              Token_Stream &tokens) {
   // No index in the variable map can be greater than or equal to the number of
   // variables.
 
   // The top expression is the or expression, which we anticipate will be useful
   // for piecewise functions.
 
-  std::shared_ptr<Expression> Result =
-      parse_or(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
-    Result = std::make_shared<Or_Expression>(
-        Result, parse_or(number_of_variables, variable_map, tokens));
+    Result = std::make_shared<Or_Expression>(Result,
+                                             parse_or(number_of_variables, variable_map, tokens));
   }
   return Result;
 }
@@ -1210,35 +1164,32 @@ Expression::parse(unsigned const number_of_variables,
  * \return Pointer to the Expression. If null, the expression was empty or
  *         grammatically ill-formed.
  */
-std::shared_ptr<Expression>
-Expression::parse(unsigned const number_of_variables,
-                  Variable_Map const &variable_map, Unit const &expected_units,
-                  string const &expected_units_text, Token_Stream &tokens) {
+std::shared_ptr<Expression> Expression::parse(unsigned const number_of_variables,
+                                              Variable_Map const &variable_map,
+                                              Unit const &expected_units,
+                                              string const &expected_units_text,
+                                              Token_Stream &tokens) {
   // No index in the variable map can be greater than or equal to the number of
   // variables.
 
   // The top expression is the or expression, which we anticipate will be useful
   // for piecewise functions.
 
-  std::shared_ptr<Expression> Result =
-      parse_or(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
-    Result = std::make_shared<Or_Expression>(
-        Result, parse_or(number_of_variables, variable_map, tokens));
+    Result = std::make_shared<Or_Expression>(Result,
+                                             parse_or(number_of_variables, variable_map, tokens));
   }
-  if (unit_expressions_are_required() ||
-      !is_compatible(Result->units(), dimensionless)) {
-    tokens.check_semantics(
-        is_compatible(Result->units(), expected_units),
-        ("expected units of " + expected_units_text).c_str());
+  if (unit_expressions_are_required() || !is_compatible(Result->units(), dimensionless)) {
+    tokens.check_semantics(is_compatible(Result->units(), expected_units),
+                           ("expected units of " + expected_units_text).c_str());
   }
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
-void Expression::write(Precedence const p, vector<string> const &vars,
-                       ostream &out) const {
+void Expression::write(Precedence const p, vector<string> const &vars, ostream &out) const {
   Require(vars.size() == number_of_variables());
 
   write_(p, vars, out);

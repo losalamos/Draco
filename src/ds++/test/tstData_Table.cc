@@ -154,8 +154,7 @@ int main(int argc, char *argv[]) {
       test_array(ut);
       test_scalar(ut);
     } catch (rtt_dsxx::assertion &error) {
-      cout << "ERROR: While testing tstData_Table_Ptr, " << error.what()
-           << endl;
+      cout << "ERROR: While testing tstData_Table_Ptr, " << error.what() << endl;
       ut.numFails++;
     }
 

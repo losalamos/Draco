@@ -287,8 +287,7 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
  * data required for the constructor for Class, the parse functions needed to
  * parse this data, and the check and construct functions.
  */
-template <typename Class, bool allow_an_exit = false>
-class Class_Parse_Table_Base {
+template <typename Class, bool allow_an_exit = false> class Class_Parse_Table_Base {
 public:
   // TYPEDEFS
 
@@ -332,8 +331,7 @@ private:
 };
 
 template <typename Class, bool allow_exit>
-/*static*/ Class_Parse_Table<Class>
-    *Class_Parse_Table_Base<Class, allow_exit>::current_;
+/*static*/ Class_Parse_Table<Class> *Class_Parse_Table_Base<Class, allow_exit>::current_;
 
 template <typename Class, bool allow_exit>
 /*static*/ Parse_Table Class_Parse_Table_Base<Class, allow_exit>::parse_table_;

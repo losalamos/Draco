@@ -27,8 +27,7 @@ namespace rtt_norms {
  *
  * \arg \a Field A real type such as float or double.
  */
-template <typename Field>
-double accumulate_norm_(double const init, Field const &x) {
+template <typename Field> double accumulate_norm_(double const init, Field const &x) {
   return init + norm<Field>(x);
 }
 
@@ -40,8 +39,7 @@ double accumulate_norm_(double const init, Field const &x) {
  * \param x Container representing a real vector whose norm is desired.
  */
 template <typename In> double L2norm(In const &x) {
-  double norm = std::accumulate(x.begin(), x.end(), 0.0,
-                                accumulate_norm_<typename In::value_type>);
+  double norm = std::accumulate(x.begin(), x.end(), 0.0, accumulate_norm_<typename In::value_type>);
 
   rtt_c4::global_sum(norm);
 
@@ -74,8 +72,7 @@ template <typename In> double L2norm(In const &x) {
  *
  * \param y Container representing a real vector.
  */
-template <typename In1, typename In2>
-double L2norm_diff(In1 const &x, In2 const &y) {
+template <typename In1, typename In2> double L2norm_diff(In1 const &x, In2 const &y) {
   Require(x.size() == y.size());
 
   auto xi = x.begin();
@@ -83,8 +80,7 @@ double L2norm_diff(In1 const &x, In2 const &y) {
   // Looping this way avoids restriction to random access containers.
   double norm = 0.0;
   for (; xi != x.end(); ++xi, ++yi) {
-    norm +=
-        norm_diff<typename In1::value_type, typename In2::value_type>(*xi, *yi);
+    norm += norm_diff<typename In1::value_type, typename In2::value_type>(*xi, *yi);
   }
 
   rtt_c4::global_sum(norm);

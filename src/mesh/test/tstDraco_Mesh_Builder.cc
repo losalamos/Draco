@@ -41,17 +41,15 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   // short-cut to some arrays
   const std::vector<unsigned> &cell_type = mesh_iface.cell_type;
   const std::vector<unsigned> &face_type = mesh_iface.face_type;
-  const std::vector<unsigned> &cell_to_node_linkage =
-      mesh_iface.cell_to_node_linkage;
+  const std::vector<unsigned> &cell_to_node_linkage = mesh_iface.cell_to_node_linkage;
   const std::vector<unsigned> &side_node_count = mesh_iface.side_node_count;
-  const std::vector<unsigned> &side_to_node_linkage =
-      mesh_iface.side_to_node_linkage;
+  const std::vector<unsigned> &side_to_node_linkage = mesh_iface.side_to_node_linkage;
 
   // instantiate the mesh
-  std::shared_ptr<Draco_Mesh> ref_mesh(new Draco_Mesh(
-      mesh_iface.dim, geometry, cell_type, cell_to_node_linkage,
-      mesh_iface.side_set_flag, side_node_count, side_to_node_linkage,
-      mesh_iface.coordinates, mesh_iface.global_node_number, face_type));
+  std::shared_ptr<Draco_Mesh> ref_mesh(
+      new Draco_Mesh(mesh_iface.dim, geometry, cell_type, cell_to_node_linkage,
+                     mesh_iface.side_set_flag, side_node_count, side_to_node_linkage,
+                     mesh_iface.coordinates, mesh_iface.global_node_number, face_type));
 
   // >>> PARSE AND BUILD MESH
 
@@ -59,8 +57,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   const std::string filename = inputpath + "rttquad_2cell.mesh.in";
 
   // create an rtt mesh reader and read the mesh
-  std::shared_ptr<RTT_Draco_Mesh_Reader> rtt_mesh(
-      new RTT_Draco_Mesh_Reader(filename));
+  std::shared_ptr<RTT_Draco_Mesh_Reader> rtt_mesh(new RTT_Draco_Mesh_Reader(filename));
   rtt_mesh->read_mesh();
 
   // instantiate a mesh builder and build the mesh
@@ -88,15 +85,13 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     ITFAILS;
 
   // check that the vector of coordinates match the reference mesh
-  if (!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(),
-                            ref_mesh->get_node_coord_vec()))
+  if (!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(), ref_mesh->get_node_coord_vec()))
     ITFAILS;
 
   // check that cell-to-node linkage data is correct
   {
     std::vector<unsigned> ref_cn_linkage = mesh_iface.flatten_cn_linkage(
-        ref_mesh->get_cc_linkage(), ref_mesh->get_cs_linkage(),
-        ref_mesh->get_cg_linkage());
+        ref_mesh->get_cc_linkage(), ref_mesh->get_cs_linkage(), ref_mesh->get_cg_linkage());
     std::vector<unsigned> cn_linkage = mesh_iface.flatten_cn_linkage(
         mesh->get_cc_linkage(), mesh->get_cs_linkage(), mesh->get_cg_linkage());
 
@@ -118,8 +113,8 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
       }
 
       // nodes must only be permuted at the cell level
-      if (!std::is_permutation(cn_first, cn_first + num_nodes_per_cell,
-                               ref_cn_first, ref_cn_first + num_nodes_per_cell))
+      if (!std::is_permutation(cn_first, cn_first + num_nodes_per_cell, ref_cn_first,
+                               ref_cn_first + num_nodes_per_cell))
         ITFAILS;
 
       // update the iterators
@@ -132,8 +127,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   {
     std::vector<unsigned> ref_sn_linkage =
         mesh_iface.flatten_sn_linkage(ref_mesh->get_cs_linkage());
-    std::vector<unsigned> sn_linkage =
-        mesh_iface.flatten_sn_linkage(mesh->get_cs_linkage());
+    std::vector<unsigned> sn_linkage = mesh_iface.flatten_sn_linkage(mesh->get_cs_linkage());
 
     // check that sn_linkage is a permutation of the original side-node linkage
     std::vector<unsigned>::const_iterator ref_sn_first = ref_sn_linkage.begin();
@@ -142,8 +136,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
       // check that sn_linkage is a permutation of the original side-node
       // linkage
-      if (!std::is_permutation(sn_first, sn_first + side_node_count[side],
-                               ref_sn_first,
+      if (!std::is_permutation(sn_first, sn_first + side_node_count[side], ref_sn_first,
                                ref_sn_first + side_node_count[side]))
         ITFAILS;
 

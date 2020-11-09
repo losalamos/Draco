@@ -35,7 +35,7 @@ namespace rtt_ode {
  */
 //================================================================================================//
 
-template <typename Function> class DLL_PUBLIC_ode Function_Traits {
+template <typename Function> class Function_Traits {
 public:
   // The following traits must be defined for all Function types:
 

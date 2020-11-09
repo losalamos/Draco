@@ -201,10 +201,9 @@ inline Unit pow(Unit const &b, double const a) {
  */
 inline bool operator==(Unit const &a, Unit const &b) {
   using rtt_dsxx::soft_equiv;
-  return soft_equiv(a.m, b.m) && soft_equiv(a.kg, b.kg) &&
-         soft_equiv(a.s, b.s) && soft_equiv(a.A, b.A) && soft_equiv(a.K, b.K) &&
-         soft_equiv(a.mol, b.mol) && soft_equiv(a.cd, b.cd) &&
-         soft_equiv(a.rad, b.rad) && soft_equiv(a.sr, b.sr) &&
+  return soft_equiv(a.m, b.m) && soft_equiv(a.kg, b.kg) && soft_equiv(a.s, b.s) &&
+         soft_equiv(a.A, b.A) && soft_equiv(a.K, b.K) && soft_equiv(a.mol, b.mol) &&
+         soft_equiv(a.cd, b.cd) && soft_equiv(a.rad, b.rad) && soft_equiv(a.sr, b.sr) &&
          soft_equiv(a.conv, b.conv);
 }
 
@@ -235,14 +234,14 @@ inline bool is_compatible(Unit const &a, Unit const &b) {
   return rtt_dsxx::soft_equiv(a.m, b.m) && rtt_dsxx::soft_equiv(a.kg, b.kg) &&
          rtt_dsxx::soft_equiv(a.s, b.s) && rtt_dsxx::soft_equiv(a.A, b.A) &&
          rtt_dsxx::soft_equiv(a.K, b.K) && rtt_dsxx::soft_equiv(a.mol, b.mol) &&
-         rtt_dsxx::soft_equiv(a.cd, b.cd) &&
-         rtt_dsxx::soft_equiv(a.rad, b.rad) && rtt_dsxx::soft_equiv(a.sr, b.sr);
+         rtt_dsxx::soft_equiv(a.cd, b.cd) && rtt_dsxx::soft_equiv(a.rad, b.rad) &&
+         rtt_dsxx::soft_equiv(a.sr, b.sr);
 }
 
 //------------------------------------------------------------------------------------------------//
 //! Write out the unit in text form.
 
-DLL_PUBLIC_parser std::ostream &operator<<(std::ostream &, const Unit &);
+std::ostream &operator<<(std::ostream &, const Unit &);
 
 // Some useful examples
 
@@ -301,18 +300,15 @@ Unit const pound = {1, 1, -2, 0, 0, 0, 0, 0, 0, 4.448221615}; //!< pound force
 //! Electron volts
 Unit const eV = {2, 1, -2, 0, 0, 0, 0, 0, 0, rtt_units::electronChargeSI};
 //! Thousands of electron volts
-Unit const keV = {2, 1, -2, 0, 0,
-                  0, 0, 0,  0, 1e3 * rtt_units::electronChargeSI};
+Unit const keV = {2, 1, -2, 0, 0, 0, 0, 0, 0, 1e3 * rtt_units::electronChargeSI};
 
 Unit const sh = {0, 0, 1, 0, 0, 0, 0, 0, 0, 1e-8};   //!< shake
 Unit const jerk = {2, 1, -2, 0, 0, 0, 0, 0, 0, 1e9}; //!< jerk
 
 // Numbers for which no conversion is requested
-Unit const constant = {0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 1.0}; //!< used for numbers with no units
-Unit const raw = {
-    0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e.,
+Unit const constant = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units
+Unit const raw = {0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e.,
 
 //------------------------------------------------------------------------------------------------//
 /*! Systems of units
@@ -333,24 +329,21 @@ Unit const raw = {
 Unit const MKS = {1., 1., 1., 1., 1., 1., 1., 1., 1., 0.};
 Unit const CGS = {0.01, 0.001, 1., 1., 1., 1., 1., 1., 1., 0.};
 Unit const CGMU = {0.01, 0.001, 1e-6, 1., 1., 1., 1., 1., 1., 0.};
-Unit const CGSH = {0.01, 0.001, 1e-8, 1., 1e3 * rtt_units::EV2K,
-                   1.,   1.,    1.,   1., 0.};
+Unit const CGSH = {0.01, 0.001, 1e-8, 1., 1e3 * rtt_units::EV2K, 1., 1., 1., 1., 0.};
 
 //------------------------------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
 * initially MKS.
 */
 
-DLL_PUBLIC_parser double conversion_factor(Unit const &units,
-                                           Unit const &unit_system);
+double conversion_factor(Unit const &units, Unit const &unit_system);
 
 //------------------------------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
  * initially MKS.
  */
 
-DLL_PUBLIC_parser double
-conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system);
+double conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system);
 
 } // end namespace rtt_parser
 

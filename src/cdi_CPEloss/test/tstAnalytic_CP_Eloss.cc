@@ -40,17 +40,16 @@ void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
   rtt_cdi::CParticle projectile_in(alpha_zaid, alpha_mass);
 
   std::shared_ptr<Analytic_Eloss_Model> model_in(
-      new rtt_cdi_cpeloss::Analytic_KP_Alpha_Eloss_Model(target_in,
-                                                         projectile_in));
+      new rtt_cdi_cpeloss::Analytic_KP_Alpha_Eloss_Model(target_in, projectile_in));
 
   Analytic_CP_Eloss eloss_mod(model_in, target_in, projectile_in,
                               rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Check that basic accessors return correct result:
   // Analytic model should match that passed to constructor
-  FAIL_IF_NOT(rtt_dsxx::soft_equiv(
-      eloss_mod.getEloss(1., 10., 1.),
-      eloss_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.), 1.0e-3));
+  FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(1., 10., 1.),
+                                   eloss_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.),
+                                   1.0e-3));
 
   // Model type better be analytic:
   FAIL_IF_NOT(eloss_mod.getModelType() == rtt_cdi::CPModelType::ANALYTIC_ETYPE);
@@ -59,8 +58,7 @@ void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF(eloss_mod.is_data_in_tabular_form());
 
   // All sizes should be 0 (again, not tabular data)
-  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() ==
-              eloss_mod.getNumTemperatures());
+  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() == eloss_mod.getNumTemperatures());
   FAIL_IF_NOT(eloss_mod.getDensityGrid().size() == eloss_mod.getNumDensities());
   FAIL_IF_NOT(eloss_mod.getEnergyGrid().size() == eloss_mod.getNumEnergies());
 
@@ -72,8 +70,7 @@ void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(projectile_in.get_zaid() == eloss_mod.getProjectile().get_zaid());
 
   // Check that accessor returns the correct model angle cutoff
-  FAIL_IF_NOT(eloss_mod.getModelAngleCutoff() ==
-              rtt_cdi::CPModelAngleCutoff::NONE);
+  FAIL_IF_NOT(eloss_mod.getModelAngleCutoff() == rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Get eloss values for some sample data:
   {
@@ -129,17 +126,16 @@ void Spitzer_test(rtt_dsxx::UnitTest &ut) {
   rtt_cdi::CParticle projectile_in(alpha_zaid, alpha_mass);
 
   std::shared_ptr<Analytic_Eloss_Model> model_in(
-      new rtt_cdi_cpeloss::Analytic_Spitzer_Eloss_Model(target_in,
-                                                        projectile_in));
+      new rtt_cdi_cpeloss::Analytic_Spitzer_Eloss_Model(target_in, projectile_in));
 
   Analytic_CP_Eloss eloss_mod(model_in, target_in, projectile_in,
                               rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Check that basic accessors return correct result:
   // Analytic model should match that passed to constructor
-  FAIL_IF_NOT(rtt_dsxx::soft_equiv(
-      eloss_mod.getEloss(1., 10., 1.),
-      eloss_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.), 1.0e-3));
+  FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_mod.getEloss(1., 10., 1.),
+                                   eloss_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.),
+                                   1.0e-3));
 
   // Model type better be analytic:
   FAIL_IF_NOT(eloss_mod.getModelType() == rtt_cdi::CPModelType::ANALYTIC_ETYPE);
@@ -148,8 +144,7 @@ void Spitzer_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF(eloss_mod.is_data_in_tabular_form());
 
   // All sizes should be 0 (again, not tabular data)
-  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() ==
-              eloss_mod.getNumTemperatures());
+  FAIL_IF_NOT(eloss_mod.getTemperatureGrid().size() == eloss_mod.getNumTemperatures());
   FAIL_IF_NOT(eloss_mod.getDensityGrid().size() == eloss_mod.getNumDensities());
   FAIL_IF_NOT(eloss_mod.getEnergyGrid().size() == eloss_mod.getNumEnergies());
 
@@ -161,8 +156,7 @@ void Spitzer_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(projectile_in.get_zaid() == eloss_mod.getProjectile().get_zaid());
 
   // Check that accessor returns the correct model angle cutoff
-  FAIL_IF_NOT(eloss_mod.getModelAngleCutoff() ==
-              rtt_cdi::CPModelAngleCutoff::NONE);
+  FAIL_IF_NOT(eloss_mod.getModelAngleCutoff() == rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Get eloss values for some sample data:
   {
@@ -172,8 +166,7 @@ void Spitzer_test(rtt_dsxx::UnitTest &ut) {
 
     double eloss_coeff = eloss_mod.getEloss(T, rho, vel0);
 
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_coeff, 9.823342835413329303e+05, 1.0e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_coeff, 9.823342835413329303e+05, 1.0e-8));
   }
 
   // Check for large value when 2kT > E
@@ -213,50 +206,40 @@ void TR_test(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<Analytic_Eloss_Model> ion_model_in(
       new rtt_cdi_cpeloss::Analytic_TR_Eloss_Model(target_ion, projectile_in));
   std::shared_ptr<Analytic_Eloss_Model> electron_model_in(
-      new rtt_cdi_cpeloss::Analytic_TR_Eloss_Model(target_electron,
-                                                   projectile_in));
+      new rtt_cdi_cpeloss::Analytic_TR_Eloss_Model(target_electron, projectile_in));
 
   Analytic_CP_Eloss eloss_ion_mod(ion_model_in, target_ion, projectile_in,
                                   rtt_cdi::CPModelAngleCutoff::NONE);
-  Analytic_CP_Eloss eloss_ele_mod(electron_model_in, target_electron,
-                                  projectile_in,
+  Analytic_CP_Eloss eloss_ele_mod(electron_model_in, target_electron, projectile_in,
                                   rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Check that basic accessors return correct result:
   // Analytic model should match that passed to constructor
-  FAIL_IF_NOT(rtt_dsxx::soft_equiv(
-      eloss_ion_mod.getEloss(1., 10., 1.),
-      eloss_ion_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.),
-      1.0e-3));
+  FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_ion_mod.getEloss(1., 10., 1.),
+                                   eloss_ion_mod.get_Analytic_Model()->calculate_eloss(1., 10., 1.),
+                                   1.0e-3));
 
   // Model type better be analytic:
-  FAIL_IF_NOT(eloss_ion_mod.getModelType() ==
-              rtt_cdi::CPModelType::ANALYTIC_ETYPE);
+  FAIL_IF_NOT(eloss_ion_mod.getModelType() == rtt_cdi::CPModelType::ANALYTIC_ETYPE);
 
   // NOT tabular data
   FAIL_IF(eloss_ion_mod.is_data_in_tabular_form());
 
   // All sizes should be 0 (again, not tabular data)
-  FAIL_IF_NOT(eloss_ion_mod.getTemperatureGrid().size() ==
-              eloss_ion_mod.getNumTemperatures());
-  FAIL_IF_NOT(eloss_ion_mod.getDensityGrid().size() ==
-              eloss_ion_mod.getNumDensities());
-  FAIL_IF_NOT(eloss_ion_mod.getEnergyGrid().size() ==
-              eloss_ion_mod.getNumEnergies());
+  FAIL_IF_NOT(eloss_ion_mod.getTemperatureGrid().size() == eloss_ion_mod.getNumTemperatures());
+  FAIL_IF_NOT(eloss_ion_mod.getDensityGrid().size() == eloss_ion_mod.getNumDensities());
+  FAIL_IF_NOT(eloss_ion_mod.getEnergyGrid().size() == eloss_ion_mod.getNumEnergies());
 
   // Data file name should be an empty string:
   FAIL_IF_NOT(eloss_ion_mod.getDataFilename().empty());
 
   // Check that accessors return the correct target and projectile:
   FAIL_IF_NOT(target_ion.get_zaid() == eloss_ion_mod.getTarget().get_zaid());
-  FAIL_IF_NOT(target_electron.get_zaid() ==
-              eloss_ele_mod.getTarget().get_zaid());
-  FAIL_IF_NOT(projectile_in.get_zaid() ==
-              eloss_ion_mod.getProjectile().get_zaid());
+  FAIL_IF_NOT(target_electron.get_zaid() == eloss_ele_mod.getTarget().get_zaid());
+  FAIL_IF_NOT(projectile_in.get_zaid() == eloss_ion_mod.getProjectile().get_zaid());
 
   // Check that accessor returns the correct model angle cutoff
-  FAIL_IF_NOT(eloss_ion_mod.getModelAngleCutoff() ==
-              rtt_cdi::CPModelAngleCutoff::NONE);
+  FAIL_IF_NOT(eloss_ion_mod.getModelAngleCutoff() == rtt_cdi::CPModelAngleCutoff::NONE);
 
   // Get eloss values for some sample ion data:
   {
@@ -266,8 +249,7 @@ void TR_test(rtt_dsxx::UnitTest &ut) {
 
     double eloss_coeff = eloss_ion_mod.getEloss(T, rho, vel0);
 
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_coeff, 9.927570982586801983e+05, 1.0e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_coeff, 9.927570982586801983e+05, 1.0e-8));
   }
 
   // Get eloss values for some sample electron data:
@@ -278,8 +260,7 @@ void TR_test(rtt_dsxx::UnitTest &ut) {
 
     double eloss_coeff = eloss_ele_mod.getEloss(T, rho, vel0);
 
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(eloss_coeff, 4.993807286690149340e+05, 1.0e-8));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_coeff, 4.993807286690149340e+05, 1.0e-8));
   }
 
   // Check for large value when 2kT > E
@@ -313,11 +294,9 @@ void Constant_test(rtt_dsxx::UnitTest &ut) {
   rtt_cdi::CParticle projectile_in(alpha_zaid, alpha_mass);
 
   std::shared_ptr<Analytic_Eloss_Model> zero_model_in(
-      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in,
-                                                         projectile_in, 0.));
+      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in, projectile_in, 0.));
   std::shared_ptr<Analytic_Eloss_Model> one_model_in(
-      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in,
-                                                         projectile_in, 1.));
+      new rtt_cdi_cpeloss::Analytic_Constant_Eloss_Model(target_in, projectile_in, 1.));
 
   Analytic_CP_Eloss eloss_zero_mod(zero_model_in, target_in, projectile_in,
                                    rtt_cdi::CPModelAngleCutoff::NONE);
@@ -326,11 +305,9 @@ void Constant_test(rtt_dsxx::UnitTest &ut) {
 
   // Check that basic accessors return correct result:
   // Analytic model should match that passed to constructor
-  FAIL_IF_NOT(
-      rtt_dsxx::soft_equiv(eloss_zero_mod.getEloss(1., 2., 3.), 0., 1.0e-3));
+  FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_zero_mod.getEloss(1., 2., 3.), 0., 1.0e-3));
 
-  FAIL_IF_NOT(
-      rtt_dsxx::soft_equiv(eloss_one_mod.getEloss(1., 2., 3.), 1., 1.0e-3));
+  FAIL_IF_NOT(rtt_dsxx::soft_equiv(eloss_one_mod.getEloss(1., 2., 3.), 1., 1.0e-3));
 
   if (ut.numFails == 0)
     PASSMSG("Constant CPEloss test passes.");

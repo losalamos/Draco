@@ -57,23 +57,19 @@ std::shared_ptr<Quadrature> parse_double_gauss(Token_Stream &tokens) {
 }
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature>
-parse_general_octant_quadrature(Token_Stream &tokens) {
+std::shared_ptr<Quadrature> parse_general_octant_quadrature(Token_Stream &tokens) {
   return General_Octant_Quadrature::parse(tokens);
 }
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> parse_lobatto(Token_Stream &tokens) {
-  return Lobatto::parse(tokens);
-}
+std::shared_ptr<Quadrature> parse_lobatto(Token_Stream &tokens) { return Lobatto::parse(tokens); }
 
 } // namespace
 
 namespace rtt_parser {
 //------------------------------------------------------------------------------------------------//
 Class_Parse_Table<Quadrature> *Class_Parse_Table<Quadrature>::current_;
-Parse_Table Class_Parse_Table<Quadrature>::parse_table_(NULL, 0,
-                                                        Parse_Table::ONCE);
+Parse_Table Class_Parse_Table<Quadrature>::parse_table_(NULL, 0, Parse_Table::ONCE);
 std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::child_;
 
 //------------------------------------------------------------------------------------------------//
@@ -93,8 +89,7 @@ Class_Parse_Table<Quadrature>::Class_Parse_Table() {
 
     register_quadrature("double gauss", parse_double_gauss);
 
-    register_quadrature("general octant quadrature",
-                        parse_general_octant_quadrature);
+    register_quadrature("general octant quadrature", parse_general_octant_quadrature);
 
     register_quadrature("lobatto", parse_lobatto);
 
@@ -110,15 +105,10 @@ void Class_Parse_Table<Quadrature>::check_completeness(Token_Stream &tokens) {
 }
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::create_object() {
-  return child_;
-}
+std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::create_object() { return child_; }
 
 //------------------------------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> &
-Class_Parse_Table<Quadrature>::get_parsed_object() {
-  return child_;
-}
+std::shared_ptr<Quadrature> &Class_Parse_Table<Quadrature>::get_parsed_object() { return child_; }
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -133,17 +123,13 @@ Class_Parse_Table<Quadrature>::get_parsed_object() {
  */
 /* static */
 void Class_Parse_Table<Quadrature>::register_quadrature(
-    string const &keyword,
-    std::shared_ptr<Quadrature> parse_function(Token_Stream &)) {
-  Abstract_Class_Parser<Quadrature, get_parse_table,
-                        get_parsed_object>::register_child(keyword,
-                                                           parse_function);
+    string const &keyword, std::shared_ptr<Quadrature> parse_function(Token_Stream &)) {
+  Abstract_Class_Parser<Quadrature, get_parse_table, get_parsed_object>::register_child(
+      keyword, parse_function);
 }
 
 //------------------------------------------------------------------------------------------------//
-template <>
-DLL_PUBLIC_quadrature std::shared_ptr<Quadrature>
-parse_class<Quadrature>(Token_Stream &tokens) {
+template <> std::shared_ptr<Quadrature> parse_class<Quadrature>(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "type", "expected type keyword");
 

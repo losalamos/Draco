@@ -33,8 +33,7 @@ namespace rtt_dsxx {
  *                   filesystem
  *    FC_LASTVALUE
  */
-std::string getFilenameComponent(std::string const &fqName,
-                                 FilenameComponent fc) {
+std::string getFilenameComponent(std::string const &fqName, FilenameComponent fc) {
   using std::string;
   string retVal;
   string::size_type idx;

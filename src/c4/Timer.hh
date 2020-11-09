@@ -179,11 +179,10 @@ private:
 public:
   Timer(); //! default constructor
   // Disable copy and assignment operators
-  Timer const &
-  operator=(Timer const &rhs) = delete;         //!< copy assignment operator
-  Timer const &operator=(Timer &&rhs) = delete; //!< move assignment operator
-  Timer(Timer const &rhs) = delete;             //!< copy constructor
-  Timer(Timer &&rhs) = delete;                  //!< move constructor
+  Timer const &operator=(Timer const &rhs) = delete; //!< copy assignment operator
+  Timer const &operator=(Timer &&rhs) = delete;      //!< move assignment operator
+  Timer(Timer const &rhs) = delete;                  //!< copy constructor
+  Timer(Timer &&rhs) = delete;                       //!< move constructor
   virtual ~Timer() = default;
   inline void start();
   inline void stop();
@@ -244,8 +243,7 @@ public:
 
   void printline(std::ostream &, unsigned p = 2U, unsigned width = 15U) const;
 
-  void printline_mean(std::ostream &, unsigned p = 2U, unsigned w = 13U,
-                      unsigned v = 5U) const;
+  void printline_mean(std::ostream &, unsigned p = 2U, unsigned w = 13U, unsigned v = 5U) const;
 
   inline void merge(Timer const &);
 
@@ -348,9 +346,7 @@ double Timer::user_cpu() const {
 
 //------------------------------------------------------------------------------------------------//
 //! The error in the posix timings
-double Timer::posix_err() const {
-  return 1.0 / static_cast<double>(DRACO_CLOCKS_PER_SEC);
-}
+double Timer::posix_err() const { return 1.0 / static_cast<double>(DRACO_CLOCKS_PER_SEC); }
 
 //------------------------------------------------------------------------------------------------//
 //! Reset the interval sums.

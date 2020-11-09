@@ -42,8 +42,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
   size_t const base = pid % 2;
   vector<double> sum(1, static_cast<double>(base + 1));
   comm.sum(sum);
-  if (rtt_dsxx::soft_equiv(sum[0],
-                           static_cast<double>(group_pids * (base + 1))))
+  if (rtt_dsxx::soft_equiv(sum[0], static_cast<double>(group_pids * (base + 1))))
     PASSMSG("Correct processor group sum");
   else
     FAILMSG("NOT correct processor group sum");
@@ -66,8 +65,8 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
       for (size_t i = 0; i < vlen; ++i)
         goldglobalvec.push_back(static_cast<double>((base + 2 * j) * 1000 + i));
 
-    if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
-                              globalvec.begin(), globalvec.end()))
+    if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(), globalvec.begin(),
+                              globalvec.end()))
       ITFAILS;
   }
 
@@ -79,8 +78,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
       myvec.push_back(static_cast<double>(pid * 1000 + i));
     vector<double> globalvec(group_pids * vlen);
     Check(myvec.size() < UINT32_MAX);
-    comm.assemble_vector(&myvec[0], &globalvec[0],
-                         static_cast<unsigned>(myvec.size()));
+    comm.assemble_vector(&myvec[0], &globalvec[0], static_cast<unsigned>(myvec.size()));
 
     FAIL_IF_NOT(globalvec.size() == group_pids * vlen);
 
@@ -90,8 +88,8 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
       for (size_t i = 0; i < vlen; ++i)
         goldglobalvec.push_back(static_cast<double>((base + 2 * j) * 1000 + i));
 
-    FAIL_IF_NOT(rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
-                                     globalvec.begin(), globalvec.end()));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(), globalvec.begin(),
+                                     globalvec.end()));
   }
 
   return;

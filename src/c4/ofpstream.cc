@@ -95,8 +95,7 @@ void ofpstream::mpibuf::send() {
  *
  * \return Integer representation of the character just added to the buffer.
  */
-/*virtual*/ ofpstream::mpibuf::int_type
-ofpstream::mpibuf::overflow(int_type c) {
+/*virtual*/ ofpstream::mpibuf::int_type ofpstream::mpibuf::overflow(int_type c) {
   buffer_.push_back(static_cast<char>(c));
   return c;
 }

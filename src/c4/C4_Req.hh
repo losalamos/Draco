@@ -145,29 +145,21 @@ private:
    * appear in the class definition, friends are not member functions.  \ref
    * https://www.tutorialspoint.com/cplusplus/cpp_friend_functions.htm
    */
-  template <typename T>
-  friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
+  template <typename T> friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
   template <typename T>
   friend void send_async(C4_Req &r, const T *buf, int nels, int dest, int tag);
-  template <typename T>
-  friend C4_Req receive_async(T *buf, int nels, int source, int tag);
-  template <typename T>
-  friend void receive_async(C4_Req &r, T *buf, int nels, int source, int tag);
+  template <typename T> friend C4_Req receive_async(T *buf, int nels, int source, int tag);
+  template <typename T> friend void receive_async(C4_Req &r, T *buf, int nels, int source, int tag);
 #ifdef C4_MPI
   template <typename T>
-  friend void send_is_custom(C4_Req &request, T const *buffer, int size,
-                             int destination, int tag);
+  friend void send_is_custom(C4_Req &request, T const *buffer, int size, int destination, int tag);
   template <typename T>
-  friend void receive_async_custom(C4_Req &request, T *buffer, int size,
-                                   int source, int tag);
-  template <typename T>
-  friend void send_is(C4_Req &r, const T *buf, int nels, int dest, int tag);
+  friend void receive_async_custom(C4_Req &request, T *buffer, int size, int source, int tag);
+  template <typename T> friend void send_is(C4_Req &r, const T *buf, int nels, int dest, int tag);
   friend void wait_all(unsigned count, C4_Req *requests);
-  friend std::vector<int> wait_all_with_source(unsigned count,
-                                               C4_Req *requests);
+  friend std::vector<int> wait_all_with_source(unsigned count, C4_Req *requests);
   friend unsigned wait_any(unsigned count, C4_Req *requests);
-  template <typename T>
-  friend void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
+  template <typename T> friend void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
 
 #endif
 };

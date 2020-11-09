@@ -23,52 +23,29 @@ using namespace std;
 
 namespace rtt_mesh_element_test {
 
-bool test_node(rtt_dsxx::UnitTest &ut,
-               const rtt_mesh_element::Element_Definition elem_def);
-bool test_bar_2(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def);
-bool test_bar_3(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def);
-bool test_tri_3(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def);
-bool test_tri_6(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_4(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_5(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_6(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_6a(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_6o(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_7(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_8(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_quad_9(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_tetra_4(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_tetra_10(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def);
-bool test_pyra_5(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_pyra_14(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_penta_6(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_penta_15(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def);
-bool test_penta_18(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def);
-bool test_hexa_8(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def);
-bool test_hexa_20(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
-bool test_hexa_27(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def);
+bool test_node(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_bar_2(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_bar_3(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_tri_3(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_tri_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_4(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_5(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_6a(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_6o(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_7(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_8(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_quad_9(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_tetra_4(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_tetra_10(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_pyra_5(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_pyra_14(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_penta_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_penta_15(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_penta_18(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_hexa_8(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_hexa_20(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
+bool test_hexa_27(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def);
 
 } // end namespace rtt_mesh_element_test
 
@@ -90,8 +67,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   type_list.push_back(Element_Definition::QUAD_4);
   type_list.push_back(Element_Definition::QUAD_5);
   type_list.push_back(
-      Element_Definition::
-          QUAD_6); // Call all three QUAD_6 elements in a single test
+      Element_Definition::QUAD_6); // Call all three QUAD_6 elements in a single test
   type_list.push_back(Element_Definition::QUAD_6a);
   type_list.push_back(Element_Definition::QUAD_6o);
   type_list.push_back(Element_Definition::QUAD_7);
@@ -262,8 +238,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 namespace rtt_mesh_element_test {
 
 //------------------------------------------------------------------------------------------------//
-bool test_node(rtt_dsxx::UnitTest &ut,
-               const rtt_mesh_element::Element_Definition elem_def) {
+bool test_node(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the NODE element.
   using rtt_mesh_element::Element_Definition;
   string ename = "NODE";
@@ -285,8 +260,7 @@ bool test_node(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_bar_2(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def) {
+bool test_bar_2(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the BAR_2 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "BAR_2";
@@ -316,8 +290,7 @@ bool test_bar_2(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_bar_3(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def) {
+bool test_bar_3(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the BAR_3 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "BAR_3";
@@ -347,8 +320,7 @@ bool test_bar_3(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_tri_3(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def) {
+bool test_tri_3(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TRI_3 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "TRI_3";
@@ -381,8 +353,7 @@ bool test_tri_3(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_tri_6(rtt_dsxx::UnitTest &ut,
-                const rtt_mesh_element::Element_Definition elem_def) {
+bool test_tri_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the element.
   using rtt_mesh_element::Element_Definition;
   string ename = "TRI_6";
@@ -415,8 +386,7 @@ bool test_tri_6(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_4(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_4(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_4 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "QUAD_4";
@@ -452,8 +422,7 @@ bool test_quad_4(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_5(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_5(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_5 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "QUAD_5";
@@ -493,8 +462,7 @@ bool test_quad_5(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_6(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_6 element.
   using rtt_mesh_element::Element_Definition;
 
@@ -564,8 +532,7 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_7(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_7(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_7 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "QUAD_7";
@@ -605,8 +572,7 @@ bool test_quad_7(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_8(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_8(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_8 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "QUAD_8";
@@ -642,8 +608,7 @@ bool test_quad_8(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_quad_9(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_quad_9(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the QUAD_9 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "QUAD_9";
@@ -679,8 +644,7 @@ bool test_quad_9(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_tetra_4(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def) {
+bool test_tetra_4(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TETRA_4 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "TETRA_4";
@@ -716,8 +680,7 @@ bool test_tetra_4(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_tetra_10(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def) {
+bool test_tetra_10(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the TETRA_10 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "TETRA_10";
@@ -753,8 +716,7 @@ bool test_tetra_10(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_pyra_5(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_pyra_5(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PYRA_5 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "PYRA_5";
@@ -763,8 +725,7 @@ bool test_pyra_5(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_nodes() == 5;
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 5;
-  ldum = ldum &&
-         elem_def.get_side_type(0).get_type() == Element_Definition::QUAD_4;
+  ldum = ldum && elem_def.get_side_type(0).get_type() == Element_Definition::QUAD_4;
   ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
   ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
   ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
@@ -796,8 +757,7 @@ bool test_pyra_5(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_pyra_14(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def) {
+bool test_pyra_14(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PYRA_14 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "PYRA_14";
@@ -806,8 +766,7 @@ bool test_pyra_14(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_number_of_nodes() == 14;
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 5;
-  ldum = ldum &&
-         elem_def.get_side_type(0).get_type() == Element_Definition::QUAD_8;
+  ldum = ldum && elem_def.get_side_type(0).get_type() == Element_Definition::QUAD_8;
   constexpr int sizeq = 8;
   array<int, sizeq> s0 = {0, 3, 2, 1, 8, 7, 6, 5};
   constexpr int sizet = 6;
@@ -839,8 +798,7 @@ bool test_pyra_14(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_penta_6(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def) {
+bool test_penta_6(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_6 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "PENTA_6";
@@ -850,11 +808,9 @@ bool test_penta_6(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 5;
   for (int j = 0; j < 3; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
   for (int j = 3; j < 5; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::TRI_3;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::TRI_3;
   constexpr int sizeq = 4;
   array<int, sizeq> s0 = {0, 1, 4, 3};
   array<int, sizeq> s1 = {1, 2, 5, 4};
@@ -886,8 +842,7 @@ bool test_penta_6(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_penta_15(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def) {
+bool test_penta_15(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_15 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "PENTA_15";
@@ -897,11 +852,9 @@ bool test_penta_15(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 5;
   for (int j = 0; j < 3; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
   for (int j = 3; j < 5; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
   constexpr int sizeq = 8;
   array<int, sizeq> s0 = {0, 1, 4, 3, 6, 10, 12, 9};
   array<int, sizeq> s1 = {1, 2, 5, 4, 7, 11, 13, 10};
@@ -933,8 +886,7 @@ bool test_penta_15(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_penta_18(rtt_dsxx::UnitTest &ut,
-                   const rtt_mesh_element::Element_Definition elem_def) {
+bool test_penta_18(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the PENTA_18 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "PENTA_18";
@@ -944,11 +896,9 @@ bool test_penta_18(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 5;
   for (int j = 0; j < 3; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
   for (int j = 3; j < 5; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::TRI_6;
   constexpr int sizeq = 9;
   array<int, sizeq> s0 = {0, 1, 4, 3, 6, 10, 12, 9, 15};
   array<int, sizeq> s1 = {1, 2, 5, 4, 7, 11, 13, 10, 16};
@@ -981,8 +931,7 @@ bool test_penta_18(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_hexa_8(rtt_dsxx::UnitTest &ut,
-                 const rtt_mesh_element::Element_Definition elem_def) {
+bool test_hexa_8(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_8 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "HEXA_8";
@@ -992,8 +941,7 @@ bool test_hexa_8(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 6;
   for (int j = 0; j < 6; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
   constexpr int size = 4;
   array<int, size> s0 = {0, 3, 2, 1};
   array<int, size> s1 = {0, 4, 7, 3};
@@ -1027,8 +975,7 @@ bool test_hexa_8(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_hexa_20(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def) {
+bool test_hexa_20(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_20 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "HEXA_20";
@@ -1038,8 +985,7 @@ bool test_hexa_20(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 6;
   for (int j = 0; j < 6; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
   constexpr int size = 8;
   array<int, size> s0 = {0, 3, 2, 1, 11, 10, 9, 8};
   array<int, size> s1 = {0, 4, 7, 3, 12, 19, 15, 11};
@@ -1074,8 +1020,7 @@ bool test_hexa_20(rtt_dsxx::UnitTest &ut,
 }
 
 //------------------------------------------------------------------------------------------------//
-bool test_hexa_27(rtt_dsxx::UnitTest &ut,
-                  const rtt_mesh_element::Element_Definition elem_def) {
+bool test_hexa_27(rtt_dsxx::UnitTest &ut, const rtt_mesh_element::Element_Definition elem_def) {
   // Test the HEXA_27 element.
   using rtt_mesh_element::Element_Definition;
   string ename = "HEXA_27";
@@ -1085,8 +1030,7 @@ bool test_hexa_27(rtt_dsxx::UnitTest &ut,
   ldum = ldum && elem_def.get_dimension() == 3;
   ldum = ldum && elem_def.get_number_of_sides() == 6;
   for (int j = 0; j < 6; ++j)
-    ldum = ldum &&
-           elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
+    ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
   constexpr int size = 9;
   array<int, size> s0 = {0, 3, 2, 1, 11, 10, 9, 8, 20};
   array<int, size> s1 = {0, 4, 7, 3, 12, 19, 15, 11, 21};

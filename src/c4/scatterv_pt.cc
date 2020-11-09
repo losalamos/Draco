@@ -19,31 +19,24 @@ using std::vector;
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //------------------------------------------------------------------------------------------------//
 
-template DLL_PUBLIC_c4 void
-indeterminate_scatterv(vector<vector<unsigned>> &outgoing_data,
-                       vector<unsigned> &incoming_data);
+template void indeterminate_scatterv(vector<vector<unsigned>> &outgoing_data,
+                                     vector<unsigned> &incoming_data);
 
-template DLL_PUBLIC_c4 void
-indeterminate_scatterv(vector<vector<int>> &outgoing_data,
-                       vector<int> &incoming_data);
+template void indeterminate_scatterv(vector<vector<int>> &outgoing_data,
+                                     vector<int> &incoming_data);
 
-template DLL_PUBLIC_c4 void
-indeterminate_scatterv(vector<vector<double>> &outgoing_data,
-                       vector<double> &incoming_data);
+template void indeterminate_scatterv(vector<vector<double>> &outgoing_data,
+                                     vector<double> &incoming_data);
 
 //------------------------------------------------------------------------------------------------//
 
-template DLL_PUBLIC_c4 void
-determinate_scatterv(vector<vector<unsigned>> &outgoing_data,
-                     vector<unsigned> &incoming_data);
+template void determinate_scatterv(vector<vector<unsigned>> &outgoing_data,
+                                   vector<unsigned> &incoming_data);
 
-template DLL_PUBLIC_c4 void
-determinate_scatterv(vector<vector<int>> &outgoing_data,
-                     vector<int> &incoming_data);
+template void determinate_scatterv(vector<vector<int>> &outgoing_data, vector<int> &incoming_data);
 
-template DLL_PUBLIC_c4 void
-determinate_scatterv(vector<vector<double>> &outgoing_data,
-                     vector<double> &incoming_data);
+template void determinate_scatterv(vector<vector<double>> &outgoing_data,
+                                   vector<double> &incoming_data);
 
 } // end namespace rtt_c4
 

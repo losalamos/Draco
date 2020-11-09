@@ -95,11 +95,9 @@ public:
   // CREATORS
 
   //! Standard IpcressDataTable constructor.
-  IpcressDataTable(std::string in_opacityEnergyDescriptor,
-                   rtt_cdi::Model in_opacityModel,
+  IpcressDataTable(std::string in_opacityEnergyDescriptor, rtt_cdi::Model in_opacityModel,
                    rtt_cdi::Reaction in_opacityReaction,
-                   std::vector<std::string> const &in_fieldNames,
-                   size_t in_matID,
+                   std::vector<std::string> const &in_fieldNames, size_t in_matID,
                    std::shared_ptr<const IpcressFile> const &spIpcressFile);
 
   // ACCESSORS
@@ -120,16 +118,13 @@ public:
   std::vector<double> const &getDensities() const { return densities; };
 
   //! Retrieve the energy boundary grid.
-  std::vector<double> const &getGroupBoundaries() const {
-    return groupBoundaries;
-  };
+  std::vector<double> const &getGroupBoundaries() const { return groupBoundaries; };
 
   //! Return a "plain English" description of the data table.
   std::string const &getDataDescriptor() const { return dataDescriptor; };
 
   //! Perform linear interploation of log(opacity) values.
-  double interpOpac(double const T, double const rho,
-                    size_t const group = 0) const;
+  double interpOpac(double const T, double const rho, size_t const group = 0) const;
 
 private:
   /*!
@@ -147,8 +142,7 @@ private:
   void loadDataTable(std::shared_ptr<const IpcressFile> const &spIpcressFile);
 
   //! Search "keys" for "key".  If found return true, otherwise return false.
-  template <typename T>
-  bool key_available(const T &key, const std::vector<T> &keys) const;
+  template <typename T> bool key_available(const T &key, const std::vector<T> &keys) const;
 };
 
 } // namespace rtt_cdi_ipcress

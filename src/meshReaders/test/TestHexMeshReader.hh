@@ -25,31 +25,23 @@ bool check_mesh(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                 const std::string &testid);
 bool check_nodes(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                  const std::string &testid);
-bool check_node_units(UnitTest &ut,
-                      const rtt_meshReaders::Hex_Mesh_Reader &mesh);
+bool check_node_units(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh);
 bool check_node_sets(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                      const std::string &testid);
 bool check_title(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh);
-bool check_element_nodes(UnitTest &ut,
-                         const rtt_meshReaders::Hex_Mesh_Reader &mesh,
+bool check_element_nodes(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                          const std::string &testid);
-bool check_invariant(UnitTest &ut,
-                     const rtt_meshReaders::Hex_Mesh_Reader &mesh);
-bool check_element_sets(UnitTest &ut,
-                        const rtt_meshReaders::Hex_Mesh_Reader &mesh,
+bool check_invariant(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh);
+bool check_element_sets(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                         const std::string &testid);
-bool check_element_types(UnitTest &ut,
-                         const rtt_meshReaders::Hex_Mesh_Reader &mesh,
+bool check_element_types(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                          const std::string &testid);
-bool check_unique_element_types(UnitTest &ut,
-                                const rtt_meshReaders::Hex_Mesh_Reader &mesh,
+bool check_unique_element_types(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                                 const std::string &testid);
 bool compare_double(const double &lhs, const double &rhs);
-bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets,
-               const std::string &name, const unsigned &begin,
-               const unsigned &end);
-bool check_get_dims_ndim(UnitTest &ut,
-                         const rtt_meshReaders::Hex_Mesh_Reader &mesh,
+bool check_map(const std::map<std::string, std::set<unsigned>> &elmsets, const std::string &name,
+               const unsigned &begin, const unsigned &end);
+bool check_get_dims_ndim(UnitTest &ut, const rtt_meshReaders::Hex_Mesh_Reader &mesh,
                          const std::string &testid);
 
 } // end namespace rtt_meshReaders_test

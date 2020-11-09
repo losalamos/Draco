@@ -133,8 +133,7 @@ public:
   // Plot2D();
 
   // another constructor; window is opened
-  explicit Plot2D(const int numGraphs, const std::string &paramFile = "",
-                  const bool batch = false);
+  explicit Plot2D(const int numGraphs, const std::string &paramFile = "", const bool batch = false);
 
   // destructor
   ~Plot2D();
@@ -154,8 +153,7 @@ public:
   void killAllSets();
 
   // opens Grace window
-  void open(const int numGraphs = 1, const std::string &paramFile = "",
-            const bool batch = false);
+  void open(const int numGraphs = 1, const std::string &paramFile = "", const bool batch = false);
 
   // sends Grace a command
   // void rawCom(const std::string command);
@@ -173,12 +171,11 @@ public:
   void save(const std::string filename);
 
   // sets the titles
-  void setTitles(const std::string title, const std::string subTitle,
-                 const int iG = 0);
+  void setTitles(const std::string title, const std::string subTitle, const int iG = 0);
 
   // sets the axes labels
-  void setAxesLabels(const std::string xLabel, const std::string yLabel,
-                     const int iG, const double charSize = 1.0);
+  void setAxesLabels(const std::string xLabel, const std::string yLabel, const int iG,
+                     const double charSize = 1.0);
 
   // Turns on autoscale when reading sets.
   // void autoscaleOnRead();

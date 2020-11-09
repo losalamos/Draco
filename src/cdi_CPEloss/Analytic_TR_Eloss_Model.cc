@@ -25,8 +25,7 @@ namespace rtt_cdi_cpeloss {
  * \param v incident particle speed in cm/shk
  * \return eloss stopping power in keV shk^-1
  */
-double Analytic_TR_Eloss_Model::calculate_eloss(const double T,
-                                                const double rho,
+double Analytic_TR_Eloss_Model::calculate_eloss(const double T, const double rho,
                                                 const double v) const {
 
   Require(T >= 0.0);
@@ -46,8 +45,7 @@ double Analytic_TR_Eloss_Model::calculate_eloss(const double T,
   if (Ep < 2. * pc.k() * Tt)
     return rtt_cdi::constants::max_eloss;
 
-  const double prefac =
-      4. * pc.pi() * nt * qtabs * qtabs * qpabs * qpabs / (mt * vp * vp);
+  const double prefac = 4. * pc.pi() * nt * qtabs * qtabs * qpabs * qpabs / (mt * vp * vp);
   const double zeta = vp / vt;
 
   double Psi = 0.;
@@ -55,8 +53,7 @@ double Analytic_TR_Eloss_Model::calculate_eloss(const double T,
 
   if (zaidt == -1) {
     // Possibly degenerate electron target
-    Psi = std::erf(zeta) -
-          2. * zeta / sqrt(pc.pi()) * (1. + mt / mp) * exp(-pow(zeta, 2));
+    Psi = std::erf(zeta) - 2. * zeta / sqrt(pc.pi()) * (1. + mt / mp) * exp(-pow(zeta, 2));
 
     // Fermi temperature
     const double TF = pow(pc.pi(), 4. / 3.) * hbar * hbar * pow(nt, 2. / 3.) /
@@ -82,27 +79,23 @@ double Analytic_TR_Eloss_Model::calculate_eloss(const double T,
     constexpr double b4 = 0.120;
     constexpr double b6 = 0.0365;
     double Delta = log(1. + a1 * pow(zeta, 2));
-    Delta +=
-        log((1. + a2 * pow(zeta, 2) + a4 * pow(zeta, 4) + a6 * pow(zeta, 6)) /
-            (1. + b2 * pow(zeta, 2) + b4 * pow(zeta, 4) + b6 * pow(zeta, 6)));
+    Delta += log((1. + a2 * pow(zeta, 2) + a4 * pow(zeta, 4) + a6 * pow(zeta, 6)) /
+                 (1. + b2 * pow(zeta, 2) + b4 * pow(zeta, 4) + b6 * pow(zeta, 6)));
 
     logL += Delta;
 
   } else {
     // Assumed non-degenerate ion target
-    Psi = std::erf(zeta) -
-          2. * zeta / sqrt(pc.pi()) * (1. + mt / mp) * exp(-pow(zeta, 2));
+    Psi = std::erf(zeta) - 2. * zeta / sqrt(pc.pi()) * (1. + mt / mp) * exp(-pow(zeta, 2));
 
     double debye =
-        sqrt(pc.k() * Tt /
-             (4. * pc.pi() * nt * pc.e() * pc.e())); // Electron debye length
-    double mu = mt * mp / (mt + mp);                 // Mean particle mass
+        sqrt(pc.k() * Tt / (4. * pc.pi() * nt * pc.e() * pc.e())); // Electron debye length
+    double mu = mt * mp / (mt + mp);                               // Mean particle mass
     double vmin = std::min<double>(vp, vt);
     double vmax = std::max<double>(vp, vt);
     constexpr double vfac = 0.27323954;
     double vrel = vmax * (1. + vfac * (vmin / vmax)); // Mean relative speed
-    double bmin =
-        qtabs * qpabs / (mu * vrel * vrel); // Minimum impace parameter
+    double bmin = qtabs * qpabs / (mu * vrel * vrel); // Minimum impace parameter
     logL = log(debye / bmin);
   }
 

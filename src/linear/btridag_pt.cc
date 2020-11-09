@@ -15,10 +15,9 @@
 namespace rtt_linear {
 using namespace std;
 
-template DLL_PUBLIC_linear void
-btridag(vector<double> const &a, vector<double> const &b,
-        vector<double> const &c, vector<double> const &r, unsigned const n,
-        unsigned const m, vector<double> &u);
+template void btridag(vector<double> const &a, vector<double> const &b, vector<double> const &c,
+                      vector<double> const &r, unsigned const n, unsigned const m,
+                      vector<double> &u);
 
 } // end namespace rtt_linear
 

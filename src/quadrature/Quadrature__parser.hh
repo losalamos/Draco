@@ -45,9 +45,8 @@ public:
 
   // STATICS
 
-  static void register_quadrature(
-      string const &keyword,
-      std::shared_ptr<Quadrature> parse_function(Token_Stream &));
+  static void register_quadrature(string const &keyword,
+                                  std::shared_ptr<Quadrature> parse_function(Token_Stream &));
 
 private:
   // STATICS

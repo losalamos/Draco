@@ -33,9 +33,7 @@ const int proc_null = -2;
 // SETUP FUNCTIONS
 //------------------------------------------------------------------------------------------------//
 
-int initialize(int & /* argc */, char **& /*argv */, int /*required*/) {
-  return 0;
-}
+int initialize(int & /* argc */, char **& /*argv */, int /*required*/) { return 0; }
 
 //------------------------------------------------------------------------------------------------//
 void finalize() {}
@@ -73,8 +71,7 @@ double wall_clock_time(DRACO_TIME_TYPE &now) {
   using namespace std::chrono;
   now = high_resolution_clock::now();
   high_resolution_clock::duration t0 = now.time_since_epoch();
-  return (static_cast<double>(t0.count()) *
-          high_resolution_clock::period::num) /
+  return (static_cast<double>(t0.count()) * high_resolution_clock::period::num) /
          high_resolution_clock::period::den;
 }
 double wall_clock_time() {
@@ -94,17 +91,13 @@ double wall_clock_time(DRACO_TIME_TYPE &now) {
 
 //------------------------------------------------------------------------------------------------//
 
-double wall_clock_resolution() {
-  return static_cast<double>(DRACO_CLOCKS_PER_SEC);
-}
+double wall_clock_resolution() { return static_cast<double>(DRACO_CLOCKS_PER_SEC); }
 
 //------------------------------------------------------------------------------------------------//
 // PROBE/WAIT FUNCTIONS
 //------------------------------------------------------------------------------------------------//
 
-bool probe(int /* source */, int /* tag */, int & /* message_size */) {
-  return false;
-}
+bool probe(int /* source */, int /* tag */, int & /* message_size */) { return false; }
 
 void blocking_probe(int /* source */, int /* tag */, int & /* message_size */) {
   Insist(false, "no messages expected in serial programs!");
@@ -112,8 +105,7 @@ void blocking_probe(int /* source */, int /* tag */, int & /* message_size */) {
 
 void wait_all(unsigned /*count*/, C4_Req *const /*requests*/) { return; }
 
-std::vector<int> wait_all_with_source(unsigned /*count*/,
-                                      C4_Req *const /*requests*/) {
+std::vector<int> wait_all_with_source(unsigned /*count*/, C4_Req *const /*requests*/) {
   return std::vector<int>();
 }
 

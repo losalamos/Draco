@@ -31,8 +31,7 @@ using Invert_Comm_Map_t = std::map<int, size_t>;
  * number of bytes, or the number of elements in an array.  The size must be positive (specifically,
  * nonzero).
  */
-void invert_comm_map(Invert_Comm_Map_t const &to_map,
-                     Invert_Comm_Map_t &from_map);
+void invert_comm_map(Invert_Comm_Map_t const &to_map, Invert_Comm_Map_t &from_map);
 
 //------------------------------------------------------------------------------------------------//
 /**
@@ -51,8 +50,7 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
  * and assuming the processor numbers are stored in iterator->first.  But invert_comm_map doesn't
  * need that, and we decided not to add that complexity.
  */
-int get_num_recv(Invert_Comm_Map_t::const_iterator first,
-                 Invert_Comm_Map_t::const_iterator last);
+int get_num_recv(Invert_Comm_Map_t::const_iterator first, Invert_Comm_Map_t::const_iterator last);
 
 } // end namespace rtt_c4
 

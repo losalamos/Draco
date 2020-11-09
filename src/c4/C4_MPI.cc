@@ -178,15 +178,13 @@ void wait_all(const unsigned count, C4_Req *const requests) {
     else
       array_of_requests[i] = MPI_REQUEST_NULL;
   }
-  Remember(int check =)
-      MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
+  Remember(int check =) MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
   Check(check == MPI_SUCCESS);
   return;
 }
 
 //------------------------------------------------------------------------------------------------//
-std::vector<int> wait_all_with_source(const unsigned count,
-                                      C4_Req *const requests) {
+std::vector<int> wait_all_with_source(const unsigned count, C4_Req *const requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)
@@ -204,8 +202,7 @@ std::vector<int> wait_all_with_source(const unsigned count,
     else
       array_of_requests[i] = MPI_REQUEST_NULL;
   }
-  Remember(int check =)
-      MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
+  Remember(int check =) MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
   Check(check == MPI_SUCCESS);
 
   for (unsigned p = 0; p < count; p++) {

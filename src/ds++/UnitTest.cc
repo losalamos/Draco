@@ -31,15 +31,14 @@ namespace rtt_dsxx {
  * when generating status reports).  The object produced by this constructor will respond to the
  * command line argument "--version."
  */
-UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
-                   std::ostream &out_, bool const verbose_)
+UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_, std::ostream &out_,
+                   bool const verbose_)
     : numPasses(0), numFails(0), fpe_trap_active(false),
       testName(getFilenameComponent(std::string(argv[0]), rtt_dsxx::FC_NAME)),
       testPath(getFilenameComponent(
-          getFilenameComponent(std::string(argv[0]), rtt_dsxx::FC_REALPATH),
-          rtt_dsxx::FC_PATH)),
-      release(release_), out(out_), m_dbcRequire(false), m_dbcCheck(false),
-      m_dbcEnsure(false), m_dbcNothrow(false), verbose(verbose_) {
+          getFilenameComponent(std::string(argv[0]), rtt_dsxx::FC_REALPATH), rtt_dsxx::FC_PATH)),
+      release(release_), out(out_), m_dbcRequire(false), m_dbcCheck(false), m_dbcEnsure(false),
+      m_dbcNothrow(false), verbose(verbose_) {
   Require(release != nullptr);
   Ensure(numPasses == 0);
   Ensure(numFails == 0);
@@ -95,8 +94,8 @@ std::string UnitTest::resultMessage() const {
  */
 bool UnitTest::failure(int line) {
   using DT = Term::DracoTerminal;
-  out << Term::ccolor(DT::fail) << "Test: failed on line " << line
-      << Term::ccolor(DT::reset) << std::endl;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line << Term::ccolor(DT::reset)
+      << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -109,8 +108,8 @@ bool UnitTest::failure(int line) {
  */
 bool UnitTest::failure(int line, char const *file) {
   using DT = Term::DracoTerminal;
-  out << Term::ccolor(DT::fail) << "Test: failed on line " << line << " in "
-      << file << Term::ccolor(DT::reset) << std::endl;
+  out << Term::ccolor(DT::fail) << "Test: failed on line " << line << " in " << file
+      << Term::ccolor(DT::reset) << std::endl;
   UnitTest::numFails++;
   return false;
 }
@@ -165,8 +164,7 @@ bool UnitTest::passes(const std::string &passmsg) {
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
  * \param fatal True if the test is to throw a std::assert on failure.
  */
-bool UnitTest::check(bool const good, std::string const &passmsg,
-                     bool const fatal) {
+bool UnitTest::check(bool const good, std::string const &passmsg, bool const fatal) {
   if (good) {
     passes(passmsg);
   } else {

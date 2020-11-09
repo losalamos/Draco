@@ -28,8 +28,7 @@ using namespace std;
 
 #ifdef C4_MPI
 
-Processor_Group::Processor_Group(unsigned const stride)
-    : size_(0), group_(), comm_() {
+Processor_Group::Processor_Group(unsigned const stride) : size_(0), group_(), comm_() {
   int flag;
   MPI_Initialized(&flag);
   Insist(flag, "Processor_Group created before MPI is initialized");

@@ -22,25 +22,22 @@ string Tri_Chebyshev_Legendre::name() const { return "Tri Chebyshev Legendre"; }
 string Tri_Chebyshev_Legendre::parse_name() const { return "tri cl"; }
 
 //------------------------------------------------------------------------------------------------//
-Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const {
-  return TRIANGLE_QUADRATURE;
-}
+Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const { return TRIANGLE_QUADRATURE; }
 
 //------------------------------------------------------------------------------------------------//
 unsigned Tri_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
 //------------------------------------------------------------------------------------------------//
 string Tri_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = tri cl" + indent +
-                  "  order = " + to_string(sn_order_) +
+  string Result = indent + "type = tri cl" + indent + "  order = " + to_string(sn_order_) +
                   Octant_Quadrature::as_text(indent);
 
   return Result;
 }
 
 //------------------------------------------------------------------------------------------------//
-void Tri_Chebyshev_Legendre::create_octant_ordinates_(
-    vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
+void Tri_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                                                      vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
 
   // The number of quadrature levels is equal to the requested SN order.
