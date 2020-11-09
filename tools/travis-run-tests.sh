@@ -194,6 +194,11 @@ elif [[ "${COMPILER}" == "LLVM" ]]; then
     echo "===== CMakeCache.txt ====="
     run "cat CMakeCache.txt"
   fi
+  if [[ "${CLANGTIDY:=OFF}" == "ON" ]]; then
+    echo "==> enable clang-tidy CI mode"
+    CMAKE_OPTS+=" -DCI_CLANG_TIDY=ON -DDRACO_STATIC_ANALYZER=clang-tidy "
+    echo "==> CMAKE_OPTS = ${CMAKE_OPTS}"
+  fi
   echo "========"
   run "cmake -DDRACO_C4=${DRACO_C4} ${CMAKE_OPTS} ${SOURCE_DIR}"
   echo "========"
