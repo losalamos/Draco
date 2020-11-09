@@ -14,11 +14,6 @@
 #include "C4_Status.hh"
 #include "C4_Traits.hh"
 #include "c4/config.h"
-#include "ds++/Assert.hh"
-
-#ifdef C4_MPI
-#include "c4_mpi.h"
-#endif
 
 namespace rtt_c4 {
 //================================================================================================//
