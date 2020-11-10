@@ -334,7 +334,10 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 #if ( defined __CUDA_ARCH__  && defined USE_CUDA )
 #define Insist_device(c, m) if(!(c)) rtt_dsxx::no_exception_insist( #c, m, __FILE__, __LINE__)
+#else
+#define Insist_device(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #endif
+
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
