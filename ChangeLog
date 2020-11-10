@@ -31,8 +31,8 @@
 	- Provide option to install object libraries isntead of libraries for better IPO on KNL.
 	- Fix build via spack on CrayPE.
 	- Allow Draco Timers to wrap Caliper timers.
-	- Add a constant analytic stopping power mode
-	- Add parallel ensight capability
+	- Add a constant analytic stopping power mode.
+	- Add parallel ensight capability.
 	- General build system improvements to better support CUDA enabled builds.
 
 2020-05-29  Kelly (KT) Thompson  <kgt@lanl.gov>
