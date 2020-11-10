@@ -13,11 +13,13 @@
 #include "c4/config.h"
 #include <algorithm>
 
+#if !defined(rtt_c4_global_hh) && !defined(rtt_c4_C4_Functions_hh)
+#error "Include c4/C4_Functions.hh instead of this c4/C4_MPI.hh"
+#endif
+
 #ifdef C4_MPI
 
 #include "MPI_Traits.hh"
-#include "c4_mpi.h"
-#include "ds++/Assert.hh"
 
 //------------------------------------------------------------------------------------------------//
 // Prototypes

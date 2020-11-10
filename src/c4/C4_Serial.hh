@@ -1,4 +1,4 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_Serial.hh
  * \author Thomas M. Evans
@@ -13,6 +13,10 @@
 #include "c4/config.h"
 #include "ds++/Assert.hh"
 #include <algorithm>
+
+#if !defined(rtt_c4_global_hh) && !defined(rtt_c4_C4_Functions_hh)
+#error "Include c4/C4_Functions.hh instead of this c4/C4_Serial.hh"
+#endif
 
 #ifdef C4_SCALAR
 
