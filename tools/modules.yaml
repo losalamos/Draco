@@ -21,7 +21,6 @@ modules:
           - "CPLUS_INCLUDE_PATH"
           - "INCLUDE"
           - "LIBRARY_PATH"
-          - "LD_LIBRARY_PATH"
     eospac:
       environment:
         set:
