@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
  * \brief  Implementation of block tridiagonal solver.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  */
-//------------------------------------------------------------------------------------------------//
-
 //------------------------------------------------------------------------------------------------//
 
 #ifndef linear_btridag_hh
@@ -22,8 +19,8 @@ namespace rtt_linear {
 /*!
  * Solve a block tridiagonal system of linear equations.
  *
- * \arg \a FieldVector A random access container whose element type must
- * represent a field, such as the reals or the complex numbers. 
+ * \arg \a FieldVector A random access container whose element type must represent a field, such as
+ *            the reals or the complex numbers.
  *
  * \param a Subdiagonal of coefficient matrix.
  * \param b Diagonal of coefficient matrix.

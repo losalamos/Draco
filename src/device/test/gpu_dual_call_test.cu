@@ -4,9 +4,7 @@
  * \author Alex R. Long
  * \date   Mon Mar 25 2019
  * \brief  Show how code can be called from GPU and host
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "device/GPU_Device.hh"
@@ -55,11 +53,9 @@ int dual_call_test(rtt_dsxx::ScalarUnitTest &ut) {
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
   err = cudaMalloc((void **)&D_n_tot, n_blocks * sizeof(unsigned long long));
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
-  err = cudaMemcpy(D_n_field, &n_field[0], n_cells * sizeof(int),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpy(D_n_field, &n_field[0], n_cells * sizeof(int), cudaMemcpyHostToDevice);
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
-  err = cudaMemcpy(D_e_field, &e_field[0], n_cells * sizeof(double),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpy(D_e_field, &e_field[0], n_cells * sizeof(double), cudaMemcpyHostToDevice);
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
   err = cudaMemcpy(D_src_cell_bias, &src_cell_bias[0], n_cells * sizeof(double),
                    cudaMemcpyHostToDevice);
@@ -74,20 +70,17 @@ int dual_call_test(rtt_dsxx::ScalarUnitTest &ut) {
   gridSize.y = 1;
   gridSize.z = 1;
   cuda_conserve_calc_num_src_particles<<<blockSize, gridSize>>>(
-      part_per_e, max_particles_pspc, n_cells, D_e_field, D_src_cell_bias,
-      D_n_field, D_n_tot);
+      part_per_e, max_particles_pspc, n_cells, D_e_field, D_src_cell_bias, D_n_field, D_n_tot);
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
   cudaDeviceSynchronize();
   std::cout << gpu.getErrorMessage(cudaGetLastError()) << std::endl;
 
   vector<double> e_field_out(n_cells, 0.0);
-  err = cudaMemcpy(&n_field[0], D_n_field, n_cells * sizeof(int),
-                   cudaMemcpyDeviceToHost);
+  err = cudaMemcpy(&n_field[0], D_n_field, n_cells * sizeof(int), cudaMemcpyDeviceToHost);
   std::cout << gpu.getErrorMessage(err) << std::endl;
 
-  err =
-      cudaMemcpy(&n_tot_block[0], D_n_tot,
-                 n_blocks * sizeof(unsigned long long), cudaMemcpyDeviceToHost);
+  err = cudaMemcpy(&n_tot_block[0], D_n_tot, n_blocks * sizeof(unsigned long long),
+                   cudaMemcpyDeviceToHost);
   std::cout << gpu.getErrorMessage(err) << std::endl;
 
   err = cudaDeviceReset();
@@ -103,9 +96,8 @@ int dual_call_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "N total: " << device_n_tot << endl;
 
-  host_n_tot = sub_conserve_calc_num_src_particles(
-      part_per_e, max_particles_pspc, 0, n_cells, &e_field[0],
-      &src_cell_bias[0], &n_field[0]);
+  host_n_tot = sub_conserve_calc_num_src_particles(part_per_e, max_particles_pspc, 0, n_cells,
+                                                   &e_field[0], &src_cell_bias[0], &n_field[0]);
 
   cout << "Host N total: " << host_n_tot << endl;
   if (host_n_tot != device_n_tot)
