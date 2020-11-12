@@ -48,8 +48,7 @@ void query_device(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Parse the output
   bool verbose(false);
-  std::map<std::string, unsigned> wordCount =
-      rtt_dsxx::get_word_count(out, verbose);
+  std::map<std::string, unsigned> wordCount = rtt_dsxx::get_word_count(out, verbose);
 
   FAIL_IF_NOT(wordCount[string("Device")] == numDev);
   // successful test output

@@ -27,9 +27,8 @@ namespace rtt_device_test {
  * \param[out] return number of particles over this cell range
  */
 __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
-    const double part_per_e, unsigned max_particles_pspc,
-    const size_t cell_start, const size_t cell_end, const double *e_field,
-    const double *src_cell_bias, int *n_field) {
+    const double part_per_e, unsigned max_particles_pspc, const size_t cell_start,
+    const size_t cell_end, const double *e_field, const double *src_cell_bias, int *n_field) {
   unsigned long long ntot = 0;
 
   ntot = 0;
@@ -81,18 +80,18 @@ __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
  * \param[in,out] n_field destination for particles in a cell
  * \param[in,out] ntot total particles per thread block
  */
-__global__ void cuda_conserve_calc_num_src_particles(
-    const double part_per_e, unsigned max_particles_pspc, int cont_size,
-    const double *e_field, const double *src_cell_bias, int *n_field,
-    unsigned long long *ntot) {
+__global__ void cuda_conserve_calc_num_src_particles(const double part_per_e,
+                                                     unsigned max_particles_pspc, int cont_size,
+                                                     const double *e_field,
+                                                     const double *src_cell_bias, int *n_field,
+                                                     unsigned long long *ntot) {
 
   __shared__ unsigned long long shared_data[512];
   size_t cell_start = threadIdx.x + blockIdx.x * blockDim.x;
   size_t cell_end = cell_start + 1;
   if (cell_start < cont_size) {
     shared_data[threadIdx.x] = sub_conserve_calc_num_src_particles(
-        part_per_e, max_particles_pspc, cell_start, cell_end, e_field,
-        src_cell_bias, n_field);
+        part_per_e, max_particles_pspc, cell_start, cell_end, e_field, src_cell_bias, n_field);
   } else
     shared_data[threadIdx.x] = 0;
   __syncthreads();

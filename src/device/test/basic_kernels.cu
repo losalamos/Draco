@@ -32,8 +32,7 @@ __global__ void sum(int *dest, int a, int b) {
  * \param{in,out] C_dev location to store solution vector
  * \param{in] N length of vectors
  */
-__global__ void vector_add(double const *A_dev, double const *B_dev,
-                           double *C_dev, int const N) {
+__global__ void vector_add(double const *A_dev, double const *B_dev, double *C_dev, int const N) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   /* if(i%512==0)
          *   printf("index %d\n",i); */

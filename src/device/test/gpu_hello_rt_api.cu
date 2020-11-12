@@ -28,8 +28,7 @@ using namespace rtt_device_test;
 void simple_add(rtt_dsxx::ScalarUnitTest &ut) {
   // C = A+B
 
-  std::cout << "\n==> Running test: gpu_hello_rt_api::simple_add(ut)\n"
-            << std::endl;
+  std::cout << "\n==> Running test: gpu_hello_rt_api::simple_add(ut)\n" << std::endl;
 
   // create some data
   int const N(2053);
@@ -88,8 +87,7 @@ void copy_and_retrieve(rtt_dsxx::ScalarUnitTest &ut) {
 
   using namespace std;
 
-  std::cout << "\n==> Running test: gpu_hello_rt_api::copy_and_retrieve(ut)\n"
-            << std::endl;
+  std::cout << "\n==> Running test: gpu_hello_rt_api::copy_and_retrieve(ut)\n" << std::endl;
 
   // Size of array
   size_t const count(100);
@@ -118,8 +116,7 @@ void copy_and_retrieve(rtt_dsxx::ScalarUnitTest &ut) {
     PASSMSG("Copied array from host to device.");
 
   // Copy back to host
-  ret =
-      cudaMemcpy(&outH[0], inD, count * sizeof(float), cudaMemcpyDeviceToHost);
+  ret = cudaMemcpy(&outH[0], inD, count * sizeof(float), cudaMemcpyDeviceToHost);
   if (ret != cudaSuccess)
     FAILMSG(string("cudaMemcpy returned \"") + cudaGetErrorString(ret) + "\"");
   else
@@ -130,8 +127,7 @@ void copy_and_retrieve(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < count; ++i) {
     if (!rtt_dsxx::soft_equiv(inH[i], outH[i], 1.0e-8f)) {
       diff = 1;
-      cout << "diff: inH[" << i << "] = " << inH[i] << "; outH[" << i
-           << "] = " << outH[i] << endl;
+      cout << "diff: inH[" << i << "] = " << inH[i] << "; outH[" << i << "] = " << outH[i] << endl;
     }
   }
   if (diff != 0)
