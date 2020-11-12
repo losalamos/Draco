@@ -8,7 +8,6 @@
 # .travis.yml calls this script to build draco and run the tests.
 #--------------------------------------------------------------------------------------------------#
 
-
 # preliminaries and environment
 set -e
 
@@ -55,11 +54,11 @@ if [[ ${STYLE} ]]; then
 # 1. GCC based build and test, or
 # 2. Autodoc
 #--------------------------------------------------------------------------------------------------#
-else
+elif [[ "${COMPILER:=GCC}" == "GCC" ]]; then
   if [[ "${AUTODOC}" == "ON" ]]; then
     echo "checking autodoc compliance..."
   else
-    echo "checking build and test..."
+    echo "checking build and test (GCC)..."
   fi
 
   # extract the TPL list from the Dockerfile
@@ -144,6 +143,69 @@ else
     bash <(curl -s https://codecov.io/bash) -f coverage.info || \
       echo "Codecov did not collect coverage reports"
   fi
+  cd -
+
+#--------------------------------------------------------------------------------------------------#
+# 1. LLVM based build and test, or
+# 2. clang-tidy
+#--------------------------------------------------------------------------------------------------#
+elif [[ "${COMPILER}" == "LLVM" ]]; then
+  echo "checking build and test (LLVM)..."
+
+  # extract the TPL list from the Dockerfile
+  DRACO_TPL="$(grep DRACO_TPL tools/Dockerfile-spack-llvm.txt | sed -e 's/.*=//' | sed -e 's/\"//g')"
+  DRACO_LLVM_TPL="$(grep DRACO_LLVM_TPL tools/Dockerfile-spack-llvm.txt | head -n 1 | sed -e 's/.*=//' | sed -e 's/\"//g')"
+  export DRACO_TPL DRACO_LLVM_TPL
+
+  # Environment setup for the build...
+  dmodules="llvm ${DRACO_TPL//@//} ${DRACO_LLVM_TPL}"
+  for item in ${dmodules}; do
+    run "module load $item"
+  done
+  run "module list"
+  run "module avail"
+
+  CXX=$(which clang++)
+  CC=$(which clang)
+  FC=$(which gfortran)
+  export CXX CC FC
+  echo "CXX    = ${CXX}"
+  echo "FC     = ${FC}"
+  echo "GCOV   = ${GCOV}"
+
+  export OMP_NUM_THREADS=2
+  if [[ ${WERROR} ]]; then
+    for i in C CXX Fortran; do
+      eval export ${i}_FLAGS+=\" -Werror\"
+    done
+  fi
+
+  echo -e "\n========== printenv =========="
+  #printenv
+  printenv | grep _FLAGS
+  echo " "
+
+  if [[ ${BUILD_DIR:-notset} == "notset" ]]; then die "BUILD_DIR not set by environment."; fi
+  run "mkdir -p ${BUILD_DIR}"
+  run "cd ${BUILD_DIR}"
+
+  echo " "
+  if [[ -f CMakeCache.txt ]]; then
+    echo "===== CMakeCache.txt ====="
+    run "cat CMakeCache.txt"
+  fi
+  if [[ "${CLANGTIDY:=OFF}" == "ON" ]]; then
+    echo "==> enable clang-tidy CI mode"
+    CMAKE_OPTS+=" -DCI_CLANG_TIDY=ON -DDRACO_STATIC_ANALYZER=clang-tidy "
+    echo "==> CMAKE_OPTS = ${CMAKE_OPTS}"
+  fi
+  echo "========"
+  run "cmake -DDRACO_C4=${DRACO_C4} ${CMAKE_OPTS} ${SOURCE_DIR}"
+  echo "========"
+  run "make -j 2"
+  echo "========"
+  # tstOMP_2 needs too many ppr (threads * cores) for Travis.
+  run "ctest -j 2 -E \(c4_tstOMP_2\|c4_tstTermination_Detector_2\) --output-on-failure"
   cd -
 fi
 

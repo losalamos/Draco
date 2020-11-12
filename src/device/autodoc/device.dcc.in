@@ -10,9 +10,8 @@
 \version Draco-@Draco_VERSION@
 \author Kelly Thompson
 
-The device package encapsulates features provided by specialized
-hardware including CUDA (previously we supported Roadrunner PPC/PPE
-nodes). The package consists of the following core classes:
+The device package encapsulates features provided by specialized hardware including CUDA (previously
+we supported Roadrunner PPC/PPE nodes). The package consists of the following core classes:
 
 \arg \b GPU_Device interface class (GPU_Device.hh)
 \arg \b GPU_Module dynamnically loadable packages and data (CPU_Module.hh)

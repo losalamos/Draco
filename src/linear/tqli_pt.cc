@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Thu Sep  2 15:00:32 2004
  * \brief  Specializations of tqli
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "tqli.i.hh"

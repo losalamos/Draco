@@ -3,9 +3,7 @@
  * \file   device/GPU_Device.cc
  * \author Kelly (KT) Thompson
  * \date   Thu Oct 20 15:28:48 2011
- * \brief
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "GPU_Device.hh"
@@ -129,8 +127,8 @@ void GPU_Device::printDeviceSummary(int const idevice, std::ostream &out) const 
  * \param errorCode CUDA enum return value
  * \return descriptive string associated with
  *
- * For optimized builds with DRACO_DBC_LEVEL=0, this function will be empty
- * and any decent compiler will optimize this call away.
+ * For optimized builds with DRACO_DBC_LEVEL=0, this function will be empty and any decent compiler
+ * will optimize this call away.
  */
 void GPU_Device::checkForCudaError(cudaError_t const errorCode) {
   std::ostringstream msg;
@@ -149,104 +147,10 @@ void GPU_Device::checkForCudaError(cudaError_t const) { /* empty */
 #endif
 
 //------------------------------------------------------------------------------------------------//
-/*!
- * \brief Return a text string that corresponds to a CUDA error enum.
- */
+//! Return a text string that corresponds to a CUDA error enum.
 std::string GPU_Device::getErrorMessage(cudaError_t const err) {
   auto raw_message = cudaGetErrorString(err);
   std::string message(raw_message);
-
-  /*
-  switch (err) {
-  case cudaSuccess:
-    message = std::string("No errors.");
-    break;
-  case cudaErrorInvalidValue:
-    message = std::string("Invalid value.");
-    break;
-  case cudaErrorMemoryAllocation:
-    message = std::string("Out of memory.");
-    break;
-  case cudaErrorInitializationError:
-    message = std::string("Driver not initialized.");
-    break;
-  case cudaErrorDeviceUninitilialized:
-    message = std::string("Driver deinitialized.");
-    break;
-  case cudaErrorNoDevice:
-    message = std::string("No CUDA-capable device available.");
-    break;
-  case cudaErrorInvalidDevice:
-    message = std::string("Invalid device.");
-    break;
-  case cudaErrorInvalidKernelImage:
-    message = std::string("Invalid kernel image.");
-    break;
-  case cudaErrorIncompatibleDriverContext:
-    message = std::string("Invalid context.");
-    break;
-  case cudaErrorMapBufferObjectFailed:
-    message = std::string("Map failed.");
-    break;
-  case cudaErrorUnmapBufferObjectFailed:
-    message = std::string("Unmap failed.");
-    break;
-  case cudaErrorArrayIsMapped:
-    message = std::string("Array is mapped.");
-    break;
-  case cudaErrorAlreadyMapped:
-    message = std::string("Already mapped.");
-    break;
-  case cudaErrorAlreadyAcquired:
-    message = std::string("Already acquired.");
-    break;
-  case cudaErrorNotMapped:
-    message = std::string("Not mapped.");
-    break;
-  case cudaErrorInvalidSource:
-    message = std::string("Invalid source.");
-    break;
-  case cudaErrorFileNotFound:
-    message = std::string("File not found.");
-    break;
-  case cudaErrorInvalidResourceHandle:
-    message = std::string("Invalid handle.");
-    break;
-  case cudaErrorNotReady:
-    message = std::string("CUDA not ready.");
-    break;
-  case cudaErrorLaunchFailure:
-    message = std::string("Launch failed.");
-    break;
-  case cudaErrorLaunchOutOfResources:
-    message = std::string("Launch exceeded resources.");
-    break;
-  case cudaErrorLaunchTimeout:
-    message = std::string("Launch exceeded timeout.");
-    break;
-  case cudaErrorLaunchIncompatibleTexturing:
-    message = std::string("Launch with incompatible texturing.");
-    break;
-  case cudaErrorUnknown:
-    message = std::string("Unknown error. ");
-    break;
-  default:
-    // cudaErrorProfilerDisabled
-    // cudaErrorNotMappedAsArray
-    // cudaErrorNotMappedAsPointer
-    // cudaErrorECCUncorrectable
-    // cudaErrorUnsupportedLimit
-    // cudaErrorSharedObjectSymbolNotFound
-    // cudaErrorSharedObjectInitFailed
-    // cudaErrorOperatingSystem
-    // cudaErrorPeerAccessAlreadyEnabled
-    // cudaErrorPeerAccessUnsupported
-    // cudaErrorPeerAccessNotEnabled
-    // cudaErrorContextIsDestroyed
-    message = std::string("Unknown error. ");
-    break;
-  }
-  */
   return message;
 }
 
@@ -257,7 +161,6 @@ std::string GPU_Device::getErrorMessage(cudaError_t const err) {
  * \param nbytes number of bytes to allocate (e.g.: len*sizeof(double) ).
  * \return GPU device pointer to allocated memory.
  */
-
 void *GPU_Device::MemAlloc(unsigned const nbytes) {
   void *ptr;
   cudaError_t err = cudaMalloc(&ptr, nbytes);
@@ -265,18 +168,21 @@ void *GPU_Device::MemAlloc(unsigned const nbytes) {
   return ptr;
 }
 
+//------------------------------------------------------------------------------------------------//
 void GPU_Device::MemcpyHtoD(void *ptr, void const *loc, unsigned nbytes) {
   cudaError_t err = cudaMemcpy(ptr, loc, nbytes, cudaMemcpyHostToDevice);
   checkForCudaError(err);
   return;
 }
 
+//------------------------------------------------------------------------------------------------//
 void GPU_Device::MemcpyDtoH(void *loc, void *ptr, unsigned nbytes) {
   cudaError_t err = cudaMemcpy(loc, ptr, nbytes, cudaMemcpyDeviceToHost);
   checkForCudaError(err);
   return;
 }
 
+//------------------------------------------------------------------------------------------------//
 void GPU_Device::MemFree(void *ptr) {
   cudaError_t err = cudaFree(ptr);
   checkForCudaError(err);

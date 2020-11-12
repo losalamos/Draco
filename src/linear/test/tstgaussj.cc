@@ -3,11 +3,7 @@
  * \file   linear/test/tstgaussj.cc
  * \author Kent Budge
  * \date   Wed Sep 13 11:46:05 2006
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -149,7 +145,6 @@ void tstgaussj(UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

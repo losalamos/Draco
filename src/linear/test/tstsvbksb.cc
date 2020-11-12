@@ -3,11 +3,7 @@
  * \file   linear/test/tstsvbksb.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/ScalarUnitTest.hh"
@@ -24,7 +20,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void tstsvbksb(UnitTest &ut) {
   vector<double> U(4), W(2), V(4);
   U[0 + 2 * 0] = 2.;

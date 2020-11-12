@@ -2,17 +2,12 @@
 /*!
  * \file   linear/test/tstbtridag.cc
  * \author Kent Budge
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
-
-//------------------------------------------------------------------------------------------------//
-
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
 
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "linear/btridag.hh"
 
 using namespace std;
@@ -22,7 +17,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void tstbtridag(UnitTest &ut) {
   vector<double> a(2), b(2), c(2), r(2);
   b[0] = 2.;
@@ -50,7 +44,6 @@ void tstbtridag(UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
