@@ -125,15 +125,14 @@ function( set_doxygen_dot_num_threads )
   # hack in a couple of other settings based on the version of doxygen
   # discovered.
   if( ${DOXYGEN_VERSION} VERSION_GREATER 1.8.14 )
-    set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES"
-      PARENT_SCOPE)
+    set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES" PARENT_SCOPE)
   endif()
   if( ${DOXYGEN_VERSION} VERSION_LESS 1.8.17 )
     set( PERL_PATH "PERL_PATH = /usr/bin/perl" PARENT_SCOPE)
   endif()
 
   # Escalate doxygen warnings into errors for CI builds
-  if( DEFINED ENV{CI} AND DEFINED ENV{TRAVIS} )
+  if( DEFINED ENV{CI} )
     set( DOXYGEN_WARN_AS_ERROR "YES" PARENT_SCOPE )
   else()
     set( DOXYGEN_WARN_AS_ERROR "NO" PARENT_SCOPE )
