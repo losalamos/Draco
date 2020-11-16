@@ -381,6 +381,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr( !!(c), #c, m, __FILE__, __LINE__ )
 
@@ -417,6 +418,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
@@ -493,7 +495,7 @@ std::string verbose_error(std::string const &message);
 #ifndef Insist
 #define Insist(c,m)
 #endif
-#ifndef Insist
+#ifndef Insist_device
 #define Insist_device(c,m)
 #endif
 #ifndef Insist_ptr
