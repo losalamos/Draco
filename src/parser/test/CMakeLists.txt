@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser/test.
-# note   Copyright (C) 2016-2019, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 project( parser_test CXX )
 
@@ -43,9 +42,8 @@ add_scalar_tests(
 
 # Special case for driver4tstConsole_Token_Stream
 # 1. This test doesn't work under Xcode
-# 2. This test must have unique access to tstConsole_Token_Stream and we will
-#    use a RESOURCE_LOCK to prevent multiple simultaneous instances during
-#    parallel ctest.
+# 2. This test must have unique access to tstConsole_Token_Stream and we will use a RESOURCE_LOCK to
+#    prevent multiple simultaneous instances during parallel ctest.
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
   include( ApplicationUnitTest )
   add_app_unit_test(
@@ -70,13 +68,19 @@ add_parallel_tests(
    PE_LIST "1;2"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
 
-# To ensure that the file token stream tests of the #include capability know
-# where to look for the included file.
+# To ensure that the file token stream tests of the #include capability know where to look for the
+# included file.
  if( "${DRACO_C4}" STREQUAL "MPI" )
    set( tests_with_env_reqs
      parser_tstParallel_File_Token_Stream_1
      parser_tstParallel_File_Token_Stream_2
      parser_tstFile_Token_Stream_1 )
+   if( ENABLE_MEMORYCHECK )
+     set( tests_with_env_reqs
+       memcheck_parser_tstParallel_File_Token_Stream_1
+       memcheck_parser_tstParallel_File_Token_Stream_2
+       memcheck_parser_tstFile_Token_Stream_1 )
+   endif()
  else()
    set( tests_with_env_reqs
      parser_tstParallel_File_Token_Stream
@@ -84,7 +88,7 @@ add_parallel_tests(
  endif()
  set_tests_properties( ${tests_with_env_reqs} PROPERTIES
    ENVIRONMENT
-   DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR})
+     DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR})
 
 #--------------------------------------------------------------------------------------------------#
 # End parser/test/CMakeLists.txt
