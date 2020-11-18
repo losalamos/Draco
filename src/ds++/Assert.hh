@@ -177,7 +177,6 @@ void show_cookies(std::string const &cond, std::string const &file, int const li
                              int const line);
 
 #if defined __CUDA_ARCH__ && defined USE_CUDA
-
 /*! \brief A special version of insist that does not throw.  Useful for GPU code. \sa
  *         device/config.h.in */
 __host__ __device__ inline void no_exception_insist(char const *const cond, char const *const msg,
@@ -186,7 +185,6 @@ __host__ __device__ inline void no_exception_insist(char const *const cond, char
   printf("The following message was provided: \"%s\"", msg);
   return;
 }
-
 #endif
 
 #if DBC & 16
