@@ -292,6 +292,10 @@ template <typename T>
 int gatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
             int *receive_displs);
 
+template <typename T>
+int allgatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
+               int *receive_displs);
+
 template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size);
 
 template <typename T>

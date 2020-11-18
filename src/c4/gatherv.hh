@@ -35,6 +35,11 @@ namespace rtt_c4 {
 template <class T>
 void determinate_gatherv(std::vector<T> &outgoing_data, std::vector<std::vector<T>> &incoming_data);
 
+// same as determinate_gatherv but outgoing_data is sent to all processors
+template <class T>
+void determinate_allgatherv(std::vector<T> &outgoing_data,
+                            std::vector<std::vector<T>> &incoming_data);
+
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Gather messages of unknown size
@@ -52,6 +57,11 @@ void indeterminate_gatherv(std::vector<T> &outgoing_data,
                            std::vector<std::vector<T>> &incoming_data);
 
 void indeterminate_gatherv(std::string &outgoing_data, std::vector<std::string> &incoming_data);
+
+// same as indeterminate_gatherv but outgoing_data is sent to all processors
+template <class T>
+void indeterminate_allgatherv(std::vector<T> &outgoing_data,
+                              std::vector<std::vector<T>> &incoming_data);
 
 } // end namespace rtt_c4
 

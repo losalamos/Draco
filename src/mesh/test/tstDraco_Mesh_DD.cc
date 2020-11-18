@@ -135,6 +135,45 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
     }
   }
 
+  // check that node-to-ghost-cell linkage is correct
+  {
+    // access the layout
+    const Draco_Mesh::Dual_Ghost_Layout ngc_layout = mesh->get_ngc_linkage();
+
+    // check size (should be number of nodes per rank on processor boundaries)
+    FAIL_IF_NOT(ngc_layout.size() == 2);
+
+    // check sizes per node and data
+    if (rtt_c4::node() == 0) {
+
+      // check sizes at local node indices on right face (only one ghost cell overall)
+      FAIL_IF_NOT(ngc_layout.at(1).size() == 1);
+      FAIL_IF_NOT(ngc_layout.at(3).size() == 1);
+
+      // check that local cell index on other rank is 0 (there is only one)
+      FAIL_IF_NOT(ngc_layout.at(1)[0].first == 0);
+      FAIL_IF_NOT(ngc_layout.at(3)[0].first == 0);
+
+      // check that the other rank is rank 1
+      FAIL_IF_NOT(ngc_layout.at(1)[0].second == 1);
+      FAIL_IF_NOT(ngc_layout.at(3)[0].second == 1);
+
+    } else {
+
+      // check sizes at local node indices on right face (only one ghost cell overall)
+      FAIL_IF_NOT(ngc_layout.at(0).size() == 1);
+      FAIL_IF_NOT(ngc_layout.at(2).size() == 1);
+
+      // check that local cell index on other rank is 0 (there is only one)
+      FAIL_IF_NOT(ngc_layout.at(0)[0].first == 0);
+      FAIL_IF_NOT(ngc_layout.at(2)[0].first == 0);
+
+      // check that the other rank is rank 0
+      FAIL_IF_NOT(ngc_layout.at(0)[0].second == 0);
+      FAIL_IF_NOT(ngc_layout.at(2)[0].second == 0);
+    }
+  }
+
   // successful test output
   if (ut.numFails == 0)
     PASSMSG("2D domain-decomposed Draco_Mesh tests ok.");
