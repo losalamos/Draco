@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_Models.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_Models implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
@@ -15,9 +15,9 @@
 
 namespace rtt_cdi_analytic {
 
-//============================================================================//
+//================================================================================================//
 // EOS_ANALYTIC_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 
 /*!
  * \brief Calculate the electron temperature given density and Electron internal
@@ -51,12 +51,11 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
     double ytol(Ue * std::numeric_limits<double>::epsilon());
     unsigned iterations(1000);
     // bracket the root
-    rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min,
-                                                    T_max);
+    rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
 
     // Search for the root
-    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
-        minimizeFunctor, T_min, T_max, iterations, xtol, ytol);
+    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max,
+                                                                    iterations, xtol, ytol);
 
     return T_new;
   } else {
@@ -94,12 +93,11 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
     double ytol(Uic * std::numeric_limits<double>::epsilon());
     unsigned iterations(1000);
     // bracket the root
-    rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min,
-                                                    T_max);
+    rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
 
     // Search for the root
-    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
-        minimizeFunctor, T_min, T_max, iterations, xtol, ytol);
+    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max,
+                                                                    iterations, xtol, ytol);
 
     return T_new;
   } else {
@@ -107,14 +105,12 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
   }
 }
 
-//============================================================================//
+//================================================================================================//
 // CONSTANT_ANALYTIC_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
-Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
-    const sf_char &packed)
-    : sigma(0) {
+Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(const sf_char &packed) : sigma(0) {
   // size of stream
   int size(sizeof(int) + sizeof(double));
 
@@ -139,7 +135,7 @@ Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
 Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
@@ -170,23 +166,20 @@ Analytic_Opacity_Model::sf_char Constant_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
-Analytic_Opacity_Model::sf_double
-Constant_Analytic_Opacity_Model::get_parameters() const {
+Analytic_Opacity_Model::sf_double Constant_Analytic_Opacity_Model::get_parameters() const {
   return sf_double(1, sigma);
 }
 
-//============================================================================//
+//================================================================================================//
 // POLYNOMIAL_ANALYTIC_OPACITY_MODEL DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
-Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
-    const sf_char &packed)
-    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0), i(0.0),
-      j(0.0), k(0.0) {
+Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(const sf_char &packed)
+    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(1.0), g(1.0), h(1.0), i(0.0), j(0.0), k(0.0) {
   // size of stream
   size_t size = sizeof(int) + 11 * sizeof(double);
 
@@ -210,11 +203,10 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
-Analytic_Opacity_Model::sf_char
-Polynomial_Analytic_Opacity_Model::pack() const {
+Analytic_Opacity_Model::sf_char Polynomial_Analytic_Opacity_Model::pack() const {
   // get the registered indicator
   int indicator = POLYNOMIAL_ANALYTIC_OPACITY_MODEL;
 
@@ -252,11 +244,10 @@ Polynomial_Analytic_Opacity_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
-Analytic_Opacity_Model::sf_double
-Polynomial_Analytic_Opacity_Model::get_parameters() const {
+Analytic_Opacity_Model::sf_double Polynomial_Analytic_Opacity_Model::get_parameters() const {
   sf_double p(11);
   p[0] = a;
   p[1] = b;
@@ -273,13 +264,13 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const {
   return p;
 }
 
-//============================================================================//
+//================================================================================================//
 // POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
-Polynomial_Specific_Heat_Analytic_EoS_Model::
-    Polynomial_Specific_Heat_Analytic_EoS_Model(const sf_char &packed)
+Polynomial_Specific_Heat_Analytic_EoS_Model::Polynomial_Specific_Heat_Analytic_EoS_Model(
+    const sf_char &packed)
     : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(0.0) {
   // size of stream
   size_t size = sizeof(int) + 6 * sizeof(double);
@@ -305,11 +296,10 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
-Analytic_Opacity_Model::sf_char
-Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
+Analytic_Opacity_Model::sf_char Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   // get the registered indicator
   int indicator = POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL;
 
@@ -342,10 +332,9 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
-Analytic_EoS_Model::sf_double
-Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
+Analytic_EoS_Model::sf_double Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   sf_double p(6);
   p[0] = a;
   p[1] = b;
@@ -357,13 +346,12 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const {
   return p;
 }
 
-//============================================================================//
+//================================================================================================//
 // CONSTANT_ANALYTIC_EI_COUPLING_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 // Unpacking constructor.
 
-Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(
-    const sf_char &packed)
+Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(const sf_char &packed)
     : ei_coupling(0) {
   // size of stream
   int size(sizeof(int) + sizeof(double));
@@ -389,11 +377,10 @@ Constant_Analytic_EICoupling_Model::Constant_Analytic_EICoupling_Model(
   Ensure(unpacker.get_ptr() == unpacker.end());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Packing function
 
-Analytic_EICoupling_Model::sf_char
-Constant_Analytic_EICoupling_Model::pack() const {
+Analytic_EICoupling_Model::sf_char Constant_Analytic_EICoupling_Model::pack() const {
   // get the registered indicator
   int indicator = CONSTANT_ANALYTIC_EICOUPLING_MODEL;
 
@@ -421,17 +408,16 @@ Constant_Analytic_EICoupling_Model::pack() const {
   return pdata;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Return the model parameters
 
-Analytic_EICoupling_Model::sf_double
-Constant_Analytic_EICoupling_Model::get_parameters() const {
+Analytic_EICoupling_Model::sf_double Constant_Analytic_EICoupling_Model::get_parameters() const {
   return sf_double(1, ei_coupling);
 }
 
-//============================================================================//
+//================================================================================================//
 // ANALYTIC_KP_ALPHA_ELOSS_MODEL MEMBER DEFINITIONS
-//============================================================================//
+//================================================================================================//
 
 /*! \brief Calculate the eloss in units of shk^-1; T given in keV, rho in g/cc,
  *         v0 in cm/shk
@@ -449,8 +435,7 @@ Constant_Analytic_EICoupling_Model::get_parameters() const {
  * \return eloss (vector of time coefficients) in shk^-1
  * 
  */
-double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
-                                                      const double rho,
+double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T, const double rho,
                                                       const double v) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
@@ -470,6 +455,6 @@ double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Analytic_Models.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

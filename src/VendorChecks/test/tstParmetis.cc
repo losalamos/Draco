@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   VendorChecks/test/tstParmetis.cc
  * \date   Monday, May 16, 2016, 16:30 pm
  * \brief  Attempt to link to libparmetis and run a simple problem.
  * \note   Copyright (C) 2016-2019, Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -19,8 +19,7 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   using std::cout;
   using std::endl;
 
-  Insist(rtt_c4::nodes() == 3,
-         "test_parmetis must be called with 3 MPI ranks exactly.");
+  Insist(rtt_c4::nodes() == 3, "test_parmetis must be called with 3 MPI ranks exactly.");
 
   // MPI VARIABLES
   size_t const MPI_PROC_ID = rtt_c4::node();
@@ -32,12 +31,12 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
 
   // Needed by parmetis
 
-  // These store the (local) adjacency structure of the graph at each
-  // processor.
+  // These store the (local) adjacency structure of the graph at each processor.
   std::vector<idx_t> xadj(6);
   std::vector<idx_t> adjncy;
   // These store the weights of the vertices and edges.
-  idx_t *vwgt = NULL, *adjwgt = NULL;
+  idx_t *vwgt = nullptr;
+  idx_t *adjwgt = nullptr;
   // This is used to indicate if the graph is weighted. (0 == no weights)
   idx_t wgtflag = 0;
   // C-style numbering that starts from 0.
@@ -58,7 +57,7 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   // An array of size ncon that is used to specify the imbalance tolerance for
   // each vertex weight, with 1 being perfect balance and nparts being perfect
   // imbalance. A value of 1.05 for each of the ncon weights is recommended.
-  real_t ubvec(static_cast<real_t>(1.05));
+  auto ubvec(static_cast<real_t>(1.05));
   // This is an array of integers that is used to pass additional parameters
   // for the routine.
   std::vector<idx_t> options(4, 0);
@@ -157,20 +156,17 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   if (MPI_PROC_ID == 0)
     cout << "parmetis initialized." << '\n';
 
-  int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt,
-                                    adjwgt, &wgtflag, &numflag, &ncon, &nparts,
-                                    &tpwgts[0], &ubvec, &options[0], &edgecut,
-                                    &part[0], &rtt_c4::communicator);
+  int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag,
+                                    &numflag, &ncon, &nparts, &tpwgts[0], &ubvec, &options[0],
+                                    &edgecut, &part[0], &rtt_c4::communicator);
 
   if (result == METIS_OK) {
     std::ostringstream msg;
-    msg << "[" << MPI_PROC_ID
-        << "] ParMETIS_V3_AdaptiveRepart did not return an error.";
+    msg << "[" << MPI_PROC_ID << "] ParMETIS_V3_AdaptiveRepart did not return an error.";
     PASSMSG(msg.str());
   } else {
     std::ostringstream msg;
-    msg << "[" << MPI_PROC_ID
-        << "] ParMETIS_V3_AdaptiveRepart returned an error code.";
+    msg << "[" << MPI_PROC_ID << "] ParMETIS_V3_AdaptiveRepart returned an error code.";
     FAILMSG(msg.str());
   }
 
@@ -187,7 +183,7 @@ void test_parmetis(rtt_c4::ParallelUnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -196,6 +192,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstParmetis.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

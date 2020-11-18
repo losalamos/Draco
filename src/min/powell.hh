@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   min/powell.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Find minimum of a multivariate function.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef min_powell_hh
 #define min_powell_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_min {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Find minimum of a multivariate function.
  *
@@ -37,8 +37,8 @@ namespace rtt_min {
  */
 
 template <class RandomContainer, class Function>
-void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
-            unsigned &iter, double &fret, Function func) {
+void powell(RandomContainer &p, RandomContainer &xi, double const ftol, unsigned &iter,
+            double &fret, Function func) {
   using rtt_dsxx::square;
   using std::vector;
 
@@ -46,7 +46,7 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
   double const TINY = 1.0e-25;
 
   Check(p.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(p.size());
+  auto const n = static_cast<unsigned>(p.size());
   vector<double> pt(n), ptt(n), xit(n);
 
   fret = func(p);
@@ -82,8 +82,8 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
     }
     fptt = func(ptt);
     if (fptt < fp) {
-      double const t = 2 * (fp - 2 * fret + fptt) * square(fp - fret - del) -
-                       del * square(fp - fptt);
+      double const t =
+          2 * (fp - 2 * fret + fptt) * square(fp - fret - del) - del * square(fp - fptt);
       if (t < 0.0) {
         linmin(p, xit, fret, func);
         for (unsigned j = 0; j < n; ++j) {
@@ -99,6 +99,6 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
 
 #endif // min_powell_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of min/powell.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Gauss_Legendre.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
  * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
  *         reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Gauss_Legendre.hh"
 #include "gauleg.hh"
@@ -17,8 +17,7 @@ namespace rtt_quadrature {
 using namespace std;
 using rtt_dsxx::to_string;
 
-Gauss_Legendre::Gauss_Legendre(unsigned sn_order)
-    : Interval_Quadrature(sn_order) {
+Gauss_Legendre::Gauss_Legendre(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Require(sn_order > 0 && sn_order % 2 == 0);
 
   // base class data members
@@ -35,35 +34,32 @@ Gauss_Legendre::Gauss_Legendre(unsigned sn_order)
   Ensure(this->sn_order() == sn_order);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Gauss_Legendre::name() const { return "Gauss-Legendre"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Gauss_Legendre::parse_name() const { return "gauss legendre"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 unsigned Gauss_Legendre::number_of_levels() const { return sn_order_; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */ string Gauss_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = gauss legendre" + indent +
-                  "  order = " + to_string(sn_order_) + indent + "end";
+  string Result = indent + "type = gauss legendre" + indent + "  order = " + to_string(sn_order_) +
+                  indent + "end";
 
   return Result;
 }
 
-//----------------------------------------------------------------------------//
-bool Gauss_Legendre::check_class_invariants() const {
-  return sn_order_ > 0 && sn_order_ % 2 == 0;
-}
+//------------------------------------------------------------------------------------------------//
+bool Gauss_Legendre::check_class_invariants() const { return sn_order_ > 0 && sn_order_ % 2 == 0; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
-vector<Ordinate>
-Gauss_Legendre::create_level_ordinates_(double const norm) const {
+vector<Ordinate> Gauss_Legendre::create_level_ordinates_(double const norm) const {
   // Preconditions checked in create_ordinate_set
 
   unsigned const numPoints(sn_order());
@@ -86,6 +82,6 @@ Gauss_Legendre::create_level_ordinates_(double const norm) const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Quadrature.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

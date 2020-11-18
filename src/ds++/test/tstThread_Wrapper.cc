@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstThread_Wrapper.cc
  * \author Tim Kelley
  * \date   Thursday, Oct 12, 2017, 10:51 am
  * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,9 +19,9 @@
 using rtt_dsxx::Thread_Wrapper;
 using rtt_dsxx::UnitTest;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /* Three thread actions: */
 void quick_action() {
@@ -43,23 +43,21 @@ void slow_action2(std::stringstream &s) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // The tests
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**\brief Exercise default ctor */
 void testInstantiation0(UnitTest & /*ut*/) {
   Thread_Wrapper tw;
   return;
 } // testInstantiation1
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**\brief Exercise two arg ctor with the join action. */
 void testInstantiation2(UnitTest &ut) {
-  {
-    Thread_Wrapper tw(std::thread(quick_action), Thread_Wrapper::action::join);
-  }
+  { Thread_Wrapper tw(std::thread(quick_action), Thread_Wrapper::action::join); }
   // Construting a thread and move it into a Thread_Wrapper
   // NB: cannot copy a std::thread.
   {
@@ -72,7 +70,7 @@ void testInstantiation2(UnitTest &ut) {
   return;
 } // testInstantiation2
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /**\brief Exercise two arg ctor with the detach action.
  *
  * This test is a bit bogus: the calling thread will detach from the worker
@@ -99,8 +97,8 @@ void testDetach(UnitTest &ut) {
   std::this_thread::sleep_for(so_long);
   bool ok = s.str() == "host thread: done\nslow_action: done\n";
   if (!ok) {
-    printf("%s:%i s.str = '%s', expected '%s'\n", __FUNCTION__, __LINE__,
-           s.str().c_str(), "host thread: done\nslow_action: done\n");
+    printf("%s:%i s.str = '%s', expected '%s'\n", __FUNCTION__, __LINE__, s.str().c_str(),
+           "host thread: done\nslow_action: done\n");
   }
   FAIL_IF_NOT(ok);
   return;
@@ -108,7 +106,7 @@ void testDetach(UnitTest &ut) {
 
 using t_func = std::function<void(UnitTest &)>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   f(u);
   if (u.numFails == 0) {
@@ -117,19 +115,17 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     run_a_test(ut, testInstantiation0, "Thread_Wrapper::ctor() ok.");
-    run_a_test(ut, testInstantiation2,
-               "Thread_Wrapper::ctor(std::thread && t, join) ok.");
-    run_a_test(ut, testDetach,
-               "Thread_Wrapper::ctor(std::thread && t, detach) ok.");
+    run_a_test(ut, testInstantiation2, "Thread_Wrapper::ctor(std::thread && t, join) ok.");
+    run_a_test(ut, testDetach, "Thread_Wrapper::ctor(std::thread && t, detach) ok.");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/test/tstThread_Wrapper.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

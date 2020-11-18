@@ -1,19 +1,23 @@
 #!/bin/bash
 ##-*- Mode: bash -*-
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##
 ## File  : environment/bashrc/bashrc_slurm
 ## Date  : Wednesday, Oct 11, 2017, 15:15 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2017, Triad National Security, LLC.
-##         All rights are reserved.
+## Note  : Copyright (C) 2017-2020, Triad National Security, LLC., All rights are reserved.
 ##
-##  Bash configuration file to aid slurm use.
-##---------------------------------------------------------------------------##
+## Bash configuration file to aid slurm use.
+##------------------------------------------------------------------------------------------------##
 
+# pragma once
+if [[ $(type dbs_pragma_once 2>&1 | grep -c "bash: type: ") != 0 ]]; then
+  function dbs_pragma_once () {
+    echo "dbspo"
+  }
 
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##
 ## ENVIRONMENTS for interactive sessions
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##
 
 # If this is an interactive shell then the environment variable $-
 # should contain an "i":
@@ -57,6 +61,7 @@ case ${-} in
    }
    export -f slurmhelp
 
+   # shellcheck disable=SC2139
    alias hluser="egrep --color -E '.*${USER}.*|$'"
    boldface=$(tput bold)
    normalface=$(tput sgr0)
@@ -73,19 +78,27 @@ case ${-} in
          h) echo "Usage: sq [-h] [-r <moniker>] [-u <moniker>]"; stop=1 ;;
          r) hluser=$OPTARG ;;
          A|j|n|p|R|u) squeue_args+=" -${opt} $OPTARG" ;;
+         *) echo "Usage: sq [-h] [-r <moniker>] [-u <moniker>]"; stop=1 ;;
        esac
      done
      shift $((OPTIND-1))
      if [[ ${stop} == 1 ]]; then return 1; fi
-     if ! [[ `squeue ${squeue_args} -h -t R | wc -l` == 0 ]]; then
+     # Silence lint warning. Better to use a bash array, but I'n not making this change today.
+     # https://github.com/koalaman/shellcheck/wiki/SC2086
+     # shellcheck disable=SC2086
+     if ! [[ $(squeue ${squeue_args} -h -t R | wc -l) == 0 ]]; then
        echo -e "\n${boldface}RUNNING${normalface}":
-       echo " squeue ${squeue_args} -o"
-       squeue ${squeue_args} -o "%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S" -S "L" -t R | egrep --color -E ".*${hluser}.*|$"
+       echo " squeue ${squeue_args} -o \"%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S\" -S \"L\" -t R"
+       # shellcheck disable=SC2086
+       squeue ${squeue_args} -o "%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S" -S "L" -t R | grep --color -E ".*${hluser}.*|$"
      fi
-     if ! [[ `squeue ${squeue_args} -h -t PD | wc -l` == 0 ]]; then
+     # shellcheck disable=SC2086
+     if ! [[ $(squeue ${squeue_args} -h -t PD | wc -l) == 0 ]]; then
        echo -e "\n${boldface}PENDING:${normalface}"
-       squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep -v "N/A" | egrep --color -E ".*${hluser}.*|$"
-       squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep --color=never "N/A" | egrep --color -E ".*${hluser}.*|$"
+       # shellcheck disable=SC2086
+       squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep -v "N/A" | grep --color -E ".*${hluser}.*|$"
+       # shellcheck disable=SC2086
+       squeue ${squeue_args} -o "%.7i %.8Q %.10u %.10a %.8q %.9P %.16j %.6C %.16S %.10L %.r" -t PD --sort=S,-p | grep --color=never "N/A" | grep --color -E ".*${hluser}.*|$"
      fi
 #     if ! [[ `squeue ${squeue_args} -h -t S,CG,CF,F,TO,PR,NF | wc -l` == 0 ]]; then
 #       echo -e "\n${boldface}OTHER:${normalface}"
@@ -112,16 +125,16 @@ case ${-} in
    alias backfill='squeue --start -o "%18S %.18i %.9P %.8j %.iu %.2t %10M %.6D %R" | egrep "(Resources|START)"'
    function jobpriorities() {
      local formatstring="%15i %8u %.10Y %.10y %.10A %.10a %.10F %.10f %.10J %.10j %.10P %.10p %.10Q %.10q %.6N %20T %t"
-     sprio -u $USER -o "$formatstring" | head -n 1
-     sprio -h -n -o "$formatstring" $* | sort -r -k 3,3
+     sprio -u "$USER" -o "$formatstring" | head -n 1
+     sprio -h -n -o "$formatstring" "$@" | sort -r -k 3,3
    }
    export -f jobpriorities
    alias myjobpriorities='jobpriorities -u $USER'
    alias myusage='sreport -t Hours cluster AccountUtilizationByUser user=$LOGNAME start=1/1/10 end=`date +"%m/%d/%Y"`'
    function sqqos() {
      local myqos="dev"
-     if [ $1 ]; then myqos=$1; fi
-     squeue --qos=$myqos -o "%.7i %.10u %.8T %.6D %.6C %.12L %S" -S "-t,-L"
+     if [ "${1}notset" != "notset" ]; then myqos="$1"; fi
+     squeue --qos="$myqos" -o "%.7i %.10u %.8T %.6D %.6C %.12L %S" -S "-t,-L"
    }
    export -f sqqos
    # checkjob analogs
@@ -132,11 +145,11 @@ case ${-} in
        echo No JobID Specified
      else
        if [[ $verbose == "-vv" ]]; then
-         scontrol -dd show job $job
+         scontrol -dd show job "$job"
        elif [[ $verbose == "-v" ]]; then
-         scontrol -d show job $job
+         scontrol -d show job "$job"
        else
-         scontrol show job $job
+         scontrol show job "$job"
        fi
        # sprio -n -u $USER -j $job -o "%15i %.8u %.10Y %.10A %.10F %.10f %.10J %.10P %.10Q"
      fi
@@ -150,15 +163,15 @@ case ${-} in
      # sacct -u $user --format=JobID,Priority%10,JobName%20,Account,QOS,Partition,Start,Elapsed,State
      echo -e "\nAccounts, partitions and qos:\n"
      sacctmgr list assoc user=kellyt format=Cluster,Account,Partition,QOS%40
-     accounts=`sacctmgr -n  list assoc user=kellyt format=Account | uniq`
+     accounts=$(sacctmgr -n  list assoc user=kellyt format=Account | uniq)
      echo -e "\nFairshare evaluation:\n"
      for a in $accounts; do
-       sshare -m -a -A $a -u $user
+       sshare -m -a -A "$a" -u "$user"
      done
      echo -e "\nPriority for pending jobs:\n"
-     sprio -n -u $user -o "%15i %.8u %.10Y %.10A %.10F %.10f %.10J %.10P %.10Q"
+     sprio -n -u "$user" -o "%15i %.8u %.10Y %.10A %.10F %.10f %.10J %.10P %.10Q"
      echo -e "\n24-hour usage report:\n"
-     sreport -t percent cluster UserUtilizationByAccount Users=$user
+     sreport -t percent cluster UserUtilizationByAccount Users="$user"
    }
    export -f showuser
    alias suser='showuser'
@@ -167,11 +180,11 @@ case ${-} in
      if [ "$user" == "" ]; then
        user=${USER}
      fi
-     sshare -m -u $user | grep $user | cut -f3 -d" " | uniq | sed '/^\s*$/d' | paste -d, -s
+     sshare -m -u "$user" | grep "$user" | cut -f3 -d" " | uniq | sed '/^\s*$/d' | paste -d, -s
    }
    export -f drmgroups
    function sreason () {
-     squeue -o "%.7i %.10u %.10T %r" -t PD,S,CG,CD,CF,CA,F,TO,PR,NF -j $1
+     squeue -o "%.7i %.10u %.10T %r" -t PD,S,CG,CD,CF,CA,F,TO,PR,NF -j "$1"
    }
    export -f sreason
    function usercpuhrs () {
@@ -184,11 +197,11 @@ case ${-} in
        lday=$2
      fi
      [ -z "$user" ] && user=${USER}
-     sreport -t Hours cluster AccountUtilizationByUser user=$user start=$fday end=$lday
+     sreport -t Hours cluster AccountUtilizationByUser user="$user" start="$fday" end="$lday"
    }
    export -f sreason
 
-   target="`uname -n | sed -e s/[.].*//`"
+   target="$(uname -n | sed -e s/[.].*//)"
    case $target in
      darwin-fe*)
        alias salloc='module purge; salloc --x11' ;;
@@ -202,15 +215,17 @@ case ${-} in
 
    ;; # end case 'interactive'
 
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##
 ## ENVIRONMENTS for non interactive sessions
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##
 
 *) # Not an interactive shell (e.g. A PBS shell?)
    export INTERACTIVE=false
    ;;
 esac
 
-##---------------------------------------------------------------------------##
+fi
+
+##------------------------------------------------------------------------------------------------##
 ## end of bashrc_slurm
-##---------------------------------------------------------------------------##
+##------------------------------------------------------------------------------------------------##

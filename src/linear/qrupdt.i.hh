@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/qrupdt.i.hh
  * \author Kent Budge
  * \date   Tue Aug 10 11:59:48 2004
  * \brief  Update the QR decomposition of a square matrix
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_qrupdt_i_hh
 #define linear_qrupdt_i_hh
@@ -17,15 +16,14 @@
 #include "ds++/DracoMath.hh"
 
 namespace rtt_linear {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Update the QR decomposition of a square matrix.
  *
- * One of the great advantages of the QR decomposition is the ease with which it
- * can be updated.  If \f$A=QR\f$ where \f$Q\f$ is an orthonormal matrix and
- * \f$R\f$ is upper triangular, then \f$A+s\bigotimes t = Q(R+u \bigotimes v)\f$
- * where \f$v=t\f$ and \f$u=Q^Ts\f$.  Updating the QR decomposition takes of
- * order \f$N^2\f$ operations rather than the \f$N^3\f$ operations of a full
+ * One of the great advantages of the QR decomposition is the ease with which it can be updated.  If
+ * \f$A=QR\f$ where \f$Q\f$ is an orthonormal matrix and \f$R\f$ is upper triangular, then
+ * \f$A+s\bigotimes t = Q(R+u \bigotimes v)\f$ where \f$v=t\f$ and \f$u=Q^Ts\f$.  Updating the QR
+ * decomposition takes of order \f$N^2\f$ operations rather than the \f$N^3\f$ operations of a full
  * matrix inversion.
  *
  * \arg \a RandomContainer A random access container.
@@ -39,8 +37,8 @@ namespace rtt_linear {
  * \todo Templatize on container element type
  */
 template <class RandomContainer>
-void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
-            RandomContainer &u, RandomContainer &v) {
+void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n, RandomContainer &u,
+            RandomContainer &v) {
 
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
@@ -51,8 +49,7 @@ void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
   using namespace rtt_dsxx;
 
   // minumum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
 
   // Find first nonzero element of u.
   int k;
@@ -85,6 +82,6 @@ void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
 
 #endif // linear_qrupdt_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of linear/qrupdt.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/rotate.hh
  * \author Kent Budge
  * \date   Tue Aug 10 12:37:43 2004
  * \brief  Perform a Jacobi rotation on a pair of matrices.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_rotate_hh
 #define linear_rotate_hh
@@ -20,14 +19,14 @@ namespace rtt_linear {
 
 using std::sqrt;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Perform a Jacobi rotation on a QR decomposition.
  *
- * Perform a Jacobi rotation on rows \f$i\f$ and \f$i+1\f$ of the orthonormal
- * matrix \f$Q\f$ and the upper triangular matrix \f$R\f$.  The rotation is
- * parametrized by \f$a\f$ and \f$b\f$ which satisfy \f$\cos\theta =
- * \frac{a}{\sqrt{a^2+b^2}}\f$ and \f$\sin\theta = \frac{a}{\sqrt{a^2+b^2}}\f$
+ * Perform a Jacobi rotation on rows \f$i\f$ and \f$i+1\f$ of the orthonormal matrix \f$Q\f$ and the
+ * upper triangular matrix \f$R\f$.  The rotation is parametrized by \f$a\f$ and \f$b\f$ which
+ * satisfy \f$\cos\theta = \frac{a}{\sqrt{a^2+b^2}}\f$ and \f$\sin\theta =
+ * \frac{a}{\sqrt{a^2+b^2}}\f$
  *
  * \arg \a RandomContainer A random access container.
  *
@@ -46,8 +45,8 @@ using std::sqrt;
  * \post \c qt.size()==n*n
  */
 template <class RandomContainer>
-void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
-            unsigned i, double a, double b) {
+void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n, unsigned i, double a,
+            double b) {
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
   Require(i + 1 < n);
@@ -57,8 +56,7 @@ void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
   // cosine and sine of rotation
   double c, s;
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
 
   if (std::abs(a) < mrv) {
     c = 0.0;
@@ -97,6 +95,6 @@ void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
 
 #endif // linear_rotate_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of linear/rotate.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

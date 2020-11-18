@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   Plot2D.cc
  * \author lowrie
@@ -6,7 +6,7 @@
  * \brief  Implementation for Plot2D.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Plot2D.hh"
 #include "plot2D_grace.h"
@@ -20,13 +20,11 @@
 
 namespace rtt_plot2D {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Constructor that calls open(); see open() for arguments.
-Plot2D::Plot2D(const int numGraphs, const std::string &paramFile,
-               const bool batch)
-    : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0),
-      d_batch(batch), d_graceVersion(), d_numSets(std::vector<int>()),
-      d_setsBeenRead(std::vector<bool>()) {
+Plot2D::Plot2D(const int numGraphs, const std::string &paramFile, const bool batch)
+    : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0), d_batch(batch),
+      d_graceVersion(), d_numSets(std::vector<int>()), d_setsBeenRead(std::vector<bool>()) {
   // is_supported must be checked for all constructors.
   Insist(is_supported(), "Plot2D unsupported on this platform!");
 
@@ -35,16 +33,16 @@ Plot2D::Plot2D(const int numGraphs, const std::string &paramFile,
   open(numGraphs, paramFile, batch);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief The destructor.
  *
  * Closes the communication pipe if it is open.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Plot2D::~Plot2D() { close(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Gets grace's version number.
  *
@@ -55,7 +53,7 @@ Plot2D::~Plot2D() { close(); }
  *
  * \return The version number.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Plot2D::VersionNumber Plot2D::graceVersion() {
   // Grab the version string from a pipe.
   std::FILE *pipe = popen("gracebat -version", "r");
@@ -89,8 +87,7 @@ Plot2D::VersionNumber Plot2D::graceVersion() {
 
     if (i < 2) {
       size_t dot = s.find(".");
-      Insist(dot != std::string::npos,
-             "plot2D::graceVersion: Version string wrong format.");
+      Insist(dot != std::string::npos, "plot2D::graceVersion: Version string wrong format.");
       sn = s.substr(0, dot);
       s = s.substr(dot + 1);
     }
@@ -103,7 +100,7 @@ Plot2D::VersionNumber Plot2D::graceVersion() {
   return n;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Opens the Grace communication pipe.
  *
@@ -115,9 +112,8 @@ Plot2D::VersionNumber Plot2D::graceVersion() {
  * \param batch If true, do not open the Grace GUI window.  Plots may be
  *                  generated and then saved with the save() function.
  */
-//----------------------------------------------------------------------------//
-void Plot2D::open(const int numGraphs, const std::string &paramFile,
-                  const bool batch) {
+//------------------------------------------------------------------------------------------------//
+void Plot2D::open(const int numGraphs, const std::string &paramFile, const bool batch) {
   Require(numGraphs > 0);
   Require(!GraceIsOpen());
 
@@ -145,10 +141,8 @@ void Plot2D::open(const int numGraphs, const std::string &paramFile,
     char *exe = new char[9];
     std::strcpy(exe, "gracebat");
 
-    if (d_graceVersion.v[0] >= 5 && d_graceVersion.v[1] >= 1 &&
-        d_graceVersion.v[2] >= 8) {
-      openStatus =
-          GraceOpenVA(exe, bufferSize, "-noprint", "-nosafe", "-noask", NULL);
+    if (d_graceVersion.v[0] >= 5 && d_graceVersion.v[1] >= 1 && d_graceVersion.v[2] >= 8) {
+      openStatus = GraceOpenVA(exe, bufferSize, "-noprint", "-nosafe", "-noask", NULL);
     } else {
       openStatus = GraceOpenVA(exe, bufferSize, "-noprint", NULL);
     }
@@ -172,7 +166,7 @@ void Plot2D::open(const int numGraphs, const std::string &paramFile,
   // Set up graph matrix
   arrange(0, 0);
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Arranges the number of graphs into the specified matrix.
  *
@@ -184,7 +178,7 @@ void Plot2D::open(const int numGraphs, const std::string &paramFile,
  *  Specifying both numRows and numCols less than 1 means both are computed
  *  automatically.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::arrange(const int numRows, const int numCols) {
   Require(GraceIsOpen());
 
@@ -233,14 +227,14 @@ void Plot2D::arrange(const int numRows, const int numCols) {
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Closes the Grace communication pipe.
  *
  *  All sets and properties are erased.  This function is called by the
  *  destructor.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::close() {
   if (GraceIsOpen()) {
     if (GraceClose() == -1) {
@@ -249,13 +243,13 @@ void Plot2D::close() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Saves the current plot in a Grace project file.
  *
  *  \param filename The file name to use.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::save(const std::string filename) {
   Require(GraceIsOpen());
 
@@ -264,7 +258,7 @@ void Plot2D::save(const std::string filename) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Sets the graph title and subtitle.
  *
@@ -272,9 +266,8 @@ void Plot2D::save(const std::string filename) {
  *  \param subTitle The subtitle.
  *  \param iG The graph number to apply the titles to.
  */
-//----------------------------------------------------------------------------//
-void Plot2D::setTitles(const std::string title, const std::string subTitle,
-                       const int iG) {
+//------------------------------------------------------------------------------------------------//
+void Plot2D::setTitles(const std::string title, const std::string subTitle, const int iG) {
   Require(GraceIsOpen());
 
   GracePrintf("focus g%d", graphNum(iG));
@@ -283,7 +276,7 @@ void Plot2D::setTitles(const std::string title, const std::string subTitle,
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Sets the axes labels.
  *
@@ -292,9 +285,9 @@ void Plot2D::setTitles(const std::string title, const std::string subTitle,
  *  \param iG The graph number.
  *  \param charSize The character size in [0,1].
 */
-//----------------------------------------------------------------------------//
-void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel,
-                           const int iG, const double charSize) {
+//------------------------------------------------------------------------------------------------//
+void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel, const int iG,
+                           const double charSize) {
   Require(GraceIsOpen());
 
   GracePrintf("focus g%d", graphNum(iG));
@@ -316,7 +309,7 @@ void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel,
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Kills all sets from graphs.
  *
@@ -324,7 +317,7 @@ void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel,
  *  way we don't have to reload the parameter file, or require the user to call
  *  setProps(), after new sets are read.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::killAllSets() {
   Require(GraceIsOpen());
 
@@ -338,7 +331,7 @@ void Plot2D::killAllSets() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Reads block data from file, one set per graph.
  *
@@ -353,7 +346,7 @@ void Plot2D::killAllSets() {
  *
  *  where (x, y(N)) is the set added to graph number N.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::readBlock(const std::string blockFilename) {
   Require(GraceIsOpen());
   Require(numColumnsInFile(blockFilename) == d_numGraphs + 1);
@@ -372,7 +365,7 @@ void Plot2D::readBlock(const std::string blockFilename) {
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Reads block data from file, all sets into one graph.
  *
@@ -388,7 +381,7 @@ void Plot2D::readBlock(const std::string blockFilename) {
  *
  *  where each pair (x, y(N)) is a set added to graph number \a iG.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::readBlock(const std::string blockFilename, const int iG) {
   Require(GraceIsOpen());
   Require(iG >= 0 && iG < d_numGraphs);
@@ -410,13 +403,13 @@ void Plot2D::readBlock(const std::string blockFilename, const int iG) {
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Redraws the graph.
  *
  *  \param autoscale If true, autoscale all of the graphs.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::redraw(const bool autoscale) {
   Require(GraceIsOpen());
 
@@ -431,7 +424,7 @@ void Plot2D::redraw(const bool autoscale) {
   GraceFlush();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Changes the set properties.
  *
@@ -440,7 +433,7 @@ void Plot2D::redraw(const bool autoscale) {
  *              setProps() may be called before any data is read.
  *  \param p The set properties.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::setProps(const int iG, const int iSet, const SetProps &p) {
   Require(GraceIsOpen());
   Require(iSet >= 0);
@@ -469,7 +462,7 @@ void Plot2D::setProps(const int iG, const int iSet, const SetProps &p) {
   redraw();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Determines the Grace graph number for the given graph number.
  *
@@ -489,7 +482,7 @@ void Plot2D::setProps(const int iG, const int iSet, const SetProps &p) {
  *  To follow this, we could just return iG.  This code allows more
  *  general layouts and does some checking.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int Plot2D::graphNum(const int iG, const bool allowVacant) const {
   Require(iG >= 0);
   Require((allowVacant && iG < d_numRows * d_numCols) || iG < d_numGraphs);
@@ -503,7 +496,7 @@ int Plot2D::graphNum(const int iG, const bool allowVacant) const {
   return iRow * d_numCols + iCol;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Computes the number of columns of data in a file.
  *
@@ -511,7 +504,7 @@ int Plot2D::graphNum(const int iG, const bool allowVacant) const {
  *
  *  \return The number of columns.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int Plot2D::numColumnsInFile(const std::string filename) const {
   using std::isspace;
 
@@ -539,13 +532,13 @@ int Plot2D::numColumnsInFile(const std::string filename) const {
   return n;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *  \brief Sets the current autoscaling mode for a graph.
  *
  *  \param iG Graph number.
 */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Plot2D::setAutoscale(const int iG) {
   switch (d_autoscale) {
   case AUTOSCALE_ON:
@@ -566,6 +559,6 @@ void Plot2D::setAutoscale(const int iG) {
 
 } // end namespace rtt_plot2D
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Plot2D.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

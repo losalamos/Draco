@@ -1,13 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_eospac/SesameTables.cc
  * \author Kelly Thompson
  * \date   Fri Apr  6 08:57:48 2001
- * \brief  Implementation file for SesameTables (mapping material IDs
- *         to Sesame table indexes).
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Implementation file for SesameTables (mapping material IDs to Sesame table indexes).
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "SesameTables.hh"
 #include "ds++/Assert.hh"
@@ -17,7 +15,7 @@
 
 namespace rtt_cdi_eospac {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Construct from packed data stream
 SesameTables::SesameTables(std::vector<char> const &packed)
     : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
@@ -63,64 +61,32 @@ SesameTables::SesameTables(std::vector<char> const &packed)
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Set functions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-SesameTables &SesameTables::addTable(EOS_INTEGER const tableID,
-                                     unsigned const matID) {
-  // matMap is a one-to-one map.  We don't allow re-mapping.
-  //Require( matMap.count( tableID ) == 0 );
-
+SesameTables &SesameTables::addTable(EOS_INTEGER const tableID, unsigned const matID) {
   // insert a new entry into the matMap.
   matMap[tableID] = matID;
-  if (rtMap.count(matID)) {
-    // we've already used this mat ID so there should be an entry in the map.
-    // Look to see if EOS_Ue_DT is already registered before adding it.
-    bool found(false);
-    for (size_t i = 0; i < rtMap[matID].size(); ++i)
-      if (rtMap[matID][i] == tableID)
-        found = true;
-    if (!found)
-      rtMap[matID].push_back(tableID);
-  } else {
+  if (std::find(rtMap[matID].begin(), rtMap[matID].end(), tableID) == rtMap[matID].end())
     rtMap[matID].push_back(tableID);
-  }
   return *this;
 }
 
-SesameTables &SesameTables::Ue_DT(unsigned matID) {
-  return addTable(EOS_Ue_DT, matID);
-}
-SesameTables &SesameTables::Zfc_DT(unsigned matID) {
-  return addTable(EOS_Zfc_DT, matID);
-}
-SesameTables &SesameTables::Ktc_DT(unsigned matID) {
-  return addTable(EOS_Ktc_DT, matID);
-}
-SesameTables &SesameTables::Uic_DT(unsigned matID) {
-  return addTable(EOS_Uic_DT, matID);
-}
-SesameTables &SesameTables::Pt_DT(unsigned matID) {
-  return addTable(EOS_Pt_DT, matID);
-}
-SesameTables &SesameTables::Dv_T(unsigned matID) {
-  return addTable(EOS_Dv_T, matID);
-}
-SesameTables &SesameTables::Ogb(unsigned matID) {
-  return addTable(EOS_Ogb, matID);
-}
-SesameTables &SesameTables::T_DUe(unsigned matID) {
-  return addTable(EOS_T_DUe, matID);
-}
-SesameTables &SesameTables::T_DUic(unsigned matID) {
-  return addTable(EOS_T_DUic, matID);
-}
+SesameTables &SesameTables::Ue_DT(unsigned matID) { return addTable(EOS_Ue_DT, matID); }
+SesameTables &SesameTables::Zfc_DT(unsigned matID) { return addTable(EOS_Zfc_DT, matID); }
+SesameTables &SesameTables::Ktc_DT(unsigned matID) { return addTable(EOS_Ktc_DT, matID); }
+SesameTables &SesameTables::Uic_DT(unsigned matID) { return addTable(EOS_Uic_DT, matID); }
+SesameTables &SesameTables::Pt_DT(unsigned matID) { return addTable(EOS_Pt_DT, matID); }
+SesameTables &SesameTables::Dv_T(unsigned matID) { return addTable(EOS_Dv_T, matID); }
+SesameTables &SesameTables::Ogb(unsigned matID) { return addTable(EOS_Ogb, matID); }
+SesameTables &SesameTables::T_DUe(unsigned matID) { return addTable(EOS_T_DUe, matID); }
+SesameTables &SesameTables::T_DUic(unsigned matID) { return addTable(EOS_T_DUic, matID); }
 
 // Move functions out as they are needed by new code and add unit tests for each.
 #if 0
 
-SesameTables& SesameTables::T_DUiz( unsigned matID ) 
+SesameTables& SesameTables::T_DUiz( unsigned matID )
 {
     return addTable( EOS_T_DUiz, matID );
 }
@@ -128,64 +94,64 @@ SesameTables& SesameTables::Ut_DT( unsigned matID )
 {
     return addTable( EOS_Ut_DT, matID );
 }
-SesameTables& SesameTables::T_DPt( unsigned matID ) 
+SesameTables& SesameTables::T_DPt( unsigned matID )
 {
     return addTable( EOS_T_DPt, matID );
 }
-SesameTables& SesameTables::T_DUt( unsigned matID ) 
+SesameTables& SesameTables::T_DUt( unsigned matID )
 {
     return addTable( EOS_T_DUt, matID );
 }
-SesameTables& SesameTables::Pt_DUt( unsigned matID ) 
+SesameTables& SesameTables::Pt_DUt( unsigned matID )
 {
     return addTable( EOS_Pt_DUt, matID );
 }
-SesameTables& SesameTables::Ut_DPt( unsigned matID ) 
+SesameTables& SesameTables::Ut_DPt( unsigned matID )
 {
     return addTable( EOS_Ut_DPt, matID );
 }
-SesameTables& SesameTables::Pic_DT( unsigned matID ) 
+SesameTables& SesameTables::Pic_DT( unsigned matID )
 {
     return addTable( EOS_Pic_DT, matID );
 }
-SesameTables& SesameTables::T_DPic( unsigned matID ) 
+SesameTables& SesameTables::T_DPic( unsigned matID )
 {
     return addTable( EOS_T_DPic, matID );
 }
-SesameTables& SesameTables::Pic_DUic( unsigned matID ) 
+SesameTables& SesameTables::Pic_DUic( unsigned matID )
 {
     return addTable( EOS_Pic_DUic, matID );
 }
-SesameTables& SesameTables::Uic_DPic( unsigned matID ) 
+SesameTables& SesameTables::Uic_DPic( unsigned matID )
 {
     return addTable( EOS_Uic_DPic, matID );
 }
-SesameTables& SesameTables::Pe_DT( unsigned matID ) 
+SesameTables& SesameTables::Pe_DT( unsigned matID )
 {
     return addTable( EOS_Pe_DT, matID );
 }
-SesameTables& SesameTables::T_DPe( unsigned matID ) 
+SesameTables& SesameTables::T_DPe( unsigned matID )
 {
     return addTable( EOS_T_DPe, matID );
 }
 
-SesameTables& SesameTables::Pe_DUe( unsigned matID ) 
+SesameTables& SesameTables::Pe_DUe( unsigned matID )
 {
     return addTable( EOS_Pe_DUe, matID );
 }
-SesameTables& SesameTables::Ue_DPe( unsigned matID ) 
+SesameTables& SesameTables::Ue_DPe( unsigned matID )
 {
     return addTable( EOS_Ue_DPe, matID );
 }
-SesameTables& SesameTables::Pc_D( unsigned matID ) 
+SesameTables& SesameTables::Pc_D( unsigned matID )
 {
     return addTable( EOS_Pc_D, matID );
 }
-SesameTables& SesameTables::Uc_D( unsigned matID ) 
+SesameTables& SesameTables::Uc_D( unsigned matID )
 {
     return addTable( EOS_Uc_D, matID );
 }
-SesameTables& SesameTables::Kr_DT( unsigned matID ) 
+SesameTables& SesameTables::Kr_DT( unsigned matID )
 {
     return addTable( EOS_Kr_DT, matID );
 }
@@ -243,12 +209,11 @@ SesameTables& SesameTables::Gs_D( unsigned matID )
 }
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Get Functions
 
 // Return the enumerated data type associated with the provided integer index
-std::vector<EOS_INTEGER>
-SesameTables::returnTypes(unsigned const tableIndex) const {
+std::vector<EOS_INTEGER> SesameTables::returnTypes(unsigned const tableIndex) const {
   size_t const found = rtMap.count(tableIndex);
   std::vector<EOS_INTEGER> result;
   // note: map::operator[] is non-const only.
@@ -271,7 +236,7 @@ unsigned SesameTables::matID(EOS_INTEGER returnType) const {
   return matMap.find(returnType)->second;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Pack a SesameTables object into a vector<char> stream.
  *
  * Packed data stream:
@@ -282,7 +247,7 @@ unsigned SesameTables::matID(EOS_INTEGER returnType) const {
  * size_t   rtMap.size()
  * map<unsigned,vector<int>> rtMap
  */
-std::vector<char> SesameTables::pack(void) const {
+std::vector<char> SesameTables::pack() const {
   using std::string;
   using std::vector;
 
@@ -294,8 +259,7 @@ std::vector<char> SesameTables::pack(void) const {
   // pack up the matMap
   vector<char> packed_matmap;
   rtt_dsxx::pack_data(matMap, packed_matmap);
-  // packed data is an integer for the length of matMap plus the size of the
-  // actual data.
+  // packed data is an integer for the length of matMap plus the size of the actual data.
   packed_SesameTable_size += sizeof(size_t) + packed_matmap.size();
 
   // pack up the rtMap
@@ -315,19 +279,19 @@ std::vector<char> SesameTables::pack(void) const {
 
   // pack the matMap (size+data)
   packer << packed_matmap.size();
-  for (size_t i = 0; i < packed_matmap.size(); ++i)
-    packer << packed_matmap[i];
+  for (char &c : packed_matmap)
+    packer << c;
 
   // pack the rtMap(data)
   packer << packed_rtmap.size();
-  for (size_t i = 0; i < packed_rtmap.size(); ++i)
-    packer << packed_rtmap[i];
+  for (char &c : packed_rtmap)
+    packer << c;
 
   Ensure(packer.get_ptr() == &packed[0] + packed_SesameTable_size);
   return packed;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void SesameTables::printEosTableList() const {
   std::cout << "List of EOS Tables:\n" << std::endl;
   for (size_t i = 0; i < tableName.size(); ++i)
@@ -336,9 +300,8 @@ void SesameTables::printEosTableList() const {
   return;
 }
 
-//----------------------------------------------------------------------------//
-std::vector<std::string>
-SesameTables::initializeTableNames(size_t const datasize) {
+//------------------------------------------------------------------------------------------------//
+std::vector<std::string> SesameTables::initializeTableNames(size_t const datasize) {
   // Create a mapping between the Enum and a string name
   std::vector<std::string> tableName(datasize);
 
@@ -544,72 +507,59 @@ SesameTables::initializeTableNames(size_t const datasize) {
   return tableName;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Initialize the tableDescriptions database
-//----------------------------------------------------------------------------//
-std::vector<std::string>
-SesameTables::initializeTableDescriptions(size_t const datasize) {
+//------------------------------------------------------------------------------------------------//
+std::vector<std::string> SesameTables::initializeTableDescriptions(size_t const datasize) {
   std::vector<std::string> tableDescription(datasize);
 
   tableDescription[EOS_NullTable] = std::string("null table");
   tableDescription[EOS_Comment] = std::string("Descriptive Comments");
-  tableDescription[EOS_Info] =
-      std::string("Atomic Number, Atomic Mass, Normal Density, Solid Bulk "
-                  "Modulus, Exchange Coefficient");
-  tableDescription[EOS_Pt_DT] =
-      std::string("Total Pressure (Density- and Temperature-dependent)");
-  tableDescription[EOS_D_PtT] =
-      std::string("Density (Total Pressure- and Temperature-dependent)");
-  tableDescription[EOS_T_DPt] =
-      std::string("Temperature (Density- and Total Pressure-dependent)");
-  tableDescription[EOS_Pt_DUt] = std::string(
-      "Total Pressure (Density- and Total Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Pt_DAt] = std::string(
-      "Total Pressure (Density- and Total Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Pt_DSt] = std::string(
-      "Total Pressure (Density- and Total Specific-Entropy-dependent)");
-  tableDescription[EOS_Ut_DT] = std::string(
-      "Total Specific-Internal-Energy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DUt] = std::string(
-      "Temperature (Density- and Total Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Ut_DPt] = std::string(
-      "Total Specific-Internal-Energy (Density- and Total Pressure-dependent)");
-  tableDescription[EOS_Ut_DAt] =
-      std::string("Total Specific-Internal-Energy (Density- and Total "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Ut_DSt] =
-      std::string("Total Specific-Internal-Energy (Density- and Total "
-                  "Specific-Entropy-dependent)");
-  tableDescription[EOS_Ut_PtT] =
-      std::string("Total Specific-Internal-Energy (Total Pressure- and "
-                  "Temperature-dependent)");
-  tableDescription[EOS_At_DT] = std::string(
-      "Total Specific-Free-Energy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DAt] = std::string(
-      "Temperature (Density- and Total Specific-Free-Energy-dependent)");
-  tableDescription[EOS_At_DPt] = std::string(
-      "Total Specific-Free-Energy (Density- and Total Pressure-dependent)");
-  tableDescription[EOS_At_DUt] =
-      std::string("Total Specific-Free-Energy (Density- and Total "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_At_DSt] =
-      std::string("Total Specific-Free-Energy (Density- and Total "
-                  "Specific-Entropy-dependent)");
-  tableDescription[EOS_St_DT] = std::string(
-      "Total Specific-Entropy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DSt] = std::string(
-      "Temperature (Density- and Total Specific-Entropy-dependent)");
-  tableDescription[EOS_St_DPt] = std::string(
-      "Total Specific-Entropy (Density- and Total Pressure-dependent)");
-  tableDescription[EOS_St_DUt] =
-      std::string("Total Specific-Entropy (Density- and Total "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_St_DAt] =
-      std::string("Total Specific-Entropy (Density- and Total "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Pic_DT] =
-      std::string("Ion Pressure plus Cold Curve Pressure (Density- and "
-                  "Temperature-dependent)");
+  tableDescription[EOS_Info] = std::string("Atomic Number, Atomic Mass, Normal Density, Solid Bulk "
+                                           "Modulus, Exchange Coefficient");
+  tableDescription[EOS_Pt_DT] = std::string("Total Pressure (Density- and Temperature-dependent)");
+  tableDescription[EOS_D_PtT] = std::string("Density (Total Pressure- and Temperature-dependent)");
+  tableDescription[EOS_T_DPt] = std::string("Temperature (Density- and Total Pressure-dependent)");
+  tableDescription[EOS_Pt_DUt] =
+      std::string("Total Pressure (Density- and Total Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pt_DAt] =
+      std::string("Total Pressure (Density- and Total Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Pt_DSt] =
+      std::string("Total Pressure (Density- and Total Specific-Entropy-dependent)");
+  tableDescription[EOS_Ut_DT] =
+      std::string("Total Specific-Internal-Energy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DUt] =
+      std::string("Temperature (Density- and Total Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Ut_DPt] =
+      std::string("Total Specific-Internal-Energy (Density- and Total Pressure-dependent)");
+  tableDescription[EOS_Ut_DAt] = std::string("Total Specific-Internal-Energy (Density- and Total "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Ut_DSt] = std::string("Total Specific-Internal-Energy (Density- and Total "
+                                             "Specific-Entropy-dependent)");
+  tableDescription[EOS_Ut_PtT] = std::string("Total Specific-Internal-Energy (Total Pressure- and "
+                                             "Temperature-dependent)");
+  tableDescription[EOS_At_DT] =
+      std::string("Total Specific-Free-Energy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DAt] =
+      std::string("Temperature (Density- and Total Specific-Free-Energy-dependent)");
+  tableDescription[EOS_At_DPt] =
+      std::string("Total Specific-Free-Energy (Density- and Total Pressure-dependent)");
+  tableDescription[EOS_At_DUt] = std::string("Total Specific-Free-Energy (Density- and Total "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_At_DSt] = std::string("Total Specific-Free-Energy (Density- and Total "
+                                             "Specific-Entropy-dependent)");
+  tableDescription[EOS_St_DT] =
+      std::string("Total Specific-Entropy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DSt] =
+      std::string("Temperature (Density- and Total Specific-Entropy-dependent)");
+  tableDescription[EOS_St_DPt] =
+      std::string("Total Specific-Entropy (Density- and Total Pressure-dependent)");
+  tableDescription[EOS_St_DUt] = std::string("Total Specific-Entropy (Density- and Total "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_St_DAt] = std::string("Total Specific-Entropy (Density- and Total "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Pic_DT] = std::string("Ion Pressure plus Cold Curve Pressure (Density- and "
+                                             "Temperature-dependent)");
   tableDescription[EOS_T_DPic] =
       std::string("Temperature (Density- and Ion Pressure plus Cold Curve "
                   "Pressure-dependent)");
@@ -617,44 +567,44 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
       std::string("Ion Pressure plus Cold Curve Pressure (Density- and Ion "
                   "Specific-Internal-Energy plus Cold Curve "
                   "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Pic_DAic] = std::string(
-      "Ion Pressure plus Cold Curve Pressure (Density- and Ion "
-      "Specific-Free-Energy plus Cold Curve Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Pic_DAic] =
+      std::string("Ion Pressure plus Cold Curve Pressure (Density- and Ion "
+                  "Specific-Free-Energy plus Cold Curve Specific-Free-Energy-dependent)");
   tableDescription[EOS_Pic_DSic] =
       std::string("Ion Pressure plus Cold Curve Pressure (Density- and Ion "
                   "Pressure plus Cold Curve Specific-Entropy-dependent)");
-  tableDescription[EOS_Uic_DT] = std::string(
-      "Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
-      "(Density- and Temperature-dependent)");
+  tableDescription[EOS_Uic_DT] =
+      std::string("Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
+                  "(Density- and Temperature-dependent)");
   tableDescription[EOS_T_DUic] =
       std::string("Temperature (Density- and Ion Specific-Internal-Energy plus "
                   "Cold Curve Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Uic_DPic] = std::string(
-      "Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
-      "(Density- and Ion Pressure plus Cold Curve Pressure-dependent)");
-  tableDescription[EOS_Uic_DAic] = std::string(
-      "Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
-      "(Density- and Ion Specific-Free-Energy plus Cold Curve "
-      "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Uic_DSic] = std::string(
-      "Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
-      "(Density- and Ion Pressure plus Cold Curve Specific-Entropy-dependent)");
+  tableDescription[EOS_Uic_DPic] =
+      std::string("Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
+                  "(Density- and Ion Pressure plus Cold Curve Pressure-dependent)");
+  tableDescription[EOS_Uic_DAic] =
+      std::string("Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
+                  "(Density- and Ion Specific-Free-Energy plus Cold Curve "
+                  "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Uic_DSic] =
+      std::string("Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy "
+                  "(Density- and Ion Pressure plus Cold Curve Specific-Entropy-dependent)");
   tableDescription[EOS_Aic_DT] =
       std::string("Ion Specific-Free-Energy plus Cold Curve "
                   "Specific-Free-Energy (Density- and Temperature-dependent)");
   tableDescription[EOS_T_DAic] =
       std::string("Temperature (Density- and Ion Specific-Free-Energy plus "
                   "Cold Curve Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Aic_DPic] = std::string(
-      "Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
-      "and Ion Pressure plus Cold Curve Pressure-dependent)");
-  tableDescription[EOS_Aic_DUic] = std::string(
-      "Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
-      "and Ion Specific-Internal-Energy plus Cold Curve "
-      "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Aic_DSic] = std::string(
-      "Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
-      "and Ion Pressure plus Cold Curve Specific-Entropy-dependent)");
+  tableDescription[EOS_Aic_DPic] =
+      std::string("Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
+                  "and Ion Pressure plus Cold Curve Pressure-dependent)");
+  tableDescription[EOS_Aic_DUic] =
+      std::string("Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
+                  "and Ion Specific-Internal-Energy plus Cold Curve "
+                  "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Aic_DSic] =
+      std::string("Ion Specific-Free-Energy plus Cold Curve Specific-Free-Energy (Density- "
+                  "and Ion Pressure plus Cold Curve Specific-Entropy-dependent)");
   tableDescription[EOS_Sic_DT] =
       std::string("Ion Pressure plus Cold Curve Specific-Entropy (Density- and "
                   "Temperature-dependent)");
@@ -668,25 +618,23 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
       std::string("Ion Pressure plus Cold Curve Specific-Entropy (Density- and "
                   "Ion Specific-Internal-Energy plus Cold Curve "
                   "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Sic_DAic] = std::string(
-      "Ion Pressure plus Cold Curve Specific-Entropy (Density- and Ion "
-      "Specific-Free-Energy plus Cold Curve Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Sic_DAic] =
+      std::string("Ion Pressure plus Cold Curve Specific-Entropy (Density- and Ion "
+                  "Specific-Free-Energy plus Cold Curve Specific-Free-Energy-dependent)");
   tableDescription[EOS_Pe_DT] =
       std::string("Electron Pressure (Density- and Temperature-dependent)");
   tableDescription[EOS_T_DPe] =
       std::string("Temperature (Density- and Electron Pressure-dependent)");
-  tableDescription[EOS_Pe_DUe] =
-      std::string("Electron Pressure (Density- and Electron "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Pe_DAe] =
-      std::string("Electron Pressure (Density- and Electron "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Pe_DSe] = std::string(
-      "Electron Pressure (Density- and Electron Specific-Entropy-dependent)");
-  tableDescription[EOS_Ue_DT] = std::string(
-      "Electron Specific-Internal-Energy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DUe] = std::string(
-      "Temperature (Density- and Electron Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pe_DUe] = std::string("Electron Pressure (Density- and Electron "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pe_DAe] = std::string("Electron Pressure (Density- and Electron "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Pe_DSe] =
+      std::string("Electron Pressure (Density- and Electron Specific-Entropy-dependent)");
+  tableDescription[EOS_Ue_DT] =
+      std::string("Electron Specific-Internal-Energy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DUe] =
+      std::string("Temperature (Density- and Electron Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Ue_DPe] =
       std::string("Electron Specific-Internal-Energy (Density- and Electron "
                   "Pressure-dependent)");
@@ -696,35 +644,30 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
   tableDescription[EOS_Ue_DSe] =
       std::string("Electron Specific-Internal-Energy (Density- and Electron "
                   "Specific-Entropy-dependent)");
-  tableDescription[EOS_Ae_DT] = std::string(
-      "Electron Specific-Free-Energy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DAe] = std::string(
-      "Temperature (Density- and Electron Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Ae_DPe] =
-      std::string("Electron Specific-Free-Energy (Density- and Electron "
-                  "Pressure-dependent)");
-  tableDescription[EOS_Ae_DUe] =
-      std::string("Electron Specific-Free-Energy (Density- and Electron "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Ae_DSe] =
-      std::string("Electron Specific-Free-Energy (Density- and Electron "
-                  "Specific-Entropy-dependent)");
-  tableDescription[EOS_Se_DT] = std::string(
-      "Electron Specific-Entropy (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DSe] = std::string(
-      "Temperature (Density- and Electron Specific-Entropy-dependent)");
-  tableDescription[EOS_Se_DPe] = std::string(
-      "Electron Specific-Entropy (Density- and Electron Pressure-dependent)");
-  tableDescription[EOS_Se_DUe] =
-      std::string("Electron Specific-Entropy (Density- and Electron "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Se_DAe] =
-      std::string("Electron Specific-Entropy (Density- and Electron "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Piz_DT] = std::string(
-      "Ion Pressure Including Zero Point (Density- and Temperature-dependent)");
-  tableDescription[EOS_T_DPiz] = std::string(
-      "Temperature (Density- and Ion Pressure Including Zero Point-dependent)");
+  tableDescription[EOS_Ae_DT] =
+      std::string("Electron Specific-Free-Energy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DAe] =
+      std::string("Temperature (Density- and Electron Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Ae_DPe] = std::string("Electron Specific-Free-Energy (Density- and Electron "
+                                             "Pressure-dependent)");
+  tableDescription[EOS_Ae_DUe] = std::string("Electron Specific-Free-Energy (Density- and Electron "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Ae_DSe] = std::string("Electron Specific-Free-Energy (Density- and Electron "
+                                             "Specific-Entropy-dependent)");
+  tableDescription[EOS_Se_DT] =
+      std::string("Electron Specific-Entropy (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DSe] =
+      std::string("Temperature (Density- and Electron Specific-Entropy-dependent)");
+  tableDescription[EOS_Se_DPe] =
+      std::string("Electron Specific-Entropy (Density- and Electron Pressure-dependent)");
+  tableDescription[EOS_Se_DUe] = std::string("Electron Specific-Entropy (Density- and Electron "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Se_DAe] = std::string("Electron Specific-Entropy (Density- and Electron "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Piz_DT] =
+      std::string("Ion Pressure Including Zero Point (Density- and Temperature-dependent)");
+  tableDescription[EOS_T_DPiz] =
+      std::string("Temperature (Density- and Ion Pressure Including Zero Point-dependent)");
   tableDescription[EOS_Piz_DUiz] =
       std::string("Ion Pressure Including Zero Point (Density- and Ion "
                   "Specific-Internal-Energy Including Zero Point-dependent)");
@@ -743,24 +686,23 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
   tableDescription[EOS_Uiz_DPiz] =
       std::string("Ion Specific-Internal-Energy Including Zero Point (Density- "
                   "and Ion Pressure Including Zero Point-dependent)");
-  tableDescription[EOS_Uiz_DAiz] = std::string(
-      "Ion Specific-Internal-Energy Including Zero Point (Density- and Ion "
-      "Specific-Free-Energy Including Zero Point-dependent)");
-  tableDescription[EOS_Uiz_DSiz] = std::string(
-      "Ion Specific-Internal-Energy Including Zero Point (Density- and Ion "
-      "Pressure Including Zero Specific-Entropy-dependent)");
+  tableDescription[EOS_Uiz_DAiz] =
+      std::string("Ion Specific-Internal-Energy Including Zero Point (Density- and Ion "
+                  "Specific-Free-Energy Including Zero Point-dependent)");
+  tableDescription[EOS_Uiz_DSiz] =
+      std::string("Ion Specific-Internal-Energy Including Zero Point (Density- and Ion "
+                  "Pressure Including Zero Specific-Entropy-dependent)");
   tableDescription[EOS_Aiz_DT] =
       std::string("Ion Specific-Free-Energy Including Zero Point (Density- and "
                   "Temperature-dependent)");
-  tableDescription[EOS_T_DAiz] =
-      std::string("Temperature (Density- and Ion Specific-Free-Energy "
-                  "Including Zero Point-dependent)");
+  tableDescription[EOS_T_DAiz] = std::string("Temperature (Density- and Ion Specific-Free-Energy "
+                                             "Including Zero Point-dependent)");
   tableDescription[EOS_Aiz_DPiz] =
       std::string("Ion Specific-Free-Energy Including Zero Point (Density- and "
                   "Ion Pressure Including Zero Point-dependent)");
-  tableDescription[EOS_Aiz_DUiz] = std::string(
-      "Ion Specific-Free-Energy Including Zero Point (Density- and Ion "
-      "Specific-Internal-Energy Including Zero Point-dependent)");
+  tableDescription[EOS_Aiz_DUiz] =
+      std::string("Ion Specific-Free-Energy Including Zero Point (Density- and Ion "
+                  "Specific-Internal-Energy Including Zero Point-dependent)");
   tableDescription[EOS_Aiz_DSiz] =
       std::string("Ion Specific-Free-Energy Including Zero Point (Density- and "
                   "Ion Pressure Including Zero Specific-Entropy-dependent)");
@@ -773,73 +715,63 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
   tableDescription[EOS_Siz_DPiz] =
       std::string("Ion Pressure Including Zero Specific-Entropy (Density- and "
                   "Ion Pressure Including Zero Point-dependent)");
-  tableDescription[EOS_Siz_DUiz] = std::string(
-      "Ion Pressure Including Zero Specific-Entropy (Density- and Ion "
-      "Specific-Internal-Energy Including Zero Point-dependent)");
+  tableDescription[EOS_Siz_DUiz] =
+      std::string("Ion Pressure Including Zero Specific-Entropy (Density- and Ion "
+                  "Specific-Internal-Energy Including Zero Point-dependent)");
   tableDescription[EOS_Siz_DAiz] =
       std::string("Ion Pressure Including Zero Specific-Entropy (Density- and "
                   "Ion Specific-Free-Energy Including Zero Point-dependent)");
-  tableDescription[EOS_Pc_D] =
-      std::string("Pressure Cold Curve (Density-dependent)");
+  tableDescription[EOS_Pc_D] = std::string("Pressure Cold Curve (Density-dependent)");
   tableDescription[EOS_Uc_D] =
       std::string("Specific-Internal-Energy Cold Curve (Density-dependent)");
-  tableDescription[EOS_Ac_D] =
-      std::string("Specific-Free-Energy Cold Curve (Density-dependent)");
-  tableDescription[EOS_Pv_T] =
-      std::string("Vapor Pressure (Temperature-dependent)");
-  tableDescription[EOS_T_Pv] =
-      std::string("Temperature (Vapor Pressure-dependent)");
-  tableDescription[EOS_Pv_Dv] = std::string(
-      "Vapor Pressure (Vapor Density on coexistence line-dependent)");
-  tableDescription[EOS_Pv_Dls] = std::string(
-      "Vapor Pressure (Liquid or Solid Density on coexistence line-dependent)");
+  tableDescription[EOS_Ac_D] = std::string("Specific-Free-Energy Cold Curve (Density-dependent)");
+  tableDescription[EOS_Pv_T] = std::string("Vapor Pressure (Temperature-dependent)");
+  tableDescription[EOS_T_Pv] = std::string("Temperature (Vapor Pressure-dependent)");
+  tableDescription[EOS_Pv_Dv] =
+      std::string("Vapor Pressure (Vapor Density on coexistence line-dependent)");
+  tableDescription[EOS_Pv_Dls] =
+      std::string("Vapor Pressure (Liquid or Solid Density on coexistence line-dependent)");
   tableDescription[EOS_Pv_Uv] =
       std::string("Vapor Pressure (Vapor Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Pv_Uls] = std::string(
-      "Vapor Pressure (Liquid or Solid Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pv_Uls] =
+      std::string("Vapor Pressure (Liquid or Solid Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Pv_Av] =
       std::string("Vapor Pressure (Vapor Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Pv_Als] = std::string(
-      "Vapor Pressure (Liquid or Solid Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Pv_Als] =
+      std::string("Vapor Pressure (Liquid or Solid Specific-Free-Energy-dependent)");
   tableDescription[EOS_Dv_T] =
       std::string("Vapor Density on coexistence line (Temperature-dependent)");
   tableDescription[EOS_T_Dv] =
       std::string("Temperature (Vapor Density on coexistence line-dependent)");
-  tableDescription[EOS_Dv_Pv] = std::string(
-      "Vapor Density on coexistence line (Vapor Pressure-dependent)");
+  tableDescription[EOS_Dv_Pv] =
+      std::string("Vapor Density on coexistence line (Vapor Pressure-dependent)");
   tableDescription[EOS_Dv_Dls] =
       std::string("Vapor Density on coexistence line (Liquid or Solid Density "
                   "on coexistence line-dependent)");
-  tableDescription[EOS_Dv_Uv] =
-      std::string("Vapor Density on coexistence line (Vapor "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Dv_Uls] =
-      std::string("Vapor Density on coexistence line (Liquid or Solid "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Dv_Av] =
-      std::string("Vapor Density on coexistence line (Vapor "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Dv_Als] =
-      std::string("Vapor Density on coexistence line (Liquid or Solid "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Dls_T] = std::string(
-      "Liquid or Solid Density on coexistence line (Temperature-dependent)");
-  tableDescription[EOS_T_Dls] = std::string(
-      "Temperature (Liquid or Solid Density on coexistence line-dependent)");
-  tableDescription[EOS_Dls_Pv] = std::string(
-      "Liquid or Solid Density on coexistence line (Vapor Pressure-dependent)");
+  tableDescription[EOS_Dv_Uv] = std::string("Vapor Density on coexistence line (Vapor "
+                                            "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Dv_Uls] = std::string("Vapor Density on coexistence line (Liquid or Solid "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Dv_Av] = std::string("Vapor Density on coexistence line (Vapor "
+                                            "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Dv_Als] = std::string("Vapor Density on coexistence line (Liquid or Solid "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Dls_T] =
+      std::string("Liquid or Solid Density on coexistence line (Temperature-dependent)");
+  tableDescription[EOS_T_Dls] =
+      std::string("Temperature (Liquid or Solid Density on coexistence line-dependent)");
+  tableDescription[EOS_Dls_Pv] =
+      std::string("Liquid or Solid Density on coexistence line (Vapor Pressure-dependent)");
   tableDescription[EOS_Dls_Dv] =
       std::string("Liquid or Solid Density on coexistence line (Vapor Density "
                   "on coexistence line-dependent)");
-  tableDescription[EOS_Dls_Uv] =
-      std::string("Liquid or Solid Density on coexistence line (Vapor "
-                  "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Dls_Uv] = std::string("Liquid or Solid Density on coexistence line (Vapor "
+                                             "Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Dls_Uls] =
       std::string("Liquid or Solid Density on coexistence line (Liquid or "
                   "Solid Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Dls_Av] =
-      std::string("Liquid or Solid Density on coexistence line (Vapor "
-                  "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Dls_Av] = std::string("Liquid or Solid Density on coexistence line (Vapor "
+                                             "Specific-Free-Energy-dependent)");
   tableDescription[EOS_Dls_Als] =
       std::string("Liquid or Solid Density on coexistence line (Liquid or "
                   "Solid Specific-Free-Energy-dependent)");
@@ -849,45 +781,38 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
       std::string("Temperature (Vapor Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Uv_Pv] =
       std::string("Vapor Specific-Internal-Energy (Vapor Pressure-dependent)");
-  tableDescription[EOS_Uv_Dv] =
-      std::string("Vapor Specific-Internal-Energy (Vapor Density on "
-                  "coexistence line-dependent)");
+  tableDescription[EOS_Uv_Dv] = std::string("Vapor Specific-Internal-Energy (Vapor Density on "
+                                            "coexistence line-dependent)");
   tableDescription[EOS_Uv_Dls] =
       std::string("Vapor Specific-Internal-Energy (Liquid or Solid Density on "
                   "coexistence line-dependent)");
-  tableDescription[EOS_Uv_Uls] =
-      std::string("Vapor Specific-Internal-Energy (Liquid or Solid "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Uv_Av] = std::string(
-      "Vapor Specific-Internal-Energy (Vapor Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Uv_Als] =
-      std::string("Vapor Specific-Internal-Energy (Liquid or Solid "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Uls_T] = std::string(
-      "Liquid or Solid Specific-Internal-Energy (Temperature-dependent)");
-  tableDescription[EOS_T_Uls] = std::string(
-      "Temperature (Liquid or Solid Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Uls_Pv] = std::string(
-      "Liquid or Solid Specific-Internal-Energy (Vapor Pressure-dependent)");
+  tableDescription[EOS_Uv_Uls] = std::string("Vapor Specific-Internal-Energy (Liquid or Solid "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Uv_Av] =
+      std::string("Vapor Specific-Internal-Energy (Vapor Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Uv_Als] = std::string("Vapor Specific-Internal-Energy (Liquid or Solid "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Uls_T] =
+      std::string("Liquid or Solid Specific-Internal-Energy (Temperature-dependent)");
+  tableDescription[EOS_T_Uls] =
+      std::string("Temperature (Liquid or Solid Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Uls_Pv] =
+      std::string("Liquid or Solid Specific-Internal-Energy (Vapor Pressure-dependent)");
   tableDescription[EOS_Uls_Dv] =
       std::string("Liquid or Solid Specific-Internal-Energy (Vapor Density on "
                   "coexistence line-dependent)");
   tableDescription[EOS_Uls_Dls] =
       std::string("Liquid or Solid Specific-Internal-Energy (Liquid or Solid "
                   "Density on coexistence line-dependent)");
-  tableDescription[EOS_Uls_Uv] =
-      std::string("Liquid or Solid Specific-Internal-Energy (Vapor "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Uls_Av] =
-      std::string("Liquid or Solid Specific-Internal-Energy (Vapor "
-                  "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Uls_Uv] = std::string("Liquid or Solid Specific-Internal-Energy (Vapor "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Uls_Av] = std::string("Liquid or Solid Specific-Internal-Energy (Vapor "
+                                             "Specific-Free-Energy-dependent)");
   tableDescription[EOS_Uls_Als] =
       std::string("Liquid or Solid Specific-Internal-Energy (Liquid or Solid "
                   "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Av_T] =
-      std::string("Vapor Specific-Free-Energy (Temperature-dependent)");
-  tableDescription[EOS_T_Av] =
-      std::string("Temperature (Vapor Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Av_T] = std::string("Vapor Specific-Free-Energy (Temperature-dependent)");
+  tableDescription[EOS_T_Av] = std::string("Temperature (Vapor Specific-Free-Energy-dependent)");
   tableDescription[EOS_Av_Pv] =
       std::string("Vapor Specific-Free-Energy (Vapor Pressure-dependent)");
   tableDescription[EOS_Av_Dv] =
@@ -896,150 +821,121 @@ SesameTables::initializeTableDescriptions(size_t const datasize) {
   tableDescription[EOS_Av_Dls] =
       std::string("Vapor Specific-Free-Energy (Liquid or Solid Density on "
                   "coexistence line-dependent)");
-  tableDescription[EOS_Av_Uv] = std::string(
-      "Vapor Specific-Free-Energy (Vapor Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Av_Uls] =
-      std::string("Vapor Specific-Free-Energy (Liquid or Solid "
-                  "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Av_Als] =
-      std::string("Vapor Specific-Free-Energy (Liquid or Solid "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Als_T] = std::string(
-      "Liquid or Solid Specific-Free-Energy (Temperature-dependent)");
-  tableDescription[EOS_T_Als] = std::string(
-      "Temperature (Liquid or Solid Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Als_Pv] = std::string(
-      "Liquid or Solid Specific-Free-Energy (Vapor Pressure-dependent)");
+  tableDescription[EOS_Av_Uv] =
+      std::string("Vapor Specific-Free-Energy (Vapor Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Av_Uls] = std::string("Vapor Specific-Free-Energy (Liquid or Solid "
+                                             "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Av_Als] = std::string("Vapor Specific-Free-Energy (Liquid or Solid "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Als_T] =
+      std::string("Liquid or Solid Specific-Free-Energy (Temperature-dependent)");
+  tableDescription[EOS_T_Als] =
+      std::string("Temperature (Liquid or Solid Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Als_Pv] =
+      std::string("Liquid or Solid Specific-Free-Energy (Vapor Pressure-dependent)");
   tableDescription[EOS_Als_Dv] =
       std::string("Liquid or Solid Specific-Free-Energy (Vapor Density on "
                   "coexistence line-dependent)");
   tableDescription[EOS_Als_Dls] =
       std::string("Liquid or Solid Specific-Free-Energy (Liquid or Solid "
                   "Density on coexistence line-dependent)");
-  tableDescription[EOS_Als_Uv] =
-      std::string("Liquid or Solid Specific-Free-Energy (Vapor "
-                  "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Als_Uv] = std::string("Liquid or Solid Specific-Free-Energy (Vapor "
+                                             "Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Als_Uls] =
       std::string("Liquid or Solid Specific-Free-Energy (Liquid or Solid "
                   "Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Als_Av] =
-      std::string("Liquid or Solid Specific-Free-Energy (Vapor "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Tm_D] =
-      std::string("Melt Temperature (Density-dependent)");
-  tableDescription[EOS_D_Tm] =
-      std::string("Density (Melt Temperature-dependent)");
-  tableDescription[EOS_Tm_Pm] =
-      std::string("Melt Temperature (Melt Pressure-dependent)");
+  tableDescription[EOS_Als_Av] = std::string("Liquid or Solid Specific-Free-Energy (Vapor "
+                                             "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Tm_D] = std::string("Melt Temperature (Density-dependent)");
+  tableDescription[EOS_D_Tm] = std::string("Density (Melt Temperature-dependent)");
+  tableDescription[EOS_Tm_Pm] = std::string("Melt Temperature (Melt Pressure-dependent)");
   tableDescription[EOS_Tm_Um] =
       std::string("Melt Temperature (Melt Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Tm_Am] =
       std::string("Melt Temperature (Melt Specific-Free-Energy-dependent)");
   tableDescription[EOS_Pm_D] = std::string("Melt Pressure (Density-dependent)");
   tableDescription[EOS_D_Pm] = std::string("Density (Melt Pressure-dependent)");
-  tableDescription[EOS_Pm_Tm] =
-      std::string("Melt Pressure (Melt Temperature-dependent)");
+  tableDescription[EOS_Pm_Tm] = std::string("Melt Pressure (Melt Temperature-dependent)");
   tableDescription[EOS_Pm_Um] =
       std::string("Melt Pressure (Melt Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Pm_Am] =
-      std::string("Melt Pressure (Melt Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Um_D] =
-      std::string("Melt Specific-Internal-Energy (Density-dependent)");
-  tableDescription[EOS_D_Um] =
-      std::string("Density (Melt Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pm_Am] = std::string("Melt Pressure (Melt Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Um_D] = std::string("Melt Specific-Internal-Energy (Density-dependent)");
+  tableDescription[EOS_D_Um] = std::string("Density (Melt Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Um_Tm] =
       std::string("Melt Specific-Internal-Energy (Melt Temperature-dependent)");
   tableDescription[EOS_Um_Pm] =
       std::string("Melt Specific-Internal-Energy (Melt Pressure-dependent)");
-  tableDescription[EOS_Um_Am] = std::string(
-      "Melt Specific-Internal-Energy (Melt Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Am_D] =
-      std::string("Melt Specific-Free-Energy (Density-dependent)");
-  tableDescription[EOS_D_Am] =
-      std::string("Density (Melt Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Um_Am] =
+      std::string("Melt Specific-Internal-Energy (Melt Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Am_D] = std::string("Melt Specific-Free-Energy (Density-dependent)");
+  tableDescription[EOS_D_Am] = std::string("Density (Melt Specific-Free-Energy-dependent)");
   tableDescription[EOS_Am_Tm] =
       std::string("Melt Specific-Free-Energy (Melt Temperature-dependent)");
-  tableDescription[EOS_Am_Pm] =
-      std::string("Melt Specific-Free-Energy (Melt Pressure-dependent)");
-  tableDescription[EOS_Am_Um] = std::string(
-      "Melt Specific-Free-Energy (Melt Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Tf_D] =
-      std::string("Freeze Temperature (Density-dependent)");
-  tableDescription[EOS_D_Tf] =
-      std::string("Density (Freeze Temperature-dependent)");
-  tableDescription[EOS_Tf_Pf] =
-      std::string("Freeze Temperature (Freeze Pressure-dependent)");
-  tableDescription[EOS_Tf_Uf] = std::string(
-      "Freeze Temperature (Freeze Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Am_Pm] = std::string("Melt Specific-Free-Energy (Melt Pressure-dependent)");
+  tableDescription[EOS_Am_Um] =
+      std::string("Melt Specific-Free-Energy (Melt Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Tf_D] = std::string("Freeze Temperature (Density-dependent)");
+  tableDescription[EOS_D_Tf] = std::string("Density (Freeze Temperature-dependent)");
+  tableDescription[EOS_Tf_Pf] = std::string("Freeze Temperature (Freeze Pressure-dependent)");
+  tableDescription[EOS_Tf_Uf] =
+      std::string("Freeze Temperature (Freeze Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Tf_Af] =
       std::string("Freeze Temperature (Freeze Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Pf_D] =
-      std::string("Freeze Pressure (Density-dependent)");
-  tableDescription[EOS_D_Pf] =
-      std::string("Density (Freeze Pressure-dependent)");
-  tableDescription[EOS_Pf_Tf] =
-      std::string("Freeze Pressure (Freeze Temperature-dependent)");
-  tableDescription[EOS_Pf_Uf] = std::string(
-      "Freeze Pressure (Freeze Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Pf_D] = std::string("Freeze Pressure (Density-dependent)");
+  tableDescription[EOS_D_Pf] = std::string("Density (Freeze Pressure-dependent)");
+  tableDescription[EOS_Pf_Tf] = std::string("Freeze Pressure (Freeze Temperature-dependent)");
+  tableDescription[EOS_Pf_Uf] =
+      std::string("Freeze Pressure (Freeze Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Pf_Af] =
       std::string("Freeze Pressure (Freeze Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Uf_D] =
-      std::string("Freeze Specific-Internal-Energy (Density-dependent)");
-  tableDescription[EOS_D_Uf] =
-      std::string("Density (Freeze Specific-Internal-Energy-dependent)");
-  tableDescription[EOS_Uf_Tf] = std::string(
-      "Freeze Specific-Internal-Energy (Freeze Temperature-dependent)");
-  tableDescription[EOS_Uf_Pf] = std::string(
-      "Freeze Specific-Internal-Energy (Freeze Pressure-dependent)");
-  tableDescription[EOS_Uf_Af] =
-      std::string("Freeze Specific-Internal-Energy (Freeze "
-                  "Specific-Free-Energy-dependent)");
-  tableDescription[EOS_Af_D] =
-      std::string("Freeze Specific-Free-Energy (Density-dependent)");
-  tableDescription[EOS_D_Af] =
-      std::string("Density (Freeze Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Uf_D] = std::string("Freeze Specific-Internal-Energy (Density-dependent)");
+  tableDescription[EOS_D_Uf] = std::string("Density (Freeze Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Uf_Tf] =
+      std::string("Freeze Specific-Internal-Energy (Freeze Temperature-dependent)");
+  tableDescription[EOS_Uf_Pf] =
+      std::string("Freeze Specific-Internal-Energy (Freeze Pressure-dependent)");
+  tableDescription[EOS_Uf_Af] = std::string("Freeze Specific-Internal-Energy (Freeze "
+                                            "Specific-Free-Energy-dependent)");
+  tableDescription[EOS_Af_D] = std::string("Freeze Specific-Free-Energy (Density-dependent)");
+  tableDescription[EOS_D_Af] = std::string("Density (Freeze Specific-Free-Energy-dependent)");
   tableDescription[EOS_Af_Tf] =
       std::string("Freeze Specific-Free-Energy (Freeze Temperature-dependent)");
   tableDescription[EOS_Af_Pf] =
       std::string("Freeze Specific-Free-Energy (Freeze Pressure-dependent)");
-  tableDescription[EOS_Af_Uf] =
-      std::string("Freeze Specific-Free-Energy (Freeze "
-                  "Specific-Internal-Energy-dependent)");
+  tableDescription[EOS_Af_Uf] = std::string("Freeze Specific-Free-Energy (Freeze "
+                                            "Specific-Internal-Energy-dependent)");
   tableDescription[EOS_Gs_D] = std::string("Shear Modulus (Density-dependent)");
   tableDescription[EOS_D_Gs] = std::string("Density (Shear Modulus-dependent)");
-  tableDescription[EOS_Ogb] =
-      std::string(" Calculated versus Interpolated Opacity Grid Boundary");
-  tableDescription[EOS_Kr_DT] = std::string(
-      "Rosseland Mean Opacity (Density- and Temperature-dependent)");
+  tableDescription[EOS_Ogb] = std::string(" Calculated versus Interpolated Opacity Grid Boundary");
+  tableDescription[EOS_Kr_DT] =
+      std::string("Rosseland Mean Opacity (Density- and Temperature-dependent)");
   tableDescription[EOS_Keo_DT] =
       std::string("Electron Conductive Opacity (Opacity Model) (Density- and "
                   "Temperature-dependent)");
-  tableDescription[EOS_Zfo_DT] = std::string(
-      "Mean Ion Charge (Opacity Model) (Density- and Temperature-dependent)");
+  tableDescription[EOS_Zfo_DT] =
+      std::string("Mean Ion Charge (Opacity Model) (Density- and Temperature-dependent)");
   tableDescription[EOS_Kp_DT] =
       std::string("Planck Mean Opacity (Density- and Temperature-dependent)");
-  tableDescription[EOS_Zfc_DT] =
-      std::string("Mean Ion Charge (Conductivity Model) (Density- and "
-                  "Temperature-dependent)");
-  tableDescription[EOS_Kec_DT] = std::string(
-      "Electrical Conductivity (Density- and Temperature-dependent)");
+  tableDescription[EOS_Zfc_DT] = std::string("Mean Ion Charge (Conductivity Model) (Density- and "
+                                             "Temperature-dependent)");
+  tableDescription[EOS_Kec_DT] =
+      std::string("Electrical Conductivity (Density- and Temperature-dependent)");
   tableDescription[EOS_Ktc_DT] =
       std::string("Thermal Conductivity (Density- and Temperature-dependent)");
-  tableDescription[EOS_B_DT] = std::string(
-      "Thermoelectric Coefficient (Density- and Temperature-dependent)");
+  tableDescription[EOS_B_DT] =
+      std::string("Thermoelectric Coefficient (Density- and Temperature-dependent)");
   tableDescription[EOS_Kc_DT] =
       std::string("Electron Conductive Opacity (Conductivity Model) (Density- "
                   "and Temperature-dependent)");
   tableDescription[EOS_V_PtT] =
       std::string("Specific-Volume (Pressure- and Temperature-dependent)");
-  tableDescription[EOS_M_DT] =
-      std::string("Mass Fraction (Density- and Temperature-dependent)");
+  tableDescription[EOS_M_DT] = std::string("Mass Fraction (Density- and Temperature-dependent)");
 
   return tableDescription;
 }
 
 } // end namespace rtt_cdi_eospac
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of SesameTables.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

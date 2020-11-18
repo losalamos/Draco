@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   norms/L2norm_pt.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Preinstantiate template function L2norm
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "L2norm.i.hh"
 #include "ds++/config.h"
@@ -15,14 +15,13 @@
 namespace rtt_norms {
 
 //! Compute the L2-norm of a vector.
-template DLL_PUBLIC_norms double L2norm(std::vector<double> const &x);
+template double L2norm(std::vector<double> const &x);
 
 //! Compute the L2-norm of a vector.
-template DLL_PUBLIC_norms double L2norm_diff(std::vector<double> const &x,
-                                             std::vector<double> const &y);
+template double L2norm_diff(std::vector<double> const &x, std::vector<double> const &y);
 
 } // end namespace rtt_norms
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of norms/L2norm_pt.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -5,7 +5,7 @@
 # brief  This is a CTest script that is used to test bin/draco_info.
 # note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 import sys
 import re

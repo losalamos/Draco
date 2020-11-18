@@ -1,21 +1,19 @@
-//----------------------------------*-C++-*--------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/NodeFlags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/NodeFlags class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "NodeFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the node_flags data block from the mesh file via calls to
- *        private member functions.
+ * \brief Parses the node_flags data block from the mesh file via calls to private member functions.
  * \param meshfile Mesh file name.
  */
 void NodeFlags::readNodeFlags(ifstream &meshfile) {
@@ -24,7 +22,7 @@ void NodeFlags::readNodeFlags(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_flags block keyword.
  * \param meshfile Mesh file name.
@@ -33,12 +31,11 @@ void NodeFlags::readKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "node_flags",
-         "Invalid mesh file: node_flags block missing");
+  Insist(dummyString == "node_flags", "Invalid mesh file: node_flags block missing");
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the node_flags block data.
  * \param meshfile Mesh file name.
@@ -47,8 +44,7 @@ void NodeFlags::readFlagTypes(ifstream &meshfile) {
   int flagTypeNum;
   string dummyString;
 
-  for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_flag_types());
-       ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_flag_types()); ++i) {
     meshfile >> flagTypeNum >> dummyString;
     Insist(static_cast<size_t>(flagTypeNum) == i + 1,
            "Invalid mesh file: node flag type out of order");
@@ -59,7 +55,7 @@ void NodeFlags::readFlagTypes(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_node_flags block keyword.
  * \param meshfile Mesh file name.
@@ -68,15 +64,13 @@ void NodeFlags::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_node_flags",
-         "Invalid mesh file: node_flags block missing end");
+  Insist(dummyString == "end_node_flags", "Invalid mesh file: node_flags block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Returns the index to the node flag type that contains the specified
- *        string.
+ * \brief Returns the index to the node flag type that contains the specified string.
  * \param desired_flag_type Flag type.
  * \return The node flag type index.
  */
@@ -94,6 +88,6 @@ int NodeFlags::get_flag_type_index(string &desired_flag_type) const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/NodeFlags.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

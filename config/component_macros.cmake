@@ -1,27 +1,24 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/component_macros.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
-# brief  Provide extra macros to simplify CMakeLists.txt for component
-#        directories.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# brief  Provide extra macros to simplify CMakeLists.txt for component directories.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 include( compilerEnv )
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Ensure order of setup is correct
-#------------------------------------------------------------------------------#
-
+#--------------------------------------------------------------------------------------------------#
 if( NOT DEFINED USE_IPO )
   dbsSetupCompilers() # sets USE_IPO
 endif()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Common Standards
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Apply these properties to all targets (libraries, executables)
 set(Draco_std_target_props_C
@@ -44,10 +41,10 @@ set(Draco_std_target_props
   INTERPROCEDURAL_OPTIMIZATION_RELEASE ${USE_IPO}
   POSITION_INDEPENDENT_CODE ON )
 
-#------------------------------------------------------------------------------#
-# Set properties that are common across all packages.  Including the required
-# language standard per target.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+# Set properties that are common across all packages.  Including the required language standard per
+# target.
+#--------------------------------------------------------------------------------------------------#
 function( dbs_std_tgt_props target )
 
   get_property(project_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
@@ -80,18 +77,48 @@ function( dbs_std_tgt_props target )
 
 endfunction()
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
+# Build a list of dependencies to support object-library mechanism
+#
+# objlib_target - object library target name (e.g. Objlib_c4)
+#
+# Returns ${objlib_target}_TARGET_DEPS by saving it to the CMakeCache.txt
+#--------------------------------------------------------------------------------------------------#
+function( dbs_objlib_build_dep_list objlib_target deplist)
+
+  set(itd_beg 0 ) # length of dep list
+  list(LENGTH deplist itd_end)
+  while( NOT ${itd_beg} STREQUAL ${itd_end} )
+    foreach(dep ${deplist} )
+      if(NOT "${${dep}_TARGET_DEPS}x" STREQUAL "x")
+        list(APPEND deplist ${${dep}_TARGET_DEPS} )
+      endif()
+      get_target_property(ill ${dep} INTERFACE_LINK_LIBRARIES )
+      if(NOT ill MATCHES NOTFOUND)
+        foreach( i ${ill} )
+          if( TARGET ${i} )
+            list(APPEND deplist ${i} )
+          endif()
+        endforeach()
+      endif()
+    endforeach()
+    list(REMOVE_DUPLICATES deplist)
+    set( itd_beg ${itd_end} )
+    list(LENGTH deplist itd_end)
+  endwhile()
+  set( ${objlib_target}_TARGET_DEPS "${deplist}" CACHE STRING "objlib dependencies" FORCE)
+
+endfunction()
+
+#--------------------------------------------------------------------------------------------------#
 # replacement for built in command 'add_executable'
 #
-# Purpose 1: In addition to adding an executable built from $sources, set
-# Draco-specific properties for the library.  This macro reduces ~20
-# lines of code repeated code down to 1-2.
+# Purpose 1: In addition to adding an executable built from $sources, set Draco-specific properties
+# for the library.  This macro reduces ~20 lines of code repeated code down to 1-2.
 #
-# Purpose 2: Encapsulate library and vendor library dependencies per
-# package.
+# Purpose 2: Encapsulate library and vendor library dependencies per package.
 #
-# Purpose 3: Use information from 1 and 2 above to generate exported
-# targets.
+# Purpose 3: Use information from 1 and 2 above to generate exported targets.
 #
 # Usage:
 #
@@ -99,7 +126,6 @@ endfunction()
 #   TARGET       "target name"
 #   EXE_NAME     "output executable name"
 #   TARGET_DEPS  "dep1;dep2;..."
-#   PREFIX       "ClubIMC"
 #   SOURCES      "file1.cc;file2.cc;..."
 #   HEADERS      "file1.hh;file2.hh;..."
 #   VENDOR_LIST  "MPI;GSL"
@@ -107,7 +133,9 @@ endfunction()
 #   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
 #   FOLDER       "myfolder"
 #   PROJECT_LABEL "myproject42"
-#   NOEXPORT        - do not export target or dependencies to draco-config.cmake
+#   NOEXPORT    - do not export target or dependencies to draco-config.cmake
+#   EXPORT_NAME - not currently used; but will be used to install a binary and add its information
+#                 to <project>-config.cmake.
 #   NOCOMMANDWINDOW - On win32, do not create a command window (qt)
 #   )
 #
@@ -117,7 +145,6 @@ endfunction()
 #   TARGET       Exe_draco_info
 #   EXE_NAME     draco_info
 #   TARGET_DEPS  Lib_diagnostics
-#   PREFIX       Draco
 #   SOURCES      "${PROJECT_SOURCE_DIR}/draco_info_main.cc"
 #   FOLDER       diagnostics
 #   )
@@ -125,24 +152,17 @@ endfunction()
 # Note: directories listed as VENDOR_INCLUDE_DIRS will be exported in the
 #       INTERFACE_INCLUDE_DIRECTORIES target property.
 #
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 macro( add_component_executable )
 
   # These become variables of the form ${ace_NAME}, etc.
   cmake_parse_arguments(
     ace
     "NOEXPORT;NOCOMMANDWINDOW"
-    "PREFIX;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
+    "EXPORT_NAME;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
     "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
-
-  # Prefix for export
-  if( NOT DEFINED ace_PREFIX AND NOT DEFINED ace_NOEXPORT)
-    message( FATAL_ERROR
-      "add_component_executable requires a PREFIX value to allow EXPORT of this
-target or the target must be labeled NOEXPORT.")
-  endif()
 
   # Default link language is C++
   if( NOT DEFINED ace_LINK_LANGUAGE )
@@ -205,7 +225,22 @@ target or the target must be labeled NOEXPORT.")
   # Generate properties related to library dependencies
   #
   if( DEFINED ace_TARGET_DEPS )
-    target_link_libraries( ${ace_TARGET} ${ace_TARGET_DEPS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      unset( ace_objlib_TARGET_DEPS )
+      foreach( lib ${ace_TARGET_DEPS} )
+        string( REPLACE "Lib_" "Objlib_" objlib ${lib} )
+        if( TARGET ${objlib} )
+          list(APPEND ace_objlib_TARGET_DEPS ${objlib} )
+        else()
+          list(APPEND ace_objlib_TARGET_DEPS ${lib} )
+        endif()
+      endforeach()
+      # Keep a list of transitive dependencies; returns ${ace_objlib_TARGET}_TARGET_DEPS
+      dbs_objlib_build_dep_list(${ace_TARGET} "${ace_objlib_TARGET_DEPS}")
+      target_link_libraries( ${ace_TARGET} ${${ace_TARGET}_TARGET_DEPS} )
+    else()
+      target_link_libraries( ${ace_TARGET} ${ace_TARGET_DEPS} )
+    endif()
   endif()
   if( DEFINED ace_VENDOR_LIBS )
     target_link_libraries( ${ace_TARGET} ${ace_VENDOR_LIBS} )
@@ -236,7 +271,7 @@ endmacro()
 #   TARGET       "target name"
 #   LIBRARY_NAME "output library name"
 #   TARGET_DEPS  "dep1;dep2;..."
-#   PREFIX       "ClubIMC"
+#   INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
 #   SOURCES      "file1.cc;file2.cc;..."
 #   HEADERS      "file1.hh;file2.hh;..."
 #   LIBRARY_NAME_PREFIX "rtt_"
@@ -253,7 +288,6 @@ endmacro()
 #   TARGET       Lib_quadrature
 #   LIBRARY_NAME quadrature
 #   TARGET_DEPS  "Lib_parser;Lib_special_functions;Lib_mesh_element"
-#   PREFIX       "Draco"
 #   SOURCES      "${sources}"
 #   )
 #
@@ -263,15 +297,13 @@ endmacro()
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
 #------------------------------------------------------------------------------
 macro( add_component_library )
-  # target_name outputname sources
-  # optional argument: libraryPrefix
 
   # These become variables of the form ${acl_NAME}, etc.
   cmake_parse_arguments(
     acl
     "NOEXPORT"
-    "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
-    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "EXPORT_NAME;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LIBRARY_TYPE;LINK_LANGUAGE"
+    "HEADERS;SOURCES;INCLUDE_DIRS;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV} )
 
   #
@@ -319,20 +351,55 @@ macro( add_component_library )
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
     WINDOWS_EXPORT_ALL_SYMBOLS ON )
- if("${acl_LINK_LANGUAGE}" STREQUAL "CUDA")
-   set_property( TARGET ${acl_TARGET} APPEND PROPERTY
-     COMPILE_DEFINITIONS "USE_CUDA=ON" )
- endif()
   if( DEFINED DRACO_LINK_OPTIONS AND NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
     set_property( TARGET ${acl_TARGET} APPEND PROPERTY
       LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
   endif()
 
+  if(DBS_GENERATE_OBJECT_LIBRARIES)
+    # Generate an object library.  This can be used instead of the regular library for better
+    # interprocedural optimization at link time.
+    if( "${acl_TARGET}" MATCHES "Lib_" )
+      string( REPLACE "Lib_" "Objlib_" acl_objlib_TARGET ${acl_TARGET} )
+    else()
+      string( CONCAT acl_objlib_TARGET "Objlib_" "${acl_TARGET}" )
+    endif()
+    if( DEFINED acl_SOURCES )
+      add_library( ${acl_objlib_TARGET} OBJECT ${acl_SOURCES} )
+    else()
+      message(FATAL_ERROR "acl_sources NOT defined")
+    endif()
+  endif()
+
   #
   # Generate properties related to library dependencies
   #
-  if( NOT "${acl_TARGET_DEPS}x" STREQUAL "x" )
+  if( DEFINED acl_TARGET_DEPS )
     target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      unset( acl_objlib_TARGET_DEPS )
+      foreach( lib ${acl_TARGET_DEPS} )
+        string( REPLACE "Lib_" "Objlib_" objlib ${lib} )
+        if( TARGET ${objlib} )
+          list(APPEND acl_objlib_TARGET_DEPS ${objlib} )
+        else()
+          list(APPEND acl_objlib_TARGET_DEPS ${lib} )
+        endif()
+      endforeach()
+      # Keep a list of transitive dependencies; returns ${acl_objlib_TARGET}_TARGET_DEPS
+      dbs_objlib_build_dep_list(${acl_objlib_TARGET} "${acl_objlib_TARGET_DEPS}")
+
+      # Create the actual dependency.
+      target_link_libraries( ${acl_objlib_TARGET} ${${acl_objlib_TARGET}_TARGET_DEPS} )
+    else()
+      target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+    endif()
+  endif()
+  if( DEFINED acl_INCLUDE_DIRS )
+    target_include_directories( ${acl_TARGET} ${acl_INCLUDE_DIRS} )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      target_include_directories( ${acl_objlib_TARGET} ${acl_INCLUDE_DIRS} )
+    endif()
   endif()
   if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
     target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )
@@ -342,15 +409,34 @@ macro( add_component_library )
       INTERFACE_INCLUDE_DIRECTORIES "${acl_VENDOR_INCLUDE_DIRS}")
   endif()
 
+  #
+  # Basic install commands for the library or object-library that are common to all Draco packages.
+  #
+  if( acl_NOEXPORT )
+    # if package is marked as NOEXPRT, we do not create an installation instruction.
+  else()
+    if( NOT DEFINED acl_EXPORT_NAME )
+      set(acl_EXPORT_NAME "draco-targets")  # default value.
+    endif()
+    install( TARGETS ${acl_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
+    if(DBS_GENERATE_OBJECT_LIBRARIES)
+      install( TARGETS ${acl_objlib_TARGET} EXPORT ${acl_EXPORT_NAME} DESTINATION ${DBSCFGDIR}lib )
+    endif()
+  endif()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${acl_TARGET}> DESTINATION ${DBSCFGDIR}lib OPTIONAL)
+  endif()
+
 endmacro()
 
-# ------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 # Register_scalar_test()
 #
 # 1. Special treatment for Roadrunner/ppe code (must ssh and then run)
 # 2. Register the test
 # 3. Register the pass/fail criteria.
-# ------------------------------------------------------------
+# 4. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#--------------------------------------------------------------------------------------------------#
 macro( register_scalar_test targetname runcmd command cmd_args )
 
   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
@@ -361,53 +447,73 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   endif()
   add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )
 
-  # Reserve enough threads for application unit tests. Normally we only need 1
-  # core for each scalar test.
+  # Reserve enough threads for application unit tests. Normally we only need 1 core for each scalar
+  # test.
   set( num_procs 1 )
 
   # For application unit tests, a parallel job is forked that needs more cores.
   if( addscalartest_APPLICATION_UNIT_TEST )
     if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
       string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${cmd_args}" )
-      # the forked processes needs $num_proc threads.  add one for the master
-      # thread, the original scalar process.
+      # the forked processes needs $num_proc threads.  add one for the master thread, the original
+      # scalar process.
       math( EXPR num_procs  "${num_procs} + 1" )
     endif()
   endif()
 
   # set pass fail criteria, processors required, etc.
-  set_tests_properties( ${targetname}
-    PROPERTIES
+  set_tests_properties( ${targetname} PROPERTIES
     PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
     PROCESSORS              "${num_procs}"
-    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-    )
+    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"  )
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
+    set_tests_properties( ${targetname} PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
   endif()
   if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
   endif()
 
   # Labels
   # message("LABEL (ast) = ${addscalartest_LABEL}")
   if( NOT "${addscalartest_LABEL}x" STREQUAL "x" )
-    set_tests_properties( ${targetname}
-      PROPERTIES  LABELS "${addscalartest_LABEL}" )
+    set_tests_properties( ${targetname} PROPERTIES LABELS "${addscalartest_LABEL}" )
   endif()
+
+  # If ENABLE_MEMORYCHECK=ON, then also create a memcheck_<test> version
+  if( ENABLE_MEMORYCHECK AND (NOT "${addscalartest_LABEL}" MATCHES "nomemcheck") AND
+      EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" )
+    separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
+    add_test(
+      NAME    memcheck_${targetname}
+      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts} ${RUN_CMD} ${command} ${cmdargs} )
+    set_tests_properties( memcheck_${targetname} PROPERTIES
+      PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+      PROCESSORS              "${num_procs}"
+      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      LABELS                  "memcheck;${addscalartest_LABEL}")
+    if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES RESOURCE_LOCK
+        "${addscalartest_RESOURCE_LOCK}" )
+    endif()
+    if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    endif()
+    unset(valgrindopts)
+  endif()
+
   unset( num_procs )
   unset( lverbose )
 endmacro()
 
-# ------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 # Register_parallel_test()
 #
 # 1. Register the test
 # 2. Register the pass/fail criteria.
-# ------------------------------------------------------------
+# 3. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#--------------------------------------------------------------------------------------------------#
 macro( register_parallel_test targetname numPE command cmd_args )
   set( lverbose OFF )
   if( lverbose )
@@ -422,30 +528,26 @@ macro( register_parallel_test targetname numPE command cmd_args )
       COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${mpiexec_omp_preflags_list}
               ${command}
-              ${cmdarg}
-              )
+              ${cmdarg} )
   else()
     add_test(
       NAME    ${targetname}
       COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${MPIRUN_PREFLAGS}
               ${command}
-              ${cmdarg}
-              )
+              ${cmdarg} )
   endif()
   set_tests_properties( ${targetname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-    )
+    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}" )
   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
     set_tests_properties( ${targetname}
       PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
   endif()
   if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
   endif()
 
   if( addparalleltest_MPI_PLUS_OMP )
@@ -470,20 +572,48 @@ macro( register_parallel_test targetname numPE command cmd_args )
   else()
 
     if( DEFINED addparalleltest_LABEL )
-      set_tests_properties( ${targetname}
-          PROPERTIES LABELS "${addparalleltest_LABEL}" )
+      set_tests_properties( ${targetname} PROPERTIES LABELS "${addparalleltest_LABEL}" )
     endif()
     set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
 
   endif()
-  unset( lverbose )
-endmacro()
 
-#----------------------------------------------------------------------#
+  # ------------------------------------------------------------
+  # If ENABLE_MEMORYCHECK=ON, then also create a memcheck_<test> version
+  if( ENABLE_MEMORYCHECK AND (NOT "${addparalleltest_LABEL}" MATCHES "nomemcheck") AND
+      EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" AND (NOT addparalleltest_MPI_PLUS_OMP ))
+    separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
+    add_test(
+      NAME    memcheck_${targetname}
+      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts}
+              ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+              ${MPIRUN_PREFLAGS}
+              ${command}
+              ${cmdarg} )
+    set_tests_properties( memcheck_${targetname} PROPERTIES
+      PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      LABELS                  "memcheck;${addparalleltest_LABEL}")
+    if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES
+        RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+    endif()
+    if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES
+        DEPENDS "${addparalleltest_RUN_AFTER}" )
+    endif()
+    set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
+    unset(valgrindopts)
+  endif()
+  unset( lverbose )
+endmacro(register_parallel_test)
+
+#--------------------------------------------------------------------------------------------------#
 # add_scalar_tests
 #
-# Given a list of sources, create unit test executables, one exe for
-# each source file.  Register the test to be run by ctest.
+# Given a list of sources, create unit test executables, one exe for each source file.  Register the
+# test to be run by ctest.
 #
 # Usage:
 #
@@ -499,15 +629,13 @@ endmacro()
 # )
 #
 # Options:
-#   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the
-#        test under 'aprun'.  ApplicationUnitTest based tests must be
-#        run this way.  Setting this option when DRACO_C4==SCALAR will
-#        reset any value provided in TEST_ARGS to be "--np scalar".
-#   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler
-#        for the final link of the test.  This is needed for Intel and
-#        PGI.
+#   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the test under 'aprun'.
+#        ApplicationUnitTest based tests must be run this way.  Setting this option when
+#        DRACO_C4==SCALAR will reset any value provided in TEST_ARGS to be "--np scalar".
+#   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler for the final link of the
+#        test.  This is needed for Intel and PGI.
 #
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
 
   # These become variables of the form ${addscalartests_SOURCES}, etc.
@@ -534,29 +662,28 @@ macro( add_scalar_tests test_sources )
   if( NOT addscalartest_LINK_LANGUAGE )
     set( addscalartest_LINK_LANGUAGE CXX )
   endif()
- if( "${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA" )
-   set_source_files_properties( ${addscalartest_SOURCES}
-     PROPERTIES LANGUAGE CUDA )
- endif()
+  if( "${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA" )
+    set_source_files_properties( ${addscalartest_SOURCES} PROPERTIES LANGUAGE CUDA )
+  endif()
 
   # Special Cases:
   # ------------------------------------------------------------
-  # On some platforms (Trinity, Sierra), even scalar tests must be run
-  # underneath MPIEXEC_EXECUTABLE (srun, jsrun, lrun):
+  # On some platforms (Trinity, Sierra), even scalar tests must be run underneath MPIEXEC_EXECUTABLE
+  # (srun, jsrun, lrun):
   separate_arguments(MPIEXEC_PREFLAGS)
   if( "${MPIEXEC_EXECUTABLE}" MATCHES "srun" OR
       "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
-    set( RUN_CMD ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} -n 1 )
+    set( RUN_CMD ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1 )
   else()
     unset( RUN_CMD )
   endif()
 
-  # Special cases for tests that use the ApplicationUnitTest
-  # framework (see c4/ApplicationUnitTest.hh).
+  # Special cases for tests that use the ApplicationUnitTest framework (see
+  # c4/ApplicationUnitTest.hh).
   if( addscalartest_APPLICATION_UNIT_TEST )
-    # If this is an ApplicationUnitTest based test then the TEST_ARGS will look
-    # like "--np 1;--np 2;--np 4".  For the case where DRACO_C4 = SCALAR, we
-    # will automatically demote these arguments to "--np scalar."
+    # If this is an ApplicationUnitTest based test then the TEST_ARGS will look like "--np 1;--np
+    # 2;--np 4".  For the case where DRACO_C4 = SCALAR, we will automatically demote these arguments
+    # to "--np scalar."
     if( "${DRACO_C4}" MATCHES "SCALAR" )
       set( addscalartest_TEST_ARGS "--np scalar" )
     endif()
@@ -575,8 +702,7 @@ macro( add_scalar_tests test_sources )
 
   # Format resource lock command
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set( addscalartest_RESOURCE_LOCK
-      "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
+    set( addscalartest_RESOURCE_LOCK "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
   endif()
 
   # What is the component name (always use Lib_${compname} as a dependency).
@@ -595,28 +721,19 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
     add_executable( Ut_${compname}_${testname}_exe ${file} )
     dbs_std_tgt_props( Ut_${compname}_${testname}_exe )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      OUTPUT_NAME ${testname} )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      VS_KEYWORD  ${testname} )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      FOLDER      ${compname}_test )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"" )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      COMPILE_DEFINITIONS "PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
-    if("${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA")
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-        COMPILE_DEFINITIONS "USE_CUDA=ON" )
-    endif()
-    if( DEFINED DRACO_LINK_OPTIONS AND
-        NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-        LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY OUTPUT_NAME ${testname} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY VS_KEYWORD  ${testname} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY FOLDER ${compname}_test )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY COMPILE_DEFINITIONS
+      "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"" )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY COMPILE_DEFINITIONS
+      "PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
+    if( DEFINED DRACO_LINK_OPTIONS AND NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY LINK_OPTIONS
+        ${DRACO_LINK_OPTIONS} )
     endif()
     if( addscalartest_LINK_WITH_FORTRAN )
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND
-        PROPERTY LINKER_LANGUAGE Fortran )
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY LINKER_LANGUAGE Fortran )
     endif()
     target_link_libraries(
       Ut_${compname}_${testname}_exe
@@ -630,17 +747,19 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-      register_scalar_test( ${compname}_${testname}
-        "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
+      register_scalar_test( ${compname}_${testname} "${RUN_CMD}"
+        $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
     else()
       set( iarg "0" )
       foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
-        register_scalar_test( ${compname}_${testname}_arg${iarg}
-          "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
+        register_scalar_test( ${compname}_${testname}_arg${iarg} "${RUN_CMD}"
+          $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
       endforeach()
     endif()
   endforeach()
+
+  unset(valgrindopts)
 
 endmacro(add_scalar_tests)
 
@@ -835,7 +954,7 @@ macro( add_parallel_tests )
           if( lverbose )
             message("   register_scalar_test( ${compname}_${testname}_arg${iarg}
             \"${RUN_CMD}\" ${testname} \"${cmdarg}\" ) ")
-            endif()
+          endif()
           register_scalar_test( ${compname}_${testname}_arg${iarg}
             "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
         endforeach()
@@ -848,7 +967,7 @@ macro( add_parallel_tests )
   unset( lverbose )
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # provide_aux_files
 #
 # Call this macro from a package CMakeLists.txt to instruct the build system
@@ -886,7 +1005,7 @@ macro( provide_aux_files )
     endif()
     set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
     if( "${file}x" STREQUAL "x" OR "${outfile}x" STREQUAL "x")
-    message( FATAL_ERROR " COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}")
+      message( FATAL_ERROR " COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}")
     endif()
     add_custom_command(
       OUTPUT  ${outfile}
@@ -923,7 +1042,7 @@ targets for copying support files.")
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # PROCESS_AUTODOC_PAGES - Run configure_file(...) for all .dcc.in files found in
 # the autodoc directory.  Destination will be the autodoc directory in the
 # component binary directory.  The CMakeLists.txt in the draco/autodoc directory
@@ -933,7 +1052,7 @@ endmacro()
 # @Draco_VERSION@)
 #
 # E.g.: process_autodoc_pages()
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( process_autodoc_pages )
   file( GLOB autodoc_in autodoc/*.in )
   foreach( file ${autodoc_in} )
@@ -947,15 +1066,15 @@ macro( process_autodoc_pages )
     list( APPEND DOXYGEN_IMAGE_PATH "${PROJECT_SOURCE_DIR}/autodoc" )
   endif()
   set( DOXYGEN_IMAGE_PATH "${DOXYGEN_IMAGE_PATH}" CACHE PATH
-     "List of directories that contain images for doxygen pages." FORCE )
+    "List of directories that contain images for doxygen pages." FORCE )
   unset( images_in )
   unset( num_images )
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # ADD_DIR_IF_EXISTS - A helper macro used for including sub-project directories
 # from src/CMakeLists.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( add_dir_if_exists package )
   if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
     message( "   ${package}" )
@@ -963,6 +1082,6 @@ macro( add_dir_if_exists package )
   endif()
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/component_macros.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

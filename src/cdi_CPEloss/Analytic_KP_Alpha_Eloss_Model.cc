@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_CPEloss/Analytic_KP_Alpha_Eloss_Model.cc
  * \author Kendra P. Long, Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  Analytic_KP_Alpha_Eloss_Model implementation file.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Analytic_KP_Alpha_Eloss_Model.hh"
 #include "ds++/Assert.hh"
@@ -29,8 +29,7 @@ namespace rtt_cdi_cpeloss {
  * \return eloss stopping power in keV shk^-1
  *
  */
-double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
-                                                      const double rho,
+double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T, const double rho,
                                                       const double v) const {
   Require(T >= 0.0);
   Require(rho >= 0.0);
@@ -50,6 +49,6 @@ double Analytic_KP_Alpha_Eloss_Model::calculate_eloss(const double T,
 
 } // namespace rtt_cdi_cpeloss
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_CPEloss/Analytic_KP_Alpha_Eloss_Model.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

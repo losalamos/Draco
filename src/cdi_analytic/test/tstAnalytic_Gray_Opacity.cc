@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/test/tstAnalytic_Gray_Opacity.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_Gray_Opacity test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
 #include "cdi/CDI.hh"
@@ -28,17 +28,16 @@ using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void constant_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
   // model
   const double constant_opacity = 5.0;
 
-  shared_ptr<Analytic_Opacity_Model> model(
-      new Constant_Analytic_Opacity_Model(constant_opacity));
+  shared_ptr<Analytic_Opacity_Model> model(new Constant_Analytic_Opacity_Model(constant_opacity));
 
   Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
 
@@ -82,8 +81,7 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
     T[i] = 0.1 + static_cast<double>(i) / 100.0;
     rho[i] = 1.0 + static_cast<double>(i) / 10.0;
 
-    if (!rtt_dsxx::soft_equiv(grayp->getOpacity(T[i], rho[i]),
-                              constant_opacity))
+    if (!rtt_dsxx::soft_equiv(grayp->getOpacity(T[i], rho[i]), constant_opacity))
       ITFAILS;
   }
 
@@ -99,12 +97,11 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void user_defined_test(rtt_dsxx::UnitTest &ut) {
   // make the user defined Marshak model
-  shared_ptr<Analytic_Opacity_Model> model(
-      new rtt_cdi_analytic_test::Marshak_Model(10.0));
+  shared_ptr<Analytic_Opacity_Model> model(new rtt_cdi_analytic_test::Marshak_Model(10.0));
 
   Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
   GrayOpacity *grayp = &anal_opacity;
@@ -154,7 +151,7 @@ void user_defined_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void CDI_test(rtt_dsxx::UnitTest &ut) {
   // lets make a marshak model gray opacity for scattering and absorption
@@ -164,26 +161,21 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   // lets make two models
   shared_ptr<Analytic_Opacity_Model> amodel(
       new Polynomial_Analytic_Opacity_Model(0.0, 100.0, -3.0, 0.0));
-  shared_ptr<Analytic_Opacity_Model> smodel(
-      new Constant_Analytic_Opacity_Model(1.0));
+  shared_ptr<Analytic_Opacity_Model> smodel(new Constant_Analytic_Opacity_Model(1.0));
 
-  if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0),
-                  100.0 / (2.0 * 2.0 * 2.0)))
+  if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0), 100.0 / (2.0 * 2.0 * 2.0)))
     FAILMSG("FAILED to calculate grey absorption opacity");
   if (!soft_equiv(smodel->calculate_opacity(1.0, 1.0, 1.0), 1.0))
     FAILMSG("FAILED to calculate grey scattering opacity");
 
-  absorption.reset(
-      new const Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION));
-  scattering.reset(
-      new const Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING));
+  absorption = std::make_shared<const Analytic_Gray_Opacity>(amodel, rtt_cdi::ABSORPTION);
+  scattering = std::make_shared<const Analytic_Gray_Opacity>(smodel, rtt_cdi::SCATTERING);
   if (absorption->getDataDescriptor() != "Analytic Gray Absorption")
     ITFAILS;
   if (scattering->getDataDescriptor() != "Analytic Gray Scattering")
     ITFAILS;
   {
-    shared_ptr<const GrayOpacity> total(
-        new const Analytic_Gray_Opacity(smodel, rtt_cdi::TOTAL));
+    shared_ptr<const GrayOpacity> total(new const Analytic_Gray_Opacity(smodel, rtt_cdi::TOTAL));
 
     if (total->getDataDescriptor() != "Analytic Gray Total")
       ITFAILS;
@@ -252,10 +244,8 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
     if (params.size() != expectedValue.size())
       ITFAILS;
 
-    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(),
-                   expectedValue.end(), tol))
-      PASSMSG(
-          "get_parameters() returned the analytic expression coefficients.");
+    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(), expectedValue.end(), tol))
+      PASSMSG("get_parameters() returned the analytic expression coefficients.");
     else
       FAILMSG("get_parameters() did not return the analytic expression "
               "coefficients.");
@@ -263,7 +253,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void packing_test(rtt_dsxx::UnitTest &ut) {
   // test the packing
@@ -315,15 +305,14 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void type_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
   // model
   const double constant_opacity = 5.0;
 
-  shared_ptr<Analytic_Opacity_Model> model(
-      new Constant_Analytic_Opacity_Model(constant_opacity));
+  shared_ptr<Analytic_Opacity_Model> model(new Constant_Analytic_Opacity_Model(constant_opacity));
 
   shared_ptr<GrayOpacity> op(new Analytic_Gray_Opacity(model, rtt_cdi::TOTAL));
   shared_ptr<Analytic_Gray_Opacity> opac;
@@ -341,9 +330,8 @@ void type_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // another way to do this
-  Compound_Analytic_MultigroupOpacity *m =
-      dynamic_cast<Compound_Analytic_MultigroupOpacity *>(&*op);
-  Analytic_Gray_Opacity *o = dynamic_cast<Analytic_Gray_Opacity *>(&*op);
+  auto *m = dynamic_cast<Compound_Analytic_MultigroupOpacity *>(&*op);
+  auto *o = dynamic_cast<Analytic_Gray_Opacity *>(&*op);
 
   if (m)
     ITFAILS;
@@ -353,14 +341,13 @@ void type_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void default_behavior_tests(rtt_dsxx::UnitTest &ut) {
   // make an analytic gray opacity that returns the total opacity for a constant
   // model
   const double constant_opacity = 5.0;
 
-  shared_ptr<Analytic_Opacity_Model> model(
-      new Constant_Analytic_Opacity_Model(constant_opacity));
+  shared_ptr<Analytic_Opacity_Model> model(new Constant_Analytic_Opacity_Model(constant_opacity));
 
   Analytic_Gray_Opacity opac(model, rtt_cdi::TOTAL);
 
@@ -425,7 +412,7 @@ void default_behavior_tests(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -440,6 +427,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAnalytic_Gray_Opacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

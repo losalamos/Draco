@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Lobatto.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
  * \note   Copyright 2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Lobatto.hh"
 #include "gauleg.hh"
@@ -17,7 +17,7 @@ namespace rtt_quadrature {
 using namespace std;
 using rtt_dsxx::to_string;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Require(sn_order > 0 && sn_order % 2 == 0);
 
@@ -52,8 +52,7 @@ Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   // Loop over the desired roots.
   for (size_t iroot = 0; iroot < numHrGaussPoints - 1; ++iroot) {
     // Approximate the i-th root.
-    double z(cos(PI * (static_cast<double>(iroot) - 0.25) /
-                 (static_cast<double>(N - 2) + 0.5)));
+    double z(cos(PI * (static_cast<double>(iroot) - 0.25) / (static_cast<double>(N - 2) + 0.5)));
     double z1;
 
     do // Use Newton's method to refine the value for the i-th root.
@@ -71,8 +70,7 @@ Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
       double const pp1((N + 1) * (z * pn - pnp1) / (1.0 - z * z));
 
       // d2P/dz2 _{N}(z)
-      double const pdp(((N) * (z * pp + pnm1 - pp1) + 2 * z * pp) /
-                       (1.0 - z * z));
+      double const pdp(((N) * (z * pp + pnm1 - pp1) + 2 * z * pp) / (1.0 - z * z));
 
       // Do synthetic division to avoid roots already found
 
@@ -112,32 +110,30 @@ Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Ensure(this->sn_order() == sn_order);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Lobatto::name() const { return "Lobatto"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Lobatto::parse_name() const { return "axial"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 unsigned Lobatto::number_of_levels() const { return sn_order_; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */ string Lobatto::as_text(string const &indent) const {
-  string Result = indent + "type = lobatto" + indent +
-                  "  order = " + to_string(sn_order()) + indent + "end";
+  string Result =
+      indent + "type = lobatto" + indent + "  order = " + to_string(sn_order()) + indent + "end";
 
   return Result;
 }
 
-//----------------------------------------------------------------------------//
-bool Lobatto::check_class_invariants() const {
-  return sn_order() > 0 && sn_order() % 2 == 0;
-}
+//------------------------------------------------------------------------------------------------//
+bool Lobatto::check_class_invariants() const { return sn_order() > 0 && sn_order() % 2 == 0; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate> Lobatto::create_level_ordinates_(double const norm) const {
   // Sanity Checks: none at present
@@ -160,7 +156,7 @@ vector<Ordinate> Lobatto::create_level_ordinates_(double const norm) const {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Lobatto::is_open_interval() const {
   // Lobatto is one of our few closed interval quadratures.
   return false;
@@ -168,6 +164,6 @@ bool Lobatto::is_open_interval() const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Lobatto.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

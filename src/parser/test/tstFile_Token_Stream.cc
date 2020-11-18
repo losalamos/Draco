@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstFile_Token_Stream.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief  Unit tests for File_Token_Stream class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -17,14 +17,13 @@ using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
   // Build path for the input file "scanner_test.inp"
-  string const inputFile(ut.getTestSourcePath() +
-                         std::string("scanner_test.inp"));
+  string const inputFile(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
   {
     File_Token_Stream tokens(inputFile);
@@ -231,8 +230,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING || token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
     if (token.type() != OTHER || token.text() != "@")
@@ -268,7 +266,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
   }
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
 
   {
     try {
@@ -342,8 +340,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
   //-------------------------------------------------------------------------//
   {
     // Build path for the input file "scanner_recovery.inp"
-    string const inputFile2(ut.getTestSourcePath() +
-                            std::string("scanner_recovery.inp"));
+    string const inputFile2(ut.getTestSourcePath() + std::string("scanner_recovery.inp"));
 
     File_Token_Stream tokens;
     tokens.open(inputFile2);
@@ -393,38 +390,31 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   // Test #include directive.
   {
-    File_Token_Stream tokens(ut.getTestSourcePath() +
-                             std::string("parallel_include_test.inp"));
+    File_Token_Stream tokens(ut.getTestSourcePath() + std::string("parallel_include_test.inp"));
 
     Token token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try rewind
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try open of file in middle of include
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
-    tokens.open(ut.getTestSourcePath() +
-                std::string("parallel_include_test.inp"));
+    ut.check(token.text() == "second", "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() + std::string("parallel_include_test.inp"));
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
 
@@ -433,8 +423,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
@@ -446,7 +435,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -456,6 +445,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstFile_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

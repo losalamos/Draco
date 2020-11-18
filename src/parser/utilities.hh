@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/utilities.hh
  * \author Kent G. Budge
@@ -9,7 +9,7 @@
  * This file declares functions that parse certain common constructs in a
  * uniform way.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef parser_utilities_hh
 #define parser_utilities_hh
@@ -41,15 +41,14 @@ bool parse_bool(Token_Stream &);
 
 Unit parse_unit(Token_Stream &);
 
-void parse_vector(Token_Stream &, double[]);
+void parse_vector(Token_Stream &, double *);
 
 //! parser a quote-delimited string, stripping the quotes.
 std::string parse_manifest_string(Token_Stream &tokens);
 
-void parse_geometry(Token_Stream &tokens,
-                    rtt_mesh_element::Geometry &parsed_geometry);
+void parse_geometry(Token_Stream &tokens, rtt_mesh_element::Geometry &parsed_geometry);
 
-void parse_unsigned_vector(Token_Stream &, unsigned[], unsigned);
+void parse_unsigned_vector(Token_Stream &, unsigned *, unsigned);
 void set_internal_unit_system(rtt_units::UnitSystem const &units);
 void set_unit_expressions_are_required(bool);
 rtt_units::UnitSystem const &get_internal_unit_system();
@@ -60,18 +59,16 @@ void free_internal_unit_system();
 double parse_quantity(Token_Stream &tokens, Unit const &unit, char const *name);
 
 //! parse an expression followed by a unit expression.
-std::shared_ptr<Expression>
-parse_quantity(Token_Stream &tokens, Unit const &unit, char const *name,
-               unsigned number_of_variables,
-               std::map<string, pair<unsigned, Unit>> const &);
+std::shared_ptr<Expression> parse_quantity(Token_Stream &tokens, Unit const &unit, char const *name,
+                                           unsigned number_of_variables,
+                                           std::map<string, pair<unsigned, Unit>> const &);
 
 double parse_temperature(Token_Stream &);
 
-std::shared_ptr<Expression>
-parse_temperature(Token_Stream &, unsigned number_of_variables,
-                  std::map<string, pair<unsigned, Unit>> const &);
+std::shared_ptr<Expression> parse_temperature(Token_Stream &, unsigned number_of_variables,
+                                              std::map<string, pair<unsigned, Unit>> const &);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
  * The parse_class template function is intended for general use as a common
@@ -95,14 +92,13 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  * the specification is not valid.
  */
 template <typename Class, typename... Context>
-std::shared_ptr<Class> parse_class(Token_Stream &tokens,
-                                   Context const &... context);
+std::shared_ptr<Class> parse_class(Token_Stream &tokens, Context const &... context);
 
 } // namespace rtt_parser
 
 #endif
 // parser_utilities_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of utilities.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Pseudo_Line_Base.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Pseudo_Line_Base.hh"
 #include "c4/C4_Functions.hh"
@@ -22,12 +22,12 @@ using namespace rtt_ode;
 using namespace rtt_dsxx;
 using namespace rtt_cdi;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef _MSC_VER
 double expm1(double const &x) { return std::exp(x) - 1.0; }
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Pseudo_Line_Base::setup_(double emin, double emax) {
   srand(seed_);
 
@@ -42,8 +42,7 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
   if (number_of_lines > 0) {
     center_.resize(number_of_lines);
     for (int i = 0; i < number_of_lines; ++i) {
-      center_[i] =
-          (emax - emin) * static_cast<double>(rand()) / RAND_MAX + emin;
+      center_[i] = (emax - emin) * static_cast<double>(rand()) / RAND_MAX + emin;
     }
 
     // Sort line centers
@@ -67,8 +66,7 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
     if (nu0_ < 0) {
       size_t N = continuum_table_.size();
       if (N > 0) {
-        C = continuum_table_[static_cast<unsigned int>(
-            edge_[i] * static_cast<double>(N) / emax)];
+        C = continuum_table_[static_cast<unsigned int>(edge_[i] * static_cast<double>(N) / emax)];
       } else {
         C = (*continuum_)(vector<double>(1, edge_[i]));
       }
@@ -83,19 +81,17 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
   sort(edge_.begin(), edge_.end());
 }
 
-//----------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(
-    std::shared_ptr<Expression const> const &continuum, int number_of_lines,
-    double line_peak, double line_width, int number_of_edges, double edge_ratio,
-    double Tref, double Tpow, double emin, double emax, unsigned seed)
-    : continuum_(continuum), continuum_table_(std::vector<double>()),
-      emax_(-1.0), nu0_(-1), // as fast flag
-      C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),
-      number_of_lines_(number_of_lines), line_peak_(line_peak),
-      line_width_(line_width), number_of_edges_(number_of_edges),
-      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
-      center_(std::vector<double>()), edge_(abs(number_of_edges)),
-      edge_factor_(abs(number_of_edges)) {
+//------------------------------------------------------------------------------------------------//
+Pseudo_Line_Base::Pseudo_Line_Base(std::shared_ptr<Expression const> const &continuum,
+                                   int number_of_lines, double line_peak, double line_width,
+                                   int number_of_edges, double edge_ratio, double Tref, double Tpow,
+                                   double emin, double emax, unsigned seed)
+    : continuum_(continuum), continuum_table_(std::vector<double>()), emax_(-1.0),
+      nu0_(-1), // as fast flag
+      C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed), number_of_lines_(number_of_lines),
+      line_peak_(line_peak), line_width_(line_width), number_of_edges_(number_of_edges),
+      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow), center_(std::vector<double>()),
+      edge_(abs(number_of_edges)), edge_factor_(abs(number_of_edges)) {
   Require(continuum != std::shared_ptr<Expression>());
   Require(line_peak >= 0.0);
   Require(line_width >= 0.0);
@@ -107,25 +103,21 @@ Pseudo_Line_Base::Pseudo_Line_Base(
   setup_(emin, emax);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
 //                                    double line_peak, double line_width,
 //                                    int number_of_edges, double edge_ratio,
 //                                    double Tref, double Tpow, double emin,
 //                                    double emax, unsigned seed)
-Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
-                                   double line_peak, double line_width,
-                                   int number_of_edges, double edge_ratio,
-                                   double Tref, double Tpow, double emin,
-                                   double emax, unsigned seed)
-    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
-      nu0_(-1), // as fast flag
-      C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),
-      number_of_lines_(number_of_lines), line_peak_(line_peak),
-      line_width_(line_width), number_of_edges_(number_of_edges),
-      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
-      center_(std::vector<double>()), edge_(abs(number_of_edges)),
-      edge_factor_(abs(number_of_edges)) {
+Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines, double line_peak,
+                                   double line_width, int number_of_edges, double edge_ratio,
+                                   double Tref, double Tpow, double emin, double emax,
+                                   unsigned seed)
+    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax), nu0_(-1), // as fast flag
+      C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed), number_of_lines_(number_of_lines),
+      line_peak_(line_peak), line_width_(line_width), number_of_edges_(number_of_edges),
+      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow), center_(std::vector<double>()),
+      edge_(abs(number_of_edges)), edge_factor_(abs(number_of_edges)) {
   Require(cont_file.size() > 0);
   Require(line_peak >= 0.0);
   Require(line_width >= 0.0);
@@ -149,19 +141,15 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
   setup_(emin, emax);
 }
 
-//----------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
-                                   double R, int number_of_lines,
-                                   double line_peak, double line_width,
-                                   int number_of_edges, double edge_ratio,
-                                   double Tref, double Tpow, double emin,
-                                   double emax, unsigned seed)
-    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax),
-      nu0_(nu0), C_(C), Bn_(Bn), Bd_(Bd), R_(R), seed_(seed),
-      number_of_lines_(number_of_lines), line_peak_(line_peak),
-      line_width_(line_width), number_of_edges_(number_of_edges),
-      edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
-      center_(std::vector<double>()), edge_(abs(number_of_edges)),
+//------------------------------------------------------------------------------------------------//
+Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd, double R,
+                                   int number_of_lines, double line_peak, double line_width,
+                                   int number_of_edges, double edge_ratio, double Tref, double Tpow,
+                                   double emin, double emax, unsigned seed)
+    : continuum_(), continuum_table_(std::vector<double>()), emax_(emax), nu0_(nu0), C_(C), Bn_(Bn),
+      Bd_(Bd), R_(R), seed_(seed), number_of_lines_(number_of_lines), line_peak_(line_peak),
+      line_width_(line_width), number_of_edges_(number_of_edges), edge_ratio_(edge_ratio),
+      Tref_(Tref), Tpow_(Tpow), center_(std::vector<double>()), edge_(abs(number_of_edges)),
       edge_factor_(abs(number_of_edges)) {
   Require(nu0_ > 0.0);
   Require(C_ >= 0.0);
@@ -178,7 +166,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
   setup_(emin, emax);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Packing function for Pseudo_Line_Base objects.
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
@@ -215,7 +203,7 @@ vector<char> Pseudo_Line_Base::pack() const {
 #endif
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
   int const number_of_lines = number_of_lines_;
@@ -226,8 +214,7 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
   if (nu0_ < 0) {
     size_t N = continuum_table_.size();
     if (N > 0) {
-      Result = continuum_table_[static_cast<unsigned int>(
-          x * static_cast<double>(N) / emax_)];
+      Result = continuum_table_[static_cast<unsigned int>(x * static_cast<double>(N) / emax_)];
     } else {
       Result = (*continuum_)(vector<double>(1, x));
     }
@@ -258,8 +245,7 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
     }
   }
   // if the power is ~0, then pow(a,0) == 1.0.
-  if (!rtt_dsxx::soft_equiv(Tpow_, 0.0,
-                            std::numeric_limits<double>::epsilon())) {
+  if (!rtt_dsxx::soft_equiv(Tpow_, 0.0, std::numeric_limits<double>::epsilon())) {
     Result *= pow(T / Tref_, Tpow_);
   }
   return Result;
@@ -267,6 +253,6 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Pseudo_Line_Base.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

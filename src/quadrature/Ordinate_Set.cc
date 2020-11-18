@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Ordinate_Set.hh"
 #include <algorithm>
@@ -20,7 +20,7 @@ using rtt_dsxx::soft_equiv;
 
 // convenience functions to check ordinates
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool check_4(std::vector<Ordinate> const &ordinates) {
   // In 1-D spherical geometry, the ordinates must be confined to the first
   // two octants.
@@ -33,7 +33,7 @@ bool check_4(std::vector<Ordinate> const &ordinates) {
   return true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool check_2(std::vector<Ordinate> const &ordinates) {
   // In 2-D geometry, the ordinates must be confined to the first
   // four octants
@@ -50,7 +50,7 @@ bool check_2(std::vector<Ordinate> const &ordinates) {
 
 namespace rtt_quadrature {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* static */
 bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b) {
   // Note that x==r==mu, z==xi
@@ -70,7 +70,7 @@ bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
   // We initially sort by octant. Only the +++ octant is actually used by
   // PARTISN-type sweepers that assume all quadratures are octant
@@ -96,12 +96,11 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
   } else if (!soft_equiv(fabs(a.eta()), fabs(b.eta()), 1.0e-14)) {
     return (fabs(a.eta()) < fabs(b.eta()));
   } else {
-    return (!soft_equiv(fabs(a.mu()), fabs(b.mu()), 1.0e-14) &&
-            fabs(a.mu()) > fabs(b.mu()));
+    return (!soft_equiv(fabs(a.mu()), fabs(b.mu()), 1.0e-14) && fabs(a.mu()) > fabs(b.mu()));
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Construct an Ordinate_Set.
  *
@@ -118,22 +117,18 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
  * are oriented opposite to the incoming starting direction on each level. *
  * \param ordering Ordering into which to sort the ordinates.
 */
-Ordinate_Set::Ordinate_Set(unsigned const dimension,
-                           rtt_mesh_element::Geometry const geometry,
+Ordinate_Set::Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry const geometry,
                            std::vector<Ordinate> const &ordinates,
                            bool const has_starting_directions,
-                           bool const has_extra_starting_directions,
-                           Ordering const ordering)
-    : geometry_(geometry), dimension_(dimension),
-      has_starting_directions_(has_starting_directions),
-      has_extra_starting_directions_(has_extra_starting_directions),
-      ordering_(ordering), norm_(0.0), ordinates_(ordinates) {
+                           bool const has_extra_starting_directions, Ordering const ordering)
+    : geometry_(geometry), dimension_(dimension), has_starting_directions_(has_starting_directions),
+      has_extra_starting_directions_(has_extra_starting_directions), ordering_(ordering),
+      norm_(0.0), ordinates_(ordinates) {
   Require(dimension >= 1 && dimension <= 3);
   Require(geometry != rtt_mesh_element::AXISYMMETRIC || dimension < 3);
   Require(geometry != rtt_mesh_element::SPHERICAL || dimension < 2);
   Require(has_starting_directions || !has_extra_starting_directions);
-  Require(dimension > 1 || geometry == rtt_mesh_element::SPHERICAL ||
-          check_4(ordinates));
+  Require(dimension > 1 || geometry == rtt_mesh_element::SPHERICAL || check_4(ordinates));
   Require(dimension != 2 || check_2(ordinates));
 
   norm_ = 0.0;
@@ -157,8 +152,7 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension,
 
   Ensure(check_class_invariants());
   Ensure(this->has_starting_directions() == has_starting_directions);
-  Ensure(this->has_extra_starting_directions() ==
-         has_extra_starting_directions);
+  Ensure(this->has_extra_starting_directions() == has_extra_starting_directions);
   Ensure(this->ordering() == ordering);
 }
 
@@ -167,45 +161,38 @@ Ordinate_Set::Ordinate_Set(Ordinate_Set const &other)
     : geometry_(other.geometry()), dimension_(other.dimension()),
       has_starting_directions_(other.has_starting_directions()),
       has_extra_starting_directions_(other.has_extra_starting_directions()),
-      ordering_(other.ordering()), norm_(other.norm()),
-      ordinates_(other.ordinates()) {}
+      ordering_(other.ordering()), norm_(other.norm()), ordinates_(other.ordinates()) {}
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Ordinate_Set::check_class_invariants() const {
   return (dimension_ >= 1 && dimension_ <= 3) &&
          (geometry_ != rtt_mesh_element::AXISYMMETRIC || dimension_ < 3) &&
          (geometry_ != rtt_mesh_element::SPHERICAL || dimension_ < 2) &&
          (has_starting_directions_ || !has_extra_starting_directions_) &&
-         (dimension_ > 1 || geometry_ == rtt_mesh_element::SPHERICAL ||
-          check_4(ordinates_)) &&
+         (dimension_ > 1 || geometry_ == rtt_mesh_element::SPHERICAL || check_4(ordinates_)) &&
          (dimension_ != 2 || check_2(ordinates_));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void Ordinate_Set::display() const {
   using std::cout;
   using std::endl;
   using std::setprecision;
 
   if (dimension() == 1 && geometry() != rtt_mesh_element::AXISYMMETRIC) {
-    cout << endl
-         << "The Quadrature directions and weights are:" << endl
-         << endl;
+    cout << endl << "The Quadrature directions and weights are:" << endl << endl;
     cout << "   m  \t    mu        \t     wt      " << endl;
     cout << "  --- \t------------- \t-------------" << endl;
     double sum_wt = 0.0;
     for (size_t ix = 0; ix < ordinates_.size(); ++ix) {
-      cout << "   " << setprecision(5) << ix << "\t" << setprecision(10)
-           << ordinates_[ix].mu() << "\t" << setprecision(10)
-           << ordinates_[ix].wt() << endl;
+      cout << "   " << setprecision(5) << ix << "\t" << setprecision(10) << ordinates_[ix].mu()
+           << "\t" << setprecision(10) << ordinates_[ix].wt() << endl;
       sum_wt += ordinates_[ix].wt();
     }
     cout << endl << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;
   } else {
-    cout << endl
-         << "The Quadrature directions and weights are:" << endl
-         << endl;
+    cout << endl << "The Quadrature directions and weights are:" << endl << endl;
     cout << "   m  \t    mu        \t    eta       \t    xi        \t     wt   "
             "   "
          << endl;
@@ -214,10 +201,9 @@ void Ordinate_Set::display() const {
          << endl;
     double sum_wt = 0.0;
     for (size_t ix = 0; ix < ordinates_.size(); ++ix) {
-      cout << "   " << ix << "\t" << setprecision(10) << ordinates_[ix].mu()
-           << "\t" << setprecision(10) << ordinates_[ix].eta() << "\t"
-           << setprecision(10) << ordinates_[ix].xi() << "\t"
-           << setprecision(10) << ordinates_[ix].wt() << endl;
+      cout << "   " << ix << "\t" << setprecision(10) << ordinates_[ix].mu() << "\t"
+           << setprecision(10) << ordinates_[ix].eta() << "\t" << setprecision(10)
+           << ordinates_[ix].xi() << "\t" << setprecision(10) << ordinates_[ix].wt() << endl;
       sum_wt += ordinates_[ix].wt();
     }
     cout << endl << "  The sum of the weights is " << sum_wt << endl;
@@ -227,6 +213,6 @@ void Ordinate_Set::display() const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Ordinate_Set.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

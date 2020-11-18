@@ -1,22 +1,22 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/vendor_libraries.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Look for any libraries which are required at the top level.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
-#------------------------------------------------------------------------------#
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 include( FeatureSummary )
 include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Helper macros for Python
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( setupPython )
 
   message( STATUS "Looking for Python...." )
+  # This module looks preferably for version 3 of Python. If not found, version 2 is searched.
   find_package(Python QUIET REQUIRED COMPONENTS Interpreter)
   #  Python_Interpreter_FOUND - Was the Python executable found
   #  Python_EXECUTABLE  - path to the Python interpreter
@@ -31,12 +31,18 @@ macro( setupPython )
   else()
     message( STATUS "Looking for Python....not found" )
   endif()
+  # As of 2020-11-10, we require 'python@3.6:' for correct dictionary sorting features.  We can
+  # build the code with 'python@2:' but some tests may fail.
+  if( Python_VERSION_MAJOR STREQUAL "3" AND Python_VERSION_MINOR VERSION_LESS "6")
+    message( FATAL_ERROR "When using python3, we require version 3.6+.  Python version "
+      "${Python_VERSION} was discovered, which doesn't satisfy the compatibility requirement.")
+  endif()
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Helper macros for Random123
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( setupRandom123 )
 
  message( STATUS "Looking for Random123...")
@@ -501,6 +507,22 @@ macro( setupLIBQUO )
 
 endmacro()
 
+#------------------------------------------------------------------------------
+# Setup Caliper (https://github.com/LLNL/Caliper)
+#------------------------------------------------------------------------------
+macro( setupCaliper)
+
+  if( NOT TARGET CALIPER::caliper )
+    message( STATUS "Looking for Caliper...")
+    find_package( Caliper QUIET )
+    if(CALIPER_FOUND)
+      message(STATUS "Looking for Caliper...${CALIPER_LIBRARY}")
+    else()
+      message(STATUS "Looking for Caliper...not found")
+    endif()
+  endif()
+
+endmacro()
 
 #------------------------------------------------------------------------------
 # Setup Eospac (https://laws.lanl.gov/projects/data/eos.html)
@@ -597,6 +619,7 @@ macro( SetupVendorLibrariesUnix )
   setupPython()
   setupQt()
   setupLIBQUO()
+  setupCaliper()
 
   # Grace ------------------------------------------------------------------
   message( STATUS "Looking for Grace...")
@@ -614,7 +637,7 @@ macro( SetupVendorLibrariesUnix )
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
-  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen )
   set_package_properties( Doxygen PROPERTIES
     URL "http://www.stack.nl/~dimitri/doxygen"
     DESCRIPTION "Doxygen autodoc generator"
@@ -646,7 +669,7 @@ macro( SetupVendorLibrariesWindows )
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
-  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen )
   set_package_properties( Doxygen PROPERTIES
     URL "http://www.stack.nl/~dimitri/doxygen"
     DESCRIPTION "Doxygen autodoc generator"
@@ -786,7 +809,6 @@ Looking for Draco...\")
 
   # CMake macros that check the system for features like 'gethostname', etc.
   include( platform_checks )
-  query_craype()
 
   # Set compiler options
   include( compilerEnv )

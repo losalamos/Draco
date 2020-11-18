@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/Draco_Mesh_Builder.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
@@ -6,7 +6,7 @@
  * \brief  Draco_Mesh_Builder class header file.
  * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_Draco_Mesh_Builder_hh
 #define rtt_mesh_Draco_Mesh_Builder_hh
@@ -19,7 +19,7 @@ namespace rtt_mesh {
 // Forward declare mesh class
 class Draco_Mesh;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Draco_Mesh_Builder
  *
@@ -30,7 +30,7 @@ class Draco_Mesh;
  * of accessors.  In particular the reader must supply some functions in the
  * RTT_Format_Reader class.
  */
-//============================================================================//
+//================================================================================================//
 
 template <typename FRT> class Draco_Mesh_Builder {
 private:
@@ -41,18 +41,17 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
+  explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh std::shared_ptr<Draco_Mesh>
-  build_mesh(rtt_mesh_element::Geometry geometry);
+  std::shared_ptr<Draco_Mesh> build_mesh(rtt_mesh_element::Geometry geometry);
 };
 
 } // end namespace rtt_mesh
 
 #endif // rtt_mesh_Draco_Mesh_Builder_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh_Builder.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

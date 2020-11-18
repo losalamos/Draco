@@ -1,12 +1,11 @@
-!----------------------------------*-F90-*----------------------------------
+!---------------------------------------------*-F90-*---------------------------------------------!
 !
 ! file   FortranCheck/f90sub/drel.f90
 ! author Kelly Thompson
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 main linking against C++ library and calling a C++ function.
-! note   Copyright (c) 2016-2020 Triad National Security, LLC.
-!        All rights reserved.
-!---------------------------------------------------------------------------
+! note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
+!-------------------------------------------------------------------------------------------------!
 
 ! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 !      http://fortranwiki.org/fortran/show/Generating+C+Interfaces
@@ -95,9 +94,9 @@ subroutine drelf90(nf) bind(c, name="drelf90")
      nf = nf + 1
   endif
   ! note: integers must be signed in F90 (i.e.: we cannot use Z'DEADBEEF')
-  idata = Z'00112233'
+  idata = 1122867 ! 1122867 = z'00112233'
   call dsxx_byte_swap(idata)
-  if( idata /= Z'33221100' )then
+  if( idata /=  857870592 )then ! 857870592 = z'33221100'
      print '(a)', "Test: failed"
      print '(a)', "     dsxx_byte_swap(int) returned an unexpected value."
      nf = nf+1
@@ -134,6 +133,6 @@ subroutine drelf90(nf) bind(c, name="drelf90")
 
 end subroutine drelf90
 
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!
 ! end of drel.f90
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved.  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_quadrature_Ordinate_hh
 #define rtt_quadrature_Ordinate_hh
@@ -16,7 +16,7 @@
 
 namespace rtt_quadrature {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Ordinate 
  * \brief Class containing angle cosines and weights for an
@@ -28,7 +28,7 @@ namespace rtt_quadrature {
  * but the ordinates must satisfy certain invariants that are protected by the
  * class representation.
  */
-//============================================================================//
+//================================================================================================//
 
 class Ordinate {
 public:
@@ -45,8 +45,7 @@ public:
   }
 
   //! Construct a 1D Ordinate from the specified angle and weight.
-  inline Ordinate(double const mu, double const wt)
-      : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt) {
+  inline Ordinate(double const mu, double const wt) : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt) {
     Require(mu >= -1.0 && mu <= 1.0);
   }
 
@@ -81,19 +80,17 @@ private:
   double wt_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b) {
-  return rtt_dsxx::soft_equiv(a.mu(), b.mu()) &&
-         rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
-         rtt_dsxx::soft_equiv(a.xi(), b.xi()) &&
-         rtt_dsxx::soft_equiv(a.wt(), b.wt());
+  return rtt_dsxx::soft_equiv(a.mu(), b.mu()) && rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
+         rtt_dsxx::soft_equiv(a.xi(), b.xi()) && rtt_dsxx::soft_equiv(a.wt(), b.wt());
 }
 
 } // end namespace rtt_quadrature
 
 #endif // rtt_quadrature_Ordinate_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Ordinate.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,21 +1,19 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellFlags.cc
  * \author B.T. Adams
  * \date   Mon Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellFlags class
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "CellFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the cell_flags data block of the mesh file via calls to private
- *        member functions.
+ * \brief Parses the cell_flags data block of the mesh file via calls to private member functions.
  * \param meshfile Mesh file name.
  */
 void CellFlags::readCellFlags(ifstream &meshfile) {
@@ -24,7 +22,7 @@ void CellFlags::readCellFlags(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -33,12 +31,11 @@ void CellFlags::readKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "cell_flags",
-         "Invalid mesh file: cell_flags block missing");
+  Insist(dummyString == "cell_flags", "Invalid mesh file: cell_flags block missing");
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block data.
  * \param meshfile Mesh file name.
@@ -47,21 +44,19 @@ void CellFlags::readFlagTypes(ifstream &meshfile) {
   int flagTypeNum;
   string dummyString;
 
-  for (size_t i = 0; i < static_cast<size_t>(dims.get_ncell_flag_types());
-       ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(dims.get_ncell_flag_types()); ++i) {
     meshfile >> flagTypeNum >> dummyString;
     Insist(static_cast<size_t>(flagTypeNum) == i + 1,
            "Invalid mesh file: cell flag type out of order");
     Check(i < flagTypes.size());
     Check(i < INT_MAX);
-    flagTypes[i].reset(
-        new Flags(dims.get_ncell_flags(static_cast<int>(i)), dummyString));
+    flagTypes[i].reset(new Flags(dims.get_ncell_flags(static_cast<int>(i)), dummyString));
     std::getline(meshfile, dummyString);
     flagTypes[i]->readFlags(meshfile);
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -70,15 +65,13 @@ void CellFlags::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_cell_flags",
-         "Invalid mesh file: cell_flags block missing end");
+  Insist(dummyString == "end_cell_flags", "Invalid mesh file: cell_flags block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Returns the index to the cell flag type that contains the specified
- *        string.
+ * \brief Returns the index to the cell flag type that contains the specified string.
  * \param desired_flag_type Flag type.
  * \return The cell flag type index.
  */
@@ -96,6 +89,6 @@ int CellFlags::get_flag_type_index(string &desired_flag_type) const {
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/CellFlags.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstParallel_File_Token_Stream.cc
  * \author Kent Budge
  * \date   Fri Apr  4 09:34:28 2003
  * \brief  Unit tests for class Parallel_File_Token_Stream
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ *         All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -19,16 +16,15 @@
 
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
   using namespace rtt_parser;
 
   // Build path for the input file "scanner_test.inp"
-  string const inputFile(ut.getTestSourcePath() +
-                         std::string("scanner_test.inp"));
+  string const inputFile(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
   {
     Parallel_File_Token_Stream tokens(inputFile);
@@ -113,137 +109,105 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     }
     FAIL_IF_NOT(caught);
 
-    if (tokens.error_count() != 1)
-      ITFAILS;
+    FAIL_IF(tokens.error_count() != 1);
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "COLOR")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "COLOR");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "=")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "=");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "BLACK")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "BLACK");
 
     token = tokens.shift();
-    if (token.type() != END)
-      ITFAILS;
+    FAIL_IF(token.type() != END);
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "-")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "-");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != ".563e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != ".563e+3");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != ".")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != ".");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "-")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "-");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.563")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.563");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1.e3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1.e3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1e+3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1e+3");
 
     token = tokens.shift();
-    if (token.type() != REAL || token.text() != "1e3")
-      ITFAILS;
+    FAIL_IF(token.type() != REAL || token.text() != "1e3");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "19090")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "19090");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "01723")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "01723");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0x1111a")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0x1111a");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "8123")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "8123");
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest string\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING || token.text() != "\"manifest string\"");
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING || token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
-    if (token.type() != OTHER || token.text() != "@")
-      ITFAILS;
+    FAIL_IF(token.type() != OTHER || token.text() != "@");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "1")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "1");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "e")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "e");
 
     token = tokens.shift();
-    if (token.type() != INTEGER || token.text() != "0")
-      ITFAILS;
+    FAIL_IF(token.type() != INTEGER || token.text() != "0");
 
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "x")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "x");
 
     token = tokens.shift();
-    if (token.type() != EXIT)
-      ITFAILS;
+    FAIL_IF(token.type() != EXIT);
+
     token = tokens.shift();
-    if (token.type() != EXIT)
-      ITFAILS;
+    FAIL_IF(token.type() != EXIT);
 
     tokens.rewind();
     token = tokens.lookahead();
     token = tokens.shift();
-    if (token.type() != KEYWORD || token.text() != "BLUE")
-      ITFAILS;
+    FAIL_IF(token.type() != KEYWORD || token.text() != "BLUE");
 
     // Check invariance even when --with-dbc=0.
-    if (!tokens.check_class_invariants())
-      ITFAILS;
+    FAIL_IF(!tokens.check_class_invariants());
   }
 
   {
@@ -251,10 +215,9 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       Parallel_File_Token_Stream tokens("no such file");
       // The preceeding file does not exist.
       ostringstream errmsg;
-      errmsg
-          << "Parallel_File_Token_Stream did not throw an expected exception.\n"
-          << "\tThe constructor should throw an exception if the requested\n"
-          << "\tfile can not be opened." << endl;
+      errmsg << "Parallel_File_Token_Stream did not throw an expected exception.\n"
+             << "\tThe constructor should throw an exception if the requested\n"
+             << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
       // Token token = tokens.shift();
       // if (token.type()!=ERROR) ITFAILS;
@@ -274,8 +237,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   {
     // Build path for the input file "scanner_test.inp"
-    string const inputFile2(ut.getTestSourcePath() +
-                            std::string("scanner_recovery.inp"));
+    string const inputFile2(ut.getTestSourcePath() + std::string("scanner_recovery.inp"));
 
     Parallel_File_Token_Stream tokens(inputFile2);
     bool exception = false;
@@ -299,8 +261,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     // Try reopening
-    string const inputFile3(ut.getTestSourcePath() +
-                            std::string("scanner_test.inp"));
+    string const inputFile3(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
     tokens.open(inputFile3);
 
@@ -314,8 +275,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   {
     // Test default constructor
-    string const inputFile3(ut.getTestSourcePath() +
-                            std::string("scanner_test.inp"));
+    string const inputFile3(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
     Parallel_File_Token_Stream tokens;
     tokens.open(inputFile3);
@@ -336,32 +296,26 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     Token token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try rewind
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "topmost2",
-             "parse top file after include sequence");
+    ut.check(token.text() == "topmost2", "parse top file after include sequence");
 
     // Try open of file in middle of include
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
-    tokens.open(ut.getTestSourcePath() +
-                std::string("parallel_include_test.inp"));
+    ut.check(token.text() == "second", "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() + std::string("parallel_include_test.inp"));
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
 
@@ -370,8 +324,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
     token = tokens.shift();
-    ut.check(token.text() == "second",
-             "parse included file in include sequence");
+    ut.check(token.text() == "second", "parse included file in include sequence");
     tokens.rewind();
     token = tokens.shift();
     ut.check(token.text() == "topmost", "parse top file in include sequence");
@@ -382,8 +335,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
-
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -392,6 +344,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstParallel_File_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

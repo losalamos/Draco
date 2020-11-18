@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   diagnostics/Timing.hh
  * \author T.M. Kelly, Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class and macros definition.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef diagnostics_Timing_hh
 #define diagnostics_Timing_hh
@@ -19,14 +18,13 @@
 
 namespace rtt_diagnostics {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Timing_Diagnostics
  * \brief Class to hold timing results for diagnostic output.
  *
- * This class provides a simple interface to store timing data during a
- * simulation.  Generally, one adds a timer label and value using the
- * update_timer() function:
+ * This class provides a simple interface to store timing data during a simulation.  Generally, one
+ * adds a timer label and value using the update_timer() function:
  * \code
  *   // start a timer
  *   ...
@@ -35,27 +33,25 @@ namespace rtt_diagnostics {
  *   // stop timer
  *   rtt_diagnostics::Timing_Diagnostics::update_timer("Solver", time);
  * \endcode
- * There is no need to "add" the timer entry for "Solver" before an update.
- * If the key "Solver" does not exist it is added with value 0.0 before
- * applying the value.
+ * There is no need to "add" the timer entry for "Solver" before an update.  If the key "Solver"
+ * does not exist it is added with value 0.0 before applying the value.
  *
  * The easiest way to use this class is through the TIMER macros.
- */
-/*!
+ *
  * \example diagnostics/test/tstTiming.cc
  */
-//============================================================================//
+//================================================================================================//
 
-class DLL_PUBLIC_diagnostics Timing_Diagnostics {
+class Timing_Diagnostics {
 public:
   // Useful typedef.
-  typedef std::vector<std::string> Vec_Keys;
+  using Vec_Keys = std::vector<std::string>;
 
 private:
   // >>> PRIVATE DATA MEMBERS
 
   //! Map of timers.
-  static std::map<std::string, double> timers;
+  DLL_PUBLIC_diagnostics static std::map<std::string, double> timers;
 
 public:
   // >>> FUNCTIONAL INTERFACE
@@ -84,29 +80,30 @@ public:
   // Delete all timers from the map of timers.
   static void delete_timers();
 
-private:
   // >>> IMPLEMENTATION
 
-  // This class is never constructed.
-  Timing_Diagnostics();
+  // Disable default ctor
+  Timing_Diagnostics() = delete;
 
-  // This class is also never destructed.
-  ~Timing_Diagnostics();
+  // Disable default dtor
+  ~Timing_Diagnostics() = delete;
 };
 
 } // end namespace rtt_diagnostics
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \page diagnostics_timing Macros for timing
  *
- * Four macros are defined here; these macros insert timer calls into code if
- * a global definition, DRACO_TIMING, is greater then 0.  The default value is
- * to set DRACO_TIMING == 0. They use the draco rtt_c4::Timer and
- * rtt_diagnostics::Timing_Diagnostics classes.
+ * Four macros are defined here; these macros insert timer calls into code if a global definition,
+ * \c DRACO_TIMING, is greater then 0.  The default value is to set DRACO_TIMING == 0. They use the
+ * draco rtt_c4::Timer and rtt_diagnostics::Timing_Diagnostics classes.
  *
- * The build system sets DRACO_TIMING through the configure option \c
- * --with-clubimc-timing.  The following settings apply:
+ * As of June 2020, the macros can be implemented in two different ways. One may use the Caliper
+ * library if that is found through the Draco build system; or one may continue to use the Draco
+ * timing diagnostics. The Caliper approach will probably be more useful in the long term.
+ *
+ * The build system sets DRACO_TIMING. The following settings apply:
  * - 0 turns off all TIMER macros
  * - 1 turns on TIMER, TIMER_START, TIMER_STOP, and TIMER_RECORD
  * - 2 turns on all TIMER macros (include TIMER_REPORT)
@@ -118,11 +115,11 @@ private:
  * #include "diagnostics/Timing.hh"
  *
  * TIMER( foo);
- * TIMER_START( foo);
+ * TIMER_START("Snippet", foo);
  * // ...
  * // code interval to time
  * // ...
- * TIMER_STOP( foo);
+ * TIMER_STOP("Snippet", foo);
  * TIMER_RECORD( "Snippet", foo);
  * TIMER_REPORT( foo, std::cout, "interval 42");
  * \endcode
@@ -130,8 +127,7 @@ private:
  * \verbatim
  *   somefile.cc ###: interval 42 elapsed wall_clock: ## seconds; elapsed user_time: ## seconds; elapsed sys_time ## seconds.\n
  * \endverbatim
- * The key "Snippet" can be used to access the stored time through the
- * Timer_Diagnostics class:
+ * The key "Snippet" can be used to access the stored time through the Timer_Diagnostics class:
  * \code
  * #ifdef DRACO_TIMING_ON
  *   vector<string> keys = Timing_Diagnostics::timer_keys();
@@ -146,7 +142,7 @@ private:
  */
 
 /*!
- * \def TIMER( timer_name)
+ * \def TIMER(timer_name)
  *
  * If DRACO_TIMING_ON is defined, TIMER( timer_name) expands to:
  * \code
@@ -156,40 +152,61 @@ private:
  */
 
 /*!
- * \def TIMER_START( timer_name)
+ * \def TIMER_START(segment_name, timer_name)
  *
- * If DRACO_TIMING > 0 TIMER_START( timer_name) expands to:
+ * If DRACO_TIMING > 0 and DRACO_CALIPER is false. TIMER_START(segment_name, timer_name) expands to:
  * \code
  *     timer_name.start()
  * \endcode
- * Otherwise it is empty.
+ * 
+ * (Note that the segment_name is ignored.) If DRACO_TIMING > 0 and DRACO_CALIPER is true, then
+ * TIMER_START(segment_name, timer_name) expands to:
+ * 
+ * \code
+ *     CALI_MARK_BEGIN(segment_name)
+ * \endcode
+ * (Note that the timer_name is ignored.). Otherwise the macro expansion is empty.
  */
 
 /*!
- * \def TIMER_STOP( timer_name)
+ * \def TIMER_STOP(segment_name, timer_name)
  *
- * If DRACO_TIMING_ON > 0, TIMER_STOP( timer_name) expands to:
+ * If DRACO_TIMING_ON > 0, and DRACO_CALIPER is false, then TIMER_STOP(segment_name, timer_name)
+ * expands to:
+ * 
  * \code
  *     timer_name.stop()
  * \endcode
- * Otherwise it is empty.
+ * 
+ * (Note that the segment_name is ignored.) If DRACO_TIMING > 0 and DRACO_CALIPER is true, then
+ * TIMER_STOP(segment_name, timer_name) expands to:
+ * 
+ * \code
+ *     CALI_MARK_END(segment_name)
+ * \endcode
+ * 
+ * (Note that the timer_name is ignored.). Otherwise the macro expansion is empty. Otherwise it is
+ * empty.
  */
 
 /*!
  * \def TIMER_RECORD( name, timer)
  *
- * If DRACO_TIMING_ON > 0, TIMER_RECORD( name, timer) expands to:
+ * If DRACO_TIMING_ON > 0, and DRACO_CALIPER is false TIMER_RECORD( name, timer) expands to:
+ * 
  * \code
  *     rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
  * \endcode
+ * 
  * Otherwise it is empty.
  */
 
 /*!
  * \def TIMER_REPORT( timer_name, ostream, comment)
  *
- * If DRACO_TIMING > 1, TIMER_REPORT( timer_name, ostream,
- * comment) expands to:
+ * If DRACO_TIMING > 1, , and DRACO_CALIPER is false TIMER_REPORT( timer_name, ostream, comment)
+ * expands to:
+ * 
  * \code
  *     ostream << __FILE__ << " " << __LINE__ << ": " << comment      \
  *             << " elapsed wall_clock: " << timer.wall_clock()       \
@@ -197,17 +214,18 @@ private:
  *             << " seconds; elapsed sys_time: " << timer.system_cpu()\
  *             << " seconds.\n" << flush
  * \endcode
- * Otherwise it is empty. The flush ensures that regression tests
- * continue to pass (otherwise, in parallel runs, output may arrive "out of
- * order" and trample the output that the regression tests look for).
+ * 
+ * Otherwise it is empty. The flush ensures that regression tests continue to pass (otherwise, in
+ * parallel runs, output may arrive "out of order" and trample the output that the regression tests
+ * look for).
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #if !defined(DRACO_TIMING)
 #define DRACO_TIMING 0
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * All timing operations are inactive.
  */
@@ -215,9 +233,9 @@ private:
 
 #define TIMER(timer)
 
-#define TIMER_START(timer)
+#define TIMER_START(name, timer)
 
-#define TIMER_STOP(timer)
+#define TIMER_STOP(name, timer)
 
 #define TIMER_RECORD(name, timer)
 
@@ -225,7 +243,8 @@ private:
 
 #endif
 
-//----------------------------------------------------------------------------//
+#ifndef DRACO_CALIPER
+//------------------------------------------------------------------------------------------------//
 /*
  * Turn on basic timing operations.
  */
@@ -237,38 +256,60 @@ private:
 
 #define TIMER(timer) rtt_c4::Timer timer
 
-#define TIMER_START(timer) timer.start()
+#define TIMER_START(name, timer) timer.start()
 
-#define TIMER_STOP(timer) timer.stop()
+#define TIMER_STOP(name, timer) timer.stop()
 
-#define TIMER_RECORD(name, timer)                                              \
+#define TIMER_RECORD(name, timer)                                                                  \
   rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
 
-#endif
+#endif // DRACO_TIMING > 0
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Turn on timing report output.  This is an add-on option to the basic timing
  * operations.
  */
 #if DRACO_TIMING > 1
 
-#define TIMER_REPORT(timer, ostream, comment)                                  \
-  ostream << __FILE__ << " " << __LINE__ << ": " << comment                    \
-          << " elapsed wall_clock: " << timer.wall_clock()                     \
-          << " seconds; elapsed user_time: " << timer.user_cpu()               \
-          << " seconds; elapsed sys_time: " << timer.system_cpu()              \
-          << " seconds.\n"                                                     \
+#define TIMER_REPORT(timer, ostream, comment)                                                      \
+  ostream << __FILE__ << " " << __LINE__ << ": " << comment                                        \
+          << " elapsed wall_clock: " << timer.wall_clock()                                         \
+          << " seconds; elapsed user_time: " << timer.user_cpu()                                   \
+          << " seconds; elapsed sys_time: " << timer.system_cpu() << " seconds.\n"                 \
           << std::flush
 
-#else
+#else // DRACO_TIMING > 1
 
 #define TIMER_REPORT(timer, ostream, comment)
 
-#endif
+#endif // DRACO_TIMING > 1
+
+#else // Caliper is available
+#include <caliper/cali.h>
+
+#if DRACO_TIMING > 0
+
+#include "c4/Timer.hh"
+
+#define DRACO_TIMING_ON
+
+#define TIMER(timer)
+
+#define TIMER_START(name, timer) CALI_MARK_BEGIN(name)
+
+#define TIMER_STOP(name, timer) CALI_MARK_END(name)
+
+#define TIMER_RECORD(name, timer)
+
+#define TIMER_REPORT(timer, ostream, comment)
+
+#endif // DRACO_TIMING > 0
+
+#endif // DRACO_CALIPER
 
 #endif // diagnostics_Timing_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //  end of diagnostics/Timing.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

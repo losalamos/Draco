@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstGatherScatter.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Test c4::gather and c4::scatter functions
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/gatherv.hh"
@@ -19,9 +19,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstAllgather(UnitTest &ut) {
   int mypid = rtt_c4::node();
@@ -45,7 +45,7 @@ void tstAllgather(UnitTest &ut) {
     FAILMSG("status is NOT okay from allgather");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstDeterminateGatherScatter(UnitTest &ut) {
   unsigned pid = node();
   unsigned const number_of_processors = nodes();
@@ -73,14 +73,13 @@ void tstDeterminateGatherScatter(UnitTest &ut) {
     gather(&c, &vc[0], 1);
 
     if (pid == 0)
-      FAIL_IF_NOT(
-          std::equal(vc.begin(), vc.end(), alphabet.begin(), alphabet.end()));
+      FAIL_IF_NOT(std::equal(vc.begin(), vc.end(), alphabet.begin(), alphabet.end()));
   }
 
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstIndeterminateGatherScatterv(UnitTest &ut) {
   unsigned const pid = node();
   unsigned const number_of_processors = nodes();
@@ -205,8 +204,7 @@ void tstIndeterminateGatherScatterv(UnitTest &ut) {
     vector<vector<unsigned>> emptyreceive;
 
     indeterminate_gatherv(emptysend, emptyreceive);
-    PASSMSG(
-        "No exception thrown for indeterminate_gatherv with empty containers.");
+    PASSMSG("No exception thrown for indeterminate_gatherv with empty containers.");
 
     if (emptysend.size() != 0)
       ITFAILS;
@@ -228,7 +226,7 @@ void tstIndeterminateGatherScatterv(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstDeterminateGatherScatterv(UnitTest &ut) {
   unsigned const pid = node();
   unsigned const number_of_processors = nodes();
@@ -395,7 +393,7 @@ void tstDeterminateGatherScatterv(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void topology_report(UnitTest &ut) {
   size_t const mpi_ranks = rtt_c4::nodes();
   size_t const my_mpi_rank = rtt_c4::node();
@@ -457,8 +455,7 @@ void topology_report(UnitTest &ut) {
 
     std::cout << "\nMPI ranks per node:";
     for (size_t j = 0; j < unique_processor_names.size(); ++j) {
-      std::cout << "\n  - Node " << j << " (" << unique_processor_names[j]
-                << "): ";
+      std::cout << "\n  - Node " << j << " (" << unique_processor_names[j] << "): ";
       for (auto const i : map_proc_to_ranks[j])
         std::cout << map_proc_to_ranks[j][i] << ",";
     }
@@ -467,7 +464,7 @@ void topology_report(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
@@ -480,6 +477,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstGatherScatter.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

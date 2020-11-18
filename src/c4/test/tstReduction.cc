@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstReduction.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  C4 Reduction test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -23,9 +23,9 @@ using rtt_c4::global_sum;
 using rtt_c4::prefix_sum;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   // test ints with blocking and non-blocking sums
@@ -48,8 +48,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   if (xint_recv != int_answer)
     ITFAILS;
   if (!rtt_c4::node())
-    cout << "int: Global non-blocking sum: " << xint_recv
-         << " answer: " << int_answer << endl;
+    cout << "int: Global non-blocking sum: " << xint_recv << " answer: " << int_answer << endl;
 
   // Test with deprecated form of global_sum
   xint = rtt_c4::node() + 1;
@@ -62,12 +61,10 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   int64_t const ten_billion(10000000000L); // 1e10 > MAX_INT
   int32_t const one_billion(1000000000L);  // 1e9 < MAX_INT
 
-  long xlong =
-      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
+  long xlong = rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   global_sum(xlong);
 
-  long xlong_send =
-      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
+  long xlong_send = rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   long xlong_recv = 0;
   C4_Req long_request;
   global_isum(xlong_send, xlong_recv, long_request);
@@ -275,8 +272,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     xld = 0.7l + static_cast<long double>(rtt_c4::node());
     global_max(xld);
 
-    FAIL_IF_NOT(
-        soft_equiv(xld, static_cast<long double>(rtt_c4::nodes()) - 0.3l));
+    FAIL_IF_NOT(soft_equiv(xld, static_cast<long double>(rtt_c4::nodes()) - 0.3l));
   }
 
   { // T = int
@@ -636,7 +632,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void array_reduction(rtt_dsxx::UnitTest &ut) {
   {
     // make a vector of doubles
@@ -711,18 +707,15 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 
       c = x;
       global_prod(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), prod.begin(), prod.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), prod.begin(), prod.end(), eps));
 
       c = x;
       global_min(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end(), eps));
 
       c = x;
       global_max(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
   { // T = long double
@@ -755,18 +748,15 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 
       c = x;
       global_prod(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), prod.begin(), prod.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), prod.begin(), prod.end(), eps));
 
       c = x;
       global_min(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end(), eps));
 
       c = x;
       global_max(&c[0], 100);
-      FAIL_IF_NOT(
-          soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
   { // T = int
@@ -1113,7 +1103,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // Calculate prefix sums on rank ID with MPI call and by hand and compare the
@@ -1169,6 +1159,21 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   if (xlong_prefix_sum != long_answer)
     ITFAILS;
+
+  // test long long
+  long long xllong = rtt_c4::node() + 1000l;
+  long long xllong_prefix_sum = prefix_sum(xllong);
+
+  long long llong_answer = 0;
+  for (auto i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      llong_answer += i + 1000l;
+  }
+
+  std::cout << "long long: Prefix sum on this node: " << xllong_prefix_sum;
+  std::cout << " Answer: " << llong_answer << std::endl;
+
+  FAIL_IF_NOT(xllong_prefix_sum == llong_answer);
 
   // test unsigned longs (start at max of unsigned int)
   uint64_t xulong = rtt_c4::node();
@@ -1226,7 +1231,7 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // Calculate prefix sums on rank ID with MPI call and by hand and compare the
@@ -1261,7 +1266,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // handled correctly in the calls)
   vector<uint32_t> xuint(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xuint[i] = std::numeric_limits<int>::max() + rtt_c4::node() * 10 + i;
+    xuint[i] = static_cast<uint32_t>(std::numeric_limits<int>::max()) + rtt_c4::node() * 10 + i;
 
   prefix_sum(&xuint[0], array_size);
 
@@ -1269,7 +1274,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        uint_answer[i] += std::numeric_limits<int>::max() + r * 10 + i;
+        uint_answer[i] += static_cast<uint32_t>(std::numeric_limits<int>::max()) + r * 10 + i;
     }
   }
 
@@ -1307,7 +1312,8 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // types are handled correctly in the calls)
   vector<uint64_t> xulong(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xulong[i] = std::numeric_limits<int64_t>::max() + rtt_c4::node() * 10 + i;
+    xulong[i] =
+        static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + rtt_c4::node() * 10 + i;
 
   prefix_sum(&xulong[0], array_size);
 
@@ -1315,7 +1321,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        ulong_answer[i] += std::numeric_limits<int64_t>::max() + r * 10 + i;
+        ulong_answer[i] += static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + r * 10 + i;
     }
   }
 
@@ -1378,7 +1384,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1390,6 +1396,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstReduction.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

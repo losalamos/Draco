@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   plot2D/test/tstPlot2D.cc
  * \author Rob Lowrie
  * \brief  Plot2D test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
@@ -32,9 +32,9 @@ void tstPlot2D(const bool batch);
 int main(int argc, char *argv[]);
 bool pass(true);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper function
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 namespace test {
 
 void pause() {
@@ -43,9 +43,9 @@ void pause() {
 }
 } // namespace test
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // The main test
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstPlot2D(const bool batch) {
   string paramFile("tstPlot2D.par");
 
@@ -157,7 +157,7 @@ void tstPlot2D(const bool batch) {
   p.save("plot4.agr");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Compare the generated plot file to gold standard.
  *
  * Note: The XM Grace plot file has this format:
@@ -177,14 +177,13 @@ void tstPlot2D(const bool batch) {
  * We need to find the line number ofr the timestamp and only compare text
  * that appears after this line.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void checkOutputFiles(std::string const &filename) {
   using std::string;
 
   Check(!filename.empty());
 
-  cout << "\nChecking contents of generated plot file \"" << filename
-       << ".agr\"..." << endl;
+  cout << "\nChecking contents of generated plot file \"" << filename << ".agr\"..." << endl;
 
   string benchfile(string("bench_") + filename);
 
@@ -236,8 +235,7 @@ void checkOutputFiles(std::string const &filename) {
       cout << end[i];
     }
     cout << ") for comparison..." << std::endl;
-    ndselect_file << " -o " << filename << ".part" << i << " " << filename
-                  << ".agr";
+    ndselect_file << " -o " << filename << ".part" << i << " " << filename << ".agr";
     cout << ndselect_file.str() << endl;
     int ret = system(ndselect_file.str().c_str());
     if (ret != 0)
@@ -260,8 +258,7 @@ void checkOutputFiles(std::string const &filename) {
       pass = false;
 
     // Do the diff on each file part via numdiff...
-    numdiff_cmd << "numdiff " << filename << ".part" << i << " bench_"
-                << filename << ".part" << i;
+    numdiff_cmd << "numdiff " << filename << ".part" << i << " bench_" << filename << ".part" << i;
     cout << "\n" << numdiff_cmd.str() << endl;
     ret = system(numdiff_cmd.str().c_str());
     if (ret != 0)
@@ -271,7 +268,7 @@ void checkOutputFiles(std::string const &filename) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   bool batch = true;
 
@@ -315,8 +312,7 @@ int main(int argc, char *argv[]) {
 
       // Grace doesn't apper to flush the data to disk immediately.  We need to
       // wait a bit before comparing the output to the gold standards.
-      std::cout << "\nWaiting for Grace to finish writing files...\n"
-                << std::endl;
+      std::cout << "\nWaiting for Grace to finish writing files...\n" << std::endl;
       bool system_call_ok = system("sleep 5") == 0;
       Insist(system_call_ok, "system call returned an error.");
 
@@ -329,8 +325,7 @@ int main(int argc, char *argv[]) {
       cout << "Unsupported test: pass\n";
     }
   } catch (rtt_dsxx::assertion const &error) {
-    cout << "Assertion: " << error.what() << "\nBetter luck next time!\n\n"
-         << endl;
+    cout << "Assertion: " << error.what() << "\nBetter luck next time!\n\n" << endl;
     pass = false;
   }
 
@@ -346,6 +341,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstPlot2D.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/Flags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Flags class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_Flags_hh
 #define rtt_RTT_Format_Reader_Flags_hh
@@ -19,20 +18,20 @@
 
 namespace rtt_RTT_Format_Reader {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Flags
- * \brief Controls parsing, storing, and accessing the data contained in the
- *        node, side, and cell flag blocks of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data contained in the node, side, and cell
+ *        flag blocks of the mesh file.
  */
-//============================================================================//
+//================================================================================================//
 class Flags {
 
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<string> vector_str;
-  typedef std::vector<int> vector_int;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_str = std::vector<string>;
+  using vector_int = std::vector<int>;
 
   size_t nflags;
   string name;
@@ -53,8 +52,7 @@ public:
    * \return The existence of the flag.
    */
   bool allowed_flag(size_t flag) const {
-    return flag_nums.end() != std::find(flag_nums.begin(), flag_nums.end(),
-                                        static_cast<int>(flag));
+    return flag_nums.end() != std::find(flag_nums.begin(), flag_nums.end(), static_cast<int>(flag));
   }
 
   /*!
@@ -88,6 +86,6 @@ public:
 
 #endif // rtt_RTT_Format_Reader_Flags_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Flags.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -32,13 +32,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
-// - 4521: Engines have multiple copy constructors, quite legal C++, disable
-//         MSVC complaint.
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable MSVC complaint.
 // - 4244: possible loss of data when converting between int types.
 // - 4204: nonstandard extension used - non-constant aggregate initializer
 // - 4127: conditional expression is constant
+// - 5105: macro expansion producing 'defined' has undefined behavior
 #pragma warning(push)
-#pragma warning(disable : 4521 4244 4127)
+#pragma warning(disable : 4521 4244 4127 5105)
 #endif
 
 #include "ut_ars.h"
@@ -62,27 +62,21 @@ int main(int argc, char **argv) {
   char m128str[M128_STR_SIZE], *kat;
 
   if (haveAESNI()) {
-    c.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-    k.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    c.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
     ret = ars1xm128i_R(7, c, k);
     kat = "2b1623350cd214dc 7740187993411872";
     if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
-              m128str);
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
       exit(1);
     }
     printf("%s: OK, got %s\n", argv[0], kat);
-    c.v[0].m =
-        m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-    k.v[0].m =
-        m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    c.v[0].m = m128i_from_charbuf("00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+    k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
     ret = ars1xm128i_R(7, c, k);
     kat = "2de6b66fa461b668 f380126f32b9cd22";
     if (strcmp(m128i_to_charbuf(ret.v[0].m, m128str), kat) != 0) {
-      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat,
-              m128str);
+      fprintf(stderr, "%s: error, expected %s, got %s\n", argv[0], kat, m128str);
       exit(1);
     }
     printf("%s: OK, got %s\n", argv[0], kat);

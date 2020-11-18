@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Text_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of the Text_Token_Stream class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_Text_Token_Stream_HH
 #define rtt_Text_Token_Stream_HH
@@ -15,7 +15,7 @@
 #include <stack>
 
 namespace rtt_parser {
-//-------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Abstract text-based token stream for simple parsers.
  *
@@ -27,7 +27,7 @@ namespace rtt_parser {
  * Null characters are not permitted in the character stream.  They are used
  * internally to indicate the end of file or an error condition.
  */
-class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream {
+class Text_Token_Stream : public Token_Stream {
 public:
   // ACCESSORS
 
@@ -47,20 +47,20 @@ public:
 
   // MANIPULATORS
 
-  virtual void rewind() = 0;
+  void rewind() override = 0;
 
   // SERVICES
 
   //! Does the Token_Stream consider \c c to be whitespace?
   bool is_whitespace(char c) const;
 
-  //! Does the Token_Stream consider <i>c</i> to be nonbreaking
+  //! Does the Token_Stream consider \e c to be non-breaking
   bool is_nb_whitespace(char c) const;
 
   // CONST DATA
 
   //! The default whitespace definition
-  static std::set<char> const default_whitespace;
+  DLL_PUBLIC_parser static std::set<char> const default_whitespace;
 
 protected:
   // IMPLEMENTATION
@@ -72,7 +72,7 @@ protected:
   Text_Token_Stream(std::set<char> const &, bool no_nonbreaking_ws = false);
 
   //! Scan the next token.
-  virtual Token fill_();
+  Token fill_() override;
 
   //! Push a character onto the back of the character queue.
   void character_push_back_(char c);
@@ -82,16 +82,16 @@ protected:
   virtual void fill_character_buffer_() = 0;
 
   virtual bool error_() const = 0;
-  virtual bool end_(void) const = 0;
-  virtual std::string location_(void) const = 0;
+  virtual bool end_() const = 0;
+  virtual std::string location_() const = 0;
 
   //! Pop a character off the internal buffer.
-  char pop_char_(void);
+  char pop_char_();
   //! Peek ahead at the internal buffer.
   char peek_(unsigned pos = 0);
 
   //! Skip any whitespace at the cursor position.
-  void eat_whitespace_(void);
+  void eat_whitespace_();
 
   //! Enter a nested file in a include directive.
   virtual void push_include(std::string &include_file_name) = 0;
@@ -99,11 +99,11 @@ protected:
   //! Exit a nested file from a include directive.
   virtual void pop_include() = 0;
 
-  // The following scan_ functions are for numeric scanning.  The names
-  // reflect the context-free grammar given by Stroustrup in appendix A
-  // of _The C++ Programming Language_.  However, we do not presently
-  // recognize type suffixes on either integers or floats.
-  unsigned scan_floating_literal_(void);
+  // The following scan_ functions are for numeric scanning.  The names reflect
+  // the context-free grammar given by Stroustrup in appendix A of _The C++
+  // Programming Language_.  However, we do not presently recognize type
+  // suffixes on either integers or floats.
+  unsigned scan_floating_literal_();
   unsigned scan_digit_sequence_(unsigned &);
   unsigned scan_exponent_part_(unsigned &);
   unsigned scan_fractional_constant_(unsigned &);
@@ -133,16 +133,16 @@ private:
 
   std::stack<unsigned> lines_;
   //!< Stack of current line values for nested input files.
-  unsigned line_;
+  unsigned line_{1};
   //!< Current line in input file.
 
-  bool no_nonbreaking_ws_;
+  bool no_nonbreaking_ws_{false};
   //!< Treat all whitespace as breaking whitespace.
 };
 
 } // namespace rtt_parser
 
 #endif // rtt_Text_Token_Stream_HH
-//--------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Text_Token_Stream.hh
-//--------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

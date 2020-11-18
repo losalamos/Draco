@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstFMA.cc
  * \author Kelly Thompson <kgt@lanl.gov>
@@ -6,7 +6,7 @@
  * \brief  Test functions defined in ds++/FMA.cc
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,7 +18,7 @@
 #include "ds++/FMA.hh"
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Test 1: Accurate FMA
 void test_fma1(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 1..." << std::endl;
@@ -42,8 +42,7 @@ void test_fma1(rtt_dsxx::UnitTest &ut) {
 #ifdef FP_FAST_FMA
   std::cout << "\t#define FMA(a,b,c) fma(a,b,c)\n" << std::endl;
 
-  if (rtt_dsxx::soft_equiv(fma_result, macro_fma_result,
-                           std::numeric_limits<double>::epsilon()))
+  if (rtt_dsxx::soft_equiv(fma_result, macro_fma_result, std::numeric_limits<double>::epsilon()))
     PASSMSG("With FP_ACCURATE_FMA=1, fma(a,b,c) == FMA(a,b,c).");
   else
     FAILMSG("With FP_ACCURATE_FMA=1, fma(a,b,c) != FMA(a,b,c).");
@@ -51,8 +50,7 @@ void test_fma1(rtt_dsxx::UnitTest &ut) {
 #else
   std::cout << "\t#define FMA(a,b,c) ((a)*(b)+(c))\n" << std::endl;
 
-  if (rtt_dsxx::soft_equiv(result, macro_fma_result,
-                           std::numeric_limits<double>::epsilon()))
+  if (rtt_dsxx::soft_equiv(result, macro_fma_result, std::numeric_limits<double>::epsilon()))
     PASSMSG("With FP_ACCURATE_FMA=1, a*b+c == FMA(a,b,c).");
   else
     FAILMSG("With FP_ACCURATE_FMA=1, a*b+c != FMA(a,b,c).");
@@ -65,8 +63,7 @@ void test_fma1(rtt_dsxx::UnitTest &ut) {
             << "\t#define FMA(a,b,c) fma(a,b,c)\n"
             << std::endl;
 
-  if (rtt_dsxx::soft_equiv(fma_result, macro_fma_result,
-                           std::numeric_limits<double>::epsilon()))
+  if (rtt_dsxx::soft_equiv(fma_result, macro_fma_result, std::numeric_limits<double>::epsilon()))
     PASSMSG("With FP_ACCURATE_FMA=1, a*b+c == FMA(a,b,c).");
   else
     FAILMSG("With FP_ACCURATE_FMA=1, a*b+c != FMA(a,b,c).");
@@ -76,7 +73,7 @@ void test_fma1(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -85,6 +82,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstFMA.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstC4_Status.cc
  * \author Robert B. Lowrie
@@ -6,7 +6,7 @@
  * \brief  Unit test for C4_Status class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -16,9 +16,9 @@ using namespace std;
 using rtt_c4::C4_Req;
 using rtt_c4::C4_Status;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tst2Procs(rtt_dsxx::UnitTest &ut) {
 
@@ -43,8 +43,7 @@ void tst2Procs(rtt_dsxx::UnitTest &ut) {
   if (my_proc == 0) {
     vector<int> send_buffer(num_int);
     vector<double> recv_buffer(num_double);
-    rtt_c4::receive_async(request, &recv_buffer[0], num_double,
-                          rtt_c4::any_source, tag);
+    rtt_c4::receive_async(request, &recv_buffer[0], num_double, rtt_c4::any_source, tag);
     rtt_c4::send_async(&send_buffer[0], num_int, 1, tag);
     request.wait(&status);
     if (status.get_source() == 1)
@@ -62,8 +61,7 @@ void tst2Procs(rtt_dsxx::UnitTest &ut) {
   } else { // my_proc == 1
     vector<double> send_buffer(num_double);
     vector<int> recv_buffer(num_int);
-    rtt_c4::receive_async(request, &recv_buffer[0], num_int, rtt_c4::any_source,
-                          tag);
+    rtt_c4::receive_async(request, &recv_buffer[0], num_int, rtt_c4::any_source, tag);
     rtt_c4::send_async(&send_buffer[0], num_double, 0, tag);
     request.wait(&status);
     if (status.get_source() == 0)
@@ -86,7 +84,7 @@ void tst2Procs(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -98,6 +96,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstC4_Status.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

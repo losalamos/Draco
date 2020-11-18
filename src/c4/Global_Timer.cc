@@ -4,9 +4,8 @@
  * \author Kent G. Budge
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define methods of class Global_Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "Global_Timer.hh"
 
@@ -16,7 +15,7 @@ using namespace std;
 bool Global_Timer::global_active_ = false;
 map<string, Global_Timer::timer_entry> Global_Timer::active_list_;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Global_Timer::Global_Timer(char const *name) : name_(name), active_(false) {
   Require(name != nullptr);
 
@@ -28,10 +27,9 @@ Global_Timer::Global_Timer(char const *name) : name_(name), active_(false) {
   Ensure(name == this->name());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*static*/
-void Global_Timer::set_selected_activity(set<string> const &timer_list,
-                                         bool const active) {
+void Global_Timer::set_selected_activity(set<string> const &timer_list, bool const active) {
   if (rtt_c4::node() == 0) {
     cout << "***** Global timers selectively activated:" << endl;
     for (auto const &name : timer_list) {
@@ -52,7 +50,7 @@ void Global_Timer::set_selected_activity(set<string> const &timer_list,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* static */
 void Global_Timer::set_global_activity(bool const active) {
   global_active_ = active;
@@ -67,7 +65,7 @@ void Global_Timer::set_global_activity(bool const active) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*static*/
 void Global_Timer::reset_all() {
   if (rtt_c4::node() == 0) {
@@ -81,7 +79,7 @@ void Global_Timer::reset_all() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*static*/
 void Global_Timer::report_all(ostream &out) {
   if (rtt_c4::node() == 0) {
@@ -116,9 +114,7 @@ void Global_Timer::report_all(ostream &out) {
           out << i.first << endl;
         }
       }
-      cout << endl
-           << "Perhaps you wanted one of these timers found but not active?"
-           << endl;
+      cout << endl << "Perhaps you wanted one of these timers found but not active?" << endl;
       for (auto const &i : active_list_) {
         timer_entry const entry = i.second;
         if (!entry.is_active && entry.timer != nullptr) {
@@ -132,6 +128,6 @@ void Global_Timer::report_all(ostream &out) {
 
 } // end namespace rtt_c4
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/Global_Timer.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

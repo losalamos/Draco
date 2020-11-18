@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/gaussj.i.hh
  * \author Kent Budge
  * \brief  Solve a linear system by Gaussian elimination.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_gaussj_i_hh
 #define linear_gaussj_i_hh
@@ -23,12 +22,11 @@ using std::fabs;
 using std::max;
 using std::sqrt;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Is a double-subscript random container square?
-template <class DoubleRandomContainer>
-bool is_square(DoubleRandomContainer const &A) {
+template <class DoubleRandomContainer> bool is_square(DoubleRandomContainer const &A) {
   Check(A.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(A.size());
+  auto const n = static_cast<unsigned>(A.size());
   for (unsigned i = 0; i < n; ++i) {
     if (A[i].size() != n)
       return false;
@@ -36,28 +34,24 @@ bool is_square(DoubleRandomContainer const &A) {
   return true;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
  * \param n Rank of matrix A
- * \param b Right hand side of the system of equations. Replaced by the
- *          solution on return.
- * \param m Column count of the right hand side of the system of equations.
- *          Setting this to a value other than one amounts to simultaneously
- *          solving m systems of equations.
+ * \param b Right hand side of the system of equations. Replaced by the solution on return.
+ * \param m Column count of the right hand side of the system of equations.  Setting this to a value
+ *          other than one amounts to simultaneously solving m systems of equations.
  */
 template <class RandomContainer>
-void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
-            unsigned const m) {
+void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b, unsigned const m) {
   using namespace std;
   using namespace rtt_dsxx;
 
   Require(A.size() == n * n);
   Require(b.size() == n * m);
-  double const eps =
-      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
+  double const eps = std::numeric_limits<typename RandomContainer::value_type>::epsilon();
 
   vector<int> indxc(n);
   vector<int> indxr(n);
@@ -125,14 +119,14 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
   Ensure(b.size() == n * m);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \arg \a DoubleRandomContainer A double-subscript random access container type
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
- * \param b Right hand side of the system of equations. Replacec by the solution
- *          of the system on return.
+ * \param b Right hand side of the system of equations. Replacec by the solution of the system on
+ *          return.
  */
 template <class DoubleRandomContainer, class RandomContainer>
 void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
@@ -143,10 +137,9 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   Require(b.size() == 0 || b.size() == A.size());
 
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
   Check(A.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(A.size());
+  auto const n = static_cast<unsigned>(A.size());
 
   vector<int> indxc(n);
   vector<int> indxr(n);
@@ -215,6 +208,6 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
 
 #endif // linear_gaussj_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of linear/gaussj.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

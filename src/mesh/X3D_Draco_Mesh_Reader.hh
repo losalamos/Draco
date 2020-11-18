@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/X3D_Draco_Mesh_Reader.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
@@ -6,7 +6,7 @@
  * \brief  X3D_Draco_Mesh_Reader header file.
  * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_X3D_Draco_Mesh_Reader_hh
 #define rtt_mesh_X3D_Draco_Mesh_Reader_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_mesh {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class X3D_Draco_Mesh_Reader
  *
@@ -40,13 +40,13 @@ namespace rtt_mesh {
  * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge
  *        as an alternative.
  */
-//============================================================================//
+//================================================================================================//
 
 class X3D_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 public:
   // >>> TYPEDEFS
-  typedef std::pair<std::string, std::vector<std::string>> Parsed_Element;
-  typedef std::vector<Parsed_Element> Parsed_Elements;
+  using Parsed_Element = std::pair<std::string, std::vector<std::string>>;
+  using Parsed_Elements = std::vector<Parsed_Element>;
 
 private:
   // >>> DATA
@@ -74,6 +74,10 @@ private:
 
   //! Cell-to-face map
   std::map<int, std::vector<int>> x3d_cellface_map;
+
+  //! Matid map
+  // As the x3d manual notes, matids are a little weird.
+  std::vector<std::string> x3d_matids;
 
   //! Side-to-node map (0-based indices, unlike other maps)
   std::map<int, std::vector<unsigned>> x3d_sidenode_map;
@@ -114,6 +118,12 @@ public:
     return x3d_coord_map.at(static_cast<int>(node + 1));
   }
 
+  // matid data
+  std::string get_matid(size_t cell) const {
+    Check(cell + 1 < INT_MAX);
+    return x3d_matids.at(cell);
+  }
+
   // accessors with deferred implementations
   unsigned get_celltype(size_t cell) const;
   std::vector<unsigned> get_cellnodes(size_t cell) const;
@@ -133,20 +143,16 @@ public:
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side));
   }
-  const std::map<size_t, std::vector<unsigned>> &get_bc_node_map() const {
-    return bc_node_map;
-  }
+  const std::map<size_t, std::vector<unsigned>> &get_bc_node_map() const { return bc_node_map; }
 
 private:
   // >>> SUPPORT FUNCTIONS
 
-  Parsed_Elements::const_iterator find_iter_of_key(const Parsed_Elements &pairs,
-                                                   std::string key,
+  Parsed_Elements::const_iterator find_iter_of_key(const Parsed_Elements &pairs, std::string key,
                                                    size_t start = 0);
 
   template <typename KT, typename VT>
-  std::map<KT, std::vector<VT>> map_x3d_block(const std::string &block_name,
-                                              size_t &dist);
+  std::map<KT, std::vector<VT>> map_x3d_block(const std::string &block_name, size_t &dist);
 
   template <typename KT> KT convert_key(const std::string &skey);
 
@@ -155,12 +161,10 @@ private:
   void read_bdy_files();
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // EXPLICIT SPECIALIZATIONS
-//----------------------------------------------------------------------------//
-template <>
-DLL_PUBLIC_mesh std::string
-X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
+//------------------------------------------------------------------------------------------------//
+template <> std::string X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
 
 } // end namespace rtt_mesh
 
@@ -169,6 +173,6 @@ X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey);
 
 #endif // rtt_mesh_X3D_Draco_Mesh_Reader_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of mesh/X3D_Draco_Mesh_Reader.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

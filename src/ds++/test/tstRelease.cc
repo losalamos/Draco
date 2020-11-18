@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstRelease.cc
  * \author Kelly Thompson <kgt@lanl.gov>
@@ -6,7 +6,7 @@
  * \brief  Check basic functionality of Release.hh/cc files.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
@@ -20,9 +20,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void maintest(UnitTest &ut) {
   {
@@ -37,8 +37,7 @@ void maintest(UnitTest &ut) {
       FAILMSG("releaseString len == 0");
 
     bool verbose(false);
-    std::map<std::string, unsigned> wc =
-        rtt_dsxx::get_word_count(releaseString, verbose);
+    std::map<std::string, unsigned> wc = rtt_dsxx::get_word_count(releaseString, verbose);
 
     FAIL_IF_NOT(wc[string("DRACO_DIAGNOSTICS")] == 1);
     FAIL_IF_NOT(wc[string("build")] == 2);
@@ -56,8 +55,7 @@ void maintest(UnitTest &ut) {
       FAILMSG("copyrightString len == 0");
 
     bool verbose(false);
-    std::map<std::string, unsigned> wc =
-        rtt_dsxx::get_word_count(copyrightString, verbose);
+    std::map<std::string, unsigned> wc = rtt_dsxx::get_word_count(copyrightString, verbose);
 
     FAIL_IF_NOT(wc[string("CCS-2")] == 1);
     FAIL_IF_NOT(wc[string("Copyright")] == 1);
@@ -68,7 +66,7 @@ void maintest(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -77,6 +75,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstRelease.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

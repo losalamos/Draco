@@ -3,7 +3,7 @@
 // The Draco Build System Documenation
 // This file is prepared by doxygen so that it can be part of the CCS-4
 // development web site as well as a written report.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*!
 
@@ -32,16 +32,16 @@ The Draco build system has the following highlighted features:
      MAKE</a> tools according to GNU Software standards
 \arg full C/C++ build support for gcc, KAI KCC, Compaq CXX, IBM xlC, and SGI CC
 \arg a well-defined C++ template instantiation model
-\arg extensible vendor support for 
-     <a href="http://www.mcs.anl.gov/mpi/index.html" 
+\arg extensible vendor support for
+     <a href="http://www.mcs.anl.gov/mpi/index.html"
         target="external">MPI</a>,
-     <a href="http://www.netlib.org" 
+     <a href="http://www.netlib.org"
         target="external"> LAPACK and BLAS, ATLAS</a>,
-     <a href="http://www.cs.sandia.gov/~mheroux/Trilinos/" 
+     <a href="http://www.cs.sandia.gov/~mheroux/Trilinos/"
         target="external">AztecOO, Epetra and Trilinos</a>,
      <a href="http://laurel.lanl.gov/PROJECTS/DATA/eos/eos.shtml"
-        target="external">EOSPAC</a>, and 
-     <a href="http://www-users.cs.umn.edu/~karypis/metis/parmetis/" 
+        target="external">EOSPAC</a>, and
+     <a href="http://www-users.cs.umn.edu/~karypis/metis/parmetis/"
         target="external">ParMetis</a>.
 \arg parallel builds
 \arg target-source architecture that protects source integrity and allows
@@ -51,51 +51,25 @@ The Draco build system has the following highlighted features:
 \arg DBS is exportable and extensible
 \arg integrated with a set of elisp macros (for emacs, xemacs) that allows
      automated package inclusion and promotes the use of a common coding
-     style 
+     style
 
 Currently, the Draco Build System is supported on the following
 systems/operating systems:
 
 - Linux (x86_64-based platforms)
 - Windows (x86_64)
-- OSX 
+- OSX
 - IBM (AIX)
 
-The DBS has been tested and verified on these systems.  
+The DBS has been tested and verified on these systems.
 
 The DBS has been used on the following systems that are no longer
 supported or maintained:
 
 - SUN (Solaris)
- 
+
 New systems will be added as required by the Draco development and
 user community.
-
-This document describes the Draco Build System. It contains the following
-sections:
-\arg \ref build describes how to configure and build Draco
-\arg \ref arch describes the build system architecture including directory
-structure, file-naming conventions, and template instantiation model
-\arg \ref pkg describes how to add a new package to Draco
-\arg \ref import describes how to import the DBS into other projects
-\arg \ref system describes the inner workings of the DBS
-
-These sections are aimed at three different audiences: users, developers, and
-code architects.  The appropriate sections for each target group are:
-\par Users
-\ref build
-\par Developers
-\ref build, \ref arch, \ref pkg, \ref import,
-\par Code Architects
-\ref build, \ref arch, \ref pkg, \ref import, \ref system
-
-This manual assumes that the reader is familiar with GNU MAKE (or UNIX MAKE
-in general).  The examples cover AUTOCONF usage; however, we do not describe
-all the details of AUTOCONF.  For those readers interested in the DBS
-inner-workings described in section \ref system, the GNU MAKE and AUTOCONF
-manuals (available with the software through the 
-<a href="http://www.fsf.org">Free Software Foundation</a>) are invaluable and
-necessary references.
 
 \par Note on semantics
 We use \e package to refer to the components sitting in Draco.  Thus, each
@@ -110,137 +84,15 @@ draco/src, and that is the convention that will be used here.
 
 \section access2src Access to the Source Code
 
-Draco is currently under CVS configuration management.  The repository
-is on the CCS-4 network.  In the near future we plan on moving the
-repository to the SourceForge server at LANL.  To gain access to the
-source code you will need a computer account on the CCS-4 LAN and you
-must be made a member of the \c radtran Unix file sharing group.  You
-may need to work with your line manager and/or the <a
-href="https://int.lanl.gov/orgs/ccs/ccs2/sysadmin/">CCS system
-administrators</a> to gain access to these computer systems.
-
-Draco can be checked out from the repository by:
-- Setting the environment variable \c CVS_RSH to \c ssh, and 
-- Issuing the following checkout command:
-
-\verbatim
-  > cvs -d sixhitch:/codes/radtran/cvsroot co -P draco
-\endverbatim
-
-If your workstation mounts \c /codes/radtran you do not need to
-include \c sixhitch: as a part of the path.  Optionally, you can set
-the environment variable \c CVSROOT to the the string shown in the
-example above.  In this case, you can omit the argument flag and value
-that specifies the repository location.
+Needs updated content.
 
 <!---------------------------------------------------------------------------->
-  
+
 \section access2release Access to Released versions of Draco
 
 The collection of Draco libraries, header files, applications, unit tests and
 documentation is periodically installed on various machines at LANL.  These
 \e released versions of Draco can be found at the following locations.
-
-\htmlonly
-<center><table>
-<tr>
-    <th class="draco"> Machine(s): </th>
-    <th class="draco"> Install location:      </th>
-</tr>
-<tr>
-    <td> </td>
-    <td> </td></tr>
-<tr>
-    <td class="draco"> CCS-4 Linux LAN   </td>
-    <td class="draco"><tt>/codes/radtran/vendors/draco/</tt></td></tr>
-<tr>
-    <td class="draco"> ICNN (Theta, QSC or Lambda) </td>
-    <td class="draco"><tt>/usr/projects/draco/</tt>          </td></tr>
-</table></center>
-\endhtmlonly
-
-Under the directories listed in the table above you will find the following
-items:
-
-\htmlonly
-<center><table width="90%">
-
-<tr>
-  <th class="draco" colspan=5> Path:   </th>
-  <th class="draco">Description:  </th>
-</tr>
-
-<tr>
-  <td class="draco"> <tt>/usr/projects/</tt><br><tt>draco/</tt><br>
-                     <center>or</center>
-                     <tt>/codes/radtran/</tt><br><tt>vendors/draco/</tt>  </td> 
-  <td colspan=4></td>
-  <td class="draco">Draco Project Top Directory</td>
-</tr>
-
-<tr>
-  <td class="draco"> </td>
-  <td class="draco" width="14%"> <tt>draco-V_v_p</tt> </td> 
-  <td colspan=3> </td> 
-  <td class="draco"> Major release V, minor revision v and patch level p </td>
-</tr>
-
-<tr>
-  <td class="draco" colspan=2> </td>
-  <td class="draco"><tt>draco/ </tt></td>
-  <td colspan=2></td> 
-  <td class="draco">The source code that was used to generated the installed objects and files. </td>
-</tr>
-
-<tr>
-  <td class="draco" colspan=2> </td>
-  <td class="draco"><tt>html/</tt></td>
-  <td colspan=2></td>
-  <td class="draco"> Doxygen HTML documentation (optional)</td>
-</tr>
-<tr>
-  <td class="draco" colspan=2> </td>
-  <td class="draco"><tt>latex/</tt></td>
-  <td colspan=2></td>
-  <td class="draco"> Doxygen Latex documentation (optional)</td>
-</tr>
-<tr>
-  <td class="draco" colspan=2> </td>
-  <td class="draco"><tt>Linux/</tt><br>
-      <center>or</center>
-      <tt>OSF1/</tt><br>
-      <center>or</center>
-      <tt>IRIX64/</tt></td>
-  <td colspan=2></td>
-  <td class="draco">Machine architecture</td>
-</tr>
-<tr>
-  <td class="draco" colspan=3></td>
-  <td class="draco"><tt>opt/</tt><br><center>or</center><tt>debug/</tt> </td>
-  <td></td>
-  <td class="draco">Optimized or Debug build</td></tr>
-<tr>
-  <td class="draco" colspan=4></td>
-  <td class="draco"><tt>bin    </tt></td>
-  <td class="draco">installed executables</td>
-</tr>
-<tr>
-  <td class="draco" colspan=4></td>
-  <td class="draco"><tt>include</tt></td>
-  <td class="draco">installed header files</td>
-</tr>
-<tr>
-  <td class="draco" colspan=4></td>
-  <td class="draco"><tt>lib    </tt></td>
-  <td class="draco">installed libraries (could be static, shared or both)</td>
-</tr>
-<tr>
-  <td class="draco" colspan=4></td>
-  <td class="draco"><tt>libexec</tt></td>
-  <td class="draco">build system tools</td>
-</tr>
-</table></center>
-\endhtmlonly
 
 Information concerning released versions of Draco is also published on
 the Draco SourceForge website: <a
@@ -251,10 +103,10 @@ and other related documents.
 
 <!---------------------------------------------------------------------------->
 
-\section build Configuring and Building Draco 
+\section build Configuring and Building Draco
 
 The Draco Build System is based on GNU AUTOCONF and MAKE.  We have endeavored
-to follow the GNU Coding Standards while designing the build system.  See 
+to follow the GNU Coding Standards while designing the build system.  See
 Stallman, R. \e Gnu \e coding \e standards. Free Software Foundation, 1996,
 for more details on the configure/make model of code development.
 
@@ -304,7 +156,7 @@ vendors or other options, is
 \verbatim
   > cd $BUILD
   > $DRACO/configure --prefix=$INSTALL
-\endverbatim 
+\endverbatim
 This configure step will build a mirror of the Draco direcotry source tree in
 $BUILD. All package directories inside of the $DRACO/src directory are
 configured.  After configuration the following directories (with build system
@@ -320,7 +172,7 @@ have autodoc then there will be no $BUILD/autodoc directory.
 Obviously, there are many options that dictate how Draco is built.  We
 reserve this discussion for the section titled \ref config_options.
 Additionally, many Draco packages require vendors whose paths may need
-to be specified at configure time.  See section \ref draco_pkgs for
+to be specified at configure time.  See section draco_pkgs for
 details on the Draco package tree and required vendors.
 
 \subsection make_draco Compiling and Installing Draco
@@ -360,51 +212,17 @@ are preserved.  The steps from a MAKE in $BUILD are as follows:
 -# enter $BUILD/src/\e pkg in order and do a \c make \c install
 .
 
-As inferred from this list, running MAKE at various directory levels has
-different behavior.  The following table shows what default MAKE targets are
-run at each directory level.
-
-\htmlonly 
-<center><h3>Default MAKE targets when building in <code>$BUILD</code></h3>
-<table> 
-<tr> 
-  <th class="draco"> Directory </th>
-  <th class="draco"> Default MAKE Target </th>
-</tr>
-<tr>
-  <td class="draco"> $BUILD </td>
-  <td class="draco" align=center> install </td>
-</tr>
-<tr>
-  <td class="draco"> $BUILD/src </td>
-  <td class="draco" align=center> install </td>
-</tr>
-<tr> 
-  <td class="draco"> $BUILD/src/<em>pkg</em> </td>
-  <td class="draco" align=center> all </td>
-</tr>
-<tr>
-  <td class="draco"> $BUILD/src/<em>pkg</em>/test </td>
-  <td class="draco" align=center> all </td>
-</tr>
-<tr>
-  <td class="draco"> $BUILD/autodoc </td>
-  <td class="draco" align=center> all </td>
-</tr>
-</table></center>
-\endhtmlonly
- 
 Thus, running MAKE in $BUILD or $BUILD/src actually does a \c make \c install
 in each subdirectory.  Running MAKE in the subdirectories does a build
 (compile) of the package directory's principle targets.
 
-The targets for each package directory in Draco are 
-- an executable 
-- a library 
-- headers 
-- a custom target 
-- one or more of the above 
-. 
+The targets for each package directory in Draco are
+- an executable
+- a library
+- headers
+- a custom target
+- one or more of the above
+.
 The targets are determined by the package \c configure.ac file.  Generating
 this file is the subject of \ref pkg.  By default the executable will be the
 package name.  The library will have the name \c lib${LIB_PREFIX}package.
@@ -419,45 +237,13 @@ libraries and Draco libraries.
 The DBS allows the definition of custom targets through inclusion of a
 \c Makefile.target file.  Sources for the build can also be customized
 using a \c Makefile.source file.  Finally, a \c Makefile.misc can be
-created for nearly any miscellaneous purpose. See section \ref system
+created for nearly any miscellaneous purpose. See section system
 for details on customizing the configure/make environment.
 
-The DBS supports several (GNU) standard MAKE targets:      
+The DBS supports several (GNU) standard MAKE targets:
 
-
-\htmlonly
-<center><h3>MAKE targets in the Draco DBS</h3>
-<table width="50%"> 
-<tr> 
-  <th class="draco"> Target </th> 
-  <th class="draco"> Description </th> 
-</tr>
-<tr>
-<td class="draco"> install </td> 
-<td class="draco"> installs targets in $INSTALL </td>
-</tr>
-<tr>
-<td class="draco"> check </td>
-<td class="draco"> builds and runs unit tests </td>
-</tr>
-<tr>
-<td class="draco"> clean </td>
-<td class="draco"> cleans directory (recursively). This should restore the build directory to a post-configure state.</td>
-</tr>
-<tr>
-<td class="draco"> distclean </td>
-<td class="draco"> cleans configuration files (recursively).  This should restore the build directory to a pre-configure state. </td>
-</tr>
-<tr>
-<td class="draco"> autodoc </td>
-<td class="draco"> runs doxygen (from $BUILD directory) </td>
-</tr>
-</table>
-</center>
-\endhtmlonly
- 
 Two items should be noted from this table.  First, doxygen
-documentation is not generated by default.  One must run \c make 
+documentation is not generated by default.  One must run \c make
 \c autodoc from $BUILD or \c make from $BUILD/autodoc.  Second, the
 unit tests are run using the \c make \c check command.  Unit tests can
 be run recursively from any directory level.  For example, to run
@@ -468,8 +254,8 @@ support in \ref arch.
 
 In each directory MAKE is run recursively.  For example, running \c make
 inside of $BUILD/src will do a compile + install in each $BUILD/src
-subdirectory.  However, it will not install the tools in $BUILD/tools.  One  
-must run \c make in $BUILD or \c make \c install in $BUILD/tools to install 
+subdirectory.  However, it will not install the tools in $BUILD/tools.  One
+must run \c make in $BUILD or \c make \c install in $BUILD/tools to install
 the tools.
 
 The default makefiles that are generated by configure contain several
@@ -479,12 +265,12 @@ useful variables are:
 - \c CXX : C++ compiler
 - \c CC : C compiler
 - \c INSTALL : install program
-. 
-For example, to build code using INSURE++ compile using the command 
+.
+For example, to build code using INSURE++ compile using the command
 \verbatim
   > make nj=2 CXX=insure
 \endverbatim
-See section \ref system for a more complete description of the
+See section system for a more complete description of the
 makefiles and variables defined in the DBS.
 
 \subsection draco_pkgs Draco Packages and Vendors
@@ -494,7 +280,7 @@ Design (Lakos, J. \e Large-scale \e C++ \e software \e design. 1996).   The
 current hierarchy of Draco packages is as follows can be displayed in doxygen autodoc:
 
 1. Visit the documentation for Assert.hh.
-2. In the horizontal toolbar above the file documentation, select the 'src' level.  
+2. In the horizontal toolbar above the file documentation, select the 'src' level.
 
 This should provide an diagram similar to the following
 
@@ -522,44 +308,6 @@ that does not require MPI.  On the other hand, \c rng requires the
 SPRNG library to be used in an application.  The following table lists
 the Draco packages that have external vendor requirements:
 
-
-\htmlonly
-<center><h3> Draco packages and their vendor requirements. </h3>
-<table>
-<tr> 
-  <th class="draco"> Draco Package </th> 
-  <th class="draco"> Vendor </th> 
-  <th class="draco"> Required or Optional </th> 
-</tr>
-<!-- lapack_wrap -->
-<tr>
-<td class="draco"> <tt> lapack_wrap </tt> </td>
-<td class="draco"> <a href="http://www.netlib.org">LAPACK, BLAS</a> </td>
-<td class="draco"> required </td>
-</tr>
-<!-- plot2D -->
-<tr>
-<td class="draco"> <tt> plot2D </tt> </td>
-<td class="draco"> <a href="http://plasma-gate.weizmann.ac.il/Grace">GRACE</a> </td>
-<td class="draco"> required </td>
-</tr>
-<!-- c4 -->
-<tr>
-<td class="draco"> <tt> c4 </tt> </td>
-<td class="draco"> <a href="http://www.mcs.anl.gov/mpi/index.html">MPI</a> </td>
-<td class="draco"> optional </td>
-</tr>
-<!-- cdi_eospac -->
-<tr>
-<td class="draco"> <tt> cdi_eospac  </tt></td>
-<td class="draco"> <a href="http://laurel.lanl.gov/PROJECTS/DATA/eos/eos.shtml">eospac</a> </td>
-<td class="draco"> required </td>
-</tr>
-</table>
-</center>
-\endhtmlonly
-
-
 To use and test a package that requires a vendor, the vendor libraries
 must be included at link time.  Some packages (\c rng for instance)
 will not build at all if the vendor is not specified during the Draco
@@ -578,7 +326,7 @@ total link line should be:
 where \c liblfg.a(so) is the SPRNG random number library.  The DBS
 automatically includes these vendor libraries; thus, if the Draco DBS
 is imported into client applications these dependencies will be taken
-care of automatically.  See section \ref import for details.
+care of automatically.  See section import for details.
 
 \par Note on the c4 package
 
@@ -598,7 +346,7 @@ the resulting build process.  For convenience we divide these options
 into three general categories: build options, vendor options, and
 Draco vendor options.  The Draco vendor options are only required when
 importing the DBS into a client; thus, discussion of these configure
-options is deferred until section \ref import.  Additionally, all of
+options is deferred until section import.  Additionally, all of
 the standard configure options exist although not all of them have
 meaning in the DBS.  To get a list of configure options run configure
 with the option \c --help:
@@ -617,154 +365,8 @@ default behavior, default values for a given option (when the option's
 value is unspecified), and valid arguments for a given option. The
 following table summarizes the \c --with DBS build options:
 
-\latexonly
-$0, \ldots , N_{c}$
-\endlatexonly
-\htmlonly
-<!-- The table command is skipped when processed by doxygen anyway so we make the whole block html -->
-<center><h3> <tt>--with</tt> build options in the DBS. </h3>
-<table width="90%">
-<tr>
-<th class="draco" width="20%"> Option </th>
-<th class="draco"> Default </th>
-<th class="draco"> Default Argument </th>
-<th class="draco"> Valid Arguments </th>
-<th class="draco"> Notes </th>
-</tr>
-<!-- lib-prefix -->
-<tr>
-<td class="draco"> <tt> --with-lib-prefix</tt> </td>
-<td class="draco"> <tt> rtt_ </tt></td>
-<td class="draco"> <tt> rtt_ </tt></td>
-<td class="draco"> any string </td>
-<td class="draco"> sets the library name prefix </td>
-</tr>
-<!-- c4 -->
-<tr>
-<td class="draco"> <tt> --with-c4 </tt></td>
-<td class="draco"> <tt> serial </tt></td>
-<td class="draco"> <tt> serial </tt></td>
-<td class="draco"> <tt> mpi </tt></td>
-<td class="draco"> builds a parallel <tt> c4 </tt></td>
-</tr>
-<!-- dbc -->
-<tr>
-<td class="draco"> <tt> --with-dbc</tt> </td>
-<td class="draco"> <tt> 7</tt> </td>
-<td class="draco"> <tt> 7</tt> </td>
-<td class="draco"> <tt> 0-7</tt> </td>
-<td class="draco">  see <a href="#dbc">below</a> </td>
-</tr>
-<!-- cxx -->
-<tr>
-<td class="draco"> <tt> --with-cxx</tt> </td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> <tt> gcc</tt> </td>
-<td class="draco"> <tt> gcc</tt>, <tt> kcc</tt>, <tt> compaq</tt>, <tt> sgi</tt>, <tt> guide</tt> <tt>asciwhite</tt> <tt>ibm</tt> </td>
-<td class="draco">  see <a href="#config_compiler">below</a> </td>
-</tr>
-<!-- f90 -->
-<tr>
-<td class="draco"> <tt> --with-f90</tt> </td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> <tt> XL</tt>, <tt> Lahey</tt>, <tt> Portland</tt>, <tt> Absoft</tt>, <tt> MIPS</tt>, <tt> Compaq</tt>, <tt> HP</tt> </td>
-<td class="draco"> manually specify FORTRAN compiler </td>
-</tr>
-<!-- opt -->
-<tr>
-<td class="draco"> <tt> --with-opt</tt> </td>
-<td class="draco"> 0 </td>
-<td class="draco"> 0 </td>
-<td class="draco">  0, ... , Nc </td>
-<td class="draco"> Nc is usually 3 </td>
-</tr>
-<!-- posix -->
-<tr>
-<td class="draco"> <tt> --with-posix </tt></td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> system-dependent </td>
-<td class="draco"> sets POSIX_SOURCE macro </td>
-</tr>
-<!-- mips -->
-<tr>
-<td class="draco"> <tt> --with-mips</tt> </td>
-<td class="draco"> 4 </td>
-<td class="draco"> 4 </td>
-<td class="draco"> <tt> 1,2,3,4</tt> </td>
-<td class="draco"> sets MIPS on SGI </td>
-</tr>
-</table>
-</center>
-\endhtmlonly
-
 Binary switches of the form \c --enable are summarized in the following
 table:
-
-\htmlonly
-<center>
-<h3>
-  <code>--enable</code> and <code>--disable</code> build options in the
-  DBS.
-</h3>
-<table width="90%">
-<tr>
-  <th class="draco"> Option </th>
-  <th class="draco"> Default </th>
-  <th class="draco"> Action </th>
-</tr>  
-<!-- shared -->
-<tr>
-  <td class="draco"><code>--enable-shared </td>
-  <td class="draco"> build archive (.a) libraries </td>
-  <td class="draco"> build shared (.so) libraries </td>
-</tr>
-<!-- static-ld -->
-<tr>
-  <td class="draco"><code>--enable-static-ld</code></td>
-  <td class="draco"> linker default </td>
-  <td class="draco"> build a statically linked executable </td>
-</tr>
-<!-- strict-ansi -->
-<tr>
-  <td class="draco"><code>--disable-strict-ansi</code> </td>
-  <td class="draco"> compile strict </td>
-  <td class="draco"> turn off strict compiling</td>
-</tr>
-<!-- one-per -->
-<tr>
-  <td class="draco"><code>--disable-one-per</code> </td>
-  <td class="draco"> make one template definition </td>
-  <td class="draco"> turn off one-template definition (KCC only) </td>
-</tr>
-<!-- debug -->
-<tr>
-  <td class="draco"><code>--enable-debug</code> </td>
-  <td class="draco"> debug is on </td>
-  <td class="draco"><code>--disable-debug</code> turns off debug flags</td>
-</tr>
-<!-- 32-bit -->
-<tr>
-  <td class="draco"><code>--enable-32-bit</code> </td>
-  <td class="draco"> 64 bit </td>
-  <td class="draco"> compile 32-bit (n32 on SGI only) </td>
-</tr>
-<!-- draco-stdhdrs -->
-<tr>
-<td class="draco"><code>--enable-draco-stdhdrs</code> </td>
-<td class="draco"> use compiler headers </td>
-<td class="draco"> use Draco version of C library headers </td>
-</tr>
-<!-- latex-doc -->
-<tr>
-  <td class="draco"><code>--enable-latex-doc</code> </td>
-  <td class="draco"> doxygen produces html only </td>
-  <td class="draco"> doxygen will produce LaTeX source </td>
-</tr>
-</table>
-</center>
-\endhtmlonly
 
 See the AUTOCONF manual for details on using standard configure
 options.
@@ -774,166 +376,23 @@ implementation in Assert.hh.  The compile level of Design-by-Contract
 is controlled by the \c --with-dbc configure option.  The following
 settings apply
 
-\htmlonly
-<center><h3>DBS configure-time DBC settings.</h3>
-<table>
-<tr>
-  <th class="draco">DBC Level</th>
-  <th class="draco" colspan=3> </th>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>0</code></td>
-  <td class="draco" colspan=3> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>1</code> </td>
-  <td class="draco"><code>Require</code> </td>
-  <td class="draco" colspan=2> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>2</code> </td>
-  <td class="draco"> </td>
-  <td class="draco"><code>Check </code></td>
-  <td class="draco"> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>3</code> </td>
-  <td class="draco"><code>Require</code> </td>
-  <td class="draco"><code>& Check </code></td>
-  <td class="draco"> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>4</code> </td>
-  <td class="draco"> </td>
-  <td class="draco"> </td>
-  <td class="draco"><code>Ensure</code> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>5</code> </td>
-  <td class="draco"><code>Require</code> </td>
-  <td class="draco"></td>
-  <td class="draco"><code>& Ensure</code> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>6</code> </td>
-  <td class="draco"> </td>
-  <td class="draco"><code>Check</code> </td>
-  <td class="draco"><code>& Ensure</code> </td>
-</tr>
-<tr>
-  <td class="draco" align="center"><code>7</code> </td>
-  <td class="draco"><code>Require,</code> </td>
-  <td class="draco"><code>Check</code> </td>
-  <td class="draco"><code>& Ensure</code> </td>
-</tr>
-</table></center>
-\endhtmlonly
-
 The default DBC setting is \c 7.  This makes all DBC tests active.
 
 \anchor config_compiler The \c --with-cxx configure option specifies
 the C++ compiler that will be used by the DBS.  The choice of compiler
 overrides any system defaults.  The system defaults are:
 
-\htmlonly
-<center>
-<h3>C++ compilers for each computer system in the DBS.</h3>
-<table>
-<tr>
-  <th class="draco"> Platform  </td>
-  <th class="draco"> Default </td>
-  <th class="draco"> Supported Alternates </td>
-</tr>
-<tr>
-  <td class="draco"> Linux  </td>
-  <td class="draco"> gcc </td>
-  <td class="draco"> KCC and Intel </td>
-</tr>
-<tr>
-  <td class="draco"> SGI (IRIX64) </td>
-  <td class="draco"> CC </td>
-  <td class="draco"> KCC and gcc </td>
-</tr>
-<tr>
-  <td class="draco"> Compaq (Tru64) </td>
-  <td class="draco"> CXX </td>
-  <td class="draco"> KCC and gcc </td>
-</tr>
-<tr>
-  <td class="draco"> ASCI White (IBM-AIX) </td>
-  <td class="draco"> new(mp)xlC </td>
-  <td class="draco"> xlC and gcc </td>
-</tr>
-<tr>
-  <td class="draco"> IBM (AIX) </td>
-  <td class="draco"> xlC </td>
-  <td class="draco"> gcc </td>
-</tr>
-<tr>
-  <td class="draco"> SUN (Solaris) </td>
-  <td class="draco"> KCC </td>
-  <td class="draco"> - </td>
-</tr>
-</table>
-</center>
-\endhtmlonly
-
 Finally, there is another set of configure options that allow
 additional values to be added to Makefile flags.  These options
 are:
 
-\htmlonly
-<center><h3>Configure options for Makefile variables</h3>
-<table>
-<tr>
-  <th class="draco"> Option </th>
-  <th class="draco"> Description </th>
-</tr>
-<!-- CPPFLAGS -->
-<tr>
-  <td class="draco"><code>--with-cppflags</code></td>
-  <td class="draco"> add flags to <code>$CPPFLAGS</code> </td>
-</tr>
-<!-- CXXFLAGS -->
-<tr>
-  <td class="draco"><code>--with-cxxflags</code></td>
-  <td class="draco"> add flags to <code>$CXXFLAGS</code> </td>
-</tr>
-<!-- CFLAGS -->
-<tr>
-  <td class="draco"><code>--with-cflags</code></td>
-  <td class="draco"> add flags to <code>$CFLAGS</code> </td>
-</tr>
-<!-- F90FLAGS -->
-<tr>
-  <td class="draco"><code>--with-f90flags</code></td>
-  <td class="draco"> add flags to <code>$F90FLAGS</code> </td>
-</tr>
-<!-- ARFLAGS -->
-<tr>
-  <td class="draco"><code>--with-arflags</code></td>
-  <td class="draco"> add flags to <code>$ARFLAGS</code> </td>
-</tr>
-<!-- LDFLAGS -->
-<tr>
-  <td class="draco"><code>--with-ldflags</code></td>
-  <td class="draco"> add flags to <code>$LDFLAGS</code> </td>
-</tr>
-<!-- LIBS -->
-<tr>
-  <td class="draco"><code>--with-libs</code></td>
-  <td class="draco"> add libraries to <code>$LIBS</code> </td>
-</tr>
-</table></center>
-\endhtmlonly
-
 These flags are used as a stopgap measure on new or unpredictable
 systems.  In general, only Draco developers and architects will use
-these options.  See \ref system for more details on Makefile variables
+these options.  See system for more details on Makefile variables
 in the DBS. These flags may also be used for specialized compiles
 (e.g.: profiling, coverage analysis, etc.).
 
-As \anchor no_option described in \ref draco_pkgs, many Draco packages
+As \anchor no_option described in draco_pkgs, many Draco packages
 have external vendor requirements.  If configure is not given any
 options, Draco will look for vendors in default compiler/linker
 locations and the \c LD_LIBRARY_PATH.  These usually are \c /usr/lib,
@@ -978,184 +437,16 @@ will set the SPRNG include directory to \c $SPRNG_INC_DIR and the
 SPRNG lib directory to \c $SPRNG_LIB_DIR.  Note that this is different
 than not specifying any options for SPRNG.  If \c --with-sprng-lib is
 not placed on the configure line then no directory location will be
-set for the SPRNG library as described \ref no_option "above".  See 
+set for the SPRNG library as described \ref no_option "above".  See
 \ref ex_builds for more examples.
 
 The following tables summarize the vendor options supported by Draco:
-
-\htmlonly
-<center><h3>Vendor options in the DBS, part I</h3><table>
-<tr>
-  <th class="draco"> Vendor </th>
-  <th class="draco"> Option </th>
-  <th class="draco"> Default </th>
-  <th class="draco"> Description </th>
-</tr>
-<!-- MPI -->
-<tr>
-  <td class="draco"> MPI </td>
-  <td class="draco"><code>--with-mpi</code></td>
-  <td class="draco"><code>vendor</code> (<code>mpich</code> on LINUX) </td>
-  <td class="draco"> set MPI to <code>vendor</code> or <code>mpich</code></td>
-</tr>
-<tr>
-  <td class="draco"> MPI </td>
-  <td class="draco"><code>--with-mpi-inc</code></td>
-  <td class="draco"><code>$MPI_INC_DIR</code></td>
-  <td class="draco"> location of MPI header files </td>
-</tr>
-<tr>
-  <td class="draco"> MPI </td>
-  <td class="draco"><code>--with-mpi-lib</code></td>
-  <td class="draco"><code>$MPI_LIB_DIR</code></td>
-  <td class="draco"> location of MPI libraries </td>
-</tr>
-<!-- SPRNG -->
-<tr>
-  <td class="draco"> SPRNG </td>
-  <td class="draco"><code>--with-sprng</code></td>
-  <td class="draco"><code>lfg</code></td>
-  <td class="draco"> set SPRNG library </td>
-</tr>
-<tr>
-  <td class="draco"> SPRNG </td>
-  <td class="draco"><code>--with-sprng-inc</code></td>
-  <td class="draco"><code>$SPRNG_INC_DIR</code></td>
-  <td class="draco"> location of SPRNG header files</td>
-</tr>
-<tr>
-  <td class="draco"> SPRNG </td>
-  <td class="draco"><code>--with-sprng-lib</code></td>
-  <td class="draco"><code>$SPRNG_LIB_DIR</code></td>
-  <td class="draco"> location of SPRNG libraries</td>
-</tr>
-</table>
-
-<h3>Vendor options in the DBS, part II</h3>
-
-<table width="90%">
-<tr>
-  <th class="draco"> Vendor </th>
-  <th class="draco"> Option </th>
-  <th class="draco"> Default </th>
-  <th class="draco"> Description </th>
-</tr>
-<!-- LAPACK -->
-<tr>
-  <td class="draco"> LAPACK </td>
-  <td class="draco"><code>--with-lapack</code></td>
-  <td class="draco"><code>vendor</code></td>
-  <td class="draco"> use <code>vendor or <code>atlas implementation of BLAS/LAPACK</td>
-</tr>
-<tr>
-  <td class="draco"> LAPACK </td>
-  <td class="draco"><code>--with-lapack-lib</code></td>
-  <td class="draco"><code>$LAPACK_LIB_DIR</code></td>
-  <td class="draco"> location of BLAS/LAPACK (or ATLAS) libraries</td>
-</tr>
-<!-- EOSPAC -->
-<tr>
-  <td class="draco"> EOSPAC </td>
-  <td class="draco"><code>--with-eospac</code></td>
-  <td class="draco"><code>eospac</code></td>
-  <td class="draco"> name of the EOSPAC library (e.g.<code>libeospac</code>) </td>
-</tr>
-<tr>
-  <td class="draco"> EOSPAC </td>
-  <td class="draco"><code>--with-eospac-lib</code></td>
-  <td class="draco"><code>$EOSPAC_LIB_DIR</code></td>
-  <td class="draco"> location of EOSPAC library </td>
-</tr>
-<!-- GANDOLF -->
-<tr>
-  <td class="draco"> GANDOLF </td>
-  <td class="draco"><code>--with-gandolf</code></td>
-  <td class="draco"><code>gandolf</code></td>
-  <td class="draco"> name of the GANDOLF library (e.g.<code>libgandolf</code>) </td>
-</tr>
-<tr>
-  <td class="draco"> GANDOLF </td>
-  <td class="draco"><code>--with-gandolf-lib</code></td>
-  <td class="draco"><code>$GANDOLF_LIB_DIR</code></td>
-  <td class="draco"> location of GANDOLF library</td>
-</tr>
-<!-- GRACE -->
-<tr>
-  <td class="draco"> GRACE </td>
-  <td class="draco"><code>--with-grace</code></td>
-  <td class="draco"><code>grace_np</code></td>
-  <td class="draco"> name of the GRACE library (e.g.<code>libgrace_np</code>) </td>
-</tr>
-<tr>
-  <td class="draco"> GRACE </td>
-  <td class="draco"><code>--with-grace-inc</code></td>
-  <td class="draco"><code>$GRACE_INC_DIR</code></td>
-  <td class="draco"> location of GRACE header files</td>
-</tr>
-<tr>
-  <td class="draco"> GRACE </td>
-  <td class="draco"><code>--with-grace-lib</code></td>
-  <td class="draco"><code>$GRACE_LIB_DIR</code></td>
-  <td class="draco"> location of GRACE library</td>
-</tr>
-<!-- PCGLIB -->
-<tr>
-  <td class="draco"> PCG </td>
-  <td class="draco"><code>--with-pcg</code></td>
-  <td class="draco"><code>pcg</code></td>
-  <td class="draco"> name of the PCG library (e.g.<code>libpcg</code>) </td>
-</tr>
-<tr>
-  <td class="draco"> PCG </td>
-  <td class="draco"><code>--with-pcg-lib</code></td>
-  <td class="draco"><code>$PCG_LIB_DIR</code></td>
-  <td class="draco"> location of PCG library</td>
-</tr>
-<tr>
-  <td class="draco"> Trilinos </td>
-  <td class="draco"><code>--with-trilinos</code></td>
-  <td class="draco"><code>aztecOO</code></td>
-  <td class="draco"> name of the Trilinos solver package (LAPACK
-vendor location must also be specified)</td>
-</tr>
-<tr>
-  <td class="draco"> Trilinos </td>
-  <td class="draco"><code>--with-trilinos-inc</code></td>
-  <td class="draco"><code>$TRILINOS_INC_DIR</code></td>
-  <td class="draco"> location of Trilinos header files</td>
-</tr>
-<tr>
-  <td class="draco"> Trilinos </td>
-  <td class="draco"><code>--with-trilinos-lib</code></td>
-  <td class="draco"><code>$TRILINOS_LIB_DIR</code></td>
-  <td class="draco"> location of Trilinos library</td>
-</tr>
-<tr>
-  <td class="draco"> Parmetis </td>
-  <td class="draco"><code>--with-parmetis</code></td>
-  <td class="draco"><code> . </code></td>
-  <td class="draco"> . </td>
-</tr>
-<tr>
-  <td class="draco"> Parmetis </td>
-  <td class="draco"><code>--with-parmetis-inc</code></td>
-  <td class="draco"><code>$PARMETIS_INC_DIR</code></td>
-  <td class="draco"> location of Parmetis header files</td>
-</tr>
-<tr>
-  <td class="draco"> Parmetis </td>
-  <td class="draco"><code>--with-parmetis-lib</code></td>
-  <td class="draco"><code>$PARMETIS_LIB_DIR</code></td>
-  <td class="draco"> location of Parmetis library</td>
-</tr>
-</table></center>
-\endhtmlonly
 
 The DBS automatically adds supporting libraries for these vendors for
 each system.  For example, on LINUX the use of GANDOLF or EOSPAC
 requires the addition of \c libg2c.  All that is required for proper
 configuration is to tell Draco where the actual vendor libraries are
-installed.   
+installed.
 
 \par Note on ATLAS
 
@@ -1181,7 +472,7 @@ following options on ASCI machines:
 The LAPACK options should only be overridden if the client wishes to
 use ATLAS instead of the vendor implementations of LAPACK and BLAS.
 
-\par Note on Trilinos 
+\par Note on Trilinos
 
 Trilinos dependes on the availability of LAPACK or ATLAS on the current
 machine for this build.  Thus, if Trilinos is specified on the configure line
@@ -1209,8 +500,8 @@ are failing when keys like "version number" are compared.
 \verbatim
 1. ssh onto lambda.
 2. llogin to a worker node(s).
-3. modules loaded: 
-   a. LaheyFortran95Pro_6.1e 
+3. modules loaded:
+   a. LaheyFortran95Pro_6.1e
    b. autoconf_2.53
    c. automake_1.6.2
    d. gcc_3.0.4
@@ -1233,7 +524,7 @@ are failing when keys like "version number" are compared.
 
 6. gmake check
 
-\endverbatim 
+\endverbatim
 
 Using Lahey 6.2 breaks cdi_eospac.  We must continue using Lahey 6.1
 or 6.2 until X-5 releases EOSPAC v6.  gcc_3.2.1 and gcc_3.2.3 are
@@ -1264,7 +555,7 @@ are the steps:
   > mkdir draco
   > cd draco
   > ../../draco/configure --prefix=/home/joe/draco-debug --with-c4=mpi
-    --with-mpi-inc --with-mpi-lib --with-sprng-inc --with-sprng-lib 
+    --with-mpi-inc --with-mpi-lib --with-sprng-inc --with-sprng-lib
     --with-lapack=atlas
     --with-lapack-lib=/codes/radtran/vendors/atlas/Linux/lib
     --with-gandolf-lib=/codes/radtran/vendors/gandolf/Linux
@@ -1292,7 +583,7 @@ A client wishes to use the \c cdi_gandolf package on Blue Mountain
 (SGI IRIX64).  We will compile an optimized version of Draco for this
 exercise using the KCC compiler.  Draco has been checked out into
 \c /scratch/joe/draco.  The following packages sit under
-\c /scratch/joe/draco/src: 
+\c /scratch/joe/draco/src:
 
 \verbatim
   ds++/ cdi/ cdi_gandolf/
@@ -1327,7 +618,7 @@ package explicitly.  Instead, assume we wished to manually run the
 A client wishes to use the \c mc package on the Q-machine (Compaq
 Tru64).  Build an optimized version with shared libraries.  Draco has
 been checked out into \c /scratch1/joe/draco.  It has the following
-packages: 
+packages:
 
 \verbatim
   ds++/ rng/ meshReaders/ viz/ traits/ c4/
@@ -1351,7 +642,7 @@ This version of Draco will have DBC \c Require active. The C++
 compiler is CXX, which is the default for Compaq Tru64.  Notice that
 we must provide the locations of the SPRNG libraries because \c mc
 depends on \c rng which, in turn, depends on SPRNG.
- 
+
 <!---------------------------------------------------------------------------->
 
 \section arch Build System Architecture
@@ -1362,7 +653,7 @@ is based on the following GNU "autotools"
 - automake
 - make
 - m4
-. 
+.
 We do not use GNU libtool, and we only peripherally utilize automake.
 
 <!---------------------------------------------------------------------------->
@@ -1381,22 +672,8 @@ The Draco Build System is designed to be imported into other codes.
 
 \section faq Frequenty Asked Questions
 
-\htmlonly <ol>
-
-<li><font class="question">When should I run autoconf or aclocal?</font><P>
-You should only run <code>aclocal</code> or <code>autoconf</code> if 
-configure.ac has been modified. Running <code>aclocal</code> followed 
-by <code>autoconf</code> will produce updated versions of 
-<code>aclocal.m4</code> and <code>configure</code>.  The easiest way to 
-update these files is to run <code>gmake reconfigure</code> from your 
-build directory.<p>The current build system requires the developer to use 
-<code>autoconf</code> version 2.5 or newer.  Older versions of <code>
-autoconf</code> are not compatible with the DBS.</li>
-
-</ol> \endhtmlonly
-
 <!---------------------------------------------------------------------------->
-  
+
 \section system Draco Build System Reference Manual.
 
 The Draco Build System components reside within the draco/config
@@ -1408,7 +685,7 @@ The configure macros are defined in the \c draco/config directory.
 Certain files contain "public" macros that are used in the package \c
 configure.ac files.  Other files contain "private" macros that are
 internal to the DBS.  The public macros are defined in the following
-files: 
+files:
 - \c ac_dracoarg.m4: defines the configure-options in the DBS
 - \c ac_dracoenv.m4: defines the platform-specific environment
 - \c ac_dracotests.m4: defines configure-time tests of the environment
@@ -1418,7 +695,7 @@ as a vendor
 and test options in package configure.ac scripts
 - \c ac_vendors.m4: defines vendor macros
 .
-The "private" macros are defined in 
+The "private" macros are defined in
 - \c ac_local.m4: defines macros used internally by the DBS
 - \c ac_platforms.m4: defines platform-specific environment settings
 used internally by the DBS
@@ -1432,9 +709,9 @@ maintained by DBS architects.
 <!---------------------------------------------------------------------------->
 
 \sa http://public.lanl.gov/lampi
-  
+
 */
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of build_system.dcc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

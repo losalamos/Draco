@@ -4,18 +4,16 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideData class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "SideData.hh"
 
 namespace rtt_RTT_Format_Reader {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Parses the side_data block data from the mesh file via calls to
- *        private member functions.
+ * \brief Parses the side_data block data from the mesh file via calls to private member functions.
  * \param meshfile Mesh file name.
  */
 void SideData::readSideData(ifstream &meshfile) {
@@ -25,7 +23,7 @@ void SideData::readSideData(ifstream &meshfile) {
   readEndKeyword(meshfile);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the side_data block keyword.
  * \param meshfile Mesh file name.
@@ -38,7 +36,7 @@ void SideData::readKeyword(ifstream &meshfile) {
   std::getline(meshfile, dummyString);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the side data block data.
  * \param meshfile Mesh file name.
@@ -56,7 +54,7 @@ void SideData::readData(ifstream &meshfile) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_sidedat block keyword.
  * \param meshfile Mesh file name.
@@ -65,13 +63,12 @@ void SideData::readEndKeyword(ifstream &meshfile) {
   string dummyString;
 
   meshfile >> dummyString;
-  Insist(dummyString == "end_sidedat",
-         "Invalid mesh file: sidedat block missing end");
+  Insist(dummyString == "end_sidedat", "Invalid mesh file: sidedat block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
 } // end namespace rtt_RTT_Format_Reader
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/SideData.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

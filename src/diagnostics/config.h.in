@@ -1,4 +1,4 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
  * \file   diagnostics/config.h
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  diagnostics defines.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #ifndef rtt_diagnostics_config_h
 #define rtt_diagnostics_config_h
@@ -17,8 +17,11 @@
 /* USE PROCMON - snapshot in time memory reporting via getrusage */
 #cmakedefine USE_PROCMON @USE_PROCMON@
 
+/* Is the Caliper library available? */
+#cmakedefine DRACO_CALIPER @DRACO_CALIPER@
+
 #endif /* rtt_diagnostics_config_h */
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of diagnostics/config.h */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

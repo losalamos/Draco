@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstC4_Req.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Unit test for C4_Req class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -14,9 +14,9 @@
 
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstCopyConstructor(rtt_dsxx::UnitTest &ut) {
   using rtt_c4::C4_Req;
@@ -45,7 +45,7 @@ void tstCopyConstructor(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstTraits(rtt_dsxx::UnitTest &ut) {
   using rtt_c4::C4_Traits;
 
@@ -68,8 +68,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut) {
     using rtt_c4::MPI_Traits;
     FAIL_IF_NOT(MPI_Traits<unsigned char>::element_type() == MPI_UNSIGNED_CHAR);
     FAIL_IF_NOT(MPI_Traits<short>::element_type() == MPI_SHORT);
-    FAIL_IF_NOT(MPI_Traits<unsigned short>::element_type() ==
-                MPI_UNSIGNED_SHORT);
+    FAIL_IF_NOT(MPI_Traits<unsigned short>::element_type() == MPI_UNSIGNED_SHORT);
     FAIL_IF_NOT(MPI_Traits<unsigned int>::element_type() == MPI_UNSIGNED);
     FAIL_IF_NOT(MPI_Traits<unsigned long>::element_type() == MPI_UNSIGNED_LONG);
     FAIL_IF_NOT(MPI_Traits<long double>::element_type() == MPI_LONG_DOUBLE);
@@ -79,7 +78,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstWait(rtt_dsxx::UnitTest &ut) {
   using namespace rtt_c4;
 
@@ -111,7 +110,7 @@ void tstWait(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -122,6 +121,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstC4_Req.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Data_Table.hh"
 #include "ds++/Release.hh"
@@ -15,7 +15,7 @@
 using namespace std;
 using rtt_dsxx::Data_Table;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_array(rtt_dsxx::UnitTest &ut) {
   constexpr array<int, 3> myarray = {3, 100, 12};
 
@@ -96,7 +96,7 @@ void test_array(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_scalar(rtt_dsxx::UnitTest &ut) {
   Data_Table<int> dt(32);
 
@@ -145,7 +145,7 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   if (ut.dbcOn() && !ut.dbcNothrow()) {
@@ -154,8 +154,7 @@ int main(int argc, char *argv[]) {
       test_array(ut);
       test_scalar(ut);
     } catch (rtt_dsxx::assertion &error) {
-      cout << "ERROR: While testing tstData_Table_Ptr, " << error.what()
-           << endl;
+      cout << "ERROR: While testing tstData_Table_Ptr, " << error.what() << endl;
       ut.numFails++;
     }
 
@@ -171,6 +170,6 @@ int main(int argc, char *argv[]) {
   return ut.numFails;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstData_Table.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

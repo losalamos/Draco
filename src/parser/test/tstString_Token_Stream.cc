@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstString_Token_Stream.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief  Unit tests for String_Token_Stream class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,14 +18,13 @@ using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstString_Token_Stream(UnitTest &ut) {
   // Build path for the input file "scanner_test.inp"
-  string const stInputFile(ut.getTestSourcePath() +
-                           std::string("scanner_test.inp"));
+  string const stInputFile(ut.getTestSourcePath() + std::string("scanner_test.inp"));
 
   ifstream infile(stInputFile.c_str());
   string contents;
@@ -216,8 +215,7 @@ void tstString_Token_Stream(UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
-      ITFAILS;
+    FAIL_IF(token.type() != STRING || token.text() != R"("manifest \"string\"")");
 
     token = tokens.shift();
     if (token.type() != OTHER || token.text() != "@")
@@ -256,8 +254,7 @@ void tstString_Token_Stream(UnitTest &ut) {
   //-------------------------------------------------------------------------//
   {
     // Build path for the input file "scanner_recovery.inp"
-    string const srInputFile(ut.getTestSourcePath() +
-                             std::string("scanner_recovery.inp"));
+    string const srInputFile(ut.getTestSourcePath() + std::string("scanner_recovery.inp"));
 
     ifstream linfile(srInputFile.c_str());
     string lcontents;
@@ -379,8 +376,7 @@ void tstString_Token_Stream(UnitTest &ut) {
     String_Token_Stream tokens("\"quote");
     try {
       tokens.shift();
-      ut.failure(
-          "Did NOT correctly report missing closing quote as syntax error");
+      ut.failure("Did NOT correctly report missing closing quote as syntax error");
     } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("missing closing quote correctly thrown and caught");
     }
@@ -430,7 +426,7 @@ void tstString_Token_Stream(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -439,6 +435,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstString_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,9 +1,9 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/unix-cuda.cmake
 # brief  Establish flags for Unix/Linux - Cuda
 # note   Copyright (C) 2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 
@@ -45,31 +45,32 @@ endif()
 if( NOT CUDA_FLAGS_INITIALIZED )
 
   set( CUDA_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-  set( CMAKE_CUDA_FLAGS                "${Draco_CUDA_ARCH} -g --expt-relaxed-constexpr")
+
+  string(APPEND CMAKE_CUDA_FLAGS " ${Draco_CUDA_ARCH} --expt-relaxed-constexpr")
+  string(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda")
   if( CMAKE_CXX_COMPILER_ID MATCHES "XL")
-    string(APPEND CMAKE_CUDA_FLAGS " -ccbin xlC -Xcompiler -std=c++14 -Xcompiler --gcc-toolchain=/usr/tce/packages/gcc/gcc-8.3.1 -Xcompiler -qxflag=disable__cplusplusOverride")
+    string(APPEND CMAKE_CUDA_FLAGS " -DCUB_IGNORE_DEPRECATED_CPP_DIALECT -DTHRUST_IGNORE_DEPRECATED_CPP_DIALECT")
+    string(APPEND CMAKE_CUDA_FLAGS " -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -std=c++14")
+    if( EXISTS /usr/gapps )
+      # ATS-2
+      string(APPEND CMAKE_CUDA_FLAGS " -Xcompiler --gcc-toolchain=/usr/tce/packages/gcc/gcc-8.3.1 -Xcompiler -qxflag=disable__cplusplusOverride")
+    elseif( EXISTS ${CMAKE_CXX_COMPILER_CONFIG_FILE} )
+      # Darwin
+      string(APPEND CMAKE_CUDA_FLAGS " -Xcompiler -F${CMAKE_CXX_COMPILER_CONFIG_FILE}")
+    endif()
   endif()
   set( CMAKE_CUDA_FLAGS_DEBUG          "-G -O0 -Xcudafe --display_error_number -Xcudafe --diag_suppress=1427")
-  set( CMAKE_CUDA_FLAGS_RELEASE        "-O2")
+  set( CMAKE_CUDA_FLAGS_RELEASE        "-O2") # -dipo
   set( CMAKE_CUDA_FLAGS_MINSIZEREL     "-O2")
   set( CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O2 --generate-line-info")
 
 endif()
 
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
-##---------------------------------------------------------------------------##
-set( CMAKE_CUDA_FLAGS                "${CMAKE_CUDA_FLAGS}"                CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_DEBUG          "${CMAKE_CUDA_FLAGS_DEBUG}"          CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_RELEASE        "${CMAKE_CUDA_FLAGS_RELEASE}"        CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_MINSIZEREL     "${CMAKE_CUDA_FLAGS_MINSIZEREL}"     CACHE
-     STRING "compiler flags" FORCE )
-set( CMAKE_CUDA_FLAGS_RELWITHDEBINFO "${CMAKE_CUDA_FLAGS_RELWITHDEBINFO}" CACHE
-     STRING "compiler flags" FORCE )
+deduplicate_flags(CMAKE_CUDA_FLAGS)
+force_compiler_flags_to_cache("CUDA")
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/unix-cuda.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

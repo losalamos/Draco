@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.t.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Template Implementation file for IpcressFile class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_ipcress_IpcressFile_t_hh
 #define rtt_cdi_ipcress_IpcressFile_t_hh
@@ -18,7 +18,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read 8 character strings from the binary file
  *
@@ -27,8 +27,7 @@ namespace rtt_cdi_ipcress {
  * \return void
  */
 template <typename T>
-void IpcressFile::read_v(size_t const byte_offset,
-                         std::vector<T> &vdata) const {
+void IpcressFile::read_v(size_t const byte_offset, std::vector<T> &vdata) const {
   Require(ipcressFileHandle.is_open());
 
   size_t const nitems(vdata.size());
@@ -59,6 +58,6 @@ void IpcressFile::read_v(size_t const byte_offset,
 
 #endif // rtt_cdi_ipcress_IpcressFile_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

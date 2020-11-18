@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   norms/L2norm.i.hh
  * \author Kent Budge
@@ -9,7 +9,7 @@
  *
  * This class is deprecated. New code should use Norm_Index instead.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef norms_L2norm_i_hh
 #define norms_L2norm_i_hh
@@ -22,17 +22,16 @@
 
 namespace rtt_norms {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Helper type for L2norm.
  *
  * \arg \a Field A real type such as float or double.
  */
-template <typename Field>
-double accumulate_norm_(double const init, Field const &x) {
+template <typename Field> double accumulate_norm_(double const init, Field const &x) {
   return init + norm<Field>(x);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \arg \a In An input container type whose elements are real, such as
  *            <code>vector<double></code> or <code>list<float></code>.
@@ -40,13 +39,12 @@ double accumulate_norm_(double const init, Field const &x) {
  * \param x Container representing a real vector whose norm is desired.
  */
 template <typename In> double L2norm(In const &x) {
-  double norm = std::accumulate(x.begin(), x.end(), 0.0,
-                                accumulate_norm_<typename In::value_type>);
+  double norm = std::accumulate(x.begin(), x.end(), 0.0, accumulate_norm_<typename In::value_type>);
 
   rtt_c4::global_sum(norm);
 
   Check(x.size() < UINT_MAX);
-  unsigned xlength(static_cast<unsigned>(x.size()));
+  auto xlength(static_cast<unsigned>(x.size()));
 
   rtt_c4::global_sum(xlength);
   Require(xlength > 0);
@@ -57,7 +55,7 @@ template <typename In> double L2norm(In const &x) {
   return norm;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * This function computes the norm of the difference between two vectors. We
  * have found that this is a surprisingly common operation, and there is
@@ -74,8 +72,7 @@ template <typename In> double L2norm(In const &x) {
  *
  * \param y Container representing a real vector.
  */
-template <typename In1, typename In2>
-double L2norm_diff(In1 const &x, In2 const &y) {
+template <typename In1, typename In2> double L2norm_diff(In1 const &x, In2 const &y) {
   Require(x.size() == y.size());
 
   auto xi = x.begin();
@@ -83,14 +80,13 @@ double L2norm_diff(In1 const &x, In2 const &y) {
   // Looping this way avoids restriction to random access containers.
   double norm = 0.0;
   for (; xi != x.end(); ++xi, ++yi) {
-    norm +=
-        norm_diff<typename In1::value_type, typename In2::value_type>(*xi, *yi);
+    norm += norm_diff<typename In1::value_type, typename In2::value_type>(*xi, *yi);
   }
 
   rtt_c4::global_sum(norm);
 
   Check(x.size() < UINT_MAX);
-  unsigned xlength(static_cast<unsigned>(x.size()));
+  auto xlength(static_cast<unsigned>(x.size()));
 
   rtt_c4::global_sum(xlength);
   Require(xlength > 0);
@@ -105,6 +101,6 @@ double L2norm_diff(In1 const &x, In2 const &y) {
 
 #endif // norms_L2norm_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of norms/L2norm.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

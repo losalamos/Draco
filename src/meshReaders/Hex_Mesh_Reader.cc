@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   meshReaders/Hex_Mesh_Reader.cc
  * \author John McGhee
@@ -6,7 +6,7 @@
  * \brief  Implements a CIC-19 Hex Mesh Format mesh reader.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Hex_Mesh_Reader.hh"
 #include <algorithm>
@@ -18,12 +18,11 @@ namespace rtt_meshReaders {
 
 using rtt_mesh_element::Element_Definition;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
-    : meshfile_name(filename), version("unknown"), npoints(0), ncells(0),
-      nvrtx(0), nvrpf(0), ndim(0), nvb_faces(0), nrb_faces(0), nmat(0),
-      point_coords(), ipar(), imat_index(), irgn_vb_index(), ipar_vb(),
-      ipar_rb(), node_sets() {
+    : meshfile_name(filename), version("unknown"), npoints(0), ncells(0), nvrtx(0), nvrpf(0),
+      ndim(0), nvb_faces(0), nrb_faces(0), nmat(0), point_coords(), ipar(), imat_index(),
+      irgn_vb_index(), ipar_vb(), ipar_rb(), node_sets() {
 
   // Open the mesh file for read.
   std::ifstream meshfile(filename.c_str(), std::ios::in);
@@ -37,8 +36,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     Insist(false, "Not a CIC-19 Hex Mesh File!");
 
   // Read in the dimensions of the problem.
-  meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces >>
-      nrb_faces >> nmat;
+  meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces >> nrb_faces >> nmat;
   Insist(check_dims(), "Error in Mesh Dimension data!");
 
   // Read the point coordinates data.
@@ -50,8 +48,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> point_coords[i][0] >> point_coords[i][1];
     else if (ndim == 3)
-      meshfile >> point_coords[i][0] >> point_coords[i][1] >>
-          point_coords[i][2];
+      meshfile >> point_coords[i][0] >> point_coords[i][1] >> point_coords[i][2];
     else
       Insist(false, "Dimension index out of range!");
   }
@@ -65,8 +62,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3];
     else if (ndim == 3)
-      meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3] >>
-          ipar[i][4] >> ipar[i][5] >> ipar[i][6] >> ipar[i][7];
+      meshfile >> ipar[i][0] >> ipar[i][1] >> ipar[i][2] >> ipar[i][3] >> ipar[i][4] >>
+          ipar[i][5] >> ipar[i][6] >> ipar[i][7];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrtx; j++)
@@ -88,8 +85,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> irgn_vb_index[i];
     else if (ndim == 3)
-      meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> ipar_vb[i][2] >>
-          ipar_vb[i][3] >> irgn_vb_index[i];
+      meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> ipar_vb[i][2] >> ipar_vb[i][3] >>
+          irgn_vb_index[i];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrpf; j++)
@@ -105,8 +102,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     else if (ndim == 2)
       meshfile >> ipar_rb[i][0] >> ipar_rb[i][1];
     else if (ndim == 3)
-      meshfile >> ipar_rb[i][0] >> ipar_rb[i][1] >> ipar_rb[i][2] >>
-          ipar_rb[i][3];
+      meshfile >> ipar_rb[i][0] >> ipar_rb[i][1] >> ipar_rb[i][2] >> ipar_rb[i][3];
     else
       Insist(false, "Dimension index out of range!");
     for (size_t j = 0; j < nvrpf; j++)
@@ -118,15 +114,17 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
   std::set<unsigned> stmp;
   for (unsigned i = 0; i < npoints; ++i)
     stmp.insert(i);
-  typedef std::map<std::string, std::set<unsigned>> resultT;
+  using resultT = std::map<std::string, std::set<unsigned>>;
   node_sets.insert(resultT::value_type("Interior", stmp));
 
   // Check the results
-
-  Ensure(invariant());
+  // [2020-07-06 KT] I am removing this check due to a clang-analyze warning:
+  // "Call to virtual method 'Hex_Mesh_Reader::invariant' during construction
+  // bypasses virtual dispatch [clang-analyzer-optin.cplusplus.VirtualCall]"
+  // Ensure(invariant());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns all the ndim-dimensional interior elements as well as the (ndim-1)
  * dimensional vacuum and reflective boundary face elements
@@ -138,7 +136,7 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
 
   // Alternatively, the private data of the class could be changed so that the
   // work done here is done in the constructor.  This would be more efficient if
-  // this is going to be used repetively.
+  // this is going to be used repetitively.
   std::vector<std::vector<unsigned>> result;
   for (unsigned i = 0; i < ncells; i++)
     result.push_back(ipar[i]);
@@ -149,16 +147,15 @@ std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns an element type for each element in the mesh. Will always be one of
- * rtt_mesh_element::Element_Definition::NODE,
- * rtt_mesh_element::Element_Definition::BAR_2,
- * rtt_mesh_element::Element_Definition::QUAD_4, or
- * rtt_mesh_element::Element_Definition::HEXA_8.
+ * - rtt_mesh_element::Element_Definition::NODE,
+ * - rtt_mesh_element::Element_Definition::BAR_2,
+ * - rtt_mesh_element::Element_Definition::QUAD_4, or
+ * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type>
-Hex_Mesh_Reader::get_element_types() const {
+std::vector<Element_Definition::Element_Type> Hex_Mesh_Reader::get_element_types() const {
   Element_Definition::Element_Type d1, d2;
   switch (ndim) {
   case (1):
@@ -184,16 +181,15 @@ Hex_Mesh_Reader::get_element_types() const {
   return tmp;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Returns the unique element types defined in the mesh. Will always be one of
- * rtt_mesh_element::Element_Definition::NODE,
- * rtt_mesh_element::Element_Definition::BAR_2,
- * rtt_mesh_element::Element_Definition::QUAD_4, or
- * rtt_mesh_element::Element_Definition::HEXA_8.
+ * - rtt_mesh_element::Element_Definition::NODE,
+ * - rtt_mesh_element::Element_Definition::BAR_2,
+ * - rtt_mesh_element::Element_Definition::QUAD_4, or
+ * - rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type>
-Hex_Mesh_Reader::get_unique_element_types() const {
+std::vector<Element_Definition::Element_Type> Hex_Mesh_Reader::get_unique_element_types() const {
   std::vector<Element_Definition::Element_Type> tmp;
   tmp.push_back(Element_Definition::NODE);
   tmp.push_back(Element_Definition::BAR_2);
@@ -213,27 +209,22 @@ Hex_Mesh_Reader::get_unique_element_types() const {
   return tmp;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * There is no provision for naming element sets in the Hex format. The
  * following default names are provided for the sets found on the mesh file:
- * <ul>
- *   <li> "Interior" -- All the ndim-dimensional cells in the problem.
- *   <li> "Interior_Region_x" - Interior cells with integer flag "x".
- *   <li> "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary
-*         faces.
- *   <li> "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with
- *        flag integer "x"
- *   <li> "Reflective_Boundary" -- All the (ndim-1) dimensional reflective
- *        boundary faces.
- * </ul>
+ * - "Interior" -- All the ndim-dimensional cells in the problem.
+ * - "Interior_Region_x" - Interior cells with integer flag "x".
+ * - "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary faces.
+ * - "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with flag integer "x"
+ * - "Reflective_Boundary" -- All the (ndim-1) dimensional reflective boundary
+ *   faces.
  */
-std::map<std::string, std::set<unsigned>>
-Hex_Mesh_Reader::get_element_sets() const {
+std::map<std::string, std::set<unsigned>> Hex_Mesh_Reader::get_element_sets() const {
   // Alternatively, the private data of the class could be changed so that the
-  // work done here is done in the constructor. This would be more efficient
-  // if this is going to be used repetively.
-  typedef std::map<std::string, std::set<unsigned>> resultT;
+  // work done here is done in the constructor. This would be more efficient if
+  // this is going to be used repetively.
+  using resultT = std::map<std::string, std::set<unsigned>>;
   resultT result;
   std::vector<int> tmp;
   std::set<int> rgn_index;
@@ -250,13 +241,13 @@ Hex_Mesh_Reader::get_element_sets() const {
   // efficiently in one loop? Note that this depends on the elements being
   // stored in a specific order.
   rgn_index = std::set<int>(imat_index.begin(), imat_index.end());
-  for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
-       i++) {
+  for (auto const &iregion : rgn_index) {
     std::ostringstream os_chdum("");
-    os_chdum << "Interior_Region_" << *i;
+    // os_chdum << "Interior_Region_" << *i;
+    os_chdum << "Interior_Region_" << iregion;
     stmp.clear();
     for (unsigned j = 0; j < ncells; j++)
-      if (imat_index[j] == *i)
+      if (imat_index[j] == iregion)
         stmp.insert(j);
     result.insert(resultT::value_type(os_chdum.str(), stmp));
   }
@@ -274,15 +265,15 @@ Hex_Mesh_Reader::get_element_sets() const {
     // efficiently in one loop? Note that this depends on the elements being
     // stored in a specific order.
     rgn_index = std::set<int>(irgn_vb_index.begin(), irgn_vb_index.end());
-    for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
-         i++) {
-
+    // for (std::set<int>::iterator i = rgn_index.begin(); i != rgn_index.end();
+    //      i++) {
+    for (auto const &iregion : rgn_index) {
       std::ostringstream os_chdum("");
-      os_chdum << "Vacuum_Boundary_Region_" << *i;
+      os_chdum << "Vacuum_Boundary_Region_" << iregion;
       stmp.clear();
       Check(nvb_faces < UINT_MAX);
       for (size_t j = 0; j < nvb_faces; j++) {
-        if (irgn_vb_index[j] == *i)
+        if (irgn_vb_index[j] == iregion)
           stmp.insert(static_cast<unsigned>(j) + ncells);
       }
       if (stmp.size() != 0)
@@ -294,8 +285,7 @@ Hex_Mesh_Reader::get_element_sets() const {
   // being stored in a specific order.
   if (nrb_faces > 0) {
     stmp.clear();
-    for (unsigned i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces;
-         i++)
+    for (unsigned i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces; i++)
       stmp.insert(i);
     result.insert(resultT::value_type("Reflective_Boundary", stmp));
   }
@@ -303,12 +293,11 @@ Hex_Mesh_Reader::get_element_sets() const {
   return result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Checks the internal consistancy of the Hex_Mesh_Reader private data.
 bool Hex_Mesh_Reader::invariant() const {
-  bool ldum = check_dims() && (point_coords.size() == npoints) &&
-              (ipar.size() == ncells) && (imat_index.size() == ncells) &&
-              (irgn_vb_index.size() == nvb_faces) &&
+  bool ldum = check_dims() && (point_coords.size() == npoints) && (ipar.size() == ncells) &&
+              (imat_index.size() == ncells) && (irgn_vb_index.size() == nvb_faces) &&
               (ipar_vb.size() == nvb_faces) && (ipar_rb.size() == nrb_faces);
 
   for (unsigned i = 0; i < ncells; ++i) {
@@ -331,8 +320,7 @@ bool Hex_Mesh_Reader::invariant() const {
 
 bool Hex_Mesh_Reader::check_dims() const {
   bool ldum = (npoints > 0) && (ncells > 0) &&
-              ((ndim == 3 && nvrtx == 8 && nvrpf == 4) ||
-               (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
+              ((ndim == 3 && nvrtx == 8 && nvrpf == 4) || (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
                (ndim == 1 && nvrtx == 2 && nvrpf == 1)) &&
               nmat > 0;
   return ldum;
@@ -340,6 +328,6 @@ bool Hex_Mesh_Reader::check_dims() const {
 
 } // end namespace rtt_meshReaders
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Hex_Mesh_Reader.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

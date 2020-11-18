@@ -1,4 +1,4 @@
-# ---------------------------------------------------------------------------- #
+#--------------------------------------------------------------------------------------------------#
 # file   config/print_target_properties.cmake
 # author Kelly Thompson
 # brief  Use these tools for debugging cmake code.  Calling
@@ -15,7 +15,7 @@
 #
 # Updates: The list of targets known by cmake may need to updated
 # periodically. See the instructions below for a bash command that will help.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 function(echo_target_property tgt prop)
   # v for value, d for defined, s for set
@@ -35,7 +35,7 @@ function(echo_target_property tgt prop)
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(echo_target tgt)
   if(NOT TARGET ${tgt})
     message("There is no target named '${tgt}'")
@@ -70,7 +70,7 @@ function(echo_target tgt)
 
     # Some targets aren't allowed:
     # Ref: https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR 
+    if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR
       prop MATCHES "_LOCATION$")
       continue()
     elseif( prop MATCHES "<LANG>" )
@@ -96,7 +96,7 @@ function(echo_target tgt)
   message("")
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 function(print_targets_properties)
   set(tgts ${ARGV})
   foreach(t ${tgts})
@@ -108,6 +108,6 @@ function(print_targets_properties)
   endforeach()
 endfunction()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # End config/print_target_properties.cmake
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#

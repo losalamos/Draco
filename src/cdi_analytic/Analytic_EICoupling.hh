@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_EICoupling.hh
  * \author Mathew Cleveland
@@ -6,7 +6,7 @@
  * \brief  Analytic_EICoupling class definition.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_Analytic_EICoupling_hh
 #define rtt_cdi_analytic_Analytic_EICoupling_hh
@@ -17,7 +17,7 @@
 
 namespace rtt_cdi_analytic {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Analytic_EICoupling
  *
@@ -40,15 +40,15 @@ namespace rtt_cdi_analytic {
  * Example usage of Analytic_EICoupling, Analytic_EICoupling_Model, and their
  * incorporation into rtt_cdi::CDI.
  */
-//============================================================================//
+//================================================================================================//
 
 class Analytic_EICoupling : public rtt_cdi::EICoupling {
 public:
   // Useful typedefs.
-  typedef std::shared_ptr<Analytic_EICoupling_Model> SP_Analytic_Model;
-  typedef std::shared_ptr<const Analytic_EICoupling_Model> const_SP_Model;
-  typedef std::vector<double> sf_double;
-  typedef std::vector<char> sf_char;
+  using SP_Analytic_Model = std::shared_ptr<Analytic_EICoupling_Model>;
+  using const_SP_Model = std::shared_ptr<const Analytic_EICoupling_Model>;
+  using sf_double = std::vector<double>;
+  using sf_char = std::vector<char>;
 
 private:
   // Analytic EICoupling model.
@@ -67,24 +67,22 @@ public:
   // >>> INTERFACE SPECIFIED BY rtt_cdi::EICoupling
 
   // Get electron ion coupling.
-  double getElectronIonCoupling(const double eTemperature,
-                                const double iTemperature, const double density,
-                                const double w_e, const double w_i) const;
+  double getElectronIonCoupling(const double eTemperature, const double iTemperature,
+                                const double density, const double w_e,
+                                const double w_i) const override;
 
-  sf_double getElectronIonCoupling(const sf_double &vetemperature,
-                                   const sf_double &vitemperature,
-                                   const sf_double &vdensity,
-                                   const sf_double &vw_e,
-                                   const sf_double &vw_i) const;
+  sf_double getElectronIonCoupling(const sf_double &vetemperature, const sf_double &vitemperature,
+                                   const sf_double &vdensity, const sf_double &vw_e,
+                                   const sf_double &vw_i) const override;
 
   // Pack the Analytic_EICoupling into a character string.
-  sf_char pack() const;
+  sf_char pack() const override;
 };
 
 } // end namespace rtt_cdi_analytic
 
 #endif // rtt_cdi_analytic_Analytic_EICoupling_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_EICoupling.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

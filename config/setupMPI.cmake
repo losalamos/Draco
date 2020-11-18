@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/setupMPI.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
@@ -17,7 +17,7 @@
 # MPI_FLAVOR openmpi|mpih|intel|mvapich2|spectrum|msmpi
 # MPI_VERSION NN.NN.NN
 #
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 include( FeatureSummary )
@@ -31,23 +31,20 @@ include( FeatureSummary )
 ##---------------------------------------------------------------------------##
 function( setMPIflavorVer )
 
-  # First attempt to determine MPI flavor -- scape flavor from full path
-  # (this ususally works for HPC or systems with modules)
+  # First attempt to determine MPI flavor -- scape flavor from full path (this ususally works for
+  # HPC or systems with modules)
   if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
     set( MPI_FLAVOR "cray" )
-  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi" OR
-      "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "openmpi" OR "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
     set( MPI_FLAVOR "openmpi" )
-  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mpich" OR
-      "${MPI_C_HEADER_DIR}" MATCHES "mpich")
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mpich" OR "${MPI_C_HEADER_DIR}" MATCHES "mpich")
     set( MPI_FLAVOR "mpich" )
-  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "impi" OR
-      "${MPIEXEC_EXECUTABLE}" MATCHES "clusterstudio" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "impi" OR "${MPIEXEC_EXECUTABLE}" MATCHES "clusterstudio")
     set( MPI_FLAVOR "intel" )
   elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "mvapich2")
     set( MPI_FLAVOR "mvapich2" )
-  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
-      "${MPIEXEC_EXECUTABLE}" MATCHES "lrun" )
+  elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR "${MPIEXEC_EXECUTABLE}" MATCHES "lrun"
+      OR "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
     set( MPI_FLAVOR "spectrum")
   endif()
 
@@ -159,33 +156,28 @@ macro( setupDracoMPIVars )
 
 endmacro()
 
-##---------------------------------------------------------------------------##
-## Query CPU topology
-##
-## Returns:
-##   MPI_CORES_PER_CPU
-##   MPI_CPUS_PER_NODE
-##   MPI_PHYSICAL_CORES
-##   MPI_MAX_NUMPROCS_PHYSICAL
-##   MPI_HYPERTHREADING
-##
-## See also:
-##   - Try running 'lstopo' for a graphical view of the local topology or
-##     'lscpu' for a text version.
-##   - EAP's flags can be found in Test.rh/General/run_job.pl (look for
-##     $other_args).  In particular, it may be useful to examine EAP's options
-##     for srun or aprun.
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# Query CPU topology
+#
+# Returns:
+#   MPI_CORES_PER_CPU
+#   MPI_CPUS_PER_NODE
+#   MPI_PHYSICAL_CORES
+#   MPI_MAX_NUMPROCS_PHYSICAL
+#   MPI_HYPERTHREADING
+#
+# See also:
+#   - Try running 'lstopo' for a graphical view of the local topology or 'lscpu' for a text version.
+#   - EAP's flags can be found in Test.rh/General/run_job.pl (look for $other_args).  In
+#     particular, it may be useful to examine EAP's options for srun or aprun.
+#--------------------------------------------------------------------------------------------------#
 macro( query_topology )
 
-  # These cmake commands, while useful, don't provide the topology detail that
-  # we are interested in (i.e. number of sockets per node). We could use the
-  # results of these queries to know if hyper-threading is enabled (if logical
-  # != physical cores)
-  # - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES
-  #   QUERY NUMBER_OF_PHYSICAL_CORES)
-  # - cmake_host_system_information(RESULT MPI_LOGICAL_CORES
-  #   QUERY NUMBER_OF_LOGICAL_CORES)
+  # These cmake commands, while useful, don't provide the topology detail that we are interested in
+  # (i.e. number of sockets per node). We could use the results of these queries to know if
+  # hyper-threading is enabled (if logical != physical cores)
+  # - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES QUERY NUMBER_OF_PHYSICAL_CORES)
+  # - cmake_host_system_information(RESULT MPI_LOGICAL_CORES  QUERY NUMBER_OF_LOGICAL_CORES)
 
   # start with default values
   set( MPI_CORES_PER_CPU 4 )
@@ -230,8 +222,7 @@ macro( query_topology )
     "Number of cores per cpu" FORCE )
 
   #
-  # Check for hyper-threading - This is important for reserving threads for
-  # OpenMP tests...
+  # Check for hyper-threading - This is important for reserving threads for OpenMP tests...
   #
   math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
     "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
@@ -244,9 +235,9 @@ macro( query_topology )
   endif()
 endmacro()
 
-##---------------------------------------------------------------------------##
-## Setup OpenMPI
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# Setup OpenMPI
+#--------------------------------------------------------------------------------------------------#
 macro( setupOpenMPI )
 
   # sanity check, these OpenMPI flags (below) require version >= 1.8
@@ -254,34 +245,51 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
-  # MPIEXEC_PREFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
-  # . --oversubscribe is only available for openmpi version >= 3.0
-  # . -H localhost,localhost,localhost,localhost might work for older versions.
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
-    set(runasroot "--allow-run-as-root --oversubscribe")
-  endif()
-  # For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of
-  # '-bind-to none'.  The 'bind-to none' is required to pack a node.
-  set( MPIEXEC_PREFLAGS "-bind-to none ${runasroot}" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN ${runasroot}" CACHE
-    STRING "extra mpirun flags (list)." FORCE)
-
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
-  #
+  # Notes:
+  # - For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of '-bind-to none'.  The
+  #   'bind-to none' is required to pack a node.
+  # - Adding '--debug-daemons' is often requested by the OpenMPI dev team in conjunction with
+  #   'export OMPI_MCA_btl_base_verbose=100' to obtain debug traces from openmpi.
+  set( MPIEXEC_PREFLAGS "-bind-to none")
+  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
   # Setup for OMP plus MPI
-  #
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
-    set( MPIEXEC_OMP_PREFLAGS
-      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
+    set( MPIEXEC_OMP_PREFLAGS "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
   endif()
 
-  set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
-    CACHE STRING "extra mpirun flags (list)." FORCE )
+  # Special settings for CI
+  # . --oversubscribe is only available for openmpi version >= 3.0
+  # . -H localhost,localhost,localhost,localhost might work for older versions.
+  # . --allow-run-as-root is required for CI builds.
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
+    set(runasroot "--allow-run-as-root --oversubscribe")
+    string(APPEND MPIEXEC_PREFLAGS           " ${runasroot}")
+    string(APPEND MPIEXEC_PREFLAGS_PERFBENCH " ${runasroot}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS       " ${runasroot}")
+    unset(runasroot)
+  endif()
+
+  # Spectrum-MPI on darwin
+  # Limit communication to on-node via '-intra sm' or 'intra vader'
+  # https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
+  if( "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
+    set(smpi-sm-only "-intra sm -aff off --report-bindings")
+    string(APPEND MPIEXEC_PREFLAGS     " ${smpi-sm-only}")
+    string(APPEND MPIEXEC_OMP_PREFLAGS " ${smpi-sm-only}")
+    unset(smpi-sm-only)
+  endif()
+
+  # Cache the result
+  set( MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS_PERFBENCH}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_OMP_PREFLAGS}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
   mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
     MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
@@ -318,29 +326,26 @@ macro( setupCrayMPI )
   # salloc/sbatch options:
   # --------------------
   # -N        limit job to a single node.
-  # --gres=craynetwork:0 This option allows more than one srun to be running at
-  #           the same time on the Cray. There are 4 gres “tokens” available. If
-  #           unspecified, each srun invocation will consume all of
-  #           them. Setting the value to 0 means consume none and allow the user
-  #           to run as many concurrent jobs as there are cores available on the
-  #           node. This should only be specified on the salloc/sbatch command.
-  #           Gabe doesn't recommend this option for regression testing.
+  # --gres=craynetwork:0 This option allows more than one srun to be running at the same time on the
+  #           Cray. There are 4 gres “tokens” available. If unspecified, each srun invocation will
+  #           consume all of them. Setting the value to 0 means consume none and allow the user to
+  #           run as many concurrent jobs as there are cores available on the node. This should only
+  #           be specified on the salloc/sbatch command.  Gabe doesn't recommend this option for
+  #           regression testing.
   # --vm-overcommit=disable|enable Do not allow overcommit of heap resources.
   # -p knl    Limit allocation to KNL nodes.
   # srun options:
   # --------------------
-  # --cpu_bind=verbose,cores
-  #           bind MPI ranks to cores
-  #           print a summary of binding when run
-  # --exclusive This option will keep concurrent jobs from running on the same
-  #           cores. If you want to background tasks to have them run
-  #           simultaneously, this option is required to be set or they will
-  #           stomp on the same cores.
+  # --cpu_bind=verbose,cores Bind MPI ranks to cores and print a summary of binding when run
+  # --exclusive This option will keep concurrent jobs from running on the same cores. If you want to
+  #           background tasks to have them run simultaneously, this option is required to be set or
+  #           they will stomp on the same cores.
 
   set(preflags " ") # -N 1 --cpu_bind=verbose,cores
   string(APPEND preflags " --gres=craynetwork:0") # --exclusive
   set( MPIEXEC_PREFLAGS ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
+  # consider adding '-m=cyclic'
   set( MPIEXEC_PREFLAGS_PERFBENCH ${preflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
@@ -351,6 +356,7 @@ endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
+## - https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
 ##---------------------------------------------------------------------------##
 macro( setupSpectrumMPI )
 
@@ -377,7 +383,12 @@ macro( setupSpectrumMPI )
   #                         total
   # - jsrun -a4 -c16 -g2 => 4 tasks, 16 cores, 2 gpus
 
-  set( MPIEXEC_PREFLAGS "--threads=1 --bind=off -v")
+  if( MPIEXEC_EXECUTABLE MATCHES jsrun )
+    # 1 resource set; 1 thread; no gpu; no binding --nrs 1
+    set( MPIEXEC_PREFLAGS "-c 1 -g 0 --bind none")
+  elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
+    set( MPIEXEC_PREFLAGS "--pack --threads=1 -v") # --bind=off
+  endif()
   # --pack ==> -c 1 -g 0.  This is actually bad for us. Disable
   # lrun -n 2 -c 10 --threads=10 --bind=off ==>
   # jsrun --np 1 --nrs 1 -c ALL_CPUS -g ALL_GPUS -d plane:1 -b rs -X 1
@@ -388,8 +399,17 @@ macro( setupSpectrumMPI )
   #
 
   if( DEFINED ENV{OMP_NUM_THREADS} )
-#    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS}" )
-    set( MPIEXEC_OMP_PREFLAGS "-c $ENV{OMP_NUM_THREADS} --threads=$ENV{OMP_NUM_THREADS} --bind=off -v" )
+    if( MPIEXEC_EXECUTABLE MATCHES jsrun )
+      # 1 resource set; OMP_NUM_THREADS tasks; no gpu; no binding
+      set( MPIEXEC_OMP_PREFLAGS "--nrs 1 -c $ENV{OMP_NUM_THREADS} -g 0 --bind none")
+    elseif( MPIEXEC_EXECUTABLE MATCHES lrun )
+      if( DEFINED ENV{OMP_NUM_THREADS} )
+        # --bind=off
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=$ENV{OMP_NUM_THREADS} -c$ENV{OMP_NUM_THREADS} -v" )
+      else()
+        set( MPIEXEC_OMP_PREFLAGS "--pack --threads=4 -c 4 -v" )
+      endif()
+    endif()
   endif()
 
   set( MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS}
@@ -400,9 +420,9 @@ macro( setupSpectrumMPI )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Setup MPI when on Linux
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( setupMPILibrariesUnix )
 
   # MPI ---------------------------------------------------------------------
@@ -422,8 +442,8 @@ macro( setupMPILibrariesUnix )
         "Program to execute MPI parallel programs." )
     endif()
 
-    # If this is a Cray system and the Cray MPI compile wrappers are used, then
-    # do some special setup:
+    # If this is a Cray system and the Cray MPI compile wrappers are used, then do some special
+    # setup:
 
     if(  CMAKE_CXX_COMPILER_WRAPPER MATCHES CrayPrgEnv )
       if( NOT EXISTS ${MPIEXEC_EXECUTABLE} )
@@ -440,15 +460,15 @@ macro( setupMPILibrariesUnix )
       endif()
       set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
         "Program to execute MPI parallel programs." FORCE )
-      set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
-        "mpirun flag used to specify the number of processors to use")
+      set( MPIEXEC_NUMPROC_FLAG "--np" CACHE STRING
+        "mpirun flag used to specify the number of processors to use" FORCE)
     endif()
 
     # Call the standard CMake FindMPI macro.
     find_package( MPI QUIET )
 
-    # Try to discover the MPI flavor and the vendor version. Returns
-    # MPI_VERSION, MPI_FLAVOR as cache variables
+    # Try to discover the MPI flavor and the vendor version. Returns MPI_VERSION, MPI_FLAVOR as
+    # cache variables
     setMPIflavorVer()
 
     # Set additional flags, environments that are MPI vendor specific.
@@ -470,8 +490,8 @@ The Draco build system doesn't know how to configure the build for
   CMAKE_CXX_COMPILER_WRAPPER = ${CMAKE_CXX_COMPILER_WRAPPER}")
     endif()
 
-    # Mark some of the variables created by the above logic as 'advanced' so
-    # that they do not show up in the 'simple' ccmake view.
+    # Mark some of the variables created by the above logic as 'advanced' so that they do not show
+    # up in the 'simple' ccmake view.
     mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
 
     message(STATUS "Looking for MPI.......found ${MPIEXEC_EXECUTABLE}")
@@ -514,8 +534,7 @@ macro( setupMPILibrariesWindows )
     find_package( MPI QUIET )
 
     if( EXISTS "$ENV{MSMPI_INC}" )
-      # if msmpi is installed via vcpkg, then use the vcpkg include path
-      # instead of the system one.
+      # if msmpi is installed via vcpkg, then use the vcpkg include path instead of the system one.
       file(TO_CMAKE_PATH $ENV{MSMPI_INC} MSMPI_INC)
       unset(tmp)
       foreach( ipath ${MPI_C_INCLUDE_DIRS} )
@@ -541,10 +560,9 @@ macro( setupMPILibrariesWindows )
         MPI_C_VERSION_MAJOR = ${MPI_C_VERSION_MAJOR}")
     endif()
 
-    # If this macro is called from a MinGW builds system (for a CAFS
-    # subdirectory) and is trying to discover MS-MPI, the above check will fail
-    # (when CMake > 3.12). However, MS-MPI is known to be good when linking with
-    # Visual Studio so override the 'failed' report.
+    # If this macro is called from a MinGW builds system (for a CAFS subdirectory) and is trying to
+    # discover MS-MPI, the above check will fail (when CMake > 3.12). However, MS-MPI is known to be
+    # good when linking with Visual Studio so override the 'failed' report.
     if( "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
         "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
       if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
@@ -559,8 +577,8 @@ macro( setupMPILibrariesWindows )
         MPI_Fortran_FOUND = ${MPI_Fortran_FOUND}")
     endif()
 
-    # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch this
-    # is and save this path to MPI_Fortran_INCLUDE_PATH
+    # For MS-MPI, mpifptr.h is architecture dependent. Figure out what arch this is and save this
+    # path to MPI_Fortran_INCLUDE_PATH
     list( GET MPI_C_LIBRARIES 0 first_c_mpi_library )
     if( first_c_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
       get_filename_component( MPI_Fortran_INCLUDE_PATH
@@ -644,8 +662,7 @@ macro( setupMPILibrariesWindows )
       set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
         "Total number of available MPI ranks" FORCE )
 
-      # Check for hyper-threading - This is important for reserving threads for
-      # OpenMP tests...
+      # Check for hyper-threading - This is important for reserving threads for OpenMP tests...
 
       math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
         "${MPI_CPUS_PER_NODE} * ${MPI_CORES_PER_CPU}" )
@@ -694,14 +711,13 @@ macro( setupMPILibrariesWindows )
 
   endif()
 
-  # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
-  # Instead, link to libmsmpi.a that was created via gendef.exe and dlltool.exe
-  # from msmpi.dll.  Ref: http://www.geuz.org/pipermail/getdp/2012/001520.html,
-  # or
+  # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.  Instead, link to
+  # libmsmpi.a that was created via gendef.exe and dlltool.exe from msmpi.dll.  Ref:
+  # http://www.geuz.org/pipermail/getdp/2012/001520.html, or
   # https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment
 
-  # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by
-  # creating libmsmpi.a. (Last tested: 2017-08-31)
+  # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by creating libmsmpi.a. (Last
+  # tested: 2017-08-31)
   #
   # 1.) You need MinGW/MSYS. Please make sure that the Devel tools are
   #     installed.
@@ -723,12 +739,11 @@ macro( setupMPILibrariesWindows )
       ")
     endif()
 
-    # only do this if we are in a CMakeAddFortranSubdirectory directive when
-    # the main Generator is Visual Studio and the Fortran subdirectory uses
-    # gfortran with Makefiles.
+    # only do this if we are in a CMakeAddFortranSubdirectory directive when the main Generator is
+    # Visual Studio and the Fortran subdirectory uses gfortran with Makefiles.
 
-    # MS-MPI has an architecture specific include directory that FindMPI.cmake
-    # doesn't seem to pickup correctly.  Add it here.
+    # MS-MPI has an architecture specific include directory that FindMPI.cmake doesn't seem to
+    # pickup correctly.  Add it here.
     get_target_property(mpilibdir MPI::MPI_Fortran INTERFACE_LINK_LIBRARIES)
     get_target_property(mpiincdir MPI::MPI_Fortran
       INTERFACE_INCLUDE_DIRECTORIES)
@@ -743,8 +758,8 @@ macro( setupMPILibrariesWindows )
       endif()
     endforeach()
 
-    # Reset the include directories for MPI::MPI_Fortran to pull in the extra
-    # $arch locations (if any)
+    # Reset the include directories for MPI::MPI_Fortran to pull in the extra $arch locations (if
+    # any)
 
     list(REMOVE_DUPLICATES mpiincdir)
     set_target_properties(MPI::MPI_Fortran
@@ -778,6 +793,6 @@ macro(setupMPILibraries)
   endif()
 endmacro()
 
-#----------------------------------------------------------------------#
-# End setupMPI.cmake
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+# End of setupMPI.cmake
+#--------------------------------------------------------------------------------------------------#

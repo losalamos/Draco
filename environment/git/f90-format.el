@@ -1,13 +1,12 @@
 ; -*- Mode: emacs -*-
-; ------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------;
 ; File:   f90-format.el
 ; Date:   Wednesday, Nov 07, 2018, 11:11 am
 ; Author: Kelly Thompson
-; Note:   Copyright (C) 2016-2019, Triad National Security, LLC.
-;         All rights are reserved.
-; ------------------------------------------------------------------------------
+; Note:   Copyright (C) 2016-2019, Triad National Security, LLC., All rights are reserved.
+;-------------------------------------------------------------------------------------------------;
 ; If emacs is available, enforce f90 formatting (indentation, etc) rules.
-; ------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------;
 
 (defun collapse-blank-lines
   (start end)
@@ -39,9 +38,9 @@ Plain `C-u' (no number) uses `fill-column' as LEN."
       (message "Not found"))))
 
 ;; (defun wrap-long-lines ()
-;;   "Find all lines > 80 columns in the current buffer and wrap them."
+;;   "Find all lines > 100 columns in the current buffer and wrap them."
 ;;   (interactive "p")
-;;   (set-fill-column 80)
+;;   (set-fill-column 100)
 ;;   (goto-long-line)
 ;; foob
 ;;   (end-of-line)
@@ -53,7 +52,7 @@ Plain `C-u' (no number) uses `fill-column' as LEN."
    ;; For more information about f90-mode settins in Emacs:
    ;; 1. M-x f90-mode
    ;; 2. C-h m
-   (set-fill-column 80)
+   (set-fill-column 100)
    (turn-on-auto-fill)
    (setq f90-beginning-ampersand nil)
    (setq f90-associate-indent 0)
@@ -74,6 +73,6 @@ Plain `C-u' (no number) uses `fill-column' as LEN."
    (save-buffer)
 )
 
-; ------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------;
 ; end f90-format.el
-; ------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------;

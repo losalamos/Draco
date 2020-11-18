@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   Norms_Index.hh
  * \author Rob Lowrie
@@ -6,7 +6,7 @@
  * \brief  Header file for Norms_Index.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_norms_Norms_Index_hh
 #define rtt_norms_Norms_Index_hh
@@ -15,7 +15,7 @@
 
 namespace rtt_norms {
 
-//============================================================================//
+//================================================================================================//
 /*!
   \class Norms_Index
 
@@ -42,12 +42,11 @@ namespace rtt_norms {
 
   \param Index_t The index type for labeling the location of the Linf norm.
 */
-//============================================================================//
-template <typename Index_t>
-class DLL_PUBLIC_norms Norms_Index : public Norms_Base {
+//================================================================================================//
+template <typename Index_t> class Norms_Index : public Norms_Base {
 public:
   //! Expose the template parameter
-  typedef Index_t Index;
+  using Index = Index_t;
 
 private:
   // DATA
@@ -70,9 +69,6 @@ public:
   // Accumulates results to processor \a n.
   void comm(const size_t n = 0);
 
-  // Re-initializes the norm values.
-  // void reset();
-
   // Equality operator.
   bool operator==(const Norms_Index &n) const;
 
@@ -86,6 +82,6 @@ public:
 
 #endif // rtt_norms_Norms_Index_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of norms/Norms_Index.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

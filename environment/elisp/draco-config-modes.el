@@ -51,6 +51,36 @@ and add turn-on-auto-fill to the mppl-mode-hook."
     (add-hook 'mppl-mode-hook 'draco-mppl-mode-hook)))
 
 ;; ========================================
+;; Yaml
+;; ========================================
+
+; (require 'yaml-mode)
+(defun draco-setup-yaml-mode ()
+  "Autoload yaml-mode, append appropriate suffixes to auto-mode-alist
+and add turn-on-auto-fill to the yaml-mode-hook."
+  (interactive)
+  (progn
+    (autoload 'yaml-mode   "yaml-mode" nil t)
+    (setq auto-mode-alist
+	  (append '(("\\.yaml$" . yaml-mode)
+		    ("\\.yml$" . yaml-mode)
+		    ("\\.yaml.in$" . yaml-mode)
+		    ("\\.yml.in$" . yaml-mode)
+		    ) auto-mode-alist))
+    (defun draco-yaml-mode-hook ()
+      "draco-mode hooks added to YAML mode."
+      (defvar yaml-tab-width 2)
+      (local-set-key [(control c)(control c)] 'comment-region)
+      (local-set-key [(f5)] 'draco-makefile-divider)
+      (local-set-key [(f6)] 'draco-makefile-comment-divider)
+      (turn-on-draco-mode)
+      (turn-off-auto-fill)
+      (set-fill-column draco-code-comment-width)
+      (require 'fill-column-indicator)
+      (fci-mode))
+    (add-hook 'yaml-mode-hook 'draco-yaml-mode-hook)))
+
+;; ========================================
 ;; TCL
 ;; ========================================
 

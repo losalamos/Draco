@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstPacking_Utils.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Test the routines used for serializing and de-serializing C++ objects
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Release.hh"
@@ -23,12 +23,11 @@ using rtt_dsxx::soft_equiv;
 using rtt_dsxx::unpack_data;
 using rtt_dsxx::Unpacker;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-void do_some_packing(Packer &p, vector<double> const &vd,
-                     vector<int> const &vi) {
+void do_some_packing(Packer &p, vector<double> const &vd, vector<int> const &vi) {
   for (const auto &item : vd)
     p << item;
   for (const auto &item : vi)
@@ -36,16 +35,15 @@ void do_some_packing(Packer &p, vector<double> const &vd,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   // make data
 
   vector<double> vd = {2.3432, 2.3432, 2.3432, 22.4, 2.3432};
   vector<int> vi = {7, 22, 6};
   std::string const test_string = "test";
-  size_t const total_size = vi.size() * sizeof(int) +
-                            vd.size() * sizeof(double) + test_string.length() +
-                            1;
+  size_t const total_size =
+      vi.size() * sizeof(int) + vd.size() * sizeof(double) + test_string.length() + 1;
 
   // includes one padding byte
   Packer p;
@@ -104,8 +102,7 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
     vector<char> lbuffer(buffer_size);
     bool byte_swap = false;
     Check(vd.size() < UINT32_MAX);
-    rtt_dsxx::pack_vec_double(&vd[0], &lbuffer[0],
-                              static_cast<uint32_t>(vd.size()), byte_swap);
+    rtt_dsxx::pack_vec_double(&vd[0], &lbuffer[0], static_cast<uint32_t>(vd.size()), byte_swap);
 
     Unpacker localUnpacker;
     localUnpacker.set_buffer(lbuffer.size(), &lbuffer[0]);
@@ -126,7 +123,7 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
 
   double const eps = std::numeric_limits<double>::epsilon();
@@ -262,8 +259,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     u.extract(4, cc.data());
 
     FAIL_IF_NOT(u.get_ptr() == buffer + size);
-    FAIL_IF_NOT(
-        rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()));
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(lx.begin(), lx.end(), ref.begin(), ref.end()));
     FAIL_IF_NOT(c[0] == 'c');
     FAIL_IF_NOT(c[1] == 'h');
     FAIL_IF_NOT(c[2] == 'a');
@@ -299,12 +295,11 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   delete[] buffer;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void packing_test_c90(rtt_dsxx::UnitTest &ut) {
   using std::vector;
 
-  std::cout << "\nTesting packing/unpacking size_t and uint64_t..."
-            << std::endl;
+  std::cout << "\nTesting packing/unpacking size_t and uint64_t..." << std::endl;
   size_t const numFails(ut.numFails);
 
   // make some data
@@ -375,7 +370,7 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void std_string_test(rtt_dsxx::UnitTest &ut) {
   vector<char> pack_string;
 
@@ -434,7 +429,7 @@ void std_string_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void packing_functions_test(rtt_dsxx::UnitTest &ut) {
 
   // Data to pack:
@@ -555,7 +550,7 @@ void packing_functions_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void endian_conversion_test(rtt_dsxx::UnitTest &ut) {
 
   Packer p;
@@ -595,12 +590,11 @@ void endian_conversion_test(rtt_dsxx::UnitTest &ut) {
     up >> unpacked_letter;
 
   // Check
-  FAIL_IF_NOT(std::string(unpacked_letters.begin(), unpacked_letters.end()) ==
-              letters);
+  FAIL_IF_NOT(std::string(unpacked_letters.begin(), unpacked_letters.end()) == letters);
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void packing_map_test(rtt_dsxx::UnitTest &ut) {
   std::cout << "\nTesting packing/unpacking std::maps..." << std::endl;
 
@@ -673,7 +667,7 @@ void packing_map_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -688,6 +682,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstPacking_Utils.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

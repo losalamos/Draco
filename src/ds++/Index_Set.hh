@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/Index_Set.hh
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef dsxx_Index_Set_hh
 #define dsxx_Index_Set_hh
@@ -16,7 +15,7 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Index_Set
  * \brief Represents a D-dimensional set if indices.
@@ -25,7 +24,7 @@ namespace rtt_dsxx {
 /*!
  * \example ds++/test/tstIndex_Set.cc
  */
-//============================================================================//
+//================================================================================================//
 template <unsigned D, int OFFSET> class Index_Set {
 public:
   // CREATORS
@@ -34,14 +33,10 @@ public:
   Index_Set() = default;
 
   //! Construct with pointer to sizes
-  explicit Index_Set(unsigned const *const dimensions) : m_array_size(0) {
-    set_size(dimensions);
-  }
+  explicit Index_Set(unsigned const *const dimensions) { set_size(dimensions); }
 
   //! Construct with all dimensions equal
-  explicit Index_Set(const unsigned dimension) : m_array_size(0) {
-    set_size(dimension);
-  }
+  explicit Index_Set(const unsigned dimension) { set_size(dimension); }
 
   //! Destructor
   virtual ~Index_Set() = default;
@@ -59,8 +54,7 @@ public:
   void set_size(const unsigned size);
 
   bool index_in_range(int index) const {
-    return (index >= OFFSET) &&
-           (index < static_cast<int>(m_array_size) + OFFSET);
+    return (index >= OFFSET) && (index < static_cast<int>(m_array_size) + OFFSET);
   }
   bool index_in_range(int index, unsigned dimension) const;
 
@@ -115,6 +109,6 @@ protected:
 
 #endif // dsxx_Index_Set_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/Index_Set.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/UnitTest.hh
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef dsxx_UnitTest_hh
 #define dsxx_UnitTest_hh
@@ -19,22 +18,19 @@
 
 namespace rtt_dsxx {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class UnitTest
  * \brief Object to encapsulate unit testing of Draco classes and functions.
  *
- * This is a virtual class.  You should use one of the following UnitTest
- * classes in your test application:
+ * This is a virtual class.  You should use one of the following UnitTest classes in your test
+ * application:
  *
- * \li ScalarUnitTest      - Used for testing code that does not use parallel
- *                       communication (rtt_c4).
- * \li ParallelUnitTest    - Used for testing code that does use parallel
- *                       communications (rtt_c4).
- * \li ApplicationUnitTest - Used for testing applications that run in
- *                       parallel. The unit test code is run in scalar-mode
- *                       and calls mpirun to run the specified application.
- *
+ * - ScalarUnitTest      - Used for testing code that does not use parallel communication (rtt_c4).
+ * - ParallelUnitTest    - Used for testing code that does use parallel communications (rtt_c4).
+ * - ApplicationUnitTest - Used for testing applications that run in parallel. The unit test code
+ *                         is run in scalar-mode and calls mpirun to run the specified application.
+ * .
  *
  * \sa UnitTest.cc for additional details.
  *
@@ -55,7 +51,7 @@ namespace rtt_dsxx {
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  */
-//============================================================================//
+//================================================================================================//
 
 class UnitTest {
 public:
@@ -67,8 +63,8 @@ public:
   // CREATORS
 
   //! Default constructors.
-  UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
-           std::ostream &out_, bool const verbose_ = true);
+  UnitTest(int & /* argc */, char **&argv, string_fp_void release_, std::ostream &out_,
+           bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
@@ -85,8 +81,7 @@ public:
   // MANIPULATORS
 
   /*!
-   * \brief Only special cases should use these (like the unit test
-   *        tstScalarUnitTest.cc).
+   * \brief Only special cases should use these (like the unit test tstScalarUnitTest.cc).
    */
   void dbcRequire(bool b) {
     m_dbcRequire = b;
@@ -107,16 +102,15 @@ public:
   bool failure(std::string const &failmsg);
   bool passes(std::string const &passmsg);
   bool check(bool, std::string const &checkmsg, bool fatal = false);
-  virtual bool check_all(bool good, std::string const &checkmsg,
-                         bool fatal = false) {
+  virtual bool check_all(bool good, std::string const &checkmsg, bool fatal = false) {
     return check(good, checkmsg, fatal);
   }
 
   /*!
    * \brief Provide a summary of the test status
    *
-   * This pure virtual function must be provided by the inherited class.  It
-   * should provide output concerning the status of UnitTest.
+   * This pure virtual function must be provided by the inherited class.  It should provide output
+   * concerning the status of UnitTest.
    */
   void status() const {
     out << resultMessage() << std::endl;
@@ -137,20 +131,17 @@ public:
   std::string getTestPath() const { return testPath; }
   std::string getTestName() const { return testName; }
   /*!
-   * \brief Returns the path of the test binary directory (useful for locating
-   *        input files).
+   * \brief Returns the path of the test binary directory (useful for locating input files).
    *
-   * This function depends on the cmake build system setting the
-   * COMPILE_DEFINITIONS target property. This should be done in
-   * config/component_macros.cmake.
+   * This function depends on the cmake build system setting the COMPILE_DEFINITIONS target
+   * property. This should be done in config/component_macros.cmake.
    *
-   * set_target_property( unit_test_target_name
-   *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
+   * set_target_property( unit_test_target_name COMPILE_DEFINITIONS
+   *    PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
    */
   static inline std::string getTestInputPath() {
 #ifdef PROJECT_BINARY_DIR
-    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR,
-                                                          rtt_dsxx::FC_NATIVE));
+    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR, rtt_dsxx::FC_NATIVE));
     // if absent, append path separator.
     if (sourcePath[sourcePath.size() - 1] != rtt_dsxx::WinDirSep &&
         sourcePath[sourcePath.size() - 1] != rtt_dsxx::UnixDirSep)
@@ -158,27 +149,23 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc, this
-    // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defined.
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this function must be
+    // valid.  ScalarUnitTest.cc is not a unit test so PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
   /*!
-   * \brief Returns the path of the test source directory (useful for locating
-   *        input files).
+   * \brief Returns the path of the test source directory (useful for locating input files).
    *
-   * This function depends on the cmake build system setting the
-   * COMPILE_DEFINITIONS target property. This should be done in
-   * config/component_macros.cmake.
+   * This function depends on the cmake build system setting the COMPILE_DEFINITIONS target
+   * property. This should be done in config/component_macros.cmake.
    *
    * set_target_property( unit_test_target_name
    *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
    */
   static inline std::string getTestSourcePath() {
 #ifdef PROJECT_SOURCE_DIR
-    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR,
-                                                          rtt_dsxx::FC_NATIVE));
+    std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR, rtt_dsxx::FC_NATIVE));
     // if absent, append path separator.
     if (sourcePath[sourcePath.size() - 1] != rtt_dsxx::WinDirSep &&
         sourcePath[sourcePath.size() - 1] != rtt_dsxx::UnixDirSep)
@@ -186,9 +173,8 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc, this
-    // function must be valid.  ScalarUnitTest.cc is not a unit test so
-    // PROJECT_SOURCE_DIR is not defined.
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this function must be
+    // valid.  ScalarUnitTest.cc is not a unit test so PROJECT_SOURCE_DIR is not defined.
     return std::string("unknown");
 #endif
   }
@@ -239,53 +225,53 @@ protected:
 #define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
-#define FAIL_IF_NOT(c)                                                         \
-  if (!(c))                                                                    \
+#define FAIL_IF_NOT(c)                                                                             \
+  if (!(c))                                                                                        \
   ITFAILS
-#define FAIL_IF(c)                                                             \
-  if ((c))                                                                     \
+#define FAIL_IF(c)                                                                                 \
+  if ((c))                                                                                         \
   ITFAILS
-#define UT_EPILOG(foo)                                                         \
-  catch (rtt_dsxx::assertion & err) {                                          \
-    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (std::exception & err) {                                               \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (...) {                                                                \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "An unknown exception was thrown on processor " << std::endl; \
-    foo.numFails++;                                                            \
-  };                                                                           \
+#define UT_EPILOG(foo)                                                                             \
+  catch (rtt_dsxx::assertion & err) {                                                              \
+    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "                        \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (std::exception & err) {                                                                   \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (...) {                                                                                    \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "An unknown exception was thrown on processor " << std::endl;                     \
+    foo.numFails++;                                                                                \
+  };                                                                                               \
   return foo.numFails;
-#define UT_EPILOG2(foo, bar)                                                   \
-  catch (rtt_dsxx::assertion & err) {                                          \
-    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (std::exception & err) {                                               \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "the following error was thrown...\n"                         \
-              << err.what() << std::endl;                                      \
-    foo.numFails++;                                                            \
-  }                                                                            \
-  catch (...) {                                                                \
-    std::cout << "ERROR: While testing " << foo.getTestName() << ", "          \
-              << "An unknown exception was thrown on processor " << std::endl; \
-    foo.numFails++;                                                            \
-  };                                                                           \
+#define UT_EPILOG2(foo, bar)                                                                       \
+  catch (rtt_dsxx::assertion & err) {                                                              \
+    std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "                        \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (std::exception & err) {                                                                   \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "the following error was thrown...\n"                                             \
+              << err.what() << std::endl;                                                          \
+    foo.numFails++;                                                                                \
+  }                                                                                                \
+  catch (...) {                                                                                    \
+    std::cout << "ERROR: While testing " << foo.getTestName() << ", "                              \
+              << "An unknown exception was thrown on processor " << std::endl;                     \
+    foo.numFails++;                                                                                \
+  };                                                                                               \
   return foo.numFails + bar.numFails;
 
 #endif // dsxx_UnitTest_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/UnitTest.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

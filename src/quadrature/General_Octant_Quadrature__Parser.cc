@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "General_Octant_Quadrature.hh"
 #include "parser/utilities.hh"
@@ -13,7 +13,7 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * The specification body must specify the number of ordinates and the number of
  * levels.  If it's organized in levels, then there is an sn order with which it
@@ -23,22 +23,19 @@ using namespace rtt_parser;
  *
  * \param tokens Token stream from which to parse the specification.
  */
-std::shared_ptr<Quadrature>
-General_Octant_Quadrature::parse(Token_Stream &tokens) {
+std::shared_ptr<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "sn order", "expected sn order");
 
   unsigned sn_order = parse_positive_integer(tokens);
 
   token = tokens.shift();
-  tokens.check_syntax(token.text() == "number of ordinates",
-                      "expected number of ordinates");
+  tokens.check_syntax(token.text() == "number of ordinates", "expected number of ordinates");
 
   unsigned Num = parse_positive_integer(tokens);
 
   token = tokens.shift();
-  tokens.check_syntax(token.text() == "number of levels",
-                      "expected number of levels");
+  tokens.check_syntax(token.text() == "number of levels", "expected number of levels");
 
   unsigned number_of_levels = parse_unsigned_integer(tokens);
 
@@ -53,8 +50,7 @@ General_Octant_Quadrature::parse(Token_Stream &tokens) {
     } else if (token.text() == "square") {
       quadrature_class = SQUARE_QUADRATURE;
     } else {
-      tokens.check_semantics(token.text() == "octant",
-                             "unrecognized quadrature class");
+      tokens.check_semantics(token.text() == "octant", "unrecognized quadrature class");
     }
   }
 
@@ -69,12 +65,12 @@ General_Octant_Quadrature::parse(Token_Stream &tokens) {
 
   tokens.check_syntax(tokens.shift().type() == END, "missing end?");
 
-  return std::shared_ptr<Quadrature>(new General_Octant_Quadrature(
-      sn_order, mu, eta, xi, wt, number_of_levels, quadrature_class));
+  return std::shared_ptr<Quadrature>(
+      new General_Octant_Quadrature(sn_order, mu, eta, xi, wt, number_of_levels, quadrature_class));
 }
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Quadrature.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstDebug_Options.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -17,9 +17,9 @@ using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void debug_options_test(UnitTest &ut) {
   for (unsigned i = 1; i < 2 * DEBUG_PROBLEM - 1; i++) {
@@ -49,8 +49,7 @@ void debug_options_test(UnitTest &ut) {
   {
     unsigned bit = add_debug_option("EXTENDED");
     // duplicate okay
-    ut.check(add_debug_option("EXTENDED") == bit,
-             "duplicate definition benign");
+    ut.check(add_debug_option("EXTENDED") == bit, "duplicate definition benign");
     string out = "EXTENDED";
     String_Token_Stream tokens(out);
     ut.check(parse_debug_options(tokens) == bit, "added debug option");
@@ -73,12 +72,11 @@ void debug_options_test(UnitTest &ut) {
     } catch (std::invalid_argument &) {
       done = false;
     }
-    ut.check(!done,
-             "catches illegal argument error for inconsistent duplicate");
+    ut.check(!done, "catches illegal argument error for inconsistent duplicate");
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -88,6 +86,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstDebug_Options.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

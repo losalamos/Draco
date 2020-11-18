@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Sn_Ordinate_Space.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Definition of class Sn_Ordinate_Space
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Sn_Ordinate_Space_hh
 #define quadrature_Sn_Ordinate_Space_hh
@@ -16,7 +16,7 @@
 namespace rtt_quadrature {
 using std::ostream;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Sn_Ordinate_Space
  *
@@ -27,7 +27,7 @@ using std::ostream;
  * a straightforward manner from the Ylm and the weight associated with each
  * ordinate direction.
  */
-//============================================================================//
+//================================================================================================//
 
 class Sn_Ordinate_Space : public Ordinate_Space {
 public:
@@ -38,8 +38,7 @@ public:
   //! Specify the ordinate quadrature with defaults.
   Sn_Ordinate_Space(unsigned dimension, rtt_mesh_element::Geometry geometry,
                     std::vector<Ordinate> const &, int expansion_order,
-                    bool extra_starting_directions = false,
-                    Ordering ordering = LEVEL_ORDERED);
+                    bool extra_starting_directions = false, Ordering ordering = LEVEL_ORDERED);
 
   // MANIPULATORS
 
@@ -64,20 +63,15 @@ protected:
 
   // IMPLEMENTATION
 
-  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                                unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
 
-  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                               unsigned sn_order);
+  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
 
 private:
   // NESTED CLASSES AND TYPEDEFS
@@ -98,6 +92,6 @@ private:
 
 #endif // quadrature_Sn_Ordinate_Space_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Sn_Ordinate_Space.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   special_functions/factorial.i.hh
+ * \file   special_functions/Factorial.i.hh
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef sf_factorial_i_hh
 #define sf_factorial_i_hh
@@ -16,7 +15,7 @@
 
 namespace rtt_sf {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief factorial
  *
@@ -31,8 +30,8 @@ template <typename T> T factorial(T const k) {
   static T const tabularValue[] = {
       1,    1,     2,      6,       24,       120,      720,
       5040, 40320, 362880, 3628800, 39916800, 479001600
-      // These are the next two values in the series.  Unfortunately, they
-      // are too big to be held by type long.
+      // These are the next two values in the series.  Unfortunately, they are too big to be held by
+      // type long.
       // , 6227020800, 87178291200
   };
   static unsigned const N(13);
@@ -45,7 +44,7 @@ template <typename T> T factorial(T const k) {
     throw std::range_error("factorial out of range");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Fraction of factorials, \f$ (k!)/(l!) \f$
  *
@@ -69,6 +68,6 @@ template <typename T> double factorial_fraction(T const k, T const l) {
 
 #endif // sf_factorial_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of sf/factorial.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

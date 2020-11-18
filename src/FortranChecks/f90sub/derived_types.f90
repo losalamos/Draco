@@ -1,24 +1,23 @@
-!----------------------------------*-F90-*----------------------------------
+!---------------------------------------------*-F90-*---------------------------------------------!
 !
 ! file   FortranCheck/ftest/derived_types.f90
 ! author Kelly Thompson, Allan Wollaber
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 derived types passed into a C++ function
-! note   Copyright (c) 2016-2020 Triad National Security, LLC.
-!        All rights reserved.
-!---------------------------------------------------------------------------
+! note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
+!-------------------------------------------------------------------------------------------------!
 
-!---------------------------------------------------------------------------
-! Create a module that contains a derived type and an interface to a C
-! function that uses it.  Note the "import" statement brings the type
-! into local scope.
-!---------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------------------!
+! Create a module that contains a derived type and an interface to a C function that uses it.
+! Note the "import" statement brings the type into local scope.
+!-------------------------------------------------------------------------------------------------!
+
 module rtt_test_derived_types
   use iso_c_binding, only : c_double, c_int, c_int64_t, c_ptr, c_null_ptr
   implicit none
-  ! Proper enumeration types don't work in F2003, but this is close
-  ! Enumerations with bind(C) are just integers anyway
-  ! See: http://www.rhinocerus.net/forum/lang-fortran/92750-no-enumeration-data-type-fortran.html
+  ! Proper enumeration types don't work in F2003, but this is close.  Enumerations with bind(C) are
+  ! just integers anyway.  See:
+  ! http://www.rhinocerus.net/forum/lang-fortran/92750-no-enumeration-data-type-fortran.html
   integer(c_int), parameter :: GREY=0, MULTIGROUP=1, ODF=2
 
   ! Create a derived type that contains some "extra" information
@@ -74,8 +73,7 @@ subroutine test_derived_types() bind(c)
 
   error_code = -1
 
-  print '(a,f7.5)', "On Fortran side, derived type contains double = ", &
-       mit%some_double
+  print '(a,f7.5)', "On Fortran side, derived type contains double = ", mit%some_double
   print '(a,i3)', "integer = ", mit%some_int
   print '(a,i11)', "large integer = ", mit%some_large_int
   print '(a,i4)', "int_array(1) = ", int_array(1)

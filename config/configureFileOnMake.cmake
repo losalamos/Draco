@@ -1,11 +1,11 @@
-#-----------------------------*-cmake-*----------------------------------------#
+#--------------------------------------------*-cmake-*---------------------------------------------#
 # file   draco/config/configureFileOnMake.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Configure a file during the 'make' process instead of during 'cmake'
 # note   Copyright (C) 2016-2020 Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Use:
 #   cmake -PconfigureFileOnMake.cmake -DINFILE=$infile \
@@ -56,6 +56,8 @@ endif()
 
 # Decode "---" as " " for variables passed to this function
 string( REPLACE "___" " " project_brief "${project_brief}" )
+string( REPLACE "___" " " DOXYGEN_HTML_DYNAMIC_MENUS "${DOXYGEN_HTML_DYNAMIC_MENUS}" )
+string( REPLACE "___" " " PERL_PATH "${PERL_PATH}" )
 
 # Ensure we use native path styles
 file( TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}" PROJECT_SOURCE_DIR )
