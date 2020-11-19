@@ -36,14 +36,18 @@ void gendir_test(rtt_dsxx::UnitTest &ut) {
   std::ofstream gendir_tmp_file;
   gendir_tmp_file.open(gendir_tmp_path);
   gendir_tmp_file << "dedx\n";
-  gendir_tmp_file << "  z=2004.000dx  d=2020-06-03  l=dedx\n";
-  gendir_tmp_file << "    f=" << data_path << "\n";
-  gendir_tmp_file << "    ng=4   aw=4.001510E+00  awr=3.96713510838 end\n";
+  //gendir_tmp_file << "  z=2004.000dx  d=2020-06-03  l=dedx\n";
+  gendir_tmp_file << "  z=2004.000dx  d=2020-06-03  l=rpa_cut\n";
+  //gendir_tmp_file << "    f=" << data_path << "\n";
+  gendir_tmp_file << "    f=" << data_path << "  ft=asc  ln=2\n";
+  //gendir_tmp_file << "    ng=4   aw=4.001510E+00  awr=3.96713510838 end\n";
+  gendir_tmp_file << "    o=45  ng=91  aw=4.001510E+00  awr=3.96713510838 end\n";
   gendir_tmp_file << "end\n";
   gendir_tmp_file.close();
 
   std::string gendir_path = gendir_tmp_path;
-  std::string library_in = "dedx";
+  //std::string library_in = "dedx";
+  std::string library_in = "rpa_cut";
 
   NDI_CP_Eloss eloss(gendir_path, library_in, target, projectile);
 

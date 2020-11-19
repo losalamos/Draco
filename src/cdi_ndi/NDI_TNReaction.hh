@@ -57,13 +57,6 @@ private:
 #ifdef NDI_FOUND
   void load_ndi();
 #endif
-
-private:
-  //! Name of reaction to read
-  const std::string reaction;
-
-  //! Energy bounds of multigroup data (MeV) to be passed to NDI
-  std::vector<double> mg_e_bounds;
 };
 
 } // namespace rtt_cdi_ndi

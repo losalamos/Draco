@@ -28,19 +28,11 @@ namespace rtt_cdi_ndi {
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
                                const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : reaction(reaction_in), mg_e_bounds(mg_e_bounds_in),
-      NDI_Base(gendir_in, "tn", library_in) {
+    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_e_bounds_in) {
 
-  Require(reaction.length() > 0);
-  Require(mg_e_bounds.size() > 0);
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
-  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(),
-                                                   mg_e_bounds.end()));
-  Require(mg_e_bounds.back() > 0);
-
+  printf("NNow loading NDI!\n");
+  printf("%i!!\n", mg_e_bounds.size());
+  printf("%i!!\n", mg_e_bounds_in.size());
   load_ndi();
 }
 //------------------------------------------------------------------------------------------------//
@@ -53,19 +45,9 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : reaction(reaction_in), mg_e_bounds(mg_e_bounds_in),
-      NDI_Base("tn", library_in) {
+    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
 
-  Require(reaction.length() > 0);
-  Require(mg_e_bounds.size() > 0);
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
-  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(),
-                                                   mg_e_bounds.end()));
-  Require(mg_e_bounds.back() > 0);
-
+  printf("Now loading NDI!\n");
   load_ndi();
 }
 //------------------------------------------------------------------------------------------------//
@@ -83,6 +65,7 @@ void NDI_TNReaction::load_ndi() {
   int ndi_error = -9999;
   constexpr int c_str_len = 4096;
   char c_str_buf[c_str_len];
+  printf("here: %i\n", mg_e_bounds.size());
 
   // Open gendir file (index of a complete NDI dataset)
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
@@ -186,6 +169,11 @@ void NDI_TNReaction::load_ndi() {
   ndi_error = NDI2_get_float64_val(dataset_handle, NDI_REAC_Q, &q_reaction);
   Require(ndi_error == 0);
   q_reaction *= 1000.; // MeV -> keV
+
+  printf("bounds.size: %i\n", mg_e_bounds.size());
+  for (auto bound : mg_e_bounds) {
+    printf("bound: %e\n", bound);
+  }
 
   //! Specify multigroup option
   ndi_error = NDI2_set_float64_vec_option(dataset_handle, NDI_COLLAPSE, mg_e_bounds.data(),

@@ -60,7 +60,7 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in,
 }
 //----------------------------------------------------------------------------//
 /*!
- * \brief Load NDI dataset.
+ * \brief Load NDI dataset
  *
  * This function opens an NDI file, navigates to the appropriate dataset, reads
  * the data into internal buffers, and closes the file. For more details on NDI,
@@ -86,6 +86,7 @@ void NDI_CP_Eloss::load_ndi() {
   Require(ndi_error == 0);
 
   //! Set library option by changing default value for this handle
+  printf("library: %s\n", library.c_str());
   ndi_error = NDI2_set_option_gendir(gendir_handle, NDI_LIBRARY_DEFAULT,
                                      library.c_str());
   Require(ndi_error == 0);
@@ -98,6 +99,24 @@ void NDI_CP_Eloss::load_ndi() {
   //! Set projectile isotope
   ndi_error = NDI2_set_isotope(dataset_handle,
                                 std::to_string(projectile.get_zaid()).c_str());
+  printf("zaid: %i\n", projectile.get_zaid());
+
+  int num_targets = 0;
+  ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TARGET, &num_targets);
+  Require(ndi_error == 0);
+  printf("num_targets: %i\n", num_targets);
+
+  int num_grps = 0;
+  ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_GRPS, &num_grps);
+  Require(ndi_error == 0);
+  printf("num_grps: %i\n", num_grps);
+
+  printf("NDI_DEDX: %i\n", NDI_DEDX);
+
+  int num_densities = 0;
+  ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_DENSITIES, &num_densities);
+  Require(ndi_error == 0);
+  printf("num_densities: %i\n", num_densities);
 
   printf("[%s : %i] not implemented!\n", __FILE__, __LINE__);
   exit(-1);
