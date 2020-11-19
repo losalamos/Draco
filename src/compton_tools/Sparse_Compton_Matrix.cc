@@ -4,18 +4,21 @@
  * \author Andrew Till
  * \date   11 May 2020
  * \brief  Implementation file for compton interface
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ * \note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
  */
 //------------------------------------------------------------------------------------------------//
 
 #include "compton_tools/Sparse_Compton_Matrix.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
-
 #include <iostream>
 
 namespace rtt_compton_tools {
 
+#ifdef 0
+/*!
+ * \brief Data container class for a sparse Compton matrix representation. Not yet implemented.
+ */
 Sparse_Compton_Matrix::Sparse_Compton_Matrix(size_t num_points, size_t num_groups,
                                              size_t num_leg_moments, size_t data_len)
     : num_points_(num_points), num_groups_(num_groups), num_leg_moments_(num_leg_moments),
@@ -42,6 +45,7 @@ void Sparse_Compton_Matrix::matvec(std::vector<double> &x, bool zeroth_moment_on
   // TODO: Implement!
   std::cout << "SCM matvec not yet implemented\n";
 }
+#endif
 
 } // namespace rtt_compton_tools
 

@@ -3,7 +3,7 @@
 # author Andrew Till
 # date   14 Oct 2020
 # brief  This is a Python script that is used to test compton_tools/CSKrw
-# note   Copyright (C) 2017-2020, Triad National Security, LLC. All rights reserved.
+# note   Copyright (C) 2020, Triad National Security, LLC. All rights reserved.
 # ------------------------------------------------------------------------------------------------ #
 import sys
 import re

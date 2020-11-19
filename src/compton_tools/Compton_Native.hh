@@ -4,7 +4,7 @@
  * \author Andrew Till
  * \date   11 May 2020
  * \brief  Implementation file for native compton bindary-read and temperature interpolation
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ * \note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -31,7 +31,6 @@ enum class Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
  * 1) access (interpolate) data from existing multigroup csk libraries
  * 2) obtain auxiliary information from existing multigroup libraries
  *    (electron temperature bounds, frequency group structures, etc)
- *
  */
 
 /*!
@@ -50,7 +49,7 @@ public:
   //--------------------------------------------------------------------------//
 
   // \brief Constructor
-  Compton_Native(const std::string &filename);
+  explicit Compton_Native(const std::string &filename);
 
   //--------------------------------------------------------------------------//
   // TEMPERATURE INTERPOLATION FUNCTIONS
@@ -168,37 +167,37 @@ private:
   // PRIVATE DATA
   //--------------------------------------------------------------------------//
 
-  size_t num_temperatures_;
-  size_t num_groups_;
-  size_t num_leg_moments_;
-  size_t num_evals_;
+  size_t num_temperatures_{0U}; //<! Number of temperature evaluations for csk data
+  size_t num_groups_{0U};       //<! Number of energy groups for csk data
+  size_t num_leg_moments_{0U};  //<! Number of Legendre moments for csk data
+  size_t num_evals_{0U};        //<! Number of "evaluations" (linear/nonlinear, in/out scattering)
   // a point is a (Leg moment, eval) pair
   // first eval has all Leg moments and all others have only the 0th moment
-  size_t num_points_;
+  size_t num_points_{0U};
 
   // Temperature grid for csk data (keV)
-  std::vector<double> Ts_;
+  std::vector<double> Ts_{};
 
   // Energy grid (MG energy boundaries) for csk data (keV)
-  std::vector<double> Egs_;
+  std::vector<double> Egs_{};
 
   // sparse data storage
 
   // first group-to with nonzero value
   // 1D array of [temperature, group-from]
-  std::vector<size_t> first_groups_;
+  std::vector<size_t> first_groups_{};
 
   // cumulative sum of row offsets into data_ and derivs_
   // 1D array of [temperature, group-from]
-  std::vector<size_t> indexes_;
+  std::vector<size_t> indexes_{};
 
   // csk data
   // 1D array of [eval, moment, temperature, group-from, group-to]
-  std::vector<double> data_;
+  std::vector<double> data_{};
 
   // temperature derivatives of csk data
   // 1D array of [eval, moment, temperature, group-from, group-to]
-  std::vector<double> derivs_;
+  std::vector<double> derivs_{};
 
   //--------------------------------------------------------------------------//
   // PRIVATE HELPER FUNCTIONS

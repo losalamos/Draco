@@ -3,8 +3,8 @@
  * \file   compton_tools/cskrw.cc
  * \author Andrew Till
  * \date   11 May 2020
- * \brief  Converter of ASCII to binary csk Compton files
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved.
+ * \brief  Converter of ASCII to binary csk Compton files. Intended for internal use.
+ * \note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -37,7 +37,7 @@ using FP = double;
 struct Sparse_Compton_Data {
 
   // Construct with zeros and known sizes
-  Sparse_Compton_Data();
+  Sparse_Compton_Data() = default;
 
   // first group-to with nonzero value
   // index with T and gfrom; applies to all points
@@ -52,8 +52,6 @@ struct Sparse_Compton_Data {
   std::vector<FP> data;
   std::vector<FP> derivs;
 };
-
-Sparse_Compton_Data::Sparse_Compton_Data() : first_groups(), indexes(), data(), derivs() {}
 
 struct Dense_Compton_Data {
   UINT numEvals;
@@ -524,7 +522,8 @@ Sparse_Compton_Data Dense_Compton_Data::copy_to_sparse() {
     indexes[i + 1U] = indexes[i] + di;
   }
 
-  // Save all Legendre moments for first (in_lin) eval and 0th Legendre moment for other (out_lin, nldiff) evals
+  // Save all Legendre moments for first (in_lin) eval
+  // and save 0th Legendre moment for other (out_lin, nldiff) evals
   const UINT numBinaryEvals = (numEvals > 1U) ? 3U : 1U;
   const UINT numPoints = (numLegMoments + numBinaryEvals - 1U);
   const UINT numPerPoint = indexes[i_sz - 1U];
@@ -811,14 +810,6 @@ void Dense_Compton_Data::print_contents(int verbosity, int precision) {
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Basic reader of the csk ASCII file format
- *
- * Modification of this executable to make it more useful is encouraged.
- *
- * What should this do? Read ASCII and do ... ?
- * Different than Converter++, which converts ASCII to binary?
- * Different than funcitonality to interpolate in T and print out a few files?
- *
- * Will be useful in testing ASCII reader and renormalization!!
  */
 //------------------------------------------------------------------------------------------------//
 void read_csk_files(std::string const &basename, int verbosity) {

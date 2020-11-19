@@ -3,8 +3,8 @@
  * \file   compton_tools/Compton_Native.cc
  * \author Andrew Till
  * \date   11 May 2020
- * \brief  Implementation file for native compton bindary-read and temperature interpolation
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ * \brief  Implementation file for native compton binary-read and temperature interpolation
+ * \note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -33,7 +33,7 @@ namespace rtt_compton_tools {
  * \brief find location in a sorted list and min/max value to be within list
  *
  * \param[in] xs vector of monotonically increasing and unique values
- * \param[inout] x value whose location in xs needs to be found;
+ * \param[in,out] x value whose location in xs needs to be found;
  *               modified so that xs[index] <= x <= xs[index+1]
  * \return Index in [0, xs.size()-2] so that xs[index] and xs[index+1] are valid
  *
@@ -48,9 +48,9 @@ size_t find_index(const vec_d &xs, double &x) {
   size_t index = (loc - xs.cbegin());
 
   // Move index and x to be interior
-  size_t len = xs.size();
-  double xmin = xs[0];
-  double xmax = xs[len - 1U];
+  const size_t len = xs.size();
+  const double xmin = xs[0];
+  const double xmax = xs[len - 1U];
   index = std::min(len - 1U, std::max(static_cast<size_t>(1), index)) - 1U;
   x = std::max(xmin, std::min(xmax, x));
   return index;
@@ -63,24 +63,25 @@ size_t find_index(const vec_d &xs, double &x) {
  * \param[in] x value of independent variable
  * \param[in] xL gridpoint to the left of x (xL <= x)
  * \param[in] xR gridpoint to the right of x (x <= xR)
- * \return length-4 array of Hermite polynomials used for interpolation from data at xL and xR to x
- *
- * If vL/vR are values of a function at xL/xR and dL/dR are derivatives of a function at xL/xR, then
+ * \return length-4 array of Hermite polynomials x for generic interpolation in x
+ * If vL/vR are function values at xL/xR and dL/dR are function derivatives at xL/xR, then
  * H[0] * vL + H[1] * vR + H[2] * dL + H[3] * dR
  * interpolates the value of the function at x, where this function computes and returns H
  */
-std::array<double, 4> hermite(double x, double xL, double xR) {
-  Require(xL <= x && x <= xR && xL < xR);
+template <typename T_FP> std::array<T_FP, 4> hermite(T_FP x, T_FP xL, T_FP xR) {
+  Require(xL < xR);
+  Require(xL <= x);
+  Require(x <= xR);
 
   // Spacing of interval
-  double dx = xR - xL;
+  const T_FP dx = xR - xL;
   // Left/right basis functions
-  double bL = (xR - x) / dx;
-  double bR = (x - xL) / dx;
+  const T_FP bL = (xR - x) / dx;
+  const T_FP bR = (x - xL) / dx;
 
   // Hermite functions
-  std::array<double, 4> hermite_eval{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR),
-                                     -dx * bL * bL * (bL - 1), dx * bR * bR * (bR - 1)};
+  std::array<T_FP, 4> hermite_eval{bL * bL * (3 - 2 * bL), bR * bR * (3 - 2 * bR),
+                                   -dx * bL * bL * (bL - 1), dx * bR * bR * (bR - 1)};
   return hermite_eval;
 }
 
@@ -94,12 +95,10 @@ std::array<double, 4> hermite(double x, double xL, double xR) {
  *
  * \param[in] filename Name of the binary csk data file to be read
  *
- * This function has rank 0 read the binary csk data file, which fills in the class' data members.
+ * Rank 0 reads the binary csk data file, which fills in the class' data members.
  * The data members are then broadcast to other MPI ranks to finish their construction.
  */
-Compton_Native::Compton_Native(const std::string &filename)
-    : num_temperatures_(0U), num_groups_(0U), num_leg_moments_(0U), num_evals_(0U), num_points_(0U),
-      Ts_(0U), Egs_(0U), first_groups_(0U), indexes_(0U), data_(0U), derivs_(0U) {
+Compton_Native::Compton_Native(const std::string &filename) {
   Require(filename.length() > 0U);
   int rank = rtt_c4::node();
   constexpr int bcast_rank = 0;
@@ -150,6 +149,7 @@ void Compton_Native::broadcast_MPI(int errcode) {
   num_evals_ = pack[p++];
   num_points_ = pack[p++];
   data_size = pack[p++];
+  Insist(data_size < (1U << 31U), "Unrepresentable with int needed in the broadcast");
 
   // Derived sizes
   const auto tsz = static_cast<int>(num_temperatures_);
@@ -161,35 +161,29 @@ void Compton_Native::broadcast_MPI(int errcode) {
   // Broadcast grids
   if (rank != bcast_rank)
     Ts_.resize(tsz);
-  Check(Ts_.size() == static_cast<size_t>(tsz));
-  rtt_c4::broadcast(&Ts_[0], tsz, 0);
+  rtt_c4::broadcast((tsz > 0 ? &Ts_[0] : nullptr), tsz, 0);
 
   if (rank != bcast_rank)
     Egs_.resize(egsz);
-  Check(Egs_.size() == static_cast<size_t>(egsz));
-  rtt_c4::broadcast(&Egs_[0], egsz, 0);
+  rtt_c4::broadcast((egsz > 0 ? &Egs_[0] : nullptr), egsz, 0);
 
   // Broadcast sparse data structures
   if (rank != bcast_rank)
     first_groups_.resize(fgsz);
-  Check(first_groups_.size() == static_cast<size_t>(fgsz));
-  rtt_c4::broadcast(&first_groups_[0], fgsz, 0);
+  rtt_c4::broadcast((fgsz > 0 ? &first_groups_[0] : nullptr), fgsz, 0);
 
   if (rank != bcast_rank)
     indexes_.resize(isz);
-  Check(indexes_.size() == static_cast<size_t>(isz));
-  rtt_c4::broadcast(&indexes_[0], isz, 0);
+  rtt_c4::broadcast((isz > 0 ? &indexes_[0] : nullptr), isz, 0);
 
   // Broadcast data itself
   if (rank != bcast_rank)
     data_.resize(dsz);
-  Check(data_.size() == static_cast<size_t>(dsz));
-  rtt_c4::broadcast(&data_[0], dsz, 0);
+  rtt_c4::broadcast((dsz > 0 ? &data_[0] : nullptr), dsz, 0);
 
   if (rank != bcast_rank)
     derivs_.resize(dsz);
-  Check(derivs_.size() == static_cast<size_t>(dsz));
-  rtt_c4::broadcast(&derivs_[0], dsz, 0);
+  rtt_c4::broadcast((dsz > 0 ? &derivs_[0] : nullptr), dsz, 0);
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -215,9 +209,9 @@ int Compton_Native::read_binary(const std::string &filename) {
 
   // Ensure valid type
   // (using vector of char to avoid using C-style strings)
-  std::vector<char> expected = {' ', 'c', 's', 'k', ' ', '\0'};
-  std::vector<char> actual(expected.size());
-  for (size_t i = 0; i < expected.size(); ++i)
+  std::array<char, 6> expected = {' ', 'c', 's', 'k', ' ', '\0'};
+  std::array<char, 6> actual;
+  for (size_t i = 0; i < actual.size(); ++i)
     fin.read(&actual[i], sizeof(actual[i]));
   if (!std::equal(expected.begin(), expected.end(), actual.begin())) {
     std::cerr << "Expecting binary file " << filename << " to start with '";
@@ -379,7 +373,7 @@ int Compton_Native::read_binary(const std::string &filename) {
 /*!
  * \brief Interpolate csk data in temperature and return dense linear inscattering matrix
  *
- * \param[inout] inscat The flattened (1D), dense inscattering matrix as a vector
+ * \param[in,out] inscat The flattened (1D), dense inscattering matrix as a vector
  *               Order of inscat is (slow) [moment, group-to, group-from] (fast)
  *               Does NOT need to be the right size prior to calling
  * \param[in] Te_keV The electron temperature in keV at which the interpolation is desired
@@ -394,11 +388,11 @@ void Compton_Native::interp_dense_inscat(vec_d &inscat, double Te_keV,
   size_t iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<double, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<double, 4> hermite = rtt_compton_tools::hermite<double>(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const size_t sz = indexes_[indexes_.size() - 1];
-  const size_t end_leg = std::min(static_cast<size_t>(num_moments_truncate), num_leg_moments_);
+  const size_t end_leg = std::min(num_moments_truncate, num_leg_moments_);
   const size_t eval_offset = 0; // in_lin
 
   // Resize and fill with zeros
@@ -430,7 +424,7 @@ void Compton_Native::interp_dense_inscat(vec_d &inscat, double Te_keV,
 /*!
  * \brief Interpolate csk data in temperature and return linear outscattering vector
  *
- * \param[inout] outscat The 1D linear outscattering array at the desired temperature
+ * \param[in,out] outscat The 1D linear outscattering array at the desired temperature
  *               Has been summed over outgoing group so only index is [group-from]
  *               Does NOT need to be the right size prior to calling
  * \param[in] Te_keV The electron temperature in keV at which the interpolation is desired
@@ -442,7 +436,7 @@ void Compton_Native::interp_linear_outscat(vec_d &outscat, double Te_keV) const 
   size_t iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<double, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<double, 4> hermite = rtt_compton_tools::hermite<double>(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const size_t sz = indexes_[indexes_.size() - 1];
@@ -471,7 +465,7 @@ void Compton_Native::interp_linear_outscat(vec_d &outscat, double Te_keV) const 
 /*!
  * \brief Interpolate csk data in temperature and add nonlinear difference to outscattering
  *
- * \param[inout] outscat The 1D net outscattering array at the desired temperature
+ * \param[in,out] outscat The 1D net outscattering array at the desired temperature
  *               Has been summed over outgoing group so only index is [group-from]
  *               MUST be the right size (# groups) and initialized with data prior to calling
  * \param[in] Te_keV The electron temperature in keV at which the interpolation is desired
@@ -479,7 +473,7 @@ void Compton_Native::interp_linear_outscat(vec_d &outscat, double Te_keV) const 
  * \param[in] scale The scale for phi:
  *                  when the radiation is in equilibrium, sum_g phi_g = scale
  *
- * Adds the difference (nonlinear outscattering minus nonlinear inscattering) to the outscattering
+ * Adds difference (nonlinear outscattering minus nonlinear inscattering) to the outscattering
  * vector. The contribution is nonlinear because it depends on phi, the radiation field.
  * The use of scale allows phi to be passed in with arbitrary normalization (4pi, c, a, etc.).
  */
@@ -495,7 +489,7 @@ void Compton_Native::interp_nonlin_diff_and_add(vec_d &outscat, double Te_keV, c
   size_t iT = rtt_compton_tools::find_index(Ts_, Teff);
 
   // Fill Hermite function
-  std::array<double, 4> hermite = rtt_compton_tools::hermite(Teff, Ts_[iT], Ts_[iT + 1U]);
+  std::array<double, 4> hermite = rtt_compton_tools::hermite<double>(Teff, Ts_[iT], Ts_[iT + 1U]);
 
   // Precompute some sparse indexes
   const size_t sz = indexes_[indexes_.size() - 1];

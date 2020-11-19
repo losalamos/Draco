@@ -45,8 +45,9 @@ Synopsis of Active Draco Packages
   TOPS.
 * cdi_ndi - Wrapper around LANL's Nuclear Data Interface (NDI) library for accessing [nuclear data
   tables](https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html).
-* compton - Provides access to Compton scattering models and data as provided by the [CSK
+* compton_interface - Provides access to Compton scattering models and data as provided by the [CSK
   library](https://gitlab.lanl.gov/CSK/CSK)..
+* compton_tools - Provides performant converter, reader, and interpolation tools for Compton data
 * device - Wrapper for heterogeneous device communication
   * The classes in this component provide access to DaCS (deprecated) and CUDA calls for use on
     heterogeneous architecture platforms (GPU machines).

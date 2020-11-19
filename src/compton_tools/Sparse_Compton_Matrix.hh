@@ -4,7 +4,7 @@
  * \author Andrew Till
  * \date   22 May 2020
  * \brief  Header file for compton interface
- * \note   Copyright (C) 2017-2020 Triad National Security, LLC. All rights reserved.
+ * \note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
  */
 //------------------------------------------------------------------------------------------------//
 
@@ -34,6 +34,7 @@ namespace rtt_compton_tools {
 
 class Sparse_Compton_Matrix {
 
+#ifdef 0
 public:
   // Construct with zeros and known sizes
   Sparse_Compton_Matrix(size_t num_points, size_t num_groups, size_t num_leg_moments,
@@ -90,6 +91,7 @@ private:
   // csk data
   // 1D array of [moment, point, group-from, group-to]
   std::vector<double> data_;
+#endif
 };
 
 } // namespace rtt_compton_tools
