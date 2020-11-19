@@ -177,7 +177,6 @@ void show_cookies(std::string const &cond, std::string const &file, int const li
                              int const line);
 
 #if defined __CUDA_ARCH__ && defined USE_CUDA
-
 /*! \brief A special version of insist that does not throw.  Useful for GPU code. \sa
  *         device/config.h.in */
 __host__ __device__ inline void no_exception_insist(char const *const cond, char const *const msg,
@@ -186,7 +185,6 @@ __host__ __device__ inline void no_exception_insist(char const *const cond, char
   printf("The following message was provided: \"%s\"", msg);
   return;
 }
-
 #endif
 
 #if DBC & 16
@@ -381,6 +379,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr( !!(c), #c, m, __FILE__, __LINE__ )
 
@@ -417,6 +416,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
@@ -493,7 +493,7 @@ std::string verbose_error(std::string const &message);
 #ifndef Insist
 #define Insist(c,m)
 #endif
-#ifndef Insist
+#ifndef Insist_device
 #define Insist_device(c,m)
 #endif
 #ifndef Insist_ptr

@@ -108,7 +108,8 @@ function npwd()
   # Indicator that there has been directory truncation:
   local trunc_symbol="..."
   # substitute ~ for $HOME to shorten the full path
-  newPWD="${PWD//${HOME}/~}"
+  # shellcheck disable=SC2001
+  newPWD=$(echo "${PWD}" | sed -e "s%$HOME%~%")
   for dir in ${scratchdirs//:/ }; do
     newPWD="${newPWD//${dir}\/${USER}/#}"
   done
