@@ -11,6 +11,8 @@
 #include "NDI_CP_Eloss.hh"
 #include "ds++/DracoStrings.hh"
 
+#include <cmath>
+
 namespace rtt_cdi_ndi {
 
 // Protect actual NDI calls with NDI_FOUND macro:
@@ -106,17 +108,64 @@ void NDI_CP_Eloss::load_ndi() {
   Require(ndi_error == 0);
   printf("num_targets: %i\n", num_targets);
 
+  std::vector<int> target_zaids(num_targets);
+  ndi_error = NDI2_get_int_vec(dataset_handle, NDI_TARGET_ZAID, target_zaids.data(),
+    target_zaids.size());
+  Require(ndi_error == 0);
+
   int num_grps = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_GRPS, &num_grps);
   Require(ndi_error == 0);
-  printf("num_grps: %i\n", num_grps);
+  n_energy = static_cast<uint32_t>(num_grps);
 
-  printf("NDI_DEDX: %i\n", NDI_DEDX);
+  energies.resize(n_energy);
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_ENERGIES, energies.data(),
+    energies.size());
+  Require(ndi_error == 0);
+  min_log_energy = energies.front();
+  d_log_energy = energies[1] - energies[0];
+  min_energy = exp(min_log_energy);
+  max_energy = exp(min_log_energy + d_log_energy*n_energy);
+  printf("min: %e max: %e\n", min_energy, max_energy);
 
   int num_densities = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_DENSITIES, &num_densities);
   Require(ndi_error == 0);
-  printf("num_densities: %i\n", num_densities);
+  n_density = static_cast<uint32_t>(num_densities);
+
+  densities.resize(n_density);
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_DENSITIES, densities.data(),
+    densities.size());
+  Require(ndi_error == 0);
+  min_log_density = densities.front();
+  d_log_density = densities[1] - densities[0];
+  min_density = exp(min_log_density);
+  max_density = exp(min_log_density + d_log_density*n_density);
+
+  int num_temperatures = 0;
+  ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TEMPS, &num_temperatures);
+  Require(ndi_error == 0);
+  n_temperature = static_cast<uint32_t>(num_temperatures);
+
+  temperatures.resize(n_temperature);
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_TEMPS, temperatures.data(),
+    temperatures.size());
+  Require(ndi_error == 0);
+  min_log_temperature = temperatures.front();
+  d_log_temperature = temperatures[1] - temperatures[0];
+  min_temperature = exp(min_log_temperature);
+  max_temperature = exp(min_log_temperature + d_log_temperature*n_temperature);
+
+  stopping_data_1d.resize(n_energy*n_density*n_temperature);
+  ndi_error = NDI2_get_float64_vec_x(dataset_handle, NDI_TARGET_DEDX,
+  std::to_string(target.get_zaid()).c_str(), stopping_data_1d.data(),
+    stopping_data_1d.size());
+  Require(ndi_error == 0);
+  for(auto dedx: stopping_data_1d) {
+    printf("dedx: %e\n", dedx);
+  }
+
+  Insist(0, "Check for uniform log spacing");
 
   printf("[%s : %i] not implemented!\n", __FILE__, __LINE__);
   exit(-1);
