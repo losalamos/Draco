@@ -14,7 +14,7 @@
 
 namespace kde {
 
-  // Explicit template instantiations go here.
+// Explicit template instantiations go here.
 template class kde<kde_coordinates::CART>;
 
 } // namespace  kde
@@ -22,4 +22,3 @@ template class kde<kde_coordinates::CART>;
 //------------------------------------------------------------------------------------------------//
 // end of kde_pt.cc
 //------------------------------------------------------------------------------------------------//
-

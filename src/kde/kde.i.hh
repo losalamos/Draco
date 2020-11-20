@@ -17,18 +17,40 @@
 
 namespace kde {
 
-  //! one-line description
+  //! DEFAULT constructor to return error if instantiation is not found
   template <int coord>
   template <int dim>
-  void kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
-                                     const std::vector<double> /*position*/,
-                                     const std::vector<double> /*band_width*/,
-                                     std::vector<double> & /*final_distribution*/) const {
+  std::vector<double> kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
+                                     const std::vector<std::array<double,3>> &/*position*/,
+                                     const std::vector<std::array<double,3>> &/*band_width*/,
+                                     const bool /*domain_decomposed*/) const {
 
   Insist(false, "kde::reconstruction has not been implemented for this coordinate system and or "
                 "dimension combination");
+  return std::vector<double>(1,0.0);
   }
 
+
+ /*!
+ * eapn_kernel basis function used during reconstruction
+ * \brief
+ *
+ * Epanechnikov kenrel to be used in reconstrtuction
+ *
+ * \param[in] x from kernel origin
+ * \return distribution weight based on distance from the kernel center 
+ *
+ * Test of kde.
+ */ 
+  template<int coord>
+  double kde<coord>::epan_kernel(const double x) const{
+      const double x2 = x*x;
+      const double result = 0.75*(1.0-x2);
+      if (x2>1.0)
+          return 0.0;
+      else
+        return result;
+  }
 
 } // end namespace  kde
 

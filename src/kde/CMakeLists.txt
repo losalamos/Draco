@@ -40,7 +40,7 @@ include_directories(
 
 add_component_library(
    TARGET       Lib_kde
-   TARGET_DEPS  Lib_dsxx
+   TARGET_DEPS  Lib_dsxx Lib_c4
    LIBRARY_NAME ${PROJECT_NAME}
    HEADERS      "${headers}"
    SOURCES      "${sources}"

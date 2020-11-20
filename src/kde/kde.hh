@@ -13,6 +13,8 @@
 #define kde_kde_hh
 
 #include <vector>
+#include <array>
+#include "c4/global.hh"
 
 namespace kde {
 
@@ -41,9 +43,15 @@ namespace kde {
     
     //! Reconstruct distribution
     template <int dim=1>
-    void reconstruction(const std::vector<double> &distribution, const std::vector<double> position, const std::vector<double> band_width, std::vector<double> &final_distribution) const;
+    std::vector<double> reconstruction(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool domain_decomposed) const;
+
+    template <int dim=1>
+    std::vector<double> mean_reconstruction(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool domain_decomposed) const;
 
     // STATICS
+
+    //! Epanechikov Kernel
+    double epan_kernel(const double x) const;
 
   protected:
     // IMPLEMENTATION
@@ -58,11 +66,7 @@ namespace kde {
 
 template<>
 template<>
-void kde<kde_coordinates::CART>::reconstruction<1>(const std::vector<double> &distribution, const std::vector<double> position, const std::vector<double> band_width, std::vector<double> &final_distribution) const;
-template<>
-template<>
-void kde<kde_coordinates::CART>::reconstruction<2>(const std::vector<double> &distribution, const std::vector<double> position, const std::vector<double> band_width, std::vector<double> &final_distribution) const;
-
+std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool dd) const;
 
 } // end namespace  kde
 
