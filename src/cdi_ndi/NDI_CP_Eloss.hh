@@ -52,8 +52,7 @@ public:
   // >>> ACCESSORS
 
   //! Get a stopping power.
-  double getEloss(const double temperature, const double density,
-                  const double v0) const;
+  double getEloss(const double temperature, const double density, const double v0) const;
 
   //! Query to see if data is in tabular or functional form (true)
   static constexpr bool is_data_in_tabular_form() { return true; }
@@ -80,9 +79,7 @@ public:
   size_t getNumEnergies() const { return n_energy; }
 
   //! Get the general eloss model type
-  rtt_cdi::CPModelType getModelType() const {
-    return rtt_cdi::CPModelType::TABULAR_ETYPE;
-  }
+  rtt_cdi::CPModelType getModelType() const { return rtt_cdi::CPModelType::TABULAR_ETYPE; }
 
 private:
 // Only implemented if NDI is found
@@ -115,6 +112,11 @@ private:
 
   //! Storage for tabulated data
   sf_double stopping_data_1d;
+
+  //! 3D indexing of 1D stopping power data
+  inline double get_stopping_data(int i_e, int i_d, int i_t) const {
+    return stopping_data_1d[i_t + n_temperature * (i_d + n_density * i_e)];
+  }
 };
 
 } // namespace rtt_cdi_ndi
