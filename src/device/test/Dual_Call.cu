@@ -32,6 +32,8 @@ __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
 
   ntot = 0;
 
+  Insist_device(part_per_e > 0, "Use the Insist_device function");
+
   // sweep through cells and calculate number of particles per cell
   for (size_t cell = cell_start; cell < cell_end; cell++) {
     // if the cell has any energy try to put some particles in it
