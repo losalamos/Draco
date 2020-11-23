@@ -238,6 +238,8 @@ Tabular_CP_Eloss::Tabular_CP_Eloss(std::string filename_in, rtt_cdi::CParticle t
     density *= target.get_mass();
   }
 
+  printf("STOPPING 1D: %e\n", stopping_data_1d[0]);
+
   // Initialize table bounds
   min_energy = exp(min_log_energy);
   max_energy = exp(min_log_energy + d_log_energy * (n_energy));
@@ -314,6 +316,9 @@ double Tabular_CP_Eloss::getEloss(const double temperature, const double density
   const double dedx = exp(linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010,
                                                f110, f011, f111, partSpeed, density, temperature));
   const double number_density = density / target.get_mass();
+  //printf("dedx(0,0,0): %e\n", stopping_data(0,0,0)*1000.*number_density*partSpeed);
+  //printf("dedx: %e\n", (dedx * 1000. * number_density * partSpeed));
+  printf("prededx: %e num: %e speed: %e\n", dedx, number_density, partSpeed);
   return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }
 

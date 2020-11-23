@@ -153,12 +153,10 @@ void NDI_CP_Eloss::load_ndi() {
 
   //! Set projectile isotope
   ndi_error = NDI2_set_isotope(dataset_handle, std::to_string(projectile.get_zaid()).c_str());
-  printf("zaid: %i\n", projectile.get_zaid());
 
   int num_targets = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TARGET, &num_targets);
   Require(ndi_error == 0);
-  printf("num_targets: %i\n", num_targets);
 
   std::vector<int> target_zaids(num_targets);
   ndi_error =
@@ -177,7 +175,6 @@ void NDI_CP_Eloss::load_ndi() {
   d_log_energy = energies[1] - energies[0];
   min_energy = exp(min_log_energy);
   max_energy = exp(min_log_energy + d_log_energy * n_energy);
-  printf("min: %e max: %e\n", min_energy, max_energy);
 
   int num_densities = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_DENSITIES, &num_densities);
@@ -190,8 +187,8 @@ void NDI_CP_Eloss::load_ndi() {
   Require(ndi_error == 0);
   min_log_density = densities.front();
   d_log_density = densities[1] - densities[0];
-  min_density = exp(min_log_density);
-  max_density = exp(min_log_density + d_log_density * n_density);
+  min_density = target.get_mass()*exp(min_log_density);
+  max_density = target.get_mass()*exp(min_log_density + d_log_density * n_density);
 
   int num_temperatures = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TEMPS, &num_temperatures);
@@ -213,9 +210,33 @@ void NDI_CP_Eloss::load_ndi() {
                                      stopping_data_1d.data(), stopping_data_1d.size());
   Require(ndi_error == 0);
 
+  printf("%e %e\n", get_stopping_data(0,0,0), get_stopping_data(1,0,0));
+
   // Check for uniform log spacing
   for (int n = 1; n < n_energy; n++) {
     Require(rtt_dsxx::soft_equiv(d_log_energy, energies[n] - energies[n - 1], 1.e-5));
+  }
+  for (int n = 1; n < n_density; n++) {
+    Require(rtt_dsxx::soft_equiv(d_log_density, densities[n] - densities[n - 1], 1.e-5));
+  }
+  for (int n = 1; n < n_temperature; n++) {
+    Require(rtt_dsxx::soft_equiv(d_log_temperature, temperatures[n] - temperatures[n - 1], 1.e-5));
+  }
+
+  // Convert units on table to match those of getEloss:
+  //   energy:      MeV -> cm/shk (using target particle mass)
+  double energy_cgs = exp(min_log_energy) * (1.e6 * pc.electronVolt());
+  min_log_energy = log(sqrt(2. * energy_cgs / target.get_mass()) * 1.e-8);
+  d_log_energy = d_log_energy / 2.;
+  //   density:     cm^-3 -> g cm^-3
+  min_log_density = log(exp(min_log_density) * target.get_mass());
+  //   temperature: keV -> keV
+  // Note that d log x = dx / x is not affected by unit conversion factors
+  for (auto &energy : energies) {
+    energy = sqrt(2. * (energy * 1.e6 * pc.electronVolt()) / target.get_mass()) * 1.e-8;
+  }
+  for (auto &density : densities) {
+    density *= target.get_mass();
   }
 }
 //----------------------------------------------------------------------------//
@@ -228,11 +249,13 @@ void NDI_CP_Eloss::load_ndi() {
  */
 double NDI_CP_Eloss::getEloss(const double temperature, const double density,
                               const double partSpeed) const {
+    printf("%e %e %e %e %e %e\n", min_temperature, max_temperature, min_density, max_density, min_energy, max_energy);
   if (temperature <= min_temperature || temperature >= max_temperature || density <= min_density ||
       density >= max_density || partSpeed <= min_energy || partSpeed >= max_energy) {
     // Outside of the table
     return 0.;
   }
+  //                              return 0.;;
 
   const int pt0_energy =
       static_cast<int>(std::floor((log(partSpeed) - min_log_energy) / d_log_energy));
@@ -262,6 +285,8 @@ double NDI_CP_Eloss::getEloss(const double temperature, const double density,
   const double dedx = exp(linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010,
                                                f110, f011, f111, partSpeed, density, temperature));
   const double number_density = density / target.get_mass();
+  printf("prededx: %e num: %e speed: %e\n", dedx, number_density, partSpeed);
+  printf("dedx(0,0,0): %e\n", dedx*1000.*number_density*partSpeed);
   return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }
 #endif // NDI_FOUND
