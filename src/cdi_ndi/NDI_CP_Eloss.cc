@@ -127,8 +127,6 @@ void NDI_CP_Eloss::load_ndi() {
   int gendir_handle = -1;
   int dataset_handle = -1;
   int ndi_error = -9999;
-  constexpr int c_str_len = 4096;
-  char c_str_buf[c_str_len];
 
   // Open gendir file (index of a complete NDI dataset)
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
@@ -156,8 +154,8 @@ void NDI_CP_Eloss::load_ndi() {
   Require(ndi_error == 0);
 
   std::vector<int> target_zaids(num_targets);
-  ndi_error =
-      NDI2_get_int_vec(dataset_handle, NDI_TARGET_ZAID, target_zaids.data(), target_zaids.size());
+  ndi_error = NDI2_get_int_vec(dataset_handle, NDI_TARGET_ZAID, target_zaids.data(),
+                               static_cast<int>(target_zaids.size()));
   Require(ndi_error == 0);
 
   int num_grps = 0;
@@ -166,7 +164,8 @@ void NDI_CP_Eloss::load_ndi() {
   n_energy = static_cast<uint32_t>(num_grps);
 
   energies.resize(n_energy);
-  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_ENERGIES, energies.data(), energies.size());
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_ENERGIES, energies.data(),
+                                   static_cast<int>(energies.size()));
   Require(ndi_error == 0);
   min_log_energy = energies.front();
   d_log_energy = energies[1] - energies[0];
@@ -179,8 +178,8 @@ void NDI_CP_Eloss::load_ndi() {
   n_density = static_cast<uint32_t>(num_densities);
 
   densities.resize(n_density);
-  ndi_error =
-      NDI2_get_float64_vec(dataset_handle, NDI_DENSITIES, densities.data(), densities.size());
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_DENSITIES, densities.data(),
+                                   static_cast<int>(densities.size()));
   Require(ndi_error == 0);
   min_log_density = densities.front();
   d_log_density = densities[1] - densities[0];
@@ -193,8 +192,8 @@ void NDI_CP_Eloss::load_ndi() {
   n_temperature = static_cast<uint32_t>(num_temperatures);
 
   temperatures.resize(n_temperature);
-  ndi_error =
-      NDI2_get_float64_vec(dataset_handle, NDI_TEMPS, temperatures.data(), temperatures.size());
+  ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_TEMPS, temperatures.data(),
+                                   static_cast<int>(temperatures.size()));
   Require(ndi_error == 0);
   min_log_temperature = temperatures.front();
   d_log_temperature = temperatures[1] - temperatures[0];
@@ -202,19 +201,19 @@ void NDI_CP_Eloss::load_ndi() {
   max_temperature = exp(min_log_temperature + d_log_temperature * n_temperature);
 
   stopping_data_1d.resize(n_energy * n_density * n_temperature);
-  ndi_error = NDI2_get_float64_vec_x(dataset_handle, NDI_TARGET_DEDX,
-                                     std::to_string(target.get_zaid()).c_str(),
-                                     stopping_data_1d.data(), stopping_data_1d.size());
+  ndi_error = NDI2_get_float64_vec_x(
+      dataset_handle, NDI_TARGET_DEDX, std::to_string(target.get_zaid()).c_str(),
+      stopping_data_1d.data(), static_cast<int>(stopping_data_1d.size()));
   Require(ndi_error == 0);
 
   // Check for uniform log spacing
-  for (int n = 1; n < n_energy; n++) {
+  for (uint32_t n = 1; n < n_energy; n++) {
     Require(rtt_dsxx::soft_equiv(d_log_energy, energies[n] - energies[n - 1], 1.e-5));
   }
-  for (int n = 1; n < n_density; n++) {
+  for (uint32_t n = 1; n < n_density; n++) {
     Require(rtt_dsxx::soft_equiv(d_log_density, densities[n] - densities[n - 1], 1.e-5));
   }
-  for (int n = 1; n < n_temperature; n++) {
+  for (uint32_t n = 1; n < n_temperature; n++) {
     Require(rtt_dsxx::soft_equiv(d_log_temperature, temperatures[n] - temperatures[n - 1], 1.e-5));
   }
 
