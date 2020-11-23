@@ -55,11 +55,11 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
 // CONSTRUCTORS
 //------------------------------------------------------------------------------------------------//
 
-//============================================================================//
-// Stubbed implementation when NDI is unavailable
-//============================================================================//
-
 #ifndef NDI_FOUND
+
+//================================================================================================//
+// Stubbed implementation when NDI is unavailable
+//================================================================================================//
 
 //! Constructor for generic NDI reader- throws when NDI not available
 NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*library_in*/) {
@@ -67,6 +67,21 @@ NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*lib
 }
 
 #else
+
+//================================================================================================//
+// Normal implementation
+//================================================================================================//
+
+/*!
+ * \brief Constructor for generic NDI reader, to be inherited by readers for generic gendir file
+ *        path and dataset.
+ *
+ * This base constructor only sets some data members based on constructor input.  For more details
+ * on NDI, see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
+ *
+ * \param[in] dataset_in name of requested dataset (provided by inherited class)
+ * \param[in] library_in name of requested NDI data library
+ */
 
 NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in)
     : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second), dataset(dataset_in),
@@ -82,11 +97,11 @@ NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in)
 
 #endif
 
-//============================================================================//
-// Stubbed implementation when NDI is unavailable
-//============================================================================//
-
 #ifndef NDI_FOUND
+
+//================================================================================================//
+// Stubbed implementation when NDI is unavailable
+//================================================================================================//
 
 //! Constructor for generic NDI reader- throws when NDI not available
 NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/,
@@ -96,38 +111,9 @@ NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*data
 
 #else
 
-NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in) {
-
-  Require(rtt_dsxx::fileExists(gendir));
-
-  Require(gendir.length() > 0);
-  Require(dataset.length() > 0);
-  Require(library.length() > 0);
-  warn_ndi_version_mismatch(gendir);
-}
-
-#endif
-
 //================================================================================================//
-// Stubbed implementation when NDI is unavailable
-//================================================================================================//
-
-#ifndef NDI_FOUND
-
-//! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/,
-                   const std::string & /*library_in*/, const std::string & /*reaction_in*/,
-                   const std::vector<double> /*mg_e_bounds_in*/) {
-  Insist(0, "NDI default gendir path only available when NDI is found.");
-}
-
-#else
-
-//============================================================================//
 // Normal implementation
-//============================================================================//
+//================================================================================================//
 
 /*!
  * \brief Constructor for generic NDI reader, to be inherited by readers for specific gendir file
@@ -141,82 +127,15 @@ NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*data
  * \param[in] library_in name of requested NDI data library
  */
 NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in, const std::string &reaction_in,
-                   const std::vector<double> mg_e_bounds_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in), reaction(reaction_in),
-      mg_e_bounds(mg_e_bounds_in) {
+                   const std::string &library_in)
+    : gendir(gendir_in), dataset(dataset_in), library(library_in) {
 
   Require(rtt_dsxx::fileExists(gendir));
 
   Require(gendir.length() > 0);
   Require(dataset.length() > 0);
   Require(library.length() > 0);
-  Require(reaction.length() > 0);
-  Require(mg_e_bounds.size() > 0);
   warn_ndi_version_mismatch(gendir);
-
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
-
-  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  for (size_t i = 1; i < mg_e_bounds.size(); i++) {
-    Insist(mg_e_bounds[i] < mg_e_bounds[i - 1], "Non-monotonic mg bounds!");
-  }
-  Insist(mg_e_bounds[mg_e_bounds.size() - 1] > 0, "Negative mg bounds!");
-}
-
-#endif
-
-//================================================================================================//
-// Stubbed implementation when NDI is unavailable
-//================================================================================================//
-
-#ifndef NDI_FOUND
-
-//! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*library_in*/,
-                   const std::string & /*reaction_in*/,
-                   const std::vector<double> /*mg_e_bounds_in*/) {
-  Insist(0, "NDI default gendir path only available when NDI is found.");
-}
-
-#else
-
-//================================================================================================//
-// Normal implementation
-//================================================================================================//
-
-/*!
- * \brief Constructor for generic NDI reader, to be inherited by readers for specific dataset.
- *
- * This base constructor only sets some data members based on constructor input.  For more details
- * on NDI, see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
- *
- * \param[in] dataset_in name of requested dataset (provided by inherited class)
- * \param[in] library_in name of requested NDI data library
- */
-NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in,
-                   const std::string &reaction_in, const std::vector<double> mg_e_bounds_in)
-    : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second), dataset(dataset_in),
-      library(library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
-
-  Require(rtt_dsxx::fileExists(gendir));
-
-  Require(gendir.length() > 0);
-  Require(dataset.length() > 0);
-  Require(library.length() > 0);
-  Require(reaction.length() > 0);
-  Require(mg_e_bounds.size() > 0);
-  warn_ndi_version_mismatch(gendir);
-
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
-
-  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()));
-  Require(mg_e_bounds.back() > 0);
 }
 
 #endif
