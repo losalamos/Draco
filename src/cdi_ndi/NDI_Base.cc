@@ -62,15 +62,13 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
 #ifndef NDI_FOUND
 
 //! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*dataset_in*/,
-                   const std::string & /*library_in*/) {
+NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*library_in*/) {
   Insist(0, "NDI default gendir path only available when NDI is found.");
 }
 
 #else
 
-NDI_Base::NDI_Base(const std::string & dataset_in,
-                   const std::string & library_in)
+NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in)
     : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second), dataset(dataset_in),
       library(library_in) {
 
@@ -91,18 +89,16 @@ NDI_Base::NDI_Base(const std::string & dataset_in,
 #ifndef NDI_FOUND
 
 //! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*gendir_in*/,
-                   const std::string & /*dataset_in*/,
+NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/,
                    const std::string & /*library_in*/) {
   Insist(0, "NDI default gendir path only available when NDI is found.");
 }
 
 #else
 
-NDI_Base::NDI_Base(const std::string & gendir_in, const std::string & dataset_in,
-                   const std::string & library_in)
-    : gendir(gendir_in), dataset(dataset_in),
-      library(library_in) {
+NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
+                   const std::string &library_in)
+    : gendir(gendir_in), dataset(dataset_in), library(library_in) {
 
   Require(rtt_dsxx::fileExists(gendir));
 
@@ -121,8 +117,8 @@ NDI_Base::NDI_Base(const std::string & gendir_in, const std::string & dataset_in
 #ifndef NDI_FOUND
 
 //! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/, const std::string & /*library_in*/,
-                   const std::string & /*reaction_in*/,
+NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/,
+                   const std::string & /*library_in*/, const std::string & /*reaction_in*/,
                    const std::vector<double> /*mg_e_bounds_in*/) {
   Insist(0, "NDI default gendir path only available when NDI is found.");
 }
@@ -168,8 +164,6 @@ NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
     Insist(mg_e_bounds[i] < mg_e_bounds[i - 1], "Non-monotonic mg bounds!");
   }
   Insist(mg_e_bounds[mg_e_bounds.size() - 1] > 0, "Negative mg bounds!");
-  printf("THIS CONSTRUCTOR!!!!!!!!!!!!!\n");
-  printf("mg size: %i\n", mg_e_bounds.size());
 }
 
 #endif

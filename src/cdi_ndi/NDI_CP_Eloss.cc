@@ -131,18 +131,15 @@ void NDI_CP_Eloss::load_ndi() {
   char c_str_buf[c_str_len];
 
   // Open gendir file (index of a complete NDI dataset)
-  printf("about to open %s\n", gendir.c_str());
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
   Require(ndi_error == 0);
   Insist(gendir_handle != -1, "gendir_handle still has default value!");
 
   // Set dataset option by changing default value for this handle
-  printf("dataset: %s\n", dataset.c_str());
   ndi_error = NDI2_set_option_gendir(gendir_handle, NDI_LIB_TYPE_DEFAULT, dataset.c_str());
   Require(ndi_error == 0);
 
   //! Set library option by changing default value for this handle
-  printf("library: %s\n", library.c_str());
   ndi_error = NDI2_set_option_gendir(gendir_handle, NDI_LIBRARY_DEFAULT, library.c_str());
   Require(ndi_error == 0);
 
@@ -187,8 +184,8 @@ void NDI_CP_Eloss::load_ndi() {
   Require(ndi_error == 0);
   min_log_density = densities.front();
   d_log_density = densities[1] - densities[0];
-  min_density = target.get_mass()*exp(min_log_density);
-  max_density = target.get_mass()*exp(min_log_density + d_log_density * n_density);
+  min_density = target.get_mass() * exp(min_log_density);
+  max_density = target.get_mass() * exp(min_log_density + d_log_density * n_density);
 
   int num_temperatures = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TEMPS, &num_temperatures);
@@ -209,8 +206,6 @@ void NDI_CP_Eloss::load_ndi() {
                                      std::to_string(target.get_zaid()).c_str(),
                                      stopping_data_1d.data(), stopping_data_1d.size());
   Require(ndi_error == 0);
-
-  printf("%e %e\n", get_stopping_data(0,0,0), get_stopping_data(1,0,0));
 
   // Check for uniform log spacing
   for (int n = 1; n < n_energy; n++) {
@@ -249,7 +244,6 @@ void NDI_CP_Eloss::load_ndi() {
  */
 double NDI_CP_Eloss::getEloss(const double temperature, const double density,
                               const double partSpeed) const {
-    printf("%e %e %e %e %e %e\n", min_temperature, max_temperature, min_density, max_density, min_energy, max_energy);
   if (temperature <= min_temperature || temperature >= max_temperature || density <= min_density ||
       density >= max_density || partSpeed <= min_energy || partSpeed >= max_energy) {
     // Outside of the table
@@ -285,8 +279,6 @@ double NDI_CP_Eloss::getEloss(const double temperature, const double density,
   const double dedx = exp(linear_interpolate_3(x0, x1, y0, y1, z0, z1, f000, f100, f001, f101, f010,
                                                f110, f011, f111, partSpeed, density, temperature));
   const double number_density = density / target.get_mass();
-  printf("prededx: %e num: %e speed: %e\n", dedx, number_density, partSpeed);
-  printf("dedx(0,0,0): %e\n", dedx*1000.*number_density*partSpeed);
   return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }
 #endif // NDI_FOUND
