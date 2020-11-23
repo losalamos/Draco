@@ -57,9 +57,6 @@ public:
   //! Query to see if data is in tabular or functional form (true)
   static constexpr bool is_data_in_tabular_form() { return true; }
 
-  //! Get the name of the associated data file
-  inline std::string getDataFilename() const { return std::string(); }
-
   //! Get the material temperature grid.
   sf_double getTemperatureGrid() const { return temperatures; }
 

@@ -24,11 +24,11 @@ namespace rtt_cdi_ndi {
  * Norris for the reference.
  *
  * \param[in] x0   lower x coordinate of lattice
- * \param[in] x1   upper x coordinate of lattic
+ * \param[in] x1   upper x coordinate of lattice
  * \param[in] y0   lower y coordinate of lattice
  * \param[in] y1   upper y coordinate of lattice
  * \param[in] z0   lower z coordinate of lattice
- * \param[in] z1   upper z coordinate of lattic
+ * \param[in] z1   upper z coordinate of lattice
  * \param[in] f000 function at (x0,y0,z0)
  * \param[in] f100 function at (x1,y0,z0)
  * \param[in] f001 function at (x0,y0,z1)
@@ -94,7 +94,7 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &libr
     : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
                        rtt_cdi::CPModelAngleCutoff::NONE),
       NDI_Base(gendir_in, "dedx", library_in) {
-  // Set angle cutoff by parsing library_in
+  // TODO BRR set angle cutoff by parsing library_in
 
   load_ndi();
 }
@@ -111,7 +111,7 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle tar
     : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
                        rtt_cdi::CPModelAngleCutoff::NONE),
       NDI_Base("dedx", library_in) {
-  // Set angle cutoff by parsing library_in
+  // TODO BRR set angle cutoff by parsing library_in
 
   load_ndi();
 }
@@ -130,8 +130,7 @@ void NDI_CP_Eloss::load_ndi() {
 
   // Open gendir file (index of a complete NDI dataset)
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
-  Require(ndi_error == 0);
-  Insist(gendir_handle != -1, "gendir_handle still has default value!");
+  Insist(ndi_error == 0, "Error when opening gendir file" + gendir);
 
   // Set dataset option by changing default value for this handle
   ndi_error = NDI2_set_option_gendir(gendir_handle, NDI_LIB_TYPE_DEFAULT, dataset.c_str());
@@ -219,7 +218,7 @@ void NDI_CP_Eloss::load_ndi() {
 
   // Convert units on table to match those of getEloss:
   //   energy:      MeV -> cm/shk (using target particle mass)
-  double energy_cgs = exp(min_log_energy) * (1.e6 * pc.electronVolt());
+  const double energy_cgs = exp(min_log_energy) * (1.e6 * pc.electronVolt());
   min_log_energy = log(sqrt(2. * energy_cgs / target.get_mass()) * 1.e-8);
   d_log_energy = d_log_energy / 2.;
   //   density:     cm^-3 -> g cm^-3
@@ -248,7 +247,6 @@ double NDI_CP_Eloss::getEloss(const double temperature, const double density,
     // Outside of the table
     return 0.;
   }
-  //                              return 0.;;
 
   const int pt0_energy =
       static_cast<int>(std::floor((log(partSpeed) - min_log_energy) / d_log_energy));
