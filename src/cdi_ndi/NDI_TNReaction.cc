@@ -29,18 +29,19 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
                                const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
     : NDI_Base(gendir_in, "tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
+      printf("CALLING CONSTRUCTOR AGAIN!!!!\n");
 
   Require(reaction.length() > 0);
   Require(mg_e_bounds.size() > 0);
-  warn_ndi_version_mismatch(gendir);
 
   for (size_t i = 0; i < mg_e_bounds.size(); i++) {
     mg_e_bounds[i] /= 1000.; // keV -> MeV
   }
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()));
-  Require(mg_e_bounds.back() > 0);
+  Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
+    "Product multigroup bounds not strictly monotonic decreasing!");
+  Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
 }
@@ -58,15 +59,15 @@ NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string 
 
   Require(reaction.length() > 0);
   Require(mg_e_bounds.size() > 0);
-  warn_ndi_version_mismatch(gendir);
 
   for (size_t i = 0; i < mg_e_bounds.size(); i++) {
     mg_e_bounds[i] /= 1000.; // keV -> MeV
   }
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Require(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()));
-  Require(mg_e_bounds.back() > 0);
+  Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
+    "Product multigroup bounds not strictly monotonic decreasing!");
+  Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
 }
