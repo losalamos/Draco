@@ -278,6 +278,53 @@ double NDI_CP_Eloss::getEloss(const double temperature, const double density,
   const double number_density = density / target.get_mass();
   return dedx * 1000. * number_density * partSpeed; // MeV cm^2 -> keV shk^-1
 }
+
+#else
+
+//----------------------------------------------------------------------------//
+// CONSTRUCTORS
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Constructor for NDI reader specific to TN DEDX data with provided path
+ *        to gendir file.
+ *
+ * \param[in] gendir_in path to gendir file
+ * \param[in] library_in name of requested NDI data library
+ * \param[in] reaction_in name of requested reaction
+ * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ */
+NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &library_in,
+                           rtt_cdi::CParticle target_in, rtt_cdi::CParticle projectile_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
+                       rtt_cdi::CPModelAngleCutoff::NONE),
+      NDI_Base(gendir_in, "dedx", library_in) {}
+/*!
+ * \brief Constructor for NDI reader specific to TN DEDX data using default
+ *        gendir file.
+ *
+ * \param[in] library_in name of requested NDI data library
+ * \param[in] reaction_in name of requested reaction
+ * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ */
+NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle target_in,
+                           rtt_cdi::CParticle projectile_in)
+    : rtt_cdi::CPEloss(target_in, projectile_in, rtt_cdi::CPModelType::TABULAR_ETYPE,
+                       rtt_cdi::CPModelAngleCutoff::NONE),
+      NDI_Base("dedx", library_in) {}
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate the tabulated stopping power for a given material and
+ *        projectile state.
+ * \param[in] temperature Material temperature [keV]
+ * \param[in] density Material density [g cm^-3]
+ * \param[in] partSpeed Particle speed [cm shk^-1]
+ */
+double NDI_CP_Eloss::getEloss(const double temperature, const double density,
+                              const double partSpeed) const {
+  Insist(0, "getEloss only defined if NDI_FOUND!");
+}
+
 #endif // NDI_FOUND
 } // namespace rtt_cdi_ndi
 

@@ -29,7 +29,6 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
                                const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
     : NDI_Base(gendir_in, "tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
-      printf("CALLING CONSTRUCTOR AGAIN!!!!\n");
 
   Require(reaction.length() > 0);
   Require(mg_e_bounds.size() > 0);
@@ -40,7 +39,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
-    "Product multigroup bounds not strictly monotonic decreasing!");
+         "Product multigroup bounds not strictly monotonic decreasing!");
   Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
@@ -66,7 +65,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string 
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
-    "Product multigroup bounds not strictly monotonic decreasing!");
+         "Product multigroup bounds not strictly monotonic decreasing!");
   Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
@@ -338,7 +337,7 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
                                const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_e_bounds_in) { /* ... */
+    : NDI_Base(gendir_in, "tn", library_in) { /* ... */
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -352,7 +351,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) { /* ... */
+    : NDI_Base("tn", library_in) { /* ... */
 }
 
 std::vector<double> NDI_TNReaction::get_PDF(const int /*product_zaid*/,
