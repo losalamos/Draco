@@ -320,8 +320,8 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle tar
  * \param[in] density Material density [g cm^-3]
  * \param[in] partSpeed Particle speed [cm shk^-1]
  */
-double NDI_CP_Eloss::getEloss(const double temperature, const double density,
-                              const double partSpeed) const {
+double NDI_CP_Eloss::getEloss(const double /*temperature*/, const double /*density*/,
+                              const double /*partSpeed*/) const {
   Insist(0, "getEloss only defined if NDI_FOUND!");
 }
 

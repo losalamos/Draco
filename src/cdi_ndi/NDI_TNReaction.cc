@@ -335,8 +335,8 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
-                               const std::string &reaction_in,
-                               const std::vector<double> mg_e_bounds_in)
+                               const std::string & /*reaction_in*/,
+                               const std::vector<double> /*mg_e_bounds_in*/)
     : NDI_Base(gendir_in, "tn", library_in) { /* ... */
 }
 
@@ -349,8 +349,8 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
-NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
-                               const std::vector<double> mg_e_bounds_in)
+NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string & /*reaction_in*/,
+                               const std::vector<double> /*mg_e_bounds_in*/)
     : NDI_Base("tn", library_in) { /* ... */
 }
 
