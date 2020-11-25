@@ -37,9 +37,11 @@ def read_csk_files(filebase, verbosity=False):
     if verbosity:
         print('Root is', fileroot)
 
-    # normalizations
-    mec2 = 510.998  # keV
-    csk_norm = 2.0 * 0.037558  # currently approximate
+    # constants and normalizations
+    # mec2 in keV as defined in CSK library
+    mec2 = 510.998
+    # csk_norm is 0.5 * pi * classical_electron_radius**2 * avogadro
+    csk_norm = 0.0751163370524
 
     # Try to read all csk files
     mats = {}
