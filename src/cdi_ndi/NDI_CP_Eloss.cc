@@ -86,8 +86,8 @@ inline double linear_interpolate_3(double const x0, double const x1, double cons
  *
  * \param[in] gendir_in path to gendir file
  * \param[in] library_in name of requested NDI data library
- * \param[in] reaction_in name of requested reaction
- * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ * \param[in] target_in Target CParticle object
+ * \param[in] projectile_in Projectile CParticle object
  */
 NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &library_in,
                            rtt_cdi::CParticle target_in, rtt_cdi::CParticle projectile_in)
@@ -103,8 +103,8 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &libr
  *        gendir file.
  *
  * \param[in] library_in name of requested NDI data library
- * \param[in] reaction_in name of requested reaction
- * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ * \param[in] target_in Target CParticle object
+ * \param[in] projectile_in Projectile CParticle object
  */
 NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle target_in,
                            rtt_cdi::CParticle projectile_in)
@@ -290,8 +290,8 @@ double NDI_CP_Eloss::getEloss(const double temperature, const double density,
  *
  * \param[in] gendir_in path to gendir file
  * \param[in] library_in name of requested NDI data library
- * \param[in] reaction_in name of requested reaction
- * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ * \param[in] target_in name of requested reaction
+ * \param[in] projectile_in energy boundaries of multigroup bins (keV)
  */
 NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &library_in,
                            rtt_cdi::CParticle target_in, rtt_cdi::CParticle projectile_in)
@@ -303,8 +303,8 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &gendir_in, const std::string &libr
  *        gendir file.
  *
  * \param[in] library_in name of requested NDI data library
- * \param[in] reaction_in name of requested reaction
- * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ * \param[in] target_in name of requested reaction
+ * \param[in] projectile_in energy boundaries of multigroup bins (keV)
  */
 NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle target_in,
                            rtt_cdi::CParticle projectile_in)
