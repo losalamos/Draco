@@ -71,9 +71,9 @@ fi
   # esac
 
   # LaTeX
-  # export TEXINPUTS=$mydir:$TEXINPUTS
-  # export BSTINPUTS=$mydir:$BSTINPUTS
-  # export BIBINPUTS=$mydir:$BIBINPUTS
+  # add_to_path $mydir TEXINPUTS
+  # add_to_path $mydir BSTINPUTS
+  # add_to_path $mydir BIBINPUTS
 
 # fi
 
