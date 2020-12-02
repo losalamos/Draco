@@ -3,9 +3,7 @@
 ## .bashrc_cts1 - my bash configuration file upon bash login
 ##---------------------------------------------------------------------------##
 
-if test -n "$verbose"; then
-   echo "In .bashrc_cts1"
-fi
+[[ -n "$verbose" ]] && echo "In .bashrc_cts1"
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
@@ -13,9 +11,10 @@ fi
 
 # Where is the vendor directory
 if [[ ! ${VENDOR_DIR} ]]; then
-   if test -d /usr/projects/draco/vendors; then
+   if [[ -d /usr/projects/draco/vendors ]]; then
       VENDOR_DIR=/usr/projects/draco/vendors
-      export PATH=$VENDOR_DIR/bin:$PATH
+      add_to_path $VENDOR_DIR/bin
+      export VENDOR_DIR PATH
    fi
 fi
 
@@ -37,11 +36,8 @@ alias salloc='salloc --x11'
 modcmd=`declare -f module`
 #    If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-   if test -f /usr/share/lmod/lmod/init/bash; then
-      source /usr/share/lmod/lmod/init/bash
-   else
-      echo "ERROR: The module command was not found. No modules will be loaded."
-   fi
+   [[ -f /usr/share/lmod/lmod/init/bash ]] && source /usr/share/lmod/lmod/init/bash || \
+     echo "ERROR: The module command was not found. No modules will be loaded."
 fi
 modcmd=`declare -f module`
 
@@ -51,10 +47,8 @@ if [[ ! ${modcmd} ]]; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-  if [[ -x /usr/projects/hpcsoft/utilities/bin/sys_name ]] && \
-    [[ -d /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name) ]]; then
-    module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)
-    module load uc/2020.08
+  if [[ -d /usr/projects/draco/Modules/cts1 ]]; then
+    module use --append /usr/projects/draco/Modules/cts1
     module load draco/intel19
   fi
 

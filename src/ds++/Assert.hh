@@ -182,7 +182,7 @@ void show_cookies(std::string const &cond, std::string const &file, int const li
 __host__ __device__ inline void no_exception_insist(char const *const cond, char const *const msg,
                                                     char const *const file, int const line) {
   printf("Insist: %s, failed in %s, line %d.\n", cond, file, line);
-  printf("The following message was provided: \"%s\"", msg);
+  printf("The following message was provided: \"%s\"\n", msg);
   return;
 }
 #endif
