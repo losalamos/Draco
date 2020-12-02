@@ -1,48 +1,54 @@
 #!/bin/bash
-##---------------------------------------------------------------------------##
-## File  : environment/bin/xfpull
-## Date  : Tuesday, May 31, 2016, 14:48 pm
-## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Triad National Security, LLC.
-##         All rights are reserved.
-##
-## Transfer 2.0 (Mercury replacement), Ref: http://transfer.lanl.gov
-##
-## Examples:
-##   xfpush foo.txt
-##   xfstatus
-##   xfpull foo.txt
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# File  : environment/bin/xfpull
+# Date  : Tuesday, May 31, 2016, 14:48 pm
+# Author: Kelly Thompson
+# Note  : Copyright (C) 2016-2020, Triad National Security, LLC., All rights are reserved.
+#
+# Transfer 2.0 (Mercury replacement), Ref: http://transfer.lanl.gov
+#
+# Examples:
+#   xfpush foo.txt
+#   xfstatus
+#   xfpull foo.txt
+#--------------------------------------------------------------------------------------------------#
 
 saveifs=$IFS
 IFS=$(echo -en "\n\b")
 wantfiles="$*"
-filesavailable=`ssh red@transfer.lanl.gov myfiles`
+filesavailable=$(ssh red@transfer.lanl.gov myfiles)
 for wantfile in $wantfiles; do
 
-    # sanity check: is the requested file in the list?
-    fileready=`echo $filesavailable | grep $wantfile`
-    if [[ ! ${fileready} ]]; then
-        echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
-        echo "       Run 'xfstatus' to see list of available files."
-        return
-    fi
+  # sanity check: is the requested file in the list?
+  fileready=$(echo "${filesavailable}" | grep "${wantfile}")
+  if [[ ! ${fileready} ]]; then
+    echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
+    echo "       Run 'xfstatus' to see list of available files."
+    return
+  fi
 
-    # Find the file identifier for the requested file.  The variable
-    # filesavailable contains a list of pairs:
-    # { (id1, file1), (id2, file2), ... }.  Load each pair and if the
-    # filename matches the requested filename then pull that file id.
-    # Once pulled, remove the file from transfer.lanl.gov.
-    for entry in $filesavailable; do
-      fileid=`echo $entry | sed -e 's/[ ].*//'`
-      filename=`echo $entry | sed -e 's/.*[ ]//'`
-      if test $filename = $wantfile; then
-          echo "scp red@transfer.lanl.gov:${fileid} ."
-          scp red@transfer.lanl.gov:${fileid} .
-          echo "ssh red@transfer.lanl.gov delete ${fileid}"
-          ssh red@transfer.lanl.gov delete ${fileid}
-      fi
-    done
+  # Find the file identifier for the requested file.  The variable filesavailable contains a list of
+  # pairs: { (id1, file1), (id2, file2), ... }.  Load each pair and if the filename matches the
+  # requested filename then pull that file id.  Once pulled, remove the file from transfer.lanl.gov.
+  for entry in $filesavailable; do
+    # shellcheck disable=SC2001
+    fileid=$(echo "${entry}" | sed -e 's/[ ].*//')
+    # shellcheck disable=SC2001
+    filename=$(echo "${entry}" | sed -e 's/.*[ ]//')
+    if [[ "${filename}" == "${wantfile}" ]]; then
+      # -T makes filename matches less strict. (change.lanl.gov #192081)
+      echo "scp -T red@transfer.lanl.gov:${fileid} ."
+      scp -T "red@transfer.lanl.gov:${fileid}" .
+      echo "ssh red@transfer.lanl.gov delete ${fileid}"
+      # shellcheck disable=SC2029
+      ssh red@transfer.lanl.gov delete "${fileid}"
+    fi
+  done
 
 done # end loop over $wantfiles
+
 IFS=$saveifs
+
+#--------------------------------------------------------------------------------------------------#
+# End xfpull
+#--------------------------------------------------------------------------------------------------#

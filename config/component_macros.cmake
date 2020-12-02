@@ -641,7 +641,7 @@ macro( add_scalar_tests test_sources )
   # These become variables of the form ${addscalartests_SOURCES}, etc.
   cmake_parse_arguments(
     addscalartest
-    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
+    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;RUN_SERIAL;NONE"
     "LABEL;LINK_LANGUAGE"
     "DEPS;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV} )
@@ -735,9 +735,10 @@ macro( add_scalar_tests test_sources )
     if( addscalartest_LINK_WITH_FORTRAN )
       set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY LINKER_LANGUAGE Fortran )
     endif()
-    target_link_libraries(
-      Ut_${compname}_${testname}_exe
-      ${test_lib_target_name}
+    if( addscalartest_RUN_SERIAL )
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY RUN_SERIAL ON )
+    endif()
+    target_link_libraries( Ut_${compname}_${testname}_exe ${test_lib_target_name}
       ${addscalartest_DEPS} )
   endforeach()
 
