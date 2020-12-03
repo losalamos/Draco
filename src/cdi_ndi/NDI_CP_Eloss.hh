@@ -85,6 +85,7 @@ private:
 #endif
 
 private:
+#ifdef NDI_FOUND
   rtt_units::PhysicalConstexprs<rtt_units::CGS> pc; //!< Units
 
   uint32_t n_energy;          //!< Number of gridpoints in projectile energy
@@ -114,6 +115,7 @@ private:
   inline double get_stopping_data(int i_e, int i_d, int i_t) const {
     return stopping_data_1d[i_t + n_temperature * (i_d + n_density * i_e)];
   }
+#endif
 };
 
 } // namespace rtt_cdi_ndi
