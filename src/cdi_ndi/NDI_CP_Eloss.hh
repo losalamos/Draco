@@ -85,12 +85,12 @@ private:
 #endif
 
 private:
-#ifdef NDI_FOUND
   rtt_units::PhysicalConstexprs<rtt_units::CGS> pc; //!< Units
 
   uint32_t n_energy;          //!< Number of gridpoints in projectile energy
   uint32_t n_density;         //!< Number of gridpoints in target density
   uint32_t n_temperature;     //!< Number of gridpoints in target temperature
+#ifdef NDI_FOUND
   double d_log_energy;        //!< Log spacing of projectile energy gridpoints
   double d_log_density;       //!< Log spacing of target density gridpoints
   double d_log_temperature;   //!< Log spacing of target temperature gridpoints
