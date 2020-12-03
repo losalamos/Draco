@@ -13,16 +13,22 @@
 if [[ ! ${VENDOR_DIR} ]]; then
    if [[ -d /usr/projects/draco/vendors ]]; then
       VENDOR_DIR=/usr/projects/draco/vendors
-      add_to_path $VENDOR_DIR/bin
+      add_to_path "${VENDOR_DIR}/bin"
       export VENDOR_DIR PATH
    fi
 fi
 
 # Support building cassio with ccsrad shared deployment repository.
-if [[ -d /usr/projects/eap/users/ccsrad/Cassio.deployment ]]; then
-  export TF_DEPLOYMENT_CLONES=/usr/projects/eap/users/ccsrad/Cassio.deployment
-  export TF_SPACK_INSTANCES=/usr/projects/eap/users/ccsrad/spack_instances
+if [[ -d /usr/projects/eap/users ]]; then
+  export UPE=/usr/projects/eap
+elif [[ -d /usr/projects/crestone/users ]]; then
+  export UPE=/usr/projects/crestone
 fi
+if [[ -d ${UPE}/users/ccsrad/Cassio.deployment ]]; then
+  export TF_DEPLOYMENT_CLONES="${UPE}/users/ccsrad/Cassio.deployment"
+  export TF_SPACK_INSTANCES="${UPE}/users/ccsrad/spack_instances"
+fi
+add_to_path "${UPE}/tools"
 
 # shell options
 # Do not escape $ for bash completion

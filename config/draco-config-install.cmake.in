@@ -31,9 +31,12 @@ set_package_properties( draco PROPERTIES
 # Basic build information
 #--------------------------------------------------------------------------------------------------#
 
-set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
+set( DRACO_LIBRARY_TYPE "@DRACO_LIBRARY_TYPE@" )
+set( DRACO_TIMING "@DRACO_TIMING@")
+set( DRACO_DIAGNOSTICS "@DRACO_DIAGNOSTICS@")
+set( DRACO_STATIC_ANALYZER "@DRACO_STATIC_ANALYZER@")
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
-set(Draco_VERSION "@Draco_VERSION@")
+set( Draco_VERSION "@Draco_VERSION@")
 
 #--------------------------------------------------------------------------------------------------#
 # MPI specific variables
