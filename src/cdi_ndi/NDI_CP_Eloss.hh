@@ -103,6 +103,7 @@ private:
   double max_density;         //!< Maximum target density
   double min_temperature;     //!< Minimum target temperature
   double max_temperature;     //!< Maximum target temperature
+#endif
   sf_double energies;         //!< Vector of energy gridpoints
   sf_double densities;        //!< Vector of density gridpoints
   sf_double temperatures;     //!< Vector of temperature gridpoints
@@ -115,7 +116,6 @@ private:
   inline double get_stopping_data(int i_e, int i_d, int i_t) const {
     return stopping_data_1d[i_t + n_temperature * (i_d + n_density * i_e)];
   }
-#endif
 };
 
 } // namespace rtt_cdi_ndi
