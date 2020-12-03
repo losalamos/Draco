@@ -52,7 +52,7 @@ public:
   // >>> ACCESSORS
 
   //! Get a stopping power.
-  double getEloss(const double temperature, const double density, const double v0) const;
+  double getEloss(const double temperature, const double density, const double partSpeed) const;
 
   //! Query to see if data is in tabular or functional form (true)
   static constexpr bool is_data_in_tabular_form() { return true; }
