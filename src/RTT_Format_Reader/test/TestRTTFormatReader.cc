@@ -12,6 +12,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <sstream>
 
 using namespace std;
@@ -30,8 +31,8 @@ void runTest(UnitTest &ut) {
 
   // New meshes added to this test will have to be added to the enumeration Meshes in the header
   // file.
-  int const MAX_MESHES = 1;
-  std::string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
+  int constexpr MAX_MESHES = 1;
+  std::array<std::string, MAX_MESHES> filename = {inpPath + string("rttdef.mesh")};
   Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
@@ -126,9 +127,9 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTes
     cycle = 1;
     time = 0.0;
     ncomments = 3;
-    comments.push_back("One tet mesh in an RTT mesh file format.");
-    comments.push_back("Date     : 24 Jul 97");
-    comments.push_back("Author(s): H. Trease, J.McGhee");
+    comments.emplace_back("One tet mesh in an RTT mesh file format.");
+    comments.emplace_back("Date     : 24 Jul 97");
+    comments.emplace_back("Author(s): H. Trease, J.McGhee");
     break;
 
   default:
@@ -419,23 +420,23 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, Uni
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("node_type");
-    num_name.push_back(std::make_pair(11, std::string("interior")));
-    num_name.push_back(std::make_pair(21, std::string("dudded")));
-    num_name.push_back(std::make_pair(6, std::string("parent")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("node_type");
+    num_name.emplace_back(std::make_pair(11, std::string("interior")));
+    num_name.emplace_back(std::make_pair(21, std::string("dudded")));
+    num_name.emplace_back(std::make_pair(6, std::string("parent")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     ntype = 0;
-    flagTypes.push_back("boundary");
-    num_name.push_back(std::make_pair(1, std::string("reflective")));
-    num_name.push_back(std::make_pair(4, std::string("vacuum")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("boundary");
+    num_name.emplace_back(std::make_pair(1, std::string("reflective")));
+    num_name.emplace_back(std::make_pair(4, std::string("vacuum")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     bndry = 1;
-    flagTypes.push_back("source");
-    num_name.push_back(std::make_pair(101, std::string("no_source")));
-    num_name.push_back(std::make_pair(22, std::string("rad_source")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("source");
+    num_name.emplace_back(std::make_pair(101, std::string("no_source")));
+    num_name.emplace_back(std::make_pair(22, std::string("rad_source")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     src = 2;
     break;
@@ -529,10 +530,10 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, Uni
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("boundary");
-    num_name.push_back(std::make_pair(1, std::string("reflective")));
-    num_name.push_back(std::make_pair(2, std::string("vacuum")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("boundary");
+    num_name.emplace_back(std::make_pair(1, std::string("reflective")));
+    num_name.emplace_back(std::make_pair(2, std::string("vacuum")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     bndry = 0;
     break;
@@ -616,16 +617,16 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, Uni
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("material");
-    num_name.push_back(std::make_pair(1, std::string("control_rod")));
-    num_name.push_back(std::make_pair(2, std::string("shield")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("material");
+    num_name.emplace_back(std::make_pair(1, std::string("control_rod")));
+    num_name.emplace_back(std::make_pair(2, std::string("shield")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     matl = 0;
-    flagTypes.push_back("rad_source");
-    num_name.push_back(std::make_pair(1, std::string("src_name1")));
-    num_name.push_back(std::make_pair(2, std::string("src_name2")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("rad_source");
+    num_name.emplace_back(std::make_pair(1, std::string("src_name1")));
+    num_name.emplace_back(std::make_pair(2, std::string("src_name2")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     rsrc = 1;
     break;
@@ -712,12 +713,12 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, 
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
-    names.push_back("ion_temp");
-    units.push_back("keV");
-    names.push_back("x_vel");
-    units.push_back("cm/sec");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
+    names.emplace_back("ion_temp");
+    units.emplace_back("keV");
+    names.emplace_back("x_vel");
+    units.emplace_back("cm/sec");
     break;
 
   default:
@@ -770,10 +771,10 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, 
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
-    names.push_back("ion_temp");
-    units.push_back("keV");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
+    names.emplace_back("ion_temp");
+    units.emplace_back("keV");
     break;
 
   default:
@@ -826,8 +827,8 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, 
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
     break;
 
   default:
@@ -893,162 +894,162 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype, Unit
     sides.resize(8);
     ordered_sides.resize(8);
     // Size and load point data
-    names.push_back("point");
-    nnodes.push_back(1);
-    nsides.push_back(0);
+    names.emplace_back("point");
+    nnodes.emplace_back(1);
+    nsides.emplace_back(0);
     side_types[0].resize(0);
     sides[0].resize(0);
     ordered_sides[0].resize(0);
     // Size and load line data.
-    names.push_back("line");
-    nnodes.push_back(2);
-    nsides.push_back(2);
+    names.emplace_back("line");
+    nnodes.emplace_back(2);
+    nsides.emplace_back(2);
     side_types[1].resize(2, 0);
     sides[1].resize(2);
     ordered_sides[1].resize(2);
-    ordered_sides[1][0].push_back(0);
-    ordered_sides[1][1].push_back(1);
+    ordered_sides[1][0].emplace_back(0);
+    ordered_sides[1][1].emplace_back(1);
     // Size triangle data.
-    names.push_back("triangle");
-    nnodes.push_back(3);
-    nsides.push_back(3);
+    names.emplace_back("triangle");
+    nnodes.emplace_back(3);
+    nsides.emplace_back(3);
     side_types[2].resize(3, 1);
     sides[2].resize(3);
     ordered_sides[2].resize(3);
     // Size quad data.
-    names.push_back("quad");
-    nnodes.push_back(4);
-    nsides.push_back(4);
+    names.emplace_back("quad");
+    nnodes.emplace_back(4);
+    nsides.emplace_back(4);
     side_types[3].resize(4, 1);
     sides[3].resize(4);
     ordered_sides[3].resize(4);
     // Size quad pyramid data.
-    names.push_back("quad_pyr");
-    nnodes.push_back(5);
-    nsides.push_back(5);
+    names.emplace_back("quad_pyr");
+    nnodes.emplace_back(5);
+    nsides.emplace_back(5);
     side_types[4].resize(5, 2);
     side_types[4][0] = 3;
     sides[4].resize(5);
     ordered_sides[4].resize(5);
     // Size tetrahedron data.
-    names.push_back("tetrahedron");
-    nnodes.push_back(4);
-    nsides.push_back(4);
+    names.emplace_back("tetrahedron");
+    nnodes.emplace_back(4);
+    nsides.emplace_back(4);
     side_types[5].resize(4, 2);
     sides[5].resize(4);
     ordered_sides[5].resize(4);
     // Size tri_prism data.
-    names.push_back("tri_prism");
-    nnodes.push_back(6);
-    nsides.push_back(5);
+    names.emplace_back("tri_prism");
+    nnodes.emplace_back(6);
+    nsides.emplace_back(5);
     side_types[6].resize(5, 3);
     sides[6].resize(5);
     ordered_sides[6].resize(5);
     // Size hexahedron data.
-    names.push_back("hexahedron");
-    nnodes.push_back(8);
-    nsides.push_back(6);
+    names.emplace_back("hexahedron");
+    nnodes.emplace_back(8);
+    nsides.emplace_back(6);
     side_types[7].resize(6, 3);
     sides[7].resize(6);
     ordered_sides[7].resize(6);
     // triangle
-    ordered_sides[2][0].push_back(1);
-    ordered_sides[2][0].push_back(2);
-    ordered_sides[2][1].push_back(2);
-    ordered_sides[2][1].push_back(0);
-    ordered_sides[2][2].push_back(0);
-    ordered_sides[2][2].push_back(1);
+    ordered_sides[2][0].emplace_back(1);
+    ordered_sides[2][0].emplace_back(2);
+    ordered_sides[2][1].emplace_back(2);
+    ordered_sides[2][1].emplace_back(0);
+    ordered_sides[2][2].emplace_back(0);
+    ordered_sides[2][2].emplace_back(1);
     // quad
-    ordered_sides[3][0].push_back(0);
-    ordered_sides[3][0].push_back(1);
-    ordered_sides[3][1].push_back(1);
-    ordered_sides[3][1].push_back(2);
-    ordered_sides[3][2].push_back(2);
-    ordered_sides[3][2].push_back(3);
-    ordered_sides[3][3].push_back(3);
-    ordered_sides[3][3].push_back(0);
+    ordered_sides[3][0].emplace_back(0);
+    ordered_sides[3][0].emplace_back(1);
+    ordered_sides[3][1].emplace_back(1);
+    ordered_sides[3][1].emplace_back(2);
+    ordered_sides[3][2].emplace_back(2);
+    ordered_sides[3][2].emplace_back(3);
+    ordered_sides[3][3].emplace_back(3);
+    ordered_sides[3][3].emplace_back(0);
     //quad_pyr
-    ordered_sides[4][0].push_back(0);
-    ordered_sides[4][0].push_back(3);
-    ordered_sides[4][0].push_back(2);
-    ordered_sides[4][0].push_back(1);
-    ordered_sides[4][1].push_back(0);
-    ordered_sides[4][1].push_back(1);
-    ordered_sides[4][1].push_back(4);
-    ordered_sides[4][2].push_back(1);
-    ordered_sides[4][2].push_back(2);
-    ordered_sides[4][2].push_back(4);
-    ordered_sides[4][3].push_back(2);
-    ordered_sides[4][3].push_back(3);
-    ordered_sides[4][3].push_back(4);
-    ordered_sides[4][4].push_back(3);
-    ordered_sides[4][4].push_back(0);
-    ordered_sides[4][4].push_back(4);
+    ordered_sides[4][0].emplace_back(0);
+    ordered_sides[4][0].emplace_back(3);
+    ordered_sides[4][0].emplace_back(2);
+    ordered_sides[4][0].emplace_back(1);
+    ordered_sides[4][1].emplace_back(0);
+    ordered_sides[4][1].emplace_back(1);
+    ordered_sides[4][1].emplace_back(4);
+    ordered_sides[4][2].emplace_back(1);
+    ordered_sides[4][2].emplace_back(2);
+    ordered_sides[4][2].emplace_back(4);
+    ordered_sides[4][3].emplace_back(2);
+    ordered_sides[4][3].emplace_back(3);
+    ordered_sides[4][3].emplace_back(4);
+    ordered_sides[4][4].emplace_back(3);
+    ordered_sides[4][4].emplace_back(0);
+    ordered_sides[4][4].emplace_back(4);
     //tetrahedron
-    ordered_sides[5][0].push_back(1);
-    ordered_sides[5][0].push_back(2);
-    ordered_sides[5][0].push_back(3);
-    ordered_sides[5][1].push_back(0);
-    ordered_sides[5][1].push_back(3);
-    ordered_sides[5][1].push_back(2);
-    ordered_sides[5][2].push_back(0);
-    ordered_sides[5][2].push_back(1);
-    ordered_sides[5][2].push_back(3);
-    ordered_sides[5][3].push_back(0);
-    ordered_sides[5][3].push_back(2);
-    ordered_sides[5][3].push_back(1);
+    ordered_sides[5][0].emplace_back(1);
+    ordered_sides[5][0].emplace_back(2);
+    ordered_sides[5][0].emplace_back(3);
+    ordered_sides[5][1].emplace_back(0);
+    ordered_sides[5][1].emplace_back(3);
+    ordered_sides[5][1].emplace_back(2);
+    ordered_sides[5][2].emplace_back(0);
+    ordered_sides[5][2].emplace_back(1);
+    ordered_sides[5][2].emplace_back(3);
+    ordered_sides[5][3].emplace_back(0);
+    ordered_sides[5][3].emplace_back(2);
+    ordered_sides[5][3].emplace_back(1);
     // tri_prism
     side_types[6][0] = side_types[6][1] = 2;
-    ordered_sides[6][0].push_back(0);
-    ordered_sides[6][0].push_back(2);
-    ordered_sides[6][0].push_back(1);
-    ordered_sides[6][1].push_back(3);
-    ordered_sides[6][1].push_back(4);
-    ordered_sides[6][1].push_back(5);
-    ordered_sides[6][2].push_back(0);
-    ordered_sides[6][2].push_back(1);
-    ordered_sides[6][2].push_back(4);
-    ordered_sides[6][2].push_back(3);
-    ordered_sides[6][3].push_back(0);
-    ordered_sides[6][3].push_back(3);
-    ordered_sides[6][3].push_back(5);
-    ordered_sides[6][3].push_back(2);
-    ordered_sides[6][4].push_back(1);
-    ordered_sides[6][4].push_back(2);
-    ordered_sides[6][4].push_back(5);
-    ordered_sides[6][4].push_back(4);
+    ordered_sides[6][0].emplace_back(0);
+    ordered_sides[6][0].emplace_back(2);
+    ordered_sides[6][0].emplace_back(1);
+    ordered_sides[6][1].emplace_back(3);
+    ordered_sides[6][1].emplace_back(4);
+    ordered_sides[6][1].emplace_back(5);
+    ordered_sides[6][2].emplace_back(0);
+    ordered_sides[6][2].emplace_back(1);
+    ordered_sides[6][2].emplace_back(4);
+    ordered_sides[6][2].emplace_back(3);
+    ordered_sides[6][3].emplace_back(0);
+    ordered_sides[6][3].emplace_back(3);
+    ordered_sides[6][3].emplace_back(5);
+    ordered_sides[6][3].emplace_back(2);
+    ordered_sides[6][4].emplace_back(1);
+    ordered_sides[6][4].emplace_back(2);
+    ordered_sides[6][4].emplace_back(5);
+    ordered_sides[6][4].emplace_back(4);
     // hexahedron
-    ordered_sides[7][0].push_back(0);
-    ordered_sides[7][0].push_back(3);
-    ordered_sides[7][0].push_back(2);
-    ordered_sides[7][0].push_back(1);
-    ordered_sides[7][1].push_back(4);
-    ordered_sides[7][1].push_back(5);
-    ordered_sides[7][1].push_back(6);
-    ordered_sides[7][1].push_back(7);
-    ordered_sides[7][2].push_back(0);
-    ordered_sides[7][2].push_back(1);
-    ordered_sides[7][2].push_back(5);
-    ordered_sides[7][2].push_back(4);
-    ordered_sides[7][3].push_back(1);
-    ordered_sides[7][3].push_back(2);
-    ordered_sides[7][3].push_back(6);
-    ordered_sides[7][3].push_back(5);
-    ordered_sides[7][4].push_back(2);
-    ordered_sides[7][4].push_back(3);
-    ordered_sides[7][4].push_back(7);
-    ordered_sides[7][4].push_back(6);
-    ordered_sides[7][5].push_back(0);
-    ordered_sides[7][5].push_back(4);
-    ordered_sides[7][5].push_back(7);
-    ordered_sides[7][5].push_back(3);
+    ordered_sides[7][0].emplace_back(0);
+    ordered_sides[7][0].emplace_back(3);
+    ordered_sides[7][0].emplace_back(2);
+    ordered_sides[7][0].emplace_back(1);
+    ordered_sides[7][1].emplace_back(4);
+    ordered_sides[7][1].emplace_back(5);
+    ordered_sides[7][1].emplace_back(6);
+    ordered_sides[7][1].emplace_back(7);
+    ordered_sides[7][2].emplace_back(0);
+    ordered_sides[7][2].emplace_back(1);
+    ordered_sides[7][2].emplace_back(5);
+    ordered_sides[7][2].emplace_back(4);
+    ordered_sides[7][3].emplace_back(1);
+    ordered_sides[7][3].emplace_back(2);
+    ordered_sides[7][3].emplace_back(6);
+    ordered_sides[7][3].emplace_back(5);
+    ordered_sides[7][4].emplace_back(2);
+    ordered_sides[7][4].emplace_back(3);
+    ordered_sides[7][4].emplace_back(7);
+    ordered_sides[7][4].emplace_back(6);
+    ordered_sides[7][5].emplace_back(0);
+    ordered_sides[7][5].emplace_back(4);
+    ordered_sides[7][5].emplace_back(7);
+    ordered_sides[7][5].emplace_back(3);
     // Load the (sorted) sides data from the ordered_sides data specified above. The first element
     // of ordered_sides and sides std::vectors corresponds to a point (no sides, and thus the second
     // "array" size is zero) so start at cell definition one.
     for (size_t c = 1; c < ordered_sides.size(); c++)
       for (size_t s = 0; s < ordered_sides[c].size(); s++)
         for (size_t n = 0; n < ordered_sides[c][s].size(); n++)
-          sides[c][s].push_back(ordered_sides[c][s][n]);
+          sides[c][s].emplace_back(ordered_sides[c][s][n]);
     break;
 
   default:
@@ -1198,20 +1199,20 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest
     for (size_t i = 0; i < mesh.get_dims_nnodes(); i++)
       parents[i] = i;
     // load the node flags.
-    flags[0].push_back(11);
-    flags[0].push_back(1);
-    flags[0].push_back(101);
-    flags[2].push_back(21);
-    flags[2].push_back(4);
-    flags[2].push_back(101);
+    flags[0].emplace_back(11);
+    flags[0].emplace_back(1);
+    flags[0].emplace_back(101);
+    flags[2].emplace_back(21);
+    flags[2].emplace_back(4);
+    flags[2].emplace_back(101);
     coords[1][2] = 3.0;
     coords[3][0] = 1.0;
-    flags[1].push_back(21);
-    flags[1].push_back(1);
-    flags[1].push_back(101);
-    flags[3].push_back(6);
-    flags[3].push_back(4);
-    flags[3].push_back(22);
+    flags[1].emplace_back(21);
+    flags[1].emplace_back(1);
+    flags[1].emplace_back(101);
+    flags[3].emplace_back(6);
+    flags[3].emplace_back(4);
+    flags[3].emplace_back(22);
     break;
 
   default:
@@ -1296,24 +1297,24 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest
     sideType.resize(mesh.get_dims_nsides(), 2);
     // load the side nodes.
     nodes.resize(mesh.get_dims_nsides());
-    nodes[0].push_back(1);
-    nodes[0].push_back(2);
-    nodes[0].push_back(3);
-    nodes[1].push_back(0);
-    nodes[1].push_back(3);
-    nodes[1].push_back(2);
-    nodes[2].push_back(0);
-    nodes[2].push_back(1);
-    nodes[2].push_back(3);
-    nodes[3].push_back(0);
-    nodes[3].push_back(2);
-    nodes[3].push_back(1);
+    nodes[0].emplace_back(1);
+    nodes[0].emplace_back(2);
+    nodes[0].emplace_back(3);
+    nodes[1].emplace_back(0);
+    nodes[1].emplace_back(3);
+    nodes[1].emplace_back(2);
+    nodes[2].emplace_back(0);
+    nodes[2].emplace_back(1);
+    nodes[2].emplace_back(3);
+    nodes[3].emplace_back(0);
+    nodes[3].emplace_back(2);
+    nodes[3].emplace_back(1);
     // load the side flags.
     flags.resize(mesh.get_dims_nsides());
-    flags[0].push_back(2);
-    flags[1].push_back(1);
-    flags[2].push_back(1);
-    flags[3].push_back(1);
+    flags[0].emplace_back(2);
+    flags[1].emplace_back(1);
+    flags[2].emplace_back(1);
+    flags[3].emplace_back(1);
 
     break;
 
@@ -1396,14 +1397,14 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest
     cellType.resize(mesh.get_dims_ncells(), 5);
     // load the cell flags.
     flags.resize(mesh.get_dims_ncells());
-    flags[0].push_back(1);
-    flags[0].push_back(2);
+    flags[0].emplace_back(1);
+    flags[0].emplace_back(2);
     // Load the cell nodes.
     nodes.resize(mesh.get_dims_ncells());
-    nodes[0].push_back(0);
-    nodes[0].push_back(1);
-    nodes[0].push_back(2);
-    nodes[0].push_back(3);
+    nodes[0].emplace_back(0);
+    nodes[0].emplace_back(1);
+    nodes[0].emplace_back(2);
+    nodes[0].emplace_back(3);
     break;
 
   default:
@@ -1603,7 +1604,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, Unit
   switch (meshtype) {
   case DEFINED:
     // set cell data per the input deck.
-    data.push_back(cell_data);
+    data.emplace_back(cell_data);
     break;
 
   default:

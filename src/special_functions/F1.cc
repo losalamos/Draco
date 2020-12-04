@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "F1.hh"
+#include <array>
 #include <cmath>
 
 namespace rtt_sf {
@@ -24,7 +25,6 @@ using namespace std;
  * integral. Reference: antia apjs 84,101 1993
  *
  * \param x Dimensionless chemical potential \f$\eta\f$
- *
  * \return Value of \f$F_1(\eta)\f$
  *
  * \post \c Result>=0
@@ -32,27 +32,26 @@ using namespace std;
 double F1(double const x) {
 
   //..load the coefficients of the expansion
-  //    double const an = 1.0;
-  unsigned const m1 = 7;
-  unsigned const k1 = 4;
-  unsigned const m2 = 9;
-  unsigned const k2 = 5;
+  unsigned constexpr m1 = 7;
+  unsigned constexpr k1 = 4;
+  unsigned constexpr m2 = 9;
+  unsigned constexpr k2 = 5;
 
-  double const a1[m1 + 1] = {
+  std::array<double, m1 + 1> const a1 = {
       -7.606458638543e7, -1.143519707857e8, -5.167289383236e7, -7.304766495775e6,
-      -1.630563622280e5, 3.145920924780e3,  -7.156354090495e1, 1.0e0};
+      -1.630563622280e5, 3.145920924780e3,  -7.156354090495e1, 1.0};
 
-  double const b1[k1 + 1] = {-7.606458639561e7, -1.333681162517e8, -7.656332234147e7,
-                             -1.638081306504e7, -1.044683266663e6};
+  std::array<double, k1 + 1> const b1 = {-7.606458639561e7, -1.333681162517e8, -7.656332234147e7,
+                                         -1.638081306504e7, -1.044683266663e6};
 
-  double const a2[m2 + 1] = {-3.493105157219e-7, -5.628286279892e-5,
-                             -5.188757767899e-3, -2.097205947730e-1,
-                             -3.353243201574e0,  -1.682094530855e1,
-                             -2.042542575231e1,  3.551366939795e0,
-                             -2.400826804233e0,  1.0e0};
+  std::array<double, m2 + 1> const a2 = {-3.493105157219e-7, -5.628286279892e-5,
+                                         -5.188757767899e-3, -2.097205947730e-1,
+                                         -3.353243201574e0,  -1.682094530855e1,
+                                         -2.042542575231e1,  3.551366939795e0,
+                                         -2.400826804233e0,  1.0};
 
-  double const b2[k2 + 1] = {-6.986210315105e-7, -1.102673536040e-4, -1.001475250797e-2,
-                             -3.864923270059e-1, -5.435619477378e0,  -1.563274262745e1};
+  std::array<double, k2 + 1> const b2 = {-6.986210315105e-7, -1.102673536040e-4, -1.001475250797e-2,
+                                         -3.864923270059e-1, -5.435619477378e0,  -1.563274262745e1};
 
   if (x < 2.0e0) {
     double const xx = exp(x);

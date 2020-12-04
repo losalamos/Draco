@@ -49,7 +49,7 @@ void NodeFlags::readFlagTypes(ifstream &meshfile) {
     Insist(static_cast<size_t>(flagTypeNum) == i + 1,
            "Invalid mesh file: node flag type out of order");
     Check(i < flagTypes.size());
-    flagTypes[i].reset(new Flags(dims.get_nnode_flags(i), dummyString));
+    flagTypes[i] = std::make_shared<Flags>(dims.get_nnode_flags(i), dummyString);
     std::getline(meshfile, dummyString);
     flagTypes[i]->readFlags(meshfile);
   }

@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
- *         reserved. */
+ * \note   Copyright 2016-2020 Triad National Security, LLC. All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_quadrature_Lobatto_hh
@@ -21,9 +20,8 @@ namespace rtt_quadrature {
  *
  * \brief A class representing an interval Lobatto quadrature set.
  *
- * This is an interval (e.g. 1D) angle quadrature set whose abscissae at order N
- * are the roots of the derivative of the Laguerre polynomial of order N-1 plus
- * the end points of the interval.
+ * This is an interval (e.g. 1D) angle quadrature set whose abscissae at order N are the roots of
+ * the derivative of the Laguerre polynomial of order N-1 plus the end points of the interval.
  */
 //================================================================================================//
 
@@ -32,20 +30,13 @@ public:
   // CREATORS
   explicit Lobatto(unsigned sn_order);
 
-  // ACCESSORS
-
   // SERVICES
 
-  virtual string name() const;
-
-  virtual string parse_name() const;
-
-  virtual unsigned number_of_levels() const;
-
-  virtual string as_text(string const &indent) const;
-
-  virtual bool is_open_interval() const;
-
+  std::string name() const override;
+  std::string parse_name() const override;
+  unsigned number_of_levels() const override;
+  std::string as_text(std::string const &indent) const override;
+  bool is_open_interval() const override;
   bool check_class_invariants() const;
 
   // STATICS
@@ -53,7 +44,7 @@ public:
   static std::shared_ptr<Quadrature> parse(Token_Stream &tokens);
 
 protected:
-  virtual vector<Ordinate> create_level_ordinates_(double norm) const;
+  std::vector<Ordinate> create_level_ordinates_(double norm) const override;
 };
 
 } // end namespace rtt_quadrature

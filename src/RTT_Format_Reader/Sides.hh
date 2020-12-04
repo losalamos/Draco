@@ -46,8 +46,7 @@ public:
         flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) { /* empty */
   }
 
-  ~Sides() { /* empty */
-  }
+  ~Sides() = default;
 
   void readSides(ifstream &meshfile);
   void redefineSides();

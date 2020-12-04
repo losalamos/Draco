@@ -48,7 +48,7 @@ public:
   Ordinate_Set(Ordinate_Set const &other);
 
   //! destructor
-  virtual ~Ordinate_Set() {}
+  virtual ~Ordinate_Set() = default;
 
   // ACCESSORS
 

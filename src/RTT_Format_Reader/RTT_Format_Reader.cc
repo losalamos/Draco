@@ -65,7 +65,7 @@ void RTT_Format_Reader::readMesh(const string &RTT_File) {
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the magic cookie at the beginning of the mesh file.
-  * \param meshfile Mesh file name.
+ * \param meshfile Mesh file name.
  */
 void RTT_Format_Reader::readKeyword(ifstream &meshfile) {
   string dummyString;
@@ -80,19 +80,19 @@ void RTT_Format_Reader::readKeyword(ifstream &meshfile) {
  * \brief Instantiates the majority of the RTT_Format_Reader member data class objects.
  */
 void RTT_Format_Reader::createMembers() {
-  spNodeFlags.reset(new NodeFlags(dims));
-  spSideFlags.reset(new SideFlags(dims));
-  spCellFlags.reset(new CellFlags(dims));
-  spNodeDataIds.reset(new NodeDataIDs(dims));
-  spSideDataIds.reset(new SideDataIDs(dims));
-  spCellDataIds.reset(new CellDataIDs(dims));
-  spCellDefs.reset(new CellDefs(dims));
-  spNodes.reset(new Nodes(*spNodeFlags, dims));
-  spSides.reset(new Sides(*spSideFlags, dims, *spCellDefs));
-  spCells.reset(new Cells(*spCellFlags, dims, *spCellDefs));
-  spNodeData.reset(new NodeData(dims));
-  spSideData.reset(new SideData(dims));
-  spCellData.reset(new CellData(dims));
+  spNodeFlags = std::make_shared<NodeFlags>(dims);
+  spSideFlags = std::make_shared<SideFlags>(dims);
+  spCellFlags = std::make_shared<CellFlags>(dims);
+  spNodeDataIds = std::make_shared<NodeDataIDs>(dims);
+  spSideDataIds = std::make_shared<SideDataIDs>(dims);
+  spCellDataIds = std::make_shared<CellDataIDs>(dims);
+  spCellDefs = std::make_shared<CellDefs>(dims);
+  spNodes = std::make_shared<Nodes>(*spNodeFlags, dims);
+  spSides = std::make_shared<Sides>(*spSideFlags, dims, *spCellDefs);
+  spCells = std::make_shared<Cells>(*spCellFlags, dims, *spCellDefs);
+  spNodeData = std::make_shared<NodeData>(dims);
+  spSideData = std::make_shared<SideData>(dims);
+  spCellData = std::make_shared<CellData>(dims);
 }
 
 //------------------------------------------------------------------------------------------------//

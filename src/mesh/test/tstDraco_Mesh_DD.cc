@@ -4,8 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Sunday, Jun 24, 2018, 14:38 pm
  * \brief  Draco_Mesh class unit test.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Test_Mesh_Interface.hh"
@@ -34,9 +33,12 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
   // generate a constainer for data needed in mesh construction
   std::shared_ptr<Test_Mesh_Interface> mesh_iface;
   if (rtt_c4::node() == 0) {
-    mesh_iface.reset(new Test_Mesh_Interface(num_xdir, num_ydir, {0, 1, 3, 4}));
+    std::vector<unsigned> global_node_number = {0, 1, 3, 4};
+    mesh_iface = std::make_shared<Test_Mesh_Interface>(num_xdir, num_ydir, global_node_number);
   } else {
-    mesh_iface.reset(new Test_Mesh_Interface(num_xdir, num_ydir, {1, 2, 4, 5}, 1.0, 0.0));
+    std::vector<unsigned> global_node_number = {1, 2, 4, 5};
+    mesh_iface =
+        std::make_shared<Test_Mesh_Interface>(num_xdir, num_ydir, global_node_number, 1.0, 0.0);
   }
 
   // set ghost data
@@ -99,8 +101,8 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
         mesh_iface->flatten_cn_linkage(layout, bd_layout, go_layout);
 
     // check that cn_linkage is a permutation of the original cell-node linkage
-    std::vector<unsigned>::const_iterator cn_first = cell_to_node_linkage.begin();
-    std::vector<unsigned>::const_iterator test_cn_first = test_cn_linkage.begin();
+    auto cn_first = cell_to_node_linkage.begin();
+    auto test_cn_first = test_cn_linkage.begin();
     for (unsigned cell = 0; cell < mesh_iface->num_cells; ++cell) {
 
       // nodes must only be permuted at the cell level

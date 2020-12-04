@@ -410,6 +410,50 @@ void tinsist(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
     }
   }
+
+  // you should always get the throwing version of Insist_device when building ds++ library tests
+  {
+    std::cout << "Insist device test (should map to Insist in CPU builds: ";
+    char const *const insist_message("You must be kidding!");
+    try {
+      Insist_device(0, insist_message);
+      throw "Bogus!";
+    } catch (rtt_dsxx::assertion const &a) {
+      PASSMSG("tinsist_device: caught rtt_dsxx::assertion");
+      std::cout << "t-Insist device message value test: ";
+      {
+        bool passed(true);
+        std::string msg(a.what());
+        std::string expected_value("You must be kidding!");
+        string::size_type idx(msg.find(expected_value));
+        if (idx == string::npos)
+          passed = false;
+        idx = msg.find(insist_message);
+        if (idx == string::npos)
+          passed = false;
+        if (!passed)
+          ITFAILS;
+      }
+    } catch (...) {
+      ITFAILS;
+    }
+  }
+
+  // make sure no_exception_insist doesn't throw
+  /*
+  {
+    std::cout << "Insist no exception test"
+    char const *const insist_message("You must be kidding!");
+    try {
+      rtt_dsxx::no_exception_insist(0, insist_message);
+      throw "Bogus!";
+    } catch (rtt_dsxx::assertion const &a) {
+      ITFAILS;
+    } catch (...) {
+      PASSMSG("no_exception_insist did not throw");
+    }
+  }
+  */
   return;
 }
 

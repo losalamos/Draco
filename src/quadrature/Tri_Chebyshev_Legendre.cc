@@ -3,8 +3,7 @@
  * \file   quadrature/Tri_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Tri_Chebyshev_Legendre.hh"
@@ -16,10 +15,10 @@ namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
 //------------------------------------------------------------------------------------------------//
-string Tri_Chebyshev_Legendre::name() const { return "Tri Chebyshev Legendre"; }
+std::string Tri_Chebyshev_Legendre::name() const { return "Tri Chebyshev Legendre"; }
 
 //------------------------------------------------------------------------------------------------//
-string Tri_Chebyshev_Legendre::parse_name() const { return "tri cl"; }
+std::string Tri_Chebyshev_Legendre::parse_name() const { return "tri cl"; }
 
 //------------------------------------------------------------------------------------------------//
 Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const { return TRIANGLE_QUADRATURE; }
@@ -28,16 +27,15 @@ Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const { return TRIAN
 unsigned Tri_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
 //------------------------------------------------------------------------------------------------//
-string Tri_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = tri cl" + indent + "  order = " + to_string(sn_order_) +
-                  Octant_Quadrature::as_text(indent);
-
-  return Result;
+std::string Tri_Chebyshev_Legendre::as_text(std::string const &indent) const {
+  return indent + "type = tri cl" + indent + "  order = " + to_string(sn_order_) +
+      Octant_Quadrature::as_text(indent);
 }
 
 //------------------------------------------------------------------------------------------------//
-void Tri_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
-                                                      vector<double> &wt) const {
+void Tri_Chebyshev_Legendre::create_octant_ordinates_(std::vector<double> &mu,
+                                                      std::vector<double> &eta,
+                                                      std::vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
 
   // The number of quadrature levels is equal to the requested SN order.
@@ -54,8 +52,7 @@ void Tri_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu, vector
 
   std::shared_ptr<Gauss_Legendre> GL(new Gauss_Legendre(sn_order_));
 
-  // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical
-  // coords)
+  // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
 
   unsigned icount = 0;
 

@@ -50,13 +50,12 @@ class CellDef {
   vector_uint node_map;
 
 public:
-  CellDef(const CellDefs &cellDefs_, const string &name_)
-      : cellDefs(cellDefs_), name(name_), nnodes(0), nsides(0), side_types(vector_uint()),
+  CellDef(const CellDefs &cellDefs_, const string name_)
+    : cellDefs(cellDefs_), name(std::move(name_)), nnodes(0), nsides(0), side_types(vector_uint()),
         sides(vector_vector_uint()), ordered_sides(0), node_map() { /* empty */
   }
 
-  ~CellDef(void) { /*empty*/
-  }
+  ~CellDef() = default;
 
   void readDef(ifstream &meshfile);
   void redefineCellDef(vector_uint const &new_side_types_,
@@ -142,9 +141,7 @@ public:
   CellDefs(const Dims &dims_)
       : dims(dims_), defs(dims.get_ncell_defs()), redefined(false) { /*empty*/
   }
-
-  ~CellDefs() { /*empty*/
-  }
+  ~CellDefs() = default;
 
   void readCellDefs(ifstream &meshfile);
   void redefineCellDefs(vector_vector_uint const &cell_side_types,

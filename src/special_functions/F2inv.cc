@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "F2inv.hh"
+#include <array>
 #include <cmath>
 
 namespace rtt_sf {
@@ -31,15 +32,16 @@ using namespace std;
  * \return Dimensionless chemical potential \f$\eta\f$
  */
 double F2inv(double f) {
-  double const an = 2.0;
-  int const m1 = 4;
-  int const k1 = 3;
-  int const m2 = 4;
-  int const k2 = 3;
-  double const a1[] = {125.829, 35974.8, 7993.89, 307.849, 1.0e0};
-  double const b1[] = {251.657, 71940.5, 11494.2, -0.0140884};
-  double const a2[] = {-3.04879, 714344, 23834.7, -1.08562e6, 1.0e0};
-  double const b2[] = {-9.14637, 495569, 13194.3, 48419.5};
+  double constexpr an = 2.0;
+  int constexpr m1 = 4;
+  int constexpr k1 = 3;
+  int constexpr m2 = 4;
+  int constexpr k2 = 3;
+
+  std::array<double, m1 + 1> constexpr a1 = {125.829, 35974.8, 7993.89, 307.849, 1.0e0};
+  std::array<double, k1 + 1> constexpr b1 = {251.657, 71940.5, 11494.2, -0.0140884};
+  std::array<double, m2 + 1> constexpr a2 = {-3.04879, 714344, 23834.7, -1.08562e6, 1.0e0};
+  std::array<double, k2 + 1> constexpr b2 = {-9.14637, 495569, 13194.3, 48419.5};
 
   if (f < 4.0e0) {
     double rn = f + a1[m1 - 1];
@@ -84,15 +86,15 @@ double F2inv(double f) {
  * \pre \c f>0
  */
 void F2inv(double const f, double &eta, double &deta) {
-  double const an = 2.0;
-  int const m1 = 4;
-  int const k1 = 3;
-  int const m2 = 4;
-  int const k2 = 3;
-  double const a1[] = {125.829, 35974.8, 7993.89, 307.849, 1.0e0};
-  double const b1[] = {251.657, 71940.5, 11494.2, -0.0140884};
-  double const a2[] = {-3.04879, 714344, 23834.7, -1.08562e6, 1.0e0};
-  double const b2[] = {-9.14637, 495569, 13194.3, 48419.5};
+  double constexpr an = 2.0;
+  int constexpr m1 = 4;
+  int constexpr k1 = 3;
+  int constexpr m2 = 4;
+  int constexpr k2 = 3;
+  std::array<double, m1 + 1> constexpr a1 = {125.829, 35974.8, 7993.89, 307.849, 1.0e0};
+  std::array<double, k1 + 1> constexpr b1 = {251.657, 71940.5, 11494.2, -0.0140884};
+  std::array<double, m2 + 1> constexpr a2 = {-3.04879, 714344, 23834.7, -1.08562e6, 1.0e0};
+  std::array<double, k2 + 1> constexpr b2 = {-9.14637, 495569, 13194.3, 48419.5};
 
   if (f < 4.0e0) {
     double rn = f + a1[m1 - 1];

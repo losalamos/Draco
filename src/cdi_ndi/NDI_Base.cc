@@ -12,6 +12,7 @@
 #include "ds++/Query_Env.hh"
 #include "ds++/SystemCall.hh"
 #include "ds++/dbc.hh"
+#include <algorithm>
 
 namespace rtt_cdi_ndi {
 
@@ -82,10 +83,9 @@ NDI_Base::NDI_Base(const std::string & /*dataset_in*/, const std::string & /*lib
  * \param[in] dataset_in name of requested dataset (provided by inherited class)
  * \param[in] library_in name of requested NDI data library
  */
-
 NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in)
-    : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second), dataset(dataset_in),
-      library(library_in) {
+    : gendir(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second),
+      dataset(std::move(dataset_in)), library(std::move(library_in)) {
 
   Require(rtt_dsxx::fileExists(gendir));
 

@@ -73,7 +73,6 @@ Synopsis of Active Draco Packages
 * norms - Calculate norms for data sets.
 * ode - Ordinary differential equation solvers (e.g.: Runge-Kutta).
 * parser - Lexical file/input parser.
-* plot2d - C++ interface to XMGrace 2-dimensional plotting.
 * quadrature - access to angular integration functions and related data.
 * rng - A random number generator component
   * The primary set of functions provided by this component were derived from Random123
@@ -82,7 +81,6 @@ Synopsis of Active Draco Packages
 * roots - Root finding algorithms
 * RTT_Format_Reader - meshReaders implementation for RTT format mesh files or input-streams.
 * special_functions - Specialized math functions like factorial and Dirac delta.
-* traits - A traits class used by viz.
 * units - Provides encapsulated unit systems, functions to convert between unit systems and physical
   constants.
 * VendorChecks - A testing component to ensure that discovered and used vendor libraries behave as
@@ -91,6 +89,8 @@ Synopsis of Active Draco Packages
 
 Deprecated packages
 ----------------
+* plot2d - C++ interface to XMGrace 2-dimensional plotting.
+* traits - A traits class used by viz.
 * shared_lib - Dynamically load/unload shared object libraries via dl load (removed 2020 Sep 7).
 
 Authors

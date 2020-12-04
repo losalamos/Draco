@@ -32,8 +32,10 @@ class NodeFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  explicit NodeFlags(const Dims &dims_) : dims(dims_), flagTypes(dims.get_nnode_flag_types()) {}
-  ~NodeFlags() {}
+  explicit NodeFlags(const Dims &dims_)
+      : dims(dims_), flagTypes(dims.get_nnode_flag_types()) { /* empty */
+  }
+  ~NodeFlags() = default;
 
   void readNodeFlags(ifstream &meshfile);
 

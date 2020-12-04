@@ -1,11 +1,10 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/Draco_Mesh.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Thursday, Jun 07, 2018, 15:38 pm
  * \brief  Draco_Mesh class implementation file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Draco_Mesh.hh"
@@ -15,8 +14,7 @@
 
 namespace rtt_mesh {
 
-// helper function for safe conversion of types during initialization list
-// processing.
+// helper function for safe conversion of types during initialization list processing.
 unsigned safe_convert_from_size_t(size_t const in_) {
   Check(in_ < UINT_MAX);
   return static_cast<unsigned>(in_);
@@ -31,34 +29,28 @@ unsigned safe_convert_from_size_t(size_t const in_) {
  * \param[in] dimension_ dimension of mesh
  * \param[in] geometry_ enumerator of possible coordinate system geometries
  * \param[in] num_faces_per_cell_ number of faces for each cell.
- * \param[in] cell_to_node_linkage_ serialized map of cell indices to node
- *               indices. nodes are listed per cell face. so there are duplicate
- *               node entries in 2D or 3D since adjacent cell faces will share
- *               one or more nodes. 2D node ordering will be assumed to be
- *               counterclockwise around the cell, in 3D the node ordering per
- *               face is assumed to be counterclockwise from inside the cell
- *               looking at the face.
- * \param[in] side_set_flag_ map of side indices (per cell) to side flag (global
- *               index for a side).
- * \param[in] side_node_count_ number of nodes per each cell on a side of
- *               the mesh.
- * \param[in] side_to_node_linkage_ serialized map of side indices (per side
- *               cell) to node indices.
+ * \param[in] cell_to_node_linkage_ serialized map of cell indices to node indices. nodes are listed
+ *               per cell face. so there are duplicate node entries in 2D or 3D since adjacent cell
+ *               faces will share one or more nodes. 2D node ordering will be assumed to be
+ *               counterclockwise around the cell, in 3D the node ordering per face is assumed to be
+ *               counterclockwise from inside the cell looking at the face.
+ * \param[in] side_set_flag_ map of side indices (per cell) to side flag (global index for a side).
+ * \param[in] side_node_count_ number of nodes per each cell on a side of the mesh.
+ * \param[in] side_to_node_linkage_ serialized map of side indices (per side cell) to node indices.
  * \param[in] coordinates_ serialized map of node index to coordinate values.
- * \param[in] global_node_number_ map of local to global node index (vector
- *               subscript is local node index and value is global node index;
- *               for one process, this is the identity map).
+ * \param[in] global_node_number_ map of local to global node index (vector subscript is local node
+ *               index and value is global node index; for one process, this is the identity map).
  * \param[in] num_nodes_per_face_per_cell_ number of vertices per face per cell.
- * \param[in] ghost_cell_type_ number of vertices corresponding to each ghost
- *               cell (1 in 1D, 2 in 2D, arbitrary in 3D).
- * \param[in] ghost_cell_to_node_linkage_ serialized map of index into vector of
- *               ghost cells to local index of ghost nodes.
+ * \param[in] ghost_cell_type_ number of vertices corresponding to each ghost cell (1 in 1D, 2 in
+ *               2D, arbitrary in 3D).
+ * \param[in] ghost_cell_to_node_linkage_ serialized map of index into vector of ghost cells to
+ *               local index of ghost nodes.
  * \param[in] ghost_cell_number_ cell index local to other processor.
  * \param[in] ghost_cell_rank_ rank of each ghost cell.
  */
 Draco_Mesh::Draco_Mesh(
     unsigned dimension_, Geometry geometry_, const std::vector<unsigned> &num_faces_per_cell_,
-    const std::vector<unsigned> &cell_to_node_linkage_, const std::vector<unsigned> &side_set_flag_,
+    const std::vector<unsigned> &cell_to_node_linkage_, const std::vector<unsigned> side_set_flag_,
     const std::vector<unsigned> &side_node_count_,
     const std::vector<unsigned> &side_to_node_linkage_, const std::vector<double> &coordinates_,
     const std::vector<unsigned> &global_node_number_,
@@ -69,7 +61,7 @@ Draco_Mesh::Draco_Mesh(
     : dimension(dimension_), geometry(geometry_),
       num_cells(safe_convert_from_size_t(num_faces_per_cell_.size())),
       num_nodes(safe_convert_from_size_t(global_node_number_.size())),
-      side_set_flag(side_set_flag_), ghost_cell_number(ghost_cell_number_),
+      side_set_flag(std::move(side_set_flag_)), ghost_cell_number(ghost_cell_number_),
       ghost_cell_rank(ghost_cell_rank_), node_coord_vec(compute_node_coord_vec(coordinates_)),
       m_num_faces_per_cell(num_faces_per_cell_),
       m_num_nodes_per_face_per_cell(num_nodes_per_face_per_cell_),
@@ -159,8 +151,8 @@ const std::vector<unsigned> Draco_Mesh::get_flat_cell_node_linkage() const {
 /*!
  * \brief Build the cell-face index map to the corresponding coordinates.
  *
- * \param[in] coordinates serialized map of node index to coordinate values
- *               (passed from constructor).
+ * \param[in] coordinates serialized map of node index to coordinate values (passed from
+ *               constructor).
  * \return a vector of vectors of size=dimension of coordinates.
  */
 std::vector<std::vector<double>>
@@ -172,7 +164,7 @@ Draco_Mesh::compute_node_coord_vec(const std::vector<double> &coordinates) const
   std::vector<std::vector<double>> ret_node_coord_vec(num_nodes, std::vector<double>(dimension));
 
   // de-serialize the vector of node coordinates
-  std::vector<double>::const_iterator ncv_first = coordinates.begin();
+  auto ncv_first = coordinates.begin();
   for (unsigned node = 0; node < num_nodes; ++node) {
 
     // create a vector of node indices for this cell
@@ -208,7 +200,7 @@ Draco_Mesh::compute_cell_to_node_tensor(const std::vector<unsigned> &num_faces_p
   std::vector<std::vector<std::vector<unsigned>>> ret_cn_tensor(num_cells);
 
   // de-serialize the cell-node linkage vector
-  std::vector<unsigned>::const_iterator cfn_first = cell_to_node_linkage.begin();
+  auto cfn_first = cell_to_node_linkage.begin();
   unsigned cf_indx = 0;
   for (unsigned cell = 0; cell < num_cells; ++cell) {
 
@@ -264,7 +256,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // initialize cell face counter and cell-node iterator
   unsigned cf_counter = 0;
-  std::vector<unsigned>::const_iterator cn_first = cell_to_node_linkage.begin();
+  auto cn_first = cell_to_node_linkage.begin();
 
   // convert cell-node linkage to map of cell face to
   for (unsigned cell = 0; cell < num_cells; ++cell) {
@@ -399,8 +391,8 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 /*!
  * \brief Build a map of node vectors to indices map for boundary layouts.
  *
- * Note: the ordering of the nodes in the mesh ctor must match the node ordering
- * of the corresponding (local) cell face.
+ * Note: the ordering of the nodes in the mesh ctor must match the node ordering of the
+ * corresponding (local) cell face.
  *
  * \param[in] indx_type vector of number of nodes, subscripted by index.
  * \param[in] indx_to_node_linkage serial map of index to node indices.
@@ -415,7 +407,7 @@ Draco_Mesh::compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
 
   // generate map
   const size_t num_indxs = indx_type.size();
-  std::vector<unsigned>::const_iterator i2n_first = indx_to_node_linkage.begin();
+  auto i2n_first = indx_to_node_linkage.begin();
   for (unsigned indx = 0; indx < num_indxs; ++indx) {
 
     // extract the node vector

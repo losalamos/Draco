@@ -168,13 +168,12 @@ void nearest_three_test(rtt_dsxx::UnitTest &ut, const Ordinate &ord, const Ordin
 
   // Find the maximum 3 dot products and their locations
   vector<double> dpcopy(dps);
-  std::partial_sort(dps.begin(), dps.begin() + 3, dps.end(), std::greater<double>());
+  std::partial_sort(dps.begin(), dps.begin() + 3, dps.end(), std::greater<>());
   size_t i1 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[0]));
   size_t i2 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[1]));
   size_t i3 = std::distance(dpcopy.begin(), std::find(dpcopy.begin(), dpcopy.end(), dps[2]));
 
-  // These 3 indices should provide the ordered weight values in the test
-  // weight vector
+  // These 3 indices should provide the ordered weight values in the test weight vector
   if (wts[i1] < wts[i2])
     ut.failure("Max weight is smaller than 2nd weight");
   if (wts[i1] < wts[i3])

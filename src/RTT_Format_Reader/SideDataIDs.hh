@@ -18,10 +18,13 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the side data ids block of
  *        the mesh file.
  */
+//================================================================================================//
 class SideDataIDs {
   // typedefs
   using ifstream = std::ifstream;
@@ -34,8 +37,9 @@ class SideDataIDs {
 
 public:
   SideDataIDs(const Dims &dims_)
-      : dims(dims_), names(dims.get_nside_data()), units(dims.get_nside_data()) {}
-  ~SideDataIDs() {}
+      : dims(dims_), names(dims.get_nside_data()), units(dims.get_nside_data()) { /* empty */
+  }
+  ~SideDataIDs() = default;
 
   void readDataIDs(ifstream &meshfile);
 

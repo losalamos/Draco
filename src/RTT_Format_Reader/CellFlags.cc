@@ -50,7 +50,7 @@ void CellFlags::readFlagTypes(ifstream &meshfile) {
            "Invalid mesh file: cell flag type out of order");
     Check(i < flagTypes.size());
     Check(i < INT_MAX);
-    flagTypes[i].reset(new Flags(dims.get_ncell_flags(static_cast<int>(i)), dummyString));
+    flagTypes[i] = std::make_shared<Flags>(dims.get_ncell_flags(static_cast<int>(i)), dummyString);
     std::getline(meshfile, dummyString);
     flagTypes[i]->readFlags(meshfile);
   }

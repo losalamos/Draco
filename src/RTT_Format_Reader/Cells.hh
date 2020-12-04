@@ -37,8 +37,8 @@ public:
   Cells(const CellFlags &cellFlags_, const Dims &dims_, const CellDefs &cellDefs_)
       : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_), cellType(dims.get_ncells()),
         nodes(dims.get_ncells()),
-        flags(dims.get_ncells(), vector_int(dims.get_ncell_flag_types())) {}
-  ~Cells() {}
+        flags(dims.get_ncells(), vector_int(dims.get_ncell_flag_types())) { /* empty */ }
+  ~Cells() = default;
 
   void readCells(ifstream &meshfile);
   void redefineCells();

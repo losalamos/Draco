@@ -59,13 +59,13 @@ protected:
   NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
            const std::string &library_in);
 
+public:
   //! Default constructor
   NDI_Base() = delete;
 
   //! Default copy constructor
   NDI_Base(const NDI_Base &) = delete;
 
-public:
   //! Get the name of the gendir file
   inline std::string get_gendir() const & { return gendir; }
 

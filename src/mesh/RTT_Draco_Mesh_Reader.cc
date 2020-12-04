@@ -1,11 +1,10 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/RTT_Draco_Mesh_Reader.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Friday, Jul 13, 2018, 08:38 am
  * \brief  RTT_Draco_Mesh_Reader header file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "RTT_Draco_Mesh_Reader.hh"
@@ -41,7 +40,7 @@ void RTT_Draco_Mesh_Reader::read_mesh() {
   Insist(rttfile.is_open(), "Failed to find or open specified RTT mesh file.");
   rttfile.close();
 
-  rtt_reader.reset(new rtt_RTT_Format_Reader::RTT_Format_Reader(filename));
+  rtt_reader = std::make_shared<rtt_RTT_Format_Reader::RTT_Format_Reader>(filename);
   Insist(rtt_reader->get_dims_ndim() < 3, "RTT reader mesh dim >= 3.");
 }
 
@@ -60,7 +59,7 @@ unsigned RTT_Draco_Mesh_Reader::get_celltype(size_t cell) const {
 
   // for Draco_Mesh, cell_type is number of nodes (in 1-2D, this is # of faces)
   Check(rtt_reader->get_cell_defs_nnodes(cell_def) < UINT_MAX);
-  unsigned cell_type = static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
+  auto cell_type = static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
 
   return cell_type;
 }

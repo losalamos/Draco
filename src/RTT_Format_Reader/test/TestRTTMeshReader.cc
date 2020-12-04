@@ -11,6 +11,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/path.hh"
+#include <array>
 #include <sstream>
 
 //------------------------------------------------------------------------------------------------//
@@ -39,8 +40,8 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 
   // New meshes added to this test will have to be added to the enumeration Meshes in the header
   // file.
-  const int MAX_MESHES = 1;
-  string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
+  constexpr int MAX_MESHES = 1;
+  std::array<string, MAX_MESHES> filename = {inpPath + string("rttdef.mesh")};
   Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
@@ -87,7 +88,6 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 //------------------------------------------------------------------------------------------------//
 bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh, Meshes const &meshtype) {
   // Save and reset at end of function
-  bool unit_test_status(ut.numFails == 0 && ut.numPasses > 0);
   bool passed(true);
 
   // Exercise the virtual accessor functions for this mesh.
@@ -263,12 +263,10 @@ bool check_virtual(rtt_dsxx::UnitTest &ut, RTT_Mesh_Reader const &mesh, Meshes c
 
   if (passed) {
     PASSMSG("Got all virtual accessors.");
-    passed = unit_test_status;
     return true;
   }
 
   FAILMSG("Errors in some virtual accessors.");
-  passed = unit_test_status;
   return false;
 }
 

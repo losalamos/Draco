@@ -4,8 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
  * \date   Wednesday, Jul 11, 2018, 14:24 pm
  * \brief  X3D_Draco_Mesh_Reader header file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_X3D_Draco_Mesh_Reader_hh
@@ -26,19 +25,17 @@ namespace rtt_mesh {
  *
  * \brief Read x3d file format and supply data to Draco_Mesh_Builder.
  *
- * This class parses mesh data from an x3d file format and manipulates it into a
- * form that is compatible to the Draco_Mesh_Builder class.  The parsing of the
- * file stream to the map follows work by Kendra Long on a parsing framework.
+ * This class parses mesh data from an x3d file format and manipulates it into a form that is
+ * compatible to the Draco_Mesh_Builder class.  The parsing of the file stream to the map follows
+ * work by Kendra Long on a parsing framework.
  *
  * For a description of the X3D mesh file layout, see:
  * https://xcp-confluence.lanl.gov/display/SIMC/Ingen->Flag+Data+Transfer
  *
- * \todo: Boundary condition data is evidently parsed separately in X3D, so
- *        meshes generated from this reader will not have side flag data (which
- *        ids boundary conditions.
+ * \todo: Boundary condition data is evidently parsed separately in X3D, so meshes generated from
+ *        this reader will not have side flag data (which ids boundary conditions.
  *
- * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge
- *        as an alternative.
+ * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge as an alternative.
  */
 //================================================================================================//
 
@@ -96,7 +93,7 @@ public:
 
   // >>> SERVICES
 
-  void read_mesh();
+  void read_mesh() override;
 
   // >>> ACCESSORS
 
@@ -105,15 +102,15 @@ public:
     Check(x3d_header_map.at("process")[0] - 1 < UINT_MAX);
     return static_cast<unsigned>(x3d_header_map.at("process")[0] - 1);
   }
-  unsigned get_numdim() const {
+  unsigned get_numdim() const override {
     Check(x3d_header_map.at("numdim")[0] < UINT_MAX);
     return static_cast<unsigned>(x3d_header_map.at("numdim")[0]);
   }
-  size_t get_numcells() const { return x3d_header_map.at("elements")[0]; }
-  size_t get_numnodes() const { return x3d_header_map.at("nodes")[0]; }
+  size_t get_numcells() const override { return x3d_header_map.at("elements")[0]; }
+  size_t get_numnodes() const override { return x3d_header_map.at("nodes")[0]; }
 
   // coordinate data
-  std::vector<double> get_nodecoord(size_t node) const {
+  std::vector<double> get_nodecoord(size_t node) const override {
     Check(node + 1 < INT_MAX);
     return x3d_coord_map.at(static_cast<int>(node + 1));
   }
@@ -125,21 +122,21 @@ public:
   }
 
   // accessors with deferred implementations
-  unsigned get_celltype(size_t cell) const;
-  std::vector<unsigned> get_cellnodes(size_t cell) const;
+  unsigned get_celltype(size_t cell) const override;
+  std::vector<unsigned> get_cellnodes(size_t cell) const override;
   std::vector<unsigned> get_cellfacenodes(size_t cell, size_t face) const;
 
   // data needed from x3d boundary file
-  size_t get_numsides() const { return x3d_sidenode_map.size(); }
-  size_t get_sidetype(size_t side) const {
+  size_t get_numsides() const override { return x3d_sidenode_map.size(); }
+  size_t get_sidetype(size_t side) const override {
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side)).size();
   }
-  unsigned get_sideflag(size_t side) const {
+  unsigned get_sideflag(size_t side) const override {
     Check(side < INT_MAX);
     return x3d_sideflag_map.at(static_cast<int>(side));
   }
-  std::vector<unsigned> get_sidenodes(size_t side) const {
+  std::vector<unsigned> get_sidenodes(size_t side) const override {
     Check(side < INT_MAX);
     return x3d_sidenode_map.at(static_cast<int>(side));
   }

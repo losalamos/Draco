@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "F12inv.hh"
+#include <array>
 #include <cmath>
 
 namespace rtt_sf {
@@ -31,23 +32,26 @@ using namespace std;
  * \return Dimensionless chemical potential \f$\eta\f$
  */
 double F12inv(double const f) {
-  double const an = 0.5;
-  int const m1 = 4;
-  int const k1 = 3;
-  int const m2 = 6;
-  int const k2 = 5;
-  double const a1[] = {1.999266880833e4, 5.702479099336e3, 6.610132843877e2, 3.818838129486e1,
-                       1.0e0};
-  double const b1[] = {1.771804140488e4, -2.014785161019e3, 9.130355392717e1, -1.670718177489e0};
-  double const a2[] = {-1.277060388085e-2,
-                       7.187946804945e-2,
-                       -4.262314235106e-1,
-                       4.997559426872e-1,
-                       -1.285579118012e0,
-                       -3.930805454272e-1,
-                       1.0e0};
-  double const b2[] = {-9.745794806288e-3, 5.485432756838e-2, -3.299466243260e-1,
-                       4.077841975923e-1,  -1.145531476975e0, -6.067091689181e-2};
+  double constexpr an = 0.5;
+  int constexpr m1 = 4;
+  int constexpr k1 = 3;
+  int constexpr m2 = 6;
+  int constexpr k2 = 5;
+
+  std::array<double, m1 + 1> constexpr a1 = {1.999266880833e4, 5.702479099336e3, 6.610132843877e2,
+                                             3.818838129486e1, 1.0e0};
+  std::array<double, k1 + 1> constexpr b1 = {1.771804140488e4, -2.014785161019e3, 9.130355392717e1,
+                                             -1.670718177489e0};
+  std::array<double, m2 + 1> constexpr a2 = {-1.277060388085e-2,
+                                             7.187946804945e-2,
+                                             -4.262314235106e-1,
+                                             4.997559426872e-1,
+                                             -1.285579118012e0,
+                                             -3.930805454272e-1,
+                                             1.0e0};
+  std::array<double, k2 + 1> constexpr b2 = {-9.745794806288e-3, 5.485432756838e-2,
+                                             -3.299466243260e-1, 4.077841975923e-1,
+                                             -1.145531476975e0,  -6.067091689181e-2};
 
   if (f < 4.0e0) {
     double rn = f + a1[m1 - 1];
@@ -92,23 +96,25 @@ double F12inv(double const f) {
  * \pre \c f>0
  */
 void F12inv(double const f, double &eta, double &deta) {
-  double const an = 0.5;
-  int const m1 = 4;
-  int const k1 = 3;
-  int const m2 = 6;
-  int const k2 = 5;
-  double const a1[] = {1.999266880833e4, 5.702479099336e3, 6.610132843877e2, 3.818838129486e1,
-                       1.0e0};
-  double const b1[] = {1.771804140488e4, -2.014785161019e3, 9.130355392717e1, -1.670718177489e0};
-  double const a2[] = {-1.277060388085e-2,
-                       7.187946804945e-2,
-                       -4.262314235106e-1,
-                       4.997559426872e-1,
-                       -1.285579118012e0,
-                       -3.930805454272e-1,
-                       1.0e0};
-  double const b2[] = {-9.745794806288e-3, 5.485432756838e-2, -3.299466243260e-1,
-                       4.077841975923e-1,  -1.145531476975e0, -6.067091689181e-2};
+  double constexpr an = 0.5;
+  int constexpr m1 = 4;
+  int constexpr k1 = 3;
+  int constexpr m2 = 6;
+  int constexpr k2 = 5;
+  std::array<double, m1 + 1> constexpr a1 = {1.999266880833e4, 5.702479099336e3, 6.610132843877e2,
+                                             3.818838129486e1, 1.0e0};
+  std::array<double, k1 + 1> constexpr b1 = {1.771804140488e4, -2.014785161019e3, 9.130355392717e1,
+                                             -1.670718177489e0};
+  std::array<double, m2 + 1> constexpr a2 = {-1.277060388085e-2,
+                                             7.187946804945e-2,
+                                             -4.262314235106e-1,
+                                             4.997559426872e-1,
+                                             -1.285579118012e0,
+                                             -3.930805454272e-1,
+                                             1.0e0};
+  std::array<double, k2 + 1> constexpr b2 = {-9.745794806288e-3, 5.485432756838e-2,
+                                             -3.299466243260e-1, 4.077841975923e-1,
+                                             -1.145531476975e0,  -6.067091689181e-2};
 
   if (f < 4.0e0) {
     double rn = f + a1[m1 - 1];

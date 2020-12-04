@@ -37,13 +37,13 @@ void check_quadrature_validity(const quadrature_data &quad) {
   Insist(0 <= quad.geometry && quad.geometry <= 2, "Invalid geometry in quadrature_data");
 
   // The "mu" and "weights" entries must not be NULL; others can be
-  Insist(quad.mu != NULL, "Null pointer to mu angle data found in quadrature_data");
-  Insist(quad.weights != NULL, "Null pointer to weight data found in quadrature_data");
+  Insist(quad.mu != nullptr, "Null pointer to mu angle data found in quadrature_data");
+  Insist(quad.weights != nullptr, "Null pointer to weight data found in quadrature_data");
 
   // For 2 and 3-D quadratures, the ordinates have all angles
   if (quad.dimension > 1) {
-    Insist(quad.eta != NULL, "Null pointer to eta angle data found in quadrature_data");
-    Insist(quad.xi != NULL, "Null pointer to xi angle data found in quadrature_data");
+    Insist(quad.eta != nullptr, "Null pointer to eta angle data found in quadrature_data");
+    Insist(quad.xi != nullptr, "Null pointer to xi angle data found in quadrature_data");
   }
 }
 

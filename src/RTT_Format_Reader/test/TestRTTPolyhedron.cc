@@ -22,7 +22,8 @@ using namespace rtt_RTT_Format_Reader;
 class is_cell {
 public:
   //! Construct the predicate for a specified dimensionality.
-  is_cell(size_t const dimensionality_in) : dimensionality(dimensionality_in) {}
+  explicit is_cell(size_t const dimensionality_in) : dimensionality(dimensionality_in) { /* empty */
+  }
 
   /*! \brief Returns \c true if the specified type index has the predicate dimensionality; \c false
    *         otherwise.
@@ -44,18 +45,17 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
   string const inpPath = ut.getTestSourcePath();
   vector<string> filenames = {"rttquad5.mesh", "rttquad9.mesh", "rttquad.mesh"};
 
-  for (unsigned i = 0; i < filenames.size(); ++i) {
-    string filename(inpPath + filenames[i]);
-    shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
+  for ( auto const & filename : filenames ) {
+    string const fq_filename(inpPath + filename);
+    shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(fq_filename));
 
     ostringstream m;
-    m << "Read mesh file " << filename << std::endl;
+    m << "Read mesh file " << fq_filename << std::endl;
     ut.passes(m.str());
 
     size_t const ndim = mesh->get_dims_ndim();
-    if (ndim != 2) {
+    if (ndim != 2)
       FAILMSG("Unexpected dimension.");
-    }
 
     vector<shared_ptr<Element_Definition>> const element_defs(mesh->get_element_defs());
     for (size_t j = 0; j < element_defs.size(); ++j) {
@@ -81,10 +81,9 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
       // Investigate and report on the mesh
 
-      // The element types begins with side types, followed by cell types.  We
-      // can distinguish these by their dimensionality. Cell types have the full
-      // dimensionality of the mesh; we assume side types have one less than the
-      // full dimensionality of the mesh.
+      // The element types begins with side types, followed by cell types.  We can distinguish these
+      // by their dimensionality. Cell types have the full dimensionality of the mesh; we assume
+      // side types have one less than the full dimensionality of the mesh.
 
       size_t const ndim = mesh->get_dims_ndim();
       vector<Element_Definition::Element_Type> const element_types(mesh->get_element_types());
@@ -117,7 +116,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       }
 
       Check(element_types.size() - ncells < UINT_MAX);
-      unsigned const nsides = static_cast<unsigned>(element_types.size() - ncells);
+      auto nsides = static_cast<unsigned>(element_types.size() - ncells);
       size_t const msides = mesh->get_dims_nsides();
       if (nsides != msides) {
         FAILMSG("Unexpected number of sides.");
@@ -132,7 +131,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
         unsigned const representative_element = *it->second.begin();
 
-        Element_Definition::Element_Type const type_index =
+        auto const type_index =
             static_cast<Element_Definition::Element_Type>(element_types[representative_element]);
 
         shared_ptr<Element_Definition const> type(new Element_Definition(type_index));

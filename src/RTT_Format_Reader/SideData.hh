@@ -14,10 +14,12 @@
 
 namespace rtt_RTT_Format_Reader {
 
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the sidedata block of the
  *        mesh file.
  */
+//================================================================================================//
 class SideData {
   // typedefs
   using ifstream = std::ifstream;
@@ -30,8 +32,9 @@ class SideData {
 
 public:
   SideData(const Dims &dims_)
-      : dims(dims_), data(dims.get_nsides(), vector_dbl(dims.get_nside_data())) {}
-  ~SideData() {}
+      : dims(dims_), data(dims.get_nsides(), vector_dbl(dims.get_nside_data())) { /* empty */
+  }
+  ~SideData() = default;
 
   void readSideData(ifstream &meshfile);
 
