@@ -87,9 +87,9 @@ private:
 private:
   rtt_units::PhysicalConstexprs<rtt_units::CGS> pc; //!< Units
 
-  uint32_t n_energy;          //!< Number of gridpoints in projectile energy
-  uint32_t n_density;         //!< Number of gridpoints in target density
-  uint32_t n_temperature;     //!< Number of gridpoints in target temperature
+  uint32_t n_energy;      //!< Number of gridpoints in projectile energy
+  uint32_t n_density;     //!< Number of gridpoints in target density
+  uint32_t n_temperature; //!< Number of gridpoints in target temperature
 #ifdef NDI_FOUND
   double d_log_energy;        //!< Log spacing of projectile energy gridpoints
   double d_log_density;       //!< Log spacing of target density gridpoints
@@ -104,9 +104,9 @@ private:
   double min_temperature;     //!< Minimum target temperature
   double max_temperature;     //!< Maximum target temperature
 #endif
-  sf_double energies;         //!< Vector of energy gridpoints
-  sf_double densities;        //!< Vector of density gridpoints
-  sf_double temperatures;     //!< Vector of temperature gridpoints
+  sf_double energies;     //!< Vector of energy gridpoints
+  sf_double densities;    //!< Vector of density gridpoints
+  sf_double temperatures; //!< Vector of temperature gridpoints
   // Note that after unit conversions, *_energy is really *_speed
 
   //! Storage for tabulated data
