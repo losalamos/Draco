@@ -85,7 +85,9 @@ private:
 #endif
 
 private:
+#ifdef NDI_FOUND
   rtt_units::PhysicalConstexprs<rtt_units::CGS> pc; //!< Units
+#endif
 
   uint32_t n_energy;      //!< Number of gridpoints in projectile energy
   uint32_t n_density;     //!< Number of gridpoints in target density
