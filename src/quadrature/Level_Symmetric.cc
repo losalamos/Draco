@@ -72,7 +72,7 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     att[0] = 0.350021174581540677777041;
     att[1] = 0.868890300722201205229788;
     wtt[0] = 0.333333333333333333333333;
-    std::array<size_t,3> wp4 = {0, 0, 0};
+    std::array<size_t, 3> wp4 = {0, 0, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp4[m]];
     break;
@@ -86,7 +86,7 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     att[2] = 0.926180935517489107558380;
     wtt[0] = 0.176126130863383433783565;
     wtt[1] = 0.157207202469949899549768;
-    std::array<size_t,6> wp6 = {0, 1, 0, 1, 1, 0};
+    std::array<size_t, 6> wp6 = {0, 1, 0, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp6[m]];
     break;
@@ -102,7 +102,7 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     wtt[0] = 0.120987654320987654320988;
     wtt[1] = 0.0907407407407407407407407;
     wtt[2] = 0.0925925925925925925925926;
-    std::array<size_t,10> wp8 = {0, 1, 1, 0, 1, 2, 1, 1, 1, 0};
+    std::array<size_t, 10> wp8 = {0, 1, 1, 0, 1, 2, 1, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp8[m]];
     break;
@@ -120,7 +120,7 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     wtt[1] = 0.0725291517123655242296233;
     wtt[2] = 0.0450437674364086390490892;
     wtt[3] = 0.0539281144878369243545650;
-    std::array<size_t,15> wp10 = {0, 1, 2, 1, 0, 1, 3, 3, 1, 2, 3, 2, 1, 1, 0};
+    std::array<size_t, 15> wp10 = {0, 1, 2, 1, 0, 1, 3, 3, 1, 2, 3, 2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp10[m]];
     break;
@@ -140,7 +140,7 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     wtt[2] = 0.0373376737588285824652402;
     wtt[3] = 0.0502819010600571181385765;
     wtt[4] = 0.0258512916557503911218290;
-    std::array<size_t,21> wp12 = {0, 1, 2, 2, 1, 0, 1, 3, 4, 3, 1, 2, 4, 4, 2, 2, 3, 2, 1, 1, 0};
+    std::array<size_t, 21> wp12 = {0, 1, 2, 2, 1, 0, 1, 3, 4, 3, 1, 2, 4, 4, 2, 2, 3, 2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp12[m]];
     break;
@@ -189,8 +189,8 @@ void Level_Symmetric::create_octant_ordinates_(std::vector<double> &mu, std::vec
     wtt[5] = 0.0135295047786756344371600;
     wtt[6] = 0.0326369372026850701318409;
     wtt[7] = 0.0103769578385399087825920;
-    std::array<size_t,36> wp16 = {0, 1, 2, 3, 3, 2, 1, 0, 1, 4, 5, 6, 5, 4, 1, 2, 5, 7,
-                                  7, 5, 2, 3, 6, 7, 6, 3, 3, 5, 5, 3, 2, 4, 2, 1, 1, 0};
+    std::array<size_t, 36> wp16 = {0, 1, 2, 3, 3, 2, 1, 0, 1, 4, 5, 6, 5, 4, 1, 2, 5, 7,
+                                   7, 5, 2, 3, 6, 7, 6, 3, 3, 5, 5, 3, 2, 4, 2, 1, 1, 0};
     for (size_t m = 0; m < octantOrdinates; ++m)
       wt[m] = wtt[wp16[m]];
     break;

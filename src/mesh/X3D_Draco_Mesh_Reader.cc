@@ -219,7 +219,7 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   }
 
   // subtract 1 to get base 0 nodes
-  for ( auto & node_index : node_indexes )
+  for (auto &node_index : node_indexes)
     node_index--;
 
   Ensure(node_indexes.size() > 0);
@@ -252,7 +252,7 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size
   std::vector<unsigned> node_indexes = get_facenodes(map_face);
 
   // subtract 1 to get base 0 nodes
-  for ( auto & node_index : node_indexes )
+  for (auto &node_index : node_indexes)
     node_index--;
 
   Ensure(node_indexes.size() > 0);
@@ -419,11 +419,11 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
   // decrement node indices
   for (int j = 0; j < num_side; ++j) {
-    for ( auto & node_index : x3d_sidenode_map.at(j) )
+    for (auto &node_index : x3d_sidenode_map.at(j))
       node_index--;
   }
   for (size_t j = 0; j < bc_node_map.size(); ++j) { // NOLINT
-    for (auto & node_index : bc_node_map.at(j) )
+    for (auto &node_index : bc_node_map.at(j))
       node_index--;
   }
 

@@ -107,7 +107,7 @@ ParallelUnitTest::~ParallelUnitTest() {
   // global_barrier();
   // out << resultMessage() << std::endl;
   global_barrier();
-  std::cout << "==> In ~ParallelUnitTest.  Calling mpi_finalize..." << std::endl;
+  // std::cout << "==> In ~ParallelUnitTest.  Calling mpi_finalize..." << std::endl;
   finalize();
   return;
 }

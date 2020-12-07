@@ -1,5 +1,4 @@
-Draco
-----------------
+# Draco
 
 [![Linux Build Status](https://travis-ci.org/lanl/Draco.svg?branch=develop)](https://travis-ci.org/lanl/Draco)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/yp8r9jxl2gc9n1fs/branch/develop?svg=true)](https://ci.appveyor.com/project/lanl/Draco)
@@ -16,7 +15,7 @@ be extracted for use in clients.
 
 To clone draco:
 
-    $ git clone https://github.com/lanl/Draco.git
+    git clone https://github.com/lanl/Draco.git
 
 To get started, please see
 [Development - Quick Start Guide](https://github.com/lanl/Draco/wiki/Development---Quick-Start)
@@ -25,8 +24,7 @@ in the wiki. Pull requests must satisfy the requirements listed in the
 
 Spack - Draco can be installed via the [spack package manager](https:://github.com/spack/spack)
 
-Synopsis of Active Draco Packages
----------------------------------
+## Synopsis of Active Draco Packages
 
 * c4 - A communications library for message passing interfaces (MPI).
   * For builds without MPI, all communication commands will be no-op functions
@@ -45,8 +43,9 @@ Synopsis of Active Draco Packages
   TOPS.
 * cdi_ndi - Wrapper around LANL's Nuclear Data Interface (NDI) library for accessing [nuclear data
   tables](https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html).
-* compton - Provides access to Compton scattering models and data as provided by the [CSK
+* compton_interface - Provides access to Compton scattering models and data as provided by the [CSK
   library](https://gitlab.lanl.gov/CSK/CSK)..
+* compton_tools - Provides performant converter, reader, and interpolation tools for Compton data
 * device - Wrapper for heterogeneous device communication
   * The classes in this component provide access to DaCS (deprecated) and CUDA calls for use on
     heterogeneous architecture platforms (GPU machines).
@@ -75,9 +74,9 @@ Synopsis of Active Draco Packages
 * parser - Lexical file/input parser.
 * quadrature - access to angular integration functions and related data.
 * rng - A random number generator component
-  * The primary set of functions provided by this component were derived from Random123
-    (https://www.deshawresearch.com/downloads/download_random123.cgi) random number library.  A few
-    additional random number generators are also provided.
+  * The primary set of functions provided by this component were derived from
+    [Random123](https://www.deshawresearch.com/downloads/download_random123.cgi) random number
+    library.  A few additional random number generators are also provided.
 * roots - Root finding algorithms
 * RTT_Format_Reader - meshReaders implementation for RTT format mesh files or input-streams.
 * special_functions - Specialized math functions like factorial and Dirac delta.
@@ -85,32 +84,32 @@ Synopsis of Active Draco Packages
   constants.
 * VendorChecks - A testing component to ensure that discovered and used vendor libraries behave as
   expected.
-* viz - Generates Ensight files for data visualization.
+* viz - Generates [Ensight](https://www.ansys.com/products/fluids/ansys-ensight) files for data
+  visualization.
 
-Deprecated packages
-----------------
-* plot2d - C++ interface to XMGrace 2-dimensional plotting.
-* traits - A traits class used by viz.
+## Deprecated packages
+
+* plot2d - C++ interface to XMGrace 2-dimensional plotting (removed 2020 Dec 3).
 * shared_lib - Dynamically load/unload shared object libraries via dl load (removed 2020 Sep 7).
+* traits - A traits class used by viz.
 
-Authors
-----------------
+## Authors
+
 Many thanks go to Draco's [contributors](https://github.com/lanl/Draco/graphs/contributors).
 
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods
 Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 
 > *CCS-2 Draco Team:* Kelly G. Thompson, Kent G. Budge, Matt A. Cleveland, Ryan T. Wollaeger,
->     Alex R. Long, Ben R. Ryan, Kendra P. Long, James S. Warsa, Tim Kelley, Jae H. Chang,
->     Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
-
+> Alex R. Long, Ben R. Ryan, Kendra P. Long, James S. Warsa, Tim Kelley, Jae H. Chang,
+> Andrew T. Till, Seth D. Cook, Ondrej Certik, and David A. Dixon.
+>
 > *Prior Contributors:* Gabriel M. Rockefeller, Allan B. Wollaber, Rob B. Lowrie, Paul W. Talbot,
->     Katherine J. Wang, Peter Ahrens, Daniel Holladay, Massimiliano Rosa, Todd J. Urbatsch,
->     Jeff D. Densmore, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers,
->     Paul Henning, Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
+> Katherine J. Wang, Peter Ahrens, Daniel Holladay, Massimiliano Rosa, Todd J. Urbatsch,
+> Jeff D. Densmore, Jeff Furnish, John McGhee, Kris C. Garrett, Mike Buksas, Nick Myers,
+> Paul Henning, Randy Roberts, Seth Johnson, Todd Adams, Tom Evans, and Lori Pritchett-Sheats.
 
-Release
-----------------
+## Release
 
 Draco is released under the BSD 3-Clause License. For more details see the
 [LICENSE file](https://github.com/lanl/Draco/blob/develop/LICENSE.md).

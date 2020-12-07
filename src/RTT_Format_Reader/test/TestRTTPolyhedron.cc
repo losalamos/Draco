@@ -45,7 +45,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
   string const inpPath = ut.getTestSourcePath();
   vector<string> filenames = {"rttquad5.mesh", "rttquad9.mesh", "rttquad.mesh"};
 
-  for ( auto const & filename : filenames ) {
+  for (auto const &filename : filenames) {
     string const fq_filename(inpPath + filename);
     shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(fq_filename));
 

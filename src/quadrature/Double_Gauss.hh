@@ -44,7 +44,6 @@ public:
 
 protected:
   std::vector<Ordinate> create_level_ordinates_(double norm) const override;
-
 };
 
 } // end namespace rtt_quadrature

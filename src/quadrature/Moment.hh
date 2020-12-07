@@ -31,7 +31,7 @@ public:
   // CREATORS
 
   //! Create an uninitialized Moment.  This is required by the constructor for vector<Moment>.
-  Moment()  = default;
+  Moment() = default;
 
   //! Construct a Moment with specified degree and order.
   Moment(unsigned const L, int const M) : L_(L), M_(M) {

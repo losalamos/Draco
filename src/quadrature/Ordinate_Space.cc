@@ -301,7 +301,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class, i
 
     moments_per_order_.resize(Lmax + 1, 0U);
     number_of_moments_ = 0;
-    for( auto mom : moments_ ) {
+    for (auto mom : moments_) {
       int const l = mom.L();
       if (!prune() || l <= Lmax) {
         if (l > Lmax) {
@@ -486,8 +486,8 @@ void Ordinate_Space::compute_reflection_maps_() {
  * flux_fact[0]*phi[1+flux_map[0]] and the y-component of the astrophysical flux is equal to
  * flux_fact[1]*phi[1+flux_map[1]].
  */
-void Ordinate_Space::moment_to_flux(std::array<unsigned, 3> & flux_map,
-                                    std::array<double, 3> & flux_fact) const {
+void Ordinate_Space::moment_to_flux(std::array<unsigned, 3> &flux_map,
+                                    std::array<double, 3> &flux_fact) const {
   double const RROOT3 = 1.0 / sqrt(3.0);
 
   if (dimension() == 1) {
@@ -531,8 +531,8 @@ void Ordinate_Space::moment_to_flux(std::array<unsigned, 3> & flux_map,
  * Thus, if you are in 2-D Cartesian geometry, and F contains the astrophysical flux at a particular
  * point for a particular group, then the ith moment is equal to flux_fact[i-1]*F[flux_map[i-1]].
  */
-void Ordinate_Space::flux_to_moment(std::array<unsigned, 3> & flux_map,
-                                    std::array<double, 3> & flux_fact) const {
+void Ordinate_Space::flux_to_moment(std::array<unsigned, 3> &flux_map,
+                                    std::array<double, 3> &flux_fact) const {
   double const ROOT3 = sqrt(3.0);
 
   // We hardwire these on the optimistic assumption that the moment basis used by

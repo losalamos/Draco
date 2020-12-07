@@ -70,17 +70,17 @@ if( USE_MDSPAN )
 endif()
 add_dir_if_exists( cdi_eospac )   # needs parser, ode, cdi
 add_dir_if_exists( cdi_ipcress )  # needs cdi
+add_dir_if_exists( compton_interface ) # needs c4, CSK
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4, mesh_element
-add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( rng )          # needs ds++, device
+add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( VendorChecks ) # needs c4
 add_dir_if_exists( viz )          # needs c4
-add_dir_if_exists( compton )      # needs c4, CSK
 
 # Level 4
 message(" ")
@@ -93,8 +93,9 @@ add_dir_if_exists( special_functions ) # needs roots, units, GSL
 # Level 5
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
-add_dir_if_exists( mesh )       # needs c4, ds++, mesh_element
-add_dir_if_exists( quadrature ) # needs mesh_element, parser, special_functions
+add_dir_if_exists( compton_tools )  # needs ds++, units, cdi_analtyic
+add_dir_if_exists( mesh )           # needs c4, ds++, mesh_element
+add_dir_if_exists( quadrature )     # needs mesh_element, parser, special_functions
 
 # Deprecated
 # add_dir_if_exists( plot2D )

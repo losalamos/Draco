@@ -64,11 +64,9 @@ class Dims {
 
 public:
   Dims()
-      : coor_units(std::string()), prob_time_units(std::string()),
-        nnode_flags(std::vector<int>()),
+      : coor_units(std::string()), prob_time_units(std::string()), nnode_flags(std::vector<int>()),
         side_types(std::vector<int>()), nside_flags(std::vector<int>()),
-        cell_types(std::vector<int>()),
-        ncell_flags(std::vector<int>()) { /* empty */
+        cell_types(std::vector<int>()), ncell_flags(std::vector<int>()) { /* empty */
   }
   ~Dims() = default;
 

@@ -29,7 +29,7 @@ namespace rtt_sf {
 template <typename T> T factorial(T const k) {
   size_t constexpr N(13);
   // only initialize this once (keyword: static)
-  std::array<T,N> constexpr tabularValue = {
+  std::array<T, N> constexpr tabularValue = {
       1,    1,     2,      6,       24,       120,      720,
       5040, 40320, 362880, 3628800, 39916800, 479001600
       // These are the next two values in the series.  Unfortunately, they are too big to be held by

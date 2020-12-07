@@ -25,7 +25,7 @@
 // Prototypes
 //------------------------------------------------------------------------------------------------//
 
-//! Set c4's initialzed variable to true (called from Fortran tests)
+//! Set c4's initialized variable to true (called from Fortran tests)
 extern "C" void setMpiInit();
 
 namespace rtt_c4 {
@@ -60,12 +60,11 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
 }
 
 //------------------------------------------------------------------------------------------------//
-/*!
- * Broadcast the range [first, last) from proc 0 into [result, ...) on all other processors.
- */
+//! Broadcast the range [first, last) from proc 0 into [result, ...) on all other processors.
 
 // This signature must be exported since it is explicitly instantiated.
 template <typename T> int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
+template <typename T> int broadcast(T * /*buffer*/, size_t /*size*/, size_t /*root*/);
 
 // This signature is defined in the header so no export is required.
 template <typename ForwardIterator, typename OutputIterator>
@@ -75,25 +74,26 @@ void broadcast(ForwardIterator first, ForwardIterator last, OutputIterator resul
 
   // Proc 0 does not copy any data into the result iterator.
 
+  size_t constexpr root(0);
   diff_type size;
   if (node() == 0)
     size = std::distance(first, last);
 
-  Remember(int check =) broadcast(&size, 1, 0);
+  Remember(int check =) broadcast(&size, 1u, root);
   Check(check == MPI_SUCCESS);
 
-  auto *buf = new value_type[size];
-  if (node() == 0)
-    std::copy(first, last, buf);
+  if (size > 0) {
+    auto *buf = new value_type[size];
+    if (node() == 0)
+      std::copy(first, last, buf);
 
-  Check(size < INT_MAX);
-  Remember(check =) broadcast(buf, static_cast<int>(size), 0);
-  Check(check == MPI_SUCCESS);
-
-  if (node() != 0)
-    std::copy(buf, buf + size, result);
-
-  delete[] buf;
+    Check(size < INT_MAX);
+    Remember(check =) broadcast(buf, size, root);
+    Check(check == MPI_SUCCESS);
+    if (node() != 0)
+      std::copy(buf, buf + size, result);
+    delete[] buf;
+  }
   return;
 }
 

@@ -28,10 +28,10 @@ void quadrature_interface_test(rtt_dsxx::UnitTest &ut) {
   int order = 4;
   int azimuthal_order = 2;
   int geometry = 0;
-  std::vector<double> mu(30,0.0);
-  std::vector<double> eta(30,0.0);
-  std::vector<double> xi(30,0.0);
-  std::vector<double> weights(30,0.0);
+  std::vector<double> mu(30, 0.0);
+  std::vector<double> eta(30, 0.0);
+  std::vector<double> xi(30, 0.0);
+  std::vector<double> weights(30, 0.0);
 
   quadrature_data quad;
 
@@ -49,8 +49,8 @@ void quadrature_interface_test(rtt_dsxx::UnitTest &ut) {
 
   get_quadrature(quad);
 
-  std::array<double,4> gs_wt = {0.1739274226, 0.3260725774, 0.3260725774, 0.1739274226};
-  std::array<double,4> gs_mu = {-0.8611363116, -0.3399810436, 0.3399810436, 0.8611363116};
+  std::array<double, 4> gs_wt = {0.1739274226, 0.3260725774, 0.3260725774, 0.1739274226};
+  std::array<double, 4> gs_mu = {-0.8611363116, -0.3399810436, 0.3399810436, 0.8611363116};
 
   for (unsigned i = 0; i < 4; ++i) {
     if (!soft_equiv(quad.mu[i], gs_mu[i], 1e-8)) {
@@ -76,8 +76,8 @@ void quadrature_interface_test(rtt_dsxx::UnitTest &ut) {
 
   get_quadrature(quad);
 
-  std::array<double,4> lobato_mu = {-1, -0.4472135955, 0.4472135955, 1};
-  std::array<double,4> lobato_wt = {0.08333333333, 0.4166666667, 0.4166666667, 0.08333333333};
+  std::array<double, 4> lobato_mu = {-1, -0.4472135955, 0.4472135955, 1};
+  std::array<double, 4> lobato_wt = {0.08333333333, 0.4166666667, 0.4166666667, 0.08333333333};
 
   for (unsigned i = 0; i < 4; ++i) {
     if (!soft_equiv(quad.mu[i], lobato_mu[i], 1e-8)) {
