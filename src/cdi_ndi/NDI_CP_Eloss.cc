@@ -229,7 +229,7 @@ void NDI_CP_Eloss::load_ndi() {
     energy = sqrt(2. * (exp(energy) * 1.e6 * pc.electronVolt()) / target.get_mass()) * 1.e-8;
   }
   for (auto &density : densities) {
-    density = exp(density)*target.get_mass();
+    density = exp(density) * target.get_mass();
   }
   for (auto &temperature : temperatures) {
     temperature = exp(temperature);
