@@ -318,22 +318,27 @@ endmacro()
 macro( setupQt )
   message( STATUS "Looking for Qt SDK...." )
 
-  # Find the QtWidgets library
-  find_package(Qt5 COMPONENTS Widgets QUIET)
+  option (USE_QT "Build QT support for Draco" ON)
 
-  if( Qt5Core_DIR )
-    mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
-      Qt5Widgets_DIR QTDIR)
-    message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
-  else()
-    message( STATUS "Looking for Qt SDK....not found." )
+  if( USE_QT )
+    # Find the QtWidgets library
+    find_package(Qt5 COMPONENTS Widgets QUIET)
+
+    if( Qt5Core_DIR )
+      mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
+        Qt5Widgets_DIR QTDIR)
+      message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
+    else()
+      message( STATUS "Looking for Qt SDK....not found." )
+    endif()
+
+    set_package_properties( Qt PROPERTIES
+      URL "http://qt.io"
+      DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
+      TYPE OPTIONAL
+      PURPOSE "Only needed to demo qt version of draco_diagnostics." )
+
   endif()
-
-  set_package_properties( Qt PROPERTIES
-    URL "http://qt.io"
-    DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
-    TYPE OPTIONAL
-    PURPOSE "Only needed to demo qt version of draco_diagnostics." )
 
 endmacro()
 
