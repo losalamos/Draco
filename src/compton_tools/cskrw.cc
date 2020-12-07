@@ -215,10 +215,9 @@ void Dense_Compton_Data::read_from_file(UINT64 eval, std::string filename, bool 
       f.get(c);
       Check(c == '\n');
 
-      // Look-ahead to next line to see if a blank line,
-      // signalling end of temperature data
+      // Look-ahead to next line to see if a blank line, signalling end of temperature data
       f.get(c);
-      if (c == '\n' || c == EOF) {
+      if (c == '\n') { // [kt] || c == EOF) { // EOF is not a char. This is alwasy false.
         finished = true;
       } else {
         f.putback(c);
