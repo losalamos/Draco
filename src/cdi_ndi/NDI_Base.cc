@@ -12,6 +12,7 @@
 #include "ds++/Query_Env.hh"
 #include "ds++/SystemCall.hh"
 #include "ds++/dbc.hh"
+#include <algorithm>
 
 namespace rtt_cdi_ndi {
 
@@ -68,11 +69,11 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const & /*gendir*/) {}
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in multigroup energy bin boundaries (keV)
  */
-NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in, const std::string &reaction_in,
+NDI_Base::NDI_Base(const std::string gendir_in, const std::string dataset_in,
+                   const std::string library_in, const std::string reaction_in,
                    const std::vector<double> mg_e_bounds_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in), reaction(reaction_in),
-      mg_e_bounds(mg_e_bounds_in) {
+    : gendir(std::move(gendir_in)), dataset(std::move(dataset_in)), library(std::move(library_in)),
+      reaction(std::move(reaction_in)), mg_e_bounds(mg_e_bounds_in) {
 
   Require(rtt_dsxx::fileExists(gendir));
 
@@ -83,9 +84,9 @@ NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
   Require(mg_e_bounds.size() > 0);
   warn_ndi_version_mismatch(gendir);
 
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
+  // keV -> MeV
+  std::transform(mg_e_bounds.begin(), mg_e_bounds.end(), mg_e_bounds.begin(),
+                 [](double &b) { return 0.001 * b; });
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   for (size_t i = 1; i < mg_e_bounds.size(); i++) {

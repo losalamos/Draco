@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Friday, Nov 30, 2012, 08:27 am
  * \brief  Implementation for Octant_Quadrature
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Octant_Quadrature.hh"
@@ -25,17 +24,15 @@ using namespace rtt_dsxx;
 bool Octant_Quadrature::has_axis_assignments() const { return has_axis_assignments_; }
 
 //------------------------------------------------------------------------------------------------//
-vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned const dimension,
-                                                      Geometry const geometry, double const norm,
-                                                      unsigned const mu_axis,
-                                                      unsigned const eta_axis,
-                                                      bool const include_starting_directions,
-                                                      bool const include_extra_directions) const {
+std::vector<Ordinate> Octant_Quadrature::create_ordinates_(
+    unsigned const dimension, Geometry const geometry, double const norm, unsigned const mu_axis,
+    unsigned const eta_axis, bool const include_starting_directions,
+    bool const include_extra_directions) const {
   using rtt_dsxx::soft_equiv;
 
   // We build the 3-D first, then edit as appropriate.
 
-  vector<double> mu, eta, wt;
+  std::vector<double> mu, eta, wt;
 
   create_octant_ordinates_(mu, eta, wt);
 
@@ -88,7 +85,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned const dimension,
   }
 
   // Evaluate xi for all octants
-  vector<double> xi(numOrdinates);
+  std::vector<double> xi(numOrdinates);
   for (size_t n = 0; n <= 4 * octantOrdinates - 1; ++n) {
     Check(n < xi.size());
     xi[n] = std::sqrt(1.0 - (mu[n] * mu[n] + eta[n] * eta[n]));
@@ -99,7 +96,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned const dimension,
     xi[n + 4 * octantOrdinates] = -xi[n];
   }
 
-  vector<Ordinate> Result;
+  std::vector<Ordinate> Result;
 
   if (dimension == 3) {
     map_axes_(mu_axis, eta_axis, mu, eta, xi);
@@ -192,9 +189,10 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned const dimension,
 }
 
 //------------------------------------------------------------------------------------------------//
-vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension, Geometry geometry,
-                                                      double norm, bool include_starting_directions,
-                                                      bool include_extra_directions) const {
+std::vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension, Geometry geometry,
+                                                           double norm,
+                                                           bool include_starting_directions,
+                                                           bool include_extra_directions) const {
   unsigned mu_axis(0), eta_axis(0);
   if (has_axis_assignments_) {
     mu_axis = mu_axis_;
@@ -244,12 +242,10 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension, Geomet
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * Pure virtual used in conjuction with child implementations, for common
- * features.
+ * Pure virtual used in conjuction with child implementations, for common features.
  */
-
-string Octant_Quadrature::as_text(string const &indent) const {
-  string Result;
+std::string Octant_Quadrature::as_text(std::string const &indent) const {
+  std::string Result;
 
   if (has_axis_assignments_) {
     Result += indent + "  axis assignments, mu = " + to_string(mu_axis_) +

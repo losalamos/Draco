@@ -3,8 +3,7 @@
  * \file   quadrature/test/quadrature_test.cc
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "quadrature_test.hh"
@@ -327,12 +326,12 @@ void test_either(UnitTest &ut, std::shared_ptr<Ordinate_Space> const &ordinate_s
   // Test flux maps
 
   {
-    unsigned MtF_map[3];
-    double MtF_fact[3];
+    std::array<unsigned, 3> MtF_map;
+    std::array<double, 3> MtF_fact;
     ordinate_space->moment_to_flux(MtF_map, MtF_fact);
 
-    unsigned FtM_map[3];
-    double FtM_fact[3];
+    std::array<unsigned, 3> FtM_map;
+    std::array<double, 3> FtM_fact;
     ordinate_space->flux_to_moment(FtM_map, FtM_fact);
 
     // See that these are inverses
@@ -437,9 +436,9 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 }
 
 //------------------------------------------------------------------------------------------------//
-void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_tests_only) {
-  cout << "Testing quadrature " << quadrature.name()
-       << "\n  Parse name: " << quadrature.parse_name() << endl;
+void quadrature_test(UnitTest & ut, Quadrature & quadrature, bool const cartesian_tests_only) {
+  cout << "Testing quadrature " << quadrature.name() << "\n  Parse name: "
+       << quadrature.parse_name() << endl;
   switch (quadrature.quadrature_class()) {
   case INTERVAL_QUADRATURE:
     cout << "  This is an interval quadrature." << endl;
@@ -588,8 +587,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_
                  Ordinate_Set::LEVEL_ORDERED);
 
     if (quadrature.is_open_interval()) {
-      // Our curvilinear angular operator algorithm doesn't work with closed
-      // interval quadratures (those for which mu=-1 is part of the set).
+      // Our curvilinear angular operator algorithm doesn't work with closed interval quadratures
+      // (those for which mu=-1 is part of the set).
       if (!cartesian_tests_only) {
 
         test_no_axis(ut, quadrature,
@@ -673,23 +672,6 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_
     }
 
     if (!cartesian_tests_only) {
-      // This test can never be called due to 'if(false)'
-      /*
-      if (!quadrature.has_axis_assignments()) {
-        // Axisymmetric is hosed if axes have been reassigned, since the levels
-        // are only guaranteed on the xi axis.
-        if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
-
-          test_no_axis(ut, quadrature,
-                       1U, // dimension,
-                       rtt_mesh_element::AXISYMMETRIC,
-                       // expansion_order
-                       min(8U, quadrature.number_of_levels()), "GQ1",
-                       false, // add_extra_directions,
-                       Ordinate_Set::LEVEL_ORDERED);
-        }
-      }
-      */
       test_no_axis(ut, quadrature,
                    1U, // dimension,
                    rtt_mesh_element::AXISYMMETRIC,
@@ -724,10 +706,10 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_
 } // end namespace rtt_quadrature
 
 //------------------------------------------------------------------------------------------------//
-// This test gets called FROM Fortran to ensure that we can successfully create
-// and assign data into a "quadrature_data" type.  See
-// ftest/tstquadrature_interfaces.f90
-// --------------------------------------------------------------------------//
+// This test gets called FROM Fortran to ensure that we can successfully create and assign data into
+// a "quadrature_data" type.  See ftest/tstquadrature_interfaces.f90
+//------------------------------------------------------------------------------------------------//
+
 extern "C" void rtt_test_quadrature_interfaces(const quadrature_data &quad, int &error_code) {
   using rtt_dsxx::soft_equiv;
   using std::cout;

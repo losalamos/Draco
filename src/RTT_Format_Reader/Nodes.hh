@@ -13,10 +13,13 @@
 #include "NodeFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the nodes block of the mesh
  *        file.
  */
+//================================================================================================//
 class Nodes {
   // typedefs
   using ifstream = std::ifstream;
@@ -36,8 +39,8 @@ public:
   Nodes(const NodeFlags &nodeFlags_, const Dims &dims_)
       : nodeFlags(nodeFlags_), dims(dims_), coords(dims.get_nnodes(), vector_dbl(dims.get_ndim())),
         parents(dims.get_nnodes()),
-        flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) {}
-  ~Nodes() {}
+        flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) { /* empty */ }
+  ~Nodes() = default;
 
   void readNodes(ifstream &meshfile);
   static int readNextInt(ifstream &meshfile);

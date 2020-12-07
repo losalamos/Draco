@@ -17,10 +17,10 @@ namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
 //------------------------------------------------------------------------------------------------//
-string Product_Chebyshev_Legendre::name() const { return "Product Chebyshev Legendre"; }
+std::string Product_Chebyshev_Legendre::name() const { return "Product Chebyshev Legendre"; }
 
 //------------------------------------------------------------------------------------------------//
-string Product_Chebyshev_Legendre::parse_name() const { return "product cl"; }
+std::string Product_Chebyshev_Legendre::parse_name() const { return "product cl"; }
 
 //------------------------------------------------------------------------------------------------//
 Quadrature_Class Product_Chebyshev_Legendre::quadrature_class() const { return OCTANT_QUADRATURE; }
@@ -29,17 +29,15 @@ Quadrature_Class Product_Chebyshev_Legendre::quadrature_class() const { return O
 unsigned Product_Chebyshev_Legendre::number_of_levels() const { return sn_order_; }
 
 //------------------------------------------------------------------------------------------------//
-string Product_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = " + parse_name() + indent +
-                  "  order = " + to_string(sn_order()) + " " + to_string(azimuthal_order_) +
-                  Octant_Quadrature::as_text(indent);
-
-  return Result;
+std::string Product_Chebyshev_Legendre::as_text(std::string const &indent) const {
+  return indent + "type = " + parse_name() + indent + "  order = " + to_string(sn_order()) + " " +
+         to_string(azimuthal_order_) + Octant_Quadrature::as_text(indent);
 }
 
 //------------------------------------------------------------------------------------------------//
-void Product_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
-                                                          vector<double> &wt) const {
+void Product_Chebyshev_Legendre::create_octant_ordinates_(std::vector<double> &mu,
+                                                          std::vector<double> &eta,
+                                                          std::vector<double> &wt) const {
   using rtt_dsxx::soft_equiv;
   using std::cos;
   using std::fabs;

@@ -16,10 +16,13 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the header block of the
  *        mesh file.
  */
+//================================================================================================//
 class Header {
   // typedefs
   using ifstream = std::ifstream;
@@ -29,18 +32,17 @@ class Header {
   string version;
   string title;
   string date;
-  int cycle;
-  double time;
-  int ncomments;
+  int cycle{0};
+  double time{0.0};
+  int ncomments{0};
   vector_str comments;
 
 public:
-  Header(void)
-      : version(std::string("")), title(std::string("")), date(std::string("")), cycle(0),
-        time(0.0), ncomments(0), comments(std::vector<string>()) { /*empty*/
+  Header()
+      : version(std::string("")), title(std::string("")), date(std::string("")),
+        comments(std::vector<string>()) { /*empty*/
   }
-  ~Header(void) { /*empty*/
-  }
+  ~Header() = default;
 
   void readHeader(ifstream &meshfile);
 

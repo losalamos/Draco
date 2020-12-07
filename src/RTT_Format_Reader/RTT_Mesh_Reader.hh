@@ -14,6 +14,7 @@
 #include "meshReaders/Mesh_Reader.hh"
 
 namespace rtt_RTT_Format_Reader {
+
 //================================================================================================//
 /*!
  * \class RTT_Mesh_Reader
@@ -28,7 +29,6 @@ namespace rtt_RTT_Format_Reader {
  *     the RTT_Format_Reader class public accessor functions are accessible.
  */
 //================================================================================================//
-
 class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader {
   // NESTED CLASSES AND TYPEDEFS
   using string = std::string;
@@ -62,47 +62,45 @@ public:
   }
 
   //! Destroys an RTT_Mesh_Reader class object
-  ~RTT_Mesh_Reader() = default;
+  ~RTT_Mesh_Reader() override = default;
 
   // ACCESSORS
-
-  // Virutal accessor function definitions based on the Mesh_Readers abstract base class.
 
   /*!
    * \brief Returns the coordinate values for each of the nodes.
    * \return The coordinate values for the nodes.
    */
-  virtual vector_vector_dbl get_node_coords() const { return rttMesh->get_nodes_coords(); }
+  vector_vector_dbl get_node_coords() const override { return rttMesh->get_nodes_coords(); }
 
   /*!
    * \brief Returns the problem coordinate units (e.g, cm).
    * \return Coordinate units.
    */
-  virtual string get_node_coord_units() const { return rttMesh->get_dims_coor_units(); }
+  string get_node_coord_units() const override { return rttMesh->get_dims_coor_units(); }
 
   /*!
    * \brief Returns the topological dimenstion (1, 2 or 3).
    * \return Topological dimension.
    */
-  virtual size_t get_dims_ndim() const { return rttMesh->get_dims_ndim(); }
+  size_t get_dims_ndim() const override { return rttMesh->get_dims_ndim(); }
 
   size_t get_dims_ncells() const { return rttMesh->get_dims_ncells(); }
 
   size_t get_dims_nsides() const { return rttMesh->get_dims_nsides(); }
 
-  virtual vector_vector_uint get_element_nodes() const;
+  vector_vector_uint get_element_nodes() const override;
 
   /*!
    * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and TETRA_4).
    * \return Element definitions.
    */
-  virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-  get_element_types() const {
+  std::vector<rtt_mesh_element::Element_Definition::Element_Type>
+  get_element_types() const override {
     return element_types;
   }
 
-  virtual std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
-  get_element_defs() const {
+  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
+  get_element_defs() const override {
     return element_defs;
   }
 
@@ -111,26 +109,27 @@ public:
    *        file.
    * \return Element definitions.
    */
-  virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-  get_unique_element_types() const {
+  std::vector<rtt_mesh_element::Element_Definition::Element_Type>
+  get_unique_element_types() const override {
     return unique_element_types;
   }
 
-  virtual std::map<string, set_uint> get_node_sets() const;
+  std::map<string, set_uint> get_node_sets() const override;
 
-  virtual std::map<string, set_uint> get_element_sets() const;
+  std::map<string, set_uint> get_element_sets() const override;
+
   /*!
    * \brief Returns the mesh file title.
    * \return Mesh file title.
    */
-  virtual string get_title() const { return rttMesh->get_header_title(); }
+  string get_title() const override { return rttMesh->get_header_title(); }
 
-  virtual bool invariant() const;
+  bool invariant() const override;
 
   // IMPLEMENTATION
 
 private:
-  void transform2CGNS(void);
+  void transform2CGNS();
 };
 
 } // end namespace rtt_RTT_Format_Reader

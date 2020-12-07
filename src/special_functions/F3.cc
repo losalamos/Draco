@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "F3.hh"
+#include <array>
 #include <cmath>
 
 namespace rtt_sf {
@@ -33,25 +34,25 @@ using namespace std;
 double F3(double const x) {
 
   //..load the coefficients of the expansion
-  unsigned const m1 = 4;
-  unsigned const k1 = 6;
-  unsigned const m2 = 7;
-  unsigned const k2 = 7;
+  unsigned constexpr m1 = 4;
+  unsigned constexpr k1 = 6;
+  unsigned constexpr m2 = 7;
+  unsigned constexpr k2 = 7;
 
-  double const a1[m1 + 1] = {6.317036716422e2, 7.514163924637e2, 2.711961035750e2, 3.274540902317e1,
-                             1.0e0};
+  std::array<double, m1 + 1> constexpr a1 = {6.317036716422e2, 7.514163924637e2, 2.711961035750e2,
+                                             3.274540902317e1, 1.0e0};
 
-  double const b1[k1 + 1] = {1.052839452797e2,  1.318163114785e2,  5.213807524405e1,
-                             7.500064111991e0,  3.383020205492e-1, 2.342176749453e-3,
-                             -8.445226098359e-6};
+  std::array<double, k1 + 1> constexpr b1 = {
+      1.052839452797e2,  1.318163114785e2,  5.213807524405e1,  7.500064111991e0,
+      3.383020205492e-1, 2.342176749453e-3, -8.445226098359e-6};
 
-  double const a2[m2 + 1] = {
+  std::array<double, m2 + 1> constexpr a2 = {
       1.360999428425e-8, 1.651419468084e-6, 1.021455604288e-4, 3.041270709839e-3,
       4.584298418374e-2, 3.440523212512e-1, 1.077505444383e0,  1.0e0};
 
-  double const b2[k2 + 1] = {5.443997714076e-8, 5.531075760054e-6, 2.969285281294e-4,
-                             6.052488134435e-3, 5.041144894964e-2, 1.048282487684e-1,
-                             1.280969214096e-2, -2.851555446444e-3};
+  std::array<double, k2 + 1> constexpr b2 = {
+      5.443997714076e-8, 5.531075760054e-6, 2.969285281294e-4, 6.052488134435e-3,
+      5.041144894964e-2, 1.048282487684e-1, 1.280969214096e-2, -2.851555446444e-3};
 
   if (x < 2.0e0) {
     double const xx = exp(x);

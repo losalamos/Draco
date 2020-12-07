@@ -13,10 +13,13 @@
 #include "Dims.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the node data ids block of
  *        the mesh file.
  */
+//================================================================================================//
 class NodeDataIDs {
   // typedefs
   using ifstream = std::ifstream;
@@ -29,8 +32,9 @@ class NodeDataIDs {
 
 public:
   NodeDataIDs(const Dims &dims_)
-      : dims(dims_), names(dims.get_nnode_data()), units(dims.get_nnode_data()) {}
-  ~NodeDataIDs() {}
+      : dims(dims_), names(dims.get_nnode_data()), units(dims.get_nnode_data()) { /* empty */
+  }
+  ~NodeDataIDs() = default;
 
   void readDataIDs(ifstream &meshfile);
 

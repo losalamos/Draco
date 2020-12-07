@@ -102,17 +102,17 @@ protected:
   NDI_Base(const std::string &dataset_in, const std::string &library_in,
            const std::string &reaction_in, const std::vector<double> mg_e_bounds_in);
 
-  NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-           const std::string &library_in, const std::string &reaction_in,
+  NDI_Base(const std::string gendir_in, const std::string dataset_in,
+           const std::string library_in, const std::string reaction_in,
            const std::vector<double> mg_e_bounds_in);
 
+public:
   //! Default constructor
   NDI_Base() = delete;
 
   //! Default copy constructor
   NDI_Base(const NDI_Base &) = delete;
 
-public:
   //! Get the name of the gendir file
   inline std::string get_gendir() const & { return gendir; }
 

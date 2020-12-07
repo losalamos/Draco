@@ -15,10 +15,13 @@
 #include <memory>
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the side flags block of the
  *        mesh file.
  */
+//================================================================================================//
 class SideFlags {
   // typedefs
   using ifstream = std::ifstream;
@@ -28,10 +31,11 @@ class SideFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  SideFlags(const Dims &dims_) : dims(dims_), flagTypes(dims.get_nside_flag_types()) {}
-  ~SideFlags() {}
+  SideFlags(const Dims &dims_) : dims(dims_), flagTypes(dims.get_nside_flag_types()) { /* empty */
+  }
+  ~SideFlags() = default;
 
-  void readSideFlags(ifstream &meshfile);
+  void readSideFlags(ifstream & meshfile);
 
 private:
   void readKeyword(ifstream &meshfile);

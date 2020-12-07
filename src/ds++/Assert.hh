@@ -455,23 +455,10 @@ std::string verbose_error(std::string const &message);
  *           http://en.cppreference.com/w/cpp/language/except_spec */
 //------------------------------------------------------------------------------------------------//
 
-// Disable since we default to C++11 ('throw()' is deprecated)
-#if 0
-
-#if DBC
-#define ONLY_DBC_THROWS throw(rtt_dsxx::assertion)
-#else
-#define ONLY_DBC_THROWS throw()
-#endif
-
-#else
-
 #if DBC
 #define ONLY_DBC_THROWS
 #else
 #define ONLY_DBC_THROWS noexcept
-#endif
-
 #endif
 
 //------------------------------------------------------------------------------------------------//

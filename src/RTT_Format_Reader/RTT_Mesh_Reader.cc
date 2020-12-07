@@ -16,8 +16,8 @@ using rtt_mesh_element::Element_Definition;
 
 //------------------------------------------------------------------------------------------------//
 //! Transforms the RTT_Format data to the CGNS format.
-void RTT_Mesh_Reader::transform2CGNS(void) {
-  Element_Definition::Element_Type cell_def;
+void RTT_Mesh_Reader::transform2CGNS() {
+  Element_Definition::Element_Type cell_def = Element_Definition::NUMBER_OF_ELEMENT_TYPES;
   std::shared_ptr<rtt_mesh_element::Element_Definition> cell;
   std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>> cell_definitions;
   vector_uint new_side_types;
@@ -68,6 +68,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
         cell_def = Element_Definition::POLYHEDRON;
     }
 
+    Check( cell_def != Element_Definition::NUMBER_OF_ELEMENT_TYPES );
     unique_element_types.push_back(cell_def);
 
     if (cell_def == Element_Definition::POLYGON) {
@@ -75,13 +76,13 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       std::shared_ptr<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
 
       std::vector<Element_Definition> elem_defs;
-      elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
+      elem_defs.emplace_back(Element_Definition::BAR_2);
 
       std::vector<unsigned> side_types(cell_definition->get_nsides(), 0);
 
-      cell.reset(new rtt_mesh_element::Element_Definition(
+      cell = std::make_shared<rtt_mesh_element::Element_Definition>(
           cell_definition->get_name(), rttMesh->get_dims_ndim(), cell_definition->get_nnodes(),
-          cell_definition->get_nsides(), elem_defs, side_types, cell_definition->get_all_sides()));
+          cell_definition->get_nsides(), elem_defs, side_types, cell_definition->get_all_sides());
     } else if (cell_def == Element_Definition::POLYHEDRON) {
       Insist(rttMesh->get_dims_ndim() == 3, "Polyhedron cell definition only supported in 3D");
       std::shared_ptr<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
@@ -94,8 +95,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
         int side_type(cell_definition->get_side_types(s));
 
-        std::vector<int>::iterator sit(
-            std::find(check_types.begin(), check_types.end(), side_type));
+        auto sit(std::find(check_types.begin(), check_types.end(), side_type));
         if (sit == check_types.end()) {
           Element_Definition elem_def(*cell_definitions[side_type]);
           if (elem_def.get_type() == Element_Definition::QUAD_4)
@@ -118,8 +118,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
         int side_type(cell_definition->get_side_types(s));
 
         // check to see if this side type has already been added to the elem_defs list of sides
-        std::vector<int>::iterator sit(
-            std::find(unique_side_types.begin(), unique_side_types.end(), side_type));
+        auto sit(std::find(unique_side_types.begin(), unique_side_types.end(), side_type));
         if (sit == unique_side_types.end()) {
           // not yet added for this polyhedron, so create a new element of this type push it onto
           // the list
@@ -133,17 +132,16 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       std::vector<unsigned> side_types;
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
         int side_type(cell_definition->get_side_types(s));
-        std::vector<int>::iterator sit(
-            std::find(unique_side_types.begin(), unique_side_types.end(), side_type));
+        auto sit(std::find(unique_side_types.begin(), unique_side_types.end(), side_type));
         Check(std::distance(unique_side_types.begin(), sit) < UINT_MAX);
         side_types.push_back(static_cast<unsigned>(std::distance(unique_side_types.begin(), sit)));
       }
 
-      cell.reset(new rtt_mesh_element::Element_Definition(
+      cell = std::make_shared<rtt_mesh_element::Element_Definition>(
           cell_definition->get_name(), rttMesh->get_dims_ndim(), cell_definition->get_nnodes(),
-          cell_definition->get_nsides(), elem_defs, side_types, cell_definition->get_all_sides()));
+          cell_definition->get_nsides(), elem_defs, side_types, cell_definition->get_all_sides());
     } else {
-      cell.reset(new rtt_mesh_element::Element_Definition(cell_def));
+      cell = std::make_shared<rtt_mesh_element::Element_Definition>(cell_def);
     }
 
     cell_definitions.push_back(cell);
@@ -270,10 +268,8 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() co
       // Allow the possibility that the cells could have identical flags as the sides.
       if (element_sets.count(flag_types_and_names) != 0) {
         set_uint side_set = element_sets.find(flag_types_and_names)->second;
-        for (set_uint::const_iterator side_set_itr = side_set.begin();
-             side_set_itr != side_set.end(); side_set_itr++) {
-          cell_flags.insert(*side_set_itr);
-        }
+        for (auto side : side_set )
+          cell_flags.insert(side);
         element_sets.erase(flag_types_and_names);
       }
       element_sets.insert(std::make_pair(flag_types_and_names, cell_flags));

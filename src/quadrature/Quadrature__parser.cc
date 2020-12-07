@@ -69,7 +69,7 @@ std::shared_ptr<Quadrature> parse_lobatto(Token_Stream &tokens) { return Lobatto
 namespace rtt_parser {
 //------------------------------------------------------------------------------------------------//
 Class_Parse_Table<Quadrature> *Class_Parse_Table<Quadrature>::current_;
-Parse_Table Class_Parse_Table<Quadrature>::parse_table_(NULL, 0, Parse_Table::ONCE);
+Parse_Table Class_Parse_Table<Quadrature>::parse_table_(nullptr, 0, Parse_Table::ONCE);
 std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::child_;
 
 //------------------------------------------------------------------------------------------------//

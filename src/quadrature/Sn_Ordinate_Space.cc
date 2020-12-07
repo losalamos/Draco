@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Sn_Ordinate_Space
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Sn_Ordinate_Space.hh"
@@ -30,7 +29,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class, unsigned /*
   int k(0); // k is always zero for 1D.
 
   for (unsigned ell = 0; ell <= L; ++ell)
-    result.push_back(Moment(ell, k));
+    result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -45,7 +44,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class, unsigned /
   for (int ell = 0; ell <= static_cast<int>(L); ++ell)
     for (int k = 0; k <= ell; ++k)
       if ((ell + k) % 2 == 0)
-        result.push_back(Moment(ell, k));
+        result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -59,7 +58,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class, unsigned /*
   // Choose: l= 0, ..., N, k = 0, ..., l
   for (int ell = 0; ell <= static_cast<int>(L); ++ell)
     for (int k = 0; k <= ell; ++k)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -80,7 +79,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsigned /*
   // Choose: l= 0, ..., L, k = -l, ..., l
   for (int ell = 0; ell <= static_cast<int>(L); ++ell)
     for (int k(-static_cast<int>(ell)); k <= ell; ++k)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -213,12 +212,12 @@ void Sn_Ordinate_Space::compute_D() {
  * \param expansion_order Expansion order of the desired scattering moment
  * space. If negative, the moment space is not needed.
  *
- * \param extra_starting_directions Add extra directions to each level set. In 
- * most geometries, an additional ordinate is added that is opposite in 
- * direction to the starting direction. This is used to implement reflection 
- * exactly in curvilinear coordinates. In 1D spherical, that means an 
- * additional angle is added at mu=1. In axisymmetric, that means additional 
- * angles are added that are oriented opposite to the incoming starting 
+ * \param extra_starting_directions Add extra directions to each level set. In
+ * most geometries, an additional ordinate is added that is opposite in
+ * direction to the starting direction. This is used to implement reflection
+ * exactly in curvilinear coordinates. In 1D spherical, that means an
+ * additional angle is added at mu=1. In axisymmetric, that means additional
+ * angles are added that are oriented opposite to the incoming starting
  * direction on each level.
  *
  * \param ordering Ordering into which to sort the ordinates.
@@ -257,15 +256,15 @@ QIM Sn_Ordinate_Space::quadrature_interpolation_model() const { return SN; }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * In the future, this function will allow the client to specify the maximum
- * order to include, but for the moment, we include all orders.
+ * In the future, this function will allow the client to specify the maximum order to include, but
+ * for the moment, we include all orders.
  */
-
 vector<double> Sn_Ordinate_Space::D() const { return D_; }
+
 //------------------------------------------------------------------------------------------------//
 /*!
- * In the future, this function will allow the client to specify the maximum
- * order to include, but for the moment, we include all orders.
+ * In the future, this function will allow the client to specify the maximum order to include, but
+ * for the moment, we include all orders.
  */
 vector<double> Sn_Ordinate_Space::M() const { return M_; }
 

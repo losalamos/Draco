@@ -25,7 +25,6 @@ namespace rtt_RTT_Format_Reader {
  *        mesh file.
  */
 //================================================================================================//
-
 class Dims {
 
   // typedefs
@@ -36,44 +35,42 @@ class Dims {
   string coor_units;
   string prob_time_units;
 
-  size_t ncell_defs;
-  size_t nnodes_max;
-  size_t nsides_max;
-  size_t nnodes_side_max;
+  size_t ncell_defs{0};
+  size_t nnodes_max{0};
+  size_t nsides_max{0};
+  size_t nnodes_side_max{0};
 
-  size_t ndim;
-  size_t ndim_topo;
+  size_t ndim{0};
+  size_t ndim_topo{0};
 
-  size_t nnodes;
-  size_t nnode_flag_types;
+  size_t nnodes{0};
+  size_t nnode_flag_types{0};
   vector_int nnode_flags;
-  size_t nnode_data;
+  size_t nnode_data{0};
 
-  size_t nsides;
-  size_t nside_types;
+  size_t nsides{0};
+  size_t nside_types{0};
   vector_int side_types;
-  size_t nside_flag_types;
+  size_t nside_flag_types{0};
   vector_int nside_flags;
-  size_t nside_data;
+  size_t nside_data{0};
 
-  size_t ncells;
-  size_t ncell_types;
+  size_t ncells{0};
+  size_t ncell_types{0};
   vector_int cell_types;
-  size_t ncell_flag_types;
+  size_t ncell_flag_types{0};
   vector_int ncell_flags;
-  size_t ncell_data;
+  size_t ncell_data{0};
 
 public:
-  Dims(void)
-      : coor_units(std::string()), prob_time_units(std::string()), ncell_defs(0), nnodes_max(0),
-        nsides_max(0), nnodes_side_max(0), ndim(0), ndim_topo(0), nnodes(0), nnode_flag_types(0),
-        nnode_flags(std::vector<int>()), nnode_data(0), nsides(0), nside_types(0),
-        side_types(std::vector<int>()), nside_flag_types(0), nside_flags(std::vector<int>()),
-        nside_data(0), ncells(0), ncell_types(0), cell_types(std::vector<int>()),
-        ncell_flag_types(0), ncell_flags(std::vector<int>()), ncell_data(0) { /* empty */
+  Dims()
+      : coor_units(std::string()), prob_time_units(std::string()),
+        nnode_flags(std::vector<int>()),
+        side_types(std::vector<int>()), nside_flags(std::vector<int>()),
+        cell_types(std::vector<int>()),
+        ncell_flags(std::vector<int>()) { /* empty */
   }
-  ~Dims(void) { /*empty*/
-  }
+  ~Dims() = default;
 
   void readDims(ifstream &meshfile);
 

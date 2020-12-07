@@ -80,16 +80,12 @@ add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( rng )          # needs ds++, device
 add_dir_if_exists( VendorChecks ) # needs c4
 add_dir_if_exists( viz )          # needs c4
-
-if( NOT CI_CLANG_TIDY )
-  add_dir_if_exists( compton )      # needs c4, CSK
-endif()
+add_dir_if_exists( compton )      # needs c4, CSK
 
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
-if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi_ndi )           # needs ds++, rng, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 add_dir_if_exists( special_functions ) # needs roots, units, GSL
@@ -101,9 +97,7 @@ add_dir_if_exists( mesh )       # needs c4, ds++, mesh_element
 add_dir_if_exists( quadrature ) # needs mesh_element, parser, special_functions
 
 # Deprecated
-add_dir_if_exists( plot2D )
-
-endif( NOT CI_CLANG_TIDY )
+# add_dir_if_exists( plot2D )
 
 # Summary
 

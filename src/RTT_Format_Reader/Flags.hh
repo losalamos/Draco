@@ -39,9 +39,9 @@ class Flags {
   vector_str flag_names;
 
 public:
-  Flags(size_t nflags_, const string &name_)
-      : nflags(nflags_), name(name_), flag_nums(nflags), flag_names(nflags) {}
-  ~Flags() {}
+  Flags(size_t nflags_, const string name_)
+    : nflags(nflags_), name(std::move(name_)), flag_nums(nflags), flag_names(nflags) { /* empty */ }
+  ~Flags() = default;
 
   void readFlags(ifstream &meshfile);
 

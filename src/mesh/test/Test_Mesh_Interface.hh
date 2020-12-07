@@ -4,8 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Thursday, Jun 07, 2018, 15:43 pm
  * \brief  Helper class for generating test meshes.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_test_Test_Mesh_Interface_hh
@@ -21,8 +20,7 @@ namespace rtt_mesh_test {
 /*!
  * \class Test_Mesh_Interface
  *
- * \brief Class to help generate and contain serialized data needed to construct
- * meshes.
+ * \brief Class to help generate and contain serialized data needed to construct meshes.
  *
  * This class is currently restricted to 2D meshes with quadrilateral cells.
  */
@@ -52,7 +50,7 @@ public:
 public:
   //! Constructor.
   Test_Mesh_Interface(const size_t num_xdir_, const size_t num_ydir_,
-                      const std::vector<unsigned> &global_node_number_ = {},
+                      const std::vector<unsigned> global_node_number_ = {},
                       const double xdir_offset_ = 0.0, const double ydir_offset_ = 0.0);
 
   // >>> SERVICES
@@ -68,11 +66,11 @@ public:
 //------------------------------------------------------------------------------------------------//
 
 Test_Mesh_Interface::Test_Mesh_Interface(const size_t num_xdir_, const size_t num_ydir_,
-                                         const std::vector<unsigned> &global_node_number_,
+                                         const std::vector<unsigned> global_node_number_,
                                          const double xdir_offset_, const double ydir_offset_)
     : dim(2), num_cells(num_xdir_ * num_ydir_), num_nodes((num_xdir_ + 1) * (num_ydir_ + 1)),
       num_sides(2 * (num_xdir_ + num_ydir_)), num_nodes_per_cell(4), num_faces_per_cell(4),
-      global_node_number(global_node_number_) {
+      global_node_number(std::move(global_node_number_)) {
 
   // set the number of cells and nodes
   const size_t num_xdir = num_xdir_;

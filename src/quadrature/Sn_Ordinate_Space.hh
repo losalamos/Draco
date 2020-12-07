@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of class Sn_Ordinate_Space
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Sn_Ordinate_Space_hh
@@ -14,7 +13,6 @@
 #include "Ordinate_Space.hh"
 
 namespace rtt_quadrature {
-using std::ostream;
 
 //================================================================================================//
 /*!
@@ -22,16 +20,14 @@ using std::ostream;
  *
  * \brief Represents ordinate operators for a conventional Sn moment space.
  *
- * The moment space contains all moments up to the specified scattering order,
- * and the moment to discrete and discrete to moment operators are calculated in
- * a straightforward manner from the Ylm and the weight associated with each
- * ordinate direction.
+ * The moment space contains all moments up to the specified scattering order, and the moment to
+ * discrete and discrete to moment operators are calculated in a straightforward manner from the Ylm
+ * and the weight associated with each ordinate direction.
  */
 //================================================================================================//
 
 class Sn_Ordinate_Space : public Ordinate_Space {
 public:
-  // NESTED CLASSES AND TYPEDEFS
 
   // CREATORS
 
@@ -40,42 +36,31 @@ public:
                     std::vector<Ordinate> const &, int expansion_order,
                     bool extra_starting_directions = false, Ordering ordering = LEVEL_ORDERED);
 
-  // MANIPULATORS
-
   // ACCESSORS
 
   bool check_class_invariants() const;
 
   // SERVICES
 
-  virtual QIM quadrature_interpolation_model() const;
+  QIM quadrature_interpolation_model() const override;
 
   //! Return the discrete to moment transform matrix
-  virtual std::vector<double> D() const;
+  std::vector<double> D() const override;
 
   //! Return the moment to discrete transform matrix
-  virtual std::vector<double> M() const;
-
-  // STATICS
+  std::vector<double> M() const override;
 
 protected:
-  // NESTED CLASSES AND TYPEDEFS
 
   // IMPLEMENTATION
 
-  virtual std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
-
-  virtual std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
-
-  virtual std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
-
-  virtual std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
-
-  virtual std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
+  std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order) override;
+  std::vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order) override;
+  std::vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order) override;
+  std::vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order) override;
+  std::vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order) override;
 
 private:
-  // NESTED CLASSES AND TYPEDEFS
-
   // IMPLEMENTATION
 
   void compute_M();
@@ -83,9 +68,9 @@ private:
 
   // DATA
 
-  std::vector<double> D_;
-  //! Moment to discrete matrix
-  std::vector<double> M_;
+  std::vector<double> D_; //!< Discrete to Moment matrix
+  std::vector<double> M_; //!< Moment to Discrete matrix
+
 };
 
 } // end namespace rtt_quadrature

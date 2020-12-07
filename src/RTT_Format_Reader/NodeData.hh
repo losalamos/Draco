@@ -13,10 +13,13 @@
 #include "Nodes.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the nodedata block of the
  *        mesh file.
  */
+//================================================================================================//
 class NodeData {
   // typedefs
   using ifstream = std::ifstream;
@@ -29,8 +32,8 @@ class NodeData {
 
 public:
   NodeData(const Dims &dims_)
-      : dims(dims_), data(dims.get_nnodes(), vector_dbl(dims.get_nnode_data())) {}
-  ~NodeData() {}
+    : dims(dims_), data(dims.get_nnodes(), vector_dbl(dims.get_nnode_data())) { /* empty */ }
+  ~NodeData() = default;
 
   void readNodeData(ifstream &meshfile);
 

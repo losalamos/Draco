@@ -4,8 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
  * \date   Thursday, Jul 12, 2018, 08:46 am
  * \brief  X3D_Draco_Mesh_Reader class implementation file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "X3D_Draco_Mesh_Reader.hh"
@@ -24,8 +23,7 @@ namespace rtt_mesh {
  *
  * \param[in] filename_ name of file to be parsed
  * \param[in] bdy_filenames_ names of files with lists of side node indexes
- * \param[in] bdy_flags_ unsigned int indicating B.C. per side file
- *           (bdy_filenames_)
+ * \param[in] bdy_flags_ unsigned int indicating B.C. per side file (bdy_filenames_)
  */
 X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(const std::string &filename_,
                                              const std::vector<std::string> &bdy_filenames_,
@@ -83,7 +81,7 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
       value = data_line.substr(key_offset);
 
     // add pairing even if value string is size 0 (gets headers and footers)
-    raw_pairs.push_back(std::pair<std::string, std::string>(key, value));
+    raw_pairs.emplace_back(std::pair<std::string, std::string>(key, value));
   }
 
   // STEP 3: close the file stream
@@ -221,8 +219,8 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   }
 
   // subtract 1 to get base 0 nodes
-  for (size_t i = 0; i < node_indexes.size(); ++i)
-    node_indexes[i]--;
+  for ( auto & node_index : node_indexes )
+    node_index--;
 
   Ensure(node_indexes.size() > 0);
   return node_indexes;
@@ -254,8 +252,8 @@ std::vector<unsigned> X3D_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size
   std::vector<unsigned> node_indexes = get_facenodes(map_face);
 
   // subtract 1 to get base 0 nodes
-  for (size_t i = 0; i < node_indexes.size(); ++i)
-    node_indexes[i]--;
+  for ( auto & node_index : node_indexes )
+    node_index--;
 
   Ensure(node_indexes.size() > 0);
   return node_indexes;
@@ -421,13 +419,12 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
 
   // decrement node indices
   for (int j = 0; j < num_side; ++j) {
-    for (size_t i = 0; i < x3d_sidenode_map.at(j).size(); ++i)
-      x3d_sidenode_map.at(j)[i]--;
+    for ( auto & node_index : x3d_sidenode_map.at(j) )
+      node_index--;
   }
-  for (size_t j = 0; j < bc_node_map.size(); ++j) {
-    for (size_t i = 0; i < bc_node_map.at(j).size(); ++i) {
-      bc_node_map.at(j)[i]--;
-    }
+  for (size_t j = 0; j < bc_node_map.size(); ++j) { // NOLINT
+    for (auto & node_index : bc_node_map.at(j) )
+      node_index--;
   }
 
   Ensure(x3d_sidenode_map.size() > 0);
