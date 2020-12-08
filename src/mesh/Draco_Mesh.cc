@@ -459,7 +459,9 @@ void Draco_Mesh::compute_node_to_cell_linkage(
       for (unsigned node = 0; node < num_nodes_per_face_per_cell[cf_counter]; ++node) {
 
         // add cell to the set for the node at this point in the cell-node linkage vector
-        auto insert_result = node_to_cells[cell_to_node_linkage[cn_counter]].insert(cell);
+        node_to_cells[cell_to_node_linkage[cn_counter]].insert({cell});
+
+        // each
 
         // increment cell node counter
         cn_counter++;
@@ -490,16 +492,24 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   if (ghost_cell_type.size() == 0)
     return;
 
-  //--------------------------------------------
-  // want: map of local nodes to all ghost cells
-
-  // (1) get global node from local node index
-
-  // (2) for each global node index, MPI gather ranks of domains adjacent to that node
-
-  // (3) for each global node index, MPI gather local of domains adjacent to that node
-
-  // ...
+  //----------------------------------------------------------------------------------------------//
+  // When domain-decomposed, the following creates a map of local nodes to all ghost cells.
+  // The procedure makes use of existing ghost data across cell faces, as follows:
+  //
+  // (1) create global node-local cell map with: (local-global node) and (local node-local cell)
+  //
+  // (2) split map into serialized vectors of local cells and global nodes, over the same index
+  //
+  // (3) mpi_allgatherv each ranks local cell/global node vectors
+  //
+  // (4) merged vectors per rank from (3) to per rank vector of map of global node to local cells
+  //
+  // (5) for a rank (i), compare each other rank (j) ghost global node list
+  //
+  // (6) if rank (i) has common global ghost nodes with rank (j), add the local cell indices of
+  //     rank (j) to each corresponding rank (i) local node index in rank (i)'s dual layout
+  //
+  //----------------------------------------------------------------------------------------------//
 
   // create map of global node to vector of adjacent ranks
   std::map<unsigned, std::vector<unsigned>> global_node_to_local_cells;
