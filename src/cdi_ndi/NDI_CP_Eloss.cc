@@ -147,6 +147,7 @@ void NDI_CP_Eloss::load_ndi() {
 
   //! Set projectile isotope
   ndi_error = NDI2_set_isotope(dataset_handle, std::to_string(projectile.get_zaid()).c_str());
+  Require(ndi_error == 0);
 
   int num_targets = 0;
   ndi_error = NDI2_get_int_val(dataset_handle, NDI_NUM_TARGET, &num_targets);

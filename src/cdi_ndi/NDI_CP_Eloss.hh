@@ -52,28 +52,29 @@ public:
   // >>> ACCESSORS
 
   //! Get a stopping power.
-  double getEloss(const double temperature, const double density, const double partSpeed) const;
+  double getEloss(const double temperature, const double density,
+                  const double partSpeed) const override;
 
   //! Query to see if data is in tabular or functional form (true)
   static constexpr bool is_data_in_tabular_form() { return true; }
 
   //! Get the material temperature grid.
-  sf_double getTemperatureGrid() const { return temperatures; }
+  sf_double getTemperatureGrid() const override { return temperatures; }
 
   //! Get the material density grid.
-  sf_double getDensityGrid() const { return densities; }
+  sf_double getDensityGrid() const override { return densities; }
 
   //! Get the projectile energy grid.
-  sf_double getEnergyGrid() const { return energies; }
+  sf_double getEnergyGrid() const override { return energies; }
 
   //! Get the number of material temperature grid points.
-  size_t getNumTemperatures() const { return n_temperature; }
+  size_t getNumTemperatures() const override { return n_temperature; }
 
   //! Get the number of material density grid points.
-  size_t getNumDensities() const { return n_density; }
+  size_t getNumDensities() const override { return n_density; }
 
   //! Get the number of projectile energy grid points.
-  size_t getNumEnergies() const { return n_energy; }
+  size_t getNumEnergies() const override { return n_energy; }
 
   //! Get the general eloss model type
   rtt_cdi::CPModelType getModelType() const { return rtt_cdi::CPModelType::TABULAR_ETYPE; }
