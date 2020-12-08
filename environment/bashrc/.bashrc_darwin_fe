@@ -17,11 +17,13 @@ if [[ ! ${VENDOR_DIR} ]]; then
   export PATH=$PATH:$VENDOR_DIR/bin
 fi
 
+[[ -z "${TERM}" ]] && export TERM=xterm-256color
+
 export DRACO_ARCH=$(/usr/projects/draco/vendors/bin/target_arch)
 if [[ -n "$MODULESHOME" ]]; then
   module use --append /projects/draco/Modules
   case $DRACO_ARCH in
-    arm)     module load draco/arm-gcc820 ;;
+    arm)     module load draco/arm-gcc930 ;;
     power9*) module load draco/power9-gcc730 ;;
     x86_64)
       module load draco/x64-gcc730

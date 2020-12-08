@@ -23,7 +23,7 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS             "-qflttrap")
+  set( CMAKE_C_FLAGS "-qflttrap -qmaxmem=-1" )
   if( EXISTS /usr/gapps )
     # ATS-2
     string( APPEND CMAKE_C_FLAGS " --gcc-toolchain=/usr/tce/packages/gcc/gcc-8.3.1" )
@@ -69,10 +69,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   endif()
 
   set( CMAKE_C_FLAGS_DEBUG "-g -O0 -qsmp=omp:noopt -qfullpath -DDEBUG")
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-g -O2 -qsmp=omp -qstrict=nans:operationprecision -qmaxmem=-1" )
-  set( CMAKE_C_FLAGS_RELEASE
-    "-O2 -qsmp=omp -qstrict=nans:operationprecision -qmaxmem=-1 -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O2 -qsmp=omp -qstrict=nans:operationprecision" )
+  set( CMAKE_C_FLAGS_RELEASE "-O2 -qsmp=omp -qstrict=nans:operationprecision -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_RELEASE}" )
 
   if( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
