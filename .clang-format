@@ -61,7 +61,7 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Preserve
 IncludeCategories:
-  - Regex:           '^"(c4|cdi|cdi_analytic|cdi_CPEloss|cdi_eospac|cdi_ipcress|cdi_ndi|compton_interface|compton_tools|device|diagnostics|ds\+\+|experimental|fit|linear|memory|mesh|mesh_element|meshReaders|min|norms|ode|parser|plot2D|quadrature|rng|roots|RTT_Format_Reader|special_functions|timestep|units|viz)/'
+  - Regex:           '^"(c4|cdi|cdi_analytic|cdi_CPEloss|cdi_eospac|cdi_ipcress|cdi_ndi|compton_interface|compton_tools|device|diagnostics|ds\+\+|experimental|fit|linear|memory|mesh|mesh_element|meshReaders|min|norms|ode|parser|quadrature|rng|roots|RTT_Format_Reader|special_functions|timestep|units|viz)/'
     Priority:        2
   - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
     Priority:        3

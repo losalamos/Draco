@@ -97,9 +97,6 @@ add_dir_if_exists( compton_tools )  # needs ds++, units, cdi_analtyic
 add_dir_if_exists( mesh )           # needs c4, ds++, mesh_element
 add_dir_if_exists( quadrature )     # needs mesh_element, parser, special_functions
 
-# Deprecated
-# add_dir_if_exists( plot2D )
-
 # Summary
 
 if( VERBOSE OR ENV{VERBOSE} )
