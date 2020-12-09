@@ -436,6 +436,12 @@ Draco_Mesh::compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
 /*!
  * \brief Build a cell-to-cell linkage across corners
  *
+ * \param[in] num_faces_per_cell number of faces per cell.
+ * \param[in] cell_to_node_linkage serial map of cell to face to node indices.
+ * \param[in] num_nodes_per_face_per_cell number of nodes per face per cell.
+ * \param[in] ghost_cell_type number of common vertices per ghost cell (sharing a full face).
+ * \param[in] ghost_cell_to_node_linkage vertices in common per ghost cell (sharing a full face).
+ * \param[in] global_node_number vector indexed by local node with global node index as values.
  */
 void Draco_Mesh::compute_node_to_cell_linkage(
     const std::vector<unsigned> &num_faces_per_cell,
