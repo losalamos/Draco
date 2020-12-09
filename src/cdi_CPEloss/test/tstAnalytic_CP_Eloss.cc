@@ -62,9 +62,6 @@ void KP_alpha_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(eloss_mod.getDensityGrid().size() == eloss_mod.getNumDensities());
   FAIL_IF_NOT(eloss_mod.getEnergyGrid().size() == eloss_mod.getNumEnergies());
 
-  // Data file name should be an empty string:
-  FAIL_IF_NOT(eloss_mod.getDataFilename().empty());
-
   // Check that accessors return the correct target and projectile:
   FAIL_IF_NOT(target_in.get_zaid() == eloss_mod.getTarget().get_zaid());
   FAIL_IF_NOT(projectile_in.get_zaid() == eloss_mod.getProjectile().get_zaid());
@@ -148,9 +145,6 @@ void Spitzer_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(eloss_mod.getDensityGrid().size() == eloss_mod.getNumDensities());
   FAIL_IF_NOT(eloss_mod.getEnergyGrid().size() == eloss_mod.getNumEnergies());
 
-  // Data file name should be an empty string:
-  FAIL_IF_NOT(eloss_mod.getDataFilename().empty());
-
   // Check that accessors return the correct target and projectile:
   FAIL_IF_NOT(target_in.get_zaid() == eloss_mod.getTarget().get_zaid());
   FAIL_IF_NOT(projectile_in.get_zaid() == eloss_mod.getProjectile().get_zaid());
@@ -229,9 +223,6 @@ void TR_test(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(eloss_ion_mod.getTemperatureGrid().size() == eloss_ion_mod.getNumTemperatures());
   FAIL_IF_NOT(eloss_ion_mod.getDensityGrid().size() == eloss_ion_mod.getNumDensities());
   FAIL_IF_NOT(eloss_ion_mod.getEnergyGrid().size() == eloss_ion_mod.getNumEnergies());
-
-  // Data file name should be an empty string:
-  FAIL_IF_NOT(eloss_ion_mod.getDataFilename().empty());
 
   // Check that accessors return the correct target and projectile:
   FAIL_IF_NOT(target_ion.get_zaid() == eloss_ion_mod.getTarget().get_zaid());

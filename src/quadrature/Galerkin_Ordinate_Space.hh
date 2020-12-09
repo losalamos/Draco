@@ -68,9 +68,7 @@ public:
   /*! Prune any moments beyond the user-specified expansion order. Such moments are included in
    * Galerkin methods for purposes of computing the M and D matrices, but are then removed from the
    * moment space unless the GQF interpolation model has been specified. */
-  bool prune() const override {
-    return method_ != GQF;
-  }
+  bool prune() const override { return method_ != GQF; }
 
   // STATICS
 

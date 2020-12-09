@@ -201,10 +201,10 @@ public:
   }
 
   //! Return the scattering moment to flux map.
-  void moment_to_flux(std::array<unsigned,3> & flux_map, std::array<double,3> & flux_fact) const;
+  void moment_to_flux(std::array<unsigned, 3> &flux_map, std::array<double, 3> &flux_fact) const;
 
   //! Return the flux to scattering moment map.
-  void flux_to_moment(std::array<unsigned,3> & flux_map, std::array<double,3> & flux_fact) const;
+  void flux_to_moment(std::array<unsigned, 3> &flux_map, std::array<double, 3> &flux_fact) const;
 
   // STATICS
 

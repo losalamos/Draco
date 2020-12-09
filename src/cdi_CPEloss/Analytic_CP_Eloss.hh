@@ -61,9 +61,6 @@ public:
   //! Query to see if data is in tabular or functional form (false).
   constexpr static bool is_data_in_tabular_form() { return false; }
 
-  // Get the name of the associated data file.
-  inline std_string getDataFilename() const override;
-
   //! Get the temperature grid (size 0 for function-based analytic data).
   sf_double getTemperatureGrid() const override { return sf_double(0); }
 
@@ -89,14 +86,6 @@ public:
    */
   rtt_cdi::CPModelType getModelType() const { return rtt_cdi::CPModelType::ANALYTIC_ETYPE; }
 };
-
-//------------------------------------------------------------------------------------------------//
-// INLINE FUNCTIONS
-//------------------------------------------------------------------------------------------------//
-/*!
- * \brief Return null string for the data filename.
- */
-std::string Analytic_CP_Eloss::getDataFilename() const { return std_string(); }
 
 } // namespace rtt_cdi_cpeloss
 

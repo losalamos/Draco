@@ -186,6 +186,14 @@ template <typename T> int broadcast(T *buffer, int size, int root) {
   int r = MPI_Bcast(buffer, size, MPI_Traits<T>::element_type(), root, communicator);
   return r;
 }
+template <typename T> int broadcast(T *buffer, size_t size, size_t root) {
+  Require(root < nranks());
+  Check(size < INT32_MAX);
+  Check(root < INT32_MAX);
+  int r = MPI_Bcast(buffer, static_cast<int>(size), MPI_Traits<T>::element_type(),
+                    static_cast<int>(root), communicator);
+  return r;
+}
 
 //------------------------------------------------------------------------------------------------//
 // GATHER/SCATTER

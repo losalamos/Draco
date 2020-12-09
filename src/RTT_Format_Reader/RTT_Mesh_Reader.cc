@@ -68,7 +68,7 @@ void RTT_Mesh_Reader::transform2CGNS() {
         cell_def = Element_Definition::POLYHEDRON;
     }
 
-    Check( cell_def != Element_Definition::NUMBER_OF_ELEMENT_TYPES );
+    Check(cell_def != Element_Definition::NUMBER_OF_ELEMENT_TYPES);
     unique_element_types.push_back(cell_def);
 
     if (cell_def == Element_Definition::POLYGON) {
@@ -268,7 +268,7 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() co
       // Allow the possibility that the cells could have identical flags as the sides.
       if (element_sets.count(flag_types_and_names) != 0) {
         set_uint side_set = element_sets.find(flag_types_and_names)->second;
-        for (auto side : side_set )
+        for (auto side : side_set)
           cell_flags.insert(side);
         element_sets.erase(flag_types_and_names);
       }

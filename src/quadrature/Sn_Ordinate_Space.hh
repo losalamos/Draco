@@ -28,7 +28,6 @@ namespace rtt_quadrature {
 
 class Sn_Ordinate_Space : public Ordinate_Space {
 public:
-
   // CREATORS
 
   //! Specify the ordinate quadrature with defaults.
@@ -51,7 +50,6 @@ public:
   std::vector<double> M() const override;
 
 protected:
-
   // IMPLEMENTATION
 
   std::vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order) override;
@@ -70,7 +68,6 @@ private:
 
   std::vector<double> D_; //!< Discrete to Moment matrix
   std::vector<double> M_; //!< Moment to Discrete matrix
-
 };
 
 } // end namespace rtt_quadrature

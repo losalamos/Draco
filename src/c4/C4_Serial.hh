@@ -45,6 +45,9 @@ int create_vector_type(unsigned /*count*/, unsigned /*blocklength*/, unsigned /*
 template <typename T> int broadcast(T * /*buffer*/, int /*size*/, int /*root*/) {
   return C4_SUCCESS;
 }
+template <typename T> int broadcast(T * /*buffer*/, size_t /*size*/, size_t /*root*/) {
+  return C4_SUCCESS;
+}
 
 template <typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator /*first*/, ForwardIterator /*last*/,

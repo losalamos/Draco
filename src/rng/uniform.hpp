@@ -107,10 +107,10 @@ using std::make_unsigned;
 // It's not clear which will cause less headache...
 template <typename T> struct make_signed {};
 template <typename T> struct make_unsigned {};
-#define R123_MK_SIGNED_UNSIGNED(ST, UT)                                        \
-  template <> struct make_signed<ST> { typedef ST type; };                     \
-  template <> struct make_signed<UT> { typedef ST type; };                     \
-  template <> struct make_unsigned<ST> { typedef UT type; };                   \
+#define R123_MK_SIGNED_UNSIGNED(ST, UT)                                                            \
+  template <> struct make_signed<ST> { typedef ST type; };                                         \
+  template <> struct make_signed<UT> { typedef ST type; };                                         \
+  template <> struct make_unsigned<ST> { typedef UT type; };                                       \
   template <> struct make_unsigned<UT> { typedef UT type; }
 
 R123_MK_SIGNED_UNSIGNED(int8_t, uint8_t);
@@ -135,8 +135,7 @@ R123_MK_SIGNED_UNSIGNED(__int128_t, __uint128_t);
 //
 // In both cases, we find max() by computing ~(unsigned)0 right-shifted
 // by is_signed.
-template <typename T>
-R123_CONSTEXPR R123_STATIC_INLINE R123_CUDA_DEVICE T maxTvalue() {
+template <typename T> R123_CONSTEXPR R123_STATIC_INLINE R123_CUDA_DEVICE T maxTvalue() {
   typedef typename make_unsigned<T>::type uT;
   return (~uT(0)) >> std::numeric_limits<T>::is_signed;
 }
@@ -159,11 +158,9 @@ template <typename T> R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue() {
 //  Let M be the number of mantissa bits in Ftype.
 //  If W>M  then the largest value retured is 1.0.
 //  If W<=M then the largest value returned is the largest Ftype less than 1.0.
-template <typename Ftype, typename Itype>
-R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
+template <typename Ftype, typename Itype> R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
   using Utype = typename make_unsigned<Itype>::type;
-  R123_CONSTEXPR Ftype factor =
-      Ftype(1.) / (static_cast<Ftype>(maxTvalue<Utype>()) + Ftype(1.));
+  R123_CONSTEXPR Ftype factor = Ftype(1.) / (static_cast<Ftype>(maxTvalue<Utype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Utype(in) * factor;
@@ -190,8 +187,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
 template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
   using Stype = typename make_signed<Itype>::type;
-  R123_CONSTEXPR Ftype factor =
-      Ftype(1.) / (Ftype(maxTvalue<Stype>()) + Ftype(1.));
+  R123_CONSTEXPR Ftype factor = Ftype(1.) / (Ftype(maxTvalue<Stype>()) + Ftype(1.));
   R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
 #ifdef R123_UNIFORM_FLOAT_STORE
   volatile Ftype x = Stype(in) * factor;
@@ -246,8 +242,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
 #pragma GCC diagnostic pop
 #endif
 
-    R123_CONSTEXPR Ftype factor =
-        Ftype(1.) / (Ftype(1.) + ((maxTvalue<Utype>() >> ex_nowarn)));
+    R123_CONSTEXPR Ftype factor = Ftype(1.) / (Ftype(1.) + ((maxTvalue<Utype>() >> ex_nowarn)));
     return (1 | (Utype(in) >> ex_nowarn)) * factor;
   } else {
     return u01<Ftype>(in);

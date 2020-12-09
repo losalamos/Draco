@@ -7,6 +7,7 @@
  * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 #include "NDI_TNReaction.hh"
+#include "ds++/dbc.hh"
 #include <cmath>
 
 namespace rtt_cdi_ndi {
@@ -27,7 +28,19 @@ namespace rtt_cdi_ndi {
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
                                const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_e_bounds_in) {
+    : NDI_Base(gendir_in, "tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
+
+  Require(reaction.length() > 0);
+  Require(mg_e_bounds.size() > 0);
+
+  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
+    mg_e_bounds[i] /= 1000.; // keV -> MeV
+  }
+
+  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
+  Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
+         "Product multigroup bounds not strictly monotonic decreasing!");
+  Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
 }
@@ -41,7 +54,19 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) {
+    : NDI_Base("tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
+
+  Require(reaction.length() > 0);
+  Require(mg_e_bounds.size() > 0);
+
+  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
+    mg_e_bounds[i] /= 1000.; // keV -> MeV
+  }
+
+  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
+  Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
+         "Product multigroup bounds not strictly monotonic decreasing!");
+  Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
 
   load_ndi();
 }
@@ -310,9 +335,9 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
-                               const std::string &reaction_in,
-                               const std::vector<double> mg_e_bounds_in)
-    : NDI_Base(gendir_in, "tn", library_in, reaction_in, mg_e_bounds_in) { /* ... */
+                               const std::string & /*reaction_in*/,
+                               const std::vector<double> /*mg_e_bounds_in*/)
+    : NDI_Base(gendir_in, "tn", library_in) { /* ... */
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -324,9 +349,9 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
-NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
-                               const std::vector<double> mg_e_bounds_in)
-    : NDI_Base("tn", library_in, reaction_in, mg_e_bounds_in) { /* ... */
+NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string & /*reaction_in*/,
+                               const std::vector<double> /*mg_e_bounds_in*/)
+    : NDI_Base("tn", library_in) { /* ... */
 }
 
 std::vector<double> NDI_TNReaction::get_PDF(const int /*product_zaid*/,

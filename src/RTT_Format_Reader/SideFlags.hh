@@ -35,7 +35,7 @@ public:
   }
   ~SideFlags() = default;
 
-  void readSideFlags(ifstream & meshfile);
+  void readSideFlags(ifstream &meshfile);
 
 private:
   void readKeyword(ifstream &meshfile);

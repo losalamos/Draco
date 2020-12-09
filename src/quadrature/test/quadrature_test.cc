@@ -436,9 +436,9 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 }
 
 //------------------------------------------------------------------------------------------------//
-void quadrature_test(UnitTest & ut, Quadrature & quadrature, bool const cartesian_tests_only) {
-  cout << "Testing quadrature " << quadrature.name() << "\n  Parse name: "
-       << quadrature.parse_name() << endl;
+void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_tests_only) {
+  cout << "Testing quadrature " << quadrature.name()
+       << "\n  Parse name: " << quadrature.parse_name() << endl;
   switch (quadrature.quadrature_class()) {
   case INTERVAL_QUADRATURE:
     cout << "  This is an interval quadrature." << endl;

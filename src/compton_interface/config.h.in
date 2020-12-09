@@ -1,13 +1,13 @@
 /*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
- * \file   compton/config.h
- * \brief  CPP defines necessary for the compton packages.
+ * \file   compton_interface/config.h
+ * \brief  CPP defines necessary for the compton_interface packages.
  * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
 /*------------------------------------------------------------------------------------------------*/
 
-#ifndef rtt_compton_config_h
-#define rtt_compton_config_h
+#ifndef rtt_compton_interface_config_h
+#define rtt_compton_interface_config_h
 
 #cmakedefine COMPTON_FOUND
 
@@ -22,8 +22,8 @@
 
 #endif
 
-#endif /* rtt_compton_config_h */
+#endif /* rtt_compton_interface_config_h */
 
 /*------------------------------------------------------------------------------------------------*/
-/* end of compton/config.h */
+/* end of compton_interface/config.h */
 /*------------------------------------------------------------------------------------------------*/

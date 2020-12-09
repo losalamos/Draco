@@ -72,11 +72,6 @@ public:
   //virtual static constexpr bool is_data_in_tabular_form() = 0;
 
   /*!
-   * \brief Returns the name of the associated data file (if any).
-   */
-  virtual std::string getDataFilename() const = 0;
-
-  /*!
    * \brief Returns a vector of temperatures that define the cached Eloss data table (keV).
    */
   virtual std::vector<double> getTemperatureGrid() const = 0;
