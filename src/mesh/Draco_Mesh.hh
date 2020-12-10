@@ -46,9 +46,19 @@ namespace rtt_mesh {
 class Draco_Mesh {
 public:
   // >>> TYPEDEFS
+
   using Geometry = rtt_mesh_element::Geometry;
+
+  // e.g.: (key: cell, value: vector of pairs of neighbors and shared nodes per face)
   using Layout =
       std::map<unsigned int, std::vector<std::pair<unsigned int, std::vector<unsigned int>>>>;
+
+  // e.g.: (key: node, value: vector of local or ghost cell indices)
+  using Dual_Layout = std::map<unsigned int, std::vector<unsigned int>>;
+
+  // e.g.: (key: node, value: vector of pairs of rank and local cell index on the rank)
+  using Dual_Ghost_Layout =
+      std::map<unsigned int, std::vector<std::pair<unsigned int, unsigned int>>>;
 
 protected:
   // >>> DATA
@@ -96,6 +106,12 @@ protected:
   // Ghost cell layout of mesh
   Layout cell_to_ghost_cell_linkage;
 
+  // Node map to vector of local cells
+  Dual_Layout node_to_cell_linkage;
+
+  // Node map to vector of ghost cells
+  Dual_Ghost_Layout node_to_ghost_cell_linkage;
+
 public:
   //! Constructor.
   Draco_Mesh(unsigned dimension_, Geometry geometry_,
@@ -134,6 +150,8 @@ public:
   Layout get_cc_linkage() const { return cell_to_cell_linkage; }
   Layout get_cs_linkage() const { return cell_to_side_linkage; }
   Layout get_cg_linkage() const { return cell_to_ghost_cell_linkage; }
+  Dual_Layout get_nc_linkage() const { return node_to_cell_linkage; }
+  Dual_Ghost_Layout get_ngc_linkage() const { return node_to_ghost_cell_linkage; }
 
   // >>> SERVICES
 
@@ -171,6 +189,14 @@ private:
   std::map<std::set<unsigned>, unsigned>
   compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
                             const std::vector<unsigned> &indx_to_node_linkage) const;
+
+  //! Calculate cell-corner-cell layouts (adjacent cells not sharing a face)
+  void compute_node_to_cell_linkage(const std::vector<unsigned> &num_faces_per_cell,
+                                    const std::vector<unsigned> &cell_to_node_linkage,
+                                    const std::vector<unsigned> &num_nodes_per_face_per_cell,
+                                    const std::vector<unsigned> &ghost_cell_type,
+                                    const std::vector<unsigned> &ghost_cell_to_node_linkage,
+                                    const std::vector<unsigned> &global_node_number);
 };
 
 } // end namespace rtt_mesh

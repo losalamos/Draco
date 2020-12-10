@@ -292,6 +292,20 @@ template <typename T>
 int gatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
             int *receive_displs);
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Gather from all ranks to a receiving array on each rank, using sizes and displacements
+ *
+ * \param[in] send_buffer array of data of type T that has a registered MPI type
+ * \param[in] send_size size of send buffer
+ * \param[in,out] receive_buffer array to gather at, according to sizes and displacements per rank
+ * \param[in] receive_sizes anticipated data size per rank in the Communicator.
+ * \param[in] receive_displs displacement into receive_buffer per rank in the Communicator.
+ */
+template <typename T>
+int allgatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
+               int *receive_displs);
+
 template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size);
 
 template <typename T>

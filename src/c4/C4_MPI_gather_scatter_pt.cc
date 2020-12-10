@@ -43,6 +43,10 @@ template int gatherv<char>(char *send_buffer, int send_size, char *receive_buffe
                            int *receive_sizes, int *receive_displs);
 
 //------------------------------------------------------------------------------------------------//
+template int allgatherv<unsigned>(unsigned *send_buffer, int send_size, unsigned *receive_buffer,
+                                  int *receive_sizes, int *receive_displs);
+
+//------------------------------------------------------------------------------------------------//
 template int scatter<unsigned>(unsigned *send_buffer, unsigned *receive_buffer, int size);
 
 template int scatter<int>(int *send_buffer, int *receive_buffer, int size);

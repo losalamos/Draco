@@ -626,20 +626,6 @@ macro( SetupVendorLibrariesUnix )
   setupLIBQUO()
   setupCaliper()
 
-  # Grace ------------------------------------------------------------------
-  message( STATUS "Looking for Grace...")
-  find_package( Grace QUIET )
-  set_package_properties( Grace PROPERTIES
-    DESCRIPTION "A WYSIWYG 2D plotting tool."
-    TYPE OPTIONAL
-    PURPOSE "Required for building the plot2D component."
-    )
-  if( Grace_FOUND )
-    message( STATUS "Looking for Grace.....found ${Grace_EXECUTABLE}")
-  else()
-    message( STATUS "Looking for Grace.....not found")
-  endif()
-
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
   find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen )

@@ -8,6 +8,8 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "Draco_Mesh.hh"
+#include "c4/C4_Functions.hh"
+#include "c4/gatherv.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <numeric>
@@ -84,6 +86,11 @@ Draco_Mesh::Draco_Mesh(
   compute_cell_to_cell_linkage(
       num_faces_per_cell_, cell_to_node_linkage_, num_nodes_per_face_per_cell_, side_node_count_,
       side_to_node_linkage_, ghost_cell_type_, ghost_cell_to_node_linkage_);
+
+  // build cell-to-corner-cell layout
+  compute_node_to_cell_linkage(num_faces_per_cell_, cell_to_node_linkage_,
+                               num_nodes_per_face_per_cell_, ghost_cell_type_,
+                               ghost_cell_to_node_linkage_, global_node_number_);
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -423,6 +430,236 @@ Draco_Mesh::compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
   Ensure(i2n_first == indx_to_node_linkage.end());
 
   return nodes_to_indx_map;
+}
+
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Build a cell-to-cell linkage across corners
+ *
+ * \param[in] num_faces_per_cell number of faces per cell.
+ * \param[in] cell_to_node_linkage serial map of cell to face to node indices.
+ * \param[in] num_nodes_per_face_per_cell number of nodes per face per cell.
+ * \param[in] ghost_cell_type number of common vertices per ghost cell (sharing a full face).
+ * \param[in] ghost_cell_to_node_linkage vertices in common per ghost cell (sharing a full face).
+ * \param[in] global_node_number vector indexed by local node with global node index as values.
+ */
+void Draco_Mesh::compute_node_to_cell_linkage(
+    const std::vector<unsigned> &num_faces_per_cell,
+    const std::vector<unsigned> &cell_to_node_linkage,
+    const std::vector<unsigned> &num_nodes_per_face_per_cell,
+    const std::vector<unsigned> &ghost_cell_type,
+    const std::vector<unsigned> &ghost_cell_to_node_linkage,
+    const std::vector<unsigned> &global_node_number) {
+
+  // (1a) create map of (single) nodes to set of cells
+
+  std::map<unsigned, std::set<unsigned>> node_to_cells;
+
+  // initialize cell face counter and cell-node iterator
+  unsigned cf_counter = 0;
+  unsigned cn_counter = 0;
+
+  // convert cell-node linkage to map of cell face to
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    for (unsigned face = 0; face < num_faces_per_cell[cell]; ++face) {
+      for (unsigned node = 0; node < num_nodes_per_face_per_cell[cf_counter]; ++node) {
+
+        // add cell to the set for the node at this point in the cell-node linkage vector
+        node_to_cells[cell_to_node_linkage[cn_counter]].insert({cell});
+
+        // each
+
+        // increment cell node counter
+        cn_counter++;
+      }
+
+      // increment cell face counter
+      cf_counter++;
+    }
+  }
+
+  Check(cn_counter == safe_convert_from_size_t(cell_to_node_linkage.size()));
+
+  // (1b) convert set of cell per node to vector ...
+
+  for (unsigned node = 0; node < num_nodes; ++node) {
+
+    // get the set of local cells for the node
+    const std::set<unsigned> &nc_set = node_to_cells.at(node);
+
+    // convert set to vector
+    node_to_cell_linkage[node] = std::vector<unsigned>(nc_set.begin(), nc_set.end());
+
+    // each node must be adjacent to at least one local cell
+    Check(node_to_cell_linkage[node].size() >= 1);
+  }
+
+  // avoid populating ghost node map if there are no faces that go off rank
+  if (ghost_cell_type.size() == 0)
+    return;
+
+  //----------------------------------------------------------------------------------------------//
+  // When domain-decomposed, the following creates a map of local nodes to all ghost cells.
+  // The procedure makes use of existing ghost data across cell faces, as follows:
+  //
+  // (1) create global node-local cell map with: (local-global node) and (local node-local cell)
+  //
+  // (2) split map into serialized vectors of local cells and global nodes, over the same index
+  //
+  // (3) mpi_allgatherv each ranks local cell/global node vectors
+  //
+  // (4) merged vectors per rank from (3) to per rank vector of map of global node to local cells
+  //
+  // (5) for a rank (i), compare each other rank (j) ghost global node list
+  //
+  // (6) if rank (i) has common global ghost nodes with rank (j), add the local cell indices of
+  //     rank (j) to each corresponding rank (i) local node index in rank (i)'s dual layout
+  //
+  //----------------------------------------------------------------------------------------------//
+
+  // create map of global node to vector of adjacent ranks
+  std::map<unsigned, std::vector<unsigned>> global_node_to_local_cells;
+
+  // first append this ranks index onto the map
+  // initialize cell face counter and cell-node iterator
+  unsigned gcn_counter = 0;
+
+  // short-cut to number of ghost faces (i.e. cells across a face on a rank boundary)
+  const unsigned num_ghost_cells = safe_convert_from_size_t(ghost_cell_type.size());
+
+  // create the pre-comm map of global ghost nodes to local cells
+  for (unsigned ghost = 0; ghost < num_ghost_cells; ++ghost) {
+    for (unsigned ghost_node = 0; ghost_node < ghost_cell_type[ghost]; ++ghost_node) {
+
+      // get global index for this node
+      const unsigned local_node = ghost_cell_to_node_linkage[gcn_counter];
+      const unsigned global_node = global_node_number[local_node];
+
+      // set initial rank and local cell listing at this global node
+      global_node_to_local_cells[global_node] = node_to_cell_linkage.at(local_node);
+
+      // increment ghost-cell-node-linkage counter
+      gcn_counter++;
+    }
+  }
+
+  // create a serial array of local cell indices (for cells with at least one off-rank vertex)
+  std::vector<unsigned> cells_per_serial;
+  for (const auto &global_node_cell_pair : global_node_to_local_cells) {
+    cells_per_serial.insert(cells_per_serial.end(), global_node_cell_pair.second.begin(),
+                            global_node_cell_pair.second.end());
+  }
+
+  // get the serialized vector size
+  const size_t num_serial = cells_per_serial.size();
+
+  // initialize a serial array of global node indices
+  std::vector<unsigned> global_node_per_serial(num_serial);
+
+  // map global ghost node indices to serial index
+  size_t serial_count = 0;
+  for (const auto &global_node_cell_pair : global_node_to_local_cells) {
+
+    // get the number of local cells for this node
+    const size_t num_node_cells = global_node_cell_pair.second.size();
+
+    // set to the global node at the serial index for this local cell
+    for (size_t node_cell = 0; node_cell < num_node_cells; ++node_cell)
+      global_node_per_serial[serial_count + node_cell] = global_node_cell_pair.first;
+
+    // increment count over serial index
+    serial_count += num_node_cells;
+  }
+
+  // check that serial vector has been filled
+  Check(serial_count == num_serial);
+
+  // gather the local cell indices per serial index per rank
+  std::vector<std::vector<unsigned>> cells_per_serial_per_rank;
+  rtt_c4::indeterminate_allgatherv(cells_per_serial, cells_per_serial_per_rank);
+
+  // get the number of ranks in this communicator group
+  const unsigned num_ranks = rtt_c4::nodes();
+
+  // sanity-check gatherv communicator group
+  Check(cells_per_serial_per_rank.size() == num_ranks);
+
+  // resize gather target for global nodes since the sizes are determined from previous gather
+  std::vector<std::vector<unsigned>> global_node_per_serial_per_rank(num_ranks);
+  for (unsigned rank = 0; rank < num_ranks; ++rank)
+    global_node_per_serial_per_rank[rank].resize(cells_per_serial_per_rank[rank].size());
+
+  // gather the global ghost node indices per serial index per rank
+  rtt_c4::determinate_allgatherv(global_node_per_serial, global_node_per_serial_per_rank);
+
+  // merge global_node_per_serial_per_rank and cells_per_serial_per_rank into map per rank
+  std::vector<std::map<unsigned, std::vector<unsigned>>> global_node_cell_map_per_rank(num_ranks);
+  for (unsigned rank = 0; rank < num_ranks; ++rank) {
+
+    // short-cut to serialized vector size from rank
+    const size_t num_serial_on_rank = cells_per_serial_per_rank[rank].size();
+    Check(num_serial_on_rank == global_node_per_serial_per_rank[rank].size());
+
+    // generate map for the rank
+    for (size_t i = 0; i < num_serial_on_rank; ++i) {
+
+      // short-cut to key (global node index) and value modifier (local_cell on rank)
+      const unsigned global_node = global_node_per_serial_per_rank[rank][i];
+      const unsigned local_cell = cells_per_serial_per_rank[rank][i];
+
+      // accumulate local cells (for rank) adjacent to this global node
+      global_node_cell_map_per_rank[rank][global_node].push_back(local_cell);
+    }
+  }
+
+  // invert local-to-global node index layout
+  std::map<unsigned, unsigned> global_to_local_node;
+  for (unsigned node = 0; node < num_nodes; ++node)
+    global_to_local_node[global_node_number[node]] = node;
+
+  // get this (my) rank
+  const unsigned my_rank = rtt_c4::node();
+
+  // generate dual gost layout
+  for (unsigned rank = 0; rank < num_ranks; ++rank) {
+
+    // exclude this rank
+    if (rank == my_rank)
+      continue;
+
+    // short-cut to global node vectors to sort and set-intersect
+    std::vector<unsigned> &v1 = global_node_per_serial_per_rank[my_rank];
+    std::vector<unsigned> &v2 = global_node_per_serial_per_rank[rank];
+
+    // sort the global node vectors
+    std::sort(v1.begin(), v1.end());
+    std::sort(v2.begin(), v2.end());
+
+    // remove duplicates
+    auto last_v1 = std::unique(v1.begin(), v1.end());
+    v1.erase(last_v1, v1.end());
+    auto last_v2 = std::unique(v2.begin(), v2.end());
+    v2.erase(last_v2, v2.end());
+
+    // perform set intsection of my rank global nodes with this rank's global nodes
+    std::vector<unsigned> rank_my_rank_node_intersect;
+    std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                          std::back_inserter(rank_my_rank_node_intersect));
+
+    // map cell and rank from each common global node index to my rank's dual ghost layout
+    for (auto gl_node : rank_my_rank_node_intersect) {
+
+      // get the local node index from the global-local-node map
+      const unsigned node = global_to_local_node.at(gl_node);
+
+      // append each local-cell-rank pair to dual ghost layout
+      for (auto local_cell : global_node_cell_map_per_rank[rank].at(gl_node))
+        node_to_ghost_cell_linkage[node].push_back(std::make_pair(local_cell, rank));
+    }
+  }
+
+  // since this mesh was constructed with ghost data, the resulting map must have non-zero size
+  Ensure(node_to_ghost_cell_linkage.size() > 0);
 }
 
 } // end namespace rtt_mesh
