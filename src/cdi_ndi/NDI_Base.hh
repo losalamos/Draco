@@ -53,11 +53,9 @@ protected:
   const std::string library;
 
 protected:
-  //! Constructor
+  //! Constructors
   NDI_Base(const std::string &dataset_in, const std::string &library_in);
-
-  NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-           const std::string &library_in);
+  NDI_Base(const std::string gendir_in, const std::string dataset_in, const std::string library_in);
 
 public:
   //! Default constructor

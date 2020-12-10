@@ -12,6 +12,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -32,6 +33,20 @@ void test_trim(UnitTest &ut) {
 
   string const case3("#  This is a string.  ");
   FAIL_IF_NOT(trim(case3, string("# ")) == string("This is a string."));
+
+  string const case4("This is a string.\0\0\0\0\1\0        ");
+  FAIL_IF_NOT(case4.length() == case2.length());
+  FAIL_IF_NOT(trim(case4) == string("This is a string."));
+
+  // tests that use std::array source data.
+  std::array<char, 20> case5arr = {'T', 'h', 'i', 's', ' ', 'i', 's', ' ',  'a',  ' ',
+                                   's', 't', 'r', 'i', 'n', 'g', '.', '\0', '\1', 'x'};
+  string const case5(case5arr.data()); // this ctor should prune '\0' and following chars.
+  FAIL_IF_NOT(case5.length() == case2.length());
+
+  string const case6(case5arr.data(), case5arr.size()); // keeps all 20 chars.
+  FAIL_IF_NOT(case6.length() == case5arr.size());
+  FAIL_IF_NOT(trim(case6) == string("This is a string."));
 
   if (ut.numFails == 0)
     PASSMSG("test_trim: All tests pass.");

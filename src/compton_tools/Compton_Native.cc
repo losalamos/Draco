@@ -8,14 +8,10 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "compton_tools/Compton_Native.hh"
-#include "c4/C4_Functions.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
-#include <algorithm>
 #include <array>
-#include <cstring>
 #include <fstream>
-#include <iostream>
 
 using UINT64 = uint64_t;
 using FP = double;
@@ -208,8 +204,8 @@ int Compton_Native::read_binary(const std::string &filename) {
   // (using vector of char to avoid using C-style strings)
   std::array<char, 6> expected = {' ', 'c', 's', 'k', ' ', '\0'};
   std::array<char, 6> actual;
-  for (size_t i = 0; i < actual.size(); ++i)
-    fin.read(&actual[i], sizeof(actual[i]));
+  for (char &c : actual)
+    fin.read(&c, sizeof(char));
   if (!std::equal(expected.begin(), expected.end(), actual.begin())) {
     std::cerr << "Expecting binary file " << filename << " to start with '";
     for (char c : expected)

@@ -104,8 +104,8 @@ NDI_Base::NDI_Base(const std::string &dataset_in, const std::string &library_in)
 //================================================================================================//
 
 //! Constructor for generic NDI reader- throws when NDI not available
-NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*dataset_in*/,
-                   const std::string & /*library_in*/) {
+NDI_Base::NDI_Base(const std::string /*gendir_in*/, const std::string /*dataset_in*/,
+                   const std::string /*library_in*/) {
   Insist(0, "NDI default gendir path only available when NDI is found.");
 }
 
@@ -126,9 +126,9 @@ NDI_Base::NDI_Base(const std::string & /*gendir_in*/, const std::string & /*data
  * \param[in] dataset_in name of requested dataset (provided by inherited class)
  * \param[in] library_in name of requested NDI data library
  */
-NDI_Base::NDI_Base(const std::string &gendir_in, const std::string &dataset_in,
-                   const std::string &library_in)
-    : gendir(gendir_in), dataset(dataset_in), library(library_in) {
+NDI_Base::NDI_Base(const std::string gendir_in, const std::string dataset_in,
+                   const std::string library_in)
+    : gendir(std::move(gendir_in)), dataset(std::move(dataset_in)), library(std::move(library_in)) {
 
   Require(rtt_dsxx::fileExists(gendir));
 

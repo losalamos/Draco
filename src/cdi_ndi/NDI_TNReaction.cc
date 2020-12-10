@@ -6,17 +6,22 @@
  * \brief  NDI_TNReaction member definitions.
  * \note   Copyright (C) 2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
+
 #include "NDI_TNReaction.hh"
+#include "ds++/Query_Env.hh"
 #include "ds++/dbc.hh"
+#include <array>
 #include <cmath>
 
 namespace rtt_cdi_ndi {
 
 // Protect actual NDI calls with NDI_FOUND macro:
 #ifdef NDI_FOUND
+
 //------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
 //------------------------------------------------------------------------------------------------//
+
 /*!
  * \brief Constructor for NDI reader specific to TN reaction data with provided path to gendir file.
  *
@@ -26,16 +31,16 @@ namespace rtt_cdi_ndi {
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
-                               const std::string &reaction_in,
+                               const std::string reaction_in,
                                const std::vector<double> mg_e_bounds_in)
-    : NDI_Base(gendir_in, "tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
+    : NDI_Base(gendir_in, "tn", library_in), reaction(std::move(reaction_in)),
+      mg_e_bounds(mg_e_bounds_in) {
 
   Require(reaction.length() > 0);
   Require(mg_e_bounds.size() > 0);
 
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
+  for (double &eb : mg_e_bounds)
+    eb /= 1000.0; // keV -> MeV
 
   // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
   Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
@@ -44,6 +49,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
 
   load_ndi();
 }
+
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for NDI reader specific to TN reaction data using default gendir file.
@@ -51,25 +57,16 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  * \param[in] library_in name of requested NDI data library
  * \param[in] reaction_in name of requested reaction
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
+ *
+ * This is a delegating constructor. It defaults the gendir filepath to the value found in the
+ * environment.
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string &reaction_in,
-                               const std::vector<double> mg_e_bounds_in)
-    : NDI_Base("tn", library_in), reaction(reaction_in), mg_e_bounds(mg_e_bounds_in) {
-
-  Require(reaction.length() > 0);
-  Require(mg_e_bounds.size() > 0);
-
-  for (size_t i = 0; i < mg_e_bounds.size(); i++) {
-    mg_e_bounds[i] /= 1000.; // keV -> MeV
-  }
-
-  // Check that mg_e_bounds is monotonically decreasing (NDI requirement)
-  Insist(rtt_dsxx::is_strict_monotonic_decreasing(mg_e_bounds.begin(), mg_e_bounds.end()),
-         "Product multigroup bounds not strictly monotonic decreasing!");
-  Insist(mg_e_bounds.back() > 0, "Negative product multigroup bounds!");
-
-  load_ndi();
+                               const std::vector<double> &mg_e_bounds_in)
+    : NDI_TNReaction(rtt_dsxx::get_env_val<std::string>("NDI_GENDIR_PATH").second, library_in,
+                     reaction_in, mg_e_bounds_in) { /* empty */
 }
+
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Load NDI dataset. Split off from constructor to allow for both default and overridden
@@ -84,7 +81,7 @@ void NDI_TNReaction::load_ndi() {
   int dataset_handle = -1;
   int ndi_error = -9999;
   constexpr int c_str_len = 4096;
-  char c_str_buf[c_str_len];
+  std::array<char, c_str_len> c_str_buf;
 
   // Open gendir file (index of a complete NDI dataset)
   ndi_error = NDI2_open_gendir(&gendir_handle, gendir.c_str());
@@ -109,9 +106,9 @@ void NDI_TNReaction::load_ndi() {
   Require(ndi_error == 0);
 
   //! Store reaction name from NDI file
-  ndi_error = NDI2_get_string_val(dataset_handle, NDI_ZAID, c_str_buf, c_str_len);
+  ndi_error = NDI2_get_string_val(dataset_handle, NDI_ZAID, c_str_buf.data(), c_str_len);
   Require(ndi_error == 0);
-  reaction_name = c_str_buf;
+  reaction_name = std::string(c_str_buf.data());
 
   //! Get number of temperature support points for reaction
   int num_temps;
@@ -224,9 +221,10 @@ void NDI_TNReaction::load_ndi() {
   //! Loop over reaction products
   for (int n = 0; n < num_products; n++) {
     //! Get ZAID of reaction product
-    ndi_error = NDI2_get_string_val_n(dataset_handle, NDI_SEC_PART_TYPES, n, c_str_buf, c_str_len);
+    ndi_error =
+        NDI2_get_string_val_n(dataset_handle, NDI_SEC_PART_TYPES, n, c_str_buf.data(), c_str_len);
     Require(ndi_error == 0);
-    const std::string product_zaid = c_str_buf;
+    const std::string product_zaid = std::string(c_str_buf.data());
 
     // Ensure no duplicate products
     Require(std::count(products.begin(), products.end(), std::stoi(product_zaid)) == 0);
@@ -335,7 +333,7 @@ std::vector<double> NDI_TNReaction::get_PDF(const int product_zaid,
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &library_in,
-                               const std::string & /*reaction_in*/,
+                               const std::string /*reaction_in*/,
                                const std::vector<double> /*mg_e_bounds_in*/)
     : NDI_Base(gendir_in, "tn", library_in) { /* ... */
 }
@@ -350,7 +348,7 @@ NDI_TNReaction::NDI_TNReaction(const std::string &gendir_in, const std::string &
  * \param[in] mg_e_bounds_in energy boundaries of multigroup bins (keV)
  */
 NDI_TNReaction::NDI_TNReaction(const std::string &library_in, const std::string & /*reaction_in*/,
-                               const std::vector<double> /*mg_e_bounds_in*/)
+                               const std::vector<double> & /*mg_e_bounds_in*/)
     : NDI_Base("tn", library_in) { /* ... */
 }
 

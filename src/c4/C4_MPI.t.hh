@@ -316,6 +316,10 @@ template <typename T> void global_sum(T *x, int n) {
   // do a element-wise global reduction (result is on all processors) into x
   MPI_Allreduce(MPI_IN_PLACE, x, n, MPI_Traits<T>::element_type(), MPI_SUM, communicator);
 }
+template <typename T> void global_sum(T *x, size_t n) {
+  Require(n < INT32_MAX);
+  global_sum(x, static_cast<int>(n));
+}
 
 //------------------------------------------------------------------------------------------------//
 
