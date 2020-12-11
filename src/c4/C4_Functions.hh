@@ -351,9 +351,13 @@ template <typename T> void global_max(T &x);
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global sum of an array.
+ * 
+ * Only instantiate this function for types L that are integral. Details of this pattern are at
+ * https://en.cppreference.com/w/cpp/types/enable_if.
  */
-template <typename T, typename L>
-void global_sum(T *x, L n, typename std::enable_if<std::is_integral<L>::value, L>::type * = 0);
+template <typename T, typename L,
+          typename std::enable_if<std::is_integral<L>::value, bool>::type = true>
+void global_sum(T *x, L n);
 
 //------------------------------------------------------------------------------------------------//
 /*!
