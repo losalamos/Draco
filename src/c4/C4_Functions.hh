@@ -352,8 +352,8 @@ template <typename T> void global_max(T &x);
 /*!
  * \brief Do an element-wise, global sum of an array.
  */
-template <typename T> void global_sum(T *x, int n);
-template <typename T> void global_sum(T *x, size_t n);
+template <typename T, typename L>
+void global_sum(T *x, L n, typename std::enable_if<std::is_integral<L>::value, L>::type * = 0);
 
 //------------------------------------------------------------------------------------------------//
 /*!

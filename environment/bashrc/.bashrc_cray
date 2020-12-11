@@ -1,23 +1,20 @@
-##-*- Mode: sh -*-
-##---------------------------------------------------------------------------##
-## File  : environment/bashrc/.bashrc_cray
-## Date  : Tuesday, May 31, 2016, 14:48 pm
-## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2020, Triad National Security, LLC.
-##         All rights are reserved.
-##
-## Bash configuration file for Cray HPC machines.
-##---------------------------------------------------------------------------##
+#-*- Mode: sh -*-
+#--------------------------------------------------------------------------------------------------#
+# File  : environment/bashrc/.bashrc_cray
+# Date  : Tuesday, May 31, 2016, 14:48 pm
+# Author: Kelly Thompson
+# Note  : Copyright (C) 2016-2020, Triad National Security, LLC., All rights are reserved.
+#
+# Bash configuration file for Cray HPC machines.
+#--------------------------------------------------------------------------------------------------#
 
 #verbose=true
 
-if test -n "$verbose"; then
-   echo "In draco/environment/bashrc/.bashrc_cray"
-fi
+[[ -n "$verbose" ]] && echo "In draco/environment/bashrc/.bashrc_cray"
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# ENVIRONMENTS
+#--------------------------------------------------------------------------------------------------#
 
 # Where is the vendor directory
 if [[ ! ${VENDOR_DIR} ]]; then
@@ -77,10 +74,10 @@ sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
 module use --append /usr/projects/draco/Modules/$sysname
 module load draco/intel19
 
-if [[ ${SLURM_JOB_PARTITION} == "knl" ]]; then
+if [[ ${SLURM_JOB_PARTITION} =~ "knl" ]]; then
   module swap craype-haswell craype-mic-knl
 fi
 
-##---------------------------------------------------------------------------##
-## end of .bashrc_cray
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# end of .bashrc_cray
+#--------------------------------------------------------------------------------------------------#

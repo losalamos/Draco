@@ -173,12 +173,6 @@ template <typename T> void global_max(T * /*x*/, int /*n*/) { /* empty */
 }
 
 //------------------------------------------------------------------------------------------------//
-template <typename T> void global_sum(T * /*x*/, int /*n*/) { /* empty */
-}
-template <typename T> void global_sum(T * /*x*/, size_t /*n*/) { /* empty */
-}
-
-//------------------------------------------------------------------------------------------------//
 template <typename T> void global_prod(T & /*x*/) { /* empty */
 }
 

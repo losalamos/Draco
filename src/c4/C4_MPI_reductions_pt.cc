@@ -80,30 +80,6 @@ template void global_min<double>(double &);
 template void global_min<long double>(long double &);
 template void global_min<unsigned long long>(unsigned long long &);
 
-template void global_sum<short>(short *, int);
-template void global_sum<unsigned short>(unsigned short *, int);
-template void global_sum<int>(int *, int);
-template void global_sum<unsigned int>(unsigned int *, int);
-template void global_sum<long>(long *, int);
-template void global_sum<unsigned long>(unsigned long *, int);
-template void global_sum<float>(float *, int);
-template void global_sum<double>(double *, int);
-template void global_sum<long double>(long double *, int);
-template void global_sum<long long>(long long *, int);
-template void global_sum<unsigned long long>(unsigned long long *, int);
-
-template void global_sum<short>(short *, size_t);
-template void global_sum<unsigned short>(unsigned short *, size_t);
-template void global_sum<int>(int *, size_t);
-template void global_sum<unsigned int>(unsigned int *, size_t);
-template void global_sum<long>(long *, size_t);
-template void global_sum<unsigned long>(unsigned long *, size_t);
-template void global_sum<float>(float *, size_t);
-template void global_sum<double>(double *, size_t);
-template void global_sum<long double>(long double *, size_t);
-template void global_sum<long long>(long long *, size_t);
-template void global_sum<unsigned long long>(unsigned long long *, size_t);
-
 template void global_prod<short>(short *, int);
 template void global_prod<unsigned short>(unsigned short *, int);
 template void global_prod<int>(int *, int);
