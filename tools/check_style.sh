@@ -186,7 +186,7 @@ modifiedfiles=$(echo "${modifiedfiles}" | sort -u)
 
 if [[ -x $EMACS ]]; then
 
-  echo -ne "\n--------------------------------------------------------------------------------"
+  echo -ne "\n--------------------------------------------------------------------------------\n"
   echo -e "Checking modified F90 code for style conformance (indentation)..\n"
 
   patchfile_f90=$(mktemp /tmp/emf90.patch.XXXXXXXX)

@@ -51,8 +51,7 @@ std::string string_toupper(std::string const &string_in);
  * \param[in] precision How many digits will be preserved? (default: 23)
  * \return A string representation of the numeric value
  *
- * \tparam T type of number that will be converted to a string. Typically a
- *           double or int.
+ * \tparam T type of number that will be converted to a string. Typically a double or int.
  *
  * \sa http://public.research.att.com/~bs/bs_faq2.html
  */
@@ -65,7 +64,7 @@ template <typename T> std::string to_string(T const num, unsigned int const prec
 
 //------------------------------------------------------------------------------------------------//
 //! trim whitespace (or other characters) from before and after main text.
-std::string trim(std::string const &str, std::string const &whitespace = " \t");
+std::string trim(std::string const &str, std::string const &whitespace = " \t\n");
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -236,11 +235,10 @@ std::string remove_color(std::string const &colored_string);
  * \param[in] digits number of version digits to print. Default = 3.
  * \return The version as a substring.
  *
- * Ex: Given the string "/ccs/opt/vendors-ec/ndi/2.1.3/share/gendir.all", return
- * "2.1.3".
+ * Ex: Given the string "/ccs/opt/vendors-ec/ndi/2.1.3/share/gendir.all", return "2.1.3".
  *
- * A version includes any integers separated by a period.  A text postfix
- * 'alpha' or 'beta' is also supported for any portion of the version string.
+ * A version includes any integers separated by a period.  A text postfix 'alpha' or 'beta' is also
+ * supported for any portion of the version string.
  */
 std::string extract_version(std::string const &string_in, size_t digits = 3);
 

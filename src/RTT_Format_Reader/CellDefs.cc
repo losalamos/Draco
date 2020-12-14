@@ -52,7 +52,7 @@ void CellDefs::readDefs(ifstream &meshfile) {
     if (dummyString[dummyString.size() - 1] == 's')
       dummyString.resize(dummyString.size() - 1);
     Check(i < defs.size());
-    defs[i].reset(new CellDef(*this, dummyString));
+    defs[i] = std::make_shared<CellDef>(*this, dummyString);
     std::getline(meshfile, dummyString);
     defs[i]->readDef(meshfile);
   }
@@ -388,12 +388,12 @@ void CellDef::redefineCellDef(vector_uint const &new_side_types,
       node_map[old_node] = new_node;
       for (size_t s = 0; s < nsides; s++) {
         if (std::count(new_ordered_sides[s].begin(), new_ordered_sides[s].end(), new_node) > 0)
-          for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
-            ++new_node_count[new_ordered_sides[s][c]];
+          for (uint64_t side : new_ordered_sides[s])
+            ++new_node_count[side];
 
         if (std::count(ordered_sides[s].begin(), ordered_sides[s].end(), old_node) > 0)
-          for (size_t c = 0; c < ordered_sides[s].size(); c++)
-            ++old_node_count[ordered_sides[s][c]];
+          for (uint64_t side : ordered_sides[s])
+            ++old_node_count[side];
       }
       // The node located diagonally across the hexahedron relative to the first node will have a
       // count of zero from the previous loop.

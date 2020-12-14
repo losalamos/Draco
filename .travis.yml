@@ -75,10 +75,12 @@ env:
     - T_SOURCE_DIR=/home/travis/build/lanl/Draco
     - VENDOR_DIR=/vendors
   matrix:
-  - STYLE=ON DOCKER_TAG=style-checks
-  - WERROR=ON COVERAGE=ON DRACO_C4=SCALAR DOCKER_TAG=spack-gcc
-  - WERROR=ON COVERAGE=ON DRACO_C4=MPI DOCKER_TAG=spack-gcc
-  - WERROR=ON DRACO_C4=MPI AUTODOC=ON DOCKER_TAG=autodoc
+  - STYLE=ON COMPILER=GCC DOCKER_TAG=style-checks
+  - WERROR=ON COVERAGE=ON DRACO_C4=SCALAR COMPILER=GCC DOCKER_TAG=spack-gcc
+  - WERROR=ON COVERAGE=ON DRACO_C4=MPI COMPILER=GCC DOCKER_TAG=spack-gcc
+  - WERROR=ON DRACO_C4=MPI AUTODOC=ON COMPILER=GCC DOCKER_TAG=autodoc
+  - WERROR=ON DRACO_C4=MPI COMPILER=LLVM DOCKER_TAG=spack-llvm
+  - WERROR=ON DRACO_C4=MPI COMPILER=LLVM CLANGTIDY=ON DOCKER_TAG=spack-llvm
 
 # matrix:
 #   allow_failures:
@@ -102,7 +104,7 @@ jobs:
 script:
   - travis_retry timeout 540 docker pull kinetictheory/draco-ci-2020nov:${DOCKER_TAG}
   - if [[ ${COVERAGE:-OFF} == "ON" ]]; then ci_env=`/bin/bash <(curl -s https://codecov.io/env)`; fi
-  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CI=${CI} -e TRAVIS=${TRAVIS} -e TRAVIS_BRANCH=${TRAVIS_BRANCH} -e CI_MERGE_REQUEST_TARGET_BRANCH_NAME=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} kinetictheory/draco-ci-2020nov:${DOCKER_TAG} /bin/bash -l -c "${SOURCE_DIR}/tools/travis-run-tests.sh"
+  - docker run ${ci_env} -v ${T_SOURCE_DIR}:${SOURCE_DIR} -e COMPILER=${COMPILER} -e VENDOR_DIR=${VENDOR_DIR} -e BUILD_DIR=${BUILD_DIR} -e SOURCE_DIR=${SOURCE_DIR} -e STYLE=${STYLE} -e COVERAGE=${COVERAGE} -e WERROR=${WERROR} -e DRACO_C4=${DRACO_C4} -e AUTODOC=${AUTODOC} -e CLANGTIDY=${CLANGTIDY} -e CI=${CI} -e TRAVIS=${TRAVIS} -e TRAVIS_BRANCH=${TRAVIS_BRANCH} -e CI_MERGE_REQUEST_TARGET_BRANCH_NAME=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} kinetictheory/draco-ci-2020nov:${DOCKER_TAG} /bin/bash -l -c "${SOURCE_DIR}/tools/travis-run-tests.sh"
 
 #--------------------------------------------------------------------------------------------------#
 # See also:

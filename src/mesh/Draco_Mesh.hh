@@ -1,11 +1,10 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/Draco_Mesh.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Thursday, Jun 07, 2018, 15:38 pm
  * \brief  Draco_Mesh class header file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_mesh_Draco_Mesh_hh
@@ -25,10 +24,9 @@ namespace rtt_mesh {
  *
  * \brief General unstructured mesh class.
  *
- * The Draco_Mesh class takes cell-node (or cell-vertex) data, and generates a
- * mesh with layout (cell adjacency) information.  This class also provides
- * basic services, including access to cell information.  This mesh is based on
- * an unstructured mesh implementation by Kent Budge.
+ * The Draco_Mesh class takes cell-node (or cell-vertex) data, and generates a mesh with layout
+ * (cell adjacency) information.  This class also provides basic services, including access to cell
+ * information.  This mesh is based on an unstructured mesh implementation by Kent Budge.
  *
  * Two important features for a fully realized Draco_Mesh are the following:
  * 1) Layout, which stores cell connectivity and hence the mesh topology.
@@ -38,19 +36,29 @@ namespace rtt_mesh {
  * 2) Geometry, which implies a metric for distance between points.
  *
  * Possibly temporary features:
- * 1) The num_faces_per_cell_ vector (argument to the constructor) is currently
- *    taken to be the number of faces per cell.
- * 2) The layout data structure(s) will probably be moved to a separate class,
- *    where accessors might be used on a flattened version.
+ * 1) The num_faces_per_cell_ vector (argument to the constructor) is currently taken to be the
+ *    number of faces per cell.
+ * 2) The layout data structure(s) will probably be moved to a separate class, where accessors might
+ *    be used on a flattened version.
  */
 //================================================================================================//
 
 class Draco_Mesh {
 public:
   // >>> TYPEDEFS
+
   using Geometry = rtt_mesh_element::Geometry;
+
+  // e.g.: (key: cell, value: vector of pairs of neighbors and shared nodes per face)
   using Layout =
       std::map<unsigned int, std::vector<std::pair<unsigned int, std::vector<unsigned int>>>>;
+
+  // e.g.: (key: node, value: vector of local or ghost cell indices)
+  using Dual_Layout = std::map<unsigned int, std::vector<unsigned int>>;
+
+  // e.g.: (key: node, value: vector of pairs of rank and local cell index on the rank)
+  using Dual_Ghost_Layout =
+      std::map<unsigned int, std::vector<std::pair<unsigned int, unsigned int>>>;
 
 protected:
   // >>> DATA
@@ -70,8 +78,7 @@ protected:
   // Side set flag (can be used for mapping BCs to sides)
   std::vector<unsigned> side_set_flag;
 
-  // Ghost cell indices local to a different node, subscripted with a local
-  // ghost cell index
+  // Ghost cell indices local to a different node, subscripted with a local ghost cell index
   const std::vector<int> ghost_cell_number;
 
   // Node index for each ghost cell, subscripted with local ghost cell index
@@ -89,8 +96,8 @@ protected:
   std::vector<unsigned> m_side_node_count;
   std::vector<unsigned> m_side_to_node_linkage;
 
-  // Layout of mesh: vector index is cell index, vector element is
-  // description of cell's adjacency to other cells in the mesh.
+  // Layout of mesh: vector index is cell index, vector element is description of cell's adjacency
+  // to other cells in the mesh.
   Layout cell_to_cell_linkage;
 
   // Side layout of mesh
@@ -99,12 +106,18 @@ protected:
   // Ghost cell layout of mesh
   Layout cell_to_ghost_cell_linkage;
 
+  // Node map to vector of local cells
+  Dual_Layout node_to_cell_linkage;
+
+  // Node map to vector of ghost cells
+  Dual_Ghost_Layout node_to_ghost_cell_linkage;
+
 public:
   //! Constructor.
   Draco_Mesh(unsigned dimension_, Geometry geometry_,
              const std::vector<unsigned> &num_faces_per_cell_,
              const std::vector<unsigned> &cell_to_node_linkage_,
-             const std::vector<unsigned> &side_set_flag_,
+             const std::vector<unsigned> side_set_flag_,
              const std::vector<unsigned> &side_node_count_,
              const std::vector<unsigned> &side_to_node_linkage_,
              const std::vector<double> &coordinates_,
@@ -137,6 +150,8 @@ public:
   Layout get_cc_linkage() const { return cell_to_cell_linkage; }
   Layout get_cs_linkage() const { return cell_to_side_linkage; }
   Layout get_cg_linkage() const { return cell_to_ghost_cell_linkage; }
+  Dual_Layout get_nc_linkage() const { return node_to_cell_linkage; }
+  Dual_Ghost_Layout get_ngc_linkage() const { return node_to_ghost_cell_linkage; }
 
   // >>> SERVICES
 
@@ -174,6 +189,14 @@ private:
   std::map<std::set<unsigned>, unsigned>
   compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,
                             const std::vector<unsigned> &indx_to_node_linkage) const;
+
+  //! Calculate cell-corner-cell layouts (adjacent cells not sharing a face)
+  void compute_node_to_cell_linkage(const std::vector<unsigned> &num_faces_per_cell,
+                                    const std::vector<unsigned> &cell_to_node_linkage,
+                                    const std::vector<unsigned> &num_nodes_per_face_per_cell,
+                                    const std::vector<unsigned> &ghost_cell_type,
+                                    const std::vector<unsigned> &ghost_cell_to_node_linkage,
+                                    const std::vector<unsigned> &global_node_number);
 };
 
 } // end namespace rtt_mesh

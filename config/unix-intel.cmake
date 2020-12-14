@@ -27,8 +27,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
   string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -O0 -inline-level=0 -ftrapuv -check=uninit"
     " -fp-model=precise -fp-speculation=safe -debug inline-debug-info -fno-omit-frame-pointer"
     " -DDEBUG")
+  # -qno-opt-dynamic-align fixed LAP numerical sensitivity for Hypre (Gaber, 12/01/2020).
   string( CONCAT CMAKE_C_FLAGS_RELEASE "-O3 -fp-speculation=fast -fp-model=precise -pthread"
-    " -DNDEBUG" )
+    " -qno-opt-dynamic-align -DNDEBUG" )
   # [KT 2017-01-19] On KNL, -fp-model=fast changes behavior significantly for
   # IMC. Revert to -fp-model=precise.
   if( "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )

@@ -13,10 +13,13 @@
 #include "Cells.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the celldata block of the
  *        mesh file.
  */
+//================================================================================================//
 class CellData {
   // typedefs
   using ifstream = std::ifstream;
@@ -30,7 +33,7 @@ class CellData {
 public:
   CellData(const Dims &dims_)
       : dims(dims_), data(dims.get_ncells(), vector_dbl(dims.get_ncell_data())) {}
-  ~CellData() {}
+  ~CellData() = default;
 
   void readCellData(ifstream &meshfile);
 

@@ -658,23 +658,23 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
-      if (!soft_equiv(c.begin(), c.end(), sum.begin(), sum.end()))
-        ITFAILS;
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
       global_prod(&c[0], 100);
-      if (!soft_equiv(c.begin(), c.end(), prod.begin(), prod.end()))
-        ITFAILS;
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), prod.begin(), prod.end()));
 
       c = x;
       global_min(&c[0], 100);
-      if (!soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end()))
-        ITFAILS;
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end()));
 
       c = x;
       global_max(&c[0], 100);
-      if (!soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end()))
-        ITFAILS;
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end()));
     }
   }
   { // T = float
@@ -703,6 +703,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end(), eps));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end(), eps));
 
       c = x;
@@ -747,6 +751,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end(), eps));
 
       c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), sum.begin(), sum.end(), eps));
+
+      c = x;
       global_prod(&c[0], 100);
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), prod.begin(), prod.end(), eps));
 
@@ -784,6 +792,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
@@ -827,6 +839,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
       global_prod(&c[0], 100);
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), prod.begin(), prod.end()));
 
@@ -864,6 +880,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
@@ -912,6 +932,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
       global_prod(&c[0], 100);
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), prod.begin(), prod.end()));
 
@@ -956,6 +980,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
       global_prod(&c[0], 100);
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), prod.begin(), prod.end()));
 
@@ -996,6 +1024,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
       global_prod(&c[0], 100);
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), prod.begin(), prod.end()));
 
@@ -1033,6 +1065,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;
@@ -1078,6 +1114,10 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
     {
       c = x;
       global_sum(&c[0], 100);
+      FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
+
+      c = x;
+      global_sum(&c[0], static_cast<size_t>(100));
       FAIL_IF_NOT(std::equal(c.begin(), c.end(), sum.begin(), sum.end()));
 
       c = x;

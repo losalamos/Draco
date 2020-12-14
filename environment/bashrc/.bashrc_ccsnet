@@ -1,35 +1,15 @@
 #!/bin/bash
 ##-*- Mode: bash -*-
-##---------------------------------------------------------------------------##
-## File  : environment/bashrc/.bashrc_ccsnet
-## Date  : Friday, Aug 28, 2020, 16:10 pm
-## Author: Kelly Thompson <kgt@lanl.gov>
-## Note  : Copyright (C) 2020, Triad National Security, LLC.
-##         All rights are reserved.
-##
-##  Bash configuration file upon bash shell startup
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# File  : environment/bashrc/.bashrc_ccsnet
+# Date  : Friday, Aug 28, 2020, 16:10 pm
+# Author: Kelly Thompson <kgt@lanl.gov>
+# Note  : Copyright (C) 2020, Triad National Security, LLC., All rights are reserved.
+#
+# Bash configuration file upon bash shell startup
+#--------------------------------------------------------------------------------------------------#
 
 if [[ -n "$verbose" ]]; then echo "In draco/environment/bashrc/.bashrc_ccsnet"; fi
-
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
-
-# Vendor (Third party libraries) location:
-if ! [[ ${VENDOR_DIR} ]]; then
-  target=`uname -n`
-  case $target in
-    ccscs[1-9]* | ccsnet* ) export VENDOR_DIR=/scratch/vendors ;;
-    *)
-      if [[ -d /ccs/codes/radtran/vendors ]]; then
-        export VENDOR_DIR=/ccs/codes/radtran/vendors
-      fi
-      ;;
-  esac
-fi
-
-add_to_path ${VENDOR_DIR}/bin PATH
 
 #--------------------------------------------------------------------------------------------------#
 # Setup Modules
@@ -37,9 +17,7 @@ add_to_path ${VENDOR_DIR}/bin PATH
 target=`uname -n`
 case $target in
   ccscs[1-9]*)
-    if [[ "${MODULEPATH}x" == "x" ]]; then
-      export MODULEPATH=/ccs/opt/modulefiles
-    fi
+    [[ -z "${MODULEPATH}" ]] && export MODULEPATH=/ccs/opt/modulefiles
     module load user_contrib/2020.04
     module use --append /ccs/codes/radtran/Modules
     module load draco/gcc930
@@ -48,16 +26,11 @@ case $target in
     module load user_contrib/2020.04
     module use --append /ccs/codes/radtran/Modules
     ;;
-*)
+  *)
     die "I don't know how to setup modules for $target"
     ;;
 esac
 
-#LaTeX
-add_to_path ${DRACO_SRC_DIR}/environment/latex TEXINPUTS
-add_to_path ${DRACO_SRC_DIR}/environment/bibtex BSTINPUTS
-add_to_path ${DRACO_SRC_DIR}/environment/bibfiles BIBINPUTS
-
-##---------------------------------------------------------------------------##
-## end of .bashrc_ccsnet
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# end of .bashrc_ccsnet
+#--------------------------------------------------------------------------------------------------#

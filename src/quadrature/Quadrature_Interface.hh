@@ -4,8 +4,7 @@
  * \author Jae Chang
  * \date   Tue Jan 27 08:51:19 2004
  * \brief  Quadrature interface definitions
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 #ifndef rtt_quadrature_Quadrature_Interface_hh
 #define rtt_quadrature_Quadrature_Interface_hh
@@ -15,27 +14,20 @@ extern "C" {
 //================================================================================================//
 /*!
  * \class quadrature_data
- * \brief Flattened quadrature data used for communicating with Fortran
- *        routines.
+ * \brief Flattened quadrature data used for communicating with Fortran routines.
  */
 //================================================================================================//
 
 struct quadrature_data {
-  int dimension;
-  int type;
-  int order;
-  int azimuthal_order;
-  int geometry;
-  double *mu;
-  double *eta;
-  double *xi;
-  double *weights;
-
-  //! Default constructor for quadrature_data
-  quadrature_data()
-      : dimension(0), type(0), order(0), azimuthal_order(0), geometry(0), mu(nullptr), eta(nullptr),
-        xi(nullptr), weights(nullptr) { /* empty */
-  }
+  int dimension{0};
+  int type{0};
+  int order{0};
+  int azimuthal_order{0};
+  int geometry{0};
+  double *mu{nullptr};
+  double *eta{nullptr};
+  double *xi{nullptr};
+  double *weights{nullptr};
 };
 
 //! An extern "C" interface to default constructor

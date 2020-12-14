@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Look for any libraries which are required at the top level.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -17,6 +16,7 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 macro( setupPython )
 
   message( STATUS "Looking for Python...." )
+  # This module looks preferably for version 3 of Python. If not found, version 2 is searched.
   find_package(Python QUIET REQUIRED COMPONENTS Interpreter)
   #  Python_Interpreter_FOUND - Was the Python executable found
   #  Python_EXECUTABLE  - path to the Python interpreter
@@ -30,6 +30,12 @@ macro( setupPython )
     message( STATUS "Looking for Python....found ${Python_EXECUTABLE}" )
   else()
     message( STATUS "Looking for Python....not found" )
+  endif()
+  # As of 2020-11-10, we require 'python@3.6:' for correct dictionary sorting features.  We can
+  # build the code with 'python@2:' but some tests may fail.
+  if( Python_VERSION_MAJOR STREQUAL "3" AND Python_VERSION_MINOR VERSION_LESS "6")
+    message( FATAL_ERROR "When using python3, we require version 3.6+.  Python version "
+      "${Python_VERSION} was discovered, which doesn't satisfy the compatibility requirement.")
   endif()
 
 endmacro()
@@ -312,22 +318,27 @@ endmacro()
 macro( setupQt )
   message( STATUS "Looking for Qt SDK...." )
 
-  # Find the QtWidgets library
-  find_package(Qt5 COMPONENTS Widgets QUIET)
+  option (USE_QT "Build QT support for Draco" ON)
 
-  if( Qt5Core_DIR )
-    mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
-      Qt5Widgets_DIR QTDIR)
-    message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
-  else()
-    message( STATUS "Looking for Qt SDK....not found." )
+  if( USE_QT )
+    # Find the QtWidgets library
+    find_package(Qt5 COMPONENTS Widgets QUIET)
+
+    if( Qt5Core_DIR )
+      mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
+        Qt5Widgets_DIR QTDIR)
+      message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
+    else()
+      message( STATUS "Looking for Qt SDK....not found." )
+    endif()
+
+    set_package_properties( Qt PROPERTIES
+      URL "http://qt.io"
+      DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
+      TYPE OPTIONAL
+      PURPOSE "Only needed to demo qt version of draco_diagnostics." )
+
   endif()
-
-  set_package_properties( Qt PROPERTIES
-    URL "http://qt.io"
-    DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
-    TYPE OPTIONAL
-    PURPOSE "Only needed to demo qt version of draco_diagnostics." )
 
 endmacro()
 
@@ -614,20 +625,6 @@ macro( SetupVendorLibrariesUnix )
   setupQt()
   setupLIBQUO()
   setupCaliper()
-
-  # Grace ------------------------------------------------------------------
-  message( STATUS "Looking for Grace...")
-  find_package( Grace QUIET )
-  set_package_properties( Grace PROPERTIES
-    DESCRIPTION "A WYSIWYG 2D plotting tool."
-    TYPE OPTIONAL
-    PURPOSE "Required for building the plot2D component."
-    )
-  if( Grace_FOUND )
-    message( STATUS "Looking for Grace.....found ${Grace_EXECUTABLE}")
-  else()
-    message( STATUS "Looking for Grace.....not found")
-  endif()
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )

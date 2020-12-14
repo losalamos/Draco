@@ -791,42 +791,44 @@ macro(dbsSetupCuda)
 endmacro()
 
 #--------------------------------------------------------------------------------------------------#
-# Setup profile tools: MAP, PAPI, HPCToolkit, TAU, etc.
+# Setup profile tools: valgrind
+# cmake -DENABLE_MEMORYCHECK=ON \
+#    -DCTEST_MEMORYCHECK_SUPPRESSIONS_FILE=/scratch/regress/ccsradregress/valgrind_suppress.txt ...
+# ctest -L memcheck
 #--------------------------------------------------------------------------------------------------#
-macro( dbsSetupProfilerTools )
+function( dbsSetupProfilerTools )
 
-  # These become variables of the form ${spt_NAME}, etc.
-  cmake_parse_arguments(
-    spt
-    ""
-    "MEMORYCHECK_SUPPRESSIONS_FILE"
-    ""
-    ${ARGV}
-    )
-
-  # Valgrind suppression file
-  # Try running 'ctest -D ExperimentalMemCheck -j 12 -R c4'
-  if( DEFINED spt_MEMORYCHECK_SUPPRESSIONS_FILE )
-    set( MEMORYCHECK_SUPPRESSIONS_FILE
-      "${spt_MEMORYCHECK_SUPPRESSIONS_FILE}" CACHE FILEPATH
-      "valgrind warning suppression file." FORCE )
-  else()
-    find_file(
-      msf
-      NAMES
-        "valgrind_suppress.txt"
-      PATHS
-        ${PROJECT_SOURCE_DIR}/regrssion
-        ${PROJECT_SOURCE_DIR}/scripts
-    )
-    if( ${msf} )
-      set( MEMORYCHECK_SUPPRESSIONS_FILE "${msf}" CACHE FILEPATH
-      "valgrind warning suppression file." FORCE )
+  option(ENABLE_MEMORYCHECK "provide memorycheck tests" OFF)
+  if( ENABLE_MEMORYCHECK )
+    find_program( CMAKE_MEMORYCHECK_COMMAND valgrind )
+    if( NOT CMAKE_MEMORYCHECK_COMMAND )
+      message(WARNING "ENABLE_MEMPORYCHECK=ON, but valgrind not found. Disabling memorycheck "
+        "features.")
     endif()
-    mark_as_advanced( msf )
+    if( EXISTS "$ENV{CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}" )
+      set( CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "$ENV{CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}" )
+    endif()
+    if( EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}" )
+      set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}" CACHE
+        STRING "valgrind suppressions file")
+    endif()
+    if( DEFINED ENV{CMAKE_MEMORYCHECK_COMMAND_OPTIONS} )
+      set( CMAKE_MEMORYCHECK_COMMAND_OPTIONS $ENV{CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
+    endif()
+    if( "${CMAKE_MEMORYCHECK_COMMAND_OPTIONS}notset" STREQUAL "notset" )
+      string( CONCAT CMAKE_MEMORYCHECK_COMMAND_OPTIONS
+        "-q --tool=memcheck --trace-children=yes --leak-check=full --num-callers=20 "
+        "--gen-suppressions=all " ) # --show-reachable=yes
+      if( EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}" )
+        string( APPEND CMAKE_MEMORYCHECK_COMMAND_OPTIONS
+          " --suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE} ")
+      endif()
+    endif()
+    set( CMAKE_MEMORYCHECK_COMMAND_OPTIONS "${CMAKE_MEMORYCHECK_COMMAND_OPTIONS}" CACHE STRING
+      "valgrind options")
   endif()
 
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------------------------------------#
 ## Toggle a compiler flag based on a bool

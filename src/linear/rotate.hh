@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 12:37:43 2004
  * \brief  Perform a Jacobi rotation on a pair of matrices.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef linear_rotate_hh
@@ -24,10 +23,10 @@ using std::sqrt;
 /*!
  * \brief Perform a Jacobi rotation on a QR decomposition.
  *
- * Perform a Jacobi rotation on rows \f$i\f$ and \f$i+1\f$ of the orthonormal
- * matrix \f$Q\f$ and the upper triangular matrix \f$R\f$.  The rotation is
- * parametrized by \f$a\f$ and \f$b\f$ which satisfy \f$\cos\theta =
- * \frac{a}{\sqrt{a^2+b^2}}\f$ and \f$\sin\theta = \frac{a}{\sqrt{a^2+b^2}}\f$
+ * Perform a Jacobi rotation on rows \f$i\f$ and \f$i+1\f$ of the orthonormal matrix \f$Q\f$ and the
+ * upper triangular matrix \f$R\f$.  The rotation is parametrized by \f$a\f$ and \f$b\f$ which
+ * satisfy \f$\cos\theta = \frac{a}{\sqrt{a^2+b^2}}\f$ and \f$\sin\theta =
+ * \frac{a}{\sqrt{a^2+b^2}}\f$
  *
  * \arg \a RandomContainer A random access container.
  *

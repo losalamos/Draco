@@ -38,13 +38,13 @@ void tstF32(UnitTest &ut) {
   }
 
   ofstream out("debug.dat");
-  for (double eta = -10; eta < 20; eta += 0.1) {
+  for (size_t j = 0; j < 300; ++j) {
+    double eta = -10.0 + 0.1 * static_cast<double>(j);
     out << eta << ' ' << F32(eta) << endl;
   }
 }
 
 //------------------------------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

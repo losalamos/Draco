@@ -27,7 +27,8 @@ ENV SPACK_ROOT=/vendors/spack
 ENV DRACO_TPL="cmake numdiff random123 eospac@6.4.0"
 ENV DRACO_DOC_TPL="mscgen doxygen"
 ENV DRACO_GCC_TPL="gsl openmpi openblas metis parmetis libquo caliper lcov"
-ENV DRACO_LLVM_TPL="gsl openmpi openblas metis parmetis libquo caliper"
+ENV DRACO_LLVM_TPL="gsl openmpi openblas metis parmetis libquo"
+# caliper - trouble building caliper with llvm@11.0.0
 ENV FORCE_UNSAFE_CONFIGURE=1
 ENV DISTRO=focal
 ENV CLANG_FORMAT_VER=10.0

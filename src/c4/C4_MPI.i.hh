@@ -17,6 +17,18 @@
 namespace rtt_c4 {
 
 //------------------------------------------------------------------------------------------------//
+template <typename T, typename L, typename std::enable_if<std::is_integral<L>::value, bool>::type>
+void global_sum(T *x, L n) {
+  Require(x != nullptr);
+  Require(n > 0);
+  Require(n < INT32_MAX);
+
+  // do a element-wise global reduction (result is on all processors) into x
+  MPI_Allreduce(MPI_IN_PLACE, x, static_cast<int>(n), MPI_Traits<T>::element_type(), MPI_SUM,
+                communicator);
+}
+
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
                     int tag /* = C4_Traits<T *>::tag */) {
