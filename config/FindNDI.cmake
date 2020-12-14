@@ -111,6 +111,8 @@ find_package_handle_standard_args( NDI
 mark_as_advanced( NDI_ROOT_DIR NDI_VERSION NDI_LIBRARY
   NDI_INCLUDE_DIR NDI_LIBRARY_DEBUG NDI_USE_PKGCONFIG NDI_CONFIG )
 
+message(FATAL_ERROR, ${NDI_VERSION})
+
 #=============================================================================
 # Register imported libraries:
 # 1. If we can find a Windows .dll file (or if we can find both Debug and
