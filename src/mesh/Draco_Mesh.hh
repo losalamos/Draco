@@ -161,7 +161,7 @@ public:
 private:
   // >>> SUPPORT FUNCTIONS
 
-  //! Calculate (merely de-serialize) the vector of node coordinates
+  //! Calculate (merely deserialize) the vector of node coordinates
   std::vector<std::vector<double>>
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
@@ -179,11 +179,6 @@ private:
                                     const std::vector<unsigned> &side_to_node_linkage,
                                     const std::vector<unsigned> &ghost_cell_type,
                                     const std::vector<unsigned> &ghost_cell_to_node_linkage);
-
-  //! Calculate a map of node to vectors of indices (cells, sides, ghost cells)
-  std::map<unsigned, std::vector<unsigned>>
-  compute_node_indx_map(const std::vector<unsigned> &indx_type,
-                        const std::vector<unsigned> &indx_to_node_linkage) const;
 
   //! Calculate a map of node vectors to indices (sides, ghost cells)
   std::map<std::set<unsigned>, unsigned>

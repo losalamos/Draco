@@ -49,7 +49,7 @@ template <typename FRT>
 std::shared_ptr<Draco_Mesh>
 Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
 
-  Require(geometry != rtt_mesh_element::END_GEOMETRY);
+  Require(geometry != rtt_mesh_element::Geometry::END_GEOMETRY);
 
   // >>> GENERATE MESH CONSTRUCTOR ARGUMENTS
 

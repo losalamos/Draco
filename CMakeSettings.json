@@ -23,7 +23,10 @@
       "buildCommandArgs": "${env.cba}",
       "ctestCommandArgs": "${env.cta}",
       "cmakeToolchain": "${env.cmakeToolchain}",
-      "variables": []
+      "variables": [],
+      "enableMicrosoftCodeAnalysis": true
+      // "enableClangTidyCodeAnalysis": true,
+      // "clangTidyChecks": "modernize-*"
     },
     {
       "name": "x64-Release",

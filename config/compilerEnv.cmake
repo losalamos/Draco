@@ -497,7 +497,7 @@ macro(dbsSetupStaticAnalyzers)
         if( NOT CLANG_TIDY_CHECKS )
           # -checks=mpi-*,bugprone-*,performance-*,modernize-*
           # See full list: `clang-tidy -check=* -list-checks'
-          # Default: all modernize checks; except use-triling-return-type.
+          # Default: all modernize checks; except use-trailing-return-type.
           set( CLANG_TIDY_CHECKS "-checks=modernize-*,-modernize-use-trailing-return-type" )
         endif()
         set( CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS}" CACHE STRING

@@ -22,8 +22,7 @@ using rtt_dsxx::soft_equiv;
 
 //------------------------------------------------------------------------------------------------//
 bool check_4(std::vector<Ordinate> const &ordinates) {
-  // In 1-D spherical geometry, the ordinates must be confined to the first
-  // two octants.
+  // In 1-D spherical geometry, the ordinates must be confined to the first two octants.
 
   size_t const N = ordinates.size();
   for (unsigned i = 0; i < N; ++i) {
@@ -35,8 +34,7 @@ bool check_4(std::vector<Ordinate> const &ordinates) {
 
 //------------------------------------------------------------------------------------------------//
 bool check_2(std::vector<Ordinate> const &ordinates) {
-  // In 2-D geometry, the ordinates must be confined to the first
-  // four octants
+  // In 2-D geometry, the ordinates must be confined to the first four octants
 
   size_t const N = ordinates.size();
   for (unsigned i = 0; i < N; ++i) {
@@ -72,9 +70,8 @@ bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b) {
 
 //------------------------------------------------------------------------------------------------//
 bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
-  // We initially sort by octant. Only the +++ octant is actually used by
-  // PARTISN-type sweepers that assume all quadratures are octant
-  // quadratures.
+  // We initially sort by octant. Only the +++ octant is actually used by PARTISN-type sweepers that
+  // assume all quadratures are octant quadratures.
 
   if (a.xi() < 0 && b.xi() > 0) {
     return true;
@@ -89,8 +86,8 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
   } else if (a.mu() > 0 && b.mu() < 0) {
     return false;
   }
-  // Within an octant, we sort by decreasing absolute xi, then increasing
-  // absolute eta, to be consistent with PARTISN.
+  // Within an octant, we sort by decreasing absolute xi, then increasing absolute eta, to be
+  // consistent with PARTISN.
   else if (!soft_equiv(fabs(a.xi()), fabs(b.xi()), 1.0e-14)) {
     return (fabs(a.xi()) > fabs(b.xi()));
   } else if (!soft_equiv(fabs(a.eta()), fabs(b.eta()), 1.0e-14)) {
@@ -104,19 +101,18 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
 /*!
  * Construct an Ordinate_Set.
  *
- * \param dimension Dimension of the problem. Must be consistent with the
- *          geometry.
+ * \param dimension Dimension of the problem. Must be consistent with the geometry.
  * \param geometry Geometry of the problem.
  * \param ordinates Ordinate set for this problem.
- * \param has_starting_directions Has starting directions on each level set.
- * \param has_extra_starting_directions Has extra directions on each level set. In most
- * geometries, an additional ordinate is added that is opposite in direction
- * to the starting direction. This is used to implement reflection exactly in
- * curvilinear coordinates. In 1D spherical, that means an additional angle is
- * added at mu=1. In axisymmetric, that means additional angles are added that
- * are oriented opposite to the incoming starting direction on each level. *
+ * \param has_starting_directions Has starting directions on each level set. 
+ * \param has_extra_starting_directions Has extra directions on each level set. In most geometries,
+ *           an additional ordinate is added that is opposite in direction to the starting 
+ *           direction. This is used to implement reflection exactly in curvilinear coordinates. In
+ *           1D spherical, that means an additional angle is added at mu=1. In axisymmetric, that 
+ *           means additional angles are added that are oriented opposite to the incoming starting
+ *           direction on each level. 
  * \param ordering Ordering into which to sort the ordinates.
-*/
+ */
 Ordinate_Set::Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry const geometry,
                            std::vector<Ordinate> const &ordinates,
                            bool const has_starting_directions,
@@ -125,10 +121,10 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry 
       has_extra_starting_directions_(has_extra_starting_directions), ordering_(ordering),
       norm_(0.0), ordinates_(ordinates) {
   Require(dimension >= 1 && dimension <= 3);
-  Require(geometry != rtt_mesh_element::AXISYMMETRIC || dimension < 3);
-  Require(geometry != rtt_mesh_element::SPHERICAL || dimension < 2);
+  Require(geometry != rtt_mesh_element::Geometry::AXISYMMETRIC || dimension < 3);
+  Require(geometry != rtt_mesh_element::Geometry::SPHERICAL || dimension < 2);
   Require(has_starting_directions || !has_extra_starting_directions);
-  Require(dimension > 1 || geometry == rtt_mesh_element::SPHERICAL || check_4(ordinates));
+  Require(dimension > 1 || geometry == rtt_mesh_element::Geometry::SPHERICAL || check_4(ordinates));
   Require(dimension != 2 || check_2(ordinates));
 
   norm_ = 0.0;
@@ -166,10 +162,11 @@ Ordinate_Set::Ordinate_Set(Ordinate_Set const &other)
 //------------------------------------------------------------------------------------------------//
 bool Ordinate_Set::check_class_invariants() const {
   return (dimension_ >= 1 && dimension_ <= 3) &&
-         (geometry_ != rtt_mesh_element::AXISYMMETRIC || dimension_ < 3) &&
-         (geometry_ != rtt_mesh_element::SPHERICAL || dimension_ < 2) &&
+         (geometry_ != rtt_mesh_element::Geometry::AXISYMMETRIC || dimension_ < 3) &&
+         (geometry_ != rtt_mesh_element::Geometry::SPHERICAL || dimension_ < 2) &&
          (has_starting_directions_ || !has_extra_starting_directions_) &&
-         (dimension_ > 1 || geometry_ == rtt_mesh_element::SPHERICAL || check_4(ordinates_)) &&
+         (dimension_ > 1 || geometry_ == rtt_mesh_element::Geometry::SPHERICAL ||
+          check_4(ordinates_)) &&
          (dimension_ != 2 || check_2(ordinates_));
 }
 
@@ -179,7 +176,7 @@ void Ordinate_Set::display() const {
   using std::endl;
   using std::setprecision;
 
-  if (dimension() == 1 && geometry() != rtt_mesh_element::AXISYMMETRIC) {
+  if (dimension() == 1 && geometry() != rtt_mesh_element::Geometry::AXISYMMETRIC) {
     cout << endl << "The Quadrature directions and weights are:" << endl << endl;
     cout << "   m  \t    mu        \t     wt      " << endl;
     cout << "  --- \t------------- \t-------------" << endl;
