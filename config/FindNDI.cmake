@@ -92,14 +92,25 @@ set( NDI_LIBRARIES ${NDI_LIBRARY} )
 
 # Try to find the version.
 if( NOT NDI_VERSION )
-  # We might also try scraping the directory name for a regex match "ndi-X.X.X"
-  if( NOT NDI_MAJOR )
+  if( EXISTS "${NDI_INCLUDE_DIR}/ndi_version.h")
+    # pull data directly from the include file.
+    file( STRINGS "${NDI_INCLUDE_DIR}/ndi_version.h" include_version_h REGEX "NDI_VERSION_DATA" )
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\1" NDI_MAJOR
+      ${include_version_h})
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\2" NDI_MINOR
+      ${include_version_h})
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\3" NDI_SUBMINOR
+      ${include_version_h})
+  else()
+    # We might also try scraping the directory name for a regex match "ndi-X.X.X"
     string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\1" NDI_MAJOR
       ${NDI_INCLUDE_DIR} )
     string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\2" NDI_MINOR
       ${NDI_INCLUDE_DIR} )
     string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\3" NDI_SUBMINOR
       ${NDI_INCLUDE_DIR} )
+  endif()
+  if( NDI_MAJOR )
     set( NDI_VERSION "${NDI_MAJOR}.${NDI_MINOR}.${NDI_SUBMINOR}")
   endif()
 endif()
