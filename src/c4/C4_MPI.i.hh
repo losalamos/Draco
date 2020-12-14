@@ -17,9 +17,8 @@
 namespace rtt_c4 {
 
 //------------------------------------------------------------------------------------------------//
-
-template <typename T, typename L>
-void global_sum(T *x, L n, typename std::enable_if<std::is_integral<L>::value, L>::type *) {
+template <typename T, typename L, typename std::enable_if<std::is_integral<L>::value, bool>::type>
+void global_sum(T *x, L n) {
   Require(x != nullptr);
   Require(n > 0);
   Require(n < INT32_MAX);
