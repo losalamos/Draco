@@ -45,6 +45,7 @@ namespace kde {
     template <int dim=1>
     std::vector<double> reconstruction(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool domain_decomposed) const;
 
+    //! Mean reconstruction 
     template <int dim=1>
     std::vector<double> mean_reconstruction(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool domain_decomposed) const;
 
@@ -67,6 +68,12 @@ namespace kde {
 template<>
 template<>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool dd) const;
+
+template<>
+template<>
+std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool dd) const;
+
+
 
 } // end namespace  kde
 

@@ -30,9 +30,23 @@ namespace kde {
   return std::vector<double>(1,0.0);
   }
 
+  //! DEFAULT constructor to return error if instantiation is not found
+  template <int coord>
+  template <int dim>
+  std::vector<double> kde<coord>::mean_reconstruction(const std::vector<double> & /*distribution*/,
+                                     const std::vector<std::array<double,3>> &/*position*/,
+                                     const std::vector<std::array<double,3>> &/*band_width*/,
+                                     const bool /*domain_decomposed*/) const {
+
+  Insist(false, "kde::reconstruction has not been implemented for this coordinate system and or "
+                "dimension combination");
+  return std::vector<double>(1,0.0);
+  }
+
+
 
  /*!
- * eapn_kernel basis function used during reconstruction
+ * epan_kernel basis function used during reconstruction
  * \brief
  *
  * Epanechnikov kenrel to be used in reconstrtuction
