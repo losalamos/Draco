@@ -124,13 +124,12 @@ find_package_handle_standard_args( NDI
   REQUIRED_VARS
     NDI_INCLUDE_DIR
     NDI_LIBRARY
+    NDI_VERSION
   VERSION_VAR
     NDI_VERSION )
 
 mark_as_advanced( NDI_ROOT_DIR NDI_VERSION NDI_LIBRARY NDI_INCLUDE_DIR NDI_LIBRARY_DEBUG
     NDI_USE_PKGCONFIG NDI_CONFIG )
-
-message(FATAL_ERROR, ${NDI_VERSION})
 
 #=============================================================================
 # Register imported libraries:
