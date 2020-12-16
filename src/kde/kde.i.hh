@@ -45,11 +45,7 @@ namespace kde {
   template<int coord>
   double kde<coord>::epan_kernel(const double x) const{
       const double x2 = x*x;
-      const double result = 0.75*(1.0-x2);
-      if (x2>1.0)
-          return 0.0;
-      else
-        return result;
+      return x2 > 1.0 ? 0.0 : 0.75*(1.0-x2) ;
   }
 
 } // end namespace  kde

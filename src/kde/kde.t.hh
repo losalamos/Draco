@@ -99,11 +99,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const
             result[i] += distribution[j]*weight;
             normal[i] += weight;
         }
-    }
-    // apply contribution to lower ranks
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        const double h = band_width[i][0];
+        // apply contribution to lower ranks
         for (int j = 0; j<global_lower_bound; j++){
             const double x = global_x_position[j];
             const double u = (x0-x)/h;
@@ -111,11 +107,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const
             result[i] += global_distribution[j]*weight;
             normal[i] += weight;
         }
-    }
-    // apply contribution to upper ranks
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        const double h = band_width[i][0];
+        // apply contribution to upper ranks
         for (int j = global_upper_bound; j<size; j++){
             const double x = global_x_position[j];
             const double u = (x0-x)/h;
