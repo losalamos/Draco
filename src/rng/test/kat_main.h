@@ -67,6 +67,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "kat.h"
 #include "util.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
 #define LINESIZE 1024
 
 int have_aesni = 0;
@@ -316,6 +322,10 @@ int main(int argc, char **argv) {
     return 0;
   }
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 //------------------------------------------------------------------------------------------------//
 // end kat_cpp.cpp

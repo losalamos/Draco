@@ -66,15 +66,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
-#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
 #ifdef __clang__
@@ -90,20 +90,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-
-#ifdef __clang__
-// Restore clang diagnostics to previous state.
-#pragma clang diagnostic pop
-#endif
-
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
-#endif
-
-#ifdef _MSC_FULL_VER
-#pragma warning(pop)
-#endif
 
 using namespace r123;
 
@@ -211,6 +197,20 @@ int main(int argc, char **argv) {
 
   return !!nfail;
 }
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
+
+#if (DBS_GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
 
 #endif /* !defined(__clang_analyzer__) */
 

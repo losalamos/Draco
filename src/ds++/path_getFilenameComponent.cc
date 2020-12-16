@@ -54,7 +54,7 @@ std::string getFilenameComponent(std::string const &fqName, FilenameComponent fc
     }
     // If we still cannot find a path separator, return "./"
     if (idx == string::npos)
-      retVal = string(string(".") + rtt_dsxx::dirSep);
+      retVal = string(".") + rtt_dsxx::dirSep;
     else
       retVal = fullName.substr(0, idx + 1);
     break;

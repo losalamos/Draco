@@ -114,7 +114,7 @@ std::string draco_getcwd() {
   std::array<char, MAXPATHLEN> curr_path;
   curr_path.fill('z');
   Insist(getcwd(&curr_path[0], MAXPATHLEN) != nullptr,
-         std::string("getcwd failed: " + std::string(strerror(errno))));
+         "getcwd failed: " + std::string(strerror(errno)));
   std::string cwd(curr_path.data());
 #endif
 

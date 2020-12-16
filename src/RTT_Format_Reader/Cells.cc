@@ -44,7 +44,7 @@ void Cells::readData(ifstream &meshfile) {
   string dummyString;
   int cellNum;
 
-  for (size_t i = 0; i < static_cast<size_t>(dims.get_ncells()); ++i) {
+  for (size_t i = 0; i < dims.get_ncells(); ++i) {
     cellNum = Nodes::readNextInt(meshfile);
     // meshfile >> cellNum;
     Insist(static_cast<size_t>(cellNum) == i + 1, "Invalid mesh file: cell index out of order");
@@ -60,7 +60,7 @@ void Cells::readData(ifstream &meshfile) {
       --nodes[i][j];
     }
 
-    for (size_t j = 0; j < static_cast<size_t>(dims.get_ncell_flag_types()); ++j) {
+    for (size_t j = 0; j < dims.get_ncell_flag_types(); ++j) {
       Check(j < flags[i].size());
       meshfile >> flags[i][j];
       Check(j < INT_MAX);

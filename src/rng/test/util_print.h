@@ -34,6 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 extern int verbose;
 
 #define TEST_TPL(NAME, N, W, R)                                                                    \
@@ -55,5 +60,9 @@ extern int verbose;
   }
 
 #include "util_expandtpl.h"
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif /* UTIL_PRINT_H */

@@ -92,9 +92,21 @@ inline void char_byte_swap(char *data, int n) {
  *
  * This function operates in place on its argument.
  */
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#if (DBS_GNUC_VERSION >= 70000)
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+#endif
+
 template <typename T> void byte_swap(T &value) {
   char_byte_swap((unsigned char *)(&value), sizeof(T));
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 //------------------------------------------------------------------------------------------------//
 /*!

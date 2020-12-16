@@ -19,7 +19,7 @@ namespace rtt_compton_tools {
 
 enum class Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
 
-//------------------------------------------------------------------------------------------------//
+//================================================================================================//
 /*!
  * \class Compton_Native
  *
@@ -38,8 +38,7 @@ enum class Eval : size_t { in_lin = 0, out_nonlin = 1, nl_diff = 2 };
  * This unit test demonstrates the method for constructing a Compton object, and exercises all
  * routines for interpolation and data access.
 */
-
-//------------------------------------------------------------------------------------------------//
+//================================================================================================//
 class Compton_Native {
 
 public:
@@ -54,20 +53,19 @@ public:
   // TEMPERATURE INTERPOLATION FUNCTIONS
   //----------------------------------------------------------------------------------------------//
 
-  // Interpolate csk data in temperature for the linear inscattering and return a flattened dense
-  // matrix with ordering (slowest) [legendre moment, group to, group from] (fastest). Must specify
+  // Interpolate CSK data in temperature for the linear inscattering and return a flattened dense
+  // matrix with ordering (slowest) [Legendre moment, group to, group from] (fastest). Must specify
   // the largest desired Legendre moment.
   void interp_dense_inscat(std::vector<double> &inscat, double Te_keV,
                            size_t num_moments_truncate) const;
 
-  // Interpolate csk data in temperature for the linear outscattering
-  // and sum over outgoing group to return a vector with index [group from].
-  // outscat must be pre-sized to the number of groups.
+  // Interpolate CSK data in temperature for the linear outscattering and sum over outgoing group to
+  // return a vector with index [group from]. \c outscat must be pre-sized to the number of groups.
   void interp_linear_outscat(std::vector<double> &outscat, double Te_keV) const;
 
-  // Adds the nonlinear difference to the outscat vector phi is a group-sized vector for the scalar
-  // radiation intensity when the radiation is in equilibrium, sum_g phi_g = scale outscat must be
-  // pre-sized and pre-filled with the outscat data by calling interp_linear_outscat
+  // Adds the nonlinear difference to the \c outscat vector phi is a group-sized vector for the
+  // scalar radiation intensity when the radiation is in equilibrium, sum_g phi_g = scale \c outscat
+  // must be pre-sized and pre-filled with the \c outscat data by calling interp_linear_outscat
   void interp_nonlin_diff_and_add(std::vector<double> &outscat, double Te_keV,
                                   const std::vector<double> &phi, double scale) const;
 
@@ -163,19 +161,19 @@ private:
   // PRIVATE DATA
   //----------------------------------------------------------------------------------------------//
 
-  size_t num_temperatures_{0U}; //<! Number of temperature evaluations for csk data
-  size_t num_groups_{0U};       //<! Number of energy groups for csk data
-  size_t num_leg_moments_{0U};  //<! Number of Legendre moments for csk data
+  size_t num_temperatures_{0U}; //<! Number of temperature evaluations for CSK data
+  size_t num_groups_{0U};       //<! Number of energy groups for CSK data
+  size_t num_leg_moments_{0U};  //<! Number of Legendre moments for CSK data
   size_t num_evals_{0U};        //<! Number of "evaluations" (linear/nonlinear, in/out scattering)
 
-  // a point is a (Leg moment, eval) pair
-  // first eval has all Leg moments and all others have only the 0th moment
+  // a point is a (Legendre moment, evaluation) pair
+  // first evaluation has all Legendre moments and all others have only the 0th moment
   size_t num_points_{0U};
 
-  // Temperature grid for csk data (keV)
+  // Temperature grid for CSK data (keV)
   std::vector<double> Ts_{};
 
-  // Energy grid (MG energy boundaries) for csk data (keV)
+  // Energy grid (MG energy boundaries) for CSK data (keV)
   std::vector<double> Egs_{};
 
   // sparse data storage
@@ -188,11 +186,11 @@ private:
   // 1D array of [temperature, group-from]
   std::vector<size_t> indexes_{};
 
-  // csk data
+  // CSK data
   // 1D array of [eval, moment, temperature, group-from, group-to]
   std::vector<double> data_{};
 
-  // temperature derivatives of csk data
+  // temperature derivatives of CSK data
   // 1D array of [eval, moment, temperature, group-from, group-to]
   std::vector<double> derivs_{};
 

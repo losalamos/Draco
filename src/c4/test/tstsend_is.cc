@@ -4,8 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 07, 2012, 14:02 pm
  * \brief  Unit tests for rtt_c4::send_is()
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -21,8 +20,7 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //------------------------------------------------------------------------------------------------//
 
-// This is a simple class that has a static MPI type and a method to commit that
-// type
+// This is a simple class that has a static MPI type and a method to commit that type
 class Custom {
 
 public:
@@ -74,8 +72,8 @@ public:
     // Commit the type to MPI so it recognizes it in communication calls
     MPI_Type_commit(&og_MPI_Custom);
 
-    // Duplicate the type so it's recognized when returned out of this context
-    // (I don't know why this is necessary)
+    // Duplicate the type so it's recognized when returned out of this context (I don't know why
+    // this is necessary)
     MPI_Type_dup(og_MPI_Custom, &MPI_Type);
   }
 #endif
@@ -116,8 +114,7 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     rtt_c4::C4_Req *const comm(nullptr);
     const unsigned count(0);
 
-    // No actual messages to send -- verify that wait_all and
-    // wait_all_with_source correctly return.
+    // No actual messages to send -- verify that wait_all and wait_all_with_source correctly return.
     bool zerocount_failed = false;
 
     // result output from source version of wait_all:
@@ -151,9 +148,8 @@ void test_zerocount_and_inactive(rtt_dsxx::UnitTest &ut) {
     // Result from wait_all_with_source call
     std::vector<int> result;
 
-    // Test a null op -- I didn't actually send anything, so the MPI requests
-    // should be set to MPI_REQUEST_NULL and the wait_all should return
-    // immediately,
+    // Test a null op -- I didn't actually send anything, so the MPI requests should be set to
+    // MPI_REQUEST_NULL and the wait_all should return immediately,
     bool nullreq_failed = false;
     try {
       wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
@@ -228,9 +224,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(sources.size() == 2);
       // First comm is receive from rank "left":
       FAIL_IF_NOT(sources[0] == left);
-      // NOTE: KPL: the value of MPI_SOURCE for a send
-      // operation does not appear to be set in all implementations, so we don't check
-      // the value for the send operation.
+      // NOTE: KPL: the value of MPI_SOURCE for a send operation does not appear to be set in all
+      // implementations, so we don't check the value for the send operation.
 
       // expected results
       vector<int> expected(bsize);
@@ -249,8 +244,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<int>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<int>() in a "
+              "C4_SCALAR build.");
 #else
       FAILMSG("Encountered a ds++ exception while testing send_is<int>().");
 #endif
@@ -270,7 +265,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     vector<double> buffer2(bsize);
     vector<double> buffer1(bsize);
     for (unsigned i = 0; i < bsize; ++i) {
-      buffer1[i] = static_cast<double>(1000.0 * pid + i);
+      buffer1[i] = 1000.0 * pid + i;
     }
 
     // post asynchronous receives.
@@ -299,8 +294,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<double>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<double>() in a "
+              "C4_SCALAR build.");
 #else
       FAILMSG("Encountered a ds++ exception while testing send_is<double>().");
 #endif
@@ -350,8 +345,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<float>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<float>() in a "
+              "C4_SCALAR build.");
 #else
       FAILMSG("Encountered a ds++ exception while testing send_is<float>().");
 #endif
@@ -421,7 +416,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     vector<unsigned int> buffer2(bsize);
     vector<unsigned int> buffer1(bsize);
     for (unsigned i = 0; i < bsize; ++i) {
-      buffer1[i] = static_cast<unsigned int>(1000 * pid + i);
+      buffer1[i] = 1000 * pid + i;
     }
 
     // post asynchronous receives.
@@ -445,18 +440,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected unsigned int data after send_is() on "
-               "node "
-            << pid << ".";
+        msg << "Did not find expected unsigned int data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<unsigned int>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<unsigned int>() in "
+              "a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "int>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned int>().");
 #endif
     }
   }
@@ -486,11 +478,18 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       // wait for all communication to finish
       rtt_c4::wait_all(static_cast<unsigned>(comm.size()), &comm[0]);
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
       // expected results
       vector<unsigned long> expected(bsize);
       for (size_t i = 0; i < bsize; ++i) {
         expected[i] = static_cast<unsigned long>(1000 * left + i);
       }
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
       if (std::equal(expected.begin(), expected.end(), buffer2.begin(), buffer2.end())) {
         ostringstream msg;
@@ -498,9 +497,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected unsigned long data after send_is() on "
-               "node "
-            << pid << ".";
+        msg << "Did not find expected unsigned long data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
@@ -508,8 +505,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       PASSMSG("Successfully caught a ds++ exception while trying to use "
               "send_is<unsigned long>() in a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "long>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned long>().");
 #endif
     }
   }
@@ -551,18 +547,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected unsigned short data after send_is() on "
-               "node "
-            << pid << ".";
+        msg << "Did not find expected unsigned short data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<unsigned short>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<unsigned short>() "
+              "in a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "long>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned long>().");
 #endif
     }
   }
@@ -604,17 +597,16 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected unsigned long long data after send_is() "
-            << "on node " << pid << ".";
+        msg << "Did not find expected unsigned long long data after send_is() on node " << pid
+            << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<unsigned long long>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<unsigned long "
+              "long>() in a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "long>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned long>().");
 #endif
     }
   }
@@ -655,17 +647,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected long data after send_is() "
-            << "on node " << pid << ".";
+        msg << "Did not find expected long data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<long>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<long>() in a "
+              "C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "long>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned long>().");
 #endif
     }
   }
@@ -706,17 +696,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected short data after send_is() "
-            << "on node " << pid << ".";
+        msg << "Did not find expected short data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<short>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<short>() in a "
+              "C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "short>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned short>().");
 #endif
     }
   }
@@ -758,17 +746,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected long long data after send_is() "
-            << "on node " << pid << ".";
+        msg << "Did not find expected long long data after send_is() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<long long>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<long long>() in a "
+              "C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "long long>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned long long>().");
 #endif
     }
   }
@@ -810,17 +796,15 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected bool data after send_is<bool>() "
-            << "on node " << pid << ".";
+        msg << "Did not find expected bool data after send_is<bool>() on node " << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<bool>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<bool>() in a "
+              "C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned "
-              "bool>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned bool>().");
 #endif
     }
   }
@@ -873,8 +857,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
       PASSMSG("Successfully caught a ds++ exception while trying to use "
               "send_is<char>() in a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<"
-              "char>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<char>().");
 #endif
     }
   }
@@ -915,23 +898,21 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
 
       if (std::equal(expected.begin(), expected.end(), buffer2.begin(), buffer2.end())) {
         ostringstream msg;
-        msg << "Expected unsigned char data found after send_is<unsigned "
-            << "char>() on node " << pid << ".";
+        msg << "Expected unsigned char data found after send_is<unsigned char>() on node " << pid
+            << ".";
         PASSMSG(msg.str());
       } else {
         ostringstream msg;
-        msg << "Did not find expected unsigned char data after "
-               "send_is<unsigned char>() on node "
+        msg << "Did not find expected unsigned char data after send_is<unsigned char>() on node "
             << pid << ".";
         FAILMSG(msg.str());
       }
     } catch (rtt_dsxx::assertion const & /*error*/) {
 #ifdef C4_SCALAR
-      PASSMSG("Successfully caught a ds++ exception while trying to use "
-              "send_is<unsigned char>() in a C4_SCALAR build.");
+      PASSMSG("Successfully caught a ds++ exception while trying to use send_is<unsigned char>() "
+              "in a C4_SCALAR build.");
 #else
-      FAILMSG("Encountered a ds++ exception while testing send_is<"
-              "unsigned char>().");
+      FAILMSG("Encountered a ds++ exception while testing send_is<unsigned char>().");
 #endif
     }
   }
@@ -944,10 +925,9 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
 void test_send_custom(rtt_dsxx::UnitTest &ut) {
   // borrowed from http://mpi.deino.net/mpi_functions/MPI_Issend.html.
 
-  // commit the MPI type for the Custom class. This must be done before
-  // send_is_custom is called. DMC checks will throw if the type has not been
-  // committed because size comparison will fail and MPI throws an error when an
-  // uncommitted type is used in a send/receive
+  // commit the MPI type for the Custom class. This must be done before send_is_custom is called.
+  // DMC checks will throw if the type has not been committed because size comparison will fail and
+  // MPI throws an error when an uncommitted type is used in a send/receive
   Custom::commit_mpi_type();
 
 #ifdef C4_SCALAR
@@ -971,8 +951,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
 
 #ifndef __clang_analyzer__
 
-  // for point-to-point communication we need to know neighbor's identifiers:
-  // left, right.
+  // for point-to-point communication we need to know neighbor's identifiers: left, right.
   int right = (rtt_c4::node() + 1) % rtt_c4::nodes();
   int left = rtt_c4::node() - 1;
   if (left < 0)
@@ -987,8 +966,8 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
 
   try {
 
-    // send data using non-blocking synchronous send. Custom sends check to make
-    // sure that the type, T is the same size as its MPI type
+    // send data using non-blocking synchronous send. Custom sends check to make sure that the type,
+    // T is the same size as its MPI type
     rtt_c4::send_is_custom(comm_int[1], &my_custom_object, 1, right, Custom::mpi_tag);
 
     // make status object to get the size of the received buffer
@@ -1034,8 +1013,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
   }
 #endif
 
-  // do the send receive again with a blocking version of custom sends and
-  // receives
+  // do the send receive again with a blocking version of custom sends and receives
 
   // create some data to send/receive
 #ifndef __clang_analyzer__
@@ -1050,9 +1028,8 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
 #endif
 
   if (rtt_c4::nodes() > 1) {
-    // send data using blocking synchronous send. Custom sends check to make
-    // sure that the type, T is the same size as its MPI type. Odd ranks send
-    // first
+    // send data using blocking synchronous send. Custom sends check to make sure that the type, T
+    // is the same size as its MPI type. Odd ranks send first
     int recv_size = -1;
     if (rtt_c4::node() % 2) {
       rtt_c4::send_custom(&my_custom_object_block, 1, right, Custom::mpi_tag);

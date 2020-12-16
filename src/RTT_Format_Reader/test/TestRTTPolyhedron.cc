@@ -29,7 +29,7 @@ public:
    *         otherwise.
    */
   bool operator()(Element_Definition::Element_Type const type) {
-    return (static_cast<unsigned>(Element_Definition(type).get_dimension()) == dimensionality);
+    return (Element_Definition(type).get_dimension() == dimensionality);
   }
 
 private:

@@ -102,8 +102,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   //
   // read a list of materials from the file:
   // - dfo[0] contains the number of materials.
-  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material
-  //   numbers.
+  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material numbers.
   //
 
   byte_offset = ipcress_word_size * dfo[0];
@@ -111,9 +110,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   read_v(byte_offset, vdata);
   size_t nummat = vdata[0];
 
-  // Consistency check.  ds[0] is the total reserved space in the file for
-  // material IDs.
-  Check(nummat < static_cast<size_t>(ds[0]));
+  // Consistency check.  ds[0] is the total reserved space in the file for material IDs.
+  Check(nummat < ds[0]);
 
   // Resize the list of material IDs.
   this->matIDs.resize(nummat);

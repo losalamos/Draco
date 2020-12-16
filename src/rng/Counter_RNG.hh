@@ -34,6 +34,7 @@
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
