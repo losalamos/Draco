@@ -48,178 +48,12 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const
     int64_t size = local_size;
     int64_t global_lower_bound = 0;
     int64_t global_upper_bound = local_size;
-    // minimize global values and only allocate them in DD problems
-    std::vector<double> global_contribution;
-    std::vector<double> global_x_position;
-    double global_max_x=-1e60;
-    double global_min_x=1e60;
-    for (int i = 0; i<local_size; i++){
-        global_max_x = std::max(global_max_x,position[i][0]);
-        global_min_x = std::min(global_min_x,position[i][0]);
-        Insist(!(band_width[i][0]<0.0),"bandwidth must be positive");
-    }
-    if(domain_decomposed){
-      // calculate global off sets and min/max values
-      int n_ranks = rtt_c4::nodes();
-      std::vector<int64_t> rank_size(rtt_c4::nodes(),0);
-      rank_size[rtt_c4::node()] = local_size;
-      rtt_c4::global_sum(rank_size.data(), n_ranks);
-      size = std::accumulate(rank_size.begin(),rank_size.end(),0.0);
-      std::vector<int64_t> accum_rank_size(rank_size);
-      std::partial_sum(rank_size.begin(), rank_size.end(),
-                   accum_rank_size.begin());
-      rtt_c4::global_max(global_max_x);
-      rtt_c4::global_min(global_min_x);
-
-      if(rtt_c4::node()>0){
-          global_lower_bound = accum_rank_size[rtt_c4::node()-1];
-          global_upper_bound = accum_rank_size[rtt_c4::node()];
-      }
-
-
-      // set up global arrays
-      global_contribution.resize(size,0.0);
-      global_x_position.resize(size,0.0);
-
-      // build up global positions
-      for (int i = 0; i<local_size; i++)
-          global_x_position[i+global_lower_bound] = position[i][0];
-
-      rtt_c4::global_sum(global_x_position.data(),size);
-
-    }
-
-    const double scale = std::accumulate(distribution.begin(), distribution.end(), 0.0);
-    std::vector<double> result(local_size,0.0);
-    std::vector<double> normal(local_size,0.0);
-
-
-    // accumulate weighted contribution from all kernels for conservation correction
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double x = position[j][0];
-            const double h = band_width[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            normal[j] += (epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h;
-        }
-    }
-    // fetch lower ranks nonlocal contribution
-    for (int i = 0; i<global_lower_bound; i++){
-        const double x0 = global_x_position[i];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double h = band_width[j][0];
-            const double x = position[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            normal[j] += (epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h;
-        }
-    }
-    // fetch upper ranks nonlocal contribution
-    for (int i = global_upper_bound; i<size; i++){
-        const double x0 = global_x_position[i];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double h = band_width[j][0];
-            const double x = position[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            normal[j] += (epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h;
-        }
-    }
-
-    // now apply the kernel to the local ranks
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double x = position[j][0];
-            const double h = band_width[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            result[i] += distribution[j]*(epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h/normal[j];
-        }
-    }
-    // apply contribution to lower ranks
-    for (int i = 0; i<global_lower_bound; i++){
-        const double x0 = global_x_position[i];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double h = band_width[j][0];
-            const double x = position[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            global_contribution[i] += distribution[j]*(epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h/normal[j];
-        }
-    }
-    // apply contribution to upper ranks
-    for (int i = global_upper_bound; i<size; i++){
-        const double x0 = global_x_position[i];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double h = band_width[j][0];
-            const double x = position[j][0];
-            const double u = (x0-x)/h;
-            const double uxl = ((x-global_min_x)+(x0-global_min_x))/h;
-            const double uxu = ((global_max_x-x)+(global_max_x-x0))/h;
-            global_contribution[i] += distribution[j]*(epan_kernel(u)+epan_kernel(uxl)+epan_kernel(uxu))/h/normal[j];
-        }
-    }
-
-    if(domain_decomposed){
-        // accumulate global contribution
-        rtt_c4::global_sum(global_contribution.data(), size);
-
-        for (int i = 0; i<local_size; i++)
-            result[i] += global_contribution[i+global_lower_bound];
-
-    }
-    
-    return result;
-    
-}
-
-/*!
- * mean based reconstruction 
- * \brief
- *
- * Cartesian geometry reconstruction of a 1D distribution
- *
- * \param[in] distribution 
- * \param[in] position
- * \param[in] band_width
- * \param[inout] final_distribution returned final function distribution
- *
- * Test of kde.
- */ 
-template<>
-template<>
-std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const
-        std::vector<double> &distribution, const
-        std::vector<std::array<double,3>> &position, const
-        std::vector<std::array<double,3>> &band_width, const bool
-        domain_decomposed) const{
-    const int64_t local_size = distribution.size();
-    Check(static_cast<int64_t>(position.size())==local_size);
-    Check(static_cast<int64_t>(band_width.size())==local_size);
-    
-    int64_t size = local_size;
-    int64_t global_lower_bound = 0;
-    int64_t global_upper_bound = local_size;
     double global_conservation = std::accumulate(distribution.begin(), distribution.end(), 0.0);
     // minimize global values and only allocate them in DD problems
     std::vector<double> global_distribution;
     std::vector<double> global_x_position;
     if(domain_decomposed){
-      // calculate global off sets and min/max values
+      // calculate global off sets
       int n_ranks = rtt_c4::nodes();
       std::vector<int64_t> rank_size(rtt_c4::nodes(),0);
       rank_size[rtt_c4::node()] = local_size;
@@ -250,44 +84,9 @@ std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const
       rtt_c4::global_sum(global_conservation);
     }
 
-    const double scale = std::accumulate(distribution.begin(), distribution.end(), 0.0);
     std::vector<double> result(local_size,0.0);
     std::vector<double> normal(local_size,0.0);
 
-
-    // accumulate weighted contribution from all kernels for conservation correction
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        const double h = band_width[i][0];
-        // fetch local contribution
-        for (int j = 0; j<local_size; j++){
-            const double x = position[j][0];
-            const double u = (x0-x)/h;
-            normal[i] += (epan_kernel(u))/h;
-        }
-    }
-    // fetch lower ranks nonlocal contribution
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        const double h = band_width[i][0];
-        for (int j = 0; j<global_lower_bound; j++){
-            const double x = global_x_position[j];
-            const double u = (x0-x)/h;
-            normal[i] += (epan_kernel(u))/h;
-        }
-    }
-    // fetch upper ranks nonlocal contribution
-    for (int i = 0; i<local_size; i++){
-        const double x0 = position[i][0];
-        const double h = band_width[i][0];
-        for (int j = global_upper_bound; j<size; j++){
-            const double x = global_x_position[j];
-            const double u = (x0-x)/h;
-            normal[i] += (epan_kernel(u))/h;
-        }
-    }
-    
-    double reconstruction_conservation = 0.0;
     // now apply the kernel to the local ranks
     for (int i = 0; i<local_size; i++){
         const double x0 = position[i][0];
@@ -296,9 +95,9 @@ std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const
         for (int j = 0; j<local_size; j++){
             const double x = position[j][0];
             const double u = (x0-x)/h;
-            const double val = distribution[j]*(epan_kernel(u))/h/normal[i];
-            result[i] += val;
-            reconstruction_conservation += val;
+            const double weight = (epan_kernel(u))/h;
+            result[i] += distribution[j]*weight;
+            normal[i] += weight;
         }
     }
     // apply contribution to lower ranks
@@ -308,9 +107,9 @@ std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const
         for (int j = 0; j<global_lower_bound; j++){
             const double x = global_x_position[j];
             const double u = (x0-x)/h;
-            const double val = global_distribution[j]*(epan_kernel(u))/h/normal[i];
-            result[i] += val;
-            reconstruction_conservation += val;
+            const double weight = (epan_kernel(u))/h;
+            result[i] += global_distribution[j]*weight;
+            normal[i] += weight;
         }
     }
     // apply contribution to upper ranks
@@ -320,18 +119,25 @@ std::vector<double> kde<kde_coordinates::CART>::mean_reconstruction<1>(const
         for (int j = global_upper_bound; j<size; j++){
             const double x = global_x_position[j];
             const double u = (x0-x)/h;
-            const double val = global_distribution[j]*(epan_kernel(u))/h/normal[i];
-            result[i] += val;
-            reconstruction_conservation += val;
+            const double weight = (epan_kernel(u))/h;
+            result[i] += global_distribution[j]*weight;
+            normal[i] += weight;
         }
     }
+
+    // normalize the integrated weight contributions
+    for (int i = 0; i<local_size; i++)
+        result[i]/=normal[i];
+
+    double reconstruction_conservation = std::accumulate(result.begin(),result.end(),0.0);
 
     if(domain_decomposed){
         // accumulate global contribution
         rtt_c4::global_sum(reconstruction_conservation);
     }
 
-    if(!rtt_dsxx::soft_equiv(reconstruction_conservation,0.0) and !rtt_dsxx::soft_equiv(global_conservation,0.0)){
+    if(!rtt_dsxx::soft_equiv(reconstruction_conservation,0.0) and
+            !rtt_dsxx::soft_equiv(global_conservation,0.0)){
         // Totals are non-zero so scale the result for conservation
         for (int i=0; i<local_size; i++)
             result[i] *= global_conservation/reconstruction_conservation;
