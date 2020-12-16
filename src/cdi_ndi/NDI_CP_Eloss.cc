@@ -238,7 +238,7 @@ void NDI_CP_Eloss::load_ndi() {
   }
 #else
   Insist(0, "NDI version " + std::to_string(NDI_MAJOR) + "." + std::to_string(NDI_MINOR) +
-                " does not support stopping powers!");
+                ".x does not support stopping powers!");
 #endif // NDI_DEDX_SUPPORT
 }
 //----------------------------------------------------------------------------//
