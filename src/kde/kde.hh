@@ -7,14 +7,12 @@
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
-// clang-format off
-
 #ifndef kde_kde_hh
 #define kde_kde_hh
 
-#include <vector>
-#include <array>
 #include "c4/global.hh"
+#include <array>
+#include <vector>
 
 namespace kde {
 
@@ -29,44 +27,46 @@ namespace kde {
  */
 //================================================================================================//
 
-  enum kde_coordinates{CART, CYL, SPH};
+enum kde_coordinates { CART, CYL, SPH };
 
-  template <int coord> class kde {
-  public:
-    // NESTED CLASSES AND TYPEDEFS
+template <int coord> class kde {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // CREATORS
+  // CREATORS
 
-    // ACCESSORS
+  // ACCESSORS
 
-    // SERVICES
-    
-    //! Reconstruct distribution
-    template <int dim=1>
-    std::vector<double> reconstruction(const std::vector<double> &distribution, const std::vector<std::array<double,3>> &position, const std::vector<std::array<double,3>> &band_width, const bool domain_decomposed) const;
+  // SERVICES
 
-    // STATICS
+  //! Reconstruct distribution
+  template <int dim = 1>
+  std::vector<double> reconstruction(const std::vector<double> &distribution,
+                                     const std::vector<std::array<double, 3>> &position,
+                                     const std::vector<std::array<double, 3>> &band_width,
+                                     const bool domain_decomposed) const;
 
-    //! Epanechikov Kernel
-    double epan_kernel(const double x) const;
+  // STATICS
 
-  protected:
-    // IMPLEMENTATION
+  //! Epanechikov Kernel
+  double epan_kernel(const double x) const;
 
-  private:
-    // NESTED CLASSES AND TYPEDEFS
+protected:
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // DATA
-  };
+  // IMPLEMENTATION
 
-template<>
-template<>
-std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const
-        std::vector<double> &distribution, const
-        std::vector<std::array<double,3>> &position, const
-        std::vector<std::array<double,3>> &band_width, const bool dd) const;
+  // DATA
+};
+
+template <>
+template <>
+std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
+    const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
+    const std::vector<std::array<double, 3>> &band_width, const bool dd) const;
 
 } // end namespace  kde
 
@@ -77,4 +77,3 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(const
 //------------------------------------------------------------------------------------------------//
 // end of kde/kde.hh
 //------------------------------------------------------------------------------------------------//
-
