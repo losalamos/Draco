@@ -32,7 +32,6 @@ void NDI_Base::warn_ndi_version_mismatch(std::string const &gendir) {
 
   std::string gendir_ver = rtt_dsxx::extract_version(gendir, 2);
   std::string ndi_ver = rtt_dsxx::extract_version(NDI_ROOT_DIR, 2);
-  printf("gendir_ver: %s ndi_ver: %s\n", gendir_ver.c_str(), ndi_ver.c_str());
   if (gendir_ver.size() == 0)
     gendir_ver = "version unknown";
   if (ndi_ver.size() == 0)
