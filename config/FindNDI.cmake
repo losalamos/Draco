@@ -112,6 +112,7 @@ if( NOT NDI_VERSION )
   endif()
   if( NDI_MAJOR )
     set( NDI_VERSION "${NDI_MAJOR}.${NDI_MINOR}.${NDI_SUBMINOR}")
+    set( NDI_VERSION_STRING "${NDI_VERSION}" )
   endif()
 endif()
 

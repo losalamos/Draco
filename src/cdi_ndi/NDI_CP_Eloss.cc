@@ -237,7 +237,8 @@ void NDI_CP_Eloss::load_ndi() {
     temperature = exp(temperature);
   }
 #else
-  Insist(0, NDI_VERSION_STRING + " does not support stopping powers!");
+  Insist(0,
+         "NDI version " + std::string(NDI_VERSION_STRING) + " does not support stopping powers!");
 #endif // NDI_DEDX_SUPPORT
 }
 //----------------------------------------------------------------------------//

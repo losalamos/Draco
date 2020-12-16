@@ -22,7 +22,7 @@
 #endif
 
 /* NDI version (if found) */
-#cmakedefine NDI_VERSION_STRING "@NDI_VERSION@"
+#cmakedefine NDI_VERSION_STRING "@NDI_VERSION_STRING@"
 #cmakedefine NDI_MAJOR @NDI_MAJOR@
 #cmakedefine NDI_MINOR @NDI_MINOR@
 
