@@ -34,12 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef __GNUC__
 #if !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused variable" warning.
-#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 #endif
 
@@ -230,8 +228,7 @@ void cpu_done(CPUInfo *tp) {
 }
 
 #ifdef __GNUC__
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
+#if !defined(__ICC) && !defined(NVCC)
 #pragma GCC diagnostic pop
 #endif
 #endif

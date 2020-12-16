@@ -37,11 +37,6 @@ include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 # arm --> -mcpu=thunderx2t99 ??? Darwin volta nodes?
 check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
-if( DEFINED CMAKE_CXX_COMPILER_ID )
-  check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
-  check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
-  check_cxx_compiler_flag( "-Wunused-local-typedefs" HAS_WUNUSED_LOCAL_TYPEDEFS )
-endif()
 
 #
 # Compiler Flags
@@ -68,7 +63,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   string(APPEND CMAKE_C_FLAGS " -Wcast-align -Wpointer-arith -Wall -pedantic -Wfloat-equal"
     " -Wunused-macros -fsanitize=bounds-strict -Wshadow -Wformat=2")
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
-    string( APPEND CMAKE_C_FLAGS " -Wno-expansion-to-defined -Wnarrowing" )
+    string( APPEND CMAKE_C_FLAGS " -Wno-expansion-to-defined -Wnarrowing -Wnull-dereference" )
   endif()
   string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra"
     " -Wundef -Wunreachable-code -DDEBUG")
@@ -109,12 +104,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
     # string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=leak")
     # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
   endif()
-  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
-    # See https://gcc.gnu.org/gcc-6/changes.html
-    # -fsanitize=bounds-strict, which enables strict checking of array bounds. In particular, it
-    #            enables -fsanitize=bounds as well as instrumentation of flexible array member-like
-    #            arrays.
-  endif()
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
     # See https://gcc.gnu.org/gcc-7/changes.html
     # -fsanitize-address-use-after-scope: sanitation of variables whose address is taken and used
@@ -124,14 +113,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
     if( NOT DEFINED ENV{TRAVIS} )
       string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
     endif()
-  endif()
-  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 )
-    # See https://gcc.gnu.org/gcc-8/changes.html
-    # -fsanitize=pointer-compare warn about subtraction (or comparison) of pointers that point to a
-    #                  different memory object.
-    # -fsanitize=pointer-subtract
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast")
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
   endif()
 
   # Systems running CrayPE use compile wrappers to specify this option.
@@ -151,14 +132,12 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
-  # Extra Debug flags that only exist in newer gcc versions.
-  if( HAS_WNOEXCEPT )
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wnoexcept" )
-  endif()
-  if( HAS_WSUGGEST_ATTRIBUTE )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 )
+    # See https://gcc.gnu.org/gcc-8/changes.html
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast -Wnon-virtual-dtor -Wuseless-cast")
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wnoexcept")
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wsuggest-attribute=const" )
-  endif()
-  if( HAS_WUNUSED_LOCAL_TYPEDEFS )
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
   endif()
 

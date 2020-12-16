@@ -573,7 +573,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, Uni
   // Check number of flags for each side flag type.
   bool got_side_flag_size = true;
   for (size_t i = 0; i < mesh.get_dims_nside_flag_types(); i++) {
-    if (flag_num_name[i].size() != static_cast<size_t>(mesh.get_side_flags_flag_size(i)))
+    if (flag_num_name[i].size() != mesh.get_side_flags_flag_size(i))
       got_side_flag_size = false;
   }
   if (!got_side_flag_size) {

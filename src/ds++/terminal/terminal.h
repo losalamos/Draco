@@ -52,8 +52,8 @@
 #include <string>
 #include <vector>
 
-#define CTRL_KEY(k) (char)(((unsigned char)(k) & 0x1f))
-#define ALT_KEY(k) (char)(((unsigned char)(k) + 0x80))
+#define CTRL_KEY(k) static_cast<char>((static_cast<unsigned char>(k) & 0x1f))
+#define ALT_KEY(k) static_cast<char>((static_cast<unsigned char>(k) + 0x80))
 
 namespace Term {
 

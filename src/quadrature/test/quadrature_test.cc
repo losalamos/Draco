@@ -546,10 +546,9 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature, bool const cartesian_
                                        Ordinate_Set::LEVEL_ORDERED);
 
     if (ordinate_set->ordinates().size() >= 2) {
-      PASSMSG(string("Ordinate count is plausible. N = " +
-                     to_string(ordinate_set->ordinates().size())));
+      PASSMSG("Ordinate count is plausible. N = " + to_string(ordinate_set->ordinates().size()));
     } else {
-      FAILMSG(string("Ordinate count is NOT plausible. N = ") +
+      FAILMSG("Ordinate count is NOT plausible. N = " +
               to_string(ordinate_set->ordinates().size()));
     }
 

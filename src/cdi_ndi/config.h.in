@@ -21,6 +21,11 @@
  #include "ndi.h"
 #endif
 
+/* NDI version (if found) */
+#cmakedefine NDI_VERSION_STRING "@NDI_VERSION@"
+#cmakedefine NDI_MAJOR "@NDI_MAJOR@"
+#cmakedefine NDI_MINOR "@NDI_MINOR@"
+
 #endif // rtt_cdi_ndi_config_h
 
 /*------------------------------------------------------------------------------------------------*/

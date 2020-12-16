@@ -40,9 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * and R being the number of rounds.
  */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
 #if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
@@ -104,7 +105,7 @@ TEST_TPL(aesni, 4, 32, 10)
 #pragma clang diagnostic pop
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif

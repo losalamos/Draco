@@ -778,13 +778,13 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 
     // fill it
     for (int i = 0; i < 100; i++) {
-      x[i] = static_cast<int>(rtt_c4::node()) + 1;
+      x[i] = rtt_c4::node() + 1;
       for (int j = 0; j < rtt_c4::nodes(); j++) {
-        sum[i] += (static_cast<int>(j) + 1);
-        prod[i] *= (static_cast<int>(j) + 1);
+        sum[i] += (j + 1);
+        prod[i] *= (j + 1);
       }
       lmin[i] = 1;
-      lmax[i] = static_cast<int>(rtt_c4::nodes());
+      lmax[i] = rtt_c4::nodes();
     }
 
     vector<int> c;
