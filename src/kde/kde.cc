@@ -1,16 +1,27 @@
 //--------------------------------------------*-C++-*---------------------------------------------//
 /*!
- * \file   kde/kde.t.hh
+ * \file   kde/kde.cc
  * \author Mathew Cleveland
  * \date   November 10th 2020
- * \brief  Templated KDE functions for various dimensions and coordinate
+ * \brief  Explicitly defined KDE functions for various dimensions and coordinate
+ *         KDE or Kernel Density Estimators are unbiased statical based
+ *         reconstruction.  They can significantly increase the convergence
+ *         rate of statical distributions. The KDE performs a reconstruction by
+ *         evaluating a mean over some discrete kernel shape. In this DRACO
+ *         implementation the mean is evaluated based on the sample locations
+ *         that are bound by the kernel shape.  A renormalization is used to
+ *         ensure the proper mean is returned given there is no guarantee the
+ *         full kernel (which integrates exactly to 1) will be integrated fully
+ *         in space. This renormalization also avoids the need for boundary
+ *         fix-ups which are typically used in KDE applications to account for
+ *         the kernel extending beyond the bounds of the spatial domain. Other
+ *         approaches that could be considered are quadrature based approaches
+ *         that fully sample the Kernel space reducing the need for the
+ *         normalization.
  * systems
  * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
-
-#ifndef kde_kde_t_hh
-#define kde_kde_t_hh
 
 #include "kde.hh"
 #include <iostream>
@@ -23,7 +34,7 @@ namespace kde {
  * reconstruction 
  * \brief
  *
- * Cartesian geometry reconstruction of a 1D distribution
+ * Cartesian geometry KDE reconstruction of a 1D distribution
  *
  * \param[in] distribution 
  * \param[in] position
@@ -92,7 +103,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
       result[i] += distribution[j] * weight;
       normal[i] += weight;
     }
-    // apply contribution to lower ranks
+    // apply contribution from lower ranks
     for (int j = 0; j < global_lower_bound; j++) {
       const double x = global_x_position[j];
       const double u = (x0 - x) / h;
@@ -100,7 +111,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
       result[i] += global_distribution[j] * weight;
       normal[i] += weight;
     }
-    // apply contribution to upper ranks
+    // apply contribution from upper ranks
     for (int j = global_upper_bound; j < size; j++) {
       const double x = global_x_position[j];
       const double u = (x0 - x) / h;
@@ -138,8 +149,6 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
 
 } // end namespace  kde
 
-#endif // kde_kde_t_hh
-
 //------------------------------------------------------------------------------------------------//
-// end of kde/kde.t.hh
+// end of kde/kde.cc
 //------------------------------------------------------------------------------------------------//

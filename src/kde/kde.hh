@@ -63,6 +63,7 @@ private:
   // DATA
 };
 
+//! Forward declaration of the reconstruction 1D Cartesian reconstruction.
 template <>
 template <>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
