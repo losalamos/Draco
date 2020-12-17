@@ -38,7 +38,7 @@ namespace kde {
  *
  * \param[in] distribution 
  * \param[in] position
- * \param[in] band_width
+ * \param[in] one_over_band_width
  * \param[inout] result returned final local function distribution
  *
  */
@@ -46,10 +46,11 @@ template <>
 template <>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
-    const std::vector<std::array<double, 3>> &band_width, const bool domain_decomposed) const {
+    const std::vector<std::array<double, 3>> &one_over_band_width,
+    const bool domain_decomposed) const {
   const int64_t local_size = distribution.size();
   Check(static_cast<int64_t>(position.size()) == local_size);
-  Check(static_cast<int64_t>(band_width.size()) == local_size);
+  Check(static_cast<int64_t>(one_over_band_width.size()) == local_size);
 
   // used for the zero accumulation conservation
   int64_t size = local_size;
@@ -94,12 +95,12 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     // now apply the kernel to the local ranks
     for (int i = 0; i < local_size; i++) {
       const double x0 = position[i][0];
-      const double h = band_width[i][0];
+      const double one_over_h = one_over_band_width[i][0];
       // fetch local contribution
       for (int j = 0; j < size; j++) {
         const double x = global_x_position[j];
-        const double u = (x0 - x) / h;
-        const double weight = (epan_kernel(u)) / h;
+        const double u = (x0 - x) * one_over_h;
+        const double weight = (epan_kernel(u)) * one_over_h;
         result[i] += global_distribution[j] * weight;
         normal[i] += weight;
       }
@@ -108,12 +109,12 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     // now apply the kernel to the local ranks
     for (int i = 0; i < local_size; i++) {
       const double x0 = position[i][0];
-      const double h = band_width[i][0];
+      const double one_over_h = one_over_band_width[i][0];
       // fetch local contribution
       for (int j = 0; j < local_size; j++) {
         const double x = position[j][0];
-        const double u = (x0 - x) / h;
-        const double weight = (epan_kernel(u)) / h;
+        const double u = (x0 - x) * one_over_h;
+        const double weight = (epan_kernel(u)) * one_over_h;
         result[i] += distribution[j] * weight;
         normal[i] += weight;
       }

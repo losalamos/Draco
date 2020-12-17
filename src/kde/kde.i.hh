@@ -25,7 +25,7 @@ namespace kde {
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] distribution 
  * \param[in] position
- * \param[in] band_width
+ * \param[in] one_over_band_width
  * \param[inout] result returned final local function distribution
  *
  */
@@ -35,7 +35,7 @@ template <int dim>
 std::vector<double>
 kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
                            const std::vector<std::array<double, 3>> & /*position*/,
-                           const std::vector<std::array<double, 3>> & /*band_width*/,
+                           const std::vector<std::array<double, 3>> & /*one_over_band_width*/,
                            const bool /*domain_decomposed*/) const {
 
   Insist(false, "kde::reconstruction has not been implemented for this coordinate system and or "
