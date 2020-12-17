@@ -51,14 +51,15 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   Check(static_cast<int64_t>(position.size()) == local_size);
   Check(static_cast<int64_t>(band_width.size()) == local_size);
 
+  // used for the zero accumulation conservation
   int64_t size = local_size;
-  int64_t global_lower_bound = 0;
-  int64_t global_upper_bound = local_size;
   double global_conservation = std::accumulate(distribution.begin(), distribution.end(), 0.0);
   std::vector<double> result(local_size, 0.0);
   std::vector<double> normal(local_size, 0.0);
   if (domain_decomposed) {
     // minimize global values and only allocate them in DD problems
+    int64_t global_lower_bound = 0;
+    int64_t global_upper_bound = local_size;
     std::vector<double> global_distribution;
     std::vector<double> global_x_position;
 
