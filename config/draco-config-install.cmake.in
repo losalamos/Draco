@@ -14,7 +14,17 @@ include( "${_SELF_DIR}/draco-targets.cmake" )
 
 # Also set the draco install dir
 set( DRACO_CONFIG_DIR "${_SELF_DIR}" )
-set( DRACO_CONFIGURATION_TYPES "@DRACO_CONFIGURATION_TYPES@" CACHE STRING
+
+# Inspect properties of Lib_dsxx to find a list of configurations
+if( TARGET Lib_dsxx )
+  get_target_property( DRACO_CONFIGURATION_TYPES Lib_dsxx IMPORTED_CONFIGURATIONS)
+endif()
+if( DRACO_CONFIGURATION_TYPES )
+  set( CMAKE_CONFIGURATION_TYPES "${DRACO_CONFIGURATION_TYPES}")
+else()
+  set( CMAKE_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@")
+endif()
+set( CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
   "Available build configurations" FORCE )
 
 # Provide some pretty print information during configure
@@ -24,8 +34,8 @@ set_package_properties( draco PROPERTIES
    DESCRIPTION "Draco is a comprehensive, radiation transport framework that provides key, reusable
  components for serial and parallel computational physics codes."
    TYPE REQUIRED
-   PURPOSE "Provides underlying capabilities required by Capsaicin and Jayenne (smart pointers,
- data access, random number generators, etc.)" )
+   PURPOSE "Provides underlying capabilities required by TRT codes (smart pointers, data access,
+ random number generators, etc.)" )
 
 #--------------------------------------------------------------------------------------------------#
 # Basic build information
