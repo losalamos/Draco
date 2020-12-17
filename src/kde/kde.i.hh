@@ -15,7 +15,21 @@
 
 namespace kde {
 
-//! DEFAULT constructor to return error if instantiation is not found
+//!
+/*!
+ * reconstruction
+ * \brief
+ * DEFAULT reconstruction to return error if instantiation is not found
+ *
+ * \tparam coord enumerated value to specify KDE coordinate system
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] distribution 
+ * \param[in] position
+ * \param[in] band_width
+ * \param[inout] result returned final local function distribution
+ *
+ */
+
 template <int coord>
 template <int dim>
 std::vector<double>

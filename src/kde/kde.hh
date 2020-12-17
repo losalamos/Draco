@@ -21,7 +21,8 @@ namespace kde {
  * \class kde - kernel density estimator class for generated smoothed
  * reconstructions of point wise PDF data
  * \brief
- *
+ * 
+ * \tparam coord enumeration specifying the KDE coordinate system to use
  * Returns a KDE reconstruction of a multidimensional distribution
  * 
  */

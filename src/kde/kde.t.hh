@@ -28,9 +28,8 @@ namespace kde {
  * \param[in] distribution 
  * \param[in] position
  * \param[in] band_width
- * \param[inout] final_distribution returned final function distribution
+ * \param[inout] result returned final local function distribution
  *
- * Test of kde.
  */
 template <>
 template <>
