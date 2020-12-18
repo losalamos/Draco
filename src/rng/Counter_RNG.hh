@@ -218,6 +218,7 @@ public:
   }
 
   //! Construct a Counter_RNG using a seed and stream number.
+  GPU_HOST_DEVICE
   Counter_RNG(const uint32_t seed, const uint64_t streamnum) { initialize(seed, streamnum); }
 
   //! Create a new Counter_RNG from data.
