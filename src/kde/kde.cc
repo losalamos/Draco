@@ -18,9 +18,7 @@
  *         approaches that could be considered are quadrature based approaches
  *         that fully sample the Kernel space reducing the need for the
  *         normalization.
- * systems
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "kde.hh"
@@ -28,19 +26,16 @@
 #include <math.h>
 #include <numeric>
 
-namespace kde {
+namespace rtt_kde {
 
+//------------------------------------------------------------------------------------------------//
 /*!
- * reconstruction 
- * \brief
- *
- * Cartesian geometry KDE reconstruction of a 1D distribution
+ * \brief Cartesian geometry KDE reconstruction of a 1D distribution
  *
  * \param[in] distribution 
  * \param[in] position
  * \param[in] one_over_band_width
- * \param[inout] result returned final local function distribution
- *
+ * \param[in,out] result returned final local function distribution
  */
 template <>
 template <>
@@ -60,22 +55,21 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   if (domain_decomposed) {
     // minimize global values and only allocate them in DD problems
     int64_t global_lower_bound = 0;
-    int64_t global_upper_bound = local_size;
     std::vector<double> global_distribution;
     std::vector<double> global_x_position;
 
     // calculate global off sets
     int n_ranks = rtt_c4::nodes();
-    std::vector<int64_t> rank_size(rtt_c4::nodes(), 0);
+    int64_t izero(0);
+    std::vector<int64_t> rank_size(rtt_c4::nodes(), izero);
     rank_size[rtt_c4::node()] = local_size;
     rtt_c4::global_sum(rank_size.data(), n_ranks);
-    size = std::accumulate(rank_size.begin(), rank_size.end(), 0.0);
+    size = std::accumulate(rank_size.begin(), rank_size.end(), izero);
     std::vector<int64_t> accum_rank_size(rank_size);
     std::partial_sum(rank_size.begin(), rank_size.end(), accum_rank_size.begin());
 
     if (rtt_c4::node() > 0) {
       global_lower_bound = accum_rank_size[rtt_c4::node() - 1];
-      global_upper_bound = accum_rank_size[rtt_c4::node()];
     }
 
     // set up global arrays
@@ -132,7 +126,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     rtt_c4::global_sum(reconstruction_conservation);
   }
 
-  if (!rtt_dsxx::soft_equiv(reconstruction_conservation, 0.0) and
+  if (!rtt_dsxx::soft_equiv(reconstruction_conservation, 0.0) &&
       !rtt_dsxx::soft_equiv(global_conservation, 0.0)) {
     // Totals are non-zero so scale the result for conservation
     for (int i = 0; i < local_size; i++)
@@ -147,7 +141,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   return result;
 }
 
-} // end namespace  kde
+} // end namespace rtt_kde
 
 //------------------------------------------------------------------------------------------------//
 // end of kde/kde.cc

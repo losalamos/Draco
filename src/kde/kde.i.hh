@@ -13,9 +13,9 @@
 
 #include "ds++/dbc.hh"
 
-namespace kde {
+namespace rtt_kde {
 
-//!
+//------------------------------------------------------------------------------------------------//
 /*!
  * reconstruction
  * \brief
@@ -43,6 +43,7 @@ kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
   return std::vector<double>(1, 0.0);
 }
 
+//------------------------------------------------------------------------------------------------//
 /*!
  * epan_kernel basis function used during reconstruction
  * \brief

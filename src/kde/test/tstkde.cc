@@ -15,14 +15,14 @@
 
 using namespace rtt_dsxx;
 using namespace rtt_c4;
-using namespace kde;
+using namespace rtt_kde;
 
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
 //
 void test_replication(ParallelUnitTest &ut) {
-  kde::kde<kde_coordinates::CART> test_kde;
+  kde<kde_coordinates::CART> test_kde;
 
   // test the epan kernel
   double value = test_kde.epan_kernel(0.0);
@@ -275,7 +275,7 @@ void test_replication(ParallelUnitTest &ut) {
 }
 
 void test_decomposition(ParallelUnitTest &ut) {
-  kde::kde<kde_coordinates::CART> test_kde;
+  kde<kde_coordinates::CART> test_kde;
 
   // test the epan kernel
   double value = test_kde.epan_kernel(0.0);

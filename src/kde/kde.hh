@@ -14,22 +14,21 @@
 #include <array>
 #include <vector>
 
-namespace kde {
-
-//================================================================================================//
-/*!
- * \class kde - kernel density estimator class for generated smoothed
- * reconstructions of point wise PDF data
- * \brief
- * 
- * \tparam coord enumeration specifying the KDE coordinate system to use
- * Returns a KDE reconstruction of a multidimensional distribution
- * 
- */
-//================================================================================================//
+namespace rtt_kde {
 
 enum kde_coordinates { CART, CYL, SPH };
 
+//================================================================================================//
+/*!
+ * \class kde
+ * \brief kernel density estimator class for generated smoothed reconstructions of point wise PDF
+ *        data
+ * 
+ * \tparam coord enumeration specifying the KDE coordinate system to use.
+ *
+ * Returns a KDE reconstruction of a multidimensional distribution
+ */
+//================================================================================================//
 template <int coord> class kde {
 public:
   // NESTED CLASSES AND TYPEDEFS
@@ -70,7 +69,7 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
     const std::vector<std::array<double, 3>> &one_over_band_width, const bool dd) const;
 
-} // end namespace  kde
+} // end namespace rtt_kde
 
 #include "kde.i.hh"
 
