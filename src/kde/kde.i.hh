@@ -60,7 +60,7 @@ template <int coord> double kde<coord>::epan_kernel(const double x) const {
   return x2 > 1.0 ? 0.0 : 0.75 * (1.0 - x2);
 }
 
-} // end namespace  kde
+} // end namespace  rtt_kde
 
 #endif // kde_kde_i_hh
 

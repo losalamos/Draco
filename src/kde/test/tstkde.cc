@@ -3,7 +3,7 @@
  * \file   kde/test/tstkde.cc
  * \author Mathew Cleveland
  * \date   Nov. 10th 2020
- * \brief  <start>
+ * \brief  KDE function tests
  * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
@@ -26,7 +26,7 @@ void test_replication(ParallelUnitTest &ut) {
 
   // test the epan kernel
   double value = test_kde.epan_kernel(0.0);
-  if (value != 0.75)
+  if (!rtt_dsxx::soft_equiv(value, 0.75))
     ITFAILS;
 
   // No mean reconstruction because of small basis functions
@@ -279,7 +279,7 @@ void test_decomposition(ParallelUnitTest &ut) {
 
   // test the epan kernel
   double value = test_kde.epan_kernel(0.0);
-  if (value != 0.75)
+  if (!rtt_dsxx::soft_equiv(value, 0.75))
     ITFAILS;
 
   if (rtt_c4::nodes() != 3)
