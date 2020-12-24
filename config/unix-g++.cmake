@@ -41,6 +41,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
     string( APPEND CMAKE_C_FLAGS " -Wnull-dereference" )
   endif()
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0 )
+    # Pragmas in rng and Random123 don't seem to disable this check.
+    string( APPEND CMAKE_C_FLAGS " -Wno-expansion-to-defined")
+  endif()
   string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -fno-inline -fno-eliminate-unused-debug-types -O0"
     " -Wundef -Wunreachable-code -fsanitize=bounds-strict -fdiagnostics-color=auto -DDEBUG")
   # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"

@@ -47,11 +47,6 @@ set( random123_known_answer_tests
   ${PROJECT_SOURCE_DIR}/kat_c.cc
   ${PROJECT_SOURCE_DIR}/kat_cpp.cpp )
 
-# Ignore some warnings from Random123 tests that I can't suppress with a pragma.
-if( CMAKE_CXX_COMPILER_ID MATCHES GNU )
-  set_source_files_properties( kat_cpp.cpp PROPERTIES COMPILE_FLAGS "-Wno-expansion-to-defined")
-endif()
-
 #--------------------------------------------------------------------------------------------------#
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
