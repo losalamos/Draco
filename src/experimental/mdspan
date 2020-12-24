@@ -49,7 +49,7 @@
 #pragma warning(disable : 4348)
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
@@ -83,7 +83,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
 #endif

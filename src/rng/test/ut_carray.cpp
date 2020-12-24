@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
@@ -355,7 +355,7 @@ int main(int, char **) {
   return 0;
 }
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 #pragma clang diagnostic pop
 #endif
 

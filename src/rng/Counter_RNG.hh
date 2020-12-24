@@ -42,7 +42,7 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
@@ -54,7 +54,7 @@
 #include "Random123/threefry.h"
 #include "uniform.hpp"
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
 #endif
