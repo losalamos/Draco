@@ -32,7 +32,8 @@ set(Draco_std_target_props_CXX
 set(Draco_std_target_props_CUDA
   CUDA_STANDARD 14              # Force strict C++ 14 standard
   CUDA_EXTENSIONS OFF
-  CUDA_STANDARD_REQUIRED ON)
+  CUDA_STANDARD_REQUIRED ON
+  CUDA_ARCHITECTURES ${CUDA_ARCHITECTURES} )
 #  CUDA_SEPARABLE_COMPILATION ON)
 #  CUDA_RESOLVE_DEVICE_SYMBOLS ON )
 # target_include_directories (my lib
