@@ -7,6 +7,10 @@
 #--------------------------------------------------------------------------------------------------#
 project( rng_test C CXX )
 
+if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 9.0 )
+  toggle_compiler_flag( TRUE "-Wno-expansion-to-defined" "CXX" "DEBUG")
+endif()
+
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
