@@ -24,7 +24,7 @@ double foo(double x) { return log(x); }
 
 //------------------------------------------------------------------------------------------------//
 //! Functor class representation of log function for testing zbrent and zbrac.
-class Zbrac_Test_Function {
+static class Zbrac_Test_Function {
 public:
   double operator()(double x) const { return log(x); }
 } zbrac_test_function;

@@ -78,7 +78,7 @@ vector<Moment> Sn_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsigned /*
 
   // Choose: l= 0, ..., L, k = -l, ..., l
   for (int ell = 0; ell <= static_cast<int>(L); ++ell)
-    for (int k(-static_cast<int>(ell)); k <= ell; ++k)
+    for (int k(-ell); k <= ell; ++k)
       result.emplace_back(Moment(ell, k));
 
   return result;

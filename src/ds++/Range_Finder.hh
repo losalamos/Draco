@@ -19,7 +19,7 @@ namespace rtt_dsxx {
 
 //================================================================================================//
 /*!
- * \class Range_finder
+ * Range_finder
  *
  * These functions locate a value in intervals described by an increasing array.  E.g. Let \c v[i]
  * be an increasing array and \c r a value. These functions look for \c i such that: \code v[i] < r

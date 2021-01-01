@@ -12,7 +12,6 @@
 
 #include "Assert.hh"
 #include "isSorted.hh"
-
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -98,7 +97,7 @@ private:
   public:
     Proxy(SortPermutation::value_type pos_, const std::vector<IT> &iters_)
         : pos(pos_), iters(iters_) {}
-    Proxy(Proxy const &rhs) noexcept : pos(rhs.pos), iters(rhs.iters){};
+    Proxy(Proxy const &rhs) noexcept : pos(rhs.pos), iters(rhs.iters) {}
     Proxy &operator=(Proxy const &rhs) {
       pos = rhs.pos;
       return *this;

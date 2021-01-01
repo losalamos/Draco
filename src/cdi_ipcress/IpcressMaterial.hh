@@ -79,7 +79,8 @@ public:
   // CREATORS
 
   //! Default constructor builds an empty object.
-  IpcressMaterial() : fieldNames(), fieldValues(){/* empty */};
+  IpcressMaterial() : fieldNames(), fieldValues() { /* empty */
+  }
 
   // MANIPULATORS
 
@@ -87,7 +88,7 @@ public:
    * \brief Set the Z/A ratio for this material.
    * \param in_zoa Set the Z/A ratio for this material.
    */
-  void set_zoa(double const in_zoa) { zoa = in_zoa; };
+  void set_zoa(double const in_zoa) { zoa = in_zoa; }
 
   /*!
    * \brief Add a field and it's data to the current material.  This is the

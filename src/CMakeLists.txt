@@ -16,18 +16,6 @@ if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
     toggle_compiler_flag( TRUE "-Wconversion -Wdouble-promotion" "CXX" "DEBUG")
   endif()
-
-#  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
-# '-fsanitize=address' Not working just yet.  Issues...
-# 1. libasan.so.5: warning: the use of `tempnam' is dangerous, better use `mkstemp'
-# 2. ==134051==ASan runtime does not come first in initial library list; you should either link
-#    runtime to your application or manually preload it with LD_PRELOAD.
-# 3. many more run time issues, some may require suppression.
-#
-#    toggle_compiler_flag( TRUE
-#      "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract" "CXX" "DEBUG")
-#  endif()
-
 elseif( CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" )
   string( REPLACE "/W2" "/W4" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
   string( REPLACE "/W2" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )

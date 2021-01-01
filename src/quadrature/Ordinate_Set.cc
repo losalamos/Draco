@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C)  2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Ordinate_Set.hh"
@@ -104,13 +103,13 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
  * \param dimension Dimension of the problem. Must be consistent with the geometry.
  * \param geometry Geometry of the problem.
  * \param ordinates Ordinate set for this problem.
- * \param has_starting_directions Has starting directions on each level set. 
+ * \param has_starting_directions Has starting directions on each level set.
  * \param has_extra_starting_directions Has extra directions on each level set. In most geometries,
- *           an additional ordinate is added that is opposite in direction to the starting 
- *           direction. This is used to implement reflection exactly in curvilinear coordinates. In
- *           1D spherical, that means an additional angle is added at mu=1. In axisymmetric, that 
- *           means additional angles are added that are oriented opposite to the incoming starting
- *           direction on each level. 
+ *          an additional ordinate is added that is opposite in direction to the starting
+ *          direction. This is used to implement reflection exactly in curvilinear coordinates. In
+ *          1D spherical, that means an additional angle is added at mu=1. In axisymmetric, that
+ *          means additional angles are added that are oriented opposite to the incoming starting
+ *          direction on each level.
  * \param ordering Ordering into which to sort the ordinates.
  */
 Ordinate_Set::Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry const geometry,

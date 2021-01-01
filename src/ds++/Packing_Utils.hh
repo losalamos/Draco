@@ -740,9 +740,9 @@ void unpack_data(std::map<keyT, std::vector<dataT>> &unpacked_map,
 
 /*!
  * \brief Pack an array into a char buffer while honoring endianess.
- * \param[in]  start
- * \param[out] dest
- * \param[in]  num_elements
+ * \param[in]  start iterator to the start of the buffer that will be packed
+ * \param[out] dest iterator to the start of the buffer holding the packed data.
+ * \param[in]  num_elements The number of elements to be packed starting with start
  * \param[in]  byte_swap (default: false)
  */
 inline void pack_vec_double(double const *start, char *dest, uint32_t num_elements,

@@ -73,7 +73,7 @@ soft_equiv(const T &value, const T &reference, const T precision = static_cast<T
  * \brief Object that allows multilevel STL containers of floating point values to be compared
  *        within a tolerance.
  *
- * \param Depth levels of containers for analysis (2 for vector<vector<T>>).
+ * \tparam Depth levels of containers for analysis (2 for vector<vector<T>>).
  *
  * This class provides a template recursion object that allows two STL containers to be compared
  * element-by-element no matter how many levels of containers exist.  The value and reference fields

@@ -40,17 +40,11 @@ std::string assertion::build_message(std::string const &cond, std::string const 
 #endif
 }
 
-//------------------------------------------------------------------------------------------------//
-//! Leave this definition in the .cc file!  It needs to be saved to the dsxx library.
-assertion::~assertion() noexcept { /* empty */ // NOLINT
-}
-
 //================================================================================================//
 // FREE FUNCTIONS
 //================================================================================================//
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
- * \return Throws an assertion.
  * \note We do not provide unit tests for functions whose purpose is to throw or exit.
  */
 void toss_cookies(std::string const &cond, std::string const &file, int const line) {
@@ -58,10 +52,7 @@ void toss_cookies(std::string const &cond, std::string const &file, int const li
 }
 
 //------------------------------------------------------------------------------------------------//
-/*!
- * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
- * \return Throws an assertion.
- */
+//! Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
 void toss_cookies_ptr(char const *const cond, char const *const file, int const line) {
   throw assertion(cond, file, line);
 }
@@ -72,8 +63,6 @@ void toss_cookies_ptr(char const *const cond, char const *const file, int const 
  *
  * This version defers the branch, and so is preferred for testing code coverage by the test suite.
  * However, it has the performance penalty of an extra function call.
- *
- * \return Throws an assertion.
  */
 void check_cookies(bool const cond, char const *const cond_text, char const *const file,
                    int const line) {

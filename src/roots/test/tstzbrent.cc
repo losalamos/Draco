@@ -27,7 +27,7 @@ double foo_expm1(double x) { return exp(x) - 1.0; }
 
 //------------------------------------------------------------------------------------------------//
 //! Functor class representation of log function for testing zbrent and zbrac.
-class Zbrac_Test_Function {
+static class Zbrac_Test_Function {
 public:
   double operator()(double x) const { return log(x); }
 } zbrac_test_function;

@@ -15,10 +15,10 @@ project( lapack_wrap CXX )
 #--------------------------------------------------------------------------------------------------#
 if( HAVE_Fortran )
 
-if( NOT TARGET lapack OR ${CMAKE_GENERATOR} MATCHES Xcode)
+if( NOT TARGET LAPACK::LAPACK OR ${CMAKE_GENERATOR} MATCHES Xcode)
   message( STATUS
-    "NOTE: Skipping lapack_wrap component because LAPACK is not found (or
-maybe you are targeting an Xcode solution." )
+    "NOTE: Skipping lapack_wrap component because LAPACK is not found (or maybe you are targeting
+ an Xcode solution." )
   return()
 endif()
 

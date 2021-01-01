@@ -4,8 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  New or overloaded cmath or cmath-like functions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoMath_hh
@@ -70,7 +69,7 @@ template <> inline std::complex<double> conj(const std::complex<double> &arg) {
  * \brief Return the cube of a value.
  *
  * \param[in] x Value to be cubed.
- * \return \f$x^3\f$
+ * \return x^3
  *
  * \c Semigroup is a type representing an algebraic structure closed under multiplication such as
  * the integers or the reals.
@@ -88,12 +87,13 @@ template <typename Semigroup> inline Semigroup cube(Semigroup const &x) { return
  *
  * \param a Minuend
  * \param b Subtrahend
- * \return \f$max(0, a-b)\f$
+ * \return max(0, a-b)
  *
  * \deprecated A FORTRAN relic that should disappear eventually.
  */
 template <typename Ordered_Group_Element>
-inline Ordered_Group_Element dim(Ordered_Group_Element a, Ordered_Group_Element b) {
+/* [[deprecated]] */ inline Ordered_Group_Element dim(Ordered_Group_Element a,
+                                                      Ordered_Group_Element b) {
   if (a < b)
     return Ordered_Group_Element(0);
   else
@@ -108,7 +108,7 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a, Ordered_Group_Element 
  *      the integers or the reals.
  *
  * \param[in] x Value to be squared.
- * \return \f$x^2\f$
+ * \return x^2
  */
 template <typename Semigroup> inline Semigroup square(const Semigroup &x) { return x * x; }
 
@@ -151,7 +151,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
  *
  * \param a Argument supplying magnitude of result.
  * \param b Argument supplying sign of result.
- * \return \f$|a|sgn(b)\f$
+ * \return Value |a| with the sign of b.
  */
 template <typename Ordered_Group> inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
   using std::abs; // just to be clear

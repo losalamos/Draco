@@ -100,6 +100,9 @@ elif [[ "${COMPILER:=GCC}" == "GCC" ]]; then
   echo "FC     = ${FC}"
   echo "GCOV   = ${GCOV}"
 
+  # Extra options for mpirun. Travis requires these extra mpirun options
+  export MPIEXEC_PREFLAGS="--allow-run-as-root --oversubscribe"
+
   export OMP_NUM_THREADS=2
   if [[ ${WERROR} ]]; then
     for i in C CXX Fortran; do
@@ -173,6 +176,9 @@ elif [[ "${COMPILER}" == "LLVM" ]]; then
   echo "FC     = ${FC}"
   echo "GCOV   = ${GCOV}"
 
+  # Extra options for mpirun. Travis requires these extra mpirun options
+  export MPIEXEC_PREFLAGS="--allow-run-as-root --oversubscribe"
+
   export OMP_NUM_THREADS=2
   if [[ ${WERROR} ]]; then
     for i in C CXX Fortran; do
@@ -196,7 +202,8 @@ elif [[ "${COMPILER}" == "LLVM" ]]; then
   fi
   if [[ "${CLANGTIDY:=OFF}" == "ON" ]]; then
     echo "==> enable clang-tidy CI mode"
-    CMAKE_OPTS+=" -DCI_CLANG_TIDY=ON -DDRACO_STATIC_ANALYZER=clang-tidy "
+    # -DCI_CLANG_TIDY=ON
+    CMAKE_OPTS+=" -DDRACO_STATIC_ANALYZER=clang-tidy "
     echo "==> CMAKE_OPTS = ${CMAKE_OPTS}"
   fi
   echo "========"

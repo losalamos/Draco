@@ -45,8 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 const char *progname;
 int verbose = 0;
 int debug = 0;
-int numtrials = 5;
-double sec_per_trial = 0.2;
+static int numtrials = 5;
+static double sec_per_trial = 0.2;
 
 #define PREFIX "test_"
 

@@ -22,13 +22,13 @@
 include_guard(GLOBAL)
 include( FeatureSummary )
 
-##---------------------------------------------------------------------------##
-## Set MPI flavor and vendor version
-##
-## Returns (as cache variables)
-## - MPI_VERSION
-## - MPI_FLAVOR = {openmpi, mpich, cray, spectrum, mvapich2, intel}
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# Set MPI flavor and vendor version
+#
+# Returns (as cache variables)
+# - MPI_VERSION
+# - MPI_FLAVOR = {openmpi, mpich, cray, spectrum, mvapich2, intel}
+#--------------------------------------------------------------------------------------------------#
 function( setMPIflavorVer )
 
   # First attempt to determine MPI flavor -- scape flavor from full path (this ususally works for
@@ -241,29 +241,23 @@ macro( setupOpenMPI )
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
+  # Extra options provided from the environment or by cmake
+  if( DEFINED ENV{MPIEXEC_PREFLAGS} )
+    set( MPIEXEC_PREFLAGS "$ENV{MPIEXEC_PREFLAGS}" )
+  endif()
+
   # Notes:
   # - For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of '-bind-to none'.  The
   #   'bind-to none' is required to pack a node.
   # - Adding '--debug-daemons' is often requested by the OpenMPI dev team in conjunction with
   #   'export OMPI_MCA_btl_base_verbose=100' to obtain debug traces from openmpi.
-  set( MPIEXEC_PREFLAGS "-bind-to none")
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
+  set(MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS} --map-by socket:SPAN")
+  string(APPEND MPIEXEC_PREFLAGS " -bind-to none")
   # Setup for OMP plus MPI
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
-    set( MPIEXEC_OMP_PREFLAGS "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
-  endif()
-
-  # Special settings for CI
-  # . --oversubscribe is only available for openmpi version >= 3.0
-  # . -H localhost,localhost,localhost,localhost might work for older versions.
-  # . --allow-run-as-root is required for CI builds.
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
-    set(runasroot "--allow-run-as-root --oversubscribe")
-    string(APPEND MPIEXEC_PREFLAGS           " ${runasroot}")
-    string(APPEND MPIEXEC_PREFLAGS_PERFBENCH " ${runasroot}")
-    string(APPEND MPIEXEC_OMP_PREFLAGS       " ${runasroot}")
-    unset(runasroot)
+    set(MPIEXEC_OMP_PREFLAGS
+      "${MPIEXEC_PREFLAGS} --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
   endif()
 
   # Spectrum-MPI on darwin

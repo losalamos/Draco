@@ -24,10 +24,10 @@ namespace rtt_dsxx {
 /*!
  * \brief Get a value from the environment
  *
- * \tparam T: the type of the value, must be default constructible
+ * \tparam T the type of the value, must be default constructible
  *
- * \param key: the key to which you would like the corresponding value
- * \param default_value: a default value to return if key undefined.
+ * \param key the key to which you would like the corresponding value
+ * \param default_value a default value to return if key undefined.
  * \return: {whether key was defined, corresponding value}
  *
  * \note Calls POSIX getenv() function, which is not required to be re-entrant.  If the key was set

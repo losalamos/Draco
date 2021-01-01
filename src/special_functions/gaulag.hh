@@ -30,7 +30,6 @@ namespace rtt_special_functions {
  * \param w On return, contains weights \f$w_j\f$ for quadrature.
  * \param alf Lagrange power parameter.
  * \param n Number of points in quadrature.
- *
  */
 template <class FieldVector>
 void gaulag(FieldVector &x, FieldVector &w, double const alf, unsigned const n) {
@@ -55,7 +54,8 @@ void gaulag(FieldVector &x, FieldVector &w, double const alf, unsigned const n) 
            (1.0 + 0.3 * alf);
     }
     unsigned its;
-    Field pp, p2;
+    Field pp{0.0};
+    Field p2{0.0};
     for (its = 0; its < MAXITS; ++its) {
       Field p1 = 1.0;
       p2 = 0.0;

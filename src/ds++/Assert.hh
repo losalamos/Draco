@@ -139,14 +139,11 @@ public:
    * \param file The source code file name that contains the DbC test.
    * \param line The source code line number that contains the DbC test.
    *
-   * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, Insist
+   * \sa \c --with-dbc[=level], Require, Ensure, Check, Insist (\ref Draco_DBC)
    */
   assertion(std::string const &cond, std::string const &file, int const line)
       : std::logic_error(build_message(cond, file, line)) { /* empty */
   }
-
-  //! Destructor for ds++/assertion class.  We do not allow the destructor to throw!
-  ~assertion() noexcept override;
 
   //! Helper function to build error message that includes source file name and line number.
   static std::string build_message(std::string const &cond, std::string const &file,

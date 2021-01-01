@@ -133,31 +133,31 @@ public:
   rtt_cdi::Model getModelType() const override { return model_type; }
 
   //! Returns a "plain English" description of the data.
-  std::string getDataDescriptor() const override { return dataDescriptor; };
+  std::string getDataDescriptor() const override { return dataDescriptor; }
 
   /*!
    * \brief Returns a "plain English" description of the energy group structure (gray
    *        vs. multigroup).
    */
-  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; };
+  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; }
 
   /*!
    * \brief Returns the name of the associated data file.  Since there is no data file associated
    *        with this opacity class the string "none" is returned.
    */
-  std::string getDataFilename() const override { return dataFilename; };
+  std::string getDataFilename() const override { return dataFilename; }
 
   //! Returns a vector of temperatures that define the cached opacity data table.
-  std::vector<double> getTemperatureGrid() const override { return temperatureGrid; };
+  std::vector<double> getTemperatureGrid() const override { return temperatureGrid; }
 
   //*! Returns a vector of densities that define the cached opacity data table.
-  std::vector<double> getDensityGrid() const override { return densityGrid; };
+  std::vector<double> getDensityGrid() const override { return densityGrid; }
 
   //! Returns the size of the temperature grid.
-  size_t getNumTemperatures() const override { return numTemperatures; };
+  size_t getNumTemperatures() const override { return numTemperatures; }
 
   //! Returns the size of the density grid.
-  size_t getNumDensities() const override { return numDensities; };
+  size_t getNumDensities() const override { return numDensities; }
 
   //! Dummy pack function.
   std::vector<char> pack() const override { return std::vector<char>(); }

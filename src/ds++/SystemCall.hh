@@ -60,7 +60,7 @@ public:
   //! constructor
   explicit draco_getstat(std::string const &fqName);
   //! If the call to stat failed, this function will return false.
-  bool valid() { return stat_return_code == 0; };
+  bool valid() { return stat_return_code == 0; }
   bool isreg();
   bool isdir();
   int errorCode() { return stat_return_code; }

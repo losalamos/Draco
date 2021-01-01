@@ -54,7 +54,7 @@ public:
   virtual ~Quadrature() = default;
 
   // ACCESSORS
-  unsigned sn_order() const { return sn_order_; };
+  unsigned sn_order() const { return sn_order_; }
 
   // SERVICES
 

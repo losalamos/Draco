@@ -178,8 +178,8 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex, double const T) 
  * \param planck     Reference argument for the Planckian integral
  * \param rosseland  Reference argument for the Rosseland integral
  *
- * \return The integrated normalized Planckian and Rosseland over the requested frequency
- *         group. These are returned as references in argument planck and rosseland
+ * The integrated normalized Planckian and Rosseland over the requested frequency group. These are
+ * returned as references in argument planck and rosseland
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex, const double T,
                                                  double &planck, double &rosseland) {
@@ -399,7 +399,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(std::vector<double> const &boun
  * \param opacity   A vector of multigroup opacity data.
  * \param planckSpectrum A vector of Planck integrals for all groups in the spectrum (normally
  *                  generated via CDI::integrate_Rosseland_Planckian_Sectrum(...).
- * \param emission_group_cdf
+ * \param emission_group_cdf A vector of CDF values, one per group.
  * \return A single interval Planckian weighted opacity value.
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this function to obtain
@@ -554,7 +554,7 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(std::vector<double> cons
     if (opacity[g - 1] > 0)
       inv_sig_planck_sum += planckSpectrum[g - 1] / opacity[g - 1];
     else
-      return std::numeric_limits<float>::max();
+      return static_cast<double>(std::numeric_limits<float>::max());
   }
 
   //                             int_{\nu_0}^{\nu_G}{d\nu 1/sigma(\nu,T) * B(\nu,T)}
@@ -565,7 +565,7 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(std::vector<double> cons
   if (planck_integral > 0.0)
     reciprocal_planck_opacity = inv_sig_planck_sum / planck_integral;
   else {
-    reciprocal_planck_opacity = std::numeric_limits<float>::max();
+    reciprocal_planck_opacity = static_cast<double>(std::numeric_limits<float>::max());
   }
   Ensure(reciprocal_planck_opacity >= 0.0);
   return reciprocal_planck_opacity;
@@ -825,7 +825,8 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  * \param pz int32_t specifying the desired particle type.
  * \param tz int32_t specifying the desired target type.
  */
-CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModelAngleCutoff mAC, int32_t pz, int32_t tz) const {
+CDI::SP_CPEloss CDI::eloss(rtt_cdi::CPModelAngleCutoff Remember(mAC), int32_t pz,
+                           int32_t tz) const {
   auto const entry = CPEloss_map.find(std::make_pair(pz, tz));
   Insist(entry != CPEloss_map.end(), "Undefined CPEloss!");
   // Be sure model type is what the user expected.

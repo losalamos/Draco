@@ -60,6 +60,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 
 #define TEST_TPL(NAME, N, W, R)                                                                    \
@@ -170,8 +176,11 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic pop
+#endif
+
 #ifdef __GNUC__
-// Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
 
