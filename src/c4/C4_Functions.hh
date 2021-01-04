@@ -292,6 +292,20 @@ template <typename T>
 int gatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
             int *receive_displs);
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Gather from all ranks to a receiving array on each rank, using sizes and displacements
+ *
+ * \param[in] send_buffer array of data of type T that has a registered MPI type
+ * \param[in] send_size size of send buffer
+ * \param[in,out] receive_buffer array to gather at, according to sizes and displacements per rank
+ * \param[in] receive_sizes anticipated data size per rank in the Communicator.
+ * \param[in] receive_displs displacement into receive_buffer per rank in the Communicator.
+ */
+template <typename T>
+int allgatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
+               int *receive_displs);
+
 template <typename T> int scatter(T *send_buffer, T *receive_buffer, int size);
 
 template <typename T>
@@ -337,8 +351,13 @@ template <typename T> void global_max(T &x);
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global sum of an array.
+ * 
+ * Only instantiate this function for types L that are integral. Details of this pattern are at
+ * https://en.cppreference.com/w/cpp/types/enable_if.
  */
-template <typename T> void global_sum(T *x, int n);
+template <typename T, typename L,
+          typename std::enable_if<std::is_integral<L>::value, bool>::type = true>
+void global_sum(T *x, L n);
 
 //------------------------------------------------------------------------------------------------//
 /*!

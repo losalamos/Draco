@@ -62,8 +62,7 @@ include(FindPackageHandleStandardArgs)
 # at this location over system locations.
 if( EXISTS "$ENV{NDI_ROOT_DIR}" )
   file( TO_CMAKE_PATH "$ENV{NDI_ROOT_DIR}" NDI_ROOT_DIR )
-  set( NDI_ROOT_DIR "${NDI_ROOT_DIR}" CACHE PATH
-    "Prefix for NDI installation." )
+  set( NDI_ROOT_DIR "${NDI_ROOT_DIR}" CACHE PATH "Prefix for NDI installation." )
 endif()
 
 #=============================================================================
@@ -76,24 +75,46 @@ endif()
 
 find_path( NDI_INCLUDE_DIR
   NAMES ndi.h
-  HINTS ${NDI_ROOT_DIR}/include/ndi
-  PATH_SUFFIXES ndi
-  )
-
+  HINTS ${NDI_ROOT_DIR}/include/ndi ${NDI_ROOT_DIR}/include
+  PATH_SUFFIXES ndi )
 set( NDI_LIBRARY_NAME ndipic ndi)
 
 find_library(NDI_LIBRARY
   NAMES ${NDI_LIBRARY_NAME}
-  PATHS ${NDI_ROOT_DIR}/lib
-  )
+  PATHS ${NDI_ROOT_DIR}/lib )
 # Do we also have debug versions?
 find_library( NDI_LIBRARY_DEBUG
   NAMES ${NDI_LIBRARY_NAME}
   HINTS ${NDI_ROOT_DIR}/lib
-  PATH_SUFFIXES Debug
-)
+  PATH_SUFFIXES Debug )
 set( NDI_INCLUDE_DIRS ${NDI_INCLUDE_DIR} )
 set( NDI_LIBRARIES ${NDI_LIBRARY} )
+
+# Try to find the version.
+if( NOT NDI_VERSION )
+  if( EXISTS "${NDI_INCLUDE_DIR}/ndi_version.h")
+    # pull data directly from the include file.
+    file( STRINGS "${NDI_INCLUDE_DIR}/ndi_version.h" include_version_h REGEX "NDI_VERSION_DATA" )
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\1" NDI_MAJOR
+      ${include_version_h})
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\2" NDI_MINOR
+      ${include_version_h})
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([A-Za-z0-9]+).*" "\\3" NDI_SUBMINOR
+      ${include_version_h})
+  else()
+    # We might also try scraping the directory name for a regex match "ndi-X.X.X"
+    string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\1" NDI_MAJOR
+      ${NDI_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\2" NDI_MINOR
+      ${NDI_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*ndi-([0-9]+).([0-9]+).([A-Za-z0-9]+).*" "\\3" NDI_SUBMINOR
+      ${NDI_INCLUDE_DIR} )
+  endif()
+  if( NDI_MAJOR )
+    set( NDI_VERSION "${NDI_MAJOR}.${NDI_MINOR}.${NDI_SUBMINOR}")
+    set( NDI_VERSION_STRING "${NDI_VERSION}" )
+  endif()
+endif()
 
 #=============================================================================
 # handle the QUIETLY and REQUIRED arguments and set NDI_FOUND to TRUE if
@@ -104,12 +125,12 @@ find_package_handle_standard_args( NDI
   REQUIRED_VARS
     NDI_INCLUDE_DIR
     NDI_LIBRARY
-  VERSION_VAR
     NDI_VERSION
-    )
+  VERSION_VAR
+    NDI_VERSION )
 
-mark_as_advanced( NDI_ROOT_DIR NDI_VERSION NDI_LIBRARY
-  NDI_INCLUDE_DIR NDI_LIBRARY_DEBUG NDI_USE_PKGCONFIG NDI_CONFIG )
+mark_as_advanced( NDI_ROOT_DIR NDI_VERSION NDI_LIBRARY NDI_INCLUDE_DIR NDI_LIBRARY_DEBUG
+    NDI_USE_PKGCONFIG NDI_CONFIG )
 
 #=============================================================================
 # Register imported libraries:
@@ -120,10 +141,8 @@ mark_as_advanced( NDI_ROOT_DIR NDI_VERSION NDI_LIBRARY
 
 # Look for dlls, or Release and Debug libraries.
 if(WIN32)
-  string( REPLACE ".lib" ".dll" NDI_LIBRARY_DLL
-    "${NDI_LIBRARY}" )
-  string( REPLACE ".lib" ".dll" NDI_LIBRARY_DEBUG_DLL
-    "${NDI_LIBRARY_DEBUG}" )
+  string( REPLACE ".lib" ".dll" NDI_LIBRARY_DLL "${NDI_LIBRARY}" )
+  string( REPLACE ".lib" ".dll" NDI_LIBRARY_DEBUG_DLL "${NDI_LIBRARY_DEBUG}" )
 endif()
 
 if( NDI_FOUND AND NOT TARGET NDI::ndi )
@@ -143,8 +162,7 @@ if( NDI_FOUND AND NOT TARGET NDI::ndi )
 
       # If we have both Debug and Release libraries
       if( EXISTS "${NDI_LIBRARY_DEBUG_DLL}" )
-        set_property( TARGET NDI::ndi APPEND PROPERTY
-          IMPORTED_CONFIGURATIONS Debug )
+        set_property( TARGET NDI::ndi APPEND PROPERTY IMPORTED_CONFIGURATIONS Debug )
         set_target_properties( NDI::ndi PROPERTIES
           IMPORTED_LOCATION_DEBUG           "${NDI_LIBRARY_DEBUG_DLL}"
           IMPORTED_IMPLIB_DEBUG             "${NDI_LIBRARY_DEBUG}" )
@@ -163,10 +181,8 @@ if( NDI_FOUND AND NOT TARGET NDI::ndi )
 
       # If we have both Debug and Release libraries
       if( EXISTS "${NDI_LIBRARY_DEBUG}" )
-        set_property( TARGET NDI::ndi APPEND PROPERTY
-          IMPORTED_CONFIGURATIONS Debug )
-        set_target_properties( NDI::ndi PROPERTIES
-          IMPORTED_LOCATION_DEBUG           "${NDI_LIBRARY_DEBUG}" )
+        set_property( TARGET NDI::ndi APPEND PROPERTY IMPORTED_CONFIGURATIONS Debug )
+        set_target_properties( NDI::ndi PROPERTIES IMPORTED_LOCATION_DEBUG "${NDI_LIBRARY_DEBUG}" )
       endif()
 
     endif()

@@ -4,9 +4,7 @@
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
  * \brief  Implementation of block tridiagonal solver
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "btridag.i.hh"

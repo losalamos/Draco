@@ -3,17 +3,14 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
-# note   Copyright (C) 2010-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2010-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
-# 2018-03-10 (KT): As of cmake-3.9.0, we have the option of using the cmake
-# function doxygen_add_docs() instead of the complex logic below.  We would
-# lose a few features, but wouldn't need to maintain this file.
-# Ref. https://cmake.org/cmake/help/v3.10/module/FindDoxygen.html
+# 2018-03-10 (KT): As of cmake-3.9.0, we have the option of using the cmake function
+# doxygen_add_docs() instead of the complex logic below.  We would lose a few features, but wouldn't
+# need to maintain this file.  Ref. https://cmake.org/cmake/help/v3.10/module/FindDoxygen.html
 
-# config/vendor_libraries.cmake is responsible for detecting if doxygen is
-# available.
+# config/vendor_libraries.cmake is responsible for detecting if doxygen is available.
 
 if( NOT DOXYGEN_FOUND )
   return()
@@ -22,12 +19,11 @@ endif()
 include(autodoc_macros)
 set_autodocdir() # --> AUTODOCDIR
 
-# Source directories that should be examined by doxygen Sets ${DOXYGEN_INPUT}.
-# This value is embedded in the doxygen_config file below.
+# Source directories that should be examined by doxygen Sets ${DOXYGEN_INPUT}.  This value is
+# embedded in the doxygen_config file below.
 set_doxygen_input() # --> DOXYGEN_INPUT
 
-# Tell doxygen where image files are located so they can be copied to the
-# output directory.
+# Tell doxygen where image files are located so they can be copied to the output directory.
 set_doxygen_image_path() # --> DOXYGEN_IMAGE_PATH
 
 # Doxygen only allows 32 threads max
@@ -37,7 +33,8 @@ set_doxygen_dot_num_threads() # --> DOXYGEN_DOT_NUM_THREADS
                               # --> PERL_PATH
 
 set( DOXYGEN_HTML_OUTPUT draco )
-set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
+string( CONCAT project_brief "Object-oriented components for numerically intensive, parallel, "
+  "radiation transport applications.")
 string( REPLACE " " "___" project_brief ${project_brief} )
 string( REPLACE " " "___" DOXYGEN_HTML_DYNAMIC_MENUS "${DOXYGEN_HTML_DYNAMIC_MENUS}" )
 string( REPLACE " " "___" PERL_PATH "${PERL_PATH}" )

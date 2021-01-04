@@ -49,7 +49,7 @@ void SideFlags::readFlagTypes(ifstream &meshfile) {
     Insist(static_cast<unsigned int>(flagTypeNum) == i + 1,
            "Invalid mesh file: side flag type out of order");
     Check(i < flagTypes.size());
-    flagTypes[i].reset(new Flags(dims.get_nside_flags(i), dummyString));
+    flagTypes[i] = std::make_shared<Flags>(dims.get_nside_flags(i), dummyString);
     std::getline(meshfile, dummyString);
     flagTypes[i]->readFlags(meshfile);
   }

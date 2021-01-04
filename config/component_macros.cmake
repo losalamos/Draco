@@ -32,7 +32,8 @@ set(Draco_std_target_props_CXX
 set(Draco_std_target_props_CUDA
   CUDA_STANDARD 14              # Force strict C++ 14 standard
   CUDA_EXTENSIONS OFF
-  CUDA_STANDARD_REQUIRED ON)
+  CUDA_STANDARD_REQUIRED ON
+  CUDA_ARCHITECTURES ${CUDA_ARCHITECTURES} )
 #  CUDA_SEPARABLE_COMPILATION ON)
 #  CUDA_RESOLVE_DEVICE_SYMBOLS ON )
 # target_include_directories (my lib
@@ -429,13 +430,14 @@ macro( add_component_library )
 
 endmacro()
 
-# ------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 # Register_scalar_test()
 #
 # 1. Special treatment for Roadrunner/ppe code (must ssh and then run)
 # 2. Register the test
 # 3. Register the pass/fail criteria.
-# ------------------------------------------------------------
+# 4. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#--------------------------------------------------------------------------------------------------#
 macro( register_scalar_test targetname runcmd command cmd_args )
 
   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
@@ -446,53 +448,73 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   endif()
   add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )
 
-  # Reserve enough threads for application unit tests. Normally we only need 1
-  # core for each scalar test.
+  # Reserve enough threads for application unit tests. Normally we only need 1 core for each scalar
+  # test.
   set( num_procs 1 )
 
   # For application unit tests, a parallel job is forked that needs more cores.
   if( addscalartest_APPLICATION_UNIT_TEST )
     if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
       string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${cmd_args}" )
-      # the forked processes needs $num_proc threads.  add one for the master
-      # thread, the original scalar process.
+      # the forked processes needs $num_proc threads.  add one for the master thread, the original
+      # scalar process.
       math( EXPR num_procs  "${num_procs} + 1" )
     endif()
   endif()
 
   # set pass fail criteria, processors required, etc.
-  set_tests_properties( ${targetname}
-    PROPERTIES
+  set_tests_properties( ${targetname} PROPERTIES
     PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
     PROCESSORS              "${num_procs}"
-    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-    )
+    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"  )
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
+    set_tests_properties( ${targetname} PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
   endif()
   if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
   endif()
 
   # Labels
   # message("LABEL (ast) = ${addscalartest_LABEL}")
   if( NOT "${addscalartest_LABEL}x" STREQUAL "x" )
-    set_tests_properties( ${targetname}
-      PROPERTIES  LABELS "${addscalartest_LABEL}" )
+    set_tests_properties( ${targetname} PROPERTIES LABELS "${addscalartest_LABEL}" )
   endif()
+
+  # If ENABLE_MEMORYCHECK=ON, then also create a memcheck_<test> version
+  if( ENABLE_MEMORYCHECK AND (NOT "${addscalartest_LABEL}" MATCHES "nomemcheck") AND
+      EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" )
+    separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
+    add_test(
+      NAME    memcheck_${targetname}
+      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts} ${RUN_CMD} ${command} ${cmdargs} )
+    set_tests_properties( memcheck_${targetname} PROPERTIES
+      PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+      PROCESSORS              "${num_procs}"
+      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      LABELS                  "memcheck;${addscalartest_LABEL}")
+    if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES RESOURCE_LOCK
+        "${addscalartest_RESOURCE_LOCK}" )
+    endif()
+    if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    endif()
+    unset(valgrindopts)
+  endif()
+
   unset( num_procs )
   unset( lverbose )
 endmacro()
 
-# ------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------#
 # Register_parallel_test()
 #
 # 1. Register the test
 # 2. Register the pass/fail criteria.
-# ------------------------------------------------------------
+# 3. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#--------------------------------------------------------------------------------------------------#
 macro( register_parallel_test targetname numPE command cmd_args )
   set( lverbose OFF )
   if( lverbose )
@@ -507,30 +529,26 @@ macro( register_parallel_test targetname numPE command cmd_args )
       COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${mpiexec_omp_preflags_list}
               ${command}
-              ${cmdarg}
-              )
+              ${cmdarg} )
   else()
     add_test(
       NAME    ${targetname}
       COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${MPIRUN_PREFLAGS}
               ${command}
-              ${cmdarg}
-              )
+              ${cmdarg} )
   endif()
   set_tests_properties( ${targetname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-    )
+    WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}" )
   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
     set_tests_properties( ${targetname}
       PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
   endif()
   if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
   endif()
 
   if( addparalleltest_MPI_PLUS_OMP )
@@ -555,14 +573,42 @@ macro( register_parallel_test targetname numPE command cmd_args )
   else()
 
     if( DEFINED addparalleltest_LABEL )
-      set_tests_properties( ${targetname}
-          PROPERTIES LABELS "${addparalleltest_LABEL}" )
+      set_tests_properties( ${targetname} PROPERTIES LABELS "${addparalleltest_LABEL}" )
     endif()
     set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
 
   endif()
+
+  # ------------------------------------------------------------
+  # If ENABLE_MEMORYCHECK=ON, then also create a memcheck_<test> version
+  if( ENABLE_MEMORYCHECK AND (NOT "${addparalleltest_LABEL}" MATCHES "nomemcheck") AND
+      EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" AND (NOT addparalleltest_MPI_PLUS_OMP ))
+    separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
+    add_test(
+      NAME    memcheck_${targetname}
+      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts}
+              ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+              ${MPIRUN_PREFLAGS}
+              ${command}
+              ${cmdarg} )
+    set_tests_properties( memcheck_${targetname} PROPERTIES
+      PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      LABELS                  "memcheck;${addparalleltest_LABEL}")
+    if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES
+        RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+    endif()
+    if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( memcheck_${targetname} PROPERTIES
+        DEPENDS "${addparalleltest_RUN_AFTER}" )
+    endif()
+    set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
+    unset(valgrindopts)
+  endif()
   unset( lverbose )
-endmacro()
+endmacro(register_parallel_test)
 
 #--------------------------------------------------------------------------------------------------#
 # add_scalar_tests
@@ -596,7 +642,7 @@ macro( add_scalar_tests test_sources )
   # These become variables of the form ${addscalartests_SOURCES}, etc.
   cmake_parse_arguments(
     addscalartest
-    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
+    "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;RUN_SERIAL;NONE"
     "LABEL;LINK_LANGUAGE"
     "DEPS;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV} )
@@ -617,14 +663,14 @@ macro( add_scalar_tests test_sources )
   if( NOT addscalartest_LINK_LANGUAGE )
     set( addscalartest_LINK_LANGUAGE CXX )
   endif()
- if( "${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA" )
-   set_source_files_properties( ${addscalartest_SOURCES} PROPERTIES LANGUAGE CUDA )
- endif()
+  if( "${addscalartest_LINK_LANGUAGE}" STREQUAL "CUDA" )
+    set_source_files_properties( ${addscalartest_SOURCES} PROPERTIES LANGUAGE CUDA )
+  endif()
 
   # Special Cases:
   # ------------------------------------------------------------
-  # On some platforms (Trinity, Sierra), even scalar tests must be run
-  # underneath MPIEXEC_EXECUTABLE (srun, jsrun, lrun):
+  # On some platforms (Trinity, Sierra), even scalar tests must be run underneath MPIEXEC_EXECUTABLE
+  # (srun, jsrun, lrun):
   separate_arguments(MPIEXEC_PREFLAGS)
   if( "${MPIEXEC_EXECUTABLE}" MATCHES "srun" OR
       "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
@@ -633,12 +679,12 @@ macro( add_scalar_tests test_sources )
     unset( RUN_CMD )
   endif()
 
-  # Special cases for tests that use the ApplicationUnitTest
-  # framework (see c4/ApplicationUnitTest.hh).
+  # Special cases for tests that use the ApplicationUnitTest framework (see
+  # c4/ApplicationUnitTest.hh).
   if( addscalartest_APPLICATION_UNIT_TEST )
-    # If this is an ApplicationUnitTest based test then the TEST_ARGS will look
-    # like "--np 1;--np 2;--np 4".  For the case where DRACO_C4 = SCALAR, we
-    # will automatically demote these arguments to "--np scalar."
+    # If this is an ApplicationUnitTest based test then the TEST_ARGS will look like "--np 1;--np
+    # 2;--np 4".  For the case where DRACO_C4 = SCALAR, we will automatically demote these arguments
+    # to "--np scalar."
     if( "${DRACO_C4}" MATCHES "SCALAR" )
       set( addscalartest_TEST_ARGS "--np scalar" )
     endif()
@@ -657,8 +703,7 @@ macro( add_scalar_tests test_sources )
 
   # Format resource lock command
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set( addscalartest_RESOURCE_LOCK
-      "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
+    set( addscalartest_RESOURCE_LOCK "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
   endif()
 
   # What is the component name (always use Lib_${compname} as a dependency).
@@ -677,28 +722,24 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
     add_executable( Ut_${compname}_${testname}_exe ${file} )
     dbs_std_tgt_props( Ut_${compname}_${testname}_exe )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      OUTPUT_NAME ${testname} )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      VS_KEYWORD  ${testname} )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      FOLDER      ${compname}_test )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"" )
-    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-      COMPILE_DEFINITIONS "PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
-    if( DEFINED DRACO_LINK_OPTIONS AND
-        NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY
-        LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY OUTPUT_NAME ${testname} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY VS_KEYWORD  ${testname} )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY FOLDER ${compname}_test )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY COMPILE_DEFINITIONS
+      "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"" )
+    set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY COMPILE_DEFINITIONS
+      "PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
+    if( DEFINED DRACO_LINK_OPTIONS AND NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x")
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY LINK_OPTIONS
+        ${DRACO_LINK_OPTIONS} )
     endif()
     if( addscalartest_LINK_WITH_FORTRAN )
-      set_property( TARGET Ut_${compname}_${testname}_exe APPEND
-        PROPERTY LINKER_LANGUAGE Fortran )
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY LINKER_LANGUAGE Fortran )
     endif()
-    target_link_libraries(
-      Ut_${compname}_${testname}_exe
-      ${test_lib_target_name}
+    if( addscalartest_RUN_SERIAL )
+      set_property( TARGET Ut_${compname}_${testname}_exe APPEND PROPERTY RUN_SERIAL ON )
+    endif()
+    target_link_libraries( Ut_${compname}_${testname}_exe ${test_lib_target_name}
       ${addscalartest_DEPS} )
   endforeach()
 
@@ -708,17 +749,19 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-      register_scalar_test( ${compname}_${testname}
-        "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
+      register_scalar_test( ${compname}_${testname} "${RUN_CMD}"
+        $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
     else()
       set( iarg "0" )
       foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
-        register_scalar_test( ${compname}_${testname}_arg${iarg}
-          "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
+        register_scalar_test( ${compname}_${testname}_arg${iarg} "${RUN_CMD}"
+          $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
       endforeach()
     endif()
   endforeach()
+
+  unset(valgrindopts)
 
 endmacro(add_scalar_tests)
 
@@ -913,7 +956,7 @@ macro( add_parallel_tests )
           if( lverbose )
             message("   register_scalar_test( ${compname}_${testname}_arg${iarg}
             \"${RUN_CMD}\" ${testname} \"${cmdarg}\" ) ")
-            endif()
+          endif()
           register_scalar_test( ${compname}_${testname}_arg${iarg}
             "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
         endforeach()
@@ -964,7 +1007,7 @@ macro( provide_aux_files )
     endif()
     set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
     if( "${file}x" STREQUAL "x" OR "${outfile}x" STREQUAL "x")
-    message( FATAL_ERROR " COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}")
+      message( FATAL_ERROR " COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}")
     endif()
     add_custom_command(
       OUTPUT  ${outfile}
@@ -1025,7 +1068,7 @@ macro( process_autodoc_pages )
     list( APPEND DOXYGEN_IMAGE_PATH "${PROJECT_SOURCE_DIR}/autodoc" )
   endif()
   set( DOXYGEN_IMAGE_PATH "${DOXYGEN_IMAGE_PATH}" CACHE PATH
-     "List of directories that contain images for doxygen pages." FORCE )
+    "List of directories that contain images for doxygen pages." FORCE )
   unset( images_in )
   unset( num_images )
 endmacro()

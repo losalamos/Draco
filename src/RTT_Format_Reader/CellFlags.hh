@@ -33,7 +33,7 @@ class CellFlags {
 
 public:
   explicit CellFlags(const Dims &dims_) : dims(dims_), flagTypes(dims.get_ncell_flag_types()) {}
-  ~CellFlags() {}
+  ~CellFlags() = default;
 
   void readCellFlags(ifstream &meshfile);
 

@@ -516,9 +516,8 @@ void Ensight_Translator::write_vrtx_data(const uint32_t part_num,
   size_t nvertices = vertices.size();
   size_t ndata = vrtx_data.ncols(0);
 
-  std::string err = "Vertex data files not open."
-                    "  Must call open() before write_part().";
-  Insist(d_vertex_out.size() == static_cast<size_t>(ndata), err.c_str());
+  std::string err = "Vertex data files not open. Must call open() before write_part().";
+  Insist(d_vertex_out.size() == ndata, err.c_str());
 
   // loop over all vertex data fields and write out data for each field
   for (size_t nvd = 0; nvd < ndata; nvd++) {

@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Galerkin_Ordinate_Space
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Galerkin_Ordinate_Space.hh"
@@ -26,10 +25,10 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1D_(Quadrature_Class, unsig
   vector<Moment> result;
 
   // Choose: l= 0, ..., N-1, k = 0
-  int k(0); // k is always zero for 1D.
+  int constexpr k(0); // k is always zero for 1D.
 
   for (unsigned ell = 0; ell < N; ++ell)
-    result.push_back(Moment(ell, k));
+    result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -43,7 +42,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class, unsi
   for (int ell = 0; ell < static_cast<int>(N); ++ell)
     for (int k = 0; k <= ell; ++k)
       if ((ell + k) % 2 == 0)
-        result.push_back(Moment(ell, k)); // Eliminate moments even in eta
+        result.emplace_back(Moment(ell, k)); // Eliminate moments even in eta
 
   return result;
 }
@@ -60,7 +59,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class, unsig
   for (int ell = 0; ell <= static_cast<int>(N); ++ell)
     for (int k = -ell; k <= ell; ++k)
       if (((ell + abs(k)) % 2 == 0) && ((ell < static_cast<int>(N)) || (k < 0)))
-        result.push_back(Moment(ell, k));
+        result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -77,12 +76,12 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class, unsi
 
   for (int ell = 0; ell < static_cast<int>(N); ++ell)
     for (int k = 0; k <= ell; ++k)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
 
   // Add N and k>0, k odd
   int ell(N);
   for (int k = 1; k <= ell; k += 2)
-    result.push_back(Moment(ell, k));
+    result.emplace_back(Moment(ell, k));
 
   return result;
 }
@@ -97,27 +96,27 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsig
   // Choose: l= 0, ..., N-1, k = -l, ..., l
   for (unsigned ell = 0; ell < N; ++ell)
     for (int k = -1 * static_cast<int>(ell); k <= static_cast<int>(ell); ++k)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
 
   // Add ell=N and k<0
   {
     unsigned ell(N);
     for (int k(-1 * static_cast<int>(ell)); k < 0; ++k)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
   }
 
   // Add ell=N, k>0, k odd
   {
     int ell(N);
     for (int k = 1; k <= ell; k += 2)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
   }
 
   // Add ell=N+1 and k<0, k even
   {
     unsigned ell(N + 1);
     for (int k(-1 * static_cast<int>(ell) + 1); k < 0; k += 2)
-      result.push_back(Moment(ell, k));
+      result.emplace_back(Moment(ell, k));
   }
 
   return result;
@@ -126,23 +125,20 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class, unsig
 //------------------------------------------------------------------------------------------------//
 /*!
  * \param dimension Dimension of the physical problem space (1, 2, or 3)
- * \param geometry Geometry of the physical problem space (spherical,
- *             axisymmetric, Cartesian)
+ * \param geometry Geometry of the physical problem space (spherical, axisymmetric, Cartesian)
  * \param ordinates Set of ordinate directions
- * \param quadrature_class Class of the quadrature used to generate the ordinate
- *             set. At present, only TRIANGLE_QUADRATURE is supported.
- * \param sn_order Order of the quadrature. This is equal to the number of
- *             levels for triangular and square quadratures.
- * \param expansion_order Expansion order of the desired scattering moment
- *             space.
+ * \param quadrature_class Class of the quadrature used to generate the ordinate set. At present,
+ *             only TRIANGLE_QUADRATURE is supported.
+ * \param sn_order Order of the quadrature. This is equal to the number of levels for triangular and
+ *             square quadratures.
+ * \param expansion_order Expansion order of the desired scattering moment space.
  * \param method Enum value specifying the desired quadrature type.
- * \param extra_starting_directions Add extra directions to each level set. In
- *             most geometries, an additional ordinate is added that is opposite
- *             in direction to the starting direction. This is used to implement
- *             reflection exactly in curvilinear coordinates. In 1D spherical,
- *             that means an additional angle is added at mu=1. In axisymmetric,
- *             that means additional angles are added that are oriented opposite
- *             to the incoming starting direction on each level.
+ * \param extra_starting_directions Add extra directions to each level set. In most geometries, an
+ *             additional ordinate is added that is opposite in direction to the starting
+ *             direction. This is used to implement reflection exactly in curvilinear
+ *             coordinates. In 1D spherical, that means an additional angle is added at mu=1. In
+ *             axisymmetric, that means additional angles are added that are oriented opposite to
+ *             the incoming starting direction on each level.
  * \param ordering Ordering into which to sort the ordinates.
  */
 Galerkin_Ordinate_Space::Galerkin_Ordinate_Space(
@@ -185,9 +181,8 @@ QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * In the future, this function will allow the client to specify the maximum
- * order to include, but for now, we include all full orders, leaving out any
- * Galerkin augments.
+ * In the future, this function will allow the client to specify the maximum order to include, but
+ * for now, we include all full orders, leaving out any Galerkin augments.
  */
 vector<double> Galerkin_Ordinate_Space::D() const {
   size_t const number_of_ordinates = ordinates().size();
@@ -204,9 +199,8 @@ vector<double> Galerkin_Ordinate_Space::D() const {
 }
 //------------------------------------------------------------------------------------------------//
 /*!
- * In the future, this function will allow the client to specify the maximum
- * order to include, but for now, we include all full orders, leaving out any
- * Galerkin augments.
+ * In the future, this function will allow the client to specify the maximum order to include, but
+ * for now, we include all full orders, leaving out any Galerkin augments.
  */
 vector<double> Galerkin_Ordinate_Space::M() const {
   size_t const number_of_ordinates = ordinates().size();
@@ -238,10 +232,10 @@ void Galerkin_Ordinate_Space::compute_operators() {
   unsigned count(0);
   for (unsigned i = 0; i < numOrdinates; ++i) {
     if (std::abs(ordinates[i].wt()) > std::numeric_limits<decltype(ordinates[i].wt())>::min()) {
-      cartesian_ordinates.push_back(ordinates[i]);
-      indexes.push_back(count++);
+      cartesian_ordinates.emplace_back(ordinates[i]);
+      indexes.emplace_back(count++);
     } else
-      indexes.push_back(0);
+      indexes.emplace_back(0);
   }
 
   size_t const numCartesianOrdinates(cartesian_ordinates.size());
@@ -255,8 +249,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
 
   if (method_ == 1 || method_ == 3) {
     // ------------------------------------------------------------------------
-    // invert the (m x n) moment-to-discrete matrix M to compute the
-    // discrete-to-moment matrix D
+    // invert the (m x n) moment-to-discrete matrix M to compute the discrete-to-moment matrix D
     // ------------------------------------------------------------------------
 
     cartesian_M.swap(cartesian_M_SN);
@@ -280,8 +273,8 @@ void Galerkin_Ordinate_Space::compute_operators() {
       }
     }
   } else if (method_ == 2) {
-    // first get new ordinate weights from the usual GQ method, needed to
-    // accurately integrate all moments
+    // first get new ordinate weights from the usual GQ method, needed to accurately integrate all
+    // moments
 
     // This branch is not tested
     Insist(false, "This branch commented out because there are no supporting "
@@ -294,8 +287,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
   if (geometry == rtt_mesh_element::CARTESIAN) {
     M_ = cartesian_M;
     D_ = cartesian_D;
-  } else // augment the Cartesian operators for the zero-weight starting
-         // directions then store
+  } else // augment the Cartesian operators for the zero-weight starting directions then store
   {
     M_ = augment_M(indexes, cartesian_M);
 
@@ -406,27 +398,21 @@ vector<double> Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ord
         if (geometry == rtt_mesh_element::AXISYMMETRIC) {
           // R-Z coordinate system
           //
-          // It is important to remember here that the positive mu axis points
-          // to the left and the positive eta axis points up, when the unit
-          // sphere is projected on the plane of the mu- and eta-axis in R-Z. In
-          // this case, phi is measured from the mu-axis counterclockwise.
+          // It is important to remember here that the positive mu axis points to the left and the
+          // positive eta axis points up, when the unit sphere is projected on the plane of the mu-
+          // and eta-axis in R-Z. In this case, phi is measured from the mu-axis counterclockwise.
           //
-          // This accounts for the fact that the azimuthal angle is discretized
-          // on levels of the xi-axis, making the computation of the azimuthal
-          // angle here consistent with the discretization by using the eta and
-          // mu ordinates to define phi.
+          // This accounts for the fact that the azimuthal angle is discretized on levels of the
+          // xi-axis, making the computation of the azimuthal angle here consistent with the
+          // discretization by using the eta and mu ordinates to define phi.
 
           double phi(compute_azimuthalAngle(mu, xi));
           M[n + m * numMoments] = Ylm(ell, k, eta, phi, sumwt);
-
-          //                    polar = eta;
-          //                    azimuthal = phi;
         } else if (geometry == rtt_mesh_element::CARTESIAN) {
           // X-Y coordinate system
           //
-          // In order to make the harmonic trial space is correctly oriented
-          // with respect to the moments chosen, the value of xi and eta are
-          // swapped.
+          // In order to make the harmonic trial space is correctly oriented with respect to the
+          // moments chosen, the value of xi and eta are swapped.
 
           double phi(compute_azimuthalAngle(mu, eta));
           M[n + m * numMoments] = Ylm(ell, k, xi, phi, sumwt);
@@ -451,8 +437,8 @@ vector<double> Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsign
   std::vector<double> A(Ain);
   std::vector<double> B(m * n);
 
-  // Create GSL matrix views of A and B
-  // LU will get a copy of M.  This matrix will be decomposed into LU.
+  // Create GSL matrix views of A and B.  LU will get a copy of M.  This matrix will be decomposed
+  // into LU.
   gsl_matrix_view gsl_A = gsl_matrix_view_array(&A[0], m, n);
   gsl_matrix_view gsl_B = gsl_matrix_view_array(&B[0], n, m);
 
@@ -462,29 +448,26 @@ vector<double> Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsign
   // Store information about sign changes in this variable.
   int signum(0);
 
-  // Factorize the square matrix M into the LU decomposition PM = LU.  On output
-  // the diagonal and upper triangular part of the input matrix M contain the
-  // matrix U.  The lower triangular part of the input matrix (excluding the
-  // diagonal) contains L. The diagonal elements of L are unity, and are not
-  // stored.
+  // Factorize the square matrix M into the LU decomposition PM = LU.  On output the diagonal and
+  // upper triangular part of the input matrix M contain the matrix U.  The lower triangular part of
+  // the input matrix (excluding the diagonal) contains L. The diagonal elements of L are unity, and
+  // are not stored.
   //
-  // The permutation matrix P is encoded in the permutation p.  The j-th column
-  // of the matrix P is given by the k-th column of the identity, where k=p[j]
-  // the j-th element of the permutation vector.  The sign of the permutation is
-  // given by signum.  It has the value \f$ (-1)^n \f$, where n is the number of
-  // interchanges in the permutation.
+  // The permutation matrix P is encoded in the permutation p.  The j-th column of the matrix P is
+  // given by the k-th column of the identity, where k=p[j] the j-th element of the permutation
+  // vector.  The sign of the permutation is given by signum.  It has the value \f$ (-1)^n \f$,
+  // where n is the number of interchanges in the permutation.
   //
-  // The algorithm used in the decomposition is Gaussian Elimination with
-  // partial pivoting (Golub & Van Loan, Matrix Computations, Algorithm 3.4.1).
+  // The algorithm used in the decomposition is Gaussian Elimination with partial pivoting (Golub &
+  // Van Loan, Matrix Computations, Algorithm 3.4.1).
 
   // Store the LU decomposition in the matrix A.
   Remember(int result =) gsl_linalg_LU_decomp(&gsl_A.matrix, p, &signum);
   Check(result == 0);
-  // Check( diagonal_not_zero( M, n, m ) );
 
-  // Compute the inverse of the matrix LU from its LU decomposition (LU,p),
-  // storing the results in the matrix B.  The inverse is computed by solving
-  // the system (LU) x = b for each column of the identity matrix.
+  // Compute the inverse of the matrix LU from its LU decomposition (LU,p), storing the results in
+  // the matrix B.  The inverse is computed by solving the system (LU) x = b for each column of the
+  // identity matrix.
 
   Remember(result =) gsl_linalg_LU_invert(&gsl_A.matrix, p, &gsl_B.matrix);
 

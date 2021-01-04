@@ -4,8 +4,7 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for the Parse_Table class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -29,7 +28,7 @@ using namespace rtt_dsxx;
 //------------------------------------------------------------------------------------------------//
 
 static std::array<const char *, 3> const color{"BLACK", "BLUE", "BLUE GREEN"};
-std::array<bool, 3> color_set;
+static std::array<bool, 3> color_set;
 
 static void Parse_Color(Token_Stream &, int i) {
   cout << "You have requested " << color[i] << endl;

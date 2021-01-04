@@ -4,8 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Parser template
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -23,8 +22,7 @@ using namespace rtt_parser;
 // TESTS
 //------------------------------------------------------------------------------------------------//
 /*
- * The following would typically be declared in a file associated with the
- * Parent class.
+ * The following would typically be declared in a file associated with the Parent class.
  */
 class Parent {
 public:
@@ -110,7 +108,7 @@ public:
   Son(double /*snip_and_snails*/) {}
 };
 
-double parsed_snips_and_snails;
+static double parsed_snips_and_snails;
 
 void parse_snips_and_snails(Token_Stream &tokens, int) {
   if (parsed_snips_and_snails >= 0.0) {
@@ -196,7 +194,7 @@ public:
   Daughter(double /*sugar_and_spice*/) {}
 };
 
-double parsed_sugar_and_spice;
+static double parsed_sugar_and_spice;
 
 void parse_sugar_and_spice(Token_Stream &tokens, int) {
   if (parsed_sugar_and_spice >= 0.0) {
@@ -271,13 +269,13 @@ template <> std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens
 
 /* the followingn would typically live in some client file for Parent. */
 
-std::shared_ptr<Parent> parent;
+static std::shared_ptr<Parent> parent;
 
 //static
 void parse_parent(Token_Stream &tokens, int) { parent = parse_class<Parent>(tokens); }
 
 std::array<Keyword, 1> const top_keywords{Keyword{"parent", parse_parent, 0, ""}};
-Parse_Table top_parse_table(top_keywords.data(), top_keywords.size());
+static Parse_Table top_parse_table(top_keywords.data(), top_keywords.size());
 
 std::shared_ptr<Parent> parse_son(Token_Stream &tokens) { return parse_class<Son>(tokens); }
 

@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Aug 29 16:46:52 2001
  * \brief  Analytic_Model definitions
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_Analytic_Models_hh
@@ -25,9 +24,9 @@ namespace rtt_cdi_analytic {
 /*!
  * \brief Enumeration describing the opacity models that are available.
  *
- * Only opacity models that have been registered here can be unpacked by the
- * Analytic_Gray_Opacity and Analytic_Multigroup_Opacity classes.  The
- * enumeration names should be the same as the derived class names.
+ * Only opacity models that have been registered here can be unpacked by the Analytic_Gray_Opacity
+ * and Analytic_Multigroup_Opacity classes.  The enumeration names should be the same as the derived
+ * class names.
  */
 enum Opacity_Models {
   CONSTANT_ANALYTIC_OPACITY_MODEL,
@@ -102,12 +101,12 @@ public:
   //! Interface for derived analytic opacity models.
   virtual double calculate_opacity(double T, double rho, double /*nu*/) const {
     return calculate_opacity(T, rho);
-  };
+  }
 
   //! Interface for derived analytic opacity models.
   virtual double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const {
     return calculate_opacity(T, rho);
-  };
+  }
 
   //! Return parameters.
   virtual sf_double get_parameters() const = 0;

@@ -22,13 +22,13 @@
 include_guard(GLOBAL)
 include( FeatureSummary )
 
-##---------------------------------------------------------------------------##
-## Set MPI flavor and vendor version
-##
-## Returns (as cache variables)
-## - MPI_VERSION
-## - MPI_FLAVOR = {openmpi, mpich, cray, spectrum, mvapich2, intel}
-##---------------------------------------------------------------------------##
+#--------------------------------------------------------------------------------------------------#
+# Set MPI flavor and vendor version
+#
+# Returns (as cache variables)
+# - MPI_VERSION
+# - MPI_FLAVOR = {openmpi, mpich, cray, spectrum, mvapich2, intel}
+#--------------------------------------------------------------------------------------------------#
 function( setMPIflavorVer )
 
   # First attempt to determine MPI flavor -- scape flavor from full path (this ususally works for
@@ -183,8 +183,7 @@ macro( query_topology )
   set( MPI_CORES_PER_CPU 4 )
   set( MPI_PHYSICAL_CORES 1 )
 
-  if( "${SITENAME}" STREQUAL "Trinitite" OR
-      "${SITENAME}" STREQUAL "Trinity" )
+  if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Trinity" )
     # Backend is different than build-node
     if( $ENV{CRAY_CPU_TARGET} MATCHES "mic-knl" )
       set( MPI_CORES_PER_CPU 17 )
@@ -201,8 +200,7 @@ macro( query_topology )
     string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
     foreach( line ${cpuinfo_data} )
       if( "${line}" MATCHES "cpu cores" )
-        string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
-          MPI_CORES_PER_CPU "${line}" )
+        string( REGEX REPLACE ".* ([0-9]+).*" "\\1" MPI_CORES_PER_CPU "${line}" )
       elseif( "${line}" MATCHES "physical id" )
         string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
         if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
@@ -214,24 +212,19 @@ macro( query_topology )
     math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
   endif()
 
-  math( EXPR MPI_CPUS_PER_NODE
-    "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
-  set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-    "Number of multi-core CPUs per node" FORCE )
-  set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-    "Number of cores per cpu" FORCE )
+  math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+  set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING "Number of multi-core CPUs per node"
+    FORCE )
+  set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING "Number of cores per cpu" FORCE )
 
   #
   # Check for hyper-threading - This is important for reserving threads for OpenMP tests...
   #
-  math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-    "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+  math( EXPR MPI_MAX_NUMPROCS_PHYSICAL "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
   if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyper-threading?"
-      FORCE )
+    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyper-threading?" FORCE )
   else()
-    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyper-threading?"
-      FORCE )
+    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyper-threading?" FORCE )
   endif()
 endmacro()
 
@@ -248,35 +241,31 @@ macro( setupOpenMPI )
   # Find cores/cpu, cpu/node, hyper-threading
   query_topology()
 
+  # Extra options provided from the environment or by cmake
+  if( DEFINED ENV{MPIEXEC_PREFLAGS} )
+    set( MPIEXEC_PREFLAGS "$ENV{MPIEXEC_PREFLAGS}" )
+  endif()
+
   # Notes:
   # - For PERFBENCH that use Quo, we need '--map-by socket:SPAN' instead of '-bind-to none'.  The
   #   'bind-to none' is required to pack a node.
   # - Adding '--debug-daemons' is often requested by the OpenMPI dev team in conjunction with
   #   'export OMPI_MCA_btl_base_verbose=100' to obtain debug traces from openmpi.
-  set( MPIEXEC_PREFLAGS "-bind-to none")
-  set( MPIEXEC_PREFLAGS_PERFBENCH "--map-by socket:SPAN")
+  set(MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS} --map-by socket:SPAN")
+  string(APPEND MPIEXEC_PREFLAGS " -bind-to none")
   # Setup for OMP plus MPI
   if( NOT APPLE )
     # -bind-to fails on OSX, See #691
-    set( MPIEXEC_OMP_PREFLAGS "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
-  endif()
-
-  # Special settings for CI
-  # . --oversubscribe is only available for openmpi version >= 3.0
-  # . -H localhost,localhost,localhost,localhost might work for older versions.
-  # . --allow-run-as-root is required for CI builds.
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
-    set(runasroot "--allow-run-as-root --oversubscribe")
-    string(APPEND MPIEXEC_PREFLAGS           " ${runasroot}")
-    string(APPEND MPIEXEC_PREFLAGS_PERFBENCH " ${runasroot}")
-    string(APPEND MPIEXEC_OMP_PREFLAGS       " ${runasroot}")
-    unset(runasroot)
+    set(MPIEXEC_OMP_PREFLAGS
+      "${MPIEXEC_PREFLAGS} --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
   endif()
 
   # Spectrum-MPI on darwin
   # Limit communication to on-node via '-intra sm' or 'intra vader'
   # https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
   if( "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
+    string(REPLACE "-bind-to none" "-bind-to core" MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS})
+    string(REPLACE "-bind-to none" "-bind-to core" MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS})
     set(smpi-sm-only "-intra sm -aff off --report-bindings")
     string(APPEND MPIEXEC_PREFLAGS     " ${smpi-sm-only}")
     string(APPEND MPIEXEC_OMP_PREFLAGS " ${smpi-sm-only}")
@@ -284,15 +273,14 @@ macro( setupOpenMPI )
   endif()
 
   # Cache the result
-  set( MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING "extra mpirun flags (list)." FORCE)
   set( MPIEXEC_PREFLAGS_PERFBENCH "${MPIEXEC_PREFLAGS_PERFBENCH}" CACHE STRING
     "extra mpirun flags (list)." FORCE)
-  set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_OMP_PREFLAGS}" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
+  set( MPIEXEC_OMP_PREFLAGS "${MPIEXEC_OMP_PREFLAGS}" CACHE STRING "extra mpirun flags (list)."
+    FORCE)
 
-  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
-    MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL
+    MPI_HYPERTHREADING )
 
 endmacro()
 

@@ -83,12 +83,13 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
  * \return A new, probably shortened, string without unwanted leading/training characters.
  */
 std::string trim(std::string const &str, std::string const &whitespace) {
-  auto const strBegin = str.find_first_not_of(whitespace);
+  std::string retval(str.data()); // prune at first '\0' if str is a c-string.
+  auto const strBegin = retval.find_first_not_of(whitespace);
   if (strBegin == std::string::npos)
     return ""; // no content
-  auto const strEnd = str.find_last_not_of(whitespace);
+  auto const strEnd = retval.find_last_not_of(whitespace);
   auto const strRange = strEnd - strBegin + 1;
-  return str.substr(strBegin, strRange);
+  return retval.substr(strBegin, strRange);
 }
 
 //------------------------------------------------------------------------------------------------//

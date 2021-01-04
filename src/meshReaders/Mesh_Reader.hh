@@ -111,7 +111,7 @@ public:
   virtual std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
   get_element_defs() const {
     return std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>();
-  };
+  }
 
   //! Provides a check on the integrity of the mesh data.
   virtual bool invariant() const = 0;

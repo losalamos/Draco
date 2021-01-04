@@ -3,8 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Data_Table.hh"
@@ -75,9 +74,8 @@ void test_array(rtt_dsxx::UnitTest &ut) {
 
 #ifdef DEBUG
   /*
-  GCC will issue a warning at compile time for a Release build (with -ftree-vrp,
-  which is enabled by default with -O2 or higher).  The warning appears because
-  the size of dt is known at compile time.
+  GCC will issue a warning at compile time for a Release build (with -ftree-vrp, which is enabled by
+  default with -O2 or higher).  The warning appears because the size of dt is known at compile time.
 */
   caught = false;
   try {
@@ -126,10 +124,11 @@ void test_scalar(rtt_dsxx::UnitTest &ut) {
   }
   FAIL_IF(caught);
 
-#ifndef RELWITHDEBINFO
-
+#ifdef DEBUG
+  // GCC in RELEASE mode will refuse to compile this code.
   caught = false;
   try {
+    // access one past end of valid range.
     std::cout << dt[1];
   } catch (rtt_dsxx::assertion & /* error */) {
     caught = true;

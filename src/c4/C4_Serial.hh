@@ -1,4 +1,4 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/C4_Serial.hh
  * \author Thomas M. Evans
@@ -13,6 +13,10 @@
 #include "c4/config.h"
 #include "ds++/Assert.hh"
 #include <algorithm>
+
+#if !defined(rtt_c4_global_hh) && !defined(rtt_c4_C4_Functions_hh)
+#error "Include c4/C4_Functions.hh instead of this c4/C4_Serial.hh"
+#endif
 
 #ifdef C4_SCALAR
 
@@ -35,10 +39,22 @@ int create_vector_type(unsigned /*count*/, unsigned /*blocklength*/, unsigned /*
 }
 
 //------------------------------------------------------------------------------------------------//
+// Global_<Op> functions
+//------------------------------------------------------------------------------------------------//
+
+template <typename T, typename L, typename std::enable_if<std::is_integral<L>::value, bool>::type>
+void global_sum(T * /*x*/, L /*n*/) {
+  return;
+}
+
+//------------------------------------------------------------------------------------------------//
 // BLOCKING SEND/RECEIVE OPERATIONS
 //------------------------------------------------------------------------------------------------//
 
 template <typename T> int broadcast(T * /*buffer*/, int /*size*/, int /*root*/) {
+  return C4_SUCCESS;
+}
+template <typename T> int broadcast(T * /*buffer*/, size_t /*size*/, size_t /*root*/) {
   return C4_SUCCESS;
 }
 

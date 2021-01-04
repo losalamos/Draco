@@ -4,8 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Tuesday, Jul 10, 2018, 10:23 am
  * \brief  X3D_Draco_Mesh_Reader class unit test.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Test_Mesh_Interface.hh"
@@ -75,8 +74,8 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     // sides must always give 2 nodes per face in X3D
     FAIL_IF_NOT(x3d_reader->get_sidetype(side) == 2);
 
-    // boundary conditions are not supplied in X3D
-    // (note this check is specialized for the 1-cell mesh)
+    // boundary conditions are not supplied in X3D (note this check is specialized for the 1-cell
+    // mesh)
     FAIL_IF_NOT(x3d_reader->get_sideflag(side) == bdy_flags[side]);
 
     // check node indices
@@ -174,13 +173,12 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     std::vector<unsigned> test_sn_linkage = mesh_iface.flatten_sn_linkage(mesh->get_cs_linkage());
 
     // check that sn_linkage is a permutation of the original side-node linkage
-    std::vector<unsigned>::const_iterator sn_first = side_to_node_linkage.begin();
-    std::vector<unsigned>::const_iterator test_sn_first = test_sn_linkage.begin();
+    auto sn_first = side_to_node_linkage.begin();
+    auto test_sn_first = test_sn_linkage.begin();
 
     for (unsigned side = 0; side < mesh_iface.num_sides; ++side) {
 
-      // check that sn_linkage is a permutation of the original side-node
-      // linkage
+      // check that sn_linkage is a permutation of the original side-node linkage
       FAIL_IF(!std::is_permutation(test_sn_first, test_sn_first + side_node_count[side], sn_first,
                                    sn_first + side_node_count[side]));
 

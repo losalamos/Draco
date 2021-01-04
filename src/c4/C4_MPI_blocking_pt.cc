@@ -3,9 +3,8 @@
  * \file   c4/C4_MPI_blocking_pt.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:41:05 2002
- * \brief  C4 MPI Blocking Send/Recv instantiations.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \brief  C4 MPI Blocking Send/Receive instantiations.
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/config.h"
@@ -70,6 +69,21 @@ template int broadcast<unsigned long long>(unsigned long long *, int, int);
 template int broadcast<float>(float *, int, int);
 template int broadcast<double>(double *, int, int);
 template int broadcast<long double>(long double *, int, int);
+
+template int broadcast<bool>(bool *, size_t, size_t);
+template int broadcast<char>(char *, size_t, size_t);
+template int broadcast<unsigned char>(unsigned char *, size_t, size_t);
+template int broadcast<short>(short *, size_t, size_t);
+template int broadcast<unsigned short>(unsigned short *, size_t, size_t);
+template int broadcast<int>(int *, size_t, size_t);
+template int broadcast<unsigned int>(unsigned int *, size_t, size_t);
+template int broadcast<long>(long *, size_t, size_t);
+template int broadcast<long long>(long long *, size_t, size_t);
+template int broadcast<unsigned long>(unsigned long *, size_t, size_t);
+template int broadcast<unsigned long long>(unsigned long long *, size_t, size_t);
+template int broadcast<float>(float *, size_t, size_t);
+template int broadcast<double>(double *, size_t, size_t);
+template int broadcast<long double>(long double *, size_t, size_t);
 
 template int send_receive(bool *sendbuf, int sendcount, int destination, bool *recvbuf,
                           int recvcount, int source, int sendtag, int recvtag);

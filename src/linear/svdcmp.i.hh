@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef linear_svdcmp_i_hh
@@ -21,14 +20,12 @@ namespace rtt_linear {
 /*!
  * \brief Compute the singular value decomposition of a matrix.
  *
- * Compute the decomposition of a matrix \f$ A=UWV^T \f$ where \f$ U \f$ has the
- * same shape as the original matrix; \f$ W \f$ is diagonal with rank equal to
- * the column order of \f$ A \f$; and \f$ V \f$ is a square full matrix of rank
- * equal to the column order of \f$ A \f$.
+ * Compute the decomposition of a matrix \f$ A=UWV^T \f$ where \f$ U \f$ has the same shape as the
+ * original matrix; \f$ W \f$ is diagonal with rank equal to the column order of \f$ A \f$; and \f$
+ * V \f$ is a square full matrix of rank equal to the column order of \f$ A \f$.
  *
- * The singular value decomposition is tremendously useful for manipulation both
- * nonsquare matrices and nearly singular square matrices.  The following
- * routine is very robust.
+ * The singular value decomposition is tremendously useful for manipulation both nonsquare matrices
+ * and nearly singular square matrices.  The following routine is very robust.
  *
  * \arg \a RandomContainer A random access container type
  * \param a Matrix to be decomposed.  On exit, contains \f$ U \f$.
@@ -49,8 +46,8 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n, RandomContai
   using std::min;
   using std::sqrt;
 
-  // More than 30 iterations says something is terribly wrong -- this shouldn't
-  // happen even for very large matrices.
+  // More than 30 iterations says something is terribly wrong -- this shouldn't happen even for very
+  // large matrices.
   const unsigned MAX_ITERATIONS = 30;
   // minimum representable value
   double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();

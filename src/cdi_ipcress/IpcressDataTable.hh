@@ -103,41 +103,39 @@ public:
   // ACCESSORS
 
   //! Retrieve the size of the temperature grid.
-  size_t getNumTemperatures() const { return temperatures.size(); };
+  size_t getNumTemperatures() const { return temperatures.size(); }
 
   //! Retrieve the size of the density grid.
-  size_t getNumDensities() const { return densities.size(); };
+  size_t getNumDensities() const { return densities.size(); }
 
   //! Retrieve the size of the energy boundary grid.
-  size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
+  size_t getNumGroupBoundaries() const { return groupBoundaries.size(); }
 
   //! Retrieve the logarithmic temperature grid.
-  std::vector<double> const &getTemperatures() const { return temperatures; };
+  std::vector<double> const &getTemperatures() const { return temperatures; }
 
   //! Retrieve the logarithmic density grid.
-  std::vector<double> const &getDensities() const { return densities; };
+  std::vector<double> const &getDensities() const { return densities; }
 
   //! Retrieve the energy boundary grid.
-  std::vector<double> const &getGroupBoundaries() const { return groupBoundaries; };
+  std::vector<double> const &getGroupBoundaries() const { return groupBoundaries; }
 
   //! Return a "plain English" description of the data table.
-  std::string const &getDataDescriptor() const { return dataDescriptor; };
+  std::string const &getDataDescriptor() const { return dataDescriptor; }
 
   //! Perform linear interploation of log(opacity) values.
   double interpOpac(double const T, double const rho, size_t const group = 0) const;
 
 private:
   /*!
-   * \brief This function sets both "ipcressDataTypeKey" and "dataDescriptor"
-   *     based on the values given for opacityEnergyDescriptor, opacityModel and
-   *     opacityReaction.
+   * \brief This function sets both "ipcressDataTypeKey" and "dataDescriptor" based on the values
+   *     given for opacityEnergyDescriptor, opacityModel and opacityReaction.
    */
   void setIpcressDataTypeKey() const;
 
   /*!
-   * \brief Load the temperature, density, energy boundary and opacity opacity
-   *     tables from the IPCRESS file.  Convert all tables (except energy
-   *     boundaries) to log values.
+   * \brief Load the temperature, density, energy boundary and opacity opacity tables from the
+   *     IPCRESS file.  Convert all tables (except energy boundaries) to log values.
    */
   void loadDataTable(std::shared_ptr<const IpcressFile> const &spIpcressFile);
 

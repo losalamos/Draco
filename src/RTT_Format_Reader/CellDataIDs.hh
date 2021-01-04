@@ -39,7 +39,7 @@ class CellDataIDs {
 public:
   explicit CellDataIDs(const Dims &dims_)
       : dims(dims_), names(dims.get_ncell_data()), units(dims.get_ncell_data()) {}
-  ~CellDataIDs() {}
+  ~CellDataIDs() = default;
 
   void readDataIDs(ifstream &meshfile);
 

@@ -1,11 +1,10 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/RTT_Draco_Mesh_Reader.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Friday, Jul 13, 2018, 08:38 am
  * \brief  RTT_Draco_Mesh_Reader header file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "RTT_Draco_Mesh_Reader.hh"
@@ -41,7 +40,7 @@ void RTT_Draco_Mesh_Reader::read_mesh() {
   Insist(rttfile.is_open(), "Failed to find or open specified RTT mesh file.");
   rttfile.close();
 
-  rtt_reader.reset(new rtt_RTT_Format_Reader::RTT_Format_Reader(filename));
+  rtt_reader = std::make_shared<rtt_RTT_Format_Reader::RTT_Format_Reader>(filename);
   Insist(rtt_reader->get_dims_ndim() < 3, "RTT reader mesh dim >= 3.");
 }
 
@@ -60,7 +59,7 @@ unsigned RTT_Draco_Mesh_Reader::get_celltype(size_t cell) const {
 
   // for Draco_Mesh, cell_type is number of nodes (in 1-2D, this is # of faces)
   Check(rtt_reader->get_cell_defs_nnodes(cell_def) < UINT_MAX);
-  unsigned cell_type = static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
+  auto cell_type = static_cast<unsigned>(rtt_reader->get_cell_defs_nnodes(cell_def));
 
   return cell_type;
 }
@@ -124,24 +123,25 @@ std::vector<unsigned> RTT_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   return cellface_node;
 }
 
+//------------------------------------------------------------------------------------------------//
 std::vector<unsigned> RTT_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size_t face) const {
 
   // get the number of dimensions
-  unsigned num_dim = rtt_reader->get_dims_ndim();
+  unsigned const num_dim = rtt_reader->get_dims_ndim();
 
   // get the node list for this cell
   const std::vector<unsigned> &cell_node = rtt_reader->get_cells_nodes(cell);
 
   // get the number of nodes
-  size_t cell_type = cell_node.size();
+  size_t const cell_type = cell_node.size();
 
   // internal nodes are not supported in 1D
   Check(num_dim == 1 ? cell_type == 2 : cell_type > 2);
 
-  std::vector<unsigned> face_node(num_dim);
-  face_node[0] = cell_node[face];
+  std::vector<unsigned> face_node;
+  face_node.emplace_back(cell_node[face]);
   if (num_dim == 2)
-    face_node[1] = cell_node[(face + 1) % cell_type];
+    face_node.emplace_back(cell_node[(face + 1) % cell_type]);
 
   return face_node;
 }

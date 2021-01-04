@@ -3,8 +3,7 @@
  * \file   device/GPU_CheckError.hh
  * \author Kelly (KT) Thompson
  * \brief  Provide helper macros for CUDA code
- * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2019-2020 Triad National Security, LLC. All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #ifndef device_GPU_CheckError_hh
@@ -16,6 +15,13 @@
 
 namespace rtt_device {
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Helper function to decode cuda integer error into a string message
+ * \param[in] err  Cuda error code
+ * \param[in] fun  function name of calling scope
+ * \param[in] line line number of calling sceop
+ */
 inline void CheckError(cudaError_t const err, char const *const fun, const int line) {
   if (err) {
     printf("CUDA Error Code[%d]: %s\n%s() Line:%d\n", err, cudaGetErrorString(err), fun, line);
@@ -23,6 +29,14 @@ inline void CheckError(cudaError_t const err, char const *const fun, const int l
   }
 }
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief Helper function to decode cuda integer error into a string message
+ * \param[in] err  Cuda error code
+ * \param[in] msg  Custom error message that will be printed if non-zero cuda error code is found.
+ * \param[in] fun  function name of calling scope
+ * \param[in] line line number of calling sceop
+ */
 inline void CheckErrorMsg(cudaError_t const err, char const *const msg, char const *const fun,
                           int const line) {
   if (err) {

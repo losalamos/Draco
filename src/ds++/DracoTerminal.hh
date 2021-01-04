@@ -38,7 +38,7 @@ class DracoTerminal {
   Term::Terminal term;
 
   //! Private constructor so that no objects can be created.
-  DracoTerminal(bool useColor_in = true) { useColor = useColor_in; };
+  DracoTerminal(bool useColor_in = true) { useColor = useColor_in; }
 
 public:
   // >> DATA <<

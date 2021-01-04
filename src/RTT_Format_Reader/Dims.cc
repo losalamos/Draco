@@ -115,7 +115,7 @@ void Dims::readNodes(ifstream &meshfile) {
   nnode_flags.resize(nnode_flag_types);
   meshfile >> dummyString;
   Insist(dummyString == "nnode_flags", "Invalid mesh file: Dimension block missing nnode_flags");
-  for (vector_int::iterator iter = nnode_flags.begin(); iter < nnode_flags.end(); ++iter)
+  for (auto iter = nnode_flags.begin(); iter < nnode_flags.end(); ++iter)
     meshfile >> *iter;
   std::getline(meshfile, dummyString);
 
@@ -143,7 +143,7 @@ void Dims::readSides(ifstream &meshfile) {
   side_types.resize(nside_types);
   meshfile >> dummyString;
   Insist(dummyString == "side_types", "Invalid mesh file: Dimension block missing side_types");
-  for (vector_int::iterator iter = side_types.begin(); iter < side_types.end(); ++iter) {
+  for (auto iter = side_types.begin(); iter < side_types.end(); ++iter) {
     meshfile >> *iter;
     --(*iter);
   }
@@ -157,7 +157,7 @@ void Dims::readSides(ifstream &meshfile) {
   nside_flags.resize(nside_flag_types);
   meshfile >> dummyString;
   Insist(dummyString == "nside_flags", "Invalid mesh file: Dimension block missing nside_flags");
-  for (vector_int::iterator iter = nside_flags.begin(); iter < nside_flags.end(); ++iter)
+  for (auto iter = nside_flags.begin(); iter < nside_flags.end(); ++iter)
     meshfile >> *iter;
   std::getline(meshfile, dummyString);
 
@@ -185,7 +185,7 @@ void Dims::readCells(ifstream &meshfile) {
   cell_types.resize(ncell_types);
   meshfile >> dummyString;
   Insist(dummyString == "cell_types", "Invalid mesh file: Dimension block missing cell_types");
-  for (vector_int::iterator iter = cell_types.begin(); iter < cell_types.end(); ++iter) {
+  for (auto iter = cell_types.begin(); iter < cell_types.end(); ++iter) {
     meshfile >> *iter;
     --(*iter);
   }
@@ -199,7 +199,7 @@ void Dims::readCells(ifstream &meshfile) {
   ncell_flags.resize(ncell_flag_types);
   meshfile >> dummyString;
   Insist(dummyString == "ncell_flags", "Invalid mesh file: Dimension block missing ncell_flags");
-  for (vector_int::iterator iter = ncell_flags.begin(); iter < ncell_flags.end(); ++iter)
+  for (auto iter = ncell_flags.begin(); iter < ncell_flags.end(); ++iter)
     meshfile >> *iter;
   std::getline(meshfile, dummyString);
 

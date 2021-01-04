@@ -60,7 +60,7 @@ public:
   ~ScalarUnitTest() override {
     out << resultMessage() << std::endl;
     return;
-  };
+  }
 
   // MANIPULATORS
 

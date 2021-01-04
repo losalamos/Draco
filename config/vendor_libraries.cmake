@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Look for any libraries which are required at the top level.
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -17,6 +16,7 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 macro( setupPython )
 
   message( STATUS "Looking for Python...." )
+  # This module looks preferably for version 3 of Python. If not found, version 2 is searched.
   find_package(Python QUIET REQUIRED COMPONENTS Interpreter)
   #  Python_Interpreter_FOUND - Was the Python executable found
   #  Python_EXECUTABLE  - path to the Python interpreter
@@ -30,6 +30,12 @@ macro( setupPython )
     message( STATUS "Looking for Python....found ${Python_EXECUTABLE}" )
   else()
     message( STATUS "Looking for Python....not found" )
+  endif()
+  # As of 2020-11-10, we require 'python@3.6:' for correct dictionary sorting features.  We can
+  # build the code with 'python@2:' but some tests may fail.
+  if( Python_VERSION_MAJOR STREQUAL "3" AND Python_VERSION_MINOR VERSION_LESS "6")
+    message( FATAL_ERROR "When using python3, we require version 3.6+.  Python version "
+      "${Python_VERSION} was discovered, which doesn't satisfy the compatibility requirement.")
   endif()
 
 endmacro()
@@ -54,286 +60,95 @@ macro( setupRandom123 )
     PURPOSE "Required for building the rng component."  )
 endmacro()
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
 #
 # This module sets the following variables:
-# lapack_FOUND - set to true if a library implementing the LAPACK
-#         interface is found
-# lapack_VERSION - '3.4.1'
-# provides targets: lapack, blas
+# - BLAS_FOUND   - set to true if a library implementing the BLAS interface is found
+# - LAPACK_FOUND - set to true if a library implementing the LAPACK interface is found
 #
-# Providers: Linux - use spack to install netlib-lapack
-#                    https://github.com/spack/spack
-#            Windows - clone and build from sources
-#                    https://github.com/KineticTheory/lapack-visualstudio-mingw-gfortran
-#------------------------------------------------------------------------------
-macro( setupLAPACKLibraries )
-
-  # defaults
-  set( lapack_url "http://www.netlib.org/lapack" )
-  set( LAPACK_FOUND FALSE ) # for robustness, always do this search.
-
-  # There are several flavors of LAPACK.
-  # 1. look for netlib-lapack
-  # 2. look for MKL (Intel)
-  # 3. look for OpenBLAS.
-
-  #----------------------------------------------------------------------------#
-  # netlib-lapack (find_package config mode search)
-  message( STATUS "Looking for lapack (netlib)...")
-
-  #----------------------------------------------------------------------------#
-  # Package-config mode: look for lapack-config.cmake in $CMAKE_PREFIX_PATH
-  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
-    find_package( lapack CONFIG QUIET )
+# Provides import targets:
+# - LAPACK::LAPACK
+# - BLAS::BLAS
+#
+# Providers:
+# - Linux - use spack to install netlib-lapack, openblas, or mkl, https://github.com/spack/spack
+# - Windows - Use vcpkg, https://github.com/microsoft/vcpkg, or
+#             clone and build from sources,
+#             https://github.com/KineticTheory/lapack-visualstudio-mingw-gfortran
+#--------------------------------------------------------------------------------------------------
+function( setupLAPACKLibraries )
+  message( STATUS "Looking for LAPACK {netlib, mkl, openblas}...")
+  if( NOT TARGET BLAS::BLAS )
+    find_package( BLAS QUIET )
   endif()
-
-  if( NOT TARGET lapack )
-    message( STATUS "Looking for lapack (netlib)....not found")
-  else()
-    set( lapack_flavor "netlib")
-    foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
-      get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
-      if( EXISTS ${tmp} )
-        set( lapack_loc ${tmp} )
-        break()
-      endif()
-    endforeach()
-    message( STATUS "Looking for lapack (netlib)....found ${lapack_loc}")
-
-    # The above might define blas, or it might not. Double check:
-    if( NOT TARGET blas )
-      find_package( BLAS QUIET)
-      if( BLAS_FOUND )
-        add_library( blas STATIC IMPORTED)
-        set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_LIBRARIES}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran")
-      else()
-        message( FATAL_ERROR "Looking for lapack (netlib)....blas not found")
-      endif()
+  if( NOT TARGET LAPACK::LAPACK )
+    find_package( LAPACK QUIET )
+  endif()
+  if( TARGET LAPACK::LAPACK )
+    get_target_property( blas_iface_link_lib BLAS::BLAS INTERFACE_LINK_LIBRARIES )
+    if ( blas_iface_link_lib MATCHES NOTFOUND AND CMAKE_CXX_COMPILER_ID STREQUAL XLClang )
+      # XL seems to provide sgemm and this prevents FindBLAS.cmake from doing it's job.
+      get_filename_component(lldir ${LAPACK_LIBRARIES} DIRECTORY)
+      unset(BLAS_LIBRARIES)
+      find_library(BLAS_LIBRARIES NAMES blas HINTS ${lldir} NO_DEFAULT_PATH )
+      target_link_libraries(LAPACK::LAPACK INTERFACE ${BLAS_LIBRARIES})
     else()
-      # ensure lapack --> blas?
-      get_target_property( ilil lapack IMPORTED_LINK_INTERFACE_LIBRARIES )
-      if( NOT "${ilil}" MATCHES "blas" )
-        set_target_properties( lapack PROPERTIES
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas )
-      endif()
+      target_link_libraries(LAPACK::LAPACK INTERFACE BLAS::BLAS)
     endif()
   endif()
-
-  #----------------------------------------------------------------------------#
-  # MKL
-
-  # If the above search failed, then try to find MKL on the local system.
-  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
-    if( DEFINED ENV{MKLROOT} )
-      message( STATUS "Looking for lapack (MKL)...")
-      # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
-      # cmake documentation for FindBLAS.
-      set( BLA_VENDOR "Intel10_64lp" )
-      find_package( Threads QUIET )
-      find_package( BLAS QUIET)
-      find_package( LAPACK QUIET)
-
-      # If we link statically, we notice that the mkl library dependencies are
-      # cyclic and FindBLAS and FindLAPACK will fail.  If this is the case, but
-      # we still found all the important libraries, set BLAS_FOUND=TRUE and
-      # finish setting up the MKL libraries as a valid TPL for blas/lapack.
-      if( NOT BLAS_FOUND AND
-          BLAS_iomp5_LIBRARY AND
-          BLAS_mkl_core_LIBRARY AND
-          BLAS_mkl_intel_thread_LIBRARY AND
-          BLAS_mkl_intel_lp64_LIBRARY )
-        set( BLAS_FOUND TRUE )
-      endif()
-
-      if( "${BLAS_mkl_core_LIBRARY}" MATCHES "libmkl_core.a" )
-        set( MKL_LIBRARY_TYPE "STATIC" )
-      else()
-        set( MKL_LIBRARY_TYPE "SHARED" )
-      endif()
-
-      # should we link against libmkl_gnu_thread.so or libmkl_intel_thread.so
-      if( ${CMAKE_C_COMPILER_ID} MATCHES GNU )
-        set(tlib "gnu")
-        set(lplib "gf")
-      else()
-        set(tlib "intel")
-        set(lplib "intel")
-      endif()
-
-      if( BLAS_FOUND )
-        unset(lapack_FOUND)
-        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
-        set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
-        set( lapack_flavor "mkl")
-        set( lapack_url "https://software.intel.com/en-us/intel-mkl")
-        add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
-        add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)
-        add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
-        add_library( blas::mkl_core    ${MKL_LIBRARY_TYPE} IMPORTED)
-        set_target_properties( blas::mkl_thread PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_${tlib}_thread_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
-        set_target_properties( blas::mkl_core PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_core_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread
-          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
-        set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_${lplib}_lp64_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core
-#          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_mkl_${tlib}_thread_LIBRARY};-Wl,--end-group"
-          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
-        set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_${lplib}_lp64_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas
-          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
-        message(STATUS "Looking for lapack (MKL)...found ${BLAS_mkl_${lplib}_lp64_LIBRARY}")
-      else()
-        message(STATUS "Looking for lapack (MKL)...NOTFOUND")
-      endif()
-
-    endif()
+  set( lapack_url "http://www.netlib.org/lapack" )
+  if( LAPACK_LIBRARIES MATCHES openblas )
+    set( lapack_url "http://openblas.net")
+  elseif( LAPACK_LIBRARIES MATCHES mkl )
+    set( lapack_url "https://software.intel.com/en-us/intel-mkl")
   endif()
-
-  #----------------------------------------------------------------------------#
-  # OpenBLAS
-
-  # If the above searches for LAPACK failed, then try to find OpenBlas on the
-  # local system.
-
-  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
-      message( STATUS "Looking for lapack (OpenBLAS)...")
-      # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro. For
-      # details see the cmake documentation for FindBLAS.
-      set( BLA_VENDOR "OpenBLAS" )
-      find_package( BLAS QUIET )
-
-      if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
-        set( lapack_flavor "openblas")
-        set( lapack_url "http://www.openblas.net")
-        add_library( lapack SHARED IMPORTED)
-        add_library( blas   SHARED IMPORTED)
-        if(WIN32)
-          string( REPLACE ".lib" ".dll" BLAS_openblas_LIBRARY_DLL_libdir
-            "${BLAS_openblas_LIBRARY}" )
-          string( REPLACE "/lib/" "/bin/" BLAS_openblas_LIBRARY_DLL_bindir
-            "${BLAS_openblas_LIBRARY_DLL_libdir}" )
-          if( EXISTS "${BLAS_openblas_LIBRARY_DLL_libdir}" )
-            set( BLAS_openblas_LIBRARY_DLL
-              "${BLAS_openblas_LIBRARY_DLL_libdir}")
-          elseif( EXISTS "${BLAS_openblas_LIBRARY_DLL_bindir}" )
-            set( BLAS_openblas_LIBRARY_DLL
-              "${BLAS_openblas_LIBRARY_DLL_bindir}")
-          else()
-            # only static libs available.
-            set( BLAS_openblas_LIBRARY_DLL "${BLAS_openblas_LIBRARY}")
-          endif()
-
-        set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY_DLL}"
-          IMPORTED_IMPLIB                   "${BLAS_openblas_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY_DLL}"
-          IMPORTED_IMPLIB                   "${BLAS_openblas_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-
-        else()
-           set_target_properties( blas PROPERTIES
-            IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-          set_target_properties( lapack PROPERTIES
-            IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        endif()
-
-        message(STATUS "Looking for lapack (OpenBLAS)...found "
-          "${BLAS_openblas_LIBRARY}")
-      else()
-        message(STATUS "Looking for lapack (OpenBLAS)...NOTFOUND")
-      endif()
-  endif()
-
-  # If the above searches for LAPACK failed, then try to find netlib-lapack and
-  # netlib-blas on the local system (without the cmake config files).
-
-  if( NOT TARGET lapack AND NOT LAPACK_FOUND )
-      MESSAGE( STATUS "Looking for lapack (no cmake config files)...")
-      find_package( BLAS QUIET )
-
-      if( BLAS_FOUND )
-        find_package(LAPACK QUIET)
-        add_library( lapack SHARED IMPORTED)
-        add_library( blas   SHARED IMPORTED)
-        set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_blas_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${LAPACK_lapack_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        message(STATUS "Looking for lapack(no cmake config)...found ${LAPACK_lapack_LIBRARY}")
-      else()
-        message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
-      endif()
-  endif()
-
   set_package_properties( BLAS PROPERTIES
     URL "${lapack_url}"
     DESCRIPTION "Basic Linear Algebra Subprograms"
     TYPE OPTIONAL
     PURPOSE "Required for building the lapack_wrap component." )
-  if( "${lapack_flavor}" STREQUAL "netlib")
-    set_package_properties( lapack PROPERTIES
-      URL "${lapack_url}"
-      DESCRIPTION "Linear Algebra PACKage"
-      TYPE OPTIONAL
-      PURPOSE "Required for building the lapack_wrap component." )
-  elseif( "${lapack_flavor}" STREQUAL "mkl" OR
-          "${lapack_flavor}" STREQUAL "openblas")
-    set_package_properties( LAPACK PROPERTIES
-      URL "${lapack_url}"
-      DESCRIPTION "Linear Algebra PACKage"
-      TYPE OPTIONAL
-      PURPOSE "Required for building the lapack_wrap component." )
-  endif()
-endmacro()
+  set_package_properties( lapack PROPERTIES
+    URL "${lapack_url}"
+    DESCRIPTION "Linear Algebra PACKage"
+    TYPE OPTIONAL
+    PURPOSE "Required for building the lapack_wrap component." )
+  message( STATUS "Looking for LAPACK {netlib, mkl, openblas}...found ${LAPACK_LIBRARIES}")
+endfunction()
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # Setup QT (any)
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 macro( setupQt )
   message( STATUS "Looking for Qt SDK...." )
 
-  # Find the QtWidgets library
-  find_package(Qt5 COMPONENTS Widgets QUIET)
+  option (USE_QT "Build QT support for Draco" ON)
 
-  if( Qt5Core_DIR )
-    mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
-      Qt5Widgets_DIR QTDIR)
-    message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
-  else()
-    message( STATUS "Looking for Qt SDK....not found." )
+  if( USE_QT )
+    # Find the QtWidgets library
+    find_package(Qt5 COMPONENTS Widgets QUIET)
+
+    if( Qt5Core_DIR )
+      mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
+        Qt5Widgets_DIR QTDIR)
+      message( STATUS "Looking for Qt SDK....found ${Qt5Core_DIR}" )
+    else()
+      message( STATUS "Looking for Qt SDK....not found." )
+    endif()
+
+    set_package_properties( Qt PROPERTIES
+      URL "http://qt.io"
+      DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
+      TYPE OPTIONAL
+      PURPOSE "Only needed to demo qt version of draco_diagnostics." )
+
   endif()
-
-  set_package_properties( Qt PROPERTIES
-    URL "http://qt.io"
-    DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
-    TYPE OPTIONAL
-    PURPOSE "Only needed to demo qt version of draco_diagnostics." )
 
 endmacro()
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # Setup GSL (any)
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 macro( setupGSL )
 
   if( NOT TARGET GSL::gsl )
@@ -614,20 +429,6 @@ macro( SetupVendorLibrariesUnix )
   setupQt()
   setupLIBQUO()
   setupCaliper()
-
-  # Grace ------------------------------------------------------------------
-  message( STATUS "Looking for Grace...")
-  find_package( Grace QUIET )
-  set_package_properties( Grace PROPERTIES
-    DESCRIPTION "A WYSIWYG 2D plotting tool."
-    TYPE OPTIONAL
-    PURPOSE "Required for building the plot2D component."
-    )
-  if( Grace_FOUND )
-    message( STATUS "Looking for Grace.....found ${Grace_EXECUTABLE}")
-  else()
-    message( STATUS "Looking for Grace.....not found")
-  endif()
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )

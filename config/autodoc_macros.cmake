@@ -2,21 +2,19 @@
 # file   config/autodoc_macros.cmake
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   Wednesday, Nov 14, 2018, 19:01 pm
-# brief  Provide extra macros to simplify CMakeLists.txt for autodoc
-#        directories.
-# note   Copyright (C) 2018-2020 Triad National Security, LLC.
-#        All rights reserved.
+# brief  Provide extra macros to simplify CMakeLists.txt for autodoc directories.
+# note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
 set(draco_config_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Set the target directory where the html files wll be created.
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 function( set_autodocdir )
-  # if AUTODOCDIR is set in environment (or make command line), create a CMake
-  # variable with this value.
+  # if AUTODOCDIR is set in environment (or make command line), create a CMake variable with this
+  # value.
   if( DEFINED ENV{AUTODOCDIR} )
     set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
   endif()
@@ -28,9 +26,9 @@ function( set_autodocdir )
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Build a list of directories that include sources that doxygen should examine.
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 function( set_doxygen_input )
 
   set( DOXYGEN_INPUT
@@ -38,8 +36,8 @@ function( set_doxygen_input )
     "${PROJECT_BINARY_DIR}/autodoc" )
   set( DOXYGEN_EXAMPLE_PATH "" )
 
-  # BUG: Move this list generation into component_macros.cmake so that inactive
-  #      packages are not included in this list.
+  # BUG: Move this list generation into component_macros.cmake so that inactive packages are not
+  #      included in this list.
   file( GLOB package_list ${PROJECT_SOURCE_DIR}/src/* )
   foreach( package ${package_list} )
     if( EXISTS ${package}/CMakeLists.txt )
@@ -54,8 +52,7 @@ function( set_doxygen_input )
     endif()
   endforeach()
 
-  # Also look for files that have been configured (.in files) and
-  # placed in the BINARY_DIR.
+  # Also look for files that have been configured (.in files) and placed in the BINARY_DIR.
   file( GLOB package_list ${PROJECT_BINARY_DIR}/src/* )
   foreach( package ${package_list} )
     # pick up processed .dcc files
@@ -87,13 +84,11 @@ function( set_doxygen_input )
 
 endfunction()
 
-#------------------------------------------------------------------------------
-# Build a list of directories that include images that doxygen should be able to
-# find.
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+# Build a list of directories that include images that doxygen should be able to find.
+#---------------------------------------------------------------------------------------------------
 function( set_doxygen_image_path )
-  # Tell doxygen where image files are located so they can be copied to the
-  # output directory.
+  # Tell doxygen where image files are located so they can be copied to the output directory.
   #
   # The list of source files (this variable also set by
   # comonent_macros.cmake::process_autodoc_pages()
@@ -110,9 +105,9 @@ function( set_doxygen_image_path )
   unset( temp )
 endfunction()
 
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Set the number of cpu threads to use when generating the documentation.
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 function( set_doxygen_dot_num_threads )
   # Doxygen only allows 32 threads max
   if(NOT DEFINED MPIEXEC_MAX_NUMPROCS)
@@ -125,32 +120,30 @@ function( set_doxygen_dot_num_threads )
   # hack in a couple of other settings based on the version of doxygen
   # discovered.
   if( ${DOXYGEN_VERSION} VERSION_GREATER 1.8.14 )
-    set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES"
-      PARENT_SCOPE)
+    set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES" PARENT_SCOPE)
   endif()
   if( ${DOXYGEN_VERSION} VERSION_LESS 1.8.17 )
     set( PERL_PATH "PERL_PATH = /usr/bin/perl" PARENT_SCOPE)
   endif()
 
   # Escalate doxygen warnings into errors for CI builds
-  if( DEFINED ENV{CI} AND DEFINED ENV{TRAVIS} )
+  if( DEFINED ENV{CI} )
     set( DOXYGEN_WARN_AS_ERROR "YES" PARENT_SCOPE )
   else()
     set( DOXYGEN_WARN_AS_ERROR "NO" PARENT_SCOPE )
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Generate and install HTML support files
 #
 # Requires the following variables to be set:
-# - PROJECT_SOURCE_DIR - Always provided by CMake (but should point to the to
-#     top level source directory.
-# - DOXYGEN_OUTPUT_DIR - Directory where html code will be written by
-#     doxygen. Actual location of HTML files will be
-#     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}.
+# - PROJECT_SOURCE_DIR - Always provided by CMake (but should point to the to top level source
+#     directory.
+# - DOXYGEN_OUTPUT_DIR - Directory where html code will be written by doxygen. Actual location of
+#     HTML files will be ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}.
 # - DOXYGEN_HTML_OUTPUT - The project name in all lowercase.
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 macro( doxygen_provide_support_files )
 
   add_custom_command(
@@ -175,8 +168,8 @@ macro( doxygen_provide_support_files )
     # use Draco's version of the style sheet
     set( doxygen_ccs_file "${PROJECT_SOURCE_DIR}/autodoc/html/doxygen.css" )
   else()
-    message( FATAL_ERROR "I can't find a style sheet to install for autodoc.
-Expected to find doxygen.css at either
+    message( FATAL_ERROR "I can't find a style sheet to install for autodoc. Expected to find
+doxygen.css at either:
 - ${draco_config_dir}/, or
 - {PROJECT_SOURCE_DIR}/autodoc/html/" )
   endif()
@@ -189,9 +182,9 @@ Expected to find doxygen.css at either
     DEPENDS "${doxygen_css_file}" )
 endmacro()
 
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 # Create a string to locate Draco.tag
-#------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 function( set_doxygen_tagfiles )
   # Create links to Draco autodoc installation.
   unset( DRACO_TAG_FILE CACHE )
@@ -206,6 +199,6 @@ function( set_doxygen_tagfiles )
   set( TAGFILES "${DRACO_TAG_FILE}=${DRACO_AUTODOC_HTML_DIR}" PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------------------------------------#
+#---------------------------------------------------------------------------------------------------
 # End config/autodoc_macros.cmake
-#--------------------------------------------------------------------------------------------------#
+#---------------------------------------------------------------------------------------------------

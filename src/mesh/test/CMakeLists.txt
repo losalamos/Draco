@@ -32,7 +32,7 @@ add_parallel_tests(
 if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
   add_parallel_tests(
     SOURCES "${two_pe_tests}"
-    PE_LIST "2"
+    PE_LIST "2;4"
     DEPS    "${libs_for_tests}" )
 endif()
 

@@ -51,8 +51,7 @@ std::string string_toupper(std::string const &string_in);
  * \param[in] precision How many digits will be preserved? (default: 23)
  * \return A string representation of the numeric value
  *
- * \tparam T type of number that will be converted to a string. Typically a
- *           double or int.
+ * \tparam T type of number that will be converted to a string. Typically a double or int.
  *
  * \sa http://public.research.att.com/~bs/bs_faq2.html
  */
@@ -65,7 +64,7 @@ template <typename T> std::string to_string(T const num, unsigned int const prec
 
 //------------------------------------------------------------------------------------------------//
 //! trim whitespace (or other characters) from before and after main text.
-std::string trim(std::string const &str, std::string const &whitespace = " \t");
+std::string trim(std::string const &str, std::string const &whitespace = " \t\n");
 
 //------------------------------------------------------------------------------------------------//
 /*!
@@ -96,7 +95,7 @@ std::vector<std::string> tokenize(std::string const &str, std::string const &del
  * \param[in] str The string that contains a number.
  * \return A numeric value.
  *
- * \tparam The template type will be deduced based on the return type ("-> T").
+ * \tparam T The template type will be deduced based on the return type ("-> T").
  */
 template <typename T> auto parse_number_impl(std::string const &str) -> T;
 
@@ -134,7 +133,7 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double;
  * \param[in] verbose Should the function print conversion message warnings (default: true).
  * \return A numeric value.
  *
- * \tparam The template type will be deduced based on the return type ("-> T").
+ * \tparam T The template type will be deduced based on the return type ("-> T").
  *
  * These functions will throw exceptions if the conversion is invalid or if the converted value is
  * out-of-range. This generic function calls unchecked parse_number_impl specialization that is
@@ -178,7 +177,7 @@ template <typename T> auto parse_number(std::string const &str, bool verbose = t
 
  * \return A vector of numeric values.
  *
- * \tparam plain-old-data type for storing numeric values, such as double, unsigned, float or int.
+ * \tparam T plain-old-data type for storing numeric values, such as double, unsigned, float or int.
  *
  * std::string foo = "{ 1.0, 2.0, 3.0 }" will be converted to
  * std::vector<double> bar = { 1.0, 2.0, 3.0 }
@@ -236,11 +235,10 @@ std::string remove_color(std::string const &colored_string);
  * \param[in] digits number of version digits to print. Default = 3.
  * \return The version as a substring.
  *
- * Ex: Given the string "/ccs/opt/vendors-ec/ndi/2.1.3/share/gendir.all", return
- * "2.1.3".
+ * Ex: Given the string "/ccs/opt/vendors-ec/ndi/2.1.3/share/gendir.all", return "2.1.3".
  *
- * A version includes any integers separated by a period.  A text postfix
- * 'alpha' or 'beta' is also supported for any portion of the version string.
+ * A version includes any integers separated by a period.  A text postfix 'alpha' or 'beta' is also
+ * supported for any portion of the version string.
  */
 std::string extract_version(std::string const &string_in, size_t digits = 3);
 

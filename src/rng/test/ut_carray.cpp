@@ -45,6 +45,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable : 4701 4521 4244 4127 4100)
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
+
 #include "ut_carray.hh"
 
 #include "util_demangle.hpp"
@@ -344,6 +354,14 @@ int main(int, char **) {
   cout << "ut_carray: all OK" << endl;
   return 0;
 }
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic pop
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)

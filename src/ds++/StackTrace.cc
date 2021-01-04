@@ -14,7 +14,7 @@
 
 //------------------------------------------------------------------------------------------------//
 // Stack trace feature is only available on Unix-based systems when compiled with Intel or GNU C++.
-// ------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef UNIX
 
 #ifndef draco_isPGI
@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------------------------//
 // Helper functions
-std::string st_to_string(int const i) {
+inline std::string st_to_string(int const i) {
   std::ostringstream msg;
   msg << i;
   return msg.str();
@@ -83,14 +83,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
   // allocate string which will be filled with the demangled function name
   size_t funcnamesize = 256;
-  auto *funcname = (char *)malloc(funcnamesize);
-
-  // msg << "\nRAW format:" << std::endl;
-  // for( int i=0; i<stack_depth; ++i )
-  // {
-  //     msg << "  " << symbollist[i] << std::endl;
-  // }
-  // msg << "\nDemangled format:" << std::endl;
+  auto *funcname = static_cast<char *>(malloc(funcnamesize));
 
   // iterate over the returned symbol lines. skip first two, (addresses of this function and
   // handler)

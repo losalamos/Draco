@@ -34,6 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC system_header
+#endif
+
 extern int verbose;
 
 #define TEST_TPL(NAME, N, W, R)                                                                    \

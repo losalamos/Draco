@@ -131,6 +131,15 @@ int gatherv(T *send_buffer, int send_size, T *receive_buffer, int * /*receive_si
 
 //------------------------------------------------------------------------------------------------//
 template <typename T>
+int allgatherv(T *send_buffer, int send_size, T *receive_buffer, int * /*receive_sizes*/,
+               int *receive_displs) {
+
+  std::copy(send_buffer, send_buffer + send_size, receive_buffer + receive_displs[0]);
+  return C4_SUCCESS;
+}
+
+//------------------------------------------------------------------------------------------------//
+template <typename T>
 int scatterv(T *send_buffer, int *send_sizes, int *send_displs, T *receive_buffer,
              int /*receive_size*/) {
   std::copy(send_buffer + send_displs[0], send_buffer + send_displs[0] + send_sizes[0],
@@ -161,10 +170,6 @@ template <typename T> void global_min(T * /*x*/, int /*n*/) { /* empty */
 
 //------------------------------------------------------------------------------------------------//
 template <typename T> void global_max(T * /*x*/, int /*n*/) { /* empty */
-}
-
-//------------------------------------------------------------------------------------------------//
-template <typename T> void global_sum(T * /*x*/, int /*n*/) { /* empty */
 }
 
 //------------------------------------------------------------------------------------------------//

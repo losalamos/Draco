@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \brief  Unit teests for qrdcmp
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -23,7 +22,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void tstqrdcmp(UnitTest &ut) {
   vector<double> A(4);
   A[0 + 2 * 0] = 2.;

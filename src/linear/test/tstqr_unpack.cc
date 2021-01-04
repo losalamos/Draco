@@ -3,11 +3,7 @@
  * \file   linear/test/tstqr_unpack.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -23,7 +19,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void tstqr_unpack(UnitTest &ut) {
   vector<double> A(2 * 2);
   A[0 + 2 * 0] = 2.;

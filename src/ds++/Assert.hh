@@ -139,14 +139,11 @@ public:
    * \param file The source code file name that contains the DbC test.
    * \param line The source code line number that contains the DbC test.
    *
-   * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, Insist
+   * \sa \c --with-dbc[=level], Require, Ensure, Check, Insist (\ref Draco_DBC)
    */
   assertion(std::string const &cond, std::string const &file, int const line)
       : std::logic_error(build_message(cond, file, line)) { /* empty */
   }
-
-  //! Destructor for ds++/assertion class.  We do not allow the destructor to throw!
-  ~assertion() noexcept override;
 
   //! Helper function to build error message that includes source file name and line number.
   static std::string build_message(std::string const &cond, std::string const &file,
@@ -176,17 +173,15 @@ void show_cookies(std::string const &cond, std::string const &file, int const li
 [[noreturn]] void insist_ptr(char const *const cond, char const *const msg, char const *const file,
                              int const line);
 
-#if defined __NVCC__ && defined USE_CUDA
-
+#if defined __CUDA_ARCH__ && defined USE_CUDA
 /*! \brief A special version of insist that does not throw.  Useful for GPU code. \sa
  *         device/config.h.in */
 __host__ __device__ inline void no_exception_insist(char const *const cond, char const *const msg,
                                                     char const *const file, int const line) {
   printf("Insist: %s, failed in %s, line %d.\n", cond, file, line);
-  printf("The following message was provided: \"%s\"", msg);
+  printf("The following message was provided: \"%s\"\n", msg);
   return;
 }
-
 #endif
 
 #if DBC & 16
@@ -254,7 +249,7 @@ std::string verbose_error(std::string const &message);
  *
  * Special code for CUDA.
  *
- * If __NVCC__ (processing with nvcc) and USE_CUDA=ON, then alter the behavior of the DbC macros
+ * If __CUDA_ARCH__ (processing with nvcc) and USE_CUDA=ON, then alter the behavior of the DbC macros
  * because cuda code cannot throw.
  */
 /*!
@@ -304,16 +299,16 @@ std::string verbose_error(std::string const &message);
  * Eventually, we want the DBC to work in GPU/Cuda code, but for now just disable DBC.
  */
 //------------------------------------------------------------------------------------------------//
-#if ( DBC & 8 ) || ( defined __NVCC__ && defined USE_CUDA )
+#if ( DBC & 8 ) || ( defined __CUDA_ARCH__ && defined USE_CUDA )
 
-#if ( DBC & 1 ) && !( defined __NVCC__ && defined USE_CUDA )
+#if ( DBC & 1 ) && !( defined __CUDA_ARCH__ && defined USE_CUDA )
 #define REQUIRE_ON
 #define Require(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c)
 #endif
 
-#if ( DBC & 2 ) && !( defined __NVCC__ && defined USE_CUDA )
+#if ( DBC & 2 ) && !( defined __CUDA_ARCH__ && defined USE_CUDA )
 #define CHECK_ON
 #define Check(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #define Assert(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
@@ -322,7 +317,7 @@ std::string verbose_error(std::string const &message);
 #define Assert(c)
 #endif
 
-#if ( DBC & 4 ) && !( defined __NVCC__ && defined USE_CUDA )
+#if ( DBC & 4 ) && !( defined __CUDA_ARCH__ && defined USE_CUDA )
 #define ENSURE_ON
 #define Ensure(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
@@ -332,12 +327,14 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
-#if ( defined __NVCC__  && defined USE_CUDA )
-#define Insist(c, m) if(!(c)) rtt_dsxx::no_exception_insist( #c, m, __FILE__, __LINE__)
+#if ( defined __CUDA_ARCH__  && defined USE_CUDA )
+#define Insist_device(c, m) if(!(c)) rtt_dsxx::no_exception_insist( #c, m, __FILE__, __LINE__)
 #else
+#define Insist_device(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
+#endif
+
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
-#endif
 
 #elif DBC & 16
 
@@ -379,6 +376,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
 #define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr( !!(c), #c, m, __FILE__, __LINE__ )
 
@@ -415,6 +413,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // Always on
 //------------------------------------------------------------------------------------------------//
+#define Insist_device(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
@@ -423,7 +422,7 @@ std::string verbose_error(std::string const &message);
 //------------------------------------------------------------------------------------------------//
 // If any of DBC is on, then make the remember macro active and the NOEXCEPT inactive.
 //------------------------------------------------------------------------------------------------//
-#if DBC && !( defined USE_CUDA && defined __NVCC__ )
+#if DBC && !( defined USE_CUDA && defined __CUDA_ARCH__ )
 #define REMEMBER_ON
 #define Remember(c) c
 #define NOEXCEPT
@@ -453,23 +452,10 @@ std::string verbose_error(std::string const &message);
  *           http://en.cppreference.com/w/cpp/language/except_spec */
 //------------------------------------------------------------------------------------------------//
 
-// Disable since we default to C++11 ('throw()' is deprecated)
-#if 0
-
-#if DBC
-#define ONLY_DBC_THROWS throw(rtt_dsxx::assertion)
-#else
-#define ONLY_DBC_THROWS throw()
-#endif
-
-#else
-
 #if DBC
 #define ONLY_DBC_THROWS
 #else
 #define ONLY_DBC_THROWS noexcept
-#endif
-
 #endif
 
 //------------------------------------------------------------------------------------------------//
@@ -490,6 +476,9 @@ std::string verbose_error(std::string const &message);
 #endif
 #ifndef Insist
 #define Insist(c,m)
+#endif
+#ifndef Insist_device
+#define Insist_device(c,m)
 #endif
 #ifndef Insist_ptr
 #define Insist_ptr(c,m)

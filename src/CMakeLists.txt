@@ -16,18 +16,6 @@ if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
     toggle_compiler_flag( TRUE "-Wconversion -Wdouble-promotion" "CXX" "DEBUG")
   endif()
-
-#  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
-# '-fsanitize=address' Not working just yet.  Issues...
-# 1. libasan.so.5: warning: the use of `tempnam' is dangerous, better use `mkstemp'
-# 2. ==134051==ASan runtime does not come first in initial library list; you should either link
-#    runtime to your application or manually preload it with LD_PRELOAD.
-# 3. many more run time issues, some may require suppression.
-#
-#    toggle_compiler_flag( TRUE
-#      "-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract" "CXX" "DEBUG")
-#  endif()
-
 elseif( CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" )
   string( REPLACE "/W2" "/W4" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
   string( REPLACE "/W2" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
@@ -70,26 +58,22 @@ if( USE_MDSPAN )
 endif()
 add_dir_if_exists( cdi_eospac )   # needs parser, ode, cdi
 add_dir_if_exists( cdi_ipcress )  # needs cdi
+add_dir_if_exists( compton_interface ) # needs c4, CSK
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4, mesh_element
-add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( rng )          # needs ds++, device
+add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( VendorChecks ) # needs c4
 add_dir_if_exists( viz )          # needs c4
-
-if( NOT CI_CLANG_TIDY )
-  add_dir_if_exists( compton )      # needs c4, CSK
-endif()
 
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
-if( NOT CI_CLANG_TIDY )
 add_dir_if_exists( cdi_ndi )           # needs ds++, rng, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 add_dir_if_exists( special_functions ) # needs roots, units, GSL
@@ -97,13 +81,9 @@ add_dir_if_exists( special_functions ) # needs roots, units, GSL
 # Level 5
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
-add_dir_if_exists( mesh )       # needs c4, ds++, mesh_element
-add_dir_if_exists( quadrature ) # needs mesh_element, parser, special_functions
-
-# Deprecated
-add_dir_if_exists( plot2D )
-
-endif( NOT CI_CLANG_TIDY )
+add_dir_if_exists( compton_tools )  # needs ds++, units, cdi_analtyic
+add_dir_if_exists( mesh )           # needs c4, ds++, mesh_element
+add_dir_if_exists( quadrature )     # needs mesh_element, parser, special_functions
 
 # Summary
 

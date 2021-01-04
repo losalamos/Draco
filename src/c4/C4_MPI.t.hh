@@ -186,6 +186,14 @@ template <typename T> int broadcast(T *buffer, int size, int root) {
   int r = MPI_Bcast(buffer, size, MPI_Traits<T>::element_type(), root, communicator);
   return r;
 }
+template <typename T> int broadcast(T *buffer, size_t size, size_t root) {
+  Require(root < nranks());
+  Check(size < INT32_MAX);
+  Check(root < INT32_MAX);
+  int r = MPI_Bcast(buffer, static_cast<int>(size), MPI_Traits<T>::element_type(),
+                    static_cast<int>(root), communicator);
+  return r;
+}
 
 //------------------------------------------------------------------------------------------------//
 // GATHER/SCATTER
@@ -226,6 +234,17 @@ int gatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes
                            receive_sizes, receive_displs, MPI_Traits<T>::element_type(),
                            0, // root is always processor 0 at present
                            communicator);
+
+  return Result;
+}
+
+//------------------------------------------------------------------------------------------------//
+template <typename T>
+int allgatherv(T *send_buffer, int send_size, T *receive_buffer, int *receive_sizes,
+               int *receive_displs) {
+  int Result =
+      MPI_Allgatherv(send_buffer, send_size, MPI_Traits<T>::element_type(), receive_buffer,
+                     receive_sizes, receive_displs, MPI_Traits<T>::element_type(), communicator);
 
   return Result;
 }
@@ -286,16 +305,6 @@ template <typename T> void global_max(T &x) {
 
   // do global MPI reduction (result is on all processors) into x
   MPI_Allreduce(MPI_IN_PLACE, &x, 1, MPI_Traits<T>::element_type(), MPI_MAX, communicator);
-}
-
-//------------------------------------------------------------------------------------------------//
-
-template <typename T> void global_sum(T *x, int n) {
-  Require(x != nullptr);
-  Require(n > 0);
-
-  // do a element-wise global reduction (result is on all processors) into x
-  MPI_Allreduce(MPI_IN_PLACE, x, n, MPI_Traits<T>::element_type(), MPI_SUM, communicator);
 }
 
 //------------------------------------------------------------------------------------------------//

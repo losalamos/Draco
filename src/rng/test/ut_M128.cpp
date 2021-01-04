@@ -49,6 +49,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 #include <Random123/features/compilerfeatures.h>
 #if !R123_USE_SSE
 #include <stdio.h>
@@ -182,6 +187,10 @@ int main(int, char **) {
   return 0;
 }
 
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
 #endif
 
 #ifdef __clang__

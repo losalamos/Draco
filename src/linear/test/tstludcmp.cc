@@ -2,11 +2,7 @@
 /*!
  * \file   linear/test/tstludcmp.cc
  * \author Kent Budge
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//------------------------------------------------------------------------------------------------//
-
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -21,7 +17,6 @@ using namespace rtt_linear;
 //------------------------------------------------------------------------------------------------//
 // TESTS
 //------------------------------------------------------------------------------------------------//
-
 void tstludcmp(UnitTest &ut) {
   vector<double> U(4);
   U[0 + 2 * 0] = 2.;

@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
            min_cc, dP.major, dP.minor);
     return 1; /* Failure */
   } else {
-    printf("-arch=sm_%d%d", dP.major, dP.minor);
+    // printf("-arch=sm_%d%d", dP.major, dP.minor);
+    printf("%d%d", dP.major, dP.minor);
     return 0; /* Success */
   }
 }
