@@ -124,6 +124,7 @@ NDI_CP_Eloss::NDI_CP_Eloss(const std::string &library_in, rtt_cdi::CParticle tar
  * see https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html
  */
 void NDI_CP_Eloss::load_ndi() {
+#if NDI_DEDX_SUPPORT
   int gendir_handle = -1;
   int dataset_handle = -1;
   int ndi_error = -9999;
@@ -235,6 +236,10 @@ void NDI_CP_Eloss::load_ndi() {
   for (auto &temperature : temperatures) {
     temperature = exp(temperature);
   }
+#else
+  Insist(0,
+         "NDI version " + std::string(NDI_VERSION_STRING) + " does not support stopping powers!");
+#endif // NDI_DEDX_SUPPORT
 }
 //----------------------------------------------------------------------------//
 /*!

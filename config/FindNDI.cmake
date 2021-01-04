@@ -112,6 +112,7 @@ if( NOT NDI_VERSION )
   endif()
   if( NDI_MAJOR )
     set( NDI_VERSION "${NDI_MAJOR}.${NDI_MINOR}.${NDI_SUBMINOR}")
+    set( NDI_VERSION_STRING "${NDI_VERSION}" )
   endif()
 endif()
 
@@ -124,6 +125,7 @@ find_package_handle_standard_args( NDI
   REQUIRED_VARS
     NDI_INCLUDE_DIR
     NDI_LIBRARY
+    NDI_VERSION
   VERSION_VAR
     NDI_VERSION )
 

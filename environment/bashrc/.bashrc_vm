@@ -11,8 +11,13 @@
 ##  in the LAP virutal environment.
 ##---------------------------------------------------------------------------##
 
-export dracomodules="gcc cmake python openmpi intel-mkl trilinos superlu-dist metis numdiff numactl parmetis gsl random123 eospac csk ndi libquo"
+export dracomodules="git gcc cmake python openmpi intel-mkl trilinos superlu-dist metis numdiff numactl parmetis gsl random123 eospac csk ndi libquo"
 
+# shellcheck disable=SC2206
+mods=( ${dracomodules} )
+for m in "${mods[@]}"; do
+    module load "$m"
+done
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_vm

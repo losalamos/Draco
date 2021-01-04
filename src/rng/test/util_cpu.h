@@ -34,13 +34,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef __GNUC__
 #if !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused variable" warning.
-#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
 
 #include "util.h"
@@ -229,9 +233,13 @@ void cpu_done(CPUInfo *tp) {
   free(tp);
 }
 
+#if defined(__clang__) && !defined(__ibmxl__)
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
+
 #ifdef __GNUC__
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
+#if !defined(__ICC) && !defined(NVCC)
 #pragma GCC diagnostic pop
 #endif
 #endif

@@ -67,6 +67,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "kat.h"
 #include "util.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
+
 #define LINESIZE 1024
 
 int have_aesni = 0;
@@ -316,6 +328,14 @@ int main(int argc, char **argv) {
     return 0;
   }
 }
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic pop
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 //------------------------------------------------------------------------------------------------//
 // end kat_cpp.cpp

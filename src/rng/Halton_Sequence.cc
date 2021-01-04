@@ -14,7 +14,7 @@
 unsigned constexpr NUMBER_OF_KNOWN_PRIMES = 9592;
 
 //! Table of all primes less than 100,000 generated using Eratosthenes' Sieve.
-std::array<unsigned, NUMBER_OF_KNOWN_PRIMES> prime = {
+static std::array<unsigned, NUMBER_OF_KNOWN_PRIMES> prime = {
     2,     3,     5,     7,     11,    13,    17,    19,    23,    29,    31,    37,    41,
     43,    47,    53,    59,    61,    67,    71,    73,    79,    83,    89,    97,    101,
     103,   107,   109,   113,   127,   131,   137,   139,   149,   151,   157,   163,   167,

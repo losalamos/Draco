@@ -63,7 +63,6 @@ public:
  * \arg dirname String representing the top node of the directory to be parsed.
  * \arg myOperator Functor that defines action to be taken on each entry in the directory. Recommend
  *      using wdtOpPrint or wdtOpRemove
- * \return void
  *
  * \sa draco_remove_dir Helper function to recursively delete a directory and all its contents.
  * \sa draco_dir_print Helper function that will print a directory and all its contents.

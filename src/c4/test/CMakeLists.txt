@@ -55,6 +55,9 @@ set( special_tests
 if( DEFINED ENV{TRAVIS} )
   # TRAVIS has severe limits on number of ranks/threads
   set( omp_test_pe_list "1" )
+elseif( CODE_COVERAGE )
+  # The 1 MPI rank version gets confused when running under code-coverage configurations.
+  set( omp_test_pe_list "2" )
 else()
   set( omp_test_pe_list "1;2" )
 endif()

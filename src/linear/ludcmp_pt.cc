@@ -7,7 +7,7 @@
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
-#include "ludcmp.i.hh"
+#include "ludcmp.hh"
 #include "ds++/Slice.hh"
 
 namespace rtt_linear {

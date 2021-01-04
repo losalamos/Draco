@@ -294,8 +294,6 @@ public:
   using Return_Class = Class;
   using Context_type = unsigned;
 
-  // MANAGEMENT
-
   // SERVICES
 
   bool allow_exit() const { return allow_an_exit; }
@@ -304,16 +302,7 @@ public:
 
   static Parse_Table &parse_table() { return parse_table_; }
 
-protected:
-  // DATA
-
-  // STATIC
-
 private:
-  // IMPLEMENTATION
-
-  // STATIC
-
   friend class Class_Parse_Table<Class>;
 
   void initialize(Keyword const *keywords, unsigned count) {
@@ -323,7 +312,7 @@ private:
       parse_table_.add(keywords, count);
       first_time = false;
     }
-    current_ = (Class_Parse_Table<Class> *)this;
+    current_ = static_cast<Class_Parse_Table<Class> *>(this);
   }
 
   static Class_Parse_Table<Class> *current_;

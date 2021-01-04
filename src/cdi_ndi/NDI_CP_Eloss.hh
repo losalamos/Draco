@@ -11,6 +11,8 @@
 #ifndef cdi_ndi_NDI_CP_Eloss_hh
 #define cdi_ndi_NDI_CP_Eloss_hh
 
+#define NDI_DEDX_SUPPORT (NDI_MAJOR > 2 || (NDI_MAJOR == 2 && NDI_MINOR >= 2))
+
 #include "NDI_Base.hh"
 #include "cdi/CPCommon.hh"
 #include "cdi/CPEloss.hh"

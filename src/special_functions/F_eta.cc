@@ -59,7 +59,7 @@ double F_eta(double const eta, double const gamma) {
         dep = dep * e + ep * dep;
         ep *= e;
         sign *= -1;
-        double srt = pow((double)j, i + 1.5);
+        double srt = pow(static_cast<double>(j), i + 1.5);
         double term = sign * ep / srt;
         if (fabs(term) < fabs(si) * std::numeric_limits<double>::epsilon())
           break;

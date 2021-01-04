@@ -70,7 +70,9 @@ public:
 //------------------------------------------------------------------------------------------------//
 class EospacUnknownDataType : public EospacException {
 public:
-  EospacUnknownDataType(std::string const &msg) noexcept : EospacException(msg){/* empty */};
+  explicit EospacUnknownDataType(std::string const &msg) noexcept
+      : EospacException(msg) { /* empty */
+  }
   ~EospacUnknownDataType() noexcept override = default;
 };
 

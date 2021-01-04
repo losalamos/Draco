@@ -3,8 +3,7 @@
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \brief  Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoMath.hh"

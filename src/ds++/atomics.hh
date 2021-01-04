@@ -17,15 +17,16 @@ namespace rtt_dsxx {
 
 //------------------------------------------------------------------------------------------------//
 /**\brief atomically add arg to a.
- * \tparam FpT: a floating point type (integer types in std lib since C++11).
- * \param a: an atomic of type FpT that will be updated.
- * \param arg: quantity to add to a
- * \param m_o: std memory order, default is memory_order_relaxed
- * \return value of a after update
- * \remark: By default, uses memory_order_relaxed, meaning (I think) that other atomic operations on
- * 'a' can be moved before or after this one.
+ * \tparam FpT a floating point type (integer types in std lib since C++11).
+ * \param a    an atomic of type FpT that will be updated.
+ * \param arg  quantity to add to a
+ * \param m_o  std memory order, default is memory_order_relaxed
+ * \return     value of a after update
+ *
+ * By default, uses memory_order_relaxed, meaning (I think) that other atomic operations on 'a' can
+ * be moved before or after this one.
  */
-template <class FpT>
+template <typename FpT>
 FpT fetch_add(std::atomic<FpT> &a, FpT arg, std::memory_order m_o = std::memory_order_relaxed) {
   static_assert(std::is_floating_point<FpT>::value,
                 "Template parameter ought to be floating point, use C++11 std "
@@ -41,13 +42,14 @@ FpT fetch_add(std::atomic<FpT> &a, FpT arg, std::memory_order m_o = std::memory_
 
 //------------------------------------------------------------------------------------------------//
 /**\brief atomically subtract a from arg.
- * \tparam FpT: a floating point type (integer types in std lib since C++11).
- * \param a: an atomic of type FpT that will be updated.
- * \param arg: quantity to subtract from a
- * \param m_o: std memory order, default is memory_order_relaxed
+ * \tparam FpT a floating point type (integer types in std lib since C++11).
+ * \param a    an atomic of type FpT that will be updated.
+ * \param arg  quantity to subtract from a
+ * \param m_o  std memory order, default is memory_order_relaxed
  * \return value of a after update
- * \remark: By default, uses memory_order_relaxed, meaning (I think) that other atomic operations on
- * 'a' can be moved before or after this one.
+ *
+ * By default, uses memory_order_relaxed, meaning (I think) that other atomic operations on 'a' can
+ * be moved before or after this one.
  */
 template <class FpT>
 FpT fetch_sub(std::atomic<FpT> &a, FpT arg, std::memory_order m_o = std::memory_order_relaxed) {

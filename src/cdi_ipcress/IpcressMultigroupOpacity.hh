@@ -328,7 +328,7 @@ public:
    * \brief Returns a string that describes the templated EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
    */
-  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; };
+  std::string getEnergyPolicyDescriptor() const override { return energyPolicyDescriptor; }
 
   /*!
    * \brief Returns a "plain English" description of the opacity data that this
@@ -393,7 +393,7 @@ public:
    * \brief Returns the number of gruops found in the current multigroup data
    *     set.
    */
-  size_t getNumGroups() const override { return getNumGroupBoundaries() - 1; };
+  size_t getNumGroups() const override { return getNumGroupBoundaries() - 1; }
 
   /*!
    * \brief Pack a IpcressMulitgroupOpacity object.

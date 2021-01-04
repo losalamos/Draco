@@ -231,7 +231,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
 
       int level = 0;
       double etap;
-      double eta;
+      double eta{0.0};
       for (unsigned a = 0; a < number_of_ordinates; a++) {
         levels_[a] = level;
 

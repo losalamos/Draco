@@ -95,7 +95,7 @@ std::vector<std::string> tokenize(std::string const &str, std::string const &del
  * \param[in] str The string that contains a number.
  * \return A numeric value.
  *
- * \tparam The template type will be deduced based on the return type ("-> T").
+ * \tparam T The template type will be deduced based on the return type ("-> T").
  */
 template <typename T> auto parse_number_impl(std::string const &str) -> T;
 
@@ -133,7 +133,7 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double;
  * \param[in] verbose Should the function print conversion message warnings (default: true).
  * \return A numeric value.
  *
- * \tparam The template type will be deduced based on the return type ("-> T").
+ * \tparam T The template type will be deduced based on the return type ("-> T").
  *
  * These functions will throw exceptions if the conversion is invalid or if the converted value is
  * out-of-range. This generic function calls unchecked parse_number_impl specialization that is
@@ -177,7 +177,7 @@ template <typename T> auto parse_number(std::string const &str, bool verbose = t
 
  * \return A vector of numeric values.
  *
- * \tparam plain-old-data type for storing numeric values, such as double, unsigned, float or int.
+ * \tparam T plain-old-data type for storing numeric values, such as double, unsigned, float or int.
  *
  * std::string foo = "{ 1.0, 2.0, 3.0 }" will be converted to
  * std::vector<double> bar = { 1.0, 2.0, 3.0 }
