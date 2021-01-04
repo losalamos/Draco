@@ -50,8 +50,8 @@ bool Is_Other_Text(char const *text) {
 /*!
  * Is the argument a valid keyword?
  *
- * \return \c true if the argument points to a string consisting of a sequence
- * of C++ identifiers separated by single spaces.
+ * \return \c true if the argument points to a string consisting of a sequence of C++ identifiers
+ * separated by single spaces.
  */
 bool Is_Keyword_Text(char const *text) {
   Require(text != nullptr);
@@ -74,8 +74,8 @@ bool Is_Keyword_Text(char const *text) {
 /*!
  * Is the argument a valid string constant?
  *
- * \return \c true if the argument points to a string consisting of a single C++
- * string constant, including the delimiting quotes.
+ * \return \c true if the argument points to a string consisting of a single C++ string constant,
+ * including the delimiting quotes.
  */
 bool Is_String_Text(char const *text) {
   Require(text != nullptr);

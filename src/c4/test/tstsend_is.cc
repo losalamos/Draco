@@ -384,7 +384,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
         expected[i] = static_cast<long double>(1000 * left + i);
       }
 
-      long double const eps = 1.0e-6f;
+      auto const eps = static_cast<long double>(1.0e-6f);
       if (soft_equiv(expected.begin(), expected.end(), buffer2.begin(), buffer2.end(), eps)) {
         ostringstream msg;
         msg << "Expected long double data found after send_is() on node " << pid << ".";

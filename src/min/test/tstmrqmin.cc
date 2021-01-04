@@ -3,8 +3,7 @@
  * \file   min/test/tstmrqmin.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -104,8 +103,8 @@ void tstmrqmin(UnitTest &ut) {
 
   vector<double> a(9, 0.0);
   vector<bool> ia(9, false);
-  double chisq;
-  double alamda;
+  double chisq{0.0};
+  double alamda{0.0};
   vector<double> covar, alpha;
   unsigned iopt(0);
   double copt = 1e100;

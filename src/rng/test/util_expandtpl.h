@@ -41,17 +41,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#if (DBS_GNUC_VERSION >= 70000)
-#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
-#endif
+#pragma GCC system_header
 #endif
 
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#pragma clang diagnostic ignored "-Wfloat-conversion"
 #endif
 
 #ifdef _MSC_FULL_VER
@@ -96,18 +96,11 @@ TEST_TPL(aesni, 4, 32, 10)
 #endif
 
 #ifdef _MSC_FULL_VER
-// conditional expression is constant
 #pragma warning(pop)
 #endif
 
 #ifdef __clang__
-// Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
-#endif
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
 #endif
 
 #undef TEST_TPL

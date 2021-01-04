@@ -1073,7 +1073,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
     // Generate reference solutions
     std::vector<double> emission_group_cdf_ref(bounds.size() - 1);
     double opacity_pl_ref(0.0);
-    double opacity_pl_recip_ref(std::numeric_limits<float>::max());
+    auto opacity_pl_recip_ref(static_cast<double>(std::numeric_limits<float>::max()));
     double opacity_ross_ref(0.0);
     for (size_t ig = 0; ig < bounds.size() - 1; ++ig) {
       emission_group_cdf_ref[ig] = opacity_pl_ref;

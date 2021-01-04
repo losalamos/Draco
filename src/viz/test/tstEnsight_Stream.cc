@@ -39,7 +39,7 @@ void readit(ifstream &stream, const bool binary, double &d) {
   if (binary) {
     float x;
     binary_read(stream, x);
-    d = x;
+    d = static_cast<double>(x);
   } else
     stream >> d;
 }

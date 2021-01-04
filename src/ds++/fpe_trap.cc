@@ -28,7 +28,7 @@
 #include <csignal>
 
 /* Signal handler for floating point exceptions. */
-extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo, void * /*psContext*/) {
+extern "C" [[noreturn]] void catch_sigfpe(int sig, siginfo_t *psSiginfo, void * /*psContext*/) {
   // generate a message:
   std::string error_type;
 

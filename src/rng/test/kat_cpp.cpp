@@ -50,23 +50,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  pair<generator, rounds> to functions that apply the right generator
 // with the right number of rounds.
 
-#if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an "unused local
-// typedef" warning, from a pre-C++11 implementation of a static assertion in compilerfeatures.h.
-#if (DBS_GNUC_VERSION >= 40600)
+#if (__GNUC__) && !defined(__ICC) && !defined(NVCC) && !defined(__clang__)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
 
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
+#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#pragma clang diagnostic ignored "-Wshadow"
 #endif
 
 #include <Random123/MicroURNG.hpp>
@@ -75,20 +76,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <stdexcept>
 #include <utility>
-
-#ifdef __clang__
-// Restore clang diagnostics to previous state.
-#pragma clang diagnostic pop
-#endif
-
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
-#endif
-
-#ifdef _MSC_FULL_VER
-#pragma warning(pop)
-#endif
 
 using namespace std;
 
@@ -240,15 +227,6 @@ void host_execute_tests(kat_instance *tests, unsigned ntests) {
   genmap[make_pair(philox4x32_e, 7u)] = do_test<r123::Philox4x32_R<7>>;
   genmap[make_pair(philox4x32_e, 10u)] = do_test<r123::Philox4x32_R<10>>;
 
-/* LLVM warning/error:
- * macro expansion producing 'defined' has undefined behavior [-Werror,-Wexpansion-to-defined]
- * Random123/features/gccfeatures.h:222:42: note: expanded from macro
- * 'R123_USE_MULHILO64_MULHI_INTRIN' */
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wexpansion-to-defined"
-#endif
-
 #if R123_USE_PHILOX_64BIT
   genmap[make_pair(philox2x64_e, 7u)] = do_test<r123::Philox2x64_R<7>>;
   genmap[make_pair(philox2x64_e, 10u)] = do_test<r123::Philox2x64_R<10>>;
@@ -262,13 +240,21 @@ void host_execute_tests(kat_instance *tests, unsigned ntests) {
   genmap[make_pair(ars4x32_e, 10u)] = do_test<r123::ARS4x32_R<10>>;
 #endif
 
+  dev_execute_tests(tests, ntests);
+}
+
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
 #endif
 
-  dev_execute_tests(tests, ntests);
-}
+#if (__GNUC__) && !defined(__ICC) && !defined(NVCC) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
 
 //------------------------------------------------------------------------------------------------//
 // end kat_cpp.cpp

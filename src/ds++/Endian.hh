@@ -141,7 +141,7 @@ bool has_ieee_float_representation();
 /*!
  * \brief Tim Kelley's specialized byte-swapping routines from ds++/swap.hh.
  *
- * \param[in] input
+ * \param[in] input Value to be considered for byte-swapping.
  * \return byte-swapped value.
  *
  * Do byte-swapping one of two ways: either use GNU extended asm for x86 (really 486+), or use the
@@ -176,7 +176,7 @@ template <> inline uint32_t byte_swap_copy<uint32_t>(uint32_t const input) {
 /*!
  * \brief Tim Kelley's specialized byte-swapping routines from ds++/swap.hh.
  *
- * \param[in] input
+ * \param[in] input Value to be considered for byte-swapping.
  * \return byte-swapped value.
  *
  * Do byte-swapping one of two ways: either use GNU extended asm for x86 (really 486+), or use the

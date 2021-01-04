@@ -297,8 +297,8 @@ void draco_mkdir(std::string const &path) {
  */
 void draco_remove(std::string const &dirpath) {
   // remove() works for all unix items but only for files (not directories) for windows.
-  if (draco_getstat(dirpath).isdir()) {
 #ifdef WIN32
+  if (draco_getstat(dirpath).isdir()) {
     // Clear any special directory attributes.
     bool ok = ::SetFileAttributes(dirpath.c_str(), FILE_ATTRIBUTE_NORMAL);
     if (!ok) {
@@ -316,12 +316,12 @@ void draco_remove(std::string const &dirpath) {
       msg << "ERROR: Error deteting file, myerr = " << myerr << ", file = " << dirpath;
       Insist(ok, msg.str());
     }
-#else
-    remove(dirpath.c_str());
-#endif
   } else {
     remove(dirpath.c_str());
   }
+#else
+  remove(dirpath.c_str());
+#endif
   // If the file still exists this check will fail.
   Ensure(!draco_getstat(dirpath).valid());
   return;

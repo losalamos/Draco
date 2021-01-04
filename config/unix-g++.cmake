@@ -13,22 +13,8 @@ include_guard(GLOBAL)
 # Notes:
 # ----------------------------------------
 # Useful options that could be added to aid debugging
-# http://gcc.gnu.org/wiki/Atomic/GCCMM
-# http://gcc.gnu.org/wiki/TransactionalMemory
-# http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-# https://gcc.gnu.org/gcc-5/changes.html
-# http://stackoverflow.com/questions/3375697/useful-gcc-flags-for-c
-
-#
-# Declare CMake options related to GCC
-#
-if( NOT DEFINED GCC_ENABLE_ALL_WARNINGS )
-  option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." OFF )
-endif()
-if( NOT DEFINED GCC_ENABLE_GLIBCXX_DEBUG )
-  option( GCC_ENABLE_GLIBCXX_DEBUG
-    "Use special version of libc.so that includes STL bounds checking." OFF )
-endif()
+# - http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+# - https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
 
 #
 # Compiler flag checks
@@ -40,78 +26,45 @@ check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
 
 #
 # Compiler Flags
-#
-# Consider using these diagnostic flags for Debug builds:
-# -Wcast-qual - warn about casts that remove qualifiers like const.
-# -Wstrict-overflow=4
-# -Wwrite-strings
-# -Wunreachable-code
-# - https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-#
+
 # Consider using these optimization flags:
 # -ffast-math -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
-#
-# Added, but shouldn't be needed:
-# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress warnings.
 #
 # Control FMA
 # -ffp-contract=off
 
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-  string(APPEND CMAKE_C_FLAGS " -Wcast-align -Wpointer-arith -Wall -pedantic -Wfloat-equal"
-    " -Wunused-macros -fsanitize=bounds-strict -Wshadow -Wformat=2")
+  string(APPEND CMAKE_C_FLAGS " -Wall -Wextra -pedantic -Wcast-align -Wpointer-arith -Wfloat-equal"
+    " -Wunused-macros -Wshadow -Wformat=2")
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
-    string( APPEND CMAKE_C_FLAGS " -Wno-expansion-to-defined -Wnarrowing -Wnull-dereference" )
+    string( APPEND CMAKE_C_FLAGS " -Wnull-dereference" )
   endif()
-  string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra"
-    " -Wundef -Wunreachable-code -DDEBUG")
-  # Ref: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md#compilers
-  # -Wfloat-equal       # Warn when if-statement compares floats directly
-  # -Werror             # Promote all warnings to 'error' status
-  # -Wconversion        # warn on type conversions that may lose data
-  # -Wdouble-promotion  # warn if float is implicit promoted to double
-  # -Wformat=2          # warn on security issues around functions that format output (ie printf)
-  # -Winline            # Warn if function marked 'inline' cannot be inlined
-  # -Wold-style-cast    # Warn if c-style casts are used, replace with c++-style cast.
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0 )
+    # Pragmas in rng and Random123 don't seem to disable this check.
+    string( APPEND CMAKE_C_FLAGS " -Wno-expansion-to-defined")
+  endif()
+  string( CONCAT CMAKE_C_FLAGS_DEBUG "-g -fno-inline -fno-eliminate-unused-debug-types -O0"
+    " -Wundef -Wunreachable-code -fsanitize=bounds-strict -fdiagnostics-color=auto -DDEBUG")
+  # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
+  string( CONCAT CMAKE_C_FLAGS_RELEASE "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  string( CONCAT CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra"
-    " -Wno-expansion-to-defined -funroll-loops" )
+  string( CONCAT CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types"
+    " -funroll-loops" )
 
-  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
-    # See https://gcc.gnu.org/gcc-5/changes.html
-    # UndefinedBehaviorSanitizer gained a few new sanitization options:
-    #  -fsanitize=alignment: enable alignment checking, detect various misaligned objects;
-    #  -fsanitize=object-size: enable object size checking, detect various out-of-bounds accesses.
-    #  -fsanitize=vptr: enable checking of C++ member function calls, member accesses and some
-    #             conversions between pointers to base and derived classes, detect if the referenced
-    #             object does not have the correct dynamic type.
-
-    if( NOT DEFINED ENV{TRAVIS} )
-      # Some options (including these) seem to confuse Travis.
-      # See https://stackoverflow.com/questions/50024731/ld-unrecognized-option-push-state-no-as-needed
-      string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
-      string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
-    endif()
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=auto")
-#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=vptr")
-#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=object-size")
-#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=alignment")
-#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=address")
-    # - The '-fsanitize=leak' option sounds great but it finds too many issues in OpenMPI.
-    # string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=leak")
-    # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
+  if( NOT DEFINED ENV{TRAVIS} )
+    # Some options (including these) seem to confuse Travis.
+    # See https://stackoverflow.com/questions/50024731/ld-unrecognized-option-push-state-no-as-needed
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
   endif()
+
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
     # See https://gcc.gnu.org/gcc-7/changes.html
-    # -fsanitize-address-use-after-scope: sanitation of variables whose address is taken and used
-    #            after a scope where the variable is defined. On by default when -fsanitize=address.
-    # -fsanitize=signed-integer-overflow
-    # -Wduplicated-branches warns when an if-else has identical branches.
     if( NOT DEFINED ENV{TRAVIS} )
       string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
+      string( APPEND CMAKE_C_FLAGS_DEBUG " -Wduplicated-branches")
     endif()
   endif()
 
@@ -135,10 +88,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 )
     # See https://gcc.gnu.org/gcc-8/changes.html
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast -Wnon-virtual-dtor -Wuseless-cast")
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wnoexcept")
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree -Wnoexcept")
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wsuggest-attribute=const" )
-    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
   endif()
 
 endif()
@@ -149,21 +100,8 @@ deduplicate_flags(CMAKE_C_FLAGS)
 deduplicate_flags(CMAKE_CXX_FLAGS)
 force_compiler_flags_to_cache("C;CXX")
 
-#
 # Toggle compiler flags for optional features
-#
-toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
-toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX"
-  "DEBUG" )
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
-
-# On SQ, our Random123/1.08 vendor uses a series of include directives that fail to compile with
-# g++-4.7.2 when the -pedantic option is requested. The core issue is that fabs is defined with two
-# different exception signatures in math.h and in ppu_intrinsics.h. On this platform, we choose not
-# use -pedantic.
-if( ${SITENAME} MATCHES "seq" )
-  toggle_compiler_flag( OFF "-pedantic" "CXX" "")
-endif()
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-g++.cmake

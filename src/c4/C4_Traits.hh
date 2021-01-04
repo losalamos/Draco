@@ -11,7 +11,6 @@
 #define rtt_c4_C4_Traits_hh
 
 #include "C4_Tags.hh"
-// #include <stdint.h> // ensure types are same across compilers (pgi)
 
 namespace rtt_c4 {
 

@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 12 12:11:22 2003
  * \brief  Assertion tests.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -20,18 +19,15 @@ using namespace std;
 //------------------------------------------------------------------------------------------------//
 
 //------------------------------------------------------------------------------------------------//
-// The way this test article works is that each of the DBC macros are tested
-// in a separate function.  A false condition is asserted using each macro,
-// and after this follows a throw.  Two catch clauses are available, one to
-// catch an assertion object, and one to catch anything else.  By comparing
-// the exception that is actually caught with the one that should be caught
-// given the DBC setting in force, we can determine whether each test passes
-// or fails.
+// The way this test article works is that each of the DBC macros are tested in a separate function.
+// A false condition is asserted using each macro, and after this follows a throw.  Two catch
+// clauses are available, one to catch an assertion object, and one to catch anything else.  By
+// comparing the exception that is actually caught with the one that should be caught given the DBC
+// setting in force, we can determine whether each test passes or fails.
 //------------------------------------------------------------------------------------------------//
 
 //------------------------------------------------------------------------------------------------//
-// Make sure we can differentiate between a std::runtime_error and a
-// rtt_dsxx::assertion.
+// Make sure we can differentiate between a std::runtime_error and a rtt_dsxx::assertion.
 //------------------------------------------------------------------------------------------------//
 
 void t1(rtt_dsxx::UnitTest &ut) {
@@ -48,7 +44,7 @@ void t1(rtt_dsxx::UnitTest &ut) {
 
 //------------------------------------------------------------------------------------------------//
 // Make sure we can catch a rtt_dsxx::assertion and extract the error message.
-// ---------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void t2(rtt_dsxx::UnitTest &ut) {
   std::cout << "t2 test: ";
@@ -96,8 +92,7 @@ void t3(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// Check the toss_cookies function.
-// This function builds an error message and throws an exception.
+// Check the toss_cookies function. This function builds an error message and throws an exception.
 //------------------------------------------------------------------------------------------------//
 void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
   {
@@ -132,8 +127,7 @@ void ttoss_cookies(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// Check the check_cookies function.
-// This function builds an error message and throws an exception.
+// Check the check_cookies function. This function builds an error message and throws an exception.
 //------------------------------------------------------------------------------------------------//
 void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
   {
@@ -162,8 +156,7 @@ void tcheck_cookies(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
-// Check the show_cookies function.
-// This function builds an error message and throws an exception.
+// Check the show_cookies function. This function builds an error message and throws an exception.
 //------------------------------------------------------------------------------------------------//
 void tshow_cookies(rtt_dsxx::UnitTest &ut) {
   using namespace std;
@@ -438,22 +431,6 @@ void tinsist(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
     }
   }
-
-  // make sure no_exception_insist doesn't throw
-  /*
-  {
-    std::cout << "Insist no exception test"
-    char const *const insist_message("You must be kidding!");
-    try {
-      rtt_dsxx::no_exception_insist(0, insist_message);
-      throw "Bogus!";
-    } catch (rtt_dsxx::assertion const &a) {
-      ITFAILS;
-    } catch (...) {
-      PASSMSG("no_exception_insist did not throw");
-    }
-  }
-  */
   return;
 }
 
@@ -539,8 +516,8 @@ int unused(int i) {
 
   default:
     Insist(false, "bad case");
-    // Should not trigger a return with no value warning, because insist is
-    // flagged as a noreturn function
+    // Should not trigger a return with no value warning, because insist is flagged as a noreturn
+    // function
   }
 }
 

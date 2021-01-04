@@ -81,7 +81,7 @@ public:
   inline Token(Token_Type type, string &&text, string &&location);
 
   //! Default constructor
-  inline Token() : text_(), location_(){};
+  inline Token() : text_(), location_() {}
 
   // ACCESSORS
 

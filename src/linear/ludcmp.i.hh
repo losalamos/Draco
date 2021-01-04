@@ -29,7 +29,7 @@ namespace rtt_linear {
  *
  * \pre \c a.size()==indx.size()*indx.size()
  */
-template <class FieldVector, class IntVector>
+template <typename FieldVector, typename IntVector>
 void ludcmp(FieldVector &a, IntVector &indx, typename FieldVector::value_type &d) {
   Require(a.size() == indx.size() * indx.size());
 
@@ -112,7 +112,7 @@ void ludcmp(FieldVector &a, IntVector &indx, typename FieldVector::value_type &d
  * \pre \c a.size()==indx.size()*indx.size()
  * \pre \c b.size()==indx.size()
  */
-template <class FieldVector1, class IntVector, class FieldVector2>
+template <typename FieldVector1, typename IntVector, typename FieldVector2>
 void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
   Require(a.size() == indx.size() * indx.size());
   Require(b.size() == indx.size());

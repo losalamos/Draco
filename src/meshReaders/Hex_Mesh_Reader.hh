@@ -97,7 +97,7 @@ public:
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
   get_unique_element_types() const override;
 
-  size_t get_dims_ndim() const override { return ndim; };
+  size_t get_dims_ndim() const override { return ndim; }
 
 private:
   bool check_dims() const;

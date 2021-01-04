@@ -32,12 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TIME_INITKEYCTR_H
 #define TIME_INITKEYCTR_H 1
 
-#ifdef __GNUC__
-#if (DBS_GNUC_VERSION >= 70000)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC system_header
 #endif
 
 #ifdef __clang__
@@ -170,15 +166,7 @@ static aesni4x32_ctr_t good_aesni4x32_10 = {{0x1e68c9fd, 0x347b0858, 0x503d8d91,
 #include "util_expandtpl.h"
 
 #ifdef __clang__
-// Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
-#endif
-
-#ifdef __GNUC__
-#if (DBS_GNUC_VERSION >= 70000)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
-#endif
 #endif
 
 #endif /* TIME_INITKEYCTR_H */

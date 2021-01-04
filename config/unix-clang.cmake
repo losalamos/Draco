@@ -10,9 +10,11 @@ include_guard(GLOBAL)
 # 1) the language standard (C++14, C99, etc)
 # 2) interprocedural optimization.
 
-# Debug flags to consider adding:
-# http://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
-# -fdiagnostics-show-hotness
+# Suggested flags:
+# ---------------
+# - http://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
+#    -fdiagnostics-show-hotness
+# - https://lefticus.gitbooks.io/cpp-best-practices/content/02-Use_the_Tools_Available.html
 #
 # valgrind like options - https://clang.llvm.org/docs/AddressSanitizer.html
 #      '-g -fsanitize=address -fno-omit-frame-pointer'
@@ -30,15 +32,23 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  string( APPEND CMAKE_C_FLAGS " -Wcast-align -Wpointer-arith -Wall -Wno-long-long"
-    " -Wreserved-id-macro -pedantic" )
+  string( APPEND CMAKE_C_FLAGS " -Weverything")
+  # now turn off some flags that produce too many warnings (we should work on these eventually!)
+  string( APPEND CMAKE_C_FLAGS " -Wno-c++98-compat -Wno-c++98-compat-pedantic"
+    " -Wno-documentation-unknown-command -Wno-exit-time-destructors -Wno-global-constructors"
+    " -Wno-weak-vtables -Wno-old-style-cast -Wno-sign-conversion -Wno-padded -Wno-extra-semi-stmt"
+    " -Wno-unreachable-code-break -Wno-unreachable-code-return"
+    " -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-switch-enum"
+    " -Wno-deprecated-declarations -Wno-missing-noreturn -Wno-unreachable-code"
+    " -Wno-documentation-deprecated-sync -Wno-documentation -Wno-undefined-func-template"
+    " -Wno-weak-template-vtables -Wno-comma")
   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
     string( APPEND CMAKE_C_FLAGS " -march=native" )
   endif()
-  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -O0 -Wextra -DDEBUG")
+  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -O0 -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -funroll-loops" )
 
   # Suppress warnings about typeid() called with function as an argument. In this case, the function
   # might not be called if the type can be deduced.

@@ -22,12 +22,26 @@
 #endif
 #endif
 
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat"
+#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+#pragma clang diagnostic ignored "-Wextra-semi-stmt"
+#pragma clang diagnostic ignored "-Wpadded"
+#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#if defined(__clang_major__) && __clang_major__ >= 11
+#pragma clang diagnostic ignored "-Wsuggest-destructor-override"
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 #ifdef __CUDACC__
 // https://stackoverflow.com/questions/14831051/how-to-disable-a-specific-nvcc-compiler-warnings
 // http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
 #pragma diag_suppress unsigned_compare_with_negative
 #endif
-
 
 //------------------------------------------------------------------------------------------------//
 
@@ -44,7 +58,6 @@
  *
  * https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
  */
-
 
 #include "terminal_base.h"
 
@@ -757,9 +770,12 @@ public:
 #pragma diag_default unsigned_compare_with_negative
 #endif
 
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic pop
+#endif
+
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
 #endif

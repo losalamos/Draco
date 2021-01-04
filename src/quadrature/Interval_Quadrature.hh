@@ -43,14 +43,14 @@ public:
     Require(m < mu_.size());
 
     return mu_[m];
-  };
+  }
 
   double wt(unsigned const m) const {
     Require(wt_.size() == sn_order());
     Require(m < wt_.size());
 
     return wt_[m];
-  };
+  }
 
   // STATICS
 

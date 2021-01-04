@@ -14,7 +14,7 @@
 
 //------------------------------------------------------------------------------------------------//
 // Stack trace feature is only available on Unix-based systems when compiled with Intel or GNU C++.
-// ------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef UNIX
 
 #ifndef draco_isPGI
@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------------------------//
 // Helper functions
-std::string st_to_string(int const i) {
+inline std::string st_to_string(int const i) {
   std::ostringstream msg;
   msg << i;
   return msg.str();

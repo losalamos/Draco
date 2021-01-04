@@ -4,8 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 15:41:00 2002
  * \brief  C4 Reduction test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -247,7 +246,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     global_isum(xld_send, xld_recv, ld_request);
     ld_request.wait();
 
-    long double ld_answer = 0.0;
+    auto ld_answer = static_cast<long double>(0.0);
     for (int i = 0; i < rtt_c4::nodes(); i++)
       ld_answer += static_cast<long double>(i) + 0.1l;
 
@@ -726,24 +725,24 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 
     // make a vector of long doubles
     vector<long double> x(100);
-    vector<long double> prod(100, 1.0);
-    vector<long double> sum(100, 0.0);
-    vector<long double> lmin(100, 0.0);
-    vector<long double> lmax(100, 0.0);
+    vector<long double> prod(100, static_cast<long double>(1.0));
+    vector<long double> sum(100, static_cast<long double>(0.0));
+    vector<long double> lmin(100, static_cast<long double>(0.0));
+    vector<long double> lmax(100, static_cast<long double>(0.0));
 
     // fill it
     for (int i = 0; i < 100; i++) {
-      x[i] = static_cast<long double>(rtt_c4::node()) + 0.11f;
+      x[i] = static_cast<long double>(rtt_c4::node()) + static_cast<long double>(0.11f);
       for (int j = 0; j < rtt_c4::nodes(); j++) {
-        sum[i] += (static_cast<long double>(j) + 0.11f);
-        prod[i] *= (static_cast<long double>(j) + 0.11f);
+        sum[i] += (static_cast<long double>(j) + static_cast<long double>(0.11f));
+        prod[i] *= (static_cast<long double>(j) + static_cast<long double>(0.11f));
       }
-      lmin[i] = 0.11f;
-      lmax[i] = static_cast<long double>(rtt_c4::nodes()) + 0.11f - 1.0f;
+      lmin[i] = static_cast<long double>(0.11f);
+      lmax[i] = static_cast<long double>(rtt_c4::nodes()) + static_cast<long double>(0.11f - 1.0f);
     }
 
     vector<long double> c;
-    long double const eps = 1.0e-6f;
+    auto const eps = static_cast<long double>(1.0e-6f);
 
     {
       c = x;

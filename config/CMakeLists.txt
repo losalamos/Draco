@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Nov 2
 # brief  Install the config directory in the target directory
-# note   Copyright (C) 2016-2020, Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020, Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
 project( config )
@@ -27,36 +26,17 @@ set( CMake_AFSD CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in  )
 #--------------------------------------------------------------------------------------------------#
 
 string( TOUPPER "${CMAKE_BUILD_TYPE}" upper_build_type )
-set( Draco_CXX_COMPILER_FLAGS
-   "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${upper_build_type}}" )
-set( Draco_C_COMPILER_FLAGS
-   "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${upper_build_type}}" )
+set( Draco_CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${upper_build_type}}" )
+set( Draco_C_COMPILER_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${upper_build_type}}" )
 set( Draco_Fortran_COMPILER_FLAGS
-   "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${upper_build_type}}" )
+    "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${upper_build_type}}" )
 
-# Publish the active build_types (A subset of CMAKE_CONFIGURATION_TYPES)
-if( CMAKE_CONFIGURATION_TYPES )
-   unset( DRACO_CONFIGURATION_TYPES CACHE)
-   foreach( cfg ${CMAKE_CONFIGURATION_TYPES} )
-      if( EXISTS ${Draco_BINARY_DIR}/${cfg} )
-         if( "${DRACO_CONFIGURATION_TYPES}x" STREQUAL "x" )
-            set( DRACO_CONFIGURATION_TYPES "${cfg}" )
-         else()
-            list( APPEND DRACO_CONFIGURATION_TYPES ${cfg} )
-         endif()
-      endif()
-   endforeach()
-   set( DRACO_CONFIGURATION_TYPES "${DRACO_CONFIGURATION_TYPES}"
-      CACHE STRING "Available multiconfig builds." )
-endif()
-
-# What MPI import targets should be found by clients (captured in
-# draco-config.cmake).
+# What MPI import targets should be found by clients (captured in draco-config.cmake).
 if ( "${DRACO_C4}" STREQUAL "MPI" )
   # c4 requires MPI::MPI_CXX if DRACO_C4==MPI.
   set( Draco_MPI_LANG_LIST "CXX" )
-  # If Draco found other MPI imported targets, then ensure they are defined for
-  # client software packages (e.g.: MPI::MPI_Fortran)
+  # If Draco found other MPI imported targets, then ensure they are defined for client software
+  # packages (e.g.: MPI::MPI_Fortran)
   foreach( lang C Fortran )
     if( TARGET MPI::MPI_${lang} )
       list( APPEND Draco_MPI_LANG_LIST ${lang} )
