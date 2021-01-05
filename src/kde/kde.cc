@@ -31,12 +31,18 @@ namespace rtt_kde {
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief Cartesian geometry KDE reconstruction of a 1D distribution
+ * 
+ * \pre The local reconstruction data is passed into this function which
+ * includes the original data distribution, its spatial position, and the
+ * optimal bandwidth to be used at each point.
  *
- * \param[in] distribution 
- * \param[in] position
- * \param[in] one_over_band_width
- * \param[in] domain_decomposed
- * \return final local function distribution
+ * \param[in] distribution original data to be reconstructed
+ * \param[in] position local of the original data 
+ * \param[in] one_over_band_width inverse bandwidth size to be used at each data location
+ * \param[in] domain_decomposed bool flag to switch between domain replicated and decomposed data
+ * \return final local KDE function distribution reconstruction
+ *
+ * \post the local reconstruction of the original data is returned.
  */
 template <>
 template <>
@@ -45,8 +51,8 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     const std::vector<std::array<double, 3>> &one_over_band_width,
     const bool domain_decomposed) const {
   const int64_t local_size = distribution.size();
-  Check(static_cast<int64_t>(position.size()) == local_size);
-  Check(static_cast<int64_t>(one_over_band_width.size()) == local_size);
+  Require(static_cast<int64_t>(position.size()) == local_size);
+  Require(static_cast<int64_t>(one_over_band_width.size()) == local_size);
 
   // used for the zero accumulation conservation
   int64_t size = local_size;
@@ -117,8 +123,10 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   }
 
   // normalize the integrated weight contributions
-  for (int i = 0; i < local_size; i++)
+  for (int i = 0; i < local_size; i++) {
+    Check(normal[i] > 0.0);
     result[i] /= normal[i];
+  }
 
   double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
 

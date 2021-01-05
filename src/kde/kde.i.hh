@@ -17,7 +17,6 @@ namespace rtt_kde {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * reconstruction
  * \brief
  * DEFAULT reconstruction to return error if instantiation is not found
  *
@@ -46,8 +45,8 @@ kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * epan_kernel basis function used during reconstruction
  * \brief
+ * epan_kernel basis function used during reconstruction
  *
  * Epanechnikov kenrel to be used in reconstrtuction
  *
