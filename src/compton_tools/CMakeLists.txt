@@ -11,15 +11,8 @@ project( compton_tools CXX )
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
-set( sources
-    #${PROJECT_SOURCE_DIR}/Sparse_Compton_Matrix.cc
-    ${PROJECT_SOURCE_DIR}/Compton_Native.cc
-)
-
-set( headers
-    #${PROJECT_SOURCE_DIR}/Sparse_Compton_Matrix.hh
-  ${PROJECT_SOURCE_DIR}/Compton_Native.hh
-)
+set( sources ${PROJECT_SOURCE_DIR}/Compton_Native.cc )
+set( headers ${PROJECT_SOURCE_DIR}/Compton_Native.hh )
 
 #--------------------------------------------------------------------------------------------------#
 # Build package library
@@ -40,10 +33,10 @@ add_component_executable(
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
-set( CMAKE_INSTALL_DO_STRIP NO ) # ??
+set( CMAKE_INSTALL_DO_STRIP NO )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton_tools )
 install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
-install( FILES
+install( PROGRAMS
     python/common_compton.py
     python/csk_reader.py
     python/merge_csk.py
