@@ -36,7 +36,7 @@ namespace rtt_kde {
  * \param[in] position
  * \param[in] one_over_band_width
  * \param[in] domain_decomposed
- * return result returned final local function distribution
+ * \return final local function distribution
  */
 template <>
 template <>

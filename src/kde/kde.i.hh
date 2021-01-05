@@ -26,7 +26,8 @@ namespace rtt_kde {
  * \param[in] distribution 
  * \param[in] position
  * \param[in] one_over_band_width
- * \param[inout] result returned final local function distribution
+ * \param[in] domain_decomposed
+ * \return final local function distribution
  *
  */
 
