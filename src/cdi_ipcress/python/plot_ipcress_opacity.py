@@ -17,7 +17,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 from numpy import arange, sin, pi, min, max
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 from matplotlib.figure import Figure
 
@@ -166,10 +166,10 @@ a.set_ylim([ 0.7*min_opacity, 1.3*max_opacity])
 a.legend(loc='best')
 
 canvas = FigureCanvasTkAgg(f, master=root)
-canvas.show()
+canvas.draw()
 canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
-toolbar = NavigationToolbar2TkAgg( canvas, root )
+toolbar = NavigationToolbar2Tk( canvas, root )
 toolbar.update()
 canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=1)
 
@@ -289,7 +289,7 @@ def plot_op():
   a.legend(loc='best')
   a.set_xlim([0.9*min(hnu_grid), 1.1*max(hnu_grid)])
   a.set_ylim([ 0.7*min_opacity, 1.3*max_opacity])
-  canvas.show()
+  canvas.draw()
   canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 ###############################################################################
 
