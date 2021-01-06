@@ -1,59 +1,62 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
-# file   src/compton_tools/CMakeLists.txt
-# author Andrew Till
-# date   2020 May 11
-# brief  Generate build project files for compton_tools
-# note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
+#
+# file   kde/CMakeLists.txt
+# author Mathew Cleveland
+# date   Nov. 10th 2020
+# brief  CMake build environment for KDE
+# note   Copyright (C) 2018-2020 Triad National Security, LLC.
+#        All rights reserved.
 #--------------------------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.17.0)
-project( compton_tools CXX )
+cmake_minimum_required(VERSION 3.9.0)
+project( kde CXX )
 
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
-set( sources ${PROJECT_SOURCE_DIR}/Compton_Native.cc )
-set( headers ${PROJECT_SOURCE_DIR}/Compton_Native.hh )
+
+file( GLOB sources *.cc )
+file( GLOB explicit_instantiations *_pt.cc )
+file( GLOB headers *.hh )
+
+# Make the header files available in the IDE.
+if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+   list( APPEND sources ${headers} )
+endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Build package library
 #--------------------------------------------------------------------------------------------------#
-add_component_library(
-  TARGET       Lib_compton_tools
-  TARGET_DEPS  "Lib_c4;Lib_units;Lib_cdi_analytic"
-  INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
-  LIBRARY_NAME compton_tools
-  SOURCES      "${sources}"
-  HEADERS      "${headers}" )
 
-add_component_executable(
-  TARGET      Exe_CSKrw
-  TARGET_DEPS "Lib_units;Lib_compton_tools"
-  SOURCES     ${PROJECT_SOURCE_DIR}/cskrw.cc)
+add_component_library(
+   TARGET       Lib_kde
+   TARGET_DEPS  Lib_c4
+   INCLUDE_DIRS ${include_dirs}
+   LIBRARY_NAME ${PROJECT_NAME}
+   HEADERS      "${headers}"
+   SOURCES      "${sources}"
+   )
 
 #--------------------------------------------------------------------------------------------------#
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
-set( CMAKE_INSTALL_DO_STRIP NO )
-install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton_tools )
-install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
-install( PROGRAMS
-    python/common_compton.py
-    python/csk_reader.py
-    python/merge_csk.py
-  DESTINATION ${DBSCFGDIR}bin )
+
+install( FILES ${headers}
+  DESTINATION ${DBSCFGDIR}include/kde )
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests
 #--------------------------------------------------------------------------------------------------#
+
 if( BUILD_TESTING )
-  add_subdirectory( test )
+   add_subdirectory( test )
 endif()
 
 #--------------------------------------------------------------------------------------------------#
 # Autodoc
 #--------------------------------------------------------------------------------------------------#
-process_autodoc_pages()
 
+process_autodoc_pages()
 #--------------------------------------------------------------------------------------------------#
-# End compton_tools/CMakeLists.txt
+# End kde/CMakeLists.txt
 #--------------------------------------------------------------------------------------------------#
+

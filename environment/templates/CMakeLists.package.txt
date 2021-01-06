@@ -33,20 +33,14 @@ if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
 endif()
 
 #--------------------------------------------------------------------------------------------------#
-# Directories to search for include directives
-#--------------------------------------------------------------------------------------------------#
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}   # sources
-   ${PROJECT_BINARY_DIR} ) # config.h
-
-#--------------------------------------------------------------------------------------------------#
 # Build package library
 #--------------------------------------------------------------------------------------------------#
 
 add_component_library(
    TARGET       Lib_<spkg>
    LIBRARY_NAME <pkg>
+   INCLUDE_DIRS ${include_dirs}
+   HEADERS      "${headers}"
    SOURCES      "${sources}"
    )
 

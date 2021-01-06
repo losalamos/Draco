@@ -47,7 +47,11 @@ add_component_executable(
 
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
 install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
-install( FILES python/ipcress_reader.py python/plot_ipcress_opacity.py DESTINATION ${DBSCFGDIR}bin )
+install(
+  PROGRAMS
+    python/ipcress_reader.py
+    python/plot_ipcress_opacity.py
+  DESTINATION ${DBSCFGDIR}bin )
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests

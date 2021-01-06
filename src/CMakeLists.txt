@@ -61,6 +61,7 @@ add_dir_if_exists( cdi_ipcress )  # needs cdi
 add_dir_if_exists( compton_interface ) # needs c4, CSK
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
+add_dir_if_exists( kde )          # needs c4
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4

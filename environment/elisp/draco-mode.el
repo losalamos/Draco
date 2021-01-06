@@ -617,13 +617,13 @@ c-------------------------------------------------------------------------------
 "Insert a Makefile comment block."
   (interactive)
   (beginning-of-line)
-  (insert "#")
-  (insert (make-string (- draco-code-comment-width 2) ?-))
-  (insert "#\n")
+  (insert "# ")
+  (insert (make-string (- draco-code-comment-width 4) ?-))
+  (insert " #\n")
   (insert "# \n")
-  (insert "#")
-  (insert (make-string (- draco-code-comment-width 2) ?-))
-  (insert "#\n")
+  (insert "# ")
+  (insert (make-string (- draco-code-comment-width 4) ?-))
+  (insert " #\n")
   (previous-line 2)
   (end-of-line)
 )
@@ -783,9 +783,6 @@ c-------------------------------------------------------------------------------
 (defun draco-mode (&optional arg)
   ;; All of the following text shows up in the "mode help" (C-h m)
   "Minor mode for using/creating Draco C++ source code.
-
-To see what version of doxymacs you are running, enter
-`\\[draco-mode-version]'.
 
 Key bindings:
 \\{draco-mode-map}"

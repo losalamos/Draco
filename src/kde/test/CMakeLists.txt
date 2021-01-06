@@ -1,14 +1,14 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 #
-# file   <pkg>/test/CMakeLists.txt
-# author <user>
-# date   <date>
-# brief  <start>
+# file   kde/test/CMakeLists.txt
+# author Mathew Cleveland
+# date   Nov. 10th 2020
+# brief  CMake configuration for KDE tests
 # note   Copyright (C) 2018-2020 Triad National Security, LLC.
 #        All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( <spkg> CXX )
+project( kde_test CXX )
 
 #--------------------------------------------------------------------------------------------------#
 # Source files
@@ -20,11 +20,11 @@ file( GLOB test_sources *.cc )
 # Build Unit tests
 #--------------------------------------------------------------------------------------------------#
 
-add_scalar_tests(
-   SOURCES "${test_sources}"
-   DEPS    Lib_<spkg>
-   )
+add_parallel_tests(
+   SOURCES   "${test_sources}"
+   DEPS      Lib_kde
+   PE_LIST   "1;3")
+#--------------------------------------------------------------------------------------------------#
+# end kde/test/CMakeLists.txt
+#--------------------------------------------------------------------------------------------------#
 
-#--------------------------------------------------------------------------------------------------#
-# end <pkg>/test/CMakeLists.txt
-#--------------------------------------------------------------------------------------------------#

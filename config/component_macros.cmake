@@ -437,16 +437,29 @@ endmacro()
 # 2. Register the test
 # 3. Register the pass/fail criteria.
 # 4. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#
+# Example - as called form add_scalar_test() or add_parallel_test()
+#
+# register_scalar_test(
+#          TARGET "${compname}_${testname}_${numPE}"
+#          COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>"
+#          CMD_ARGS "-a 5" )
 #--------------------------------------------------------------------------------------------------#
-macro( register_scalar_test targetname runcmd command cmd_args )
+macro( register_scalar_test )
 
-  separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
+  cmake_parse_arguments( rst
+    "BOOL_OPTION_1"
+    "TARGET;COMMAND"
+    "CMD_ARGS"
+    ${ARGV} )
+
+  separate_arguments( cmdargs UNIX_COMMAND ${rst_CMD_ARGS} )
 
   set(lverbose OFF)
   if( lverbose)
-    message("add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )")
+    message("add_test( NAME ${rst_TARGET} COMMAND ${RUN_CMD} ${rst_COMMAND} ${cmdargs} )")
   endif()
-  add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )
+  add_test( NAME ${rst_TARGET} COMMAND ${RUN_CMD} ${rst_COMMAND} ${cmdargs} )
 
   # Reserve enough threads for application unit tests. Normally we only need 1 core for each scalar
   # test.
@@ -454,8 +467,8 @@ macro( register_scalar_test targetname runcmd command cmd_args )
 
   # For application unit tests, a parallel job is forked that needs more cores.
   if( addscalartest_APPLICATION_UNIT_TEST )
-    if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
-      string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${cmd_args}" )
+    if( "${rst_CMD_ARGS}" MATCHES "--np" AND NOT "${rst_CMD_ARGS}" MATCHES "scalar")
+      string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${rst_CMD_ARGS}" )
       # the forked processes needs $num_proc threads.  add one for the master thread, the original
       # scalar process.
       math( EXPR num_procs  "${num_procs} + 1" )
@@ -463,22 +476,24 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   endif()
 
   # set pass fail criteria, processors required, etc.
-  set_tests_properties( ${targetname} PROPERTIES
+  set_tests_properties( ${rst_TARGET} PROPERTIES
     PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
     PROCESSORS              "${num_procs}"
     WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"  )
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set_tests_properties( ${targetname} PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
+    set_tests_properties( ${rst_TARGET} PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
   endif()
   if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    set_tests_properties( ${rst_TARGET} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+  endif()
+  if( DEFINED addscalartest_ENV )
+    set_tests_properties( ${rst_TARGET} PROPERTIES ENVIRONMENT "${addscalartest_ENV}" )
   endif()
 
   # Labels
-  # message("LABEL (ast) = ${addscalartest_LABEL}")
   if( NOT "${addscalartest_LABEL}x" STREQUAL "x" )
-    set_tests_properties( ${targetname} PROPERTIES LABELS "${addscalartest_LABEL}" )
+    set_tests_properties( ${rst_TARGET} PROPERTIES LABELS "${addscalartest_LABEL}" )
   endif()
 
   # If ENABLE_MEMORYCHECK=ON, then also create a memcheck_<test> version
@@ -486,20 +501,23 @@ macro( register_scalar_test targetname runcmd command cmd_args )
       EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" )
     separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
     add_test(
-      NAME    memcheck_${targetname}
-      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts} ${RUN_CMD} ${command} ${cmdargs} )
-    set_tests_properties( memcheck_${targetname} PROPERTIES
+      NAME    memcheck_${rst_TARGET}
+      COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts} ${RUN_CMD} ${rst_COMMAND} ${cmdargs} )
+    set_tests_properties( memcheck_${rst_TARGET} PROPERTIES
       PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
       FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
       PROCESSORS              "${num_procs}"
       WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
       LABELS                  "memcheck;${addscalartest_LABEL}")
     if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-      set_tests_properties( memcheck_${targetname} PROPERTIES RESOURCE_LOCK
+      set_tests_properties( memcheck_${rst_TARGET} PROPERTIES RESOURCE_LOCK
         "${addscalartest_RESOURCE_LOCK}" )
     endif()
     if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-      set_tests_properties( memcheck_${targetname} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+      set_tests_properties( memcheck_${rst_TARGET} PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+    endif()
+    if( DEFINED addscalartest_ENV )
+      set_tests_properties( memcheck_${rst_TARGET} PROPERTIES ENVIRONMENT "${addscalartest_ENV}" )
     endif()
     unset(valgrindopts)
   endif()
@@ -514,56 +532,71 @@ endmacro()
 # 1. Register the test
 # 2. Register the pass/fail criteria.
 # 3. If valgrind is available and ENABLE_MEMORYCHECK=ON, also register a memcheck_<test> version.
+#
+# Example - called from add_parallel_test()
+#
+# register_parallel_test(
+#          TARGET "${compname}_${testname}_${numPE}"
+#          NUMPE  "${numPE}"
+#          COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>"
+#          CMD_ARGS "-a 5" )
 #--------------------------------------------------------------------------------------------------#
-macro( register_parallel_test targetname numPE command cmd_args )
+macro( register_parallel_test )
+
+  cmake_parse_arguments( rpt
+    "BOOL_OPTION_1"
+    "TARGET;COMMAND"
+    "NUMPE;CMD_ARGS"
+    ${ARGV} )
+
   set( lverbose OFF )
   if( lverbose )
-    message( "      Adding test: ${targetname}" )
+    message( "      Adding test: ${rpt_TARGET}" )
   endif()
   unset( RUN_CMD )
 
   if( addparalleltest_MPI_PLUS_OMP )
     string( REPLACE " " ";" mpiexec_omp_preflags_list "${MPIEXEC_OMP_PREFLAGS}" )
     add_test(
-      NAME    ${targetname}
-      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      NAME    ${rpt_TARGET}
+      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${rpt_NUMPE}
               ${mpiexec_omp_preflags_list}
-              ${command}
-              ${cmdarg} )
+              ${rpt_COMMAND}
+              ${rpt_CMD_ARGS} )
   else()
     add_test(
-      NAME    ${targetname}
-      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      NAME    ${rpt_TARGET}
+      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${rpt_NUMPE}
               ${MPIRUN_PREFLAGS}
-              ${command}
-              ${cmdarg} )
+              ${rpt_COMMAND}
+              ${rpt_CMD_ARGS} )
   endif()
-  set_tests_properties( ${targetname}
-    PROPERTIES
+  set_tests_properties( ${rpt_TARGET} PROPERTIES
     PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
     WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}" )
   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set_tests_properties( ${targetname}
-      PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+    set_tests_properties(${rpt_TARGET} PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}")
   endif()
   if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-    set_tests_properties( ${targetname} PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+    set_tests_properties( ${rpt_TARGET} PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+  endif()
+  if( DEFINED addparalleltest_ENV )
+    set_tests_properties( ${rpt_TARGET} PROPERTIES ENVIRONMENT "${addparalleltest_ENV}" )
   endif()
 
   if( addparalleltest_MPI_PLUS_OMP )
 
     if( DEFINED ENV{OMP_NUM_THREADS} )
-      math( EXPR numthreads "${numPE} * $ENV{OMP_NUM_THREADS}" )
+      math( EXPR numthreads "${rpt_NUMPE} * $ENV{OMP_NUM_THREADS}" )
     else()
-      math( EXPR numthreads "${numPE} * ${MPI_CORES_PER_CPU}" )
+      math( EXPR numthreads "${rpt_NUMPE} * ${MPI_CORES_PER_CPU}" )
     endif()
 
     if( MPI_HYPERTHREADING )
       math( EXPR numthreads "2 * ${numthreads}" )
     endif()
-    set_tests_properties( ${targetname}
-      PROPERTIES
+    set_tests_properties( ${rpt_TARGET} PROPERTIES
         PROCESSORS "${numthreads}"
         LABELS     "nomemcheck" )
     unset( numthreads )
@@ -573,9 +606,9 @@ macro( register_parallel_test targetname numPE command cmd_args )
   else()
 
     if( DEFINED addparalleltest_LABEL )
-      set_tests_properties( ${targetname} PROPERTIES LABELS "${addparalleltest_LABEL}" )
+      set_tests_properties( ${rpt_TARGET} PROPERTIES LABELS "${addparalleltest_LABEL}" )
     endif()
-    set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
+    set_tests_properties( ${rpt_TARGET} PROPERTIES PROCESSORS "${rpt_NUMPE}" )
 
   endif()
 
@@ -585,26 +618,29 @@ macro( register_parallel_test targetname numPE command cmd_args )
       EXISTS "${CMAKE_MEMORYCHECK_COMMAND}" AND (NOT addparalleltest_MPI_PLUS_OMP ))
     separate_arguments(valgrindopts NATIVE_COMMAND ${CMAKE_MEMORYCHECK_COMMAND_OPTIONS})
     add_test(
-      NAME    memcheck_${targetname}
+      NAME    memcheck_${rpt_TARGET}
       COMMAND ${CMAKE_MEMORYCHECK_COMMAND} ${valgrindopts}
-              ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+              ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${rpt_NUMPE}
               ${MPIRUN_PREFLAGS}
-              ${command}
-              ${cmdarg} )
-    set_tests_properties( memcheck_${targetname} PROPERTIES
+              ${rpt_COMMAND}
+              ${rpt_CMD_ARGS} )
+    set_tests_properties( memcheck_${rpt_TARGET} PROPERTIES
       PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
       FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
       WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
       LABELS                  "memcheck;${addparalleltest_LABEL}")
     if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-      set_tests_properties( memcheck_${targetname} PROPERTIES
+      set_tests_properties( memcheck_${rpt_TARGET} PROPERTIES
         RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
     endif()
     if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-      set_tests_properties( memcheck_${targetname} PROPERTIES
+      set_tests_properties( memcheck_${rpt_TARGET} PROPERTIES
         DEPENDS "${addparalleltest_RUN_AFTER}" )
     endif()
-    set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
+    if( DEFINED addparalleltest_ENV )
+      set_tests_properties( memcheck_${rpt_TARGET} PROPERTIES ENVIRONMENT "${addparalleltest_ENV}" )
+    endif()
+    set_tests_properties( ${rpt_TARGET} PROPERTIES PROCESSORS "${rpt_NUMPE}" )
     unset(valgrindopts)
   endif()
   unset( lverbose )
@@ -621,6 +657,7 @@ endmacro(register_parallel_test)
 # add_scalar_tests(
 #    SOURCES "${test_sources}"
 #    [ DEPS    "${library_dependencies}" ]
+#    [ ENV     "FOO=${CMAKE_BUILD_TYPE}" ]
 #    [ TEST_ARGS     "arg1;arg2" ]
 #    [ PASS_REGEX    "regex" ]
 #    [ FAIL_REGEX    "regex" ]
@@ -644,16 +681,15 @@ macro( add_scalar_tests test_sources )
     addscalartest
     "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;RUN_SERIAL;NONE"
     "LABEL;LINK_LANGUAGE"
-    "DEPS;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
+    "DEPS;ENV;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV} )
 
   # Sanity Checks
   # ------------------------------------------------------------
   if( "${addscalartest_SOURCES}none" STREQUAL "none" )
-    message( FATAL_ERROR "You must provide the keyword SOURCES and a list of "
-      "sources when using the add_scalar_tests macro.  Please see "
-      "draco/config/component_macros.cmake::add_scalar_tests() for more "
-      "information." )
+    message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using "
+      "the add_scalar_tests macro.  Please see draco/config/component_macros.cmake::"
+      "add_scalar_tests() for more information." )
   endif()
 
   # Defaults:
@@ -749,14 +785,17 @@ macro( add_scalar_tests test_sources )
     get_filename_component( testname ${file} NAME_WE )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-      register_scalar_test( ${compname}_${testname} "${RUN_CMD}"
-        $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
+      register_scalar_test(
+        TARGET  "${compname}_${testname}"
+        COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>")
     else()
       set( iarg "0" )
       foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
-        register_scalar_test( ${compname}_${testname}_arg${iarg} "${RUN_CMD}"
-          $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
+        register_scalar_test(
+          TARGET   "${compname}_${testname}_arg${iarg}"
+          COMMAND  "$<TARGET_FILE:Ut_${compname}_${testname}_exe>"
+          CMD_ARGS "${cmdarg}" )
       endforeach()
     endif()
   endforeach()
@@ -765,66 +804,64 @@ macro( add_scalar_tests test_sources )
 
 endmacro(add_scalar_tests)
 
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # add_parallel_tests
 #
-# Given a list of sources, create unit test executables, one exe for
-# each source file.  Register the test to be run by ctest.
+# Given a list of sources, create unit test executables, one exe for each source file.  Register the
+# test to be run by ctest.
 #
 # Usage:
 #
 # add_parallel_tests(
 #    SOURCES "${test_sources}"
 #    DEPS    "${library_dependencies}"
-#    PE_LIST "1;2;4" )
+#    PE_LIST "1;2;4"
+#    ENV     "DRACO_INC_PATH=${CMAKE_CURRENT_SOURCE_DIR}")
 #
-# Optional parameters that require arguments.
+# Optional parameters that do not require arguments.
 #
-#    SOURCES         - semi-colon delimited list of files.
-#    PE_LIST         - semi-colon delimited list of integers (number of MPI
-#                      ranks).
+#    MPI_PLUS_OMP    - This bool indicates that the test uses OpenMP for each MPI rank.
+#    LINK_WITH_FORTRAN - Use the Fortran compiler to perform the final link of the unit test.
+#
+# Optional parameters that require a single argument
+#
+#    LABEL           - Label that can be used to select tests via ctest's -R or -E options.
+#
+# Optional parameters that require a list of arguments.
+#
 #    DEPS            - CMake target dependencies.
+#    ENV             - Environment variables that will be set for the context of the running test.
+#    FAIL_REGEX      - If this regex exists in the output, the test will 'fail.'
+#    MPIFLAGS        - Extra options to pass to mpirun.
+#    PASS_REGEX      - This regex must exist in the output to produce a 'pass.'
+#    PE_LIST         - semi-colon delimited list of integers (number of MPI ranks).
+#    RESOURCE_LOCK   - Tests with this common string identifier will not be run concurrently.
+#    RUN_AFTER       - The argument to this option is a test name that must complete before the
+#                      current test will be allowed to run
+#    SOURCES         - semi-colon delimited list of files.
 #    TEST_ARGS       - Command line arguments to use when running the test.
-#    PASS_REGEX      - This regex must exist in the output to produce
-#                      a 'pass.'
-#    FAIL_REGEX      - If this regex exists in the output, the test
-#                      will 'fail.'
-#    RESOURCE_LOCK   - Tests with this common string identifier will
-#                      not be run concurrently.
-#    RUN_AFTER       - The argument to this option is a test name that
-#                      must complete before the current test will be
-#                      allowed to run
-#    MPIFLAGS
-#    LABEL           - Label that can be used to select tests via
-#                      ctest's -R or -E options.
-#
-# Optional parameters that require arguments.
-#
-#    MPI_PLUS_OMP    - This bool indicates that the test uses OpenMP
-#                      for each MPI rank.
-#    LINK_WITH_FORTRAN - Use the Fortran compiler to perform the final
-#                      link of the unit test.
-#----------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( add_parallel_tests )
 
-  cmake_parse_arguments(
-    addparalleltest
+  cmake_parse_arguments( addparalleltest
     "MPI_PLUS_OMP;LINK_WITH_FORTRAN"
     "LABEL"
-    "DEPS;FAIL_REGEX;MPIFLAGS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
-    ${ARGV}
-    )
+    "DEPS;ENV;FAIL_REGEX;MPIFLAGS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
+    ${ARGV} )
 
   set(lverbose OFF)
 
   # Sanity Check
   if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
-    message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_parallel_tests macro.  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )
+    message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using"
+      " the add_parallel_tests macro.  Please see draco/config/component_macros.cmake::"
+      "add_parallel_tests() for more information." )
   endif()
   if( "${addparalleltest_PE_LIST}none" STREQUAL "none" )
-    message( FATAL_ERROR "You must provide the keyword PE_LIST and a list containing the number of cores used to execute this test (e.g. \"PE_LIST  \"1;2;4\"\").  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )
+    message( FATAL_ERROR "You must provide the keyword PE_LIST and a list containing the number of "
+      "cores used to execute this test (e.g. \"PE_LIST  \"1;2;4\"\").  Please see "
+      "draco/config/component_macros.cmake::add_parallel_tests() for more information." )
   endif()
-
 
   # Pass/Fail criteria
   if( "${addparalleltest_PASS_REGEX}none" STREQUAL "none" )
@@ -838,8 +875,7 @@ macro( add_parallel_tests )
 
   # Format resource lock command
   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set( addparalleltest_RESOURCE_LOCK
-      "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
+    set( addparalleltest_RESOURCE_LOCK "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
   endif()
 
   # What is the component name? Use this to give a target name to the test.
@@ -876,21 +912,19 @@ macro( add_parallel_tests )
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"" )
-    if( DEFINED DRACO_LINK_OPTIONS AND
-        NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x" )
+    if( DEFINED DRACO_LINK_OPTIONS AND NOT "${DRACO_LINK_OPTIONS}x" STREQUAL "x" )
       set_target_properties( Ut_${compname}_${testname}_exe PROPERTIES
         LINK_OPTIONS ${DRACO_LINK_OPTIONS} )
     endif()
     if( addparalleltest_MPI_PLUS_OMP )
       if( ${CMAKE_GENERATOR} MATCHES Xcode )
-        set_target_properties( Ut_${compname}_${testname}_exe
-          PROPERTIES XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
+        set_target_properties( Ut_${compname}_${testname}_exe PROPERTIES
+          XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
       endif()
     endif()
     # Do we need to use the Fortran compiler as the linker?
     if( addparalleltest_LINK_WITH_FORTRAN )
-      set_target_properties( Ut_${compname}_${testname}_exe
-        PROPERTIES LINKER_LANGUAGE Fortran )
+      set_target_properties( Ut_${compname}_${testname}_exe PROPERTIES LINKER_LANGUAGE Fortran )
     endif()
 
     if( lverbose )
@@ -915,18 +949,17 @@ macro( add_parallel_tests )
         set( iarg 0 )
         if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
           register_parallel_test(
-            ${compname}_${testname}_${numPE}
-            ${numPE}
-            $<TARGET_FILE:Ut_${compname}_${testname}_exe>
-            "" )
+            TARGET "${compname}_${testname}_${numPE}"
+            NUMPE  "${numPE}"
+            COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>" )
         else()
           foreach( cmdarg ${addparalleltest_TEST_ARGS} )
             math( EXPR iarg "${iarg} + 1" )
             register_parallel_test(
-              ${compname}_${testname}_${numPE}_arg${iarg}
-              ${numPE}
-              $<TARGET_FILE:Ut_${compname}_${testname}_exe>
-              ${cmdarg} )
+              TARGET "${compname}_${testname}_${numPE}_arg${iarg}"
+              NUMPE  "${numPE}"
+              COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>"
+              CMD_ARGS "${cmdarg}" )
           endforeach()
         endif()
       endforeach()
@@ -941,27 +974,30 @@ macro( add_parallel_tests )
       set( addscalartest_FAIL_REGEX "${addparalleltest_FAIL_REGEX}" )
       set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
       set( addscalartest_RUN_AFTER "${addparalleltest_RUN_AFTER}" )
+      if( DEFINED addparalleltest_ENV )
+        set( addscalartest_ENV "${addparalleltest_ENV}" )
+      endif()
 
       if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
-        if( lverbose )
-          message("   register_scalar_test( ${compname}_${testname}
-          \"${RUN_CMD}\" $<TARGET_FILE:Ut_${compname}_${testname}_exe> \"\" )")
-        endif()
-        register_scalar_test( ${compname}_${testname}
-          "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
+        register_scalar_test(
+          TARGET  "${compname}_${testname}"
+          COMMAND "$<TARGET_FILE:Ut_${compname}_${testname}_exe>")
       else()
 
         foreach( cmdarg ${addparalleltest_TEST_ARGS} )
           math( EXPR iarg "${iarg} + 1" )
-          if( lverbose )
-            message("   register_scalar_test( ${compname}_${testname}_arg${iarg}
-            \"${RUN_CMD}\" ${testname} \"${cmdarg}\" ) ")
-          endif()
-          register_scalar_test( ${compname}_${testname}_arg${iarg}
-            "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
+          register_scalar_test(
+            TARGET   "${compname}_${testname}_arg${iarg}"
+            COMMAND  "$<TARGET_FILE:Ut_${compname}_${testname}_exe>"
+            CMD_ARGS "${cmdarg}" )
         endforeach()
 
       endif()
+      unset(addscalartest_ENV)
+      unset(addscalartest_RUN_AFTER)
+      unset(addscalartest_RESOURCE_LOCK)
+      unset(addscalartest_FAIL_REGEX)
+      unset(addscalartest_PASS_REGEX)
 
     endforeach()
   endif()

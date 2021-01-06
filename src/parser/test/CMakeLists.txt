@@ -10,7 +10,6 @@ project( parser_test CXX )
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
-
 file( GLOB test_sources *.cc )
 
 #--------------------------------------------------------------------------------------------------#
@@ -21,10 +20,8 @@ add_component_executable(
   TARGET      Exe_tstConsole_Token_Stream
   SOURCES     ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc
   TARGET_DEPS Lib_parser
-  NOEXPORT
-  )
-list( REMOVE_ITEM test_sources
-   ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
+  NOEXPORT )
+list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
 
 # These tests are scalar only
 set( scalar_test_sources
@@ -38,7 +35,7 @@ set( scalar_test_sources
 list( REMOVE_ITEM test_sources ${scalar_test_sources} )
 add_scalar_tests(
    SOURCES "${scalar_test_sources}"
-   DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_parser") # ;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
 
 # Special case for driver4tstConsole_Token_Stream
 # 1. This test doesn't work under Xcode
@@ -52,43 +49,30 @@ if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
     STDINFILE "${CMAKE_CURRENT_SOURCE_DIR}/console_test.inp" )
 endif()
 
+#--------------------------------------------------------------------------------------------------#
 # The remaining tests are Parallel.
+#--------------------------------------------------------------------------------------------------#
 
-# Run with with 1 PE only
+# These 2 tests require extra environment variables to be set.
 list( REMOVE_ITEM test_sources
-   ${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc )
+  ${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc
+  ${PROJECT_SOURCE_DIR}/tstParallel_File_Token_Stream.cc )
 add_parallel_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc"
    PE_LIST "1"
-   DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_parser"
+   ENV     "DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR}")
+add_parallel_tests(
+   SOURCES "${PROJECT_SOURCE_DIR}/tstParallel_File_Token_Stream.cc"
+   PE_LIST "1;2"
+   DEPS    "Lib_parser"
+   ENV     "DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Run remaining tests with 1 and 2 PEs.
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
-   DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
-
-# To ensure that the file token stream tests of the #include capability know where to look for the
-# included file.
- if( "${DRACO_C4}" STREQUAL "MPI" )
-   set( tests_with_env_reqs
-     parser_tstParallel_File_Token_Stream_1
-     parser_tstParallel_File_Token_Stream_2
-     parser_tstFile_Token_Stream_1 )
-   if( ENABLE_MEMORYCHECK )
-     set( tests_with_env_reqs
-       memcheck_parser_tstParallel_File_Token_Stream_1
-       memcheck_parser_tstParallel_File_Token_Stream_2
-       memcheck_parser_tstFile_Token_Stream_1 )
-   endif()
- else()
-   set( tests_with_env_reqs
-     parser_tstParallel_File_Token_Stream
-     parser_tstFile_Token_Stream )
- endif()
- set_tests_properties( ${tests_with_env_reqs} PROPERTIES
-   ENVIRONMENT
-     DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR})
+   DEPS    "Lib_parser" )
 
 #--------------------------------------------------------------------------------------------------#
 # End parser/test/CMakeLists.txt
