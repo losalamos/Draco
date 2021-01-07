@@ -59,7 +59,7 @@ fi
 case $ddir in
 
   #--------------------------------------------------------------------------------------------------#
-  draco-7_7*|draco-7_8*)
+  draco-7_9*)
     function gcc831env()
     {
       run "module purge"
@@ -69,7 +69,7 @@ case $ddir in
       unset CPATH
       unset LD_LIBRARY_PATH
       unset LIBRARY_PATH
-      run "module load draco/gcc831-cuda-11.0.2"
+      run "module load draco/gcc831-smpi202008-cuda1102"
       run "module list"
       export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
       CXX=$(which g++)
