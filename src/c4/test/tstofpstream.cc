@@ -41,7 +41,8 @@ void tstofpstream(UnitTest &ut) {
   // Corner case: One of the middle ranks has no output.
   {
     ofpstream out(filename);
-    if (pid != 2) out << pid << endl;
+    if (pid != 2)
+      out << pid << endl;
     out.send();
 
     // Read file on head rank, check for correct lines
@@ -49,13 +50,11 @@ void tstofpstream(UnitTest &ut) {
       ifstream in(filename);
       int this_pid = 42;
       for (int a = 0; a < rtt_c4::nodes(); a++) {
-        if (a != 2)
-        {
+        if (a != 2) {
           in >> this_pid;
           if (this_pid != a) {
             std::ostringstream msg;
-            msg << "Unexpected value for this_pid = " << this_pid
-                << ". Expected value a = " << a;
+            msg << "Unexpected value for this_pid = " << this_pid << ". Expected value a = " << a;
             FAILMSG(msg.str());
           }
         }
@@ -104,7 +103,8 @@ void tstofpstream_bin(UnitTest &ut) {
   // Corner case: One of the middle ranks has no output.
   {
     ofpstream out(filename, std::ofstream::binary);
-    if (pid != 2) out.write(reinterpret_cast<const char *>(&pid), sizeof(int));
+    if (pid != 2)
+      out.write(reinterpret_cast<const char *>(&pid), sizeof(int));
     out.send();
     out.shrink_to_fit();
   }
@@ -114,8 +114,7 @@ void tstofpstream_bin(UnitTest &ut) {
     ifstream in(filename, std::ifstream::binary);
     int this_pid(-42);
     for (int a = 0; a < rtt_c4::nodes(); a++) {
-      if (a != 2)
-      {
+      if (a != 2) {
         in.read(reinterpret_cast<char *>(&this_pid), sizeof(int));
         if (this_pid != a) {
           std::ostringstream msg;
