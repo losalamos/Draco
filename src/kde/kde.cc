@@ -22,8 +22,8 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "kde.hh"
+#include <cmath>
 #include <iostream>
-#include <math.h>
 #include <numeric>
 
 namespace rtt_kde {
