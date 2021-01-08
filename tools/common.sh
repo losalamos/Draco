@@ -400,7 +400,7 @@ function npes_test
         cps=$(lscpu | grep "^Core(s)" | awk '{ print $4 }')
         # number of sockets
         ns=$(lscpu | grep "^Socket(s):" | awk '{ print $2 }')
-        np=$(("$cps"*"$ns"))
+        np=$(( cps * ns))
 
       else
 

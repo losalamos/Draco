@@ -60,8 +60,11 @@ Spack - Draco can be installed via the [spack package manager](https:://github.c
 * fit - Least squares fitting routines.
 * fpe_trap - Catch IEEE floating point exceptions
 * FortranCheck - Test Fortran compatibility and interoperability
-* The examples in this component will demonstrate if the Fortran compiler is working; if Fortran/C
+  * The examples in this component will demonstrate if the Fortran compiler is working; if Fortran/C
     inter-language linking/running is working and sample `ISO_C_BINDING` calls.
+* kde - KDE are a natural extension of quadrature. They reconstruct a smooth representation of a
+  sampled field based on a specified Kernel shape. This populates the initial KDE infrastructure and
+  some simple 1D reconstructions.
 * lapack_wrap - C++ wrapper for BLAS and LAPACK.
 * linear - direct solvers for small linear systems of equations.
 * mesh - Encapsulate mesh definition and accessors.

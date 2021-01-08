@@ -14,7 +14,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="intel1904env gcc830env"
+environments="intel1904env gcc930env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -44,21 +44,19 @@ fi
 case "${ddir}" in
 
   #--------------------------------------------------------------------------------------------------#
-  draco-7_8*)
+  draco-7_9*)
     function intel1904env
     {
       run "module purge"
-      run "module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)"
-      run "module load uc/2020.08"
+      run "module use --append /usr/projects/draco/Modules/cts1"
       run "module load draco/intel19"
       run "module list"
     }
-    function gcc830env()
+    function gcc930env()
     {
       run "module purge"
-      run "module use --append /usr/projects/draco/Modules/$(/usr/projects/hpcsoft/utilities/bin/sys_name)"
-      run "module load uc/2020.08"
-      run "module load draco/gcc8"
+      run "module use --append /usr/projects/draco/Modules/cts1"
+      run "module load draco/gcc9"
       run "module list"
     }
     ;;

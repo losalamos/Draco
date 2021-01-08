@@ -1,35 +1,26 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 #
-# file   <pkg>/CMakeLists.txt
-# author <user>
-# date   <date>
-# brief  <start>
+# file   kde/CMakeLists.txt
+# author Mathew Cleveland
+# date   Nov. 10th 2020
+# brief  CMake build environment for KDE
 # note   Copyright (C) 2018-2020 Triad National Security, LLC.
 #        All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
-project( <spkg> CXX )
-
-#--------------------------------------------------------------------------------------------------#
-# Generate config.h (only occurs when cmake is run)
-#--------------------------------------------------------------------------------------------------#
-
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/<pkg>/config.h )
+project( kde CXX )
 
 #--------------------------------------------------------------------------------------------------#
 # Source files
 #--------------------------------------------------------------------------------------------------#
 
-file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-list( APPEND headers ${PROJECT_BINARY_DIR}/<pkg>/config.h )
-list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} ${template_implementations} )
+   list( APPEND sources ${headers} )
 endif()
 
 #--------------------------------------------------------------------------------------------------#
@@ -37,9 +28,10 @@ endif()
 #--------------------------------------------------------------------------------------------------#
 
 add_component_library(
-   TARGET       Lib_<spkg>
-   LIBRARY_NAME <pkg>
+   TARGET       Lib_kde
+   TARGET_DEPS  Lib_c4
    INCLUDE_DIRS ${include_dirs}
+   LIBRARY_NAME ${PROJECT_NAME}
    HEADERS      "${headers}"
    SOURCES      "${sources}"
    )
@@ -48,10 +40,8 @@ add_component_library(
 # Installation instructions
 #--------------------------------------------------------------------------------------------------#
 
-install( TARGETS Lib_<spkg> EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-target_link_libraries( Lib_<spkg> ${Lib_win_winsock} )
-install( FILES ${headers} ${template_implementations}
-  DESTINATION ${DBSCFGDIR}include/<pkg> )
+install( FILES ${headers}
+  DESTINATION ${DBSCFGDIR}include/kde )
 
 #--------------------------------------------------------------------------------------------------#
 # Unit tests
@@ -67,5 +57,6 @@ endif()
 
 process_autodoc_pages()
 #--------------------------------------------------------------------------------------------------#
-# End <pkg>/CMakeLists.txt
+# End kde/CMakeLists.txt
 #--------------------------------------------------------------------------------------------------#
+
