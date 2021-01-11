@@ -46,6 +46,7 @@ contains
 #ifdef C4_MPI
     integer                         :: error_string_len, ierror
     character(MPI_MAX_ERROR_STRING) :: error_string
+    external mpi_error_string, MPI_Abort
 
     ! Check and report a nonzero error code
     if (error .ne. 0) then
@@ -62,6 +63,7 @@ contains
   subroutine fc4_mpi_init(ierr)
     implicit none
     integer, intent(out) :: ierr
+    external mpi_init, mpi_comm_size, mpi_comm_rank
 
     ierr = 0
     fc4_rank = 0
@@ -86,6 +88,7 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
+    external mpi_finalize
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
@@ -98,6 +101,7 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
+    external mpi_barrier
     call mpi_barrier(MPI_COMM_WORLD,ierr)
     call check_mpi_error(ierr)
 #endif
