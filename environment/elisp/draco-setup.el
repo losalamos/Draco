@@ -246,12 +246,12 @@ cvs-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
-(defcustom draco-want-doxymacs-mode nil
-  "*Does the user want to have the Draco minor mode enabled for
-doxymacs-mode?"
-:group 'draco-mode
-:type '(radio	(const :tag "Yes" t)
-		(const :tag "No"  nil)))
+;; (defcustom draco-want-doxymacs-mode nil
+;;   "*Does the user want to have the Draco minor mode enabled for
+;; doxymacs-mode?"
+;; :group 'draco-mode
+;; :type '(radio	(const :tag "Yes" t)
+;; 		(const :tag "No"  nil)))
 
 (defcustom draco-want-sh-mode t
   "*Does the user want to have the Draco minor mode enabled for
@@ -393,7 +393,7 @@ compilation-mode?"
 (if draco-want-cvs-mode        (draco-setup-cvs-mode))
 (if draco-want-dired-mode      (draco-setup-dired-mode))
 (if draco-want-perl-mode       (draco-setup-perl-mode))
-(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
+;(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
 (if draco-want-emacs-lisp-mode (draco-setup-emacs-lisp-mode))
 (if draco-want-f90-mode        (draco-setup-f90-mode))
 (if draco-want-fortran-mode    (draco-setup-fortran-mode))

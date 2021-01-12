@@ -2,7 +2,7 @@
 
 ;; Ref: www.emacswiki.org
 ;;      www.linuxpowered.com/html/tutorials/emacs.html
-
+;;      http://ergoemacs.org/emacs/elisp_basics.html
 
 ;; FAQ
 ;;
@@ -39,7 +39,6 @@
 ;; Personal Settings below this line
 ;;---------------------------------------------------------------------------------------
 
-
 ;; ---------------------------------------------------------------------------
 ;; MELPA package manager
 ;; https://melpa.org/#/getting-started
@@ -52,24 +51,26 @@
 ;; M-x package-list-packages
 ;; M-x package install
 (require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+(add-to-list 'package-archives (cons "melpa"  "https://melpa.org/packages/") t)
+;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
 (package-initialize)
-
 
 ;; this is the same title bar format all Gnome apps seem to use
 (setq frame-title-format (list "[" (system-name) "] %b" ))
 
 ; Turn off warning:
 (setq large-file-warning-threshold nil)
+
+;; Automatically keep buffers synchronized with file system
+;; (i.e. reload the buffer automatically if the file changes outside of emacs).
+(global-auto-revert-mode t)
+
+;; load symlinks w/o a question
+(setq vc-follow-symlinks t)
+
+;; Bind Alt as Meta
+(setq x-alt-keysym 'meta)
+;;(setq x-super-keysym 'meta) ;; Use Windows or penguin key as Meta.
 
 ;; Allow 'emacsclient' to connect to running emacs.
 (server-start)
@@ -88,6 +89,18 @@ There are two things you can do about this warning:
   (ansi-color-apply-on-region (point-min) (point-max)))
 (if (fboundp 'display-ansi-colors)
     (define-key text-mode-map [(f12)] 'display-ansi-colors))
+(defun endless/colorize-compilation ()
+  "Colorize from `compilation-filter-start' to `point'."
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region
+     compilation-filter-start (point))))
+(add-hook 'compilation-filter-hook 'endless/colorize-compilation)
+
+;; ========================================
+;; highlight-doxygen-mode
+;; https://github.com/Lindydancer/highlight-doxygen
+;; ========================================
+(highlight-doxygen-global-mode 1)
 
 ;; ========================================
 ;; GNU Emacs Custom settings
