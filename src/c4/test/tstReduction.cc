@@ -14,6 +14,7 @@
 using namespace std;
 
 using rtt_c4::C4_Req;
+using rtt_c4::global_and;
 using rtt_c4::global_isum;
 using rtt_c4::global_max;
 using rtt_c4::global_min;
@@ -27,6 +28,14 @@ using rtt_dsxx::soft_equiv;
 //------------------------------------------------------------------------------------------------//
 
 void elemental_reduction(rtt_dsxx::UnitTest &ut) {
+
+  // test bools with with blocking mpi_land
+  bool are_all_proc_even = (rtt_c4::node() + 1) % 2 == 0;
+  global_and(are_all_proc_even);
+
+  // at least one processor index must be odd (adding 1)
+  FAIL_IF(are_all_proc_even);
+
   // test ints with blocking and non-blocking sums
   int xint = rtt_c4::node() + 1;
   global_sum(xint);
