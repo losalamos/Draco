@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstPath.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Test functions found in ds++/path.hh and path.cc
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,9 +16,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_currentPath(ScalarUnitTest &ut) {
   cout << "\nTesting currentPath() function ... \n" << endl;
 
@@ -46,14 +46,12 @@ void test_currentPath(ScalarUnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   // Convert path to Native format
   std::string const fqpn = getFilenameComponent(fqp, rtt_dsxx::FC_NATIVE);
 
-  cout << "\nTesting getFilenameComponent() function with fqpn = " << fqpn
-       << " ...\n"
-       << endl;
+  cout << "\nTesting getFilenameComponent() function with fqpn = " << fqpn << " ...\n" << endl;
 
   bool usesUnixDirSep = true;
 
@@ -124,12 +122,10 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
 
   if (usesUnixDirSep) {
     if (mypath + myname == fqpn)
-      PASSMSG(string("Successfully divided fqp into path+name = ") + mypath +
-              myname);
+      PASSMSG(string("Successfully divided fqp into path+name = ") + mypath + myname);
     else
-      FAILMSG(string("mypath+myname != fqpn") + string("\n\tmypath = ") +
-              mypath + string("\n\tmyname = ") + myname +
-              string("\n\tfqp    = ") + fqpn);
+      FAILMSG(string("mypath+myname != fqpn") + string("\n\tmypath = ") + mypath +
+              string("\n\tmyname = ") + myname + string("\n\tfqp    = ") + fqpn);
   }
 
   // value if not found
@@ -157,8 +153,8 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
     if (std::ifstream(realpath.c_str()))
       PASSMSG("FC_REALPATH points to a valid executable.");
     else
-      FAILMSG(string("FC_REALPATH is invalid or not executable.") +
-              string("  realpath = ") + realpath);
+      FAILMSG(string("FC_REALPATH is invalid or not executable.") + string("  realpath = ") +
+              realpath);
   }
 #else
   { // The binary should exist and marked by the filesystem as executable.
@@ -177,11 +173,9 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
       // bool exebit = rpstatus2.has_permission_bit( 0100 );
 
       if (rpstatus.has_permission_bit(0100))
-        PASSMSG(string("FC_REALPATH points to a valid executable. Path = ") +
-                realpath);
+        PASSMSG(string("FC_REALPATH points to a valid executable. Path = ") + realpath);
       else
-        FAILMSG(string("FC_REALPATH is invalid or not executable. Path = ") +
-                realpath);
+        FAILMSG(string("FC_REALPATH is invalid or not executable. Path = ") + realpath);
     } else {
       if (realpath.size() == 0)
         PASSMSG("FC_REALPATH has length <= 0.");
@@ -238,7 +232,7 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_draco_remove(rtt_dsxx::ScalarUnitTest &ut) {
   std::cout << "\nBegin test tstPath::test_draco_remove.\n" << std::endl;
   {
@@ -307,15 +301,12 @@ void test_draco_remove(rtt_dsxx::ScalarUnitTest &ut) {
     outfile3.close();
 
     // Did we create the files?
-    if (fileExists(dummyFile1) && fileExists(dummyFile2) &&
-        fileExists(dummyFile3)) {
-      PASSMSG(string("Successfully created files = ") + dummyFile1 +
-              std::string(", ") + dummyFile2 + std::string(" and ") +
-              dummyFile3);
+    if (fileExists(dummyFile1) && fileExists(dummyFile2) && fileExists(dummyFile3)) {
+      PASSMSG(string("Successfully created files = ") + dummyFile1 + std::string(", ") +
+              dummyFile2 + std::string(" and ") + dummyFile3);
     } else {
-      FAILMSG(string("Failed to create files = ") + dummyFile1 +
-              std::string(", ") + dummyFile2 + std::string(" and ") +
-              dummyFile3);
+      FAILMSG(string("Failed to create files = ") + dummyFile1 + std::string(", ") + dummyFile2 +
+              std::string(" and ") + dummyFile3);
       // no reason to continue.
       return;
     }
@@ -334,7 +325,7 @@ void test_draco_remove(rtt_dsxx::ScalarUnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
   try {
@@ -345,6 +336,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstPath.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

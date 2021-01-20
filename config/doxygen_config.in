@@ -2095,7 +2095,10 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = "Remember(c)=c"
+# https://www.doxygen.nl/manual/preprocessing.html
+
+PREDEFINED             = "Remember(c)=c" \
+                         "C4_MPI=1"
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2189,14 +2192,14 @@ CLASS_DIAGRAMS         = YES
 # the mscgen tool resides. If left empty the tool is assumed to be found in the
 # default search path.
 
-# MSCGEN_PATH            =
+#MSCGEN_PATH            = @MSCGEN_PATH@
 
 # You can include diagrams made with dia in doxygen documentation. Doxygen will
 # then run dia to produce the diagram and insert it in the documentation. The
 # DIA_PATH tag allows you to specify the directory where the dia binary resides.
 # If left empty dia is assumed to be found in the default search path.
 
-DIA_PATH               =
+# DIA_PATH               = @DIA_PATH@
 
 # If set to YES the inheritance and collaboration graphs will hide inheritance
 # and usage relations if the target is undocumented or is not a class.

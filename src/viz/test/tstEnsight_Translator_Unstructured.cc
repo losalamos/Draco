@@ -1,12 +1,11 @@
-//-----------------------------------*-C++-*----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   viz/test/tstEnsight_Translator_Unstructured.cc
  * \author Thomas M. Evans, Ryan T. Wollaeger
  * \date   Wednesday, Oct 03, 2018, 15:27 pm
  * \brief  Ensight_Translator unstructured mesh test.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -17,16 +16,15 @@
 using rtt_viz::Ensight_Translator;
 
 template <typename IT>
-void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
-                               bool const binary, bool const geom,
-                               bool const decomposed) {
+void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix, bool const binary,
+                               bool const geom, bool const decomposed) {
 
   // short-cuts
-  typedef std::vector<std::string> vec_s;
-  typedef std::vector<IT> vec_i;
-  typedef std::vector<vec_i> vec2_i;
-  typedef std::vector<double> vec_d;
-  typedef std::vector<vec_d> vec2_d;
+  using vec_s = std::vector<std::string>;
+  using vec_i = std::vector<IT>;
+  using vec2_i = std::vector<vec_i>;
+  using vec_d = std::vector<double>;
+  using vec2_d = std::vector<vec_d>;
 
   if (binary)
     std::cout << "\nGenerating binary files...\n" << std::endl;
@@ -42,8 +40,8 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   double time = .01;
   double dt = .01;
 
-  std::string const gd_wpath = rtt_dsxx::getFilenameComponent(
-      ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
+  std::string const gd_wpath =
+      rtt_dsxx::getFilenameComponent(ut.getTestInputPath(), rtt_dsxx::FC_NATIVE);
 
   // >>> INITIALIZE AND SET VECTOR DATA
 
@@ -89,27 +87,25 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   }
 
   // Build path for the input file "cell_data_unstr2d"
-  std::string const cdInputFile =
-      ut.getTestSourcePath() + std::string("cell_data_unstr2d");
+  std::string const cdInputFile = ut.getTestSourcePath() + std::string("cell_data_unstr2d");
   std::ifstream input(cdInputFile.c_str());
   if (!input)
     ITFAILS;
 
-  for (size_t i = 0; i < pt_coor.size(); i++) {
-    for (size_t j = 0; j < pt_coor[i].size(); j++)
-      input >> pt_coor[i][j];
-  }
+  for (auto &vec1d : pt_coor)
+    for (auto &elem : vec1d)
+      input >> elem;
   for (size_t i = 0; i < ipar.size(); i++) {
     for (size_t j = 0; j < ipar[i].size(); j++)
       input >> ipar[i][j];
   }
 
   // build an Ensight_Translator (make sure it overwrites any existing stuff)
-  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names,
-                                true, geom, binary, decomposed);
+  Ensight_Translator translator(prefix, gd_wpath, vdata_names, cdata_names, true, geom, binary,
+                                decomposed);
 
-  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor,
-                          vrtx_data, cell_data, rgn_data, rgn_name);
+  translator.ensight_dump(icycle, time, dt, ipar, iel_type, rgn_index, pt_coor, vrtx_data,
+                          cell_data, rgn_data, rgn_name);
 
   std::vector<double> dump_times = translator.get_dump_times();
   if (dump_times.size() != 1)
@@ -124,7 +120,7 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, std::string prefix,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -134,8 +130,7 @@ int main(int argc, char *argv[]) {
     if (rtt_c4::node() == 0) {
       // check serial writes
       bool decomposed{false};
-      std::string prefix =
-          "unstr2d_testproblem_serial_" + std::to_string(rtt_c4::nodes());
+      std::string prefix = "unstr2d_testproblem_serial_" + std::to_string(rtt_c4::nodes());
       ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
       // Binary dumps
@@ -148,8 +143,7 @@ int main(int argc, char *argv[]) {
     }
     // check decomposed writes
     bool decomposed{true};
-    std::string prefix =
-        "unstr2d_testproblem_parallel_" + std::to_string(rtt_c4::nodes());
+    std::string prefix = "unstr2d_testproblem_parallel_" + std::to_string(rtt_c4::nodes());
     ensight_dump_test_unstr2d<int>(ut, prefix, binary, geom, decomposed);
 
     // Binary dumps
@@ -163,6 +157,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of viz/test/tstEnsight_Translator_Unstructured.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

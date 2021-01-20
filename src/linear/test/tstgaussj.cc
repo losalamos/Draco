@@ -1,14 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/test/tstgaussj.cc
  * \author Kent Budge
  * \date   Wed Sep 13 11:46:05 2006
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -20,9 +16,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_linear;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstgaussj(UnitTest &ut) {
   {
@@ -48,8 +44,8 @@ void tstgaussj(UnitTest &ut) {
         for (unsigned k = 0; k < N; k++) {
           sum += a[i + N * k] * ai[k + N * j];
         }
-        count = count || (((i == j) && !soft_equiv(sum, 1.0)) ||
-                          ((i != j) && !soft_equiv(sum, 0.0)));
+        count =
+            count || (((i == j) && !soft_equiv(sum, 1.0)) || ((i != j) && !soft_equiv(sum, 0.0)));
       }
     }
     for (unsigned i = 0, k = 0; i < N; i++) {
@@ -89,8 +85,8 @@ void tstgaussj(UnitTest &ut) {
         for (unsigned k = 0; k < N; k++) {
           sum += a[i][k] * ai[k][j];
         }
-        count = count || (((i == j) && !soft_equiv(sum, 1.0)) ||
-                          ((i != j) && !soft_equiv(sum, 0.0)));
+        count =
+            count || (((i == j) && !soft_equiv(sum, 1.0)) || ((i != j) && !soft_equiv(sum, 0.0)));
       }
     }
     for (unsigned i = 0, k = 0; i < N; i++) {
@@ -128,8 +124,8 @@ void tstgaussj(UnitTest &ut) {
         for (unsigned k = 0; k < N; k++) {
           sum += a[i + N * k] * ai[k + N * j];
         }
-        count = count || (((i == j) && !soft_equiv(sum, 1.0)) ||
-                          ((i != j) && !soft_equiv(sum, 0.0)));
+        count =
+            count || (((i == j) && !soft_equiv(sum, 1.0)) || ((i != j) && !soft_equiv(sum, 0.0)));
       }
     }
     for (unsigned i = 0, k = 0; i < N; i++) {
@@ -148,8 +144,7 @@ void tstgaussj(UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
-
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -158,6 +153,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstgaussj.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

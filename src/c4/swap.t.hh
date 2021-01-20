@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/swap.t.hh
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_swap_t_hh
 #define c4_swap_t_hh
@@ -18,9 +17,9 @@
 
 namespace rtt_c4 {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // EXCHANGE
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifdef C4_MPI
 
@@ -38,8 +37,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
   Check(outgoing_pid.size() < UINT_MAX);
   auto outgoing_processor_count = static_cast<unsigned>(outgoing_pid.size());
 
-  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of
-  // zero-length.
+  // This block is a no-op for with-c4=scalar. Ditto when the vectors are of zero-length.
   {
 
     // Post the asynchronous sends.
@@ -49,8 +47,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
       Check(outgoing_pid[p] < INT_MAX);
       outgoing_C4_Req[p] = rtt_c4::send_async(
           (outgoing_data[p].size() > 0 ? &outgoing_data[p][0] : nullptr),
-          static_cast<int>(outgoing_data[p].size()),
-          static_cast<int>(outgoing_pid[p]), tag);
+          static_cast<int>(outgoing_data[p].size()), static_cast<int>(outgoing_pid[p]), tag);
     }
 
     // Post the asynchronous receives
@@ -60,8 +57,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
       Check(incoming_pid[p] < INT_MAX);
       incoming_C4_Req[p] = receive_async(
           (incoming_data[p].size() > 0 ? &incoming_data[p][0] : nullptr),
-          static_cast<int>(incoming_data[p].size()),
-          static_cast<int>(incoming_pid[p]), tag);
+          static_cast<int>(incoming_data[p].size()), static_cast<int>(incoming_pid[p]), tag);
     }
 
     // Wait for all the receives to complete.
@@ -75,7 +71,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
                       std::vector<std::vector<T>> &incoming_data, int tag) {
@@ -93,10 +89,9 @@ void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
       if (outgoing_data[p].size() > 0) {
         Check(outgoing_data[p].size() < INT_MAX);
         Check(p < INT_MAX);
-        outgoing_C4_Req[p] = rtt_c4::send_async(
-            (outgoing_data[p].size() > 0 ? &outgoing_data[p][0] : nullptr),
-            static_cast<int>(outgoing_data[p].size()), static_cast<int>(p),
-            tag);
+        outgoing_C4_Req[p] =
+            rtt_c4::send_async((outgoing_data[p].size() > 0 ? &outgoing_data[p][0] : nullptr),
+                               static_cast<int>(outgoing_data[p].size()), static_cast<int>(p), tag);
       }
     }
 
@@ -106,10 +101,9 @@ void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
       if (incoming_data[p].size() > 0) {
         Check(incoming_data[p].size() < INT_MAX);
         Check(p < INT_MAX);
-        incoming_C4_Req[p] = receive_async(
-            (incoming_data[p].size() > 0 ? &incoming_data[p][0] : nullptr),
-            static_cast<int>(incoming_data[p].size()), static_cast<int>(p),
-            tag);
+        incoming_C4_Req[p] =
+            receive_async((incoming_data[p].size() > 0 ? &incoming_data[p][0] : nullptr),
+                          static_cast<int>(incoming_data[p].size()), static_cast<int>(p), tag);
       }
     }
 
@@ -122,7 +116,7 @@ void determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
 
   return;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
 void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
                           std::vector<std::vector<T>> const &outgoing_data,
@@ -139,18 +133,15 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
   { // This block is a no-op for with-c4=scalar
 
     // Send the sizing information using determinate_swap
-    std::vector<std::vector<unsigned>> outgoing_size(outgoing_pid.size(),
-                                                     std::vector<unsigned>(1));
-    std::vector<std::vector<unsigned>> incoming_size(incoming_pid.size(),
-                                                     std::vector<unsigned>(1));
+    std::vector<std::vector<unsigned>> outgoing_size(outgoing_pid.size(), std::vector<unsigned>(1));
+    std::vector<std::vector<unsigned>> incoming_size(incoming_pid.size(), std::vector<unsigned>(1));
 
     for (unsigned p = 0; p < outgoing_processor_count; ++p) {
       Check(outgoing_data.size() < UINT_MAX);
       outgoing_size[p][0] = static_cast<unsigned>(outgoing_data[p].size());
     }
 
-    determinate_swap(outgoing_pid, outgoing_size, incoming_pid, incoming_size,
-                     tag);
+    determinate_swap(outgoing_pid, outgoing_size, incoming_pid, incoming_size, tag);
 
     // Post the asynchronous sends.
     std::vector<C4_Req> outgoing_C4_Req(outgoing_processor_count);
@@ -159,8 +150,7 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
       Check(outgoing_pid[p] < INT_MAX);
       outgoing_C4_Req[p] = rtt_c4::send_async(
           (outgoing_data[p].size() > 0 ? &outgoing_data[p][0] : nullptr),
-          static_cast<int>(outgoing_data[p].size()),
-          static_cast<int>(outgoing_pid[p]), tag);
+          static_cast<int>(outgoing_data[p].size()), static_cast<int>(outgoing_pid[p]), tag);
     }
 
     // Post the asynchronous receives
@@ -172,8 +162,7 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
       Check(incoming_pid[p] < INT_MAX);
       incoming_C4_Req[p] = receive_async(
           (incoming_data[p].size() > 0 ? &incoming_data[p][0] : nullptr),
-          static_cast<int>(incoming_data[p].size()),
-          static_cast<int>(incoming_pid[p]), tag);
+          static_cast<int>(incoming_data[p].size()), static_cast<int>(incoming_pid[p]), tag);
     }
 
     // Wait for all the receives to complete.
@@ -188,31 +177,28 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // These functions do nothing if there is no communicator (C4_SCALAR=1)
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #else
 
 template <typename T>
 void determinate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
                       std::vector<std::vector<T>> const & /*outgoing_data*/,
                       std::vector<unsigned> const & /*incoming_pid*/,
-                      std::vector<std::vector<T>> & /*incoming_data*/,
-                      int /*tag*/) {
+                      std::vector<std::vector<T>> & /*incoming_data*/, int /*tag*/) {
   return;
 }
 template <typename T>
 void determinate_swap(std::vector<std::vector<T>> const & /*outgoing_data*/,
-                      std::vector<std::vector<T>> & /*incoming_data*/,
-                      int /*tag*/) {
+                      std::vector<std::vector<T>> & /*incoming_data*/, int /*tag*/) {
   return;
 }
 template <typename T>
 void semideterminate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
                           std::vector<std::vector<T>> const & /*outgoing_data*/,
                           std::vector<unsigned> const & /*incoming_pid*/,
-                          std::vector<std::vector<T>> & /*incoming_data*/,
-                          int /*tag*/) {
+                          std::vector<std::vector<T>> & /*incoming_data*/, int /*tag*/) {
   return;
 }
 #endif // C4_MPI
@@ -221,6 +207,6 @@ void semideterminate_swap(std::vector<unsigned> const & /*outgoing_pid*/,
 
 #endif // c4_swap_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/swap.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

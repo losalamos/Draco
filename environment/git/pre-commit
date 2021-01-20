@@ -1,24 +1,27 @@
-#!/bin/sh
-# Git pre-commit hook that runs multiple hooks specified in $HOOKS.
-# Make sure this script is executable. Bypass hooks with git commit --no-verify.
+#!/bin/bash
 
-# This file is part of a set of unofficial pre-commit hooks available
-# at github.
+#--------------------------------------------------------------------------------------------------#
+# Git pre-commit hook that runs multiple hooks specified in $HOOKS.  Make sure this script is
+# executable. Bypass hooks with git commit --no-verify.
+#
+# This file is part of a set of unofficial pre-commit hooks available at github.
 # Link:    https://github.com/githubbrowser/Pre-commit-hooks
 # Contact: David Martin, david.martin.mailbox@googlemail.com
-
-
-###########################################################
+#
+#--------------------------------------------------------------------------------------------------#
 # CONFIGURATION:
-# pre-commit hooks to be executed. They should be in the same .git/hooks/ folder
-# as this script. Hooks should return 0 if successful and nonzero to cancel the
-# commit. They are executed in the order in which they are listed.
-#HOOKS="pre-commit-compile pre-commit-uncrustify"
+#
+# pre-commit hooks to be executed. They should be in the same .git/hooks/ folder as this
+# script. Hooks should return 0 if successful and nonzero to cancel the commit. They are executed in
+# the order in which they are listed.
 HOOKS="pre-commit-clang-format pre-commit-f90-format"
-###########################################################
-# There should be no need to change anything below this line.
+#--------------------------------------------------------------------------------------------------#
 
-. "$(dirname -- "$0")/canonicalize_filename.sh"
+#--------------------------------------------------------------------------------------------------#
+# There should be no need to change anything below this line.
+#--------------------------------------------------------------------------------------------------#
+# shellcheck source=environment/git/canonicalize_filename.sh
+source "$(dirname -- "$0")/canonicalize_filename.sh"
 
 # exit on error
 set -e
@@ -29,17 +32,18 @@ SCRIPT="$(canonicalize_filename "$0")"
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH="$(dirname -- "$SCRIPT")"
 
-# Ensure only one directory is listed...
-SCRIPTPATH=`echo $SCRIPTPATH | sed -e 's/.* //g'`
+# Ensure only one directory is listed
+SCRIPTPATH="${SCRIPTPATH// */}"
 
 for hook in $HOOKS; do
-  echo "Running hook: ${hook}"
-  # run hook if it exists
-  # if it returns with nonzero exit with 1 and thus abort the commit
+  # Run the hook script, if it exists. If it returns with nonzero exit with 1 and thus abort the
+  # commit.
   if [ -f "${SCRIPTPATH}/${hook}" ]; then
-    "${SCRIPTPATH}/${hook}"
-    if [ $? != 0 ]; then
-      exit 1
-    fi
+    # echo "Running git pre-commit hook: ${SCRIPTPATH}/${hook}"
+    if ! "${SCRIPTPATH}/${hook}"; then exit 1; fi
   fi
 done
+
+#--------------------------------------------------------------------------------------------------#
+# End pre-commit
+#--------------------------------------------------------------------------------------------------#

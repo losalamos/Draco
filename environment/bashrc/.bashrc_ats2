@@ -19,6 +19,12 @@ export PATH=${VENDOR_DIR:=/usr/gapps/jayenne/vendors}/bin:$PATH
 export VENDOR_DIR
 export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
 
+# Support building cassio with ccsrad shared deployment repository.
+if [[ -d /usr/workspace/dacodes/eap/users/ccsrad/Cassio.deployment ]]; then
+  export TF_DEPLOYMENT_CLONES=/usr/workspace/dacodes/eap/users/ccsrad/eap.deployment
+  export TF_SPACK_INSTANCES=/usr/workspace/dacodes/eap/users/ccsrad/spack_instances
+fi
+
 #
 # MODULES
 #
@@ -27,11 +33,7 @@ export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
 modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-  if test -f /usr/share/lmod/lmod/init/bash; then
-    source /usr/share/lmod/lmod/init/bash
-  else
-    echo "ERROR: The module command was not found. No modules will be loaded."
-  fi
+  source /usr/share/lmod/lmod/init/bash || die "ERROR: The module command was not found. No modules will be loaded."
 fi
 modcmd=`declare -f module`
 
@@ -40,60 +42,47 @@ if [[ ! ${modcmd} ]]; then
   echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-  #module use
-  #module use /usr/gapps/jayenne/vendors-ec/spack.20190616/share/spack/lmod/linux-rhel7-ppc64le/Core
   module use /usr/gapps/user_contrib/spack.20200402/share/spack/lmod/linux-rhel7-ppc64le/Core
+  module use --append /usr/gapps/jayenne/Modules
 
   module unuse /usr/share/lmod/lmod/modulefiles/Core
   module unuse /collab/usr/global/tools/modulefiles/blueos_3_ppc64le_ib_p9/Core
-
-# StdEnv
-
-  export dracomodules="cuda python/3.7.2 ack htop gsl numdiff git random123 gcc/8.3.1 cmake/3.17.0 metis netlib-lapack eospac/6.4.0 spectrum-mpi/2019.06.24 parmetis superlu-dist trilinos libquo csk ndi"
+  module load draco/xl2020.08.19-cuda-11.0.2
 
 fi
 
-# Bind '-b rs'
+# function dracoenv()
+# {
+#   module --force purge
+#   module load StdEnv
+#   module unload spectrum-mpi xl cuda
+#   for m in $dracomodules; do
+#     module load $m
+#   done
+#   unset MPI_ROOT
+#   export CXX=`which g++`
+#   export CC=`which gcc`
+#   export FC=`which gfortran`
+#   export MPIRUN="lrun"
+#   export OMP_NUM_THREADS=10
+# }
 
-function dracoenv()
-{
-  module purge
-  module load StdEnv
-  module unload spectrum-mpi xl
-  for m in $dracomodules; do
-    module load $m
-  done
-  unset MPI_ROOT
-  export CXX=`which g++`
-  export CC=`which gcc`
-  export FC=`which gfortran`
-  export MPIRUN="lrun"
-  export OMP_NUM_THREADS=10
-}
+# function rmdracoenv()
+# {
+#   unset MPIRUN
+#   unset FC
+#   unset CC
+#   unset CXX
 
-function rmdracoenv()
-{
-  unset OMP_NUM_THREADS
-  unset MPIRUN
-  unset FC
-  unset CC
-  unset CXX
-
-  # unload in reverse order.
-  mods=( ${dracomodules} )
-  for ((i=${#mods[@]}-1; i>=0; i--)); do
-    # loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
-    #if test $loaded = 1; then
-    module unload ${mods[$i]}
-    #fi
-  done
-}
+#   # unload in reverse order.
+#   mods=( ${dracomodules} )
+#   for ((i=${#mods[@]}-1; i>=0; i--)); do
+#     module unload ${mods[$i]}
+#   done
+# }
 
 # Do not escape $ for bash completion
 shopt -s direxpand
-
-alias cmakedebug='C_FLAGS=-Werror CXX_FLAGS=-Werror cmake -Wdeprecated -Wdev'
-alias cmakerel='cmake -DCMAKE_BUILD_TYPE=RELEASE'
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_ats2

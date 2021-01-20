@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressFile.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Implementation file for IpcressFile class.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressFile.t.hh"
@@ -15,7 +15,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief The standard IpcressFile constructor.
  *
@@ -44,10 +44,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
 
   // Attempt to open the ipcress file.  Open at end of file (ate) so that we can
   // know the size of the binary file.
-  ipcressFileHandle.open(dataFilename.c_str(),
-                         std::ios::in | std::ios::binary | std::ios::ate);
-  Insist(ipcressFileHandle.is_open(),
-         "IpcressFile: Unable to open ipcress file.");
+  ipcressFileHandle.open(dataFilename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+  Insist(ipcressFileHandle.is_open(), "IpcressFile: Unable to open ipcress file.");
 
   // Save the size of the file (bytes) to check against value of toc[21].
   Remember(std::ifstream::pos_type sizeOfFile(ipcressFileHandle.tellg()););
@@ -104,8 +102,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   //
   // read a list of materials from the file:
   // - dfo[0] contains the number of materials.
-  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material
-  //   numbers.
+  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material numbers.
   //
 
   byte_offset = ipcress_word_size * dfo[0];
@@ -113,9 +110,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   read_v(byte_offset, vdata);
   size_t nummat = vdata[0];
 
-  // Consistency check.  ds[0] is the total reserved space in the file for
-  // material IDs.
-  Check(nummat < static_cast<size_t>(ds[0]));
+  // Consistency check.  ds[0] is the total reserved space in the file for material IDs.
+  Check(nummat < ds[0]);
 
   // Resize the list of material IDs.
   this->matIDs.resize(nummat);
@@ -132,46 +128,37 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   ipcressFileHandle.close();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Indicate if the requested material id is available in the data file.
  *
  * \param[in] matid unsigned integer that specifies the material to be queried.
  */
 bool IpcressFile::materialFound(size_t matid) const {
-  // Loop over all available materials.  If the requested material id matches on
-  // in the list then return true. If we reach the end of the list without a
-  // match return false.
-  for (size_t i = 0; i < matIDs.size(); ++i)
-    if (matid == matIDs[i])
-      return true;
-  return false;
+  return std::find(matIDs.begin(), matIDs.end(), matid) != matIDs.end();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
   std::string foundFile;
 
   // ensure a name is provided
   Insist(ipcressFile.size() > 0,
-         std::string("You must provide a filename when constructing an") +
-             " IpcressFile object.");
-  Insist(rtt_dsxx::fileExists(ipcressFile),
-         "Could not located requested ipcress file.");
+         std::string("You must provide a filename when constructing an") + " IpcressFile object.");
+  Insist(rtt_dsxx::fileExists(ipcressFile), "Could not located requested ipcress file.");
 
   // if the provided filename looks okay then use it.
   return ipcressFile;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Read 8 character strings from the binary file
  *
  * \param[in]  byte_offset offset into the ipcress file where the data exists.
  * \param[out] vdata       return value
  */
-void IpcressFile::read_strings(size_t const byte_offset,
-                               std::vector<std::string> &vdata) const {
+void IpcressFile::read_strings(size_t const byte_offset, std::vector<std::string> &vdata) const {
   Require(ipcressFileHandle.is_open());
 
   size_t const nitems(vdata.size());
@@ -192,9 +179,9 @@ void IpcressFile::read_strings(size_t const byte_offset,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Populate the materialData member data container.
-void IpcressFile::loadFieldData(void) {
+void IpcressFile::loadFieldData() {
   // Attempt to open the ipcress file.
   Insist(ipcressFileHandle.is_open(), "getKeys: Unable to open ipcress file.");
 
@@ -257,6 +244,6 @@ void IpcressFile::loadFieldData(void) {
 
 } // end namespace rtt_cdi_ipcress
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressFile.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

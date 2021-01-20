@@ -1,19 +1,18 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/ludcmp.hh
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  LU decomposition
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_ludcmp_hh
 #define linear_ludcmp_hh
 
 namespace rtt_linear {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief LU-decompose a nonsingular matrix.
  *
@@ -26,11 +25,10 @@ namespace rtt_linear {
  *
  * \pre \c a.size()==indx.size()*indx.size()
  */
-template <class FieldVector, class IntVector>
-void ludcmp(FieldVector &a, IntVector &indx,
-            typename FieldVector::value_type &d);
+template <typename FieldVector, typename IntVector>
+void ludcmp(FieldVector &a, IntVector &indx, typename FieldVector::value_type &d);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Solve the system \f$Ax=b\f$
  *
@@ -45,13 +43,15 @@ void ludcmp(FieldVector &a, IntVector &indx,
  * \pre \c a.size()==indx.size()*indx.size()
  * \pre \c b.size()==indx.size()
  */
-template <class FieldVector1, class IntVector, class FieldVector2>
+template <typename FieldVector1, typename IntVector, typename FieldVector2>
 void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b);
 
 } // namespace rtt_linear
 
+#include "linear/ludcmp.i.hh"
+
 #endif // linear_ludcmp_hh
 
-//----------------------------------------------------------------------------//
-// end of Implicit.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// end of linear/ludcmp.hh
+//------------------------------------------------------------------------------------------------//

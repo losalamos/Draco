@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   memory/memory.cc
  * \author Kent G. Budge
  * \brief  memory diagnostic utilities
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "memory.hh"
 #include "ds++/Assert.hh"
@@ -17,39 +16,42 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
+#pragma clang diagnostic ignored "-Wunused-macros"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
 #ifndef _GLIBCXX_THROW
 #define _GLIBCXX_THROW(except) throw(except)
 #endif
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 namespace rtt_memory {
 using namespace std;
 
-uint64_t total;
-uint64_t peak;
-uint64_t largest;
+static uint64_t total;
+static uint64_t peak;
+static uint64_t largest;
 
-uint64_t check_peak = numeric_limits<uint64_t>::max();
+static uint64_t check_peak = numeric_limits<uint64_t>::max();
 // normally set in debugger to trigger a breakpoint
 
-uint64_t check_large = 176160768UL; // numeric_limits<uint64_t>::max();
+static uint64_t check_large = numeric_limits<uint64_t>::max();
 // normally set in debugger to trigger a breakpoint
 
-uint64_t check_select_size = 504U;
+static uint64_t check_select_size = 504U;
 // normally set in debugger to trigger a breakpoint
 
-uint64_t check_select_count = 0U;
+static uint64_t check_select_count = 0U;
 // normally set in debugger to trigger a breakpoint
 
-unsigned dump_count = 0;
+static unsigned dump_count = 0;
 // indicates whether to dump the first few largest allocations and exit
 
-bool is_active = false;
+static bool is_active = false;
 
 #if DRACO_DIAGNOSTICS & 2
 
@@ -58,8 +60,7 @@ struct alloc_t {
   unsigned count;   // number of allocations of this size
 
   alloc_t() {}
-  alloc_t(std::size_t my_size, unsigned my_count)
-      : size(my_size), count(my_count) {}
+  alloc_t(std::size_t my_size, unsigned my_count) : size(my_size), count(my_count) {}
 };
 
 struct Unsigned {
@@ -71,15 +72,15 @@ struct Unsigned {
   unsigned &operator++() { return ++value; }
 };
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class memory_diagnostics
  * \brief
  *
- * We put the following in a wrapper so we can control destruction. We want to
- * be sure is_active is forced to be false once alloc_map is destroyed.
+ * We put the following in a wrapper so we can control destruction. We want to be sure is_active is
+ * forced to be false once alloc_map is destroyed.
  */
-//============================================================================//
+//================================================================================================//
 struct memory_diagnostics {
   map<void *, alloc_t> alloc_map;
   map<size_t, Unsigned> alloc_count;
@@ -89,7 +90,7 @@ struct memory_diagnostics {
 
 #endif // DRACO_DIAGNOSTICS & 2
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool set_memory_checking(bool new_status) {
   bool Result = is_active;
 
@@ -105,20 +106,19 @@ bool set_memory_checking(bool new_status) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t total_allocation() { return total; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t peak_allocation() { return peak; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 uint64_t largest_allocation() { return largest; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Print a report on possible leaks.
  *
- * This function prints a report in a human-friendly format on possible memory
- * leaks.
+ * This function prints a report in a human-friendly format on possible memory leaks.
  */
 void report_leaks(ostream &out) {
   if (is_active) {
@@ -128,8 +128,8 @@ void report_leaks(ostream &out) {
     } else {
       map<void *, alloc_t>::const_iterator i;
       for (i = st.alloc_map.begin(); i != st.alloc_map.end(); ++i) {
-        out << i->second.size << " bytes allocated at address " << i->first
-            << " as allocation " << i->second.count << " of this size" << endl;
+        out << i->second.size << " bytes allocated at address " << i->first << " as allocation "
+            << i->second.count << " of this size" << endl;
       }
     }
 #else
@@ -154,12 +154,12 @@ using namespace rtt_memory;
 
 #if DRACO_DIAGNOSTICS & 2
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Allocate memory with diagnostics.
  *
- * This version of operator new overrides the library default and allows us to
- * track how memory is being used while debugging. Since this introduces
- * considerable overhead, it should not be used for production builds.
+ * This version of operator new overrides the library default and allows us to track how memory is
+ * being used while debugging. Since this introduces considerable overhead, it should not be used
+ * for production builds.
  */
 void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
   void *Result = malloc(n);
@@ -186,14 +186,14 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
   if (is_active) {
     is_active = false;
     total += n;
-    // Don't use max() here; doing it with if statement allows programmers to
-    // set a breakpoint here to find high water marks of memory usage.
+    // Don't use max() here; doing it with if statement allows programmers to set a breakpoint here
+    // to find high water marks of memory usage.
     if (total > peak) {
       peak = total;
       if (peak >= check_peak) {
-        // This is where a programmer should set his breakpoint if he wishes to
-        // pause execution when total memory exceeds the check_peak value (which
-        // the programmer typically also sets in the debugger).
+        // This is where a programmer should set his breakpoint if he wishes to pause execution when
+        // total memory exceeds the check_peak value (which the programmer typically also sets in
+        // the debugger).
         cout << "Reached check peak value" << endl;
         if (dump_count > 0) {
           map<size_t, size_t> alloc_sizes;
@@ -220,10 +220,9 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
       }
     }
     if (n >= check_large) {
-      // This is where a programmer should set his breakpoint if he wishes to
-      // pause execution when a memory allocation is requested that is larger
-      // than the check_large value (which the programmer typically also sets in
-      // the debugger).
+      // This is where a programmer should set his breakpoint if he wishes to pause execution when a
+      // memory allocation is requested that is larger than the check_large value (which the
+      // programmer typically also sets in the debugger).
       cout << "Allocated check large value" << endl;
     }
     if (n > largest) {
@@ -233,13 +232,11 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
     unsigned count = ++st.alloc_count[n];
     st.alloc_map[Result] = alloc_t(n, count);
     if (n == check_select_size && count == check_select_count) {
-      // This is where the programmer should set his breakpoint if he wishes to
-      // pause execution on the check_select_count'th instance of requesting an
-      // allocation of size check_select_size (which the programmer typically
-      // also set in the debugger.) This is typically done to narrow in on a
-      // potential memory leak, by identifying exactly which allocation is being
-      // leaked by looking at the allocation map (st.alloc_map) to see the size
-      // and instance.
+      // This is where the programmer should set his breakpoint if he wishes to pause execution on
+      // the check_select_count'th instance of requesting an allocation of size check_select_size
+      // (which the programmer typically also set in the debugger.) This is typically done to narrow
+      // in on a potential memory leak, by identifying exactly which allocation is being leaked by
+      // looking at the allocation map (st.alloc_map) to see the size and instance.
       cout << "Reached check select allocation" << endl;
     }
     is_active = true;
@@ -247,11 +244,10 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Deallocate memory with diagnostics
  *
- * This is the operator delete override to go with the operator new override
- * above.
+ * This is the operator delete override to go with the operator new override above.
  */
 void operator delete(void *ptr) throw() {
   free(ptr);
@@ -261,10 +257,9 @@ void operator delete(void *ptr) throw() {
       size_t const n = i->second.size;
       total -= n;
       if (n >= check_large) {
-        // This is where the programmer should set his breakpoint if he wishes
-        // to pause execution when an allocation larger than check_large is
-        // deallocated. check_large is typically also set in the debugger by the
-        // programmer.
+        // This is where the programmer should set his breakpoint if he wishes to pause execution
+        // when an allocation larger than check_large is deallocated. check_large is typically also
+        // set in the debugger by the programmer.
         cout << "Deallocated check large value" << endl;
       }
       is_active = false;
@@ -274,30 +269,29 @@ void operator delete(void *ptr) throw() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*! Deallocate memory with diagnostics
  *
- * C++14 introduces operator delete with a size_t argument, used in place of
- * the unsized operator delete when the size of the allocation can be deduced
- * as a hint to the memory manager. For now, we ignore the hint.
+ * C++14 introduces operator delete with a size_t argument, used in place of the unsized operator
+ * delete when the size of the allocation can be deduced as a hint to the memory manager. For now,
+ * we ignore the hint.
  *
- * Since C++14 does not mandate when the compiler calls this version, it is
- * not possible to guarantee coverage on all platforms.
+ * Since C++14 does not mandate when the compiler calls this version, it is not possible to
+ * guarantee coverage on all platforms.
  */
 void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * \brief Provide a special action when an out-of-memory condition is
- *        encountered.
+ * \brief Provide a special action when an out-of-memory condition is encountered.
  *
- * The usual notion is that if new operator cannot allocate dynamic memory of
- * the requested size, then it should throw an exception of type std::bad_alloc.
+ * The usual notion is that if new operator cannot allocate dynamic memory of the requested size,
+ * then it should throw an exception of type std::bad_alloc.
  *
- * If std::bad_alloc is about to be thrown because new is unable to allocate
- * enough memory, a user-defined function can be called to provide diagnostic
- * information.  This function must be registered in the program.
+ * If std::bad_alloc is about to be thrown because new is unable to allocate enough memory, a
+ * user-defined function can be called to provide diagnostic information.  This function must be
+ * registered in the program.
  *
  * Example:
  *
@@ -317,12 +311,19 @@ void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
  *
  * \bug untested
  */
-void rtt_memory::out_of_memory_handler(void) {
+void rtt_memory::out_of_memory_handler() {
   std::set_new_handler(nullptr);
-  std::cerr << "Unable to allocate requested memory.\n"
-            << rtt_dsxx::print_stacktrace("bad_alloc");
+  std::cerr << "Unable to allocate requested memory.\n" << rtt_dsxx::print_stacktrace("bad_alloc");
 }
 
-//----------------------------------------------------------------------------//
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+//------------------------------------------------------------------------------------------------//
 // end of memory.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

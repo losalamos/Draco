@@ -19,17 +19,17 @@ all: ${elcfiles}
 %.elc: %.el
 	./compile-elisp $<
 
-clean: 
+clean:
 	rm -rf *.elc *~
 
 ##################################################
 # Specific dependencies
 ##################################################
 
-doxymacs.elc: xml-parse.elc
-	./compile-elisp $*.el
+# doxymacs.elc: xml-parse.elc
+# 	./compile-elisp $*.el
 
-draco-config-modes.elc: draco-mode.elc draco-setup.elc doxymacs.elc draco-global-keys.elc draco-menu.elc
+draco-config-modes.elc: draco-mode.elc draco-setup.elc draco-global-keys.elc draco-menu.elc
 	./compile-elisp $*.el
 
 draco-menu.elc: draco-mode.elc
@@ -40,5 +40,3 @@ draco-new-files.elc: draco-helper-functions.elc
 
 draco-setup.elc: draco-faces.elc draco-new-files.elc
 	./compile-elisp $*.el
-
-

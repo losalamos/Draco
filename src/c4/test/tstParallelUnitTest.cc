@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstParallelUnitTest.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Test the functionality of the class ParallelUnitTest
  * \note   Copyright (C) 2016-2020 Los Alamos National Securities, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/C4_Functions.hh"
 #include "c4/ParallelUnitTest.hh"
@@ -17,9 +17,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*
  * Demonstrate that the normal access functions work as indended.
@@ -40,8 +40,7 @@ void tstMemberFunctions(ParallelUnitTest &ut, stringstream &output) {
       ut.reset();
       output.clear();
     } else {
-      cout << "Test: failed\n\t passes member function failed for failing case."
-           << endl;
+      cout << "Test: failed\n\t passes member function failed for failing case." << endl;
     }
   }
 
@@ -66,8 +65,7 @@ void tstMemberFunctions(ParallelUnitTest &ut, stringstream &output) {
     string const data(output.str());
     size_t const found = data.find(msg);
     if (ut.numPasses == 1 && found != string::npos)
-      cout << "Test: passed\n\t check_all member function works for pass."
-           << endl;
+      cout << "Test: passed\n\t check_all member function works for pass." << endl;
     else
       cout << "Test: failed\n\t check_all member function failed." << endl;
   }
@@ -103,7 +101,7 @@ void tstMemberFunctions(ParallelUnitTest &ut, stringstream &output) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   int retVal(0);
@@ -141,6 +139,6 @@ int main(int argc, char *argv[]) {
   return retVal;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstunit_test.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

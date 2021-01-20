@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/ludcmp.i.hh
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  Implementation of methods of ludcmp.hh
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ludcmp.hh"
 #include "ds++/Assert.hh"
@@ -17,9 +16,7 @@
 
 namespace rtt_linear {
 
-using std::vector;
-
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief LU-decompose a nonsingular matrix.
  *
@@ -32,17 +29,16 @@ using std::vector;
  *
  * \pre \c a.size()==indx.size()*indx.size()
  */
-template <class FieldVector, class IntVector>
-void ludcmp(FieldVector &a, IntVector &indx,
-            typename FieldVector::value_type &d) {
+template <typename FieldVector, typename IntVector>
+void ludcmp(FieldVector &a, IntVector &indx, typename FieldVector::value_type &d) {
   Require(a.size() == indx.size() * indx.size());
 
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   Check(indx.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(indx.size());
+  auto const n = static_cast<unsigned>(indx.size());
 
-  vector<Field> vv(n);
+  std::vector<Field> vv(n);
 
   d = 1.0;
   for (unsigned i = 0; i < n; ++i) {
@@ -101,7 +97,7 @@ void ludcmp(FieldVector &a, IntVector &indx,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Solve the system \f$Ax=b\f$
  *
@@ -116,17 +112,17 @@ void ludcmp(FieldVector &a, IntVector &indx,
  * \pre \c a.size()==indx.size()*indx.size()
  * \pre \c b.size()==indx.size()
  */
-template <class FieldVector1, class IntVector, class FieldVector2>
+template <typename FieldVector1, typename IntVector, typename FieldVector2>
 void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
   Require(a.size() == indx.size() * indx.size());
   Require(b.size() == indx.size());
 
-  typedef typename FieldVector2::value_type Field;
+  using Field = typename FieldVector2::value_type;
 
   // minimum representable value
   double const mrv = std::numeric_limits<Field>::min();
   Check(indx.size() < UINT_MAX);
-  unsigned const n = static_cast<unsigned>(indx.size());
+  auto const n = static_cast<unsigned>(indx.size());
 
   unsigned ii = 0;
 
@@ -153,6 +149,6 @@ void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
 
 } // end namespace rtt_linear
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ludcmp.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

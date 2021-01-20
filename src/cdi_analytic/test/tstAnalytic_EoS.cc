@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/test/tstAnalytic_EoS.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Analytic_EoS test.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
 #include "cdi_analytic/Analytic_EoS.hh"
@@ -23,18 +23,17 @@ using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   // make an analytic model (polynomial specific heats)
   // elec specific heat = a + bT^c
   // ion specific heat  = d + eT^f
-  shared_ptr<Polynomial_Model> model(
-      new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
+  shared_ptr<Polynomial_Model> model(new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
 
   if (!model)
     FAILMSG("Failed to build an Analytic EoS Model!");
@@ -143,8 +142,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   // Test the get_Analytic_Model() member function.
   {
     shared_ptr<Polynomial_Model const> myEoS_model =
-        dynamic_pointer_cast<Polynomial_Model const>(
-            analytic.get_Analytic_Model());
+        dynamic_pointer_cast<Polynomial_Model const>(analytic.get_Analytic_Model());
     shared_ptr<Polynomial_Model const> expected_model(model);
 
     if (expected_model == myEoS_model)
@@ -167,10 +165,8 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
     if (params.size() != expectedValue.size())
       ITFAILS;
 
-    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(),
-                   expectedValue.end(), tol))
-      PASSMSG(
-          "get_parameters() returned the analytic expression coefficients.");
+    if (soft_equiv(params.begin(), params.end(), expectedValue.begin(), expectedValue.end(), tol))
+      PASSMSG("get_parameters() returned the analytic expression coefficients.");
     else
       FAILMSG("get_parameters() did not return the analytic expression "
               "coefficients.");
@@ -179,8 +175,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic model like Su-Olson (polynomial specific heats)
   // elec specific heat = a + bT^c
   // ion specific heat  = d + eT^f
-  shared_ptr<Polynomial_Model> so_model(
-      new Polynomial_Model(0.0, 54880.0, 3.0, 0.2, 0.0, 0.0));
+  shared_ptr<Polynomial_Model> so_model(new Polynomial_Model(0.0, 54880.0, 3.0, 0.2, 0.0, 0.0));
   // make an analtyic eos
   Analytic_EoS so_analytic(so_model);
 
@@ -245,16 +240,15 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void CDI_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   // cdi object
   CDI eosdata;
 
   // analytic model
-  shared_ptr<Analytic_EoS_Model> model(
-      new Polynomial_Model(0.0, 1.0, 3.0, 0.0, 0.0, 0.0));
+  shared_ptr<Analytic_EoS_Model> model(new Polynomial_Model(0.0, 1.0, 3.0, 0.0, 0.0, 0.0));
 
   // assign the eos object
   shared_ptr<Analytic_EoS> analytic_eos(new Analytic_EoS(model));
@@ -397,16 +391,15 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
-  typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+  using Polynomial_Model = Polynomial_Specific_Heat_Analytic_EoS_Model;
 
   vector<char> packed;
 
   {
     // make an analytic model (polynomial specific heats)
-    shared_ptr<Polynomial_Model> model(
-        new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
+    shared_ptr<Polynomial_Model> model(new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
 
     // make an analtyic eos
     shared_ptr<EoS> eos(new Analytic_EoS(model));
@@ -453,7 +446,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -465,6 +458,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAnalytic_EoS.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

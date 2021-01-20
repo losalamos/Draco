@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,22 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef UTIL_CPU_H__
-#define UTIL_CPU_H__ 1
+#ifndef UTIL_CPU_H
+#define UTIL_CPU_H 1
 
 #ifdef __GNUC__
 #if !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused variable" warning.
-#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
 
 #include "util.h"
@@ -50,13 +54,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * before reading /proc/cpuinfo, might fool
  * energy-saving CPU into showing its true speed
  */
-static void warmupCPU(long n) {
+static double warmupCPU(long n) {
   double d = 0.3;
   int i;
   for (i = 0; i < n; i++) {
     d = 3.6 * d * (1. - d);
   }
   dprintf(("logistic map produced %f\n", d));
+  return d;
 }
 
 #if defined(_MSC_VER)
@@ -99,7 +104,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
 static double clockspeedHz(int *ncores, char **modelnamep) {
   FILE *fp = popen("sysctl hw.cpufrequency", "r");
   double hz = 0.;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   if (fscanf(fp, "%*s %lf", &hz) != 1)
     return 0.;
   pclose(fp);
@@ -109,12 +114,11 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
     *modelnamep = ntcsdup("Apple");
   return hz;
 }
-#elif defined(__SUNPRO_CC) || defined(__SUNPRO_C) ||                           \
-    (defined(__GNUC__) && defined(__sun__))
+#elif defined(__SUNPRO_CC) || defined(__SUNPRO_C) || (defined(__GNUC__) && defined(__sun__))
 static double clockspeedHz(int *ncores, char **modelnamep) {
   FILE *fp = popen("kstat -p -s current_clock_Hz", "r");
   double hz = 0.;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   /* To-do: get a model name from kstat too */
   if (modelnamep)
     *modelnamep = ntcsdup("Solaris");
@@ -133,7 +137,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
   double Mhz = 0.;
   double xMhz;
   int i;
-  warmupCPU(100L * 1000L * 1000L);
+  double d = warmupCPU(100L * 1000L * 1000L);
   FILE *fp;
   if ((fp = fopen("/proc/cpuinfo", "r")) == NULL) {
     if (ncores)
@@ -170,7 +174,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
         *ncores += 1;
     }
   }
-  double d = Mhz * 1e6;
+  d = Mhz * 1e6;
   dprintf(("clockspeed is %f\n", d));
   return d;
 }
@@ -213,8 +217,7 @@ CPUInfo *cpu_init(const char *arg) {
   CPUInfo *tp;
   tp = (CPUInfo *)malloc(sizeof(CPUInfo));
   tp->hz = clockspeedHz(&tp->ncores, &tp->cpuname);
-  printf("%d cores, %.3f Ghz, cpu %s\n", tp->ncores, tp->hz * 1e-9,
-         tp->cpuname);
+  printf("%d cores, %.3f Ghz, cpu %s\n", tp->ncores, tp->hz * 1e-9, tp->cpuname);
   if (arg) {
     int n = atoi(arg);
     if (n) {
@@ -230,11 +233,15 @@ void cpu_done(CPUInfo *tp) {
   free(tp);
 }
 
+#if defined(__clang__) && !defined(__ibmxl__)
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
+
 #ifdef __GNUC__
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
+#if !defined(__ICC) && !defined(NVCC)
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#endif /* UTIL_CPU_H__ */
+#endif /* UTIL_CPU_H */

@@ -49,11 +49,11 @@ else
   if test -d $HOME/modulefiles; then
     export ucmf=$HOME/modulefiles
     module use --append $ucmf/fta
-  else
-    module load user_contrib
+#  else
+#    module load user_contrib
   fi
 
-  export dracomodules="hsi psi svn"
+#  export dracomodules="hsi psi svn"
 
 fi
 

@@ -1,7 +1,7 @@
 #!/bin/bash
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # CTS-1 Environment setups
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 export VENDOR_DIR=/usr/projects/draco/vendors
 
@@ -14,7 +14,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="intel1904env intel1704env gcc830env gcc740env"
+environments="intel1904env gcc930env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -32,9 +32,9 @@ if [[ ${package:-false} == false ]] ; then die "package not defined"; fi
 if [[ ${source_prefix:-false} == false ]] ; then die "source_prefix not defined"; fi
 (cd "/usr/projects/${package:=draco}" || exit; if [[ -L latest ]]; then rm latest; fi; ln -s "${source_prefix:-source_prefix}" latest)
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Specify environments (modules)
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 if [[ ${ddir:=false} == false ]] ;then
   echo "FATAL ERROR: Expected ddir to be set in the environment. (cts1-env.sh)"
@@ -43,63 +43,25 @@ fi
 
 case "${ddir}" in
 
-  #------------------------------------------------------------------------------#
-  draco-7_5*|draco-7_6*|draco-7_7*)
+  #--------------------------------------------------------------------------------------------------#
+  draco-7_9*)
     function intel1904env
     {
       run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/19.0.4 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module use --append /usr/projects/draco/Modules/cts1"
+      run "module load draco/intel19"
       run "module list"
     }
-    function intel1704env
+    function gcc930env()
     {
       run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load intel/17.0.4 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
-      run "module list"
-    }
-    function gcc830env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.0 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load gcc/8.3.0 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
-      run "module list"
-    }
-    function gcc740env()
-    {
-      run "module purge"
-      run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load friendly-testing user_contrib"
-      run "module load cmake/3.17.2 git numdiff python/3.6-anaconda-5.0.1"
-      run "module load gcc/7.4.0 openmpi/2.1.2"
-      run "unset MPI_ROOT"
-      run "module load random123 eospac/6.4.0 gsl"
-      run "module load mkl metis ndi csk qt quo"
-      run "module load parmetis superlu-dist/5.1.3 trilinos/12.10.1"
+      run "module use --append /usr/projects/draco/Modules/cts1"
+      run "module load draco/gcc9"
       run "module list"
     }
     ;;
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
   *)
     die "cts1-env.sh:: did not set any build environments, ddir = $ddir."
@@ -107,9 +69,9 @@ case "${ddir}" in
 
 esac
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Sanity check
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 for env in ${environments}; do
   if [[ $(fn_exists "$env") -gt 0 ]]; then

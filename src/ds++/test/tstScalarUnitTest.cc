@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstScalarUnitTest.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
@@ -31,18 +31,18 @@ using namespace rtt_dsxx;
 #define FAILURE unitTest.failure(__LINE__, __FILE__);
 #define FAILMSG(a) unitTest.failure(a);
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 char *convert_string_to_char_ptr(std::string const &s) {
   auto *pc = new char[s.length() + 1];
   std::strncpy(pc, s.c_str(), s.length() + 1);
   return pc;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstOne(UnitTest &unitTest) {
   unitTest.passes("Looks like the passes member function is working.");
@@ -53,7 +53,7 @@ void tstOne(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstTwo(UnitTest &unitTest) {
   unitTest.failure("Looks like the failure member function is working.");
   unitTest.check(false, "Also for check version.");
@@ -71,12 +71,11 @@ void tstTwo(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
   std::ostringstream const msg_nocolor(rtt_dsxx::remove_color(msg.str()));
-  map<string, unsigned> word_list(
-      rtt_dsxx::get_word_count(msg_nocolor, verbose));
+  map<string, unsigned> word_list(rtt_dsxx::get_word_count(msg_nocolor, verbose));
 
   // Check the list of occurrences against the expected values
   if (word_list[string("Test")] == 9)
@@ -94,19 +93,17 @@ void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   if (word_list[string("macro")] == 1)
     unitTest.passes("Found 1 occurrence of \"macro\"");
   else
-    unitTest.failure(
-        "Did not find expected number of occurrences of \"macro\"");
+    unitTest.failure("Did not find expected number of occurrences of \"macro\"");
 
   if (word_list[string("working")] == 2)
     unitTest.passes("Found 2 occurrences of \"working\"");
   else
-    unitTest.failure(
-        "Did not find expected number of occurrences of \"working\"");
+    unitTest.failure("Did not find expected number of occurrences of \"working\"");
 
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstGetWordCountFile(UnitTest &unitTest) {
   cout << "\ntstGetWordCountFile...\n" << endl;
 
@@ -126,8 +123,7 @@ void tstGetWordCountFile(UnitTest &unitTest) {
   map<string, unsigned> word_list(get_word_count(filename, false));
 
   // Some output
-  cout << "The world_list has the following statistics (word, count):\n"
-       << endl;
+  cout << "The world_list has the following statistics (word, count):\n" << endl;
   for (auto &it : word_list)
     cout << it.first << "\t::\t" << it.second << endl;
 
@@ -148,7 +144,7 @@ void tstGetWordCountFile(UnitTest &unitTest) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char **argv) {
   std::cout << "Testing Design-by-Contract setters and getters "
             << "for the UnitTest class..." << std::endl;
@@ -223,7 +219,7 @@ void tstdbcsettersandgetters(UnitTest &unitTest, int argc, char **argv) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstVersion(UnitTest &unitTest, char *test) {
   // Check version construction
 
@@ -234,8 +230,8 @@ void tstVersion(UnitTest &unitTest, char *test) {
   // Convert to 'char *'
   // We can then use &vc[0] as type char**
   std::vector<char *> vc;
-  std::transform(vs_arguments.begin(), vs_arguments.end(),
-                 std::back_inserter(vc), convert_string_to_char_ptr);
+  std::transform(vs_arguments.begin(), vs_arguments.end(), std::back_inserter(vc),
+                 convert_string_to_char_ptr);
 
   char **argv = &vc[0];
   try {
@@ -256,7 +252,7 @@ void tstVersion(UnitTest &unitTest, char *test) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstPaths(UnitTest &unitTest, char *test) {
 
   using std::string;
@@ -278,23 +274,20 @@ void tstPaths(UnitTest &unitTest, char *test) {
 
   // Report current state
   std::cout << "\nThe unitTest system reports the following paths:"
-            << "\n\tTest Path         = " << testBinaryDir
-            << "\n\tTest Name         = " << testName
+            << "\n\tTest Path         = " << testBinaryDir << "\n\tTest Name         = " << testName
             << "\n\tBinary Input Path = " << testBinaryInputDir
             << "\n\tSource Input Path = " << testSourceDir << "\n"
             << std::endl;
 
   // Checks
   string const stest = rtt_dsxx::getFilenameComponent(
-      rtt_dsxx::getFilenameComponent(string(test), rtt_dsxx::FC_NATIVE),
-      rtt_dsxx::FC_REALPATH);
+      rtt_dsxx::getFilenameComponent(string(test), rtt_dsxx::FC_NATIVE), rtt_dsxx::FC_REALPATH);
   FAIL_IF_NOT(stest == testBinaryDir + testName);
   FAIL_IF_NOT(testName == string("tstScalarUnitTest") + rtt_dsxx::exeExtension);
   if (thisFile != testSourceDir + testName_wo_suffix + ".cc") {
     // 2nd chance for case-insensitive file systems
     string const lc_thisFile = string_tolower(thisFile);
-    string const lc_gold =
-        string_tolower(testSourceDir + testName_wo_suffix + ".cc");
+    string const lc_gold = string_tolower(testSourceDir + testName_wo_suffix + ".cc");
     FAIL_IF_NOT(lc_thisFile == lc_gold);
   }
 
@@ -302,19 +295,16 @@ void tstPaths(UnitTest &unitTest, char *test) {
   FAIL_IF_NOT(rtt_dsxx::fileExists(testBinaryInputDir + "cmake_install.cmake"));
 
   // If this is a multi-config build tool, examine the value of buildType.
-  string buildType =
-      rtt_dsxx::getFilenameComponent(testBinaryDir, rtt_dsxx::FC_NAME);
+  string buildType = rtt_dsxx::getFilenameComponent(testBinaryDir, rtt_dsxx::FC_NAME);
   if (buildType != string("test")) {
     // trim trailing Windows or Unix slash, if any
     if (buildType.substr(buildType.length() - 1, 1) == string("\\") ||
         buildType.substr(buildType.length() - 1, 1) == string("/"))
       buildType = buildType.substr(0, buildType.length() - 1);
     std::cout << "This appears to be a multi-config build tool like Xcode or "
-              << "Visual Studio where build type = " << buildType << "."
-              << std::endl;
+              << "Visual Studio where build type = " << buildType << "." << std::endl;
     if (buildType != string("Release") && buildType != string("Debug") &&
-        buildType != string("DebWithRelInfo") &&
-        buildType != string("MinSizeRel"))
+        buildType != string("DebWithRelInfo") && buildType != string("MinSizeRel"))
       FAILMSG(string("Unexpected build type = ") + buildType);
   }
 
@@ -326,7 +316,7 @@ void tstPaths(UnitTest &unitTest, char *test) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   try {
     // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
@@ -379,6 +369,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstScalarUnitTest.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

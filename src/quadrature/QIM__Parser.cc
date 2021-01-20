@@ -1,31 +1,29 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/QIM__Parser.cc
  * \author Kent Budge
  * \brief  Define a parse routine for quadrature interpolation model
  *         specifications.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "QIM.hh"
 
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
- * /param tokens Token stream from which to parse the specification.
+ * \brief Parse the quadrature interpolation model
+ * \param[in,out] tokens Token stream from which to parse the specification.
+ * \param[out] qim Reference to a QIM into which the specification should be stored.
  *
- * /param qim Reference to a QIM into which the specification should be
- * stored. The routine checks that the QIM is set to END_QIM and reports a
- * semantic error if it is not. This simplifies checking for duplicate
- * specifications, by allowing the client to set the QIM to END_QIM before
- * beginning his parse.
+ * The routine checks that the \c QIM is set to \c END_QIM and reports a semantic error if it is
+ * not. This simplifies checking for duplicate specifications, by allowing the client to set the
+ * \c QIM to \c END_QIM before beginning his parse.
  */
 void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
-  tokens.check_semantics(qim == END_QIM,
-                         "quadrature interpolation model already specified");
+  tokens.check_semantics(qim == END_QIM, "quadrature interpolation model already specified");
 
   Token token = tokens.shift();
 
@@ -38,14 +36,13 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
   } else if (token.text() == "GQF") {
     qim = GQF;
   } else {
-    tokens.check_semantics(false,
-                           "unrecognized quadrature interpolation model");
+    tokens.check_semantics(false, "unrecognized quadrature interpolation model");
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Provide a string representation of the provided quadrature enum.
-std::string quadrature_interpolation_model_as_text(QIM q) {
+std::string quadrature_interpolation_model_as_text(QIM const q) {
   switch (q) {
   case SN:
     return "SN";
@@ -57,12 +54,12 @@ std::string quadrature_interpolation_model_as_text(QIM q) {
     return "GQF";
   default:
     Insist(false, "bad case");
-    return 0; // to kill warnings; never reached
+    return nullptr; // to kill warnings; never reached
   }
 }
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/QIM.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

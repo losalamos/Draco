@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Double_Gauss.cc
  * \author Kelly Thompson
@@ -7,7 +7,7 @@
  *         set.
  * \note   Copyright 2016-2020 Triad National Security, LLC. All rights
  *         reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
@@ -64,35 +64,32 @@ Double_Gauss::Double_Gauss(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Ensure(this->sn_order() == sn_order);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::name() const { return "Double-Gauss"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::parse_name() const { return "double gauss"; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
 unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const {
-  string Result = indent + "type = double gauss" + indent +
-                  "  order = " + to_string(sn_order()) + indent + "end";
+  string Result = indent + "type = double gauss" + indent + "  order = " + to_string(sn_order()) +
+                  indent + "end";
 
   return Result;
 }
 
-//----------------------------------------------------------------------------//
-bool Double_Gauss::check_class_invariants() const {
-  return sn_order() > 0 && sn_order() % 2 == 0;
-}
+//------------------------------------------------------------------------------------------------//
+bool Double_Gauss::check_class_invariants() const { return sn_order() > 0 && sn_order() % 2 == 0; }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* virtual */
-vector<Ordinate>
-Double_Gauss::create_level_ordinates_(double const norm) const {
+vector<Ordinate> Double_Gauss::create_level_ordinates_(double const norm) const {
   // Preconditions checked in create_ordinate_set
 
   unsigned const numPoints(sn_order());
@@ -115,6 +112,6 @@ Double_Gauss::create_level_ordinates_(double const norm) const {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Double_Gauss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

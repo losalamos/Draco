@@ -2,49 +2,55 @@
 Copyright 2013, D. E. Shaw Research.
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions, and the following disclaimer.
+* Redistributions of source code must retain the above copyright
+  notice, this list of conditions, and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright notice, this
-  list of conditions, and the following disclaimer in the documentation and/or
-  other materials provided with the distribution.
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions, and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
 
-* Neither the name of D. E. Shaw Research nor the names of its contributors may
-  be used to endorse or promote products derived from this software without
-  specific prior written permission.
+* Neither the name of D. E. Shaw Research nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /* ut_uniform.cpp:   unit test for uniform.hpp.
 
-    This is a "sanity test" of u01, uneg11 and u01fixedpt.  We confirm that a
-    histogram of few thousand calls to each of the functions matches a reference
-    histogram.  This verifies that the results are generally sane i.e., they
-    fall within the expected range, and that they are close to a correct
-    distribution.  It is *not* a foolproof test of correctness, but it should
-    catch portability issues like errors in r123::make_signed or
-    r123::make_unsigned or r123::maxTvalue or misunderstandings about
-    std::numeric_limits.
+    This is a "sanity test" of u01, uneg11 and u01fixedpt.  We confirm
+    that a histogram of few thousand calls to each of the functions
+    matches a reference histogram.  This verifies that the results are
+    generally sane i.e., they fall within the expected range, and that
+    they are close to a correct distribution.  It is *not* a foolproof
+    test of correctness, but it should catch portability issues
+    like errors in r123::make_signed or r123::make_unsigned
+    or r123::maxTvalue or misunderstandings about std::numeric_limits.
 
     There is a "known answer test" for uniform.hpp in ut_uniform_IEEEkat.cpp,
-    but it is only expected to work on machines with strict IEEE arithmetic and
-    no high-precicision intermediates.  See its own comments for more details.
+    but it is only expected to work on machines with strict IEEE arithmetic
+    and  no high-precicision intermediates.  See its own comments for
+    more details.
  */
 
 #include "rng/config.h"
+
+/* suppress clang-tidy warnings from this file imported from R123 */
+#if !defined(__clang_analyzer__)
 
 #ifdef _MSC_FULL_VER
 // - 4521: Engines have multiple copy constructors, quite legal C++, disable
@@ -60,21 +66,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
-#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
-#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && !defined(__ibmxl__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
+#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#pragma clang diagnostic ignored "-Wextra-semi"
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
 
 #include "uniform.hpp"
@@ -85,36 +95,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string>
 
-#ifdef __clang__
-// Restore clang diagnostics to previous state.
-#pragma clang diagnostic pop
-#endif
-
-#if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
-#endif
-
-#ifdef _MSC_FULL_VER
-#pragma warning(pop)
-#endif
-
 using namespace r123;
 
 template <typename T> typename r123::make_unsigned<T>::type U(T x) { return x; }
 
 template <typename T> typename r123::make_signed<T>::type S(T x) { return x; }
 
-#define Chk(u, Rng, Ftype)                                                     \
-  do {                                                                         \
-    chk<Ftype, Rng>(#u, #Rng, #Ftype, &u<Ftype, Rng::ctr_type::value_type>);   \
+#define Chk(u, Rng, Ftype)                                                                         \
+  do {                                                                                             \
+    chk<Ftype, Rng>(#u, #Rng, #Ftype, &u<Ftype, Rng::ctr_type::value_type>);                       \
   } while (0)
 
 std::map<std::string, std::string> refmap;
 
-void RefHist(const char *k, const char *v) {
-  refmap[std::string(k)] = std::string(v);
-}
+void RefHist(const char *k, const char *v) { refmap[std::string(k)] = std::string(v); }
 
 void fillrefhist() {
 #include "ut_uniform_reference.hpp"
@@ -124,8 +118,8 @@ bool checking = true;
 int nfail = 0;
 
 template <typename Ftype, typename RNG, typename Utype>
-void chk(const std::string &fname, const std::string &rngname,
-         const std::string &ftypename, Utype f) {
+void chk(const std::string &fname, const std::string &rngname, const std::string &ftypename,
+         Utype f) {
   std::string key = fname + " " + rngname + " " + ftypename;
   RNG rng;
   typedef typename RNG::ukey_type ukey_type;
@@ -159,9 +153,8 @@ void chk(const std::string &fname, const std::string &rngname,
   }
   if (checking) {
     if (oss.str() != refmap[key]) {
-      printf(
-          "MISMATCH:  %s:\n\tcomputed histogram=%s\n\treference histogram=%s\n",
-          key.c_str(), oss.str().c_str(), refmap[key].c_str());
+      printf("MISMATCH:  %s:\n\tcomputed histogram=%s\n\treference histogram=%s\n", key.c_str(),
+             oss.str().c_str(), refmap[key].c_str());
       nfail++;
     }
   } else {
@@ -209,6 +202,22 @@ int main(int argc, char **argv) {
   return !!nfail;
 }
 
-//----------------------------------------------------------------------------//
+#if defined(__clang__) && !defined(__ibmxl__)
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
+
+#if (DBS_GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
+
+#endif /* !defined(__clang_analyzer__) */
+
+//------------------------------------------------------------------------------------------------//
 // end ut_uniform.cpp
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

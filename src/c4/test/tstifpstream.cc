@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstifpstream.cc
  * \author Mathew Cleveland
@@ -6,7 +6,7 @@
  * \brief  Tests ifpstream class for paralle read
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/ifpstream.hh"
@@ -18,9 +18,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // HELPER FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void write_stream(std::string filename, const std::ios_base::openmode mode) {
 
@@ -40,13 +40,12 @@ void write_stream(std::string filename, const std::ios_base::openmode mode) {
   out.send();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
 
   int pid = rtt_c4::node();
 
-  std::string filename =
-      "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".txt";
+  std::string filename = "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".txt";
   if (mode == std::ofstream::binary)
     filename = "tstifpstream" + std::to_string(rtt_c4::nodes()) + ".bin";
 
@@ -78,8 +77,7 @@ void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
     ITFAILS;
 
   // read second strings on each rank
-  compare_string =
-      "MPI rank " + to_string(pid) + " reporting a second time ...\n";
+  compare_string = "MPI rank " + to_string(pid) + " reporting a second time ...\n";
   std::string second_string(second_buffer_size, '\0');
   in.fill_buffers(second_buffer_size);
   in.read(&second_string[0], second_buffer_size);
@@ -87,11 +85,10 @@ void tstifpstream(UnitTest &ut, const std::ios_base::openmode mode) {
     ITFAILS;
 
   if (pid == 0)
-    PASSMSG("completed serialized read of " + filename +
-            " without hanging or segfaulting");
+    PASSMSG("completed serialized read of " + filename + " without hanging or segfaulting");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
@@ -101,6 +98,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstofpstream.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstAbstract_Class_Parser.cc
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Parser template
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,28 +18,26 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
- * The following would typically be declared in a file associated with the
- * Parent class.
+ * The following would typically be declared in a file associated with the Parent class.
  */
-
 class Parent {
 public:
-  virtual ~Parent() {}
+  virtual ~Parent() = default;
 
   virtual string name() = 0;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 namespace rtt_parser {
 template <> class Class_Parse_Table<Parent> {
 public:
   // TYPEDEFS
 
-  typedef Parent Return_Class;
+  using Return_Class = Parent;
 
   // MANAGEMENT
 
@@ -65,12 +62,10 @@ public:
 
   // STATICS
 
-  static void
-  register_model(string const &keyword,
-                 std::shared_ptr<Parent> parse_function(Token_Stream &)) {
-    Abstract_Class_Parser<Parent, get_parse_table_,
-                          get_parsed_object_>::register_child(keyword,
-                                                              parse_function);
+  static void register_model(string const &keyword,
+                             std::shared_ptr<Parent> parse_function(Token_Stream &)) {
+    Abstract_Class_Parser<Parent, get_parse_table_, get_parsed_object_>::register_child(
+        keyword, parse_function);
   }
 
 private:
@@ -91,7 +86,7 @@ std::shared_ptr<Parent> Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
 Parse_Table Class_Parse_Table<Parent>::parse_table_;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Specialization of the parse_class function for T=Parent
  */
@@ -101,19 +96,19 @@ template <> std::shared_ptr<Parent> parse_class<Parent>(Token_Stream &tokens) {
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
- * The following is what you would expect to find in a file associated with
- * the Son class.
+ * The following is what you would expect to find in a file associated with the
+ * Son class.
  */
 class Son : public Parent {
 public:
-  virtual string name() { return "son"; }
+  string name() override { return "son"; }
 
   Son(double /*snip_and_snails*/) {}
 };
 
-double parsed_snips_and_snails;
+static double parsed_snips_and_snails;
 
 void parse_snips_and_snails(Token_Stream &tokens, int) {
   if (parsed_snips_and_snails >= 0.0) {
@@ -133,19 +128,15 @@ template <> class Class_Parse_Table<Son> {
 public:
   // TYPEDEFS
 
-  typedef Son Return_Class;
+  using Return_Class = Son;
 
   // MANAGEMENT
 
   Class_Parse_Table() {
     if (!parse_table_is_initialized_) {
-      const Keyword keywords[] = {
-          {"snips and snails", parse_snips_and_snails, 0, ""},
-      };
-
-      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
-      parse_table_.add(keywords, number_of_keywords);
-
+      std::array<Keyword, 1> const keywords{
+          Keyword{"snips and snails", parse_snips_and_snails, 0, ""}};
+      parse_table_.add(keywords.data(), keywords.size());
       parse_table_is_initialized_ = true;
     }
 
@@ -179,32 +170,31 @@ private:
   static bool parse_table_is_initialized_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
 Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Son>>(tokens);
 }
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
- * The following is what you would expect to find in a file associated with
- * the Daughter class.
+ * The following is what you would expect to find in a file associated with the
+ * Daughter class.
  */
-
 class Daughter : public Parent {
 public:
-  virtual string name() { return "daughter"; }
+  string name() override { return "daughter"; }
 
   Daughter(double /*sugar_and_spice*/) {}
 };
 
-double parsed_sugar_and_spice;
+static double parsed_sugar_and_spice;
 
 void parse_sugar_and_spice(Token_Stream &tokens, int) {
   if (parsed_sugar_and_spice >= 0.0) {
@@ -224,18 +214,15 @@ template <> class Class_Parse_Table<Daughter> {
 public:
   // TYPEDEFS
 
-  typedef Daughter Return_Class;
+  using Return_Class = Daughter;
 
   // MANAGEMENT
 
   Class_Parse_Table() {
     if (!parse_table_is_initialized_) {
-      const Keyword keywords[] = {
-          {"sugar and spice", parse_sugar_and_spice, 0, ""},
-      };
-
-      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
-      parse_table_.add(keywords, number_of_keywords);
+      std::array<Keyword, 1> const keywords{
+          Keyword{"sugar and spice", parse_sugar_and_spice, 0, ""}};
+      parse_table_.add(keywords.data(), keywords.size());
       parse_table_is_initialized_ = true;
     }
 
@@ -273,9 +260,8 @@ Class_Parse_Table<Daughter> *Class_Parse_Table<Daughter>::current_;
 Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
-//----------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
+//------------------------------------------------------------------------------------------------//
+template <> std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 
@@ -283,30 +269,21 @@ std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
 
 /* the followingn would typically live in some client file for Parent. */
 
-std::shared_ptr<Parent> parent;
+static std::shared_ptr<Parent> parent;
 
 //static
-void parse_parent(Token_Stream &tokens, int) {
-  parent = parse_class<Parent>(tokens);
-}
+void parse_parent(Token_Stream &tokens, int) { parent = parse_class<Parent>(tokens); }
 
-const Keyword top_keywords[] = {
-    {"parent", parse_parent, 0, ""},
-};
+std::array<Keyword, 1> const top_keywords{Keyword{"parent", parse_parent, 0, ""}};
+static Parse_Table top_parse_table(top_keywords.data(), top_keywords.size());
 
-const unsigned number_of_top_keywords = sizeof(top_keywords) / sizeof(Keyword);
-
-Parse_Table top_parse_table(top_keywords, number_of_top_keywords);
-
-std::shared_ptr<Parent> parse_son(Token_Stream &tokens) {
-  return parse_class<Son>(tokens);
-}
+std::shared_ptr<Parent> parse_son(Token_Stream &tokens) { return parse_class<Son>(tokens); }
 
 std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens) {
   return parse_class<Daughter>(tokens);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test all the above */
 
 void test(UnitTest &ut) {
@@ -315,8 +292,7 @@ void test(UnitTest &ut) {
   Class_Parse_Table<Parent>::register_model("daughter", parse_daughter);
 
   // Build path for the input file
-  string const sadInputFile(ut.getTestSourcePath() +
-                            std::string("sons_and_daughters.inp"));
+  string const sadInputFile(ut.getTestSourcePath() + std::string("sons_and_daughters.inp"));
 
   File_Token_Stream tokens(sadInputFile);
 
@@ -324,16 +300,14 @@ void test(UnitTest &ut) {
 
   cout << parent->name() << endl;
 
-  if (tokens.error_count() == 0 && parent != std::shared_ptr<Parent>() &&
-      parent->name() == "son") {
+  if (tokens.error_count() == 0 && parent != std::shared_ptr<Parent>() && parent->name() == "son") {
     PASSMSG("Parsed son correctly");
   } else {
     FAILMSG("Did NOT parse son correctly");
   }
 }
 
-//----------------------------------------------------------------------------//
-
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -342,6 +316,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAbstract_Class_Parser.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

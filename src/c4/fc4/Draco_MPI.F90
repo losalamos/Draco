@@ -1,14 +1,12 @@
-!----------------------------------*-F90-*----------------------------------
-!
+!---------------------------------------------*-F90 *----------------------------------------------!
 ! \file   c4/fc4/Draco_MPI.F90
 ! \author Allan Wollaber
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
-! \note   Copyright (c) 2016-2020 Triad National Security, LLC.
-!         All rights reserved.
+! \note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
 !
 ! This is a modified version of jayenne/src/api/ftest/API_MPI.F90
-!---------------------------------------------------------------------------
+!--------------------------------------------------------------------------------------------------!
 
 module draco_mpi
   use iso_c_binding, only : c_double, c_intptr_t
@@ -48,6 +46,7 @@ contains
 #ifdef C4_MPI
     integer                         :: error_string_len, ierror
     character(MPI_MAX_ERROR_STRING) :: error_string
+    external mpi_error_string, MPI_Abort
 
     ! Check and report a nonzero error code
     if (error .ne. 0) then
@@ -64,6 +63,7 @@ contains
   subroutine fc4_mpi_init(ierr)
     implicit none
     integer, intent(out) :: ierr
+    external mpi_init, mpi_comm_size, mpi_comm_rank
 
     ierr = 0
     fc4_rank = 0
@@ -88,6 +88,7 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
+    external mpi_finalize
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
@@ -100,6 +101,7 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
+    external mpi_barrier
     call mpi_barrier(MPI_COMM_WORLD,ierr)
     call check_mpi_error(ierr)
 #endif
@@ -107,6 +109,6 @@ contains
 
 end module draco_mpi
 
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
 ! End c4/fc4/Draco_MPI.F90
-!-----------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!

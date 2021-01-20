@@ -6,7 +6,7 @@
  * \brief  Tests File_Input and File_Output.
  * \note   Copyright 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/File_Streams.hh"
 #include "ds++/Release.hh"
@@ -19,14 +19,13 @@ using rtt_dsxx::File_Input;
 using rtt_dsxx::File_Output;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_fileio(rtt_dsxx::UnitTest &ut, const bool is_fformat_binary) {
 
-  string const filename("file_streams." +
-                        string(is_fformat_binary ? "binary" : "ascii"));
+  string const filename("file_streams." + string(is_fformat_binary ? "binary" : "ascii"));
 
   int i = 5;
   string s = "  a string with spaces  ";
@@ -121,7 +120,7 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool is_fformat_binary) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -131,6 +130,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstFile_Streams.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

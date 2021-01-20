@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstDracoStrings.cc
  * \author Kelly G. Thompson <kgt@lanl.gov>
@@ -6,19 +6,20 @@
  * \brief  Test functions defined in ds++/DracoStrings.hh
  * \note   Copyright (C) 2017-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_trim(UnitTest &ut) {
 
@@ -33,6 +34,20 @@ void test_trim(UnitTest &ut) {
   string const case3("#  This is a string.  ");
   FAIL_IF_NOT(trim(case3, string("# ")) == string("This is a string."));
 
+  string const case4("This is a string.\0\0\0\0\1\0        ");
+  FAIL_IF_NOT(case4.length() == case2.length());
+  FAIL_IF_NOT(trim(case4) == string("This is a string."));
+
+  // tests that use std::array source data.
+  std::array<char, 20> case5arr = {'T', 'h', 'i', 's', ' ', 'i', 's', ' ',  'a',  ' ',
+                                   's', 't', 'r', 'i', 'n', 'g', '.', '\0', '\1', 'x'};
+  string const case5(case5arr.data()); // this ctor should prune '\0' and following chars.
+  FAIL_IF_NOT(case5.length() == case2.length());
+
+  string const case6(case5arr.data(), case5arr.size()); // keeps all 20 chars.
+  FAIL_IF_NOT(case6.length() == case5arr.size());
+  FAIL_IF_NOT(trim(case6) == string("This is a string."));
+
   if (ut.numFails == 0)
     PASSMSG("test_trim: All tests pass.");
   else
@@ -41,7 +56,7 @@ void test_trim(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_prune(UnitTest &ut) {
 
   cout << "\nBegin test_prune checks...\n";
@@ -62,7 +77,7 @@ void test_prune(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_tokenize(UnitTest &ut) {
 
   cout << "\nBegin test_tokenize checks...\n";
@@ -86,7 +101,7 @@ void test_tokenize(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_parse_number(UnitTest &ut) {
 
   cout << "\nBegin test_parse_number checks...\n";
@@ -139,7 +154,7 @@ void test_parse_number(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_string_to_numvec(UnitTest &ut) {
 
   cout << "\nBegin test_string_to_numvec checks...\n";
@@ -151,8 +166,7 @@ void test_string_to_numvec(UnitTest &ut) {
 
   vector<int> const case1v = string_to_numvec<int>(case1);
   vector<double> const case2v = string_to_numvec<double>(case2);
-  vector<double> const case3v =
-      string_to_numvec<double>(case3, string("[)"), string(" "));
+  vector<double> const case3v = string_to_numvec<double>(case3, string("[)"), string(" "));
 
   vector<int> const case1ref = {1, 2, 3};
   vector<double> const case2ref = {1.1, 2.2, 3.3};
@@ -169,7 +183,7 @@ void test_string_to_numvec(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_tostring(UnitTest &ut) {
 
   cout << "\nBegin test_tostring checks...\n";
@@ -201,7 +215,7 @@ void test_tostring(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_upper_lower(UnitTest &ut) {
 
   cout << "\nBegin test_upper_lower checks...\n";
@@ -222,7 +236,73 @@ void test_upper_lower(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+void test_extract_version(UnitTest &ut) {
+
+  cout << "\nBegin test_extract_version checks...\n";
+  unsigned const nf = ut.numFails;
+
+  // version at end of string
+  std::string ndi_path{"/usr/projects/data/nuclear/ndi/2.1.3"};
+  std::cout << "Case 1: " << extract_version(ndi_path) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path) == "2.1.3");
+
+  // version with 'alpha'
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1.4alpha";
+  std::cout << "Case 2: " << extract_version(ndi_path) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path) == "2.1.4alpha");
+
+  // version with 'beta' and trailing text
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1.4beta/share/gendir";
+  std::cout << "Case 3: " << extract_version(ndi_path) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path) == "2.1.4beta");
+
+  // version in the middle of a string
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1.3/share/gendir";
+  std::cout << "Case 4: " << extract_version(ndi_path) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path) == "2.1.3");
+
+  // version at the start of a string
+  ndi_path = "2.1.3/share/gendir";
+  std::cout << "Case 5: " << extract_version(ndi_path) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path) == "2.1.3");
+
+  // version, only print 2 digits
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1.3/share/gendir";
+  std::cout << "Case 6: " << extract_version(ndi_path, 2) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 2) == "2.1");
+
+  // version, only print 1 digit
+  std::cout << "Case 7: " << extract_version(ndi_path, 1) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 1) == "2");
+
+  // version, only print 2 digits (with 'beta')
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1.3beta/share/gendir";
+  std::cout << "Case 8: " << extract_version(ndi_path, 2) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 2) == "2.1");
+
+  // version, only print 1 digit (with 'beta')
+  std::cout << "Case 9: " << extract_version(ndi_path, 1) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 1) == "2");
+
+  // version, 'alpha' for middle digit.
+  ndi_path = "/usr/projects/data/nuclear/ndi/2.1alpha.3beta/share/gendir";
+  std::cout << "Case 10: " << extract_version(ndi_path, 2) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 2) == "2.1alpha");
+
+  // version, 'alpha' for middle digit, only print major version.
+  std::cout << "Case 11: " << extract_version(ndi_path, 1) << std::endl;
+  FAIL_IF_NOT(extract_version(ndi_path, 1) == "2");
+
+  if (ut.numFails == nf)
+    PASSMSG("test_extract_version: All tests pass.");
+  else
+    FAILMSG("test_extract_version: FAILED");
+
+  return;
+}
+
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -233,10 +313,11 @@ int main(int argc, char *argv[]) {
     test_string_to_numvec(ut);
     test_tostring(ut);
     test_upper_lower(ut);
+    test_extract_version(ut);
   }
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstDracoStrings.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

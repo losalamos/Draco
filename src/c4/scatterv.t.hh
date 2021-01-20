@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/scatterv.t.hh
  * \author Kent G. Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef c4_scatterv_t_hh
 #define c4_scatterv_t_hh
@@ -19,14 +18,13 @@ namespace rtt_c4 {
 using std::copy;
 using std::vector;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // SCATTER
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
-void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
-                            vector<T> &incoming_data) {
+void indeterminate_scatterv(vector<vector<T>> &outgoing_data, vector<T> &incoming_data) {
 #ifdef C4_MPI
   { // This block is a no-op for with-c4=scalar
 
@@ -50,12 +48,10 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
       vector<T> sendbuf(total_count);
       for (unsigned p = 0; p < N; ++p) {
         Check(outgoing_data[p].size() + displs[p] <= sendbuf.size());
-        copy(outgoing_data[p].begin(), outgoing_data[p].end(),
-             sendbuf.begin() + displs[p]);
+        copy(outgoing_data[p].begin(), outgoing_data[p].end(), sendbuf.begin() + displs[p]);
       }
       Remember(check =) rtt_c4::scatterv(
-          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr),
-          (counts.size() > 0 ? &counts[0] : nullptr),
+          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr), (counts.size() > 0 ? &counts[0] : nullptr),
           (displs.size() > 0 ? &displs[0] : nullptr),
           (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
       Check(check == MPI_SUCCESS);
@@ -65,8 +61,7 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
       Check(check == MPI_SUCCESS);
       incoming_data.resize(count);
       Remember(check =) rtt_c4::scatterv(
-          static_cast<T *>(nullptr), static_cast<int *>(nullptr),
-          static_cast<int *>(nullptr),
+          static_cast<T *>(nullptr), static_cast<int *>(nullptr), static_cast<int *>(nullptr),
           (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
       Check(check == MPI_SUCCESS);
     }
@@ -81,11 +76,10 @@ void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 template <typename T>
-void determinate_scatterv(vector<vector<T>> &outgoing_data,
-                          vector<T> &incoming_data) {
-  Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());
+void determinate_scatterv(vector<vector<T>> &outgoing_data, vector<T> &incoming_data) {
+  Require(outgoing_data.size() == rtt_c4::nranks());
 
 #ifdef C4_MPI
   { // This block is a no-op for with-c4=scalar
@@ -102,20 +96,18 @@ void determinate_scatterv(vector<vector<T>> &outgoing_data,
         displs[p] = total_count;
         total_count += n;
       }
-      int count = counts[0];
+      int const count = counts.size() > 0 ? counts[0] : 0;
       Check(static_cast<int>(incoming_data.size()) == count);
 
       vector<T> sendbuf(total_count);
       for (unsigned p = 0; p < N; ++p) {
-        copy(outgoing_data[p].begin(), outgoing_data[p].end(),
-             sendbuf.begin() + displs[p]);
+        copy(outgoing_data[p].begin(), outgoing_data[p].end(), sendbuf.begin() + displs[p]);
       }
-      rtt_c4::scatterv(
-          (sendbuf.size() > 0 ? &sendbuf[0] : nullptr), &counts[0], &displs[0],
-          (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
+      rtt_c4::scatterv((sendbuf.size() > 0 ? &sendbuf[0] : nullptr), &counts[0], &displs[0],
+                       (incoming_data.size() > 0 ? &incoming_data[0] : nullptr), count);
     } else {
       Check(incoming_data.size() < INT_MAX);
-      auto count = static_cast<int>(incoming_data.size());
+      auto const count = static_cast<int>(incoming_data.size());
       rtt_c4::scatterv(static_cast<T *>(nullptr), static_cast<int *>(nullptr),
                        static_cast<int *>(nullptr), &incoming_data[0], count);
     }
@@ -134,6 +126,6 @@ void determinate_scatterv(vector<vector<T>> &outgoing_data,
 
 #endif // c4_scatterv_t_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/scatterv.t.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

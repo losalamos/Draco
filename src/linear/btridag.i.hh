@@ -1,13 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/btridag.i.hh
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
  * \brief  Implementation of block tridiagonal solver
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_btridag_i_hh
 #define linear_btridag_i_hh
@@ -18,12 +16,12 @@
 
 namespace rtt_linear {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * Solve a block tridiagonal system of linear equations.
  *
- * \arg \a FieldVector A random access container whose element type must
- * represent a field, such as the reals or the complex numbers.
+ * \arg \a FieldVector A random access container whose element type must represent a field, such as
+ *            the reals or the complex numbers.
  *
  * \param a Subdiagonal of coefficient matrix.
  * \param b Diagonal of coefficient matrix.
@@ -36,9 +34,8 @@ namespace rtt_linear {
  * \throw std::range_error If the system is not diagonal dominant.
  */
 template <class FieldVector>
-void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
-             FieldVector const &r, unsigned const n, unsigned const m,
-             FieldVector &u) {
+void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c, FieldVector const &r,
+             unsigned const n, unsigned const m, FieldVector &u) {
   Require(a.size() == n * m * m);
   Require(b.size() == n * m * m);
   Require(c.size() == n * m * m);
@@ -46,8 +43,7 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
   Require(u.size() == n * m);
 
   using namespace rtt_dsxx;
-
-  typedef typename FieldVector::value_type Field;
+  using Field = typename FieldVector::value_type;
 
   if (n == 0) {
     return;
@@ -62,12 +58,10 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
     Slice<typename FieldVector::iterator> u0(u.begin(), m);
     lubksb(rbet, indx, u0);
     for (unsigned j = 1; j < n; ++j) {
-      std::copy(c.begin() + (j - 1) * m * m, c.begin() + j * m * m,
-                gam.begin() + j * m * m);
+      std::copy(c.begin() + (j - 1) * m * m, c.begin() + j * m * m, gam.begin() + j * m * m);
 
       for (unsigned k = 0; k < m; ++k) {
-        Slice<typename FieldVector::iterator> gamj(
-            gam.begin() + j * m * m + k * m, m);
+        Slice<typename FieldVector::iterator> gamj(gam.begin() + j * m * m + k * m, m);
 
         lubksb(rbet, indx, gamj);
       }
@@ -104,6 +98,6 @@ void btridag(FieldVector const &a, FieldVector const &b, FieldVector const &c,
 
 #endif // linear_btridag_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of btridag.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/Compound_Analytic_MultigroupOpacity.cc
  * \brief  Compound_Analytic_MultigroupOpacity class member definitions.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Compound_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
@@ -12,9 +12,9 @@
 
 namespace rtt_cdi_analytic {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CONSTRUCTORS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Constructor for an analytic multigroup opacity model.
  *
@@ -36,18 +36,16 @@ namespace rtt_cdi_analytic {
  * \param model_in Enum specifying CDI model.
  */
 Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
-    const sf_double &groups, const sf_Analytic_Model &models,
-    rtt_cdi::Reaction reaction_in, rtt_cdi::Model model_in)
-    : Analytic_MultigroupOpacity(groups, reaction_in, model_in),
-      group_models(models) {
+    const sf_double &groups, const sf_Analytic_Model &models, rtt_cdi::Reaction reaction_in,
+    rtt_cdi::Model model_in)
+    : Analytic_MultigroupOpacity(groups, reaction_in, model_in), group_models(models) {
   Require(groups.size() - 1 == models.size());
-  Require(
-      rtt_dsxx::is_strict_monotonic_increasing(groups.begin(), groups.end()));
+  Require(rtt_dsxx::is_strict_monotonic_increasing(groups.begin(), groups.end()));
 
   Ensure(check_class_invariant());
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
  *
@@ -56,8 +54,7 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
  * Analytic_Model types that have been registered in the
  * rtt_cdi_analytic::Opacity_Models enumeration.
  */
-Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
-    const sf_char &packed)
+Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(const sf_char &packed)
     : Analytic_MultigroupOpacity(packed), group_models() {
   // get the number of group boundaries
   size_t const num_groups = getGroupBoundaries().size() - 1;
@@ -75,16 +72,16 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
   // unpack the models
   std::vector<sf_char> models(num_groups);
   int model_size = 0;
-  for (size_t i = 0; i < models.size(); ++i) {
+  for (auto &model_1dvec : models) {
     // unpack the size of the analytic model
     unpacker >> model_size;
     Check(static_cast<size_t>(model_size) >= sizeof(int));
 
-    models[i].resize(model_size);
+    model_1dvec.resize(model_size);
 
     // unpack the model
-    for (size_t j = 0; j < models[i].size(); ++j)
-      unpacker >> models[i][j];
+    for (auto &elem : model_1dvec)
+      unpacker >> elem;
   }
 
   // now rebuild the analytic models
@@ -98,9 +95,9 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
 
     // now determine which analytic model we need to build
     if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL) {
-      group_models[i].reset(new Constant_Analytic_Opacity_Model(models[i]));
+      group_models[i] = std::make_shared<Constant_Analytic_Opacity_Model>(models[i]);
     } else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL) {
-      group_models[i].reset(new Polynomial_Analytic_Opacity_Model(models[i]));
+      group_models[i] = std::make_shared<Polynomial_Analytic_Opacity_Model>(models[i]);
     } else {
       Insist(0, "Unregistered analytic opacity model!");
     }
@@ -110,14 +107,14 @@ Compound_Analytic_MultigroupOpacity::Compound_Analytic_MultigroupOpacity(
 
   Ensure(check_class_invariant());
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 bool Compound_Analytic_MultigroupOpacity::check_class_invariant() const {
   return group_models.size() + 1 == getGroupBoundaries().size();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // OPACITY INTERFACE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Return the group opacities given a scalar temperature and density.
  *
@@ -132,8 +129,7 @@ bool Compound_Analytic_MultigroupOpacity::check_class_invariant() const {
  *
  */
 Compound_Analytic_MultigroupOpacity::sf_double
-Compound_Analytic_MultigroupOpacity::getOpacity(double temperature,
-                                                double density) const {
+Compound_Analytic_MultigroupOpacity::getOpacity(double temperature, double density) const {
   Require(temperature >= 0.0);
   Require(density >= 0.0);
 
@@ -148,8 +144,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(double temperature,
     Check(group_models[i]);
 
     // assign the opacity based on the group model
-    opacities[i] = group_models[i]->calculate_opacity(temperature, density,
-                                                      nu[i], nu[i + 1]);
+    opacities[i] = group_models[i]->calculate_opacity(temperature, density, nu[i], nu[i + 1]);
 
     Check(opacities[i] >= 0.0);
   }
@@ -157,7 +152,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(double temperature,
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a vector of multigroup opacities given a vector of
@@ -196,8 +191,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
       Check(group_models[j]);
 
       // assign the opacity based on the group model
-      opacities[i][j] =
-          group_models[j]->calculate_opacity(temperature[i], density);
+      opacities[i][j] = group_models[j]->calculate_opacity(temperature[i], density);
 
       Check(opacities[i][j] >= 0.0);
     }
@@ -206,7 +200,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  *
  * \brief Return a vector of multigroup opacities given a vector of
@@ -228,8 +222,8 @@ Compound_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
  * cm^2/g indexed [density][group]
  */
 Compound_Analytic_MultigroupOpacity::vf_double
-Compound_Analytic_MultigroupOpacity::getOpacity(
-    double temperature, const sf_double &density) const {
+Compound_Analytic_MultigroupOpacity::getOpacity(double temperature,
+                                                const sf_double &density) const {
   Require(temperature >= 0.0);
 
   // define the return opacity field (same size as density field); each
@@ -245,8 +239,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(
       Check(group_models[j]);
 
       // assign the opacity based on the group model
-      opacities[i][j] =
-          group_models[j]->calculate_opacity(temperature, density[i]);
+      opacities[i][j] = group_models[j]->calculate_opacity(temperature, density[i]);
 
       Check(opacities[i][j] >= 0.0);
     }
@@ -255,7 +248,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(
   return opacities;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Pack an analytic multigroup opacity.
  *
@@ -264,8 +257,7 @@ Compound_Analytic_MultigroupOpacity::getOpacity(
  * class must have a pack function; this is enforced by the virtual
  * Analytic_Opacity_Model base class.
  */
-Compound_Analytic_MultigroupOpacity::sf_char
-Compound_Analytic_MultigroupOpacity::pack() const {
+Compound_Analytic_MultigroupOpacity::sf_char Compound_Analytic_MultigroupOpacity::pack() const {
   // make a packer
   rtt_dsxx::Packer packer;
 
@@ -298,13 +290,13 @@ Compound_Analytic_MultigroupOpacity::pack() const {
   packer.set_buffer(size, &packed[base_size]);
 
   // pack each models size and data
-  for (size_t i = 0; i < models.size(); ++i) {
+  for (auto &model_1dvec : models) {
     // pack the size of this model
-    packer << static_cast<int>(models[i].size());
+    packer << static_cast<int>(model_1dvec.size());
 
     // now pack the model data
-    for (size_t j = 0; j < models[i].size(); ++j)
-      packer << models[i][j];
+    for (auto &elem : model_1dvec)
+      packer << elem;
   }
 
   Ensure(packer.get_ptr() == &packed[base_size] + size);
@@ -313,6 +305,6 @@ Compound_Analytic_MultigroupOpacity::pack() const {
 
 } // end namespace rtt_cdi_analytic
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of Compound_Analytic_MultigroupOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

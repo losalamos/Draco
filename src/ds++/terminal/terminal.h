@@ -1,9 +1,15 @@
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Draco supressions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // clang-format off
 
 #include "ds++/config.h"
+
+#ifdef _MSC_FULL_VER
+// - 4996: 'sscanf': This function or variable may be unsafe.
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
 
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
@@ -16,14 +22,28 @@
 #endif
 #endif
 
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat"
+#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+#pragma clang diagnostic ignored "-Wextra-semi-stmt"
+#pragma clang diagnostic ignored "-Wpadded"
+#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#if defined(__clang_major__) && __clang_major__ >= 11
+#pragma clang diagnostic ignored "-Wsuggest-destructor-override"
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 #ifdef __CUDACC__
 // https://stackoverflow.com/questions/14831051/how-to-disable-a-specific-nvcc-compiler-warnings
 // http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
 #pragma diag_suppress unsigned_compare_with_negative
 #endif
 
-
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef TERMINAL_H
 #define TERMINAL_H
@@ -39,15 +59,14 @@
  * https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
  */
 
-
 #include "terminal_base.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-#define CTRL_KEY(k) (char)(((unsigned char)(k) & 0x1f))
-#define ALT_KEY(k) (char)(((unsigned char)(k) + 0x80))
+#define CTRL_KEY(k) static_cast<char>((static_cast<unsigned char>(k) & 0x1f))
+#define ALT_KEY(k) static_cast<char>((static_cast<unsigned char>(k) + 0x80))
 
 namespace Term {
 
@@ -740,9 +759,9 @@ public:
 
 #endif // TERMINAL_H
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Draco supressions
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 // This is defined by <termios.h> but causes conflicts with some TRT code.
 #undef B0
@@ -751,12 +770,20 @@ public:
 #pragma diag_default unsigned_compare_with_negative
 #endif
 
+#if defined(__clang__) && !defined(__ibmxl__)
+#pragma clang diagnostic pop
+#endif
+
 #ifdef __GNUC__
 #if (DBS_GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
 #endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
+#endif
+
 // clang-format on
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

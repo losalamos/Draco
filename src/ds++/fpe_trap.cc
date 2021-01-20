@@ -1,37 +1,34 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/fpe_trap.cc
  * \author Rob Lowrie, Kelly Thompson
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  platform dependent implementation of fpe_trap functions.
  *
- * Copyright (C) 2016-2020 Triad National Security, LLC.
- *               All rights reserved.
+ * Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
- * See COPYING file for more copyright information.  This code is based
- * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is
- * available at http://algae.sourceforge.net/.
+ * See COPYING file for more copyright information.  This code is based substantially on
+ * fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is available at http://algae.sourceforge.net/.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "fpe_trap.hh"
 #include "Assert.hh"
 #include "StackTrace.hh"
 #include <sstream>
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Linux_x86
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_LINUX_X86
 
 #include <cfenv>
 #include <csignal>
 
 /* Signal handler for floating point exceptions. */
-extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
-                             void * /*psContext*/) {
+extern "C" [[noreturn]] void catch_sigfpe(int sig, siginfo_t *psSiginfo, void * /*psContext*/) {
   // generate a message:
   std::string error_type;
 
@@ -40,27 +37,22 @@ extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
   } else {
     switch (psSiginfo->si_code) {
     case FPE_INTDIV:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer divide by zero)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer divide by zero)";
       break;
     case FPE_INTOVF:
       error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer overflow)";
       break;
     case FPE_FLTDIV:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point divide by zero)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point divide by zero)";
       break;
     case FPE_FLTOVF:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point overflow)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point overflow)";
       break;
     case FPE_FLTUND:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point underflow)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point underflow)";
       break;
     case FPE_FLTRES:
-      error_type =
-          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point inexact result)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point inexact result)";
       break;
     case FPE_FLTINV:
       error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Invalid floating point "
@@ -79,10 +71,10 @@ extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
   Insist(false, rtt_dsxx::print_stacktrace(error_type));
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Enable trapping fpe signals.
  * \return \b true if trapping is enabled, \b false otherwise.
@@ -92,9 +84,8 @@ namespace rtt_dsxx {
 bool fpe_trap::enable() {
   struct sigaction act;
 
-  // Choose to use Draco's DbC Insist.  If set to false, the compiler should
-  // print a stack trace instead of the pretty print message defined above in
-  // catch_sigfpe.
+  // Choose to use Draco's DbC Insist.  If set to false, the compiler should print a stack trace
+  // instead of the pretty print message defined above in catch_sigfpe.
   if (this->abortWithInsist)
     act.sa_sigaction = catch_sigfpe; // the signal handler
 
@@ -102,11 +93,10 @@ bool fpe_trap::enable() {
   act.sa_flags = SA_SIGINFO;   // want 3 args for handler
 
   // specify handler
-  Insist(!sigaction(SIGFPE, &act, nullptr),
-         "Unable to set floating point handler.");
+  Insist(!sigaction(SIGFPE, &act, nullptr), "Unable to set floating point handler.");
 
-  // The feenableexcept function is new for glibc 2.2.  See its description
-  // in the man page for fenv(3).
+  // The feenableexcept function is new for glibc 2.2.  See its description in the man page for
+  // fenv(3).
 
   (void)feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 
@@ -135,7 +125,7 @@ bool fpe_trap::enable() {
   return fpeTrappingActive;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() {
   (void)fedisableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
@@ -147,9 +137,9 @@ void fpe_trap::disable() {
 
 #endif // FPETRAP_LINUX_X86
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // OSF_ALPHA
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_OSF_ALPHA
 
 #include <machine/fpu.h>
@@ -171,7 +161,7 @@ static void catch_sigfpe(int sig) {
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //!  Enable trapping of floating point errors.
 bool fpe_trap::enable() {
   unsigned long csr = ieee_get_fp_control();
@@ -186,7 +176,7 @@ bool fpe_trap::enable() {
   return fpeTrappingActive;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() {
   ieee_set_fp_control(0x00);
@@ -198,9 +188,9 @@ void fpe_trap::disable() {
 
 #endif // FPETRAP_OSF_ALPHA
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // WINDOWS X86
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_WINDOWS_X86
 
 #include <Windows.h> // defines STATUS_FLOAT_...
@@ -254,10 +244,10 @@ extern "C" void trans_func(unsigned int u, PEXCEPTION_POINTERS /*pExp*/) {
 
 namespace rtt_dsxx {
 
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // - http://stackoverflow.com/questions/2769814/how-do-i-use-try-catch-to-catch-floating-point-errors
 // - See MSDN articles on fenv_access and _controlfp_s examples.
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 bool fpe_trap::enable() {
   // Always call this before setting control words.
   _clearfp();
@@ -265,19 +255,14 @@ bool fpe_trap::enable() {
   // Read the current control words.
   unsigned int fp_control_word = _controlfp(0, 0);
 
-  // Set the exception masks off for exceptions that you want to trap.  When
-  // a mask bit is set, the corresponding floating-point exception is
-  // blocked from being generated.
+  // Set the exception masks off for exceptions that you want to trap.  When a mask bit is set, the
+  // corresponding floating-point exception is blocked from being generated.
 
   fp_control_word &= ~(EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW);
 
-  // Other options:
-  // _EM_DENORMAL
-  // _EM_UNDERFLOW
-  // _EM_INEXACT
+  // Other options: _EM_DENORMAL, _EM_UNDERFLOW, _EM_INEXACT
 
-  // Update the control word with our changes
-  // MCW_EM is Interrupt exception mask.
+  // Update the control word with our changes: MCW_EM is Interrupt exception mask.
   _controlfp(fp_control_word, MCW_EM);
 
   if (this->abortWithInsist)
@@ -289,7 +274,7 @@ bool fpe_trap::enable() {
   return fpeTrappingActive;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() {
   // Always call this before setting control words.
@@ -298,32 +283,28 @@ void fpe_trap::disable() {
   // Read the current control words.
   unsigned int fp_control_word = _controlfp(0, 0);
 
-  // Set the exception masks off for exceptions that you want to trap.  When
-  // a mask bit is set, the corresponding floating-point exception is
-  // blocked from being generated.
+  // Set the exception masks off for exceptions that you want to trap.  When a mask bit is set, the
+  // corresponding floating-point exception is blocked from being generated.
   fp_control_word |= (EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW);
 
-  // Update the control word with our changes
-  // MCW_EM is Interrupt exception mask.
+  // Update the control word with our changes MCW_EM is Interrupt exception mask.
   _controlfp(fp_control_word, MCW_EM);
 
   fpeTrappingActive = false;
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // CCrashHandler
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void CCrashHandler::SetProcessExceptionHandlers() {
   std::cout << "In CCrashHandler::SetProcessExceptionHandlers" << std::endl;
   // Install top-level SEH handler
   SetUnhandledExceptionFilter(SehHandler);
 
-  // Catch pure virtual function calls.
-  // Because there is one _purecall_handler for the whole process,
-  // calling this function immediately impacts all threads. The last
-  // caller on any thread sets the handler.
-  // http://msdn.microsoft.com/en-us/library/t296ys27.aspx
+  // Catch pure virtual function calls.  Because there is one _purecall_handler for the whole
+  // process, calling this function immediately impacts all threads. The last caller on any thread
+  // sets the handler.  http://msdn.microsoft.com/en-us/library/t296ys27.aspx
   _set_purecall_handler(PureCallHandler);
 
   // Catch new operator memory allocation exceptions
@@ -347,17 +328,15 @@ void CCrashHandler::SetProcessExceptionHandlers() {
 }
 
 void CCrashHandler::SetThreadExceptionHandlers() {
-  // Catch terminate() calls.
-  // In a multithreaded environment, terminate functions are maintained
-  // separately for each thread. Each new thread needs to install its own
-  // terminate function. Thus, each thread is in charge of its own termination handling.
+  // Catch terminate() calls.  In a multithreaded environment, terminate functions are maintained
+  // separately for each thread. Each new thread needs to install its own terminate function. Thus,
+  // each thread is in charge of its own termination handling.
   // http://msdn.microsoft.com/en-us/library/t6fk7h29.aspx
   set_terminate(TerminateHandler);
 
-  // Catch unexpected() calls.
-  // In a multithreaded environment, unexpected functions are maintained
-  // separately for each thread. Each new thread needs to install its own
-  // unexpected function. Thus, each thread is in charge of its own unexpected handling.
+  // Catch unexpected() calls.  In a multithreaded environment, unexpected functions are maintained
+  // separately for each thread. Each new thread needs to install its own unexpected function. Thus,
+  // each thread is in charge of its own unexpected handling.
   // http://msdn.microsoft.com/en-us/library/h46t5b69.aspx
   set_unexpected(UnexpectedHandler);
 
@@ -373,8 +352,8 @@ void CCrashHandler::SetThreadExceptionHandlers() {
 }
 
 // The following code gets exception pointers using a workaround found in CRT code.
-void CCrashHandler::GetExceptionPointers(
-    DWORD dwExceptionCode, EXCEPTION_POINTERS **ppExceptionPointers) {
+void CCrashHandler::GetExceptionPointers(DWORD dwExceptionCode,
+                                         EXCEPTION_POINTERS **ppExceptionPointers) {
   // The following code was taken from VC++ 8.0 CRT (invarg.c: line 104)
 
   EXCEPTION_RECORD ExceptionRecord;
@@ -437,15 +416,13 @@ void CCrashHandler::GetExceptionPointers(
 }
 
 //! Action to perform when an exception is found.
-void CCrashHandler::ActionOnException(std::string const &message,
-                                      EXCEPTION_POINTERS *pExcPtrs) {
+void CCrashHandler::ActionOnException(std::string const &message, EXCEPTION_POINTERS *pExcPtrs) {
   std::cout << "In CCrashHandler::ActionOnException" << std::endl;
   CCrashHandler::CreateMiniDump(pExcPtrs);
 
   // Provide a report
   std::ostringstream msg;
-  msg << "\nERROR: " << message
-      << "\nA fatal error has occured and a dump file was generated "
+  msg << "\nERROR: " << message << "\nA fatal error has occured and a dump file was generated "
       << "(crashdump.dmp)."
       << "\nThe dump file can be viewed by loading it into "
       << "Visual Studio." << std::endl;
@@ -485,8 +462,7 @@ void CCrashHandler::CreateMiniDump(EXCEPTION_POINTERS *pExcPtrs) {
   mci.CallbackRoutine = NULL;
   mci.CallbackParam = NULL;
 
-  std::cout << "\nThreadId = " << mei.ThreadId
-            << "\nExceptionPointers = " << mei.ExceptionPointers;
+  std::cout << "\nThreadId = " << mei.ThreadId << "\nExceptionPointers = " << mei.ExceptionPointers;
 
   typedef BOOL(WINAPI * LPMINIDUMPWRITEDUMP)(
       HANDLE hProcess, DWORD ProcessId, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -505,8 +481,8 @@ void CCrashHandler::CreateMiniDump(EXCEPTION_POINTERS *pExcPtrs) {
   std::cout << "\nhProcess = " << hProcess << "\nProcessId = " << dwProcessId
             << "\nhFile = " << hFile << "\nMiniDumpNormal = " << MiniDumpNormal;
 
-  BOOL bWriteDump = pfnMiniDumpWriteDump(hProcess, dwProcessId, hFile,
-                                         MiniDumpNormal, &mei, NULL, &mci);
+  BOOL bWriteDump =
+      pfnMiniDumpWriteDump(hProcess, dwProcessId, hFile, MiniDumpNormal, &mei, NULL, &mci);
 
   if (!bWriteDump)
     return;
@@ -575,9 +551,10 @@ void __cdecl CCrashHandler::PureCallHandler() {
 }
 
 // CRT invalid parameter handler
-void __cdecl CCrashHandler::InvalidParameterHandler(
-    const wchar_t * /*expression*/, const wchar_t * /*function*/,
-    const wchar_t * /*file*/, unsigned int /*line*/, uintptr_t pReserved) {
+void __cdecl CCrashHandler::InvalidParameterHandler(const wchar_t * /*expression*/,
+                                                    const wchar_t * /*function*/,
+                                                    const wchar_t * /*file*/, unsigned int /*line*/,
+                                                    uintptr_t pReserved) {
 
   std::cout << "In CCrashHandler::InvalidParameterHandler" << std::endl;
   pReserved;
@@ -632,8 +609,7 @@ void CCrashHandler::SigfpeHandler(int /*code*/, int /*subcode*/) {
   EXCEPTION_POINTERS *pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
 
   // Write minidump file
-  ActionOnException(std::string("SignalFloatingPointException"),
-                    pExceptionPtrs);
+  ActionOnException(std::string("SignalFloatingPointException"), pExceptionPtrs);
 
   return;
 }
@@ -676,8 +652,7 @@ void CCrashHandler::SigsegvHandler(int) {
   PEXCEPTION_POINTERS pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
 
   // Write minidump file
-  ActionOnException(std::string("SignalInvalidStorageAccess(SIGSEGV)"),
-                    pExceptionPtrs);
+  ActionOnException(std::string("SignalInvalidStorageAccess(SIGSEGV)"), pExceptionPtrs);
 
   return;
 }
@@ -701,20 +676,19 @@ void CCrashHandler::SigtermHandler(int) {
 
 #endif // FPETRAP_WINDOWS_X86
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // DARWIN INTEL
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_DARWIN_INTEL
 
 #include <xmmintrin.h>
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Enable trapping of floating point errors.
 bool fpe_trap::enable() {
-  _mm_setcsr(_MM_MASK_MASK &
-             ~(_MM_MASK_OVERFLOW | _MM_MASK_INVALID | _MM_MASK_DIV_ZERO));
+  _mm_setcsr(_MM_MASK_MASK & ~(_MM_MASK_OVERFLOW | _MM_MASK_INVALID | _MM_MASK_DIV_ZERO));
 
   // This functionality is not currently implemented on the Mac.
   abortWithInsist = false;
@@ -723,7 +697,7 @@ bool fpe_trap::enable() {
   fpeTrappingActive = true;
   return fpeTrappingActive;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() {
   _mm_setcsr(_MM_MASK_MASK & ~0x00);
@@ -735,9 +709,9 @@ void fpe_trap::disable() {
 
 #endif // FPETRAP_DARWIN_INTEL
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // DARWIN PPC
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_DARWIN_PPC
 
 #include <mach/mach.h>
@@ -747,9 +721,8 @@ void fpe_trap::disable() {
 namespace {
 
 /*
- * On Mach, we need a mindbogglingly complex setup for floating point errors.
- * Not the least of the hassles is that we have to do the whole thing from
- * a different thread.
+ * On Mach, we need a mindbogglingly complex setup for floating point errors.  Not the least of the
+ * hassles is that we have to do the whole thing from a different thread.
  */
 void *fpe_enabler(void *parent) {
   mach_port_t victim = (mach_port_t)parent;
@@ -775,9 +748,7 @@ void *fpe_enabler(void *parent) {
   return 0;
 }
 
-static void catch_sigfpe(int sig) {
-  Insist(0, "Floating point exception caught by fpe_trap.")
-}
+static void catch_sigfpe(int sig) { Insist(0, "Floating point exception caught by fpe_trap.") }
 
 } // end of namespace
 
@@ -797,7 +768,7 @@ bool fpe_trap::enable() {
   return fpeTrappingActive;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() {
   // (void)feenableexcept( 0x00 );
@@ -811,18 +782,18 @@ void fpe_trap::disable() {
 
 #endif // FPETRAP_DARWIN_PPC
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // UNSUPPORTED PLATFORMS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 #ifdef FPETRAP_UNSUPPORTED
 
 namespace rtt_dsxx {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //!  Enable trapping of floating point errors.
 bool fpe_trap::enable() {
-  // (unsupported platform.  leave fag set to false.
-  // (using abortWithInsist to silence unused variable warning)
+  // unsupported platform.  leave fag set to false.  (using abortWithInsist to silence unused
+  // variable warning)
   if (abortWithInsist)
     fpeTrappingActive = false;
   else
@@ -831,7 +802,7 @@ bool fpe_trap::enable() {
   return fpeTrappingActive;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable() { return; }
 
@@ -839,6 +810,6 @@ void fpe_trap::disable() { return; }
 
 #endif // FPETRAP_UNSUPPORTED
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/fpe_trap.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

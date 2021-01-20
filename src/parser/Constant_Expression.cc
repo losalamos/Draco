@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/Constant_Expression.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Definition of methods of class Constant_Expression
  * \note   Copyright (C) 2006-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
 #include <cmath>
@@ -15,16 +15,15 @@
 namespace {
 using namespace std;
 
-//----------------------------------------------------------------------------//
-void upper(ostream &out, char const *const label, double const power,
-           bool &first, unsigned &icount) {
+//------------------------------------------------------------------------------------------------//
+void upper(ostream &out, char const *const label, double const power, bool &first,
+           unsigned &icount) {
   if (power > 0.0) {
     if (!first) {
       out << '*';
     }
     first = false;
-    if (rtt_dsxx::soft_equiv(power, trunc(power),
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(power, trunc(power), std::numeric_limits<double>::epsilon())) {
       out << label;
       for (unsigned i = 1; i < power; ++i) {
         out << '*' << label;
@@ -37,15 +36,14 @@ void upper(ostream &out, char const *const label, double const power,
   }
 }
 
-//----------------------------------------------------------------------------//
-void lower(ostream &out, char const *const label, double const power,
-           bool &first) {
+//------------------------------------------------------------------------------------------------//
+void lower(ostream &out, char const *const label, double const power, bool &first) {
   if (power < 0.0) {
     if (!first) {
       out << '*';
     }
     first = false;
-    unsigned ipower = static_cast<unsigned>(-power);
+    auto ipower = static_cast<unsigned>(-power);
     out << "pow(" << label << "," << ipower << ")";
   }
 }
@@ -54,7 +52,7 @@ void lower(ostream &out, char const *const label, double const power,
 
 namespace rtt_parser {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void write_c(Unit const &u, ostream &out) {
   double const eps = std::numeric_limits<double>::epsilon();
   double const mrv = std::numeric_limits<double>::min();
@@ -152,6 +150,6 @@ void write_c(Unit const &u, ostream &out) {
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of parser/Constant_Expression.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

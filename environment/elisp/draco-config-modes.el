@@ -51,6 +51,36 @@ and add turn-on-auto-fill to the mppl-mode-hook."
     (add-hook 'mppl-mode-hook 'draco-mppl-mode-hook)))
 
 ;; ========================================
+;; Yaml
+;; ========================================
+
+; (require 'yaml-mode)
+(defun draco-setup-yaml-mode ()
+  "Autoload yaml-mode, append appropriate suffixes to auto-mode-alist
+and add turn-on-auto-fill to the yaml-mode-hook."
+  (interactive)
+  (progn
+    (autoload 'yaml-mode   "yaml-mode" nil t)
+    (setq auto-mode-alist
+	  (append '(("\\.yaml$" . yaml-mode)
+		    ("\\.yml$" . yaml-mode)
+		    ("\\.yaml.in$" . yaml-mode)
+		    ("\\.yml.in$" . yaml-mode)
+		    ) auto-mode-alist))
+    (defun draco-yaml-mode-hook ()
+      "draco-mode hooks added to YAML mode."
+      (defvar yaml-tab-width 2)
+      (local-set-key [(control c)(control c)] 'comment-region)
+      (local-set-key [(f5)] 'draco-makefile-divider)
+      (local-set-key [(f6)] 'draco-makefile-comment-divider)
+      (turn-on-draco-mode)
+      (turn-off-auto-fill)
+      (set-fill-column draco-code-comment-width)
+      (require 'fill-column-indicator)
+      (fci-mode))
+    (add-hook 'yaml-mode-hook 'draco-yaml-mode-hook)))
+
+;; ========================================
 ;; TCL
 ;; ========================================
 
@@ -95,7 +125,9 @@ auto-mode-alist."
 	(local-set-key [(f6)] 'draco-makefile-comment-divider)
 	(turn-on-draco-mode)
         (set-fill-column draco-code-comment-width)
-	(turn-on-auto-fill))
+	(turn-on-auto-fill)
+        (require 'fill-column-indicator)
+        (fci-mode))
       (add-hook 'python-mode-hook 'draco-python-mode-hook)))
 
 ;; ========================================
@@ -211,7 +243,7 @@ auto-mode-alist.
   "Autoload c++-mode, c-mode and append the appropriate suffixes to
 auto-mode-alist.
 
-- Autoload c-mode, c++-mode and doxymacs-mode.
+- Autoload c-mode, c++-mode.
 - Associate files *.C, *.cc, *.pt, *.hh, *.hpp, *.cpp, *.hh.in,
   *.h.in, *.c, *.h, *.dcc, *.dcc.in and *.dot with this mode.
 - Create and install menu items for inserting C++/C/Doxygen comment
@@ -235,7 +267,7 @@ auto-mode-alist.
     (progn
       (autoload 'c++-mode "cc-mode" "C++ Editing Mode" t)
       (autoload 'c-mode   "cc-mode" "C Editing Mode" t)
-      (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
+;;      (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
       (setq auto-mode-alist
 	    (append '(("\\.C$"      . c++-mode)
 		      ("\\.cc$"     . c++-mode)
@@ -260,12 +292,12 @@ auto-mode-alist.
 	      ["Insert C++ comment block"   draco-cc-divider t]
 	      ["Insert C++ function divider" draco-insert-function-doc t]
 	      ["Insert C++ class comment block"   draco-insert-class-doc       t]
-	      ["Insert Doxygen singleline comment" doxymacs-insert-blank-singleline-comment t ]
-	      ["Insert Doxygen multiline comment" doxymacs-insert-blank-multiline-comment t ]
-	      ["Insert Doxygen file comment" doxymacs-insert-file-comment t ]
-	      ["Insert Doxygen function comment" doxymacs-insert-function-comment t ]
-	      ["Insert Doxygen member comment" doxymacs-insert-member-comment t ]
-	      ["Insert Doxygen grouping comment" doxymacs-insert-grouping-comment t ]
+;	      ["Insert Doxygen singleline comment" doxymacs-insert-blank-singleline-comment t ]
+;	      ["Insert Doxygen multiline comment" doxymacs-insert-blank-multiline-comment t ]
+;	      ["Insert Doxygen file comment" doxymacs-insert-file-comment t ]
+;	      ["Insert Doxygen function comment" doxymacs-insert-function-comment t ]
+;	      ["Insert Doxygen member comment" doxymacs-insert-member-comment t ]
+;	      ["Insert Doxygen grouping comment" doxymacs-insert-grouping-comment t ]
 	      ["Insert C divider" draco-c-comment-divider t]
 	      ["Insert C comment block"   draco-c-divider t]
 	      ))
@@ -347,10 +379,10 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(local-set-key [(f6)] 'draco-insert-comment-divider)
 	(local-set-key [(meta f5)] 'draco-insert-function-doc)
 	(local-set-key [(meta f6)] 'draco-insert-class-doc)
-	(local-set-key [(shift f5)] 'doxymacs-insert-function-comment)
-	(local-set-key [(shift f6)] 'doxymacs-insert-file-comment)
-	(local-set-key [(control f5)] 'doxymacs-insert-blank-multiline-comment)
-	(local-set-key [(control f6)] 'doxymacs-insert-blank-singleline-comment)
+;	(local-set-key [(shift f5)] 'doxymacs-insert-function-comment)
+;	(local-set-key [(shift f6)] 'doxymacs-insert-file-comment)
+;	(local-set-key [(control f5)] 'doxymacs-insert-blank-multiline-comment)
+;	(local-set-key [(control f6)] 'doxymacs-insert-blank-singleline-comment)
 	(draco-mode-update-menu (draco-menu-insert-comments-cc))
 	(turn-on-font-lock)
 	(turn-on-auto-fill))
@@ -699,21 +731,21 @@ auto-mode-alist and set up some customizations for DRACO."
 ;; Doxymacs Mode
 ;; ========================================
 
-(require 'doxymacs)
-(defun draco-setup-doxymacs-mode ()
-  "Autoload doxymacs-mode and set up some customizations for DRACO."
-  (interactive)
-  (progn
-    (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
-    (require 'doxymacs)
-    (defvar doxymacs-doxygen-style "Qt")
-    (add-hook 'c-mode-common-hook 'doxymacs-mode)
-    (defun draco-doxymacs-font-lock-hook ()
-      (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-	  (doxymacs-font-lock)))
-     (add-hook 'font-lock-mode-hook 'draco-doxymacs-font-lock-hook)
-    )
-  )
+;; (require 'doxymacs)
+;; (defun draco-setup-doxymacs-mode ()
+;;   "Autoload doxymacs-mode and set up some customizations for DRACO."
+;;   (interactive)
+;;   (progn
+;;     (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
+;;     (require 'doxymacs)
+;;     (defvar doxymacs-doxygen-style "Qt")
+;;     (add-hook 'c-mode-common-hook 'doxymacs-mode)
+;;     (defun draco-doxymacs-font-lock-hook ()
+;;       (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+;; 	  (doxymacs-font-lock)))
+;;      (add-hook 'font-lock-mode-hook 'draco-doxymacs-font-lock-hook)
+;;     )
+;;   )
 
 ;; ========================================
 ;; Shell mode

@@ -31,6 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rng/config.h"
 
+/* Not our code: disable clang-tidy checks */
+#if !defined(__clang_analyzer__)
+
 #ifdef _MSC_FULL_VER
 // - 4521: Engines have multiple copy constructors, quite legal C++, disable
 //         MSVC complaint.
@@ -44,6 +47,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
 #include <Random123/features/compilerfeatures.h>
@@ -138,7 +146,7 @@ int main(int, char **) {
   // exception test in ut_carray.cpp
 
   bool b(false);
-#if ! ( defined(_MSC_VER) && ! defined(DEBUG) )
+#if !(defined(_MSC_VER) && !defined(DEBUG))
   rngRemember(bool caught);
   rngRemember(caught = false);
   try {
@@ -147,7 +155,7 @@ int main(int, char **) {
     rngRemember(caught = true);
   }
   assert(caught);
-  
+
   rngRemember(caught = false);
   try {
     b = One <= AnotherOne;
@@ -181,6 +189,10 @@ int main(int, char **) {
 
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
@@ -189,3 +201,5 @@ int main(int, char **) {
 #ifdef _MSC_FULL_VER
 #pragma warning(pop)
 #endif
+
+#endif /* !defined(__clang_analyzer__) */

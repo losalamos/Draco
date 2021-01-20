@@ -82,8 +82,7 @@ int main(int, char **) {
 #endif
   // From FIPS-197, this is the official "right answer"
   r123array1xm128i right_answer;
-  right_answer[0] =
-      m128i_from_charbuf("69c4 e0d8 6a7b 0430 d8cd b780 70b4 c55a");
+  right_answer[0] = m128i_from_charbuf("69c4 e0d8 6a7b 0430 d8cd b780 70b4 c55a");
   (void)
       right_answer; /* don't complain about an unused variable if neither NI nor OPENSSL are enabled. */
 #if R123_USE_AES_NI

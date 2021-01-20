@@ -1,60 +1,57 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/test/TestRTTFormatReader.cc
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:26:42 2002
  * \brief  RTT_Format_Reader test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 map<Meshes, bool> Dims_validated;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void runTest(UnitTest &ut) {
   // Find the mesh file
   string const inpPath = ut.getTestSourcePath();
 
-  // New meshes added to this test will have to be added to the enumeration
-  // Meshes in the header file.
-  int const MAX_MESHES = 1;
-  std::string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
+  // New meshes added to this test will have to be added to the enumeration Meshes in the header
+  // file.
+  int constexpr MAX_MESHES = 1;
+  std::array<std::string, MAX_MESHES> filename = {inpPath + string("rttdef.mesh")};
   Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
-    // Construct an RTT_Format_Reader class object from the data in the
-    // specified mesh file.
+    // Construct an RTT_Format_Reader class object from the data in the specified mesh file.
     RTT_Format_Reader mesh(filename[mesh_number]);
     {
       ostringstream m;
-      m << "Read " << filename[mesh_number]
-        << " without coreing in or firing an assertion." << std::endl;
+      m << "Read " << filename[mesh_number] << " without coreing in or firing an assertion."
+        << std::endl;
       PASSMSG(m.str());
     }
     bool all_passed = true;
-    // The following switch allows addition of other meshes for testing, with
-    // the "DEFINED" mesh providing an example. Only the check_dims tests is
-    // required and it will be automatically called by the other tests (with the
-    // exception of check header) if not invoked herein.  The comparison data
-    // must also be provided for additional meshes within the switch structure
+    // The following switch allows addition of other meshes for testing, with the "DEFINED" mesh
+    // providing an example. Only the check_dims tests is required and it will be automatically
+    // called by the other tests (with the exception of check header) if not invoked herein.  The
+    // comparison data must also be provided for additional meshes within the switch structure
     // residing in the test functions.
     switch (mesh_number) {
-    // Test all nested class accessor functions for a very simplistic mesh file
-    // (enum DEFINED).
+    // Test all nested class accessor functions for a very simplistic mesh file (enum DEFINED).
     case (0):
       mesh_type = DEFINED;
       all_passed = all_passed && check_header(mesh, mesh_type, ut);
@@ -104,9 +101,8 @@ void runTest(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
-bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Verify that the Dims data was previously validated.
   if (!Dims_validated.count(meshtype))
     check_dims(mesh, meshtype, ut);
@@ -114,9 +110,8 @@ bool verify_Dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return Dims_validated.find(meshtype)->second;
 }
 
-//----------------------------------------------------------------------------//
-bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                  UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Exercise the header accessor functions for this mesh.
   bool all_passed = true;
   std::string version, title, date;
@@ -132,9 +127,9 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     cycle = 1;
     time = 0.0;
     ncomments = 3;
-    comments.push_back("One tet mesh in an RTT mesh file format.");
-    comments.push_back("Date     : 24 Jul 97");
-    comments.push_back("Author(s): H. Trease, J.McGhee");
+    comments.emplace_back("One tet mesh in an RTT mesh file format.");
+    comments.emplace_back("Date     : 24 Jul 97");
+    comments.emplace_back("Author(s): H. Trease, J.McGhee");
     break;
 
   default:
@@ -191,9 +186,8 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Exercise the dims accessor functions for this mesh.
   bool all_passed = true;
   std::string coor_units, prob_time_units;
@@ -238,16 +232,14 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     nnode_data = 3;
     nsides = 4;
     nside_types = 1;
-    // All side types are decremented relative to the value in the
-    // input file for zero indexing.
+    // All side types are decremented relative to the value in the input file for zero indexing.
     side_types.push_back(2);
     nside_flag_types = 1;
     nside_flags.push_back(2);
     nside_data = 2;
     ncells = 1;
     ncell_types = 1;
-    // All cell types are decremented relative to the value in the
-    // input file for zero indexing.
+    // All cell types are decremented relative to the value in the input file for zero indexing.
     cell_types.push_back(5);
     ncell_flag_types = 2;
     ncell_flags.push_back(2);
@@ -413,9 +405,8 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -429,23 +420,23 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("node_type");
-    num_name.push_back(std::make_pair(11, std::string("interior")));
-    num_name.push_back(std::make_pair(21, std::string("dudded")));
-    num_name.push_back(std::make_pair(6, std::string("parent")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("node_type");
+    num_name.emplace_back(std::make_pair(11, std::string("interior")));
+    num_name.emplace_back(std::make_pair(21, std::string("dudded")));
+    num_name.emplace_back(std::make_pair(6, std::string("parent")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     ntype = 0;
-    flagTypes.push_back("boundary");
-    num_name.push_back(std::make_pair(1, std::string("reflective")));
-    num_name.push_back(std::make_pair(4, std::string("vacuum")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("boundary");
+    num_name.emplace_back(std::make_pair(1, std::string("reflective")));
+    num_name.emplace_back(std::make_pair(4, std::string("vacuum")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     bndry = 1;
-    flagTypes.push_back("source");
-    num_name.push_back(std::make_pair(101, std::string("no_source")));
-    num_name.push_back(std::make_pair(22, std::string("rad_source")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("source");
+    num_name.emplace_back(std::make_pair(101, std::string("no_source")));
+    num_name.emplace_back(std::make_pair(22, std::string("rad_source")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     src = 2;
     break;
@@ -524,9 +515,8 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -540,10 +530,10 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("boundary");
-    num_name.push_back(std::make_pair(1, std::string("reflective")));
-    num_name.push_back(std::make_pair(2, std::string("vacuum")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("boundary");
+    num_name.emplace_back(std::make_pair(1, std::string("reflective")));
+    num_name.emplace_back(std::make_pair(2, std::string("vacuum")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     bndry = 0;
     break;
@@ -583,8 +573,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check number of flags for each side flag type.
   bool got_side_flag_size = true;
   for (size_t i = 0; i < mesh.get_dims_nside_flag_types(); i++) {
-    if (flag_num_name[i].size() !=
-        static_cast<size_t>(mesh.get_side_flags_flag_size(i)))
+    if (flag_num_name[i].size() != mesh.get_side_flags_flag_size(i))
       got_side_flag_size = false;
   }
   if (!got_side_flag_size) {
@@ -613,9 +602,8 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                      UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -629,16 +617,16 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    flagTypes.push_back("material");
-    num_name.push_back(std::make_pair(1, std::string("control_rod")));
-    num_name.push_back(std::make_pair(2, std::string("shield")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("material");
+    num_name.emplace_back(std::make_pair(1, std::string("control_rod")));
+    num_name.emplace_back(std::make_pair(2, std::string("shield")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     matl = 0;
-    flagTypes.push_back("rad_source");
-    num_name.push_back(std::make_pair(1, std::string("src_name1")));
-    num_name.push_back(std::make_pair(2, std::string("src_name2")));
-    flag_num_name.push_back(num_name);
+    flagTypes.emplace_back("rad_source");
+    num_name.emplace_back(std::make_pair(1, std::string("src_name1")));
+    num_name.emplace_back(std::make_pair(2, std::string("src_name2")));
+    flag_num_name.emplace_back(num_name);
     num_name.resize(0);
     rsrc = 1;
     break;
@@ -712,9 +700,8 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -726,12 +713,12 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
-    names.push_back("ion_temp");
-    units.push_back("keV");
-    names.push_back("x_vel");
-    units.push_back("cm/sec");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
+    names.emplace_back("ion_temp");
+    units.emplace_back("keV");
+    names.emplace_back("x_vel");
+    units.emplace_back("cm/sec");
     break;
 
   default:
@@ -771,9 +758,8 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -785,10 +771,10 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
-    names.push_back("ion_temp");
-    units.push_back("keV");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
+    names.emplace_back("ion_temp");
+    units.emplace_back("keV");
     break;
 
   default:
@@ -828,9 +814,8 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                         UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -842,8 +827,8 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    names.push_back("density");
-    units.push_back("gm/cm**3");
+    names.emplace_back("density");
+    units.emplace_back("gm/cm**3");
     break;
 
   default:
@@ -883,12 +868,11 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //!\brief Test reading of the cell defs block from an RTT file
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -904,169 +888,168 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   switch (meshtype) {
   case DEFINED:
-    // Size std::vectors and load data consistent between both the standard
-    //  and sorted cell definitions (names, nnodes, nsides).
+    // Size std::vectors and load data consistent between both the standard and sorted cell
+    //  definitions (names, nnodes, nsides).
     side_types.resize(8);
     sides.resize(8);
     ordered_sides.resize(8);
     // Size and load point data
-    names.push_back("point");
-    nnodes.push_back(1);
-    nsides.push_back(0);
+    names.emplace_back("point");
+    nnodes.emplace_back(1);
+    nsides.emplace_back(0);
     side_types[0].resize(0);
     sides[0].resize(0);
     ordered_sides[0].resize(0);
     // Size and load line data.
-    names.push_back("line");
-    nnodes.push_back(2);
-    nsides.push_back(2);
+    names.emplace_back("line");
+    nnodes.emplace_back(2);
+    nsides.emplace_back(2);
     side_types[1].resize(2, 0);
     sides[1].resize(2);
     ordered_sides[1].resize(2);
-    ordered_sides[1][0].push_back(0);
-    ordered_sides[1][1].push_back(1);
+    ordered_sides[1][0].emplace_back(0);
+    ordered_sides[1][1].emplace_back(1);
     // Size triangle data.
-    names.push_back("triangle");
-    nnodes.push_back(3);
-    nsides.push_back(3);
+    names.emplace_back("triangle");
+    nnodes.emplace_back(3);
+    nsides.emplace_back(3);
     side_types[2].resize(3, 1);
     sides[2].resize(3);
     ordered_sides[2].resize(3);
     // Size quad data.
-    names.push_back("quad");
-    nnodes.push_back(4);
-    nsides.push_back(4);
+    names.emplace_back("quad");
+    nnodes.emplace_back(4);
+    nsides.emplace_back(4);
     side_types[3].resize(4, 1);
     sides[3].resize(4);
     ordered_sides[3].resize(4);
     // Size quad pyramid data.
-    names.push_back("quad_pyr");
-    nnodes.push_back(5);
-    nsides.push_back(5);
+    names.emplace_back("quad_pyr");
+    nnodes.emplace_back(5);
+    nsides.emplace_back(5);
     side_types[4].resize(5, 2);
     side_types[4][0] = 3;
     sides[4].resize(5);
     ordered_sides[4].resize(5);
     // Size tetrahedron data.
-    names.push_back("tetrahedron");
-    nnodes.push_back(4);
-    nsides.push_back(4);
+    names.emplace_back("tetrahedron");
+    nnodes.emplace_back(4);
+    nsides.emplace_back(4);
     side_types[5].resize(4, 2);
     sides[5].resize(4);
     ordered_sides[5].resize(4);
     // Size tri_prism data.
-    names.push_back("tri_prism");
-    nnodes.push_back(6);
-    nsides.push_back(5);
+    names.emplace_back("tri_prism");
+    nnodes.emplace_back(6);
+    nsides.emplace_back(5);
     side_types[6].resize(5, 3);
     sides[6].resize(5);
     ordered_sides[6].resize(5);
     // Size hexahedron data.
-    names.push_back("hexahedron");
-    nnodes.push_back(8);
-    nsides.push_back(6);
+    names.emplace_back("hexahedron");
+    nnodes.emplace_back(8);
+    nsides.emplace_back(6);
     side_types[7].resize(6, 3);
     sides[7].resize(6);
     ordered_sides[7].resize(6);
     // triangle
-    ordered_sides[2][0].push_back(1);
-    ordered_sides[2][0].push_back(2);
-    ordered_sides[2][1].push_back(2);
-    ordered_sides[2][1].push_back(0);
-    ordered_sides[2][2].push_back(0);
-    ordered_sides[2][2].push_back(1);
+    ordered_sides[2][0].emplace_back(1);
+    ordered_sides[2][0].emplace_back(2);
+    ordered_sides[2][1].emplace_back(2);
+    ordered_sides[2][1].emplace_back(0);
+    ordered_sides[2][2].emplace_back(0);
+    ordered_sides[2][2].emplace_back(1);
     // quad
-    ordered_sides[3][0].push_back(0);
-    ordered_sides[3][0].push_back(1);
-    ordered_sides[3][1].push_back(1);
-    ordered_sides[3][1].push_back(2);
-    ordered_sides[3][2].push_back(2);
-    ordered_sides[3][2].push_back(3);
-    ordered_sides[3][3].push_back(3);
-    ordered_sides[3][3].push_back(0);
+    ordered_sides[3][0].emplace_back(0);
+    ordered_sides[3][0].emplace_back(1);
+    ordered_sides[3][1].emplace_back(1);
+    ordered_sides[3][1].emplace_back(2);
+    ordered_sides[3][2].emplace_back(2);
+    ordered_sides[3][2].emplace_back(3);
+    ordered_sides[3][3].emplace_back(3);
+    ordered_sides[3][3].emplace_back(0);
     //quad_pyr
-    ordered_sides[4][0].push_back(0);
-    ordered_sides[4][0].push_back(3);
-    ordered_sides[4][0].push_back(2);
-    ordered_sides[4][0].push_back(1);
-    ordered_sides[4][1].push_back(0);
-    ordered_sides[4][1].push_back(1);
-    ordered_sides[4][1].push_back(4);
-    ordered_sides[4][2].push_back(1);
-    ordered_sides[4][2].push_back(2);
-    ordered_sides[4][2].push_back(4);
-    ordered_sides[4][3].push_back(2);
-    ordered_sides[4][3].push_back(3);
-    ordered_sides[4][3].push_back(4);
-    ordered_sides[4][4].push_back(3);
-    ordered_sides[4][4].push_back(0);
-    ordered_sides[4][4].push_back(4);
+    ordered_sides[4][0].emplace_back(0);
+    ordered_sides[4][0].emplace_back(3);
+    ordered_sides[4][0].emplace_back(2);
+    ordered_sides[4][0].emplace_back(1);
+    ordered_sides[4][1].emplace_back(0);
+    ordered_sides[4][1].emplace_back(1);
+    ordered_sides[4][1].emplace_back(4);
+    ordered_sides[4][2].emplace_back(1);
+    ordered_sides[4][2].emplace_back(2);
+    ordered_sides[4][2].emplace_back(4);
+    ordered_sides[4][3].emplace_back(2);
+    ordered_sides[4][3].emplace_back(3);
+    ordered_sides[4][3].emplace_back(4);
+    ordered_sides[4][4].emplace_back(3);
+    ordered_sides[4][4].emplace_back(0);
+    ordered_sides[4][4].emplace_back(4);
     //tetrahedron
-    ordered_sides[5][0].push_back(1);
-    ordered_sides[5][0].push_back(2);
-    ordered_sides[5][0].push_back(3);
-    ordered_sides[5][1].push_back(0);
-    ordered_sides[5][1].push_back(3);
-    ordered_sides[5][1].push_back(2);
-    ordered_sides[5][2].push_back(0);
-    ordered_sides[5][2].push_back(1);
-    ordered_sides[5][2].push_back(3);
-    ordered_sides[5][3].push_back(0);
-    ordered_sides[5][3].push_back(2);
-    ordered_sides[5][3].push_back(1);
+    ordered_sides[5][0].emplace_back(1);
+    ordered_sides[5][0].emplace_back(2);
+    ordered_sides[5][0].emplace_back(3);
+    ordered_sides[5][1].emplace_back(0);
+    ordered_sides[5][1].emplace_back(3);
+    ordered_sides[5][1].emplace_back(2);
+    ordered_sides[5][2].emplace_back(0);
+    ordered_sides[5][2].emplace_back(1);
+    ordered_sides[5][2].emplace_back(3);
+    ordered_sides[5][3].emplace_back(0);
+    ordered_sides[5][3].emplace_back(2);
+    ordered_sides[5][3].emplace_back(1);
     // tri_prism
     side_types[6][0] = side_types[6][1] = 2;
-    ordered_sides[6][0].push_back(0);
-    ordered_sides[6][0].push_back(2);
-    ordered_sides[6][0].push_back(1);
-    ordered_sides[6][1].push_back(3);
-    ordered_sides[6][1].push_back(4);
-    ordered_sides[6][1].push_back(5);
-    ordered_sides[6][2].push_back(0);
-    ordered_sides[6][2].push_back(1);
-    ordered_sides[6][2].push_back(4);
-    ordered_sides[6][2].push_back(3);
-    ordered_sides[6][3].push_back(0);
-    ordered_sides[6][3].push_back(3);
-    ordered_sides[6][3].push_back(5);
-    ordered_sides[6][3].push_back(2);
-    ordered_sides[6][4].push_back(1);
-    ordered_sides[6][4].push_back(2);
-    ordered_sides[6][4].push_back(5);
-    ordered_sides[6][4].push_back(4);
+    ordered_sides[6][0].emplace_back(0);
+    ordered_sides[6][0].emplace_back(2);
+    ordered_sides[6][0].emplace_back(1);
+    ordered_sides[6][1].emplace_back(3);
+    ordered_sides[6][1].emplace_back(4);
+    ordered_sides[6][1].emplace_back(5);
+    ordered_sides[6][2].emplace_back(0);
+    ordered_sides[6][2].emplace_back(1);
+    ordered_sides[6][2].emplace_back(4);
+    ordered_sides[6][2].emplace_back(3);
+    ordered_sides[6][3].emplace_back(0);
+    ordered_sides[6][3].emplace_back(3);
+    ordered_sides[6][3].emplace_back(5);
+    ordered_sides[6][3].emplace_back(2);
+    ordered_sides[6][4].emplace_back(1);
+    ordered_sides[6][4].emplace_back(2);
+    ordered_sides[6][4].emplace_back(5);
+    ordered_sides[6][4].emplace_back(4);
     // hexahedron
-    ordered_sides[7][0].push_back(0);
-    ordered_sides[7][0].push_back(3);
-    ordered_sides[7][0].push_back(2);
-    ordered_sides[7][0].push_back(1);
-    ordered_sides[7][1].push_back(4);
-    ordered_sides[7][1].push_back(5);
-    ordered_sides[7][1].push_back(6);
-    ordered_sides[7][1].push_back(7);
-    ordered_sides[7][2].push_back(0);
-    ordered_sides[7][2].push_back(1);
-    ordered_sides[7][2].push_back(5);
-    ordered_sides[7][2].push_back(4);
-    ordered_sides[7][3].push_back(1);
-    ordered_sides[7][3].push_back(2);
-    ordered_sides[7][3].push_back(6);
-    ordered_sides[7][3].push_back(5);
-    ordered_sides[7][4].push_back(2);
-    ordered_sides[7][4].push_back(3);
-    ordered_sides[7][4].push_back(7);
-    ordered_sides[7][4].push_back(6);
-    ordered_sides[7][5].push_back(0);
-    ordered_sides[7][5].push_back(4);
-    ordered_sides[7][5].push_back(7);
-    ordered_sides[7][5].push_back(3);
-    // Load the (sorted) sides data from the ordered_sides data specified
-    // above. The first element of ordered_sides and sides std::vectors
-    // corresponds to a point (no sides, and thus the second "array"
-    // size is zero) so start at cell definition one.
+    ordered_sides[7][0].emplace_back(0);
+    ordered_sides[7][0].emplace_back(3);
+    ordered_sides[7][0].emplace_back(2);
+    ordered_sides[7][0].emplace_back(1);
+    ordered_sides[7][1].emplace_back(4);
+    ordered_sides[7][1].emplace_back(5);
+    ordered_sides[7][1].emplace_back(6);
+    ordered_sides[7][1].emplace_back(7);
+    ordered_sides[7][2].emplace_back(0);
+    ordered_sides[7][2].emplace_back(1);
+    ordered_sides[7][2].emplace_back(5);
+    ordered_sides[7][2].emplace_back(4);
+    ordered_sides[7][3].emplace_back(1);
+    ordered_sides[7][3].emplace_back(2);
+    ordered_sides[7][3].emplace_back(6);
+    ordered_sides[7][3].emplace_back(5);
+    ordered_sides[7][4].emplace_back(2);
+    ordered_sides[7][4].emplace_back(3);
+    ordered_sides[7][4].emplace_back(7);
+    ordered_sides[7][4].emplace_back(6);
+    ordered_sides[7][5].emplace_back(0);
+    ordered_sides[7][5].emplace_back(4);
+    ordered_sides[7][5].emplace_back(7);
+    ordered_sides[7][5].emplace_back(3);
+    // Load the (sorted) sides data from the ordered_sides data specified above. The first element
+    // of ordered_sides and sides std::vectors corresponds to a point (no sides, and thus the second
+    // "array" size is zero) so start at cell definition one.
     for (size_t c = 1; c < ordered_sides.size(); c++)
       for (size_t s = 0; s < ordered_sides[c].size(); s++)
         for (size_t n = 0; n < ordered_sides[c][s].size(); n++)
-          sides[c][s].push_back(ordered_sides[c][s][n]);
+          sides[c][s].emplace_back(ordered_sides[c][s][n]);
     break;
 
   default:
@@ -1088,13 +1071,10 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   // Check cell definition access
   {
-    rtt_RTT_Format_Reader::CellDef const myCellDef(
-        mesh.get_cell_defs_cell_def(0));
-    if (myCellDef.get_name() == std::string("point") &&
-        myCellDef.get_nnodes() == 1 && myCellDef.get_nsides() == 0 &&
-        myCellDef.get_all_side_types().size() == 0 &&
-        myCellDef.get_all_sides().size() == 0 &&
-        myCellDef.get_all_ordered_sides().size() == 0) {
+    rtt_RTT_Format_Reader::CellDef const myCellDef(mesh.get_cell_defs_cell_def(0));
+    if (myCellDef.get_name() == std::string("point") && myCellDef.get_nnodes() == 1 &&
+        myCellDef.get_nsides() == 0 && myCellDef.get_all_side_types().size() == 0 &&
+        myCellDef.get_all_sides().size() == 0 && myCellDef.get_all_ordered_sides().size() == 0) {
       PASSMSG("mesh.get_cell_defs_cell_def() works.");
     } else {
       FAILMSG("mesh.get_cell_defs_cell_def() failed.");
@@ -1119,12 +1099,6 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       std::cout << " }." << std::endl;
     }
   }
-
-  // Check get_cell_defs_node_map(int,int)
-  //      {
-  //      int myNode = mesh.get_cell_defs_node_map(0,0);
-  //      std::cout << "myNode = " << myNode << std::endl;
-  //      }
 
   // Check get_cell_defs_redefined()
   {
@@ -1201,20 +1175,19 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-//
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// check_nodes
+//------------------------------------------------------------------------------------------------//
 
-bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the nodes accessor functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> coords(
-      mesh.get_dims_nnodes(), std::vector<double>(mesh.get_dims_ndim(), 0.0));
+  std::vector<std::vector<double>> coords(mesh.get_dims_nnodes(),
+                                          std::vector<double>(mesh.get_dims_ndim(), 0.0));
   std::vector<size_t> parents(mesh.get_dims_nnodes());
   std::vector<std::vector<int>> flags(mesh.get_dims_nnodes());
 
@@ -1226,20 +1199,20 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     for (size_t i = 0; i < mesh.get_dims_nnodes(); i++)
       parents[i] = i;
     // load the node flags.
-    flags[0].push_back(11);
-    flags[0].push_back(1);
-    flags[0].push_back(101);
-    flags[2].push_back(21);
-    flags[2].push_back(4);
-    flags[2].push_back(101);
+    flags[0].emplace_back(11);
+    flags[0].emplace_back(1);
+    flags[0].emplace_back(101);
+    flags[2].emplace_back(21);
+    flags[2].emplace_back(4);
+    flags[2].emplace_back(101);
     coords[1][2] = 3.0;
     coords[3][0] = 1.0;
-    flags[1].push_back(21);
-    flags[1].push_back(1);
-    flags[1].push_back(101);
-    flags[3].push_back(6);
-    flags[3].push_back(4);
-    flags[3].push_back(22);
+    flags[1].emplace_back(21);
+    flags[1].emplace_back(1);
+    flags[1].emplace_back(101);
+    flags[3].emplace_back(6);
+    flags[3].emplace_back(4);
+    flags[3].emplace_back(22);
     break;
 
   default:
@@ -1306,9 +1279,8 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -1325,24 +1297,24 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     sideType.resize(mesh.get_dims_nsides(), 2);
     // load the side nodes.
     nodes.resize(mesh.get_dims_nsides());
-    nodes[0].push_back(1);
-    nodes[0].push_back(2);
-    nodes[0].push_back(3);
-    nodes[1].push_back(0);
-    nodes[1].push_back(3);
-    nodes[1].push_back(2);
-    nodes[2].push_back(0);
-    nodes[2].push_back(1);
-    nodes[2].push_back(3);
-    nodes[3].push_back(0);
-    nodes[3].push_back(2);
-    nodes[3].push_back(1);
+    nodes[0].emplace_back(1);
+    nodes[0].emplace_back(2);
+    nodes[0].emplace_back(3);
+    nodes[1].emplace_back(0);
+    nodes[1].emplace_back(3);
+    nodes[1].emplace_back(2);
+    nodes[2].emplace_back(0);
+    nodes[2].emplace_back(1);
+    nodes[2].emplace_back(3);
+    nodes[3].emplace_back(0);
+    nodes[3].emplace_back(2);
+    nodes[3].emplace_back(1);
     // load the side flags.
     flags.resize(mesh.get_dims_nsides());
-    flags[0].push_back(2);
-    flags[1].push_back(1);
-    flags[2].push_back(1);
-    flags[3].push_back(1);
+    flags[0].emplace_back(2);
+    flags[1].emplace_back(1);
+    flags[2].emplace_back(1);
+    flags[3].emplace_back(1);
 
     break;
 
@@ -1378,8 +1350,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check a single node for a single side.
   bool got_side_node = true;
   for (size_t i = 0; i < mesh.get_dims_nsides(); i++) {
-    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_sides_type(i));
-         n++)
+    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_sides_type(i)); n++)
       if (nodes[i][n] != mesh.get_sides_nodes(i, n))
         got_side_node = false;
   }
@@ -1408,9 +1379,8 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                 UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -1427,14 +1397,14 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     cellType.resize(mesh.get_dims_ncells(), 5);
     // load the cell flags.
     flags.resize(mesh.get_dims_ncells());
-    flags[0].push_back(1);
-    flags[0].push_back(2);
+    flags[0].emplace_back(1);
+    flags[0].emplace_back(2);
     // Load the cell nodes.
     nodes.resize(mesh.get_dims_ncells());
-    nodes[0].push_back(0);
-    nodes[0].push_back(1);
-    nodes[0].push_back(2);
-    nodes[0].push_back(3);
+    nodes[0].emplace_back(0);
+    nodes[0].emplace_back(1);
+    nodes[0].emplace_back(2);
+    nodes[0].emplace_back(3);
     break;
 
   default:
@@ -1469,8 +1439,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check a single node for a single cell.
   bool got_cell_node = true;
   for (size_t i = 0; i < mesh.get_dims_ncells(); i++) {
-    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_cells_type(i));
-         n++)
+    for (size_t n = 0; n < mesh.get_cell_defs_nnodes(mesh.get_cells_type(i)); n++)
       if (nodes[i][n] != mesh.get_cells_nodes(i, n))
         got_cell_node = false;
   }
@@ -1502,18 +1471,16 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the node_data functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> data(
-      mesh.get_dims_nnodes(),
-      std::vector<double>(mesh.get_dims_nnode_data(), 0.0));
+  std::vector<std::vector<double>> data(mesh.get_dims_nnodes(),
+                                        std::vector<double>(mesh.get_dims_nnode_data(), 0.0));
 
   switch (meshtype) {
   case DEFINED:
@@ -1564,18 +1531,16 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
 
   // Exercise the side_data functions for this mesh.
   bool all_passed = true;
-  std::vector<std::vector<double>> data(
-      mesh.get_dims_nsides(),
-      std::vector<double>(mesh.get_dims_nside_data(), 0.0));
+  std::vector<std::vector<double>> data(mesh.get_dims_nsides(),
+                                        std::vector<double>(mesh.get_dims_nside_data(), 0.0));
 
   switch (meshtype) {
   case DEFINED:
@@ -1625,9 +1590,8 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
-bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
-                     UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype, UnitTest &ut) {
   // Return if the Dims data is corrupt.
   if (!verify_Dims(mesh, meshtype, ut))
     return false;
@@ -1640,7 +1604,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   switch (meshtype) {
   case DEFINED:
     // set cell data per the input deck.
-    data.push_back(cell_data);
+    data.emplace_back(cell_data);
     break;
 
   default:
@@ -1684,7 +1648,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   return all_passed;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -1693,6 +1657,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of TestRTTFormatReader.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

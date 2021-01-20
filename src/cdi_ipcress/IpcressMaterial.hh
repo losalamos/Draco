@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressMaterial.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Header file for IpcressMaterial class
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_ipcress_IpcressMaterial_hh
 #define rtt_cdi_ipcress_IpcressMaterial_hh
@@ -20,7 +20,7 @@
 
 namespace rtt_cdi_ipcress {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class IpcressMaterial
  *
@@ -61,7 +61,7 @@ namespace rtt_cdi_ipcress {
  * of empty IpcressMaterials is created (length = num materials) and then the
  * data for each material is stored via the add_field() member function.
  */
-//============================================================================//
+//================================================================================================//
 
 class IpcressMaterial {
 
@@ -73,13 +73,14 @@ class IpcressMaterial {
   std::vector<std::vector<double>> fieldValues;
 
   //! Ratio of Z to A for this material. Ration generated from 'comp' data.
-  double zoa;
+  double zoa = {0.0};
 
 public:
   // CREATORS
 
   //! Default constructor builds an empty object.
-  IpcressMaterial(void) : fieldNames(), fieldValues(), zoa(0.0){/* empty */};
+  IpcressMaterial() : fieldNames(), fieldValues() { /* empty */
+  }
 
   // MANIPULATORS
 
@@ -87,7 +88,7 @@ public:
    * \brief Set the Z/A ratio for this material.
    * \param in_zoa Set the Z/A ratio for this material.
    */
-  void set_zoa(double const in_zoa) { zoa = in_zoa; };
+  void set_zoa(double const in_zoa) { zoa = in_zoa; }
 
   /*!
    * \brief Add a field and it's data to the current material.  This is the
@@ -99,13 +100,11 @@ public:
    * \param in_values a vector<double> of values that represent the data loaded
    *        from the IPCRESS file.
    */
-  void add_field(std::string &in_fieldName,
-                 std::vector<double> const &in_values) {
+  void add_field(std::string &in_fieldName, std::vector<double> const &in_values) {
     // Remove white space from in_fieldName before saving it.
     // NOTE: ::isspace forces the use of c namespace rather than std::isspace
-    in_fieldName.erase(
-        std::remove_if(in_fieldName.begin(), in_fieldName.end(), ::isspace),
-        in_fieldName.end());
+    in_fieldName.erase(std::remove_if(in_fieldName.begin(), in_fieldName.end(), ::isspace),
+                       in_fieldName.end());
 
     // Check if the field name is already registered.
     auto itr = std::find(fieldNames.begin(), fieldNames.end(), in_fieldName);
@@ -128,13 +127,12 @@ public:
   // ACCESSORS
 
   //! return the list of known field descriptors
-  std::vector<std::string> listDataFieldNames(void) const { return fieldNames; }
+  std::vector<std::string> listDataFieldNames() const { return fieldNames; }
 
   //! return the vector of data associated with a field name.
   std::vector<double> data(std::string const &fieldName) const {
     Require(fieldName.size() > 0);
-    Require(find(fieldNames.begin(), fieldNames.end(), fieldName) !=
-            fieldNames.end());
+    Require(find(fieldNames.begin(), fieldNames.end(), fieldName) != fieldNames.end());
     return fieldValues[getFieldIndex(fieldName)];
   }
 
@@ -147,12 +145,10 @@ private:
    */
   size_t getFieldIndex(std::string const &fieldName) const {
     Require(fieldName.size() > 0);
-    Remember(std::vector<std::string>::const_iterator pos =
-                 find(fieldNames.begin(), fieldNames.end(), fieldName););
+    Remember(auto pos = find(fieldNames.begin(), fieldNames.end(), fieldName));
     Check(pos != fieldNames.end());
-    size_t fieldIndex = std::distance(
-        fieldNames.begin(),
-        std::find(fieldNames.begin(), fieldNames.end(), fieldName));
+    size_t fieldIndex = std::distance(fieldNames.begin(),
+                                      std::find(fieldNames.begin(), fieldNames.end(), fieldName));
     Ensure(fieldIndex < fieldNames.size());
     return fieldIndex;
   }
@@ -162,6 +158,6 @@ private:
 
 #endif // rtt_cdi_ipcress_IpcressFile_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

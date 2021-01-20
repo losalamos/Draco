@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_analytic/test/cdi_analytic_test.hh
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Dummy model used for testing cdi_analytic software.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_cdi_analytic_test_hh
 #define rtt_cdi_analytic_test_hh
@@ -16,36 +16,31 @@
 
 namespace rtt_cdi_analytic_test {
 
-//============================================================================//
+//================================================================================================//
 // USER-DEFINED ANALYTIC_OPACITY_MODEL
-//============================================================================//
+//================================================================================================//
 
 class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model {
 private:
   double a;
 
 public:
-  Marshak_Model(double a_) : a(a_) { /*...*/
+  explicit Marshak_Model(double a_) noexcept : a(a_) { /*...*/
   }
 
-  double calculate_opacity(double T, double /*rho*/) const {
-    return a / (T * T * T);
-  }
+  double calculate_opacity(double T, double /*rho*/) const override { return a / (T * T * T); }
 
-  double calculate_opacity(double T, double rho, double /*nu*/) const {
+  double calculate_opacity(double T, double rho, double /*nu*/) const override {
     return calculate_opacity(T, rho);
   }
 
-  double calculate_opacity(double T, double rho, double /*nu0*/,
-                           double /*nu1*/) const {
+  double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const override {
     return calculate_opacity(T, rho);
   }
 
-  std::vector<double> get_parameters() const {
-    return std::vector<double>(1, a);
-  }
+  std::vector<double> get_parameters() const override { return std::vector<double>(1, a); }
 
-  std::vector<char> pack() const {
+  std::vector<char> pack() const override {
     rtt_dsxx::Packer packer;
     std::vector<char> p(sizeof(double) + sizeof(int));
     packer.set_buffer(p.size(), &p[0]);
@@ -59,6 +54,6 @@ public:
 
 #endif // rtt_cdi_analytic_test_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of cdi_analytic/test/cdi_analytic_test.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

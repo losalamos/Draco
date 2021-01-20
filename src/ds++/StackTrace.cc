@@ -1,22 +1,20 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/StackTrace.cc
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 10:15 am
  * \brief  Linux/X86 implementation of stack trace functions.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "StackTrace.hh"
 #include <array>
 #include <iostream>
 #include <sstream>
 
-//----------------------------------------------------------------------------//
-// Stack trace feature is only available on Unix-based systems when
-// compiled with Intel or GNU C++.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// Stack trace feature is only available on Unix-based systems when compiled with Intel or GNU C++.
+//------------------------------------------------------------------------------------------------//
 #ifdef UNIX
 
 #ifndef draco_isPGI
@@ -29,19 +27,18 @@
 #include <ucontext.h>
 #include <unistd.h> // readlink
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Helper functions
-std::string st_to_string(int const i) {
+inline std::string st_to_string(int const i) {
   std::ostringstream msg;
   msg << i;
   return msg.str();
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
-  // store/build the message here.  At the end of the function we return
-  // msg.str().
+  // store/build the message here.  At the end of the function we return msg.str().
   std::ostringstream msg;
 
   // Get our PID and build the name of the link in /proc
@@ -54,30 +51,25 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   int ret = -1; // This scheme won't work on OSX: no /proc fs
 #else
   // Build linkname
-  std::string const linkname =
-      std::string("/proc/") + st_to_string(pid) + std::string("/exe");
+  std::string const linkname = std::string("/proc/") + st_to_string(pid) + std::string("/exe");
 
   auto ret = readlink(linkname.c_str(), buf.data(), buf_size);
 #endif
   if (ret >= 0) /* readlink succeeded */
     buf[ret] = 0;
-  std::string const process_name =
-      ret < 0 ? "UNAVAILABLE" : std::string(buf.data());
+  std::string const process_name = ret < 0 ? "UNAVAILABLE" : std::string(buf.data());
 
   // retrieve current stack addresses
   int constexpr max_frames = 64;
   std::array<void *, max_frames> addrlist;
   uint32_t constexpr sizeofvoidptr = sizeof(void *);
-  int const stack_depth =
-      backtrace(addrlist.data(), sizeofvoidptr * addrlist.size());
+  int const stack_depth = backtrace(addrlist.data(), sizeofvoidptr * addrlist.size());
 
   // Print a header for the stack trace
   msg << "\n"
       << error_message << "\nStack trace:"
-      << "\n  Process        : " << process_name
-      << "\n  PID            : " << pid
-      << "\n  Stack depth    : " << stack_depth << " (showing "
-      << stack_depth - 2 << ")"
+      << "\n  Process        : " << process_name << "\n  PID            : " << pid
+      << "\n  Stack depth    : " << stack_depth << " (showing " << stack_depth - 2 << ")"
       << "\n\n";
 
   // If there is no stack information, we are done.
@@ -85,30 +77,23 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
     return msg.str();
   }
 
-  // resolve addresses into strings containing "filename(function+address)",
-  // this array must be free()-ed
+  // resolve addresses into strings containing "filename(function+address)", this array must be
+  // free()-ed
   char **symbollist = backtrace_symbols(addrlist.data(), stack_depth);
 
   // allocate string which will be filled with the demangled function name
   size_t funcnamesize = 256;
-  auto *funcname = (char *)malloc(funcnamesize);
+  auto *funcname = static_cast<char *>(malloc(funcnamesize));
 
-  // msg << "\nRAW format:" << std::endl;
-  // for( int i=0; i<stack_depth; ++i )
-  // {
-  //     msg << "  " << symbollist[i] << std::endl;
-  // }
-  // msg << "\nDemangled format:" << std::endl;
-
-  // iterate over the returned symbol lines. skip first two,
-  // (addresses of this function and handler)
+  // iterate over the returned symbol lines. skip first two, (addresses of this function and
+  // handler)
   for (int i = 0; i < stack_depth - 2; i++) {
     char *begin_name = nullptr;
     char *begin_offset = nullptr;
     char *end_offset = nullptr;
 
-    // find parentheses and +address offset surrounding the mangled name:
-    // ./module(function+0x15c) [0x8048a6d]
+    // find parentheses and +address offset surrounding the mangled name: ./module(function+0x15c)
+    // [0x8048a6d]
     for (char *p = symbollist[i]; *p; ++p) {
       if (*p == '(')
         begin_name = p;
@@ -126,9 +111,8 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
       *end_offset = '\0';
       char *location = end_offset + 1;
 
-      // mangled name is now in [begin_name, begin_offset) and caller
-      // offset in [begin_offset, end_offset). now apply
-      // __cxa_demangle():
+      // mangled name is now in [begin_name, begin_offset) and caller offset in [begin_offset,
+      // end_offset). now apply __cxa_demangle():
 
       int status(1); // assume failure
       char *ret01 = nullptr;
@@ -137,13 +121,11 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 #endif
       if (status == 0) {
         funcname = ret01; // use possibly realloc()-ed string
-        msg << "  " << symbollist[i] << " : " << funcname << "()+"
-            << begin_offset << location << "\n";
+        msg << "  " << symbollist[i] << " : " << funcname << "()+" << begin_offset << location
+            << "\n";
       } else {
-        // demangling failed. Output function name as a C function with
-        // no arguments.
-        msg << "  " << symbollist[i] << " : " << begin_name << "()+"
-            << begin_offset << "\n";
+        // demangling failed. Output function name as a C function with no arguments.
+        msg << "  " << symbollist[i] << " : " << begin_name << "()+" << begin_offset << "\n";
       }
     } else {
       // couldn't parse the line? print the whole line.
@@ -157,8 +139,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 #ifdef draco_isPGI
   msg << "\n==> Draco's StackTrace feature is not currently implemented for "
          "PGI."
-      << "\n    The StackTrace is known to work under Intel or GCC compilers."
-      << std::endl;
+      << "\n    The StackTrace is known to work under Intel or GCC compilers." << std::endl;
 #else
   msg << "\n==> Try to run 'addr2line -e " << process_name << " 0x99999' "
       << "\n    to find where each part of the stack relates to your source "
@@ -172,17 +153,15 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // UNIX
 
-//----------------------------------------------------------------------------//
-// Stack trace feature is also available on Win32-based systems when
-// compiled with Visual Studio.
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+// Stack trace feature is also available on Win32-based systems when compiled with Visual Studio.
+// ------------------------------------------------------------------------------------------------//
 #ifdef WIN32
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
-  // store/build the message here.  At the end of the function we return
-  // msg.str().
+  // store/build the message here.  At the end of the function we return msg.str().
   std::ostringstream msg;
 
   int pid(0);
@@ -192,10 +171,8 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
   // Print a header for the stack trace
   msg << "\n"
       << error_message << "\nStack trace:"
-      << "\n  Process        : " << process_name
-      << "\n  PID            : " << pid
-      << "\n  Stack depth    : " << stack_depth << " (showing "
-      << stack_depth - 3 << ")"
+      << "\n  Process        : " << process_name << "\n  PID            : " << pid
+      << "\n  Stack depth    : " << stack_depth << " (showing " << stack_depth - 3 << ")"
       << "\n\n";
 
   msg << "\n==> Draco's StackTrace feature is not currently implemented for "
@@ -209,6 +186,6 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_message) {
 
 #endif // WIN32
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/StackTrace.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \brief  Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
@@ -16,9 +15,9 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 class sum_predicate_Test_Predicate {
 public:
@@ -27,7 +26,7 @@ public:
   double operator()(const std::pair<double, char *> &p) { return p.first; }
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void dbc_test(UnitTest &ut) {
   using rtt_dsxx::dim;
   using std::pair;
@@ -51,8 +50,7 @@ void dbc_test(UnitTest &ut) {
   array<double, 6> sum_test_array = {1., 4., 3., 2., 5., 6.};
 
   if (is_monotonic_increasing(sum_test_array.begin(), sum_test_array.end()) ||
-      !is_monotonic_increasing(sum_test_array.begin(),
-                               sum_test_array.begin() + 2))
+      !is_monotonic_increasing(sum_test_array.begin(), sum_test_array.begin() + 2))
     FAILMSG("is_monotonic_increasing function template FAILED");
   else
     PASSMSG("is_monotonic_increasing function template ok");
@@ -60,18 +58,15 @@ void dbc_test(UnitTest &ut) {
   // Ensure that the is_monotonic_increasing() function will return true if
   // there is only one data point.
 
-  if (!is_monotonic_increasing(sum_test_array.begin(),
-                               sum_test_array.begin() + 1))
+  if (!is_monotonic_increasing(sum_test_array.begin(), sum_test_array.begin() + 1))
     FAILMSG(string("is_monotonic_increasing function template ") +
             "incorrectly reported length=1 container non-monotonic.");
   else
     PASSMSG(string("is_monotonic_increasing function template worked for ") +
             string("length=1 test."));
 
-  if (is_strict_monotonic_increasing(sum_test_array.begin(),
-                                     sum_test_array.end()) ||
-      !is_strict_monotonic_increasing(sum_test_array.begin(),
-                                      sum_test_array.begin() + 2))
+  if (is_strict_monotonic_increasing(sum_test_array.begin(), sum_test_array.end()) ||
+      !is_strict_monotonic_increasing(sum_test_array.begin(), sum_test_array.begin() + 2))
     FAILMSG("is_strict_monotonic_increasing function template FAILED");
   else
     PASSMSG("is_strict_monotonic_increasing function template ok");
@@ -79,18 +74,15 @@ void dbc_test(UnitTest &ut) {
   // Ensure that the is_strict_monotonic_increasing() function will return true
   // if there is only one data point.
 
-  if (is_strict_monotonic_increasing(sum_test_array.begin(),
-                                     sum_test_array.begin() + 1))
+  if (is_strict_monotonic_increasing(sum_test_array.begin(), sum_test_array.begin() + 1))
     PASSMSG(string("is_strict_monotonic_increasing function template worked ") +
             string("for length=1 test."));
   else
     FAILMSG(string("is_strict_monotonic_increasing function template ") +
             string("incorrectly reported length=1 container non-monotonic."));
 
-  if (is_strict_monotonic_decreasing(sum_test_array.begin() + 1,
-                                     sum_test_array.begin() + 3) &&
-      !is_strict_monotonic_decreasing(sum_test_array.begin(),
-                                      sum_test_array.end()))
+  if (is_strict_monotonic_decreasing(sum_test_array.begin() + 1, sum_test_array.begin() + 3) &&
+      !is_strict_monotonic_decreasing(sum_test_array.begin(), sum_test_array.end()))
     PASSMSG("is_strict_monotonic_decreasing function template ok");
   else
     FAILMSG("is_strict_monotonic_decreasing function template FAILED");
@@ -98,17 +90,15 @@ void dbc_test(UnitTest &ut) {
   // Ensure that the is_strict_monotonic_decreasing() function will return
   // true if there is only one data point.
 
-  if (is_strict_monotonic_decreasing(sum_test_array.begin(),
-                                     sum_test_array.begin() + 1))
+  if (is_strict_monotonic_decreasing(sum_test_array.begin(), sum_test_array.begin() + 1))
     PASSMSG(string("is_strict_monotonic_decreasing function template ") +
             string("worked for length=1 test."));
   else
     FAILMSG(string("is_strict_monotonic_decreasing function template ") +
             string("incorrectly reported length=1 container monotonic."));
 
-  if (std::find_if(sum_test_array.begin(), sum_test_array.end(), [](double x) {
-        return x > 2.0;
-      }) != sum_test_array.begin() + 1)
+  if (std::find_if(sum_test_array.begin(), sum_test_array.end(),
+                   [](double x) { return x > 2.0; }) != sum_test_array.begin() + 1)
     FAILMSG("std::bind2nd or std::greater function templates FAILED");
   else
     PASSMSG("std::bind2nd or std::greater function templates ok");
@@ -151,13 +141,13 @@ void dbc_test(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void isFinite_test(UnitTest &ut) {
   UT_MSG(rtt_dsxx::isFinite(15.0), "Correctly found 15.0 to be finite.");
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -167,6 +157,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstdbc.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/test/tstDouble_Gauss.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "quadrature_test.hh"
 #include "ds++/Release.hh"
@@ -16,9 +16,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_quadrature;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -41,8 +41,7 @@ int main(int argc, char *argv[]) {
         PASSMSG("assertion caught for unlisted QIM == SVD.");
       }
       try {
-        FAIL_IF_NOT(quadrature_interpolation_model_as_text(END_QIM) ==
-                    "END_QIM");
+        FAIL_IF_NOT(quadrature_interpolation_model_as_text(END_QIM) == "END_QIM");
       } catch (rtt_dsxx::assertion const & /*error*/) {
         PASSMSG("assertion caught for invalid QIM == END_QIM.");
       }
@@ -51,6 +50,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstDouble_Gauss.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

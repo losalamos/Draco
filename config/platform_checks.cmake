@@ -64,48 +64,6 @@ Platform Checks...
 ")
 dbs_set_sitename()
 
-#------------------------------------------------------------------------------#
-# Sanity checks for Cray Programming Environments
-#
-# - Ensure CMAKE_EXE_LINKER_FLAGS contains "-dynamic"
-# - Ensure that the compilers given to cmake are actually Cray compiler
-#   wrappers.
-#------------------------------------------------------------------------------#
-macro( query_craype )
-
-  # We expect developers to use the Cray compiler wrappers. See also
-  # https://cmake.org/cmake/help/latest/module/FindMPI.html
-  #
-  # Skip this check if building from within spack.
-  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv AND
-      NOT "$ENV{CXX}" MATCHES "$ENV{SPACK_ROOT}/lib/spack/env/" )
-    if( NOT "$ENV{CXX}" MATCHES "CC$" OR
-        NOT "$ENV{CC}" MATCHES "cc$" OR
-        NOT "$ENV{FC}" MATCHES "ftn$" OR
-        NOT "$ENV{CRAYPE_LINK_TYPE}" MATCHES "dynamic$" )
-      message( FATAL_ERROR
-        "The build system requires that the Cray compiler wrappers (CC, cc, "
-        "ftn) be used when configuring this product on a Cray system "
-        "(CMAKE_CXX_COMPILER_WRAPPER = ${CMAKE_CXX_COMPILER_WRAPPER}). The "
-        "development environment must also support dynamic linking.  The "
-        "build system thinks you are trying to use:\n"
-        "  CMAKE_CXX_COMPILER     = ${CMAKE_CXX_COMPILER}\n"
-        "  CMAKE_C_COMPILER       = ${CMAKE_C_COMPILER}\n"
-        "  CMAKE_Fortran_COMPILER = ${CMAKE_Fortran_COMPILER}\n"
-        "  CRAYPE_LINK_TYPE       = $ENV{CRAYPE_LINK_TYPE}\n"
-        "If you are working on a system that runs the Cray Programming "
-        "Environment, try setting the following variables and rerunning cmake "
-        "from a clean build directory:\n"
-        "   export CXX=`which CC`\n"
-        "   export CC=`which cc`\n"
-        "   export FC=`which ftn`\n"
-        "   export CRAYPE_LINK_TYPE=dynamic\n"
-        "Otherwise please email this error message and other related "
-        "information to draco@lanl.gov.\n" )
-    endif()
-  endif()
-endmacro()
-
 ##---------------------------------------------------------------------------##
 ## Determine System Type and System Names
 ##
@@ -280,12 +238,12 @@ macro( query_have_restrict_keyword )
 
 endmacro()
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Query if hardware has FMA, AVX2
 #
 # This code is adopted from
 # https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 macro( query_fma_on_hardware )
 
   if( NOT PLATFORM_CHECK_FMA_DONE )

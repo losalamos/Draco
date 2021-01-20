@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstTime.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Test timing functions in C4.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/Global_Timer.hh"
 #include "c4/ParallelUnitTest.hh"
@@ -14,9 +14,9 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   using std::cout;
@@ -52,8 +52,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   double const wcr(rtt_c4::wall_clock_resolution());
   if (wcr > 0.0 && wcr <= 1000.0) {
     ostringstream msg;
-    msg << "The timer has a wall clock resoution of " << wcr << " ticks."
-        << endl;
+    msg << "The timer has a wall clock resoution of " << wcr << " ticks." << endl;
     PASSMSG(msg.str());
   } else {
     ostringstream msg;
@@ -118,14 +117,12 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
     ostringstream msg;
     msg << "t.wall_clock() value does not match the expected value."
         << "\n\tend            = " << end << "\n\tbegin          = " << begin
-        << "\n\tend-begin      = " << end - begin
-        << "\n\tt.wall_clock() = " << t.wall_clock()
-        << "\n\terror          = " << error << "\n\tprec           = " << prec
-        << endl;
+        << "\n\tend-begin      = " << end - begin << "\n\tt.wall_clock() = " << t.wall_clock()
+        << "\n\terror          = " << error << "\n\tprec           = " << prec << endl;
     FAILMSG(msg.str());
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Ensure that system + user <= wall
   //
   // Due to round off errors, the wall clock time might be less than the system
@@ -141,8 +138,8 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   if (deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution) {
     ostringstream msg;
     msg << "The sum of cpu and user time is less than or equal to the\n\t"
-        << "reported wall clock time (within error bars = " << time_resolution
-        << " secs.)." << endl;
+        << "reported wall clock time (within error bars = " << time_resolution << " secs.)."
+        << endl;
     PASSMSG(msg.str());
   } else {
     ostringstream msg;
@@ -189,11 +186,9 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
 #else
     if (timingsingleline.str().length() == 26)
 #endif
-      PASSMSG(string("printline() returned a single line of the") +
-              " expected length.");
+      PASSMSG(string("printline() returned a single line of the") + " expected length.");
     else
-      FAILMSG(string("printline() did not return a line of the ") +
-              "expected length.");
+      FAILMSG(string("printline() did not return a line of the ") + "expected length.");
   }
 
   //------------------------------------------------------//
@@ -262,7 +257,7 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void test_pause(rtt_dsxx::UnitTest &ut) {
   using rtt_c4::Timer;
 
@@ -284,7 +279,7 @@ void test_pause(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   rtt_c4::Timer::initialize(argc, argv);
@@ -295,6 +290,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstTime.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

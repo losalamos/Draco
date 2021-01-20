@@ -1,20 +1,19 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   mesh/X3D_Draco_Mesh_Reader.i.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>, Kendra Long
  * \date   Thursday, Jul 12, 2018, 08:46 am
  * \brief  X3D_Draco_Mesh_Reader class implementation header file.
- * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2018-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/DracoStrings.hh"
 
 namespace rtt_mesh {
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Generate a map from a block in an x3d file
  *
@@ -24,9 +23,8 @@ namespace rtt_mesh {
  * \return map of mesh data with key of type KT and value of type VT
  */
 template <typename KT, typename VT>
-std::map<KT, std::vector<VT>>
-X3D_Draco_Mesh_Reader::map_x3d_block(const std::string &block_name,
-                                     size_t &dist) {
+std::map<KT, std::vector<VT>> X3D_Draco_Mesh_Reader::map_x3d_block(const std::string &block_name,
+                                                                   size_t &dist) {
 
   // parse x3d block and generate x3d_map
   auto label_first = find_iter_of_key(parsed_pairs, block_name, dist);
@@ -71,7 +69,7 @@ X3D_Draco_Mesh_Reader::map_x3d_block(const std::string &block_name,
   return ret_x3d_map;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Convert key to template type.
  *
@@ -79,8 +77,7 @@ X3D_Draco_Mesh_Reader::map_x3d_block(const std::string &block_name,
  *
  * \return numerical key of type "KT"
  */
-template <typename KT>
-KT X3D_Draco_Mesh_Reader::convert_key(const std::string &skey) {
+template <typename KT> KT X3D_Draco_Mesh_Reader::convert_key(const std::string &skey) {
 
   // try to convert to key type KT, throw assertion if impossible
   KT ret_key;
@@ -95,6 +92,6 @@ KT X3D_Draco_Mesh_Reader::convert_key(const std::string &skey) {
 
 } // namespace rtt_mesh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of mesh/X3D_Draco_Mesh_Reader.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstBroadcast.cc
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  c4 Broadcast communication test.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -20,9 +19,9 @@ using rtt_c4::C4_Req;
 using rtt_c4::C4_Traits;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void test_simple(rtt_dsxx::UnitTest &ut) {
 
@@ -40,6 +39,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   long double ld = 0;
   vector<double> vref(10, 3.1415);
   vector<double> v(10, 0.0);
+  vector<float> vempty_ref;
+  vector<float> vempty;
   string msgref("hello, world!");
   string msg;
 
@@ -79,6 +80,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   broadcast(&ld, 1, 0);
 
   broadcast(v.begin(), v.end(), v.begin());
+  broadcast(vempty.begin(), vempty.end(), vempty.begin());
   broadcast(msg.begin(), msg.end(), msg.begin());
 
   // check scalar values
@@ -97,6 +99,8 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
 
   // check array values
   FAIL_IF_NOT(soft_equiv(v.begin(), v.end(), vref.begin(), vref.end()));
+  FAIL_IF_NOT(
+      soft_equiv(vempty.begin(), vempty.end(), vempty_ref.begin(), vempty_ref.end(), 1.0e-7f));
   FAIL_IF_NOT(msg == msgref);
 
   // safer 4 argument form (in case msg has not been resized).
@@ -112,8 +116,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     FAIL_IF_NOT(rtt_c4::node() == 0);
   } catch (exception & /*error*/) {
     ostringstream mymsg;
-    mymsg << "Successfully caught a range violation in broadcast on PE "
-          << rtt_c4::node();
+    mymsg << "Successfully caught a range violation in broadcast on PE " << rtt_c4::node();
     PASSMSG(mymsg.str());
   }
 
@@ -127,7 +130,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //  By adjusting the parameters below, this test will overflow the MPI memory
 //  buffers.  Read the comments below if you'd like to do this.
 void test_loop(rtt_dsxx::UnitTest &ut) {
@@ -174,7 +177,7 @@ void test_loop(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -185,6 +188,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstBroadcast.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

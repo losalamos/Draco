@@ -1,11 +1,11 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*---------------------------------------------*-C-*----------------------------------------------*/
 /*!
  * \file   parser/Debug_Options.cc
  * \author Kent Grimmett Budge
  * \brief  Define Debug_Options parse functions.
  * \note   Copyright (C) 2014-2020 Triad National Security, LLC.
  *         All rights reserved. */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 #include "Debug_Options.hh"
 #include <map>
@@ -39,7 +39,7 @@ bool is_bit(unsigned bit) {
 namespace rtt_parser {
 using std::string;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Get a debug specification.
  *
@@ -69,8 +69,7 @@ unsigned get_debug_option(string const &option_name) {
     return DEBUG_RESET_TIMING;
   } else {
     // parse extension to debug options
-    if (extended_debug_option.find(option_name) ==
-        extended_debug_option.end()) {
+    if (extended_debug_option.find(option_name) == extended_debug_option.end()) {
       return 0;
     } else {
       return extended_debug_option[option_name];
@@ -78,7 +77,7 @@ unsigned get_debug_option(string const &option_name) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Parse a debug specification.
  *
@@ -119,7 +118,7 @@ unsigned parse_debug_options(Token_Stream &tokens, unsigned const parent) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Convert a debug mask to a string containing comma-delimited set of
  *      debug keywords.
@@ -159,9 +158,8 @@ string debug_options_as_text(unsigned debug_options) {
   }
   // Mask out standard options and see if any extensions are active
   debug_options =
-      debug_options &
-      ~(DEBUG_SUMMARY | DEBUG_BALANCE | DEBUG_TIMESTEP | DEBUG_TIMING |
-        DEBUG_ALGORITHM | DEBUG_MEMORY | DEBUG_PROBLEM | DEBUG_RESET_TIMING);
+      debug_options & ~(DEBUG_SUMMARY | DEBUG_BALANCE | DEBUG_TIMESTEP | DEBUG_TIMING |
+                        DEBUG_ALGORITHM | DEBUG_MEMORY | DEBUG_PROBLEM | DEBUG_RESET_TIMING);
 
   if (debug_options) {
     for (const auto &i : extended_debug_option) {
@@ -174,7 +172,7 @@ string debug_options_as_text(unsigned debug_options) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Add a new debug option to the debug parser specific to an
  *      application. This version assigns the next available bit.
@@ -187,8 +185,8 @@ unsigned add_debug_option(string const &option_name) {
     // option already exists; regard as benign
     return extended_debug_option[option_name];
   } else {
-    while (available != 0 && extended_debug_back_option.find(available) !=
-                                 extended_debug_back_option.end()) {
+    while (available != 0 &&
+           extended_debug_back_option.find(available) != extended_debug_back_option.end()) {
       available <<= 1U;
     }
     if (available == 0) {
@@ -202,7 +200,7 @@ unsigned add_debug_option(string const &option_name) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Add a new debug option to the debug parser specific to an
  *      application. This version requests a specific bit and throws an
@@ -222,8 +220,7 @@ void add_debug_option(string const &option_name, unsigned const bit) {
       throw std::invalid_argument("debug option redefined");
     }
     // else duplicate identical definition acceptable
-  } else if (extended_debug_back_option.find(bit) !=
-             extended_debug_back_option.end()) {
+  } else if (extended_debug_back_option.find(bit) != extended_debug_back_option.end()) {
     throw std::invalid_argument("bitflag already allocated");
   } else {
     extended_debug_option[option_name] = bit;
@@ -231,7 +228,7 @@ void add_debug_option(string const &option_name, unsigned const bit) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void flush_debug_options() {
   extended_debug_option.clear();
   extended_debug_back_option.clear();
@@ -240,6 +237,6 @@ void flush_debug_options() {
 
 } // end namespace rtt_parser
 
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 /* end of parser/Debug_Options.cc */
-/*---------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/

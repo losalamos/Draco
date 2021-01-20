@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstSwap.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Test c4::determinate_swap and c4::indeterminate_swap functions
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/swap.hh"
@@ -17,9 +17,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstDeterminateSwap(UnitTest &ut) {
   vector<unsigned> outgoing_pid, incoming_pid;
@@ -77,8 +77,7 @@ void tstDeterminateSwap(UnitTest &ut) {
   for (unsigned i = 0; i < incoming_pid.size(); ++i) {
     incoming_data[i].resize(2);
   }
-  rtt_c4::determinate_swap(outgoing_pid, outgoing_data, incoming_pid,
-                           incoming_data);
+  rtt_c4::determinate_swap(outgoing_pid, outgoing_data, incoming_pid, incoming_data);
 
   if (incoming_data.size() != incoming_pid.size()) {
     ut.failure("Incoming data is NOT correct count");
@@ -187,8 +186,7 @@ void tstSemideterminateSwap(UnitTest &ut) {
   for (unsigned i = 0; i < incoming_pid.size(); ++i) {
     incoming_data[i].resize(2);
   }
-  rtt_c4::semideterminate_swap(outgoing_pid, outgoing_data, incoming_pid,
-                               incoming_data);
+  rtt_c4::semideterminate_swap(outgoing_pid, outgoing_data, incoming_pid, incoming_data);
 
   if (incoming_data.size() != incoming_pid.size()) {
     ut.failure("Incoming data is NOT correct count");
@@ -202,8 +200,7 @@ void tstSemideterminateSwap(UnitTest &ut) {
     } else {
       ut.passes("Incoming data is correct size");
     }
-    if (incoming_data[i][0] != pid ||
-        incoming_data[i][1] != static_cast<size_t>(rtt_c4::node())) {
+    if (incoming_data[i][0] != pid || incoming_data[i][1] != static_cast<size_t>(rtt_c4::node())) {
       ut.failure("Incoming data is NOT correct");
     } else {
       ut.passes("Incoming data is correct");
@@ -211,7 +208,7 @@ void tstSemideterminateSwap(UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
@@ -221,6 +218,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstSwap.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

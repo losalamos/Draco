@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/test/tIpcressOpacity.cc
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
 #include "cdi/OpacityCommon.hh"
@@ -27,9 +27,9 @@ using rtt_cdi_ipcress::IpcressGrayOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_dsxx::soft_equiv;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   // Ipcress data filename (IPCRESS format required)
@@ -48,7 +48,7 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Attempt to instantiate the object.
     try {
-      spIF.reset(new IpcressFile(op_data_file));
+      spIF = std::make_shared<IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       cout << "While testing tIpcressOpacity, " << error.what() << endl;
       return;
@@ -97,8 +97,8 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
 
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_twomat_rgt.reset(new IpcressGrayOpacity(
-        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
+    spOp_twomat_rgt =
+        std::make_shared<IpcressGrayOpacity>(spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
     // spIF goes out of scope
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
@@ -110,8 +110,7 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // If we get here then the object was successfully instantiated.
-  PASSMSG(
-      "shared_ptr to new Opacity object created for two_mats.ipcress data.");
+  PASSMSG("shared_ptr to new Opacity object created for two_mats.ipcress data.");
 
   // ----------------- //
   // Gray Opacity Test //
@@ -121,8 +120,8 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   double density = 27.0;                           // g/cm^3
   double tabulatedGrayOpacity = 6.157321485417703; // cm^2/g
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_twomat_rgt, temperature, density, tabulatedGrayOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_twomat_rgt, temperature, density,
+                                                   tabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -161,10 +160,10 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   vector<double> expected_densGrid = {0.01, 0.1, 1.0, 10.0, 100.0};
   vector<double> expected_tempGrid = {0.01, 0.2575, 0.505, 0.7525, 1.0};
 
-  FAIL_IF_NOT(soft_equiv(densGrid.begin(), densGrid.end(),
-                         expected_densGrid.begin(), expected_densGrid.end()));
-  FAIL_IF_NOT(soft_equiv(tempGrid.begin(), tempGrid.end(),
-                         expected_tempGrid.begin(), expected_tempGrid.end()));
+  FAIL_IF_NOT(soft_equiv(densGrid.begin(), densGrid.end(), expected_densGrid.begin(),
+                         expected_densGrid.end()));
+  FAIL_IF_NOT(soft_equiv(tempGrid.begin(), tempGrid.end(), expected_tempGrid.begin(),
+                         expected_tempGrid.end()));
 
   // --------------- //
   // MG Opacity test //
@@ -176,8 +175,8 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
   // Try to instantiate the Opacity object.
   try {
     shared_ptr<IpcressFile> spIF(new IpcressFile(op_data_file));
-    spOp_twomat_rtmg.reset(new IpcressMultigroupOpacity(
-        spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
+    spOp_twomat_rtmg =
+        std::make_shared<IpcressMultigroupOpacity>(spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -213,32 +212,22 @@ void file_check_two_mats(rtt_dsxx::ScalarUnitTest &ut) {
 
   // The solution to compare against:
   vector<double> tabulatedMGOpacity = {
-      1.65474413066534,  1.25678363987902,
-      0.969710642123251, 0.809634824544866,
-      0.724209752535695, 0.657174133970242,
-      0.60418067688849,  0.56102837685666,
-      0.526678715472818, 0.498691712866007,
-      0.476029518181352, 0.458069153077808,
-      0.443645292733958, 0.432168463782148,
-      0.422976580403301, 0.415262388915466,
-      0.408791600852843, 0.402940726234063,
-      0.397310792049752, 0.391533709574117,
-      0.385148585211532, 0.377799945947677,
-      0.368969609795487, 0.358190516168003,
-      0.345144753971726, 0.329280962243614,
-      0.310427778423081, 0.288524502929352,
-      0.263718520343973, 0.236783648295996,
-      0.208267355739943, 0.179391299272131,
-      0.15400996177649}; // KeV, numGroups entries.
+      1.65474413066534,  1.25678363987902,  0.969710642123251, 0.809634824544866, 0.724209752535695,
+      0.657174133970242, 0.60418067688849,  0.56102837685666,  0.526678715472818, 0.498691712866007,
+      0.476029518181352, 0.458069153077808, 0.443645292733958, 0.432168463782148, 0.422976580403301,
+      0.415262388915466, 0.408791600852843, 0.402940726234063, 0.397310792049752, 0.391533709574117,
+      0.385148585211532, 0.377799945947677, 0.368969609795487, 0.358190516168003, 0.345144753971726,
+      0.329280962243614, 0.310427778423081, 0.288524502929352, 0.263718520343973, 0.236783648295996,
+      0.208267355739943, 0.179391299272131, 0.15400996177649}; // KeV, numGroups entries.
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_twomat_rtmg, temperature, density, tabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_twomat_rtmg, temperature, density,
+                                                   tabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"file_check_analytic\"...\n";
@@ -269,7 +258,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the object.
   try {
-    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const &error) {
     FAILMSG(error.what());
     FAILMSG("Aborting tests.");
@@ -315,8 +304,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_ragray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ragray = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error)
   // Alternatively, we could use:
   // catch ( rtt_cdi_ipcress::gkeysException GandError )
@@ -345,8 +334,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   double density = 1.0;      // g/cm^3
   double tabulatedGrayOpacity = density * pow(temperature, 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray,
-                                                   temperature, density,
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray, temperature, density,
                                                    tabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
@@ -361,8 +349,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_ramg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ramg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -388,8 +376,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   for (int i = 0; i < numGroups; ++i)
     tabulatedMGOpacity[i] = density * pow(temperature, 4); // cm^2/gm
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_ramg, temperature, density, tabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ramg, temperature, density,
+                                                   tabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -417,8 +405,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_pgray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pgray = std::make_shared<IpcressGrayOpacity>(spGFAnalytic, matid, rtt_cdi::PLANCK,
+                                                               rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -443,8 +431,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   density = 0.7;                                         // g/cm^3
   double tabulatedValue = density * pow(temperature, 4); // cm^2/g
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_pgray, temperature, density, tabulatedValue)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pgray, temperature, density,
+                                                   tabulatedValue)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -458,8 +446,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pmg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
@@ -488,8 +476,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
     tabulatedMGOpacity[ig] = density * pow(temperature, 4); // cm^2/g
 
   // If this test fails then stop testing.
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_pmg, temperature, density, tabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pmg, temperature, density,
+                                                   tabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -529,8 +517,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < vtabulatedGrayOpacity.size(); ++i)
     vtabulatedGrayOpacity[i] = density * pow(vtemperature[i], 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray,
-                                                   vtemperature, density,
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray, vtemperature, density,
                                                    vtabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
@@ -550,8 +537,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < vtabulatedGrayOpacity.size(); ++i)
     vtabulatedGrayOpacity[i] = vdensity[i] * pow(temperature, 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray,
-                                                   temperature, vdensity,
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ragray, temperature, vdensity,
                                                    vtabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
@@ -574,8 +560,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < vtabulatedGrayOpacity.size(); ++i)
     vtabulatedGrayOpacity[i] = density * pow(vtemperature[i], 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pgray,
-                                                   vtemperature, density,
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pgray, vtemperature, density,
                                                    vtabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
@@ -595,8 +580,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t i = 0; i < vtabulatedGrayOpacity.size(); ++i)
     vtabulatedGrayOpacity[i] = vdensity[i] * pow(temperature, 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pgray,
-                                                   temperature, vdensity,
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pgray, temperature, vdensity,
                                                    vtabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
@@ -623,8 +607,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedMGOpacity[i][ig] = density * pow(vtemperature[i], 4);
   }
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_ramg, vtemperature, density, vtabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ramg, vtemperature, density,
+                                                   vtabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -646,8 +630,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedMGOpacity[i][ig] = vdensity[i] * pow(temperature, 4);
   }
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_ramg, temperature, vdensity, vtabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_ramg, temperature, vdensity,
+                                                   vtabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -673,8 +657,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedMGOpacity[i][ig] = density * pow(vtemperature[i], 4);
   }
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_pmg, vtemperature, density, vtabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pmg, vtemperature, density,
+                                                   vtabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -696,14 +680,14 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedMGOpacity[i][ig] = vdensity[i] * pow(temperature, 4);
   }
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, spOp_Analytic_pmg, temperature, vdensity, vtabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, spOp_Analytic_pmg, temperature, vdensity,
+                                                   vtabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"check_ipcress_stl_accessors\"...\n";
@@ -720,7 +704,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the object.
   try {
-    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     FAILMSG(error.what());
@@ -745,8 +729,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // try to instantiate the Opacity object.
   try {
-    spGGOp_Analytic_ra.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spGGOp_Analytic_ra = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressGrayOpacity object "
@@ -803,20 +787,17 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Here is the solution from Ipcress
   vector<double> graOp(nt);
-  spGGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(),
-                                 cvdensity.begin(), cvdensity.end(),
-                                 graOp.begin());
+  spGGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(), cvdensity.begin(),
+                                 cvdensity.end(), graOp.begin());
   if (rtt_dsxx::soft_equiv(graOp, vtabulatedGrayOpacity)) {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
             << spGGOp_Analytic_ra->getDataFilename()
             << " (const-iterator accessor, temp x density).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
             << spGGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     FAILMSG(message.str());
@@ -827,20 +808,17 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   // Using non-const iterator              //
   // ------------------------------------- //
 
-  spGGOp_Analytic_ra->getOpacity(vtemperature.begin(), vtemperature.end(),
-                                 vdensity.begin(), vdensity.end(),
-                                 graOp.begin());
+  spGGOp_Analytic_ra->getOpacity(vtemperature.begin(), vtemperature.end(), vdensity.begin(),
+                                 vdensity.end(), graOp.begin());
   if (rtt_dsxx::soft_equiv(graOp, vtabulatedGrayOpacity)) {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
             << spGGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
             << spGGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     FAILMSG(message.str());
@@ -856,21 +834,17 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t it = 0; it < nt; ++it)
     vtabulatedGrayOpacity[it] = density * pow(vtemperature[it], 4);
 
-  spGGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(),
-                                 density, graOp.begin());
+  spGGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(), density,
+                                 graOp.begin());
   if (rtt_dsxx::soft_equiv(graOp, vtabulatedGrayOpacity)) {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
-            << spGGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vtemps).";
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
+            << spGGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vtemps).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
-            << spGGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vtemps).";
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
+            << spGGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vtemps).";
     FAILMSG(message.str());
   }
 
@@ -884,21 +858,16 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   for (size_t id = 0; id < nd; ++id)
     vtabulatedGrayOpacity[id] = vdensity[id] * pow(temperature, 4);
 
-  spGGOp_Analytic_ra->getOpacity(temperature, cvdensity.begin(),
-                                 cvdensity.end(), graOp.begin());
+  spGGOp_Analytic_ra->getOpacity(temperature, cvdensity.begin(), cvdensity.end(), graOp.begin());
   if (rtt_dsxx::soft_equiv(graOp, vtabulatedGrayOpacity)) {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
-            << spGGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vdensity).";
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
+            << spGGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vdensity).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
-            << spGGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vdensity).";
+    message << spGGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
+            << spGGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vdensity).";
     FAILMSG(message.str());
   }
 
@@ -916,8 +885,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // try to instantiate the Opacity object.
   try {
-    spGMGOp_Analytic_ra.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spGMGOp_Analytic_ra = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressGrayOpacity "
@@ -943,21 +912,18 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Here is the solution from Ipcress
   vector<double> mgOp(nt * ng);
-  spGMGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(),
-                                  cvdensity.begin(), cvdensity.end(),
-                                  mgOp.begin());
+  spGMGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(), cvdensity.begin(),
+                                  cvdensity.end(), mgOp.begin());
 
   if (rtt_dsxx::soft_equiv(mgOp, vtabulatedOpacity)) {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
             << spGMGOp_Analytic_ra->getDataFilename()
             << " (const-iterator accessor, temp x density).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
             << spGMGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     FAILMSG(message.str());
@@ -973,22 +939,19 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
     mgOp[i] = 0.0;
 
   // use Ipcress to obtain new data
-  spGMGOp_Analytic_ra->getOpacity(vtemperature.begin(), vtemperature.end(),
-                                  vdensity.begin(), vdensity.end(),
-                                  mgOp.begin());
+  spGMGOp_Analytic_ra->getOpacity(vtemperature.begin(), vtemperature.end(), vdensity.begin(),
+                                  vdensity.end(), mgOp.begin());
 
   // compare the results to the reference solution and report our findings.
   if (rtt_dsxx::soft_equiv(mgOp, vtabulatedOpacity)) {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
             << spGMGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
             << spGMGOp_Analytic_ra->getDataFilename()
             << " (non-const-iterator accessor, temp x density).";
     FAILMSG(message.str());
@@ -1009,23 +972,19 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedOpacity[it * ng + ig] = density * pow(vtemperature[it], 4);
 
   // Obtain new solution
-  spGMGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(),
-                                  density, mgOp.begin());
+  spGMGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(), density,
+                                  mgOp.begin());
 
   // Compare solutions and report the results.
   if (rtt_dsxx::soft_equiv(mgOp, vtabulatedOpacity)) {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
-            << spGMGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vtemps).";
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
+            << spGMGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vtemps).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
-            << spGMGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vtemps).";
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
+            << spGMGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vtemps).";
     FAILMSG(message.str());
   }
 
@@ -1044,36 +1003,30 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
       vtabulatedOpacity[id * ng + ig] = vdensity[id] * pow(temperature, 4);
 
   // Obtain new solution
-  spGMGOp_Analytic_ra->getOpacity(temperature, cvdensity.begin(),
-                                  cvdensity.end(), mgOp.begin());
+  spGMGOp_Analytic_ra->getOpacity(temperature, cvdensity.begin(), cvdensity.end(), mgOp.begin());
 
   // Compare solutions and report the results.
   if (rtt_dsxx::soft_equiv(mgOp, vtabulatedOpacity)) {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity computation was good for \n\t"
-            << spGMGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vdensity).";
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity computation was good for \n\t"
+            << spGMGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vdensity).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << spGMGOp_Analytic_ra->getDataDescriptor()
-            << " opacity value is out of spec. for \n\t"
-            << spGMGOp_Analytic_ra->getDataFilename()
-            << " (const iterator accessor, vdensity).";
+    message << spGMGOp_Analytic_ra->getDataDescriptor() << " opacity value is out of spec. for \n\t"
+            << spGMGOp_Analytic_ra->getDataFilename() << " (const iterator accessor, vdensity).";
     FAILMSG(message.str());
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"gray_opacity_packing_test\"...\n";
 
   vector<char> packed;
   // Ipcress data filename (IPCRESS format required)
-  string const op_data_file =
-      ut.getTestSourcePath() + "analyticOpacities.ipcress";
+  string const op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
   FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
 
   {
@@ -1086,7 +1039,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Try to instantiate the object.
     try {
-      spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+      spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       ostringstream message;
       FAILMSG(error.what());
@@ -1100,8 +1053,8 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
     // material ID
     int const matid = 10001;
 
-    spOp_Analytic_ragray.reset(new IpcressGrayOpacity(
-        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
+    spOp_Analytic_ragray = std::make_shared<IpcressGrayOpacity>(
+        spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
 
     // pack up the opacity
     packed = spOp_Analytic_ragray->pack();
@@ -1112,7 +1065,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    unpacked_opacity.reset(new IpcressGrayOpacity(packed));
+    unpacked_opacity = std::make_shared<IpcressGrayOpacity>(packed);
   } catch (rtt_dsxx::assertion const &error) {
     ostringstream message;
     message << "Failed to create shared_ptr to unpacked IpcressOpacity object "
@@ -1140,8 +1093,8 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   double density = 1.0;      // g/cm^3
   double tabulatedGrayOpacity = density * pow(temperature, 4);
 
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, unpacked_opacity, temperature, density, tabulatedGrayOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, unpacked_opacity, temperature, density,
+                                                   tabulatedGrayOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -1161,15 +1114,14 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   cout << "\nStarting test \"mg_opacity_packing_test\"...\n";
 
   vector<char> packed;
   // Ipcress data filename (IPCRESS format required)
-  string const op_data_file =
-      ut.getTestSourcePath() + "analyticOpacities.ipcress";
+  string const op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
   FAIL_IF_NOT(rtt_dsxx::fileExists(op_data_file));
 
   {
@@ -1182,7 +1134,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
     // Try to instantiate the object.
     try {
-      spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+      spGFAnalytic = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
     } catch (rtt_dsxx::assertion const &error) {
       ostringstream message;
       FAILMSG(error.what());
@@ -1200,8 +1152,8 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
     // Create a smart pointer to an Opacity object.
     shared_ptr<MultigroupOpacity> spOp_Analytic_pmg;
 
-    spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity(
-        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
+    spOp_Analytic_pmg = std::make_shared<IpcressMultigroupOpacity>(
+        spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
 
     packed = spOp_Analytic_pmg->pack();
   }
@@ -1211,7 +1163,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Try to instantiate the Opacity object.
   try {
-    unpacked_opacity.reset(new IpcressMultigroupOpacity(packed));
+    unpacked_opacity = std::make_shared<IpcressMultigroupOpacity>(packed);
   } catch (rtt_dsxx::assertion const &error)
   // Alternatively, we could use:
   // catch ( rtt_cdi_ipcress::gkeysException GandError )
@@ -1247,8 +1199,8 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
     tabulatedMGOpacity[ig] = density * pow(temperature, 4); // cm^2/g
 
   // If this test fails then stop testing.
-  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(
-          ut, unpacked_opacity, temperature, density, tabulatedMGOpacity)) {
+  if (!rtt_cdi_ipcress_test::opacityAccessorPassed(ut, unpacked_opacity, temperature, density,
+                                                   tabulatedMGOpacity)) {
     FAILMSG("Aborting tests.");
     return;
   }
@@ -1286,7 +1238,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1301,6 +1253,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tIpcressOpacity.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

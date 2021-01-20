@@ -5,7 +5,7 @@
 # brief  This is a Python script that is used to test c4/bin/ythi
 # note   Copyright (C) 2018, Triad National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 import sys
 import re
 

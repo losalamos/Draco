@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   linear/qr_unpack.i.hh
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef linear_qr_unpack_i_hh
 #define linear_qr_unpack_i_hh
@@ -19,20 +18,18 @@
 #include <sstream>
 
 namespace rtt_linear {
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Compute an explicit representation of a packed QR decomposition.
  *
- * This procedure takes a packed representation of a QR decomposition, as
- * returned by qrdcmp, and computes explicit \f$Q^T\f$ and \f$R\f$ matrices.
- * \f$Q^T\f$ rather than \f$Q\f$ is returned because this is what is usually
- * required for further computation (as with qrupdt).
+ * This procedure takes a packed representation of a QR decomposition, as returned by qrdcmp, and
+ * computes explicit \f$Q^T\f$ and \f$R\f$ matrices.  \f$Q^T\f$ rather than \f$Q\f$ is returned
+ * because this is what is usually required for further computation (as with qrupdt).
  *
  * \arg \a RandomContainer A random access container
- * \param r \f$N\times N\f$ matrix containing, in its lower triangular part, the
- *          Householder vectors \f$u\f$ of the QR decomposition, and, in its
- *          strict upper triangular part, the strict upper triangular part of
- *          \f$R\f$.  On exit, contains \f$R\f$.
+ * \param r \f$N\times N\f$ matrix containing, in its lower triangular part, the Householder vectors
+ *          \f$u\f$ of the QR decomposition, and, in its strict upper triangular part, the strict
+ *          upper triangular part of \f$R\f$.  On exit, contains \f$R\f$.
  * \param n Rank of matrix \f$N\f$
  * \param c Householder vector normalizations \f$\frac{1}{2}u\cdot u\f$.
  * \param d Diagonal elements of \f$R\f$.
@@ -41,8 +38,8 @@ namespace rtt_linear {
  * \pre \c n*n==r.size()
  * \pre \c n==c.size()
  * \pre \c n=d.size()
- * \pre The elements of <code>c</code> must be set to the correct normalization
- *          values for the \f$u\f$ contained in <code>r</code>.
+ * \pre The elements of <code>c</code> must be set to the correct normalization values for the
+ *          \f$ u \f$ contained in \c r.
  *
  * \post \c r[i][j]==0 for all \c j<i
  * \post \c r.size()==n*n
@@ -56,8 +53,7 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
   Require(n == d.size());
 
   // minimum representable value
-  double const mrv =
-      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const mrv = std::numeric_limits<typename RandomContainer::value_type>::min();
   qt.resize(n * n);
 
   for (unsigned i = 0; i < n; ++i) {
@@ -98,6 +94,6 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
 
 #endif // linear_qr_unpack_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of linear/qr_unpack.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

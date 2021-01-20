@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   device/GPU_Device.hh
  * \author Kelly (KT) Thompson
  * \brief  Define class GPU_Device
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef device_GPU_Device_hh
 #define device_GPU_Device_hh
@@ -19,14 +18,13 @@
 
 namespace rtt_device {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class GPU_Device
  * \brief A wrapper for the CUDA environment.
  *
- * This class encapsulates many features provided by the CUDA programming
- * environment. It can query the hardware for available features, find and load
- * .cubin files for GPU kernel execution, etc.
+ * This class encapsulates many features provided by the CUDA programming environment. It can query
+ * the hardware for available features, find and load .cubin files for GPU kernel execution, etc.
  *
  * \sa GPU_Device.cc for detailed descriptions.
  *
@@ -37,9 +35,7 @@ namespace rtt_device {
  *     // Create and then print a summary of the devices found.
  *     std::ostringstream out;
  *     size_t const numDev( gpu.numDevicesAvailable() );
- *     out << "GPU device summary:\n\n"
- *         << "   Number of devices found: " << numDev
- *         << "\n" << endl;
+ *     out << "GPU device summary:\n\nNumber of devices found: " << numDev << "\n" << endl;
  *     for( size_t device=0; device<numDev; ++device )
  *         gpu.printDeviceSummary( device, out );
  *
@@ -50,8 +46,7 @@ namespace rtt_device {
  * \example device/test/gpu_hello_rt_api.cu
  * Test of GPU_Device for with CUDA runtime API.
  */
-//============================================================================//
-
+//================================================================================================//
 class GPU_Device {
 public:
   // NESTED CLASSES AND TYPEDEFS
@@ -71,25 +66,15 @@ public:
   //! How many GPU devices are found on the bus?
   size_t numDevicesAvailable() const { return deviceCount; }
   //! maximum number of threads per block
-  int maxThreadsPerBlock(int devId = 0) const {
-    return m_maxthreadsperblock[devId];
-  }
+  int maxThreadsPerBlock(int devId = 0) const { return m_maxthreadsperblock[devId]; }
   //! maxThreadsDim[3] is the maximum sizes of each dimension of a block.
-  int maxThreadsDim(int dim, int devId = 0) const {
-    return m_maxthreadsdim[devId][dim];
-  }
+  int maxThreadsDim(int dim, int devId = 0) const { return m_maxthreadsdim[devId][dim]; }
   //! maxGridSize[3] is the maximum sizes of each dimension of a grid;
-  int maxGridSize(int dim, int devId = 0) const {
-    return m_maxgridsize[devId][dim];
-  }
+  int maxGridSize(int dim, int devId = 0) const { return m_maxgridsize[devId][dim]; }
   //! the total amount of shared memory available per block in bytes
-  size_t sharedMemPerBlock(size_t devId = 0) const {
-    return m_sharedmemperblock[devId];
-  }
+  size_t sharedMemPerBlock(size_t devId = 0) const { return m_sharedmemperblock[devId]; }
   //! the total amount of constant memory available on the device in bytes;
-  int totalConstantMemory(int devId = 0) const {
-    return m_totalconstantmemory[devId];
-  }
+  int totalConstantMemory(int devId = 0) const { return m_totalconstantmemory[devId]; }
   //! the warp size
   int SIMDWidth(int devId = 0) const { return m_simdwidth[devId]; }
   /*! the maximum pitch allowed by the memory copy functions that involve memory
@@ -99,14 +84,13 @@ public:
   int regsPerBlock(int devId = 0) const { return m_regsperblock[devId]; }
   //! the clock frequency in kilohertz
   int clockRate(int devId = 0) const { return m_clockrate[devId]; }
-  /*! the alignment requirement; texture base addresses that are aligned to
-   *  textureAlign bytes do not need an offset applied to texture fetches */
+  /*! the alignment requirement; texture base addresses that are aligned to textureAlign bytes do
+   *  not need an offset applied to texture fetches */
   int textureAlign(int devId = 0) const { return m_texturealign[devId]; }
 
   // SERVICES
   //! Print a summary of idevice's features to ostream out.
-  void printDeviceSummary(int const idevice,
-                          std::ostream &out = std::cout) const;
+  void printDeviceSummary(int const idevice, std::ostream &out = std::cout) const;
 
   // STATICS
   inline static int align(int offset, int alignment) {
@@ -155,6 +139,6 @@ private:
 
 #endif // device_GPU_Device_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of device/GPU_Device.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

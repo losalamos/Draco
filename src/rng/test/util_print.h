@@ -1,5 +1,5 @@
 /*
-Copyright 2016, D. E. Shaw Research.
+Copyright 2010-2011, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,30 +29,35 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef UTIL_PRINT_H__
-#define UTIL_PRINT_H__
+#ifndef UTIL_PRINT_H
+#define UTIL_PRINT_H
 
 #include <stdio.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC system_header
+#endif
+
 extern int verbose;
 
-#define TEST_TPL(NAME, N, W, R) \
-void printline_##NAME##N##x##W##_##R(NAME##N##x##W##_ukey_t ukey, NAME##N##x##W##_ctr_t ictr, NAME##N##x##W##_ctr_t *octrs, size_t nctr) \
-{ \
-    size_t i; \
-    for (i = 0; i < nctr; i++) { \
-	if (i > 0) { \
-	    printf("  [%lu]", (unsigned long)i); \
-	    PRINTARRAY(octrs[i], stdout); \
-	    putc('\n', stdout); \
-	    fflush(stdout); \
-	} else { \
-	    PRINTLINE(NAME, N, W, R, ictr, ukey, octrs[0], stdout); \
-	} \
-	if (verbose < 2) break; \
-    } \
-}
+#define TEST_TPL(NAME, N, W, R)                                                                    \
+  void printline_##NAME##N##x##W##_##R(NAME##N##x##W##_ukey_t ukey, NAME##N##x##W##_ctr_t ictr,    \
+                                       NAME##N##x##W##_ctr_t *octrs, size_t nctr) {                \
+    size_t i;                                                                                      \
+    for (i = 0; i < nctr; i++) {                                                                   \
+      if (i > 0) {                                                                                 \
+        printf("  [%lu]", (unsigned long)i);                                                       \
+        PRINTARRAY(octrs[i], stdout);                                                              \
+        putc('\n', stdout);                                                                        \
+        fflush(stdout);                                                                            \
+      } else {                                                                                     \
+        PRINTLINE(NAME, N, W, R, ictr, ukey, octrs[0], stdout);                                    \
+      }                                                                                            \
+      if (verbose < 2)                                                                             \
+        break;                                                                                     \
+    }                                                                                              \
+  }
 
 #include "util_expandtpl.h"
 
-#endif /* UTIL_PRINT_H__ */
+#endif /* UTIL_PRINT_H */

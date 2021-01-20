@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   min/mrqmin.i.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Implementation of mrqmin
  * \note   Copyright (C) 2009-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef min_mrqmin_i_hh
 #define min_mrqmin_i_hh
@@ -17,13 +17,12 @@
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
 #include <cmath>
-#include <math.h>
 
 namespace rtt_min {
 
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Helper function for mrqmin
 template <class RandomContainer, class RandomBoolContainer>
 void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
@@ -47,14 +46,13 @@ void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 //! Helper function for mrqmin
 
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
-void mrqcof(RandomContainer const &x, RandomContainer const &y,
-            RandomContainer const &sig, unsigned const ndata, unsigned const m,
-            RandomContainer &a, RandomBoolContainer &ia, RandomContainer &alpha,
-            RandomContainer &beta, unsigned const ma, double &chisq,
+void mrqcof(RandomContainer const &x, RandomContainer const &y, RandomContainer const &sig,
+            unsigned const ndata, unsigned const m, RandomContainer &a, RandomBoolContainer &ia,
+            RandomContainer &alpha, RandomContainer &beta, unsigned const ma, double &chisq,
             ModelFunction funcs) {
   vector<double> dyda(ma);
   unsigned mfit = 0;
@@ -102,7 +100,7 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Perform a nonlinear least squares fit of data to a model function.
  *
@@ -134,10 +132,9 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
  *             value that was returned by a previous iteration.
  */
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
-void mrqmin(RandomContainer const &x, RandomContainer const &y,
-            RandomContainer const &sig, unsigned const n, unsigned const m,
-            RandomContainer &a, RandomBoolContainer &ia, RandomContainer &covar,
-            RandomContainer &alpha, unsigned const ma, double &chisq,
+void mrqmin(RandomContainer const &x, RandomContainer const &y, RandomContainer const &sig,
+            unsigned const n, unsigned const m, RandomContainer &a, RandomBoolContainer &ia,
+            RandomContainer &covar, RandomContainer &alpha, unsigned const ma, double &chisq,
             ModelFunction funcs, double &alamda) {
   static unsigned mfit;
   static vector<double> oneda;
@@ -219,6 +216,6 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
 
 #endif // min_mrqmin_i_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of min/mrqmin.i.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

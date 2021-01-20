@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   ds++/test/tstatomics.cc
  * \author Tim Kelley
  * \date   Thursday, Sept. 6, 2018, 10:51 am
  * \note   Copyright (C) 2018-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -16,7 +16,7 @@
 
 using rtt_dsxx::UnitTest;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Hammer an atomic from each thread. Each iteration, the thread adds
  * (tid * iteration) to the counter. The atomic ensures that everyone sees
  * a consistent view of the counter: no thread overwrites the contribution
@@ -33,10 +33,9 @@ void thread_action(std::atomic<double> &d, size_t N, size_t tid) {
   return;
 } // thread_action
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
-void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
-                           size_t const n_iterations) {
+void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads, size_t const n_iterations) {
   std::atomic<double> a_d(0.0);
 
   // launch a number of threads
@@ -66,8 +65,8 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   // check and report
   bool const passed = rtt_dsxx::soft_equiv(result, expected);
   if (!passed) {
-    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__,
-           __LINE__, tsum, sum, result);
+    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__, __LINE__, tsum, sum,
+           result);
   }
   FAIL_IF_NOT(passed);
   return;
@@ -91,7 +90,7 @@ void test_fetch_add_atomic_1e6(UnitTest &ut) {
 // This should give the wrong answer nearly every time on any respectable
 // thread implementation.
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Similarly, hammer a POD from each thread. Each iteration, the thread adds
  * (tid * iteration) to the counter. Since the threads are contending, we expect
  * to have a race condition where two threads read the same value from d and
@@ -108,7 +107,7 @@ void thread_action_pod(double &d, size_t N, size_t tid) {
   return;
 } // run_in_a_thread_d
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // same as above, except does not use an atomic
 void test_fetch_add_not_atomic(UnitTest & /*ut*/) {
   size_t const n_threads(43);
@@ -170,10 +169,9 @@ void thread_action_sub(std::atomic<double> &d, size_t N, size_t tid) {
   return;
 } // thread_action
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
-void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads,
-                           size_t const n_iterations) {
+void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads, size_t const n_iterations) {
   std::atomic<double> a_d(0.0);
 
   // launch a number of threads
@@ -227,7 +225,7 @@ void test_fetch_sub_atomic_1e6(UnitTest &ut) {
 
 using t_func = std::function<void(UnitTest &)>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   f(u);
   if (u.numFails == 0) {
@@ -236,7 +234,7 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -249,6 +247,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of ds++/test/tstatomics.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

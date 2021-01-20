@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   memory/memory.hh
  * \author Kent G. Budge
@@ -11,7 +11,7 @@
  * existing memory checking tools. Other capabilities gradually accreted
  * themselves to this set of utilities, such as leak characterization.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef memory_memory_hh
 #define memory_memory_hh
@@ -30,7 +30,7 @@ uint64_t largest_allocation();
 void report_leaks(std::ostream &);
 
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
-void out_of_memory_handler(void);
+void out_of_memory_handler();
 
 // To set the peak at which to break
 uint64_t set_check_peak(uint64_t);
@@ -40,6 +40,6 @@ void set_dump_and_exit(unsigned);
 
 #endif
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of memory/memory.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,11 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   min/test/tstmrqmin.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,15 +17,14 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_min;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-typedef void Model(vector<double> const &x, vector<double> const &a, double &y,
+using Model = void(vector<double> const &x, vector<double> const &a, double &y,
                    vector<double> &dyda);
 
-void model(vector<double> const &x, vector<double> const &a, double &y,
-           vector<double> &dyda) {
+void model(vector<double> const &x, vector<double> const &a, double &y, vector<double> &dyda) {
   Require(x.size() == 4);
   Require(a.size() == 9);
   dyda.resize(9);
@@ -46,8 +44,7 @@ void model(vector<double> const &x, vector<double> const &a, double &y,
   double const c = x[2];
   double const an = x[3];
 
-  y = A + B * c + C * c * an +
-      n * (D + E * c + F * c * an + p * (G + H * c + J * c * an));
+  y = A + B * c + C * c * an + n * (D + E * c + F * c * an + p * (G + H * c + J * c * an));
   dyda[0] = 1;
   dyda[1] = c;
   dyda[2] = c * an;
@@ -59,9 +56,9 @@ void model(vector<double> const &x, vector<double> const &a, double &y,
   dyda[8] = n * p * c * an;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // tstmrqmin
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 void tstmrqmin(UnitTest &ut) {
   std::cout << "\nTesting tstmrqmin()...\n" << std::endl;
@@ -106,8 +103,8 @@ void tstmrqmin(UnitTest &ut) {
 
   vector<double> a(9, 0.0);
   vector<bool> ia(9, false);
-  double chisq;
-  double alamda;
+  double chisq{0.0};
+  double alamda{0.0};
   vector<double> covar, alpha;
   unsigned iopt(0);
   double copt = 1e100;
@@ -121,8 +118,8 @@ void tstmrqmin(UnitTest &ut) {
         alamda = 0;
       }
       Check(y.size() < UINT_MAX);
-      mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar,
-             alpha, 9U, chisq, model, alamda);
+      mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq, model,
+             alamda);
     }
     if (chisq < copt) {
       iopt = i;
@@ -131,8 +128,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 1-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variable " << iopt << endl;
+  cout << "Optimum 1-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variable "
+       << iopt << endl;
 
   copt = 1e100;
   unsigned i1(0), i2(0);
@@ -148,8 +145,8 @@ void tstmrqmin(UnitTest &ut) {
           alamda = 0;
         }
         Check(y.size() < UINT_MAX);
-        mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar,
-               alpha, 9U, chisq, model, alamda);
+        mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq,
+               model, alamda);
       }
       if (chisq < copt) {
         i1 = i;
@@ -162,8 +159,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 2-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << endl;
+  cout << "Optimum 2-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << endl;
 
   copt = 1e100;
   unsigned i3(0);
@@ -181,8 +178,8 @@ void tstmrqmin(UnitTest &ut) {
             alamda = 0;
           }
           Check(y.size() < UINT_MAX);
-          mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar,
-                 alpha, 9U, chisq, model, alamda);
+          mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq,
+                 model, alamda);
         }
         if (chisq < copt) {
           i1 = i;
@@ -199,8 +196,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[i] = false;
     a[i] = 0.0;
   }
-  cout << "Optimum 3-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << i3 << endl;
+  cout << "Optimum 3-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << i3 << endl;
 
   copt = 1e100;
   unsigned i4(0);
@@ -220,8 +217,8 @@ void tstmrqmin(UnitTest &ut) {
               alamda = 0;
             }
             Check(y.size() < UINT_MAX);
-            mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar,
-                   alpha, 9U, chisq, model, alamda);
+            mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq,
+                   model, alamda);
           }
           if (chisq < copt) {
             i1 = j1;
@@ -242,8 +239,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 4-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << i3 << i4 << endl;
+  cout << "Optimum 4-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << i3 << i4 << endl;
 
   copt = 1e100;
   unsigned i5(0);
@@ -265,8 +262,8 @@ void tstmrqmin(UnitTest &ut) {
                 alamda = 0;
               }
               Check(y.size() < UINT_MAX);
-              mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia,
-                     covar, alpha, 9U, chisq, model, alamda);
+              mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq,
+                     model, alamda);
             }
             if (chisq < copt) {
               i1 = j1;
@@ -291,8 +288,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 5-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << i3 << i4 << i5 << endl;
+  cout << "Optimum 5-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << i3 << i4 << i5 << endl;
 
   copt = 1e100;
   unsigned i6(0);
@@ -316,8 +313,8 @@ void tstmrqmin(UnitTest &ut) {
                   alamda = 0;
                 }
                 Check(y.size() < UINT_MAX);
-                mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia,
-                       covar, alpha, 9U, chisq, model, alamda);
+                mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U,
+                       chisq, model, alamda);
               }
               if (chisq < copt) {
                 i1 = j1;
@@ -346,8 +343,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 6-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << endl;
+  cout << "Optimum 6-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << i3 << i4 << i5 << i6 << endl;
 
   copt = 1e100;
   unsigned i7(0);
@@ -373,8 +370,8 @@ void tstmrqmin(UnitTest &ut) {
                     alamda = 0;
                   }
                   Check(y.size() < UINT_MAX);
-                  mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia,
-                         covar, alpha, 9U, chisq, model, alamda);
+                  mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U,
+                         chisq, model, alamda);
                 }
                 if (chisq < copt) {
                   i1 = j1;
@@ -407,8 +404,8 @@ void tstmrqmin(UnitTest &ut) {
     ia[j1] = false;
     a[j1] = 0.0;
   }
-  cout << "Optimum 7-var is " << sqrt(copt / static_cast<double>(y.size()))
-       << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << i7 << endl;
+  cout << "Optimum 7-var is " << sqrt(copt / static_cast<double>(y.size())) << " for variables "
+       << i1 << i2 << i3 << i4 << i5 << i6 << i7 << endl;
 
   ia.resize(0);
   ia.resize(9, false);
@@ -429,8 +426,8 @@ void tstmrqmin(UnitTest &ut) {
       alamda = 0;
     }
     Check(y.size() < UINT_MAX);
-    mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha,
-           9U, chisq, model, alamda);
+    mrqmin(x, y, sig, static_cast<unsigned>(y.size()), 4U, a, ia, covar, alpha, 9U, chisq, model,
+           alamda);
   }
 
   cout << endl;
@@ -443,11 +440,10 @@ void tstmrqmin(UnitTest &ut) {
   cout << "G = " << a[6] << " +/- " << sqrt(covar[6 + 9 * 6]) << endl;
   cout << "H = " << a[7] << " +/- " << sqrt(covar[7 + 9 * 7]) << endl;
   cout << "J = " << a[8] << " +/- " << sqrt(covar[8 + 9 * 8]) << endl;
-  cout << "rms deviation = " << sqrt(chisq / static_cast<double>(y.size()))
-       << endl;
+  cout << "rms deviation = " << sqrt(chisq / static_cast<double>(y.size())) << endl;
 
   Check(y.size() < UINT_MAX);
-  unsigned const N = static_cast<unsigned>(y.size());
+  auto const N = static_cast<unsigned>(y.size());
   vector<double> xx(4);
   vector<double> dyda(9);
   double maxerr = 0;
@@ -473,7 +469,7 @@ void tstmrqmin(UnitTest &ut) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -482,6 +478,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstmrqmin.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

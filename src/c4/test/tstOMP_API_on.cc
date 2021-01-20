@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstOMP_API_on.cc
  * \author Timothy Kelley
@@ -6,7 +6,7 @@
  * \brief  Demonstrate basic OMP API with OpenMP present
  * \note   Copyright (C) 2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/c4_omp.h"
 #include "ds++/Release.hh"
@@ -20,17 +20,17 @@
 using namespace rtt_c4;
 using rtt_dsxx::UnitTest;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void check_set_get(UnitTest &ut) {
   int const init_n = get_omp_num_threads();
-  set_omp_num_threads(51);
+  set_omp_num_threads(39);
   // use the direct OMP interface to check number of threads was set correctly
   int const new_max{omp_get_max_threads()};
-  FAIL_IF_NOT(51 == new_max);
+  FAIL_IF_NOT(39 == new_max);
   int const new_max_us(get_omp_max_threads());
-  FAIL_IF_NOT(51 == new_max_us);
+  FAIL_IF_NOT(39 == new_max_us);
   // now reset to the previous number of threads
   set_omp_num_threads(init_n);
   int const final_n{get_omp_num_threads()};
@@ -50,13 +50,12 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char **argv) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    run_a_test(ut, check_set_get,
-               "Check getting/setting OpenMP number threads, API available");
+    run_a_test(ut, check_set_get, "Check getting/setting OpenMP number threads, API available");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }
@@ -74,6 +73,6 @@ int main(int argc, char **argv) {
 
 #endif // OPENMP_FOUND
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstOMP_API_on.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

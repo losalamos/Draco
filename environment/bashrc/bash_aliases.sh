@@ -1,15 +1,17 @@
 #!/bin/bash
 ##-*- Mode: bash -*-
-#------------------------------------------------------------------------------#
-# bashrc_aliases
-#
-# bashrc_aliases is sourced by interactive shells from
-# .bash_profile and .bashrc
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+## File  : environment/bashrc/bashrc_aliases.sh
+## Date  : Tuesday, Sep 01, 2020, 19:01 pm
+## Author: Kelly Thompson <kgt@lanl.gov>
+## Note  : Copyright (C) 2020, Triad National Security, LLC., All rights are reserved.
+##
+## bashrc_aliases is sourced by interactive shells from .bash_profile and .bashrc
+#--------------------------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # Draco Dev Env Customizations
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Generic Settings
 alias ll='\ls -Flh'
@@ -29,29 +31,32 @@ alias less='/usr/bin/less -r'
 alias mdstat='cat /proc/mdstat'
 alias meminfo='cat /proc/meminfo'
 alias mroe='more'
-nodename=`uname -n | sed -e 's/[.].*//g'`
+nodename=$(uname -n | sed -e 's/[.].*//g')
 alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
 
 # Module related:
 alias moduel='module'
 alias ma='module avail'
+alias mica='module --ignore_cache avail'
 alias mls='module list'
 alias mld='module load'
 alias mul='module unload'
 alias msh='module show'
 
-#------------------------------------------------------------------------------#
-# Color Prompt
-#------------------------------------------------------------------------------#
+# machines
+alias sierra='ssh -t redcap ssh sierra.llnl.gov'
+alias rzansel='ssh -t ihpc-gate1.lanl.gov ssh rzansel.llnl.gov'
 
-# Provide special ls commands if this is a color-xterm or compatible
-# terminal.
+#--------------------------------------------------------------------------------------------------#
+# Color Prompt
+#--------------------------------------------------------------------------------------------------#
+
+# Provide special ls commands if this is a color-xterm or compatible terminal.
 
 # 1. Does the current terminal support color?
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-  # We have color support; assume it's compliant with Ecma-48
-  # (ISO/IEC-6429). (Lack of such support is extremely rare, and such a case
-  # would tend to support setf rather than setaf.)
+  # We have color support; assume it's compliant with Ecma-48 (ISO/IEC-6429). (Lack of such support
+  # is extremely rare, and such a case would tend to support setf rather than setaf.)
   color_prompt=yes
 fi
 
@@ -60,18 +65,18 @@ case "$TERM" in
   xterm-color|*-256color) color_prompt=yes;;
   emacs|dumb)
     color_prompt=no
-    LS_COLORS=''
+    unset LS_COLORS
     ;;
 esac
-
-# if ! [ -x /usr/bin/dircolors ]; then
-#   color_prompt=no
-# fi
 
 if [[ "${color_prompt:-no}" == "yes" ]]; then
 
   # Use custom colors if provided.
-  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+  if [[ -r ~/.dircolors ]]; then
+    eval "$(dircolors -b ~/.dircolors)"
+  else
+    eval "$(dircolors -b)"
+  fi
 
   # append --color option to some aliased commands
 
@@ -89,8 +94,7 @@ if [[ "${color_prompt:-no}" == "yes" ]]; then
   # colored GCC warnings and errors
   # export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-  # Colorized prompt (might need some extra debian_chroot stuff -- see wls
-  # example).
+  # Colorized prompt (might need some extra debian_chroot stuff -- see wls example).
   if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
   fi
@@ -104,11 +108,11 @@ if [[ "${color_prompt:-no}" == "yes" ]]; then
 fi
 unset color_prompt
 
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 # User Customizations
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
-# Aliases ---------------------------------------------------------------------#
+# Aliases -----------------------------------------------------------------------------------------#
 
 # alias cmakedebug='unset MPI_ROOT;C_FLAGS=-Werror CXX_FLAGS=-Werror cmake -Wdeprecated -Wdev'
 # alias cmakedebugfast='cmake -DBUILD_TESTING=OFF'
@@ -128,6 +132,6 @@ unset color_prompt
 
 # add_to_path /scratch/vendors/bin PATH
 
-#------------------------------------------------------------------------------#
-# End .bash_aliases
-#------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
+# End environment/bashrc/bashrc_aliases.sh
+#--------------------------------------------------------------------------------------------------#

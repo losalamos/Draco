@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Level_Symmetric.hh
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Level_Symmetric_hh
 #define quadrature_Level_Symmetric_hh
@@ -15,12 +14,12 @@
 
 namespace rtt_quadrature {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Level_Symmetric
  * \brief A class to encapsulate a 3D Level Symmetric quadrature set.
  */
-//============================================================================//
+//================================================================================================//
 
 class Level_Symmetric : public Octant_Quadrature {
 public:
@@ -36,22 +35,15 @@ public:
 
   Level_Symmetric(); // disable default construction
 
-  // ACCESSORS
-
   // SERVICES
 
-  // These functions override the virtual member functions specifed in the
-  // parent class Quadrature.
+  // These functions override the virtual member functions specifed in the parent class Quadrature.
 
-  DLL_PUBLIC_quadrature string name() const;
-
-  DLL_PUBLIC_quadrature string parse_name() const;
-
-  DLL_PUBLIC_quadrature Quadrature_Class quadrature_class() const;
-
-  DLL_PUBLIC_quadrature unsigned number_of_levels() const;
-
-  DLL_PUBLIC_quadrature string as_text(string const &indent) const;
+  std::string name() const override;
+  std::string parse_name() const override;
+  Quadrature_Class quadrature_class() const override;
+  unsigned number_of_levels() const override;
+  std::string as_text(std::string const &indent) const override;
 
   // STATICS
 
@@ -61,17 +53,14 @@ private:
   // IMPLEMENTATION
 
   //! Virtual hook for create_ordinate_set
-  DLL_PUBLIC_quadrature virtual void
-  create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
-                           vector<double> &wt) const;
-
-  // DATA
+  void create_octant_ordinates_(std::vector<double> &mu, std::vector<double> &eta,
+                                std::vector<double> &wt) const override;
 };
 
 } // end namespace rtt_quadrature
 
 #endif // quadrature_Level_Symmetric_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Level_Symmetric.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

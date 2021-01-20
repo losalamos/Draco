@@ -1,14 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/String_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class String_Token_Stream.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ *         All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_String_Token_Stream_HH
 #define rtt_String_Token_Stream_HH
@@ -20,7 +17,7 @@ namespace rtt_parser {
 using std::set;
 using std::string;
 
-//-------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief std::string-based token stream
  *
@@ -28,8 +25,7 @@ using std::string;
  * std::string passed to the constructor. The diagnostic output is directed to
  * an internal string that can be retrieved at will.
  */
-
-class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream {
+class String_Token_Stream : public Text_Token_Stream {
 public:
   // CREATORS
 
@@ -46,16 +42,16 @@ public:
   // MANIPULATORS
 
   // Return to the start of the string.
-  void rewind();
+  void rewind() override;
 
   //! Report a condition.
-  virtual void report(Token const &token, string const &message);
+  void report(Token const &token, string const &message) override;
 
   //! Report a condition.
-  virtual void report(string const &message);
+  void report(string const &message) override;
 
   //! Report a comment.
-  virtual void comment(std::string const &message);
+  void comment(std::string const &message) override;
 
   // ACCESSORS
 
@@ -70,15 +66,15 @@ public:
 
 protected:
   //! Generate a locator string.
-  virtual string location_() const;
+  string location_() const override;
 
-  virtual void fill_character_buffer_();
+  void fill_character_buffer_() override;
 
-  virtual bool error_() const;
-  virtual bool end_() const;
+  bool error_() const override;
+  bool end_() const override;
 
-  virtual void push_include(std::string &include_file_name);
-  virtual void pop_include();
+  void push_include(std::string &include_file_name) override;
+  void pop_include() override;
 
 private:
   // IMPLEMENTATION
@@ -95,6 +91,6 @@ private:
 
 #endif // rtt_String_Token_Stream_HH
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of String_Token_Stream.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ipcress/IpcressInterpreter.cc
  * \author Allan Wollaber
@@ -6,7 +6,7 @@
  * \brief  Basic reader to print info in IPCRESS files.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
 #include "IpcressGrayOpacity.hh"
@@ -32,17 +32,17 @@ using std::endl;
 using std::ios;
 using std::string;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*!
  * \brief Basic reader to print info in IPCRESS files.
  *
- * Information about the IPCRESS IPCRESS Interface Library may be
- * found on X-Division's Physical Data Team web site:
+ * Information about the IPCRESS IPCRESS Interface Library may be found on
+ * X-Division's Physical Data Team web site:
  *
  * http://velvet.lanl.gov/PROJECTS/DATA/atomic/ipcress/intro.lasso
  *
- * We have a slightly modified copy of the ipcress libraries
- * (explicitly added compiler libraries) located at:
+ * We have a slightly modified copy of the ipcress libraries (explicitly added
+ * compiler libraries) located at:
  *
  * /radtran/vendors/ipcress
  *
@@ -50,16 +50,15 @@ using std::string;
  *
  * Modification of this executable to make it more useful is encouraged.
  */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void ipcress_file_read(std::string const &op_data_file) {
   // Ipcress data filename (IPCRESS format required)
 
   std::shared_ptr<IpcressFile> spGF;
   try {
-    spGF.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+    spGF = std::make_shared<rtt_cdi_ipcress::IpcressFile>(op_data_file);
   } catch (rtt_dsxx::assertion const & /*excpt*/) {
-    std::cerr << "Error: Can't open file " << op_data_file << ". Aborting"
-              << endl;
+    std::cerr << "Error: Can't open file " << op_data_file << ". Aborting" << endl;
     throw;
   }
 
@@ -76,8 +75,8 @@ void ipcress_file_read(std::string const &op_data_file) {
   cout << "=========================================\n"
        << "For Material " << i + 1 << " with ID number " << matIDs[i]
        << "\n=========================================" << endl;
-  auto spMgOp = std::make_shared<IpcressMultigroupOpacity>(
-      spGF, matIDs[i], rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
+  auto spMgOp = std::make_shared<IpcressMultigroupOpacity>(spGF, matIDs[i], rtt_cdi::ROSSELAND,
+                                                           rtt_cdi::TOTAL);
 
   // set precision
   cout.precision(7);
@@ -85,9 +84,9 @@ void ipcress_file_read(std::string const &op_data_file) {
 
 #if defined(MSVC) && MSVC_VERSION < 1900
   // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
-  // because numeric_limits<double>::max() has a 3-digit exponent.)
-  // Enable two-digit exponent format to stay consistent with GNU and
-  // Intel on Linux.(requires <stdio.h>).
+  // because numeric_limits<double>::max() has a 3-digit exponent.)  Enable
+  // two-digit exponent format to stay consistent with GNU and Intel on
+  // Linux.(requires <stdio.h>).
   unsigned old_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
@@ -123,22 +122,17 @@ void ipcress_file_read(std::string const &op_data_file) {
     Insist((matID < numMaterials), "Invalid material index");
 
     double density(0.0);
-    cout << "Please enter a density from " << dens[0] << " to "
-         << dens[dens.size() - 1] << endl;
+    cout << "Please enter a density from " << dens[0] << " to " << dens[dens.size() - 1] << endl;
     std::cin >> density;
-    if (density <= 0.0) {
-      keepGoing = 0;
+    if (density <= 0.0)
       break;
-    }
 
     double temperature(0.0);
-    cout << "Please select a temperature from " << temps[0] << " to "
-         << temps[temps.size() - 1] << endl;
+    cout << "Please select a temperature from " << temps[0] << " to " << temps[temps.size() - 1]
+         << endl;
     std::cin >> temperature;
-    if (temperature <= 0.0) {
-      keepGoing = 0;
+    if (temperature <= 0.0)
       break;
-    }
 
     cout << "Choose your opacity type:\n"
          << "1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)\n"
@@ -151,50 +145,50 @@ void ipcress_file_read(std::string const &op_data_file) {
     Insist((selID < 6), "Invalid choice.");
 
     if (selID == 1) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::ROSSELAND,
+                                                        rtt_cdi::ABSORPTION);
       cout << "The Gray Rosseland Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
     } else if (selID == 2) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::PLANCK,
+                                                        rtt_cdi::ABSORPTION);
       cout << "The Gray Planck Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
 
     } else if (selID == 3) {
       auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(
           spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
       cout << "The Multigroup Rosseland Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is: " << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is: " << endl;
       std::vector<double> opData = spMGOp->getOpacity(temperature, density);
       cout << "Index \t Group Center \t\t Opacity" << endl;
       for (size_t g = 0; g < opData.size(); ++g)
-        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t "
-             << opData[g] << endl;
+        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t " << opData[g]
+             << endl;
     } else if (selID == 4) {
-      auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(
-          spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
+      auto spMGOp = std::make_shared<IpcressMultigroupOpacity>(spGF, matIDs[matID], rtt_cdi::PLANCK,
+                                                               rtt_cdi::ABSORPTION);
       cout << "The Multigroup Planck Absorption Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is: " << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is: " << endl;
       std::vector<double> opData = spMGOp->getOpacity(temperature, density);
       cout << "Index \t Group Center  \t\t Opacity" << endl;
       for (size_t g = 0; g < opData.size(); ++g)
-        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t "
-             << opData[g] << endl;
+        cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t " << opData[g]
+             << endl;
     }
     if (selID == 5) {
-      auto spGOp = std::make_shared<IpcressGrayOpacity>(
-          spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::TOTAL);
+      auto spGOp = std::make_shared<IpcressGrayOpacity>(spGF, matIDs[matID], rtt_cdi::ROSSELAND,
+                                                        rtt_cdi::TOTAL);
       cout << "The Gray Rosseland Total Opacity for\n"
-           << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-           << density << ", temperature " << temperature << " is "
-           << spGOp->getOpacity(temperature, density) << endl;
+           << "material " << matID << " Id(" << matIDs[matID] << ") at density " << density
+           << ", temperature " << temperature << " is " << spGOp->getOpacity(temperature, density)
+           << endl;
     }
   }
 
@@ -206,7 +200,7 @@ void ipcress_file_read(std::string const &op_data_file) {
   cout << "Ending session." << endl;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   // Process known command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
@@ -217,10 +211,9 @@ int main(int argc, char *argv[]) {
   help_strings['v'] = "print version information and exit.";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
-  std::string const helpstring(
-      "\nUsage: IpcressInterpreter [-hv] "
-      "<ipcress file>\nFollow the prompts to print opacity data to the "
-      "screen.");
+  std::string const helpstring("\nUsage: IpcressInterpreter [-hv] "
+                               "<ipcress file>\nFollow the prompts to print opacity data to the "
+                               "screen.");
 
   int c(0);
   while ((c = program_options()) != -1) {
@@ -230,8 +223,7 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'h': // --help
-      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring
-           << endl;
+      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring << endl;
       return 0;
     }
   }
@@ -243,14 +235,13 @@ int main(int argc, char *argv[]) {
     // >>> UNIT TESTS
     ipcress_file_read(filename);
   } catch (rtt_dsxx::assertion &excpt) {
-    cout << "While attempting to read an opacity file, " << excpt.what()
-         << endl;
+    cout << "While attempting to read an opacity file, " << excpt.what() << endl;
     return 1;
   }
 
   return 0;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of IpcressInterpreter.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

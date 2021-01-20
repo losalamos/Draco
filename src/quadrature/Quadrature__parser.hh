@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Quadrature__parser.hh
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Parser for various quadrature classes.
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC. All rights
  *         reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "Quadrature.hh"
 #include "parser/Class_Parse_Table.hh"
@@ -14,18 +14,18 @@
 namespace rtt_parser {
 using rtt_quadrature::Quadrature;
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Quadrature_Parse_Table
  * \brief Parse table for Quadrature objects
  */
-//============================================================================//
+//================================================================================================//
 
 template <> class Class_Parse_Table<Quadrature> {
 public:
   // TYPEDEFS
 
-  typedef Quadrature Return_Class;
+  using Return_Class = Quadrature;
 
   // MANAGEMENT
 
@@ -45,9 +45,8 @@ public:
 
   // STATICS
 
-  static void register_quadrature(
-      string const &keyword,
-      std::shared_ptr<Quadrature> parse_function(Token_Stream &));
+  static void register_quadrature(string const &keyword,
+                                  std::shared_ptr<Quadrature> parse_function(Token_Stream &));
 
 private:
   // STATICS
@@ -63,6 +62,6 @@ private:
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/Quadrature__parser.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

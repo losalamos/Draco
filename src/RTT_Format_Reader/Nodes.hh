@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   RTT_Format_Reader/Nodes.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Nodes class.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_RTT_Format_Reader_Nodes_hh
 #define rtt_RTT_Format_Reader_Nodes_hh
@@ -14,18 +13,21 @@
 #include "NodeFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//================================================================================================//
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the
- *        nodes block of the mesh file.
+ * \brief Controls parsing, storing, and accessing the data specific to the nodes block of the mesh
+ *        file.
  */
+//================================================================================================//
 class Nodes {
   // typedefs
-  typedef std::ifstream ifstream;
-  typedef std::string string;
-  typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::vector<double> vector_dbl;
-  typedef std::vector<std::vector<double>> vector_vector_dbl;
+  using ifstream = std::ifstream;
+  using string = std::string;
+  using vector_int = std::vector<int>;
+  using vector_vector_int = std::vector<std::vector<int>>;
+  using vector_dbl = std::vector<double>;
+  using vector_vector_dbl = std::vector<std::vector<double>>;
 
   const NodeFlags &nodeFlags;
   const Dims &dims;
@@ -35,11 +37,11 @@ class Nodes {
 
 public:
   Nodes(const NodeFlags &nodeFlags_, const Dims &dims_)
-      : nodeFlags(nodeFlags_), dims(dims_),
-        coords(dims.get_nnodes(), vector_dbl(dims.get_ndim())),
+      : nodeFlags(nodeFlags_), dims(dims_), coords(dims.get_nnodes(), vector_dbl(dims.get_ndim())),
         parents(dims.get_nnodes()),
-        flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) {}
-  ~Nodes() {}
+        flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) { /* empty */
+  }
+  ~Nodes() = default;
 
   void readNodes(ifstream &meshfile);
   static int readNextInt(ifstream &meshfile);
@@ -64,8 +66,7 @@ public:
   vector_dbl get_coords(size_t node_numb) const { return coords[node_numb]; }
 
   /*!
-   * \brief Returns the coordinate value for the specified node and direction
-   *        (i.e., x, y, and z).
+   * \brief Returns the coordinate value for the specified node and direction (i.e., x, y, and z).
    * \param node_numb Node number.
    * \param coord_index Coordinate index number (x = 0, y = 1, z = 2).
    * \return The node coordinate value.
@@ -87,15 +88,13 @@ public:
    * \param flag_numb Node flag index.
    * \return The node flag.
    */
-  int get_flags(size_t node_numb, size_t flag_numb) const {
-    return flags[node_numb][flag_numb];
-  }
+  int get_flags(size_t node_numb, size_t flag_numb) const { return flags[node_numb][flag_numb]; }
 };
 
 } // end namespace rtt_RTT_Format_Reader
 
 #endif // rtt_RTT_Format_Reader_Nodes_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of RTT_Format_Reader/Nodes.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

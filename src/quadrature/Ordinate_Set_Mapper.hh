@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set_Mapper.hh
  * \author Allan Wollaber
@@ -6,7 +6,7 @@
  * \brief  Declarations for the class rtt_quadrature::Ordinate_Set_Mapper.
  * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_OrdinateSetMapper_hh
 #define quadrature_OrdinateSetMapper_hh
@@ -15,13 +15,13 @@
 
 namespace rtt_quadrature {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Ordinate_Set_Mapper
  *
  * \brief Provides services to map an angle ordinate onto an ordinate set
  */
-//============================================================================//
+//================================================================================================//
 
 class Ordinate_Set_Mapper {
 public:
@@ -54,8 +54,7 @@ public:
   bool check_class_invariants() const;
 
   //! Maps an ordinate and weight into the ordinate set
-  void map_angle_into_ordinates(const Ordinate &ord_in,
-                                const Interpolation_Type &interp_in,
+  void map_angle_into_ordinates(const Ordinate &ord_in, const Interpolation_Type &interp_in,
                                 std::vector<double> &weights_in) const;
 
 private:
@@ -122,6 +121,6 @@ private:
 
 #endif // quadrature_OrdinateSetMapper_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/OrdinateSetMapper.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

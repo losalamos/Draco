@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstParallelUnitTestFailMode.cc
  * \author Kelly Thompson
@@ -6,7 +6,7 @@
  * \brief  Test the functionality of the class ParallelUnitTest
  * \note   Copyright (C) 2016-2020 Los Alamos National Securities, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*
  * NOTE: This is not a good example of how ParallelUnitTest should be used.
@@ -27,9 +27,9 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 /*
  * Demonstrate that the normal access functions work as indended.
@@ -133,7 +133,7 @@ void tstTwo(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   stringstream output;
@@ -164,8 +164,7 @@ int main(int argc, char *argv[]) {
   } catch (rtt_dsxx::assertion &err) {
     std::string msg = err.what();
     if (msg != std::string("Success")) {
-      cout << "ERROR: DBC assertion while testing " << argv[0] << ", "
-           << err.what() << endl;
+      cout << "ERROR: DBC assertion while testing " << argv[0] << ", " << err.what() << endl;
       // ut.numFails++;
       return 1;
     }
@@ -179,16 +178,15 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  //----------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------------------------//
   // Now that ut has called ~ParallelUnitTest(), we need to examine the
   // output to show that the global sum ran correctly.
 
   string msg(output.str());
   int retval(0);
   if (numnodes_gt_1 && node_is_0) {
-    string const expectedOutput = string("tstParallelUnitTestFailMode") +
-                                  rtt_dsxx::exeExtension +
-                                  string(" Test: FAILED.");
+    string const expectedOutput =
+        string("tstParallelUnitTestFailMode") + rtt_dsxx::exeExtension + string(" Test: FAILED.");
     size_t found = msg.find(expectedOutput);
     if (found != string::npos)
       tstTwoPass = true;
@@ -216,6 +214,6 @@ int main(int argc, char *argv[]) {
   return retval;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstunit_test.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

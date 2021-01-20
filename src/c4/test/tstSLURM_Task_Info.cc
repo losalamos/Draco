@@ -1,11 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   c4/test/tstSLURM_Task_Info.cc
  * \author Tim Kelley
  * \date   Fri Jun 7 08:06:53 2019
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "c4/SLURM_Task_Info.hh"
 #include "ds++/Release.hh"
@@ -22,14 +22,14 @@ using rtt_dsxx::UnitTest;
 using env_store_value = std::pair<bool, std::string>;
 using env_store_t = std::map<std::string, env_store_value>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Helper function: Record SLURM keys and values, if any, then remove them from
  * environment. Return recorded values so they can be restored later. */
 env_store_t clean_env() {
   // for each key, is it defined? If so, record the value, then unset it. If
   // not, note that.
-  std::array<std::string, 3> slurm_keys = {
-      "SLURM_CPUS_PER_TASK", "SLURM_NTASKS", "SLURM_JOB_NUM_NODES"};
+  std::array<std::string, 3> slurm_keys = {"SLURM_CPUS_PER_TASK", "SLURM_NTASKS",
+                                           "SLURM_JOB_NUM_NODES"};
   env_store_t store{};
   for (auto &k : slurm_keys) {
     // We're assuming none of those flags were set to something like 2 billion
@@ -43,8 +43,8 @@ env_store_t clean_env() {
       store.insert({k, {true, storestr.str()}});
       int unset_ok = draco_unsetenv(k.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
-               __FUNCTION__, __LINE__, k.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n", __FUNCTION__,
+               __LINE__, k.c_str(), errno);
         // throw something?
       }
     } else {
@@ -54,7 +54,7 @@ env_store_t clean_env() {
   return store;
 } // clean_env
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Helper function: Restore the SLURM keys that were previously defined. */
 void restore_env(env_store_t const &store) {
   /* For each key, if it was defined, restore that definition. If it was
@@ -67,16 +67,15 @@ void restore_env(env_store_t const &store) {
       std::string const &val_str{val.second};
       int set_ok = draco_setenv(key.c_str(), val_str.c_str());
       if (0 != set_ok) {
-        printf(
-            "%s:%i Failed to set environment variable %s to %s, errno = %d\n",
-            __FUNCTION__, __LINE__, key.c_str(), val_str.c_str(), errno);
+        printf("%s:%i Failed to set environment variable %s to %s, errno = %d\n", __FUNCTION__,
+               __LINE__, key.c_str(), val_str.c_str(), errno);
         // throw something
       }
     } else {
       int unset_ok = draco_unsetenv(key.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
-               __FUNCTION__, __LINE__, key.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n", __FUNCTION__,
+               __LINE__, key.c_str(), errno);
         // throw something?
       }
     }
@@ -84,7 +83,7 @@ void restore_env(env_store_t const &store) {
   return;
 } // restore_env
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a "clean" environment--that is, no slurm keys. */
 void test_instantiate_SLURM_Info(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
@@ -100,14 +99,13 @@ void test_instantiate_SLURM_Info(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a "live" environment--that is, slurm keys are defined. */
 void test_SLURM_Info(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
   auto orig_env = clean_env();
   int const iset_cpus_per_task{21}, iset_ntasks{341}, iset_job_num_nodes{1001};
-  const char *set_cpus_per_task{"21"}, *set_ntasks{"341"},
-      *set_job_num_nodes{"1001"};
+  const char *set_cpus_per_task{"21"}, *set_ntasks{"341"}, *set_job_num_nodes{"1001"};
   env_store_t test_env = {{"SLURM_CPUS_PER_TASK", {true, set_cpus_per_task}},
                           {"SLURM_NTASKS", {true, set_ntasks}},
                           {"SLURM_JOB_NUM_NODES", {true, set_job_num_nodes}}};
@@ -123,7 +121,7 @@ void test_SLURM_Info(UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test with a partial "live" environment--that is, slurm keys are defined. */
 void test_SLURM_Info_partial(UnitTest &ut) {
   /* Test instantiating SLURM_Task_Info in a 'clean' environment */
@@ -146,7 +144,7 @@ void test_SLURM_Info_partial(UnitTest &ut) {
 
 using t_func = std::function<void(UnitTest &)>;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   f(u);
   if (u.numFails == 0) {
@@ -155,18 +153,17 @@ void run_a_test(UnitTest &u, t_func f, std::string const &msg) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     run_a_test(ut, test_instantiate_SLURM_Info, "SLURM_Info (clean env) ok.");
     run_a_test(ut, test_SLURM_Info, "SLURM_Info (SLURM vars set) ok.");
-    run_a_test(ut, test_SLURM_Info_partial,
-               "SLURM_Info (partial SLURM vars set) ok.");
+    run_a_test(ut, test_SLURM_Info_partial, "SLURM_Info (partial SLURM vars set) ok.");
   } // try--catches in the epilog:
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of c4/test/tstSLURM_Task_Info.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

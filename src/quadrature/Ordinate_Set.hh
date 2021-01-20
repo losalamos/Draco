@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   quadrature/Ordinate_Set.hh
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef quadrature_OrdinateSet_hh
 #define quadrature_OrdinateSet_hh
@@ -16,14 +16,14 @@
 
 namespace rtt_quadrature {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class Ordinate_Set
  *
  * \brief An ordered collection of Ordinates that make up a complete
  * quadrature set for a specified geometry.
  */
-//============================================================================//
+//================================================================================================//
 
 class Ordinate_Set {
 public:
@@ -40,17 +40,15 @@ public:
 
   // CREATORS
 
-  Ordinate_Set(unsigned const dimension,
-               rtt_mesh_element::Geometry const geometry,
-               std::vector<Ordinate> const &ordinates,
-               bool const has_starting_directions = true,
+  Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry const geometry,
+               std::vector<Ordinate> const &ordinates, bool const has_starting_directions = true,
                bool const has_extra_starting_directions = false,
                Ordering const ordering = LEVEL_ORDERED);
 
   Ordinate_Set(Ordinate_Set const &other);
 
   //! destructor
-  virtual ~Ordinate_Set() {}
+  virtual ~Ordinate_Set() = default;
 
   // ACCESSORS
 
@@ -73,9 +71,7 @@ public:
   bool has_starting_directions() const { return has_starting_directions_; }
 
   //! Does this set include extra starting directions?
-  bool has_extra_starting_directions() const {
-    return has_extra_starting_directions_;
-  }
+  bool has_extra_starting_directions() const { return has_extra_starting_directions_; }
 
   Ordering ordering() const { return ordering_; }
 
@@ -111,6 +107,6 @@ private:
 
 #endif // quadrature_OrdinateSet_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of quadrature/OrdinateSet.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

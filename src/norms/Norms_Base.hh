@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
   \file   Norms_Base.hh
   \author Rob Lowrie
   \date   Fri Jan 14 13:01:19 2005
   \brief  Header file for Norms_Base.
   \note   Copyright (C) 2016-2020 Triad National Security, LLC.
-          All rights reserved.
-*/
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+          All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #ifndef rtt_norms_Norms_Base_hh
 #define rtt_norms_Norms_Base_hh
@@ -19,7 +16,7 @@
 
 namespace rtt_norms {
 
-//============================================================================//
+//================================================================================================//
 /*!
   \class Norms_Base
 
@@ -28,22 +25,22 @@ namespace rtt_norms {
   This class is not intended to be used by clients.  It allows non-template
   dependent functionality of Norms to be compiled in a single place.
 */
-//============================================================================//
-class DLL_PUBLIC_norms Norms_Base {
+//================================================================================================//
+class Norms_Base {
 protected:
   // DATA
 
   // sum of absolute values
-  double d_sum_L1;
+  double d_sum_L1 = {0.0};
 
   // sum of squares of values
-  double d_sum_L2;
+  double d_sum_L2 = {0.0};
 
   // max norm.
-  double d_Linf;
+  double d_Linf = {0.0};
 
   // sum of weights
-  double d_sum_weights;
+  double d_sum_weights = {0.0};
 
 public:
   // CREATORS
@@ -53,7 +50,7 @@ public:
   // Use default copy ctor, dtor, and assignment.
 
   /// Destructor for Norms_Base.
-  virtual ~Norms_Base();
+  virtual ~Norms_Base() = default;
 
   // MANIPULATORS
 
@@ -85,6 +82,6 @@ public:
 
 #endif // rtt_norms_Norms_Base_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of norms/Norms_Base.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

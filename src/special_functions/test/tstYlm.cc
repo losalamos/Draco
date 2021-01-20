@@ -1,12 +1,10 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   special_functions/test/tstYlm.cc
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
- * \brief  
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
- *         All rights reserved. */
-//----------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -18,30 +16,28 @@
 using namespace std;
 using namespace rtt_sf;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // Tests
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
-void comparecPlk(unsigned const l, int const k, double const x,
-                 double const expVal, rtt_dsxx::UnitTest &ut) {
+void comparecPlk(unsigned const l, int const k, double const x, double const expVal,
+                 rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   std::ostringstream msg;
 
   double const val(cPlk(l, k, x));
 
   if (soft_equiv(val, expVal)) {
-    msg << "cPlk(" << l << "," << k
-        << ") function returned the expected value = " << expVal << ".";
+    msg << "cPlk(" << l << "," << k << ") function returned the expected value = " << expVal << ".";
     ut.passes(msg.str());
   } else {
-    msg << "cPlk(" << l << "," << k
-        << ") function did NOT return the expected value.\n"
+    msg << "cPlk(" << l << "," << k << ") function did NOT return the expected value.\n"
         << "\tExpected " << expVal << ", but found " << val;
     ut.failure(msg.str());
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstcPlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -105,10 +101,9 @@ void tstcPlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
-void compareNormYlk(unsigned const l, int const k, double const theta,
-                    double const phi, double const expVal,
-                    rtt_dsxx::UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+void compareNormYlk(unsigned const l, int const k, double const theta, double const phi,
+                    double const expVal, rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   std::ostringstream msg;
 
@@ -119,77 +114,70 @@ void compareNormYlk(unsigned const l, int const k, double const theta,
         << ") function returned the expected value = " << expVal << ".";
     ut.passes(msg.str());
   } else {
-    msg << "normalizedYlk(" << l << "," << k
-        << ") function did NOT return the expected value.\n"
+    msg << "normalizedYlk(" << l << "," << k << ") function did NOT return the expected value.\n"
         << "\tExpected " << expVal << ", but found " << Ylk;
     ut.failure(msg.str());
   }
 }
 
-//----------------------------------------------------------------------------//
-void compareRealYlk(unsigned const l, int const k, double const theta,
-                    double const phi, double const expVal,
-                    rtt_dsxx::UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+void compareRealYlk(unsigned const l, int const k, double const theta, double const phi,
+                    double const expVal, rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   std::ostringstream msg;
 
   double const Ylk(realYlk(l, k, theta, phi));
 
   if (soft_equiv(Ylk, expVal)) {
-    msg << "realYlk(" << l << "," << k
-        << ") function returned the expected value = " << expVal << ".";
+    msg << "realYlk(" << l << "," << k << ") function returned the expected value = " << expVal
+        << ".";
     ut.passes(msg.str());
   } else {
-    msg << "realYlk(" << l << "," << k
-        << ") function did NOT return the expected value.\n"
+    msg << "realYlk(" << l << "," << k << ") function did NOT return the expected value.\n"
         << "\tExpected " << expVal << ", but found " << Ylk;
     ut.failure(msg.str());
   }
 }
 
-//----------------------------------------------------------------------------//
-void compareGalerkinYlk(unsigned const l, int const k, double const theta,
-                        double const phi, double const expVal,
-                        rtt_dsxx::UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+void compareGalerkinYlk(unsigned const l, int const k, double const theta, double const phi,
+                        double const expVal, rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   std::ostringstream msg;
 
   double const Ylk(galerkinYlk(l, k, cos(theta), phi, (4.0 * rtt_units::PI)));
 
   if (soft_equiv(Ylk, expVal)) {
-    msg << "galerkinYlk(" << l << "," << k
-        << ") function returned the expected value = " << expVal << ".";
+    msg << "galerkinYlk(" << l << "," << k << ") function returned the expected value = " << expVal
+        << ".";
     ut.passes(msg.str());
   } else {
-    msg << "galerkinYlk(" << l << "," << k
-        << ") function did NOT return the expected value.\n"
+    msg << "galerkinYlk(" << l << "," << k << ") function did NOT return the expected value.\n"
         << "\tExpected " << expVal << ", but found " << Ylk;
     ut.failure(msg.str());
   }
 }
 
-//----------------------------------------------------------------------------//
-void compareComplexYlk(unsigned const l, int const k, double const theta,
-                       double const phi, double const expVal,
-                       rtt_dsxx::UnitTest &ut) {
+//------------------------------------------------------------------------------------------------//
+void compareComplexYlk(unsigned const l, int const k, double const theta, double const phi,
+                       double const expVal, rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   std::ostringstream msg;
 
   double const Ylk(complexYlk(l, k, theta, phi));
 
   if (soft_equiv(Ylk, expVal)) {
-    msg << "complexYlk(" << l << "," << k
-        << ") function returned the expected value = " << expVal << ".";
+    msg << "complexYlk(" << l << "," << k << ") function returned the expected value = " << expVal
+        << ".";
     ut.passes(msg.str());
   } else {
-    msg << "complexYlk(" << l << "," << k
-        << ") function did NOT return the expected value.\n"
+    msg << "complexYlk(" << l << "," << k << ") function did NOT return the expected value.\n"
         << "\tExpected " << expVal << ", but found " << Ylk;
     ut.failure(msg.str());
   }
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -233,20 +221,18 @@ void tstNormalizedYlk(rtt_dsxx::UnitTest &ut) {
   compareNormYlk(2, 2, theta, phi, expVal, ut);
 
   // Test rotational invariance
-  if (soft_equiv(normalizedYlk(3, 2, theta, phi),
-                 normalizedYlk(3, 2, theta + 2 * PI, phi)))
+  if (soft_equiv(normalizedYlk(3, 2, theta, phi), normalizedYlk(3, 2, theta + 2 * PI, phi)))
     ut.passes("Azimuthal invariance looks okay.");
   else
     ut.failure("Failed azimuthal invariance test.");
-  if (soft_equiv(normalizedYlk(3, 2, theta, phi),
-                 normalizedYlk(3, 2, theta, phi + PI)))
+  if (soft_equiv(normalizedYlk(3, 2, theta, phi), normalizedYlk(3, 2, theta, phi + PI)))
     ut.passes("Polar invariance looks okay.");
   else
     ut.failure("Failed polar invariance test.");
 
   return;
 }
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstRealYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -272,7 +258,7 @@ void tstRealYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -299,7 +285,7 @@ void tstComplexYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::soft_equiv;
   using rtt_units::PI;
@@ -325,7 +311,7 @@ void tstgalerkinYlk(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -338,6 +324,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of testYlm.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

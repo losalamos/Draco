@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   parser/test/tstAbstract_Class_Contextual_Parser.cc
  * \author Kent G. Budge
@@ -6,7 +6,7 @@
  * \brief  Test the Abstract_Class_Contextual_Parser template
  * \note   Copyright (C) 2016-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,14 +19,13 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // TESTS
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Declare an abstract class, Parent, for which we wish to write a constructor.
  * The following would typically be declared in a file named Parent.hh
  */
-
 class Parent {
 public:
   explicit Parent(int const magic) : magic_(magic) {}
@@ -35,7 +34,7 @@ public:
 
   int magic() const { return magic_; }
 
-  virtual ~Parent() {}
+  virtual ~Parent() = default;
 
   virtual string name() = 0;
   // Makes this class abstract, and gives us a way to test later which child
@@ -45,7 +44,7 @@ private:
   int magic_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Declare a parse table for parsing objects derived from Parent. Note that this
  * must be in the rtt_parser namespace regardless of which namespace Parent
@@ -57,7 +56,7 @@ template <> class Class_Parse_Table<Parent> {
 public:
   // TYPEDEFS
 
-  typedef Parent Return_Class;
+  using Return_Class = Parent;
 
   // MANAGEMENT
 
@@ -88,14 +87,12 @@ public:
 
   Parse_Table const &parse_table() const { return parse_table_; }
 
-  static void register_model(
-      string const &keyword,
-      std::shared_ptr<Parent> parse_function(Token_Stream &, int const &)) {
+  static void register_model(string const &keyword,
+                             std::shared_ptr<Parent> parse_function(Token_Stream &, int const &)) {
     Abstract_Class_Parser<Parent, get_parse_table_, get_parsed_object_,
                           Contextual_Parse_Functor<Parent, int, get_context_>>::
         register_child(keyword,
-                       Contextual_Parse_Functor<Parent, int, get_context_>(
-                           parse_function));
+                       Contextual_Parse_Functor<Parent, int, get_context_>(parse_function));
     // This function allows downstream developers to add new daughter classes to
     // the parser without having to modify upstream code.
   }
@@ -129,25 +126,24 @@ std::shared_ptr<Parent> Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
 Parse_Table Class_Parse_Table<Parent>::parse_table_;
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Specialization of the parse_class template function for T=Parent
  */
-template <>
-std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
+template <> std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
   return parse_class_from_table<Class_Parse_Table<Parent>>(tokens, context);
 }
 
 } // namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * We now declare a child class derived from Parent.  The following would
  * normally be placed in the file Son.hh
  */
 class Son : public Parent {
 public:
-  virtual string name() { return "son"; }
+  string name() override { return "son"; }
 
   Son(double /*snip_and_snails*/, int const context) : Parent(context) {}
   // "snips and snails" is provided by the parser based on the parsed
@@ -156,7 +152,7 @@ public:
   // parameter, but we do want to check that the context is got right.
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Now declare a parser class for parsing specifications for Son. Typically the
  * child parser class will be derived from the parent parser class so that parse
@@ -167,24 +163,19 @@ template <> class Class_Parse_Table<Son> : public Class_Parse_Table<Parent> {
 public:
   // TYPEDEFS
 
-  typedef Son Return_Class;
+  using Return_Class = Son;
 
   // MANAGEMENT
 
-  explicit Class_Parse_Table(int const context_in)
-      : Class_Parse_Table<Parent>(context_in) {
+  explicit Class_Parse_Table(int const context_in) : Class_Parse_Table<Parent>(context_in) {
     if (!parse_table_is_initialized_) {
       // The parser class must populate the parse_table_ with the keywords and
       // parse functions needed to parse a specification. This is done once the
       // first time any Class_Parse_Table<Son> object is constructed.
 
-      const Keyword keywords[] = {
-          {"snips and snails", parse_snips_and_snails, 0, ""},
-      };
-
-      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
-      parse_table_.add(keywords, number_of_keywords);
-
+      std::array<Keyword, 1> const keywords{
+          Keyword{"snips and snails", parse_snips_and_snails, 0, ""}};
+      parse_table_.add(keywords.data(), keywords.size());
       parse_table_is_initialized_ = true;
     }
 
@@ -209,8 +200,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (rtt_dsxx::soft_equiv(snips_and_snails, -1.0,
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(snips_and_snails, -1.0, std::numeric_limits<double>::epsilon())) {
       tokens.report_semantic_error("no snips and snails specified");
     }
   }
@@ -248,36 +238,33 @@ private:
   static bool parse_table_is_initialized_;
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
 Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
-//----------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
-                                      int const &context) {
+//------------------------------------------------------------------------------------------------//
+template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens, int const &context) {
   return parse_class_from_table<Class_Parse_Table<Son>>(tokens, context);
 }
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Now define a second child of Parent, which we will (whimsically) call
  * Daughter. The following would typicall be placed in the file Daughter.hh
  */
-
 class Daughter : public Parent {
 public:
-  virtual string name() { return "daughter"; }
+  string name() override { return "daughter"; }
 
   Daughter(double /*sugar_and_spice*/) : Parent(0) {}
   // This child doesn't care about the context, which is perfectly acceptable
   // (if it makes sense).
 };
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /*
  * Define a parser class now for Daughter. This is similar to what we do for Son
  * so we will go light on comments.
@@ -287,18 +274,15 @@ template <> class Class_Parse_Table<Daughter> {
 public:
   // TYPEDEFS
 
-  typedef Daughter Return_Class;
+  using Return_Class = Daughter;
 
   // MANAGEMENT
 
   Class_Parse_Table() {
     if (!parse_table_is_initialized_) {
-      const Keyword keywords[] = {
-          {"sugar and spice", parse_sugar_and_spice, 0, ""},
-      };
-
-      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
-      parse_table_.add(keywords, number_of_keywords);
+      std::array<Keyword, 1> const keywords{
+          Keyword{"sugar and spice", parse_sugar_and_spice, 0, ""}};
+      parse_table_.add(keywords.data(), keywords.size());
       parse_table_is_initialized_ = true;
     }
 
@@ -314,8 +298,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (rtt_dsxx::soft_equiv(sugar_and_spice, -1.0,
-                             std::numeric_limits<double>::epsilon())) {
+    if (rtt_dsxx::soft_equiv(sugar_and_spice, -1.0, std::numeric_limits<double>::epsilon())) {
       tokens.report_semantic_error("no sugar and spice specified");
     }
   }
@@ -353,9 +336,8 @@ Class_Parse_Table<Daughter> *Class_Parse_Table<Daughter>::current_;
 Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
-//----------------------------------------------------------------------------//
-template <>
-std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
+//------------------------------------------------------------------------------------------------//
+template <> std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 
@@ -372,7 +354,7 @@ std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens, int const &) {
   return parse_class<Daughter>(tokens);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 /* Test all the above */
 
 void test(UnitTest &ut) {
@@ -398,7 +380,7 @@ void test(UnitTest &ut) {
   ut.check(parent->magic() == 42, "context");
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -408,6 +390,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // end of tstAbstract_Class_Contextual_Parser.cc
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
