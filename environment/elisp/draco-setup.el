@@ -237,20 +237,6 @@ shell-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
-(defcustom draco-want-cvs-mode t
-  "*Does the user want to have the Draco minor mode enabled for
-cvs-mode?"
-:group 'draco-mode
-:type '(radio	(const :tag "Yes" t)
-		(const :tag "No"  nil)))
-
-;; (defcustom draco-want-doxymacs-mode nil
-;;   "*Does the user want to have the Draco minor mode enabled for
-;; doxymacs-mode?"
-;; :group 'draco-mode
-;; :type '(radio	(const :tag "Yes" t)
-;; 		(const :tag "No"  nil)))
-
 (defcustom draco-want-sh-mode t
   "*Does the user want to have the Draco minor mode enabled for
 sh-mode?"
