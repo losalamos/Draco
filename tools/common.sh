@@ -92,7 +92,7 @@ function machineName
     echo "Unable to determine machine name, please edit tools/common.sh."
     return 1
   fi
-  echo $sysName
+  echo "$sysName"
 }
 
 # Logic taken from /usr/projects/hpcsoft/templates/header
