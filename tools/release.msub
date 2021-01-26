@@ -8,14 +8,15 @@
 ## Generic setup
 ##---------------------------------------------------------------------------##
 
-source $draco_script_dir/common.sh
-export buildflavor=`flavor`
-export build_pe=`npes_build`
-test_pe=`npes_test`
+# shellcheck source=tools/common.sh
+source "$draco_script_dir/common.sh"
+export buildflavor=$(flavor)
+export build_pe=$(npes_build)
+test_pe=$(npes_test)
 
 # For Darwin and ATS-2, if the cuda module is loaded, then limit testing parallelism to avoid
 # crashing the GPU.
-if [[ $(echo $_LMFILES_ | grep -c /cuda/) -gt 0 ]]; then
+if [[ $(echo "${_LMFILES_}" | grep -c /cuda/) -gt 0 ]]; then
   test_pe=12
 fi
 export test_pe
@@ -27,15 +28,16 @@ export test_pe
 verbose=1
 if test $verbose == 1; then
   echo
-  echo "Starting release build for $package - $rttversion - $buildflavor - $TARGET:"
+  echo "Starting release build for ${package:-unknown} - ${rttversion:-unknown} - ${buildflavor} - $TARGET:"
   echo "================================================================================"
-  echo "install_prefix = $install_prefix/$rttversion"
-  echo "build_prefix   = $build_prefix/$rttversion"
+  echo "install_prefix = ${install_prefix:-unknown}/$rttversion"
+  echo "build_prefix   = ${build_prefix:-unknown}/$rttversion"
   echo
   echo "make command = make -j $build_pe -l $build_pe"
   echo "test command = ctest -j $test_pe"
-  echo "steps        = ${steps}"
-  echo "queue        = $access_queue"
+  echo "steps        = ${steps:-unknown}"
+  # shellcheck disable=SC2154
+  echo "queue        = ${access_queue}"
   echo "cmake opts   = $CONFIG_EXTRA"
   echo
 fi
