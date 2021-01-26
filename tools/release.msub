@@ -11,11 +11,14 @@
 source $draco_script_dir/common.sh
 export buildflavor=`flavor`
 export build_pe=`npes_build`
-export test_pe=`npes_test`
-case `uname -n` in
-rzansel* | sierra* )  export test_pe=80 ;;
-esac
+test_pe=`npes_test`
 
+# For Darwin and ATS-2, if the cuda module is loaded, then limit testing parallelism to avoid
+# crashing the GPU.
+if [[ $(echo $_LMFILES_ | grep -c /cuda/) -gt 0 ]]; then
+  test_pe=12
+fi
+export test_pe
 
 ##---------------------------------------------------------------------------##
 ## Print a summary of this build
