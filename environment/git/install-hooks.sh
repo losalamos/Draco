@@ -19,19 +19,22 @@ HOOKS="pre-commit pre-commit-clang-format pre-commit-flake8 pre-commit-f90-forma
 ###########################################################
 # There should be no need to change anything below this line.
 
-export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+rscriptdir="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+export rscriptdir
 
 if [[ $1 ]]; then
   if [[ -d $1/.git ]]; then
-    export dotgitdir="$( cd "$1/.git" && pwd )"
+    dotgitdir="$( cd "$1/.git" && pwd )"
   else
     echo "ERROR: Cannot find $1/.git. Aborting"
     exit 1
   fi
 else
-  export dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
+  dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
 fi
+export dotgitdir
 
+# shellcheck source=environment/git/canonicalize_filename.sh
 . "$(dirname -- "$0")/canonicalize_filename.sh"
 
 # exit on error
@@ -55,18 +58,16 @@ copy_hooks() {
   echo "Checking if hooks are executable:"
   for hook in $HOOKS; do
     if [ ! -x "$dotgitdir/hooks/$hook" ] ; then
-      chmod +x $dotgitdir/hooks/$hook
+      chmod +x "$dotgitdir/hooks/$hook"
     else
       echo "$hook OK."
     fi
   done
 }
 
-
 echo ""
 echo "Git pre-commit hook installation."
 echo ""
-
 
 if [ -d "$dotgitdir/hooks" ] ; then
   # create hooks subfolder if it does not yet exist
