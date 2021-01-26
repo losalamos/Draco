@@ -256,10 +256,6 @@ auto-mode-alist.
   [ f6 ]   - Insert C++ comment divider
   [ M-f5 ] - Insert C++ function comment
   [ M-f6 ] - Insert C++ class comment
-  [ S-f5 ] - Insert doxygen function comment
-  [ S-f6 ] - Insert doxygen file comment
-  [ C-f5 ] - Insert doxygen multiline comment
-  [ C-f6 ] - Insert doxygen singleline comment
 - Turn on font lock.
 - Turn on auto fill.
 - Turn on draco-mode."
@@ -267,7 +263,6 @@ auto-mode-alist.
     (progn
       (autoload 'c++-mode "cc-mode" "C++ Editing Mode" t)
       (autoload 'c-mode   "cc-mode" "C Editing Mode" t)
-;;      (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
       (setq auto-mode-alist
 	    (append '(("\\.C$"      . c++-mode)
 		      ("\\.cc$"     . c++-mode)
@@ -292,21 +287,9 @@ auto-mode-alist.
 	      ["Insert C++ comment block"   draco-cc-divider t]
 	      ["Insert C++ function divider" draco-insert-function-doc t]
 	      ["Insert C++ class comment block"   draco-insert-class-doc       t]
-;	      ["Insert Doxygen singleline comment" doxymacs-insert-blank-singleline-comment t ]
-;	      ["Insert Doxygen multiline comment" doxymacs-insert-blank-multiline-comment t ]
-;	      ["Insert Doxygen file comment" doxymacs-insert-file-comment t ]
-;	      ["Insert Doxygen function comment" doxymacs-insert-function-comment t ]
-;	      ["Insert Doxygen member comment" doxymacs-insert-member-comment t ]
-;	      ["Insert Doxygen grouping comment" doxymacs-insert-grouping-comment t ]
 	      ["Insert C divider" draco-c-comment-divider t]
 	      ["Insert C comment block"   draco-c-divider t]
 	      ))
-
-            ;; Borrowed from
-            ;; http://www.esperi.demon.co.uk/nix/xemacs/personal/init-prog-modes.html
-
-            ;; Also see help for XEmacs variable c-offsets-alist
-            ;; \C-h v c-offset-alist
       (defun draco-setup-c-mode ()
 	"Setup C, C++ mode for Draco Developers.
 
@@ -347,20 +330,20 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
          )
         )
 
-      (if draco-colorize-modeline
-	  (add-hook 'c++-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "skyblue" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer)))))
-      (if draco-colorize-modeline
-	  (add-hook 'c-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "pink" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer)))))
+      ;; (if draco-colorize-modeline
+      ;;     (add-hook 'c++-mode-hook
+      ;;   	    '(lambda ()
+      ;;   	       (set-face-background 'modeline
+      ;;   				    "skyblue" (current-buffer))
+      ;;   	       (set-face-foreground 'modeline
+      ;;   				    "black"   (current-buffer)))))
+      ;; (if draco-colorize-modeline
+      ;;     (add-hook 'c-mode-hook
+      ;;   	    '(lambda ()
+      ;;   	       (set-face-background 'modeline
+      ;;   				    "pink" (current-buffer))
+      ;;   	       (set-face-foreground 'modeline
+      ;;   				    "black"   (current-buffer)))))
 
       (defun draco-c-mode-hook ()
 	"DRACO hooks added to C/C++ mode.
@@ -373,29 +356,25 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-set-style "draco")
 	(local-set-key "\C-m" 'newline-and-indent)
 	(set-fill-column draco-code-comment-width)
-        (require 'fill-column-indicator)
-        (fci-mode)
 	(local-set-key [(f5)] 'draco-cc-divider)
 	(local-set-key [(f6)] 'draco-insert-comment-divider)
 	(local-set-key [(meta f5)] 'draco-insert-function-doc)
 	(local-set-key [(meta f6)] 'draco-insert-class-doc)
-;	(local-set-key [(shift f5)] 'doxymacs-insert-function-comment)
-;	(local-set-key [(shift f6)] 'doxymacs-insert-file-comment)
-;	(local-set-key [(control f5)] 'doxymacs-insert-blank-multiline-comment)
-;	(local-set-key [(control f6)] 'doxymacs-insert-blank-singleline-comment)
 	(draco-mode-update-menu (draco-menu-insert-comments-cc))
 	(turn-on-font-lock)
+        (if (> emacs-major-version 24)
+            (require 'fill-column-indicator)
+          (fci-mode))
 	(turn-on-auto-fill))
+      ;; register the draco-c-mode-hook
       (add-hook 'c-mode-common-hook 'draco-c-mode-hook)
       (add-hook 'c-mode-common-hook 'imenu-add-menubar-index)
-;      (add-hook 'c-mode-common-hook 'draco-add-style)
       (add-hook 'c-mode-common-hook 'turn-on-draco-mode)
       (add-hook 'font-lock-mode-hook
 		'(lambda ()
 		   (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
 		       (draco-font-lock))))
       ))
-
 
 ;; ========================================
 ;; AUCTEX
@@ -591,14 +570,6 @@ auto-mode-alist."
       "ChangeLog Editing Mode" t)
     (require 'add-log)
     (set-fill-column draco-code-comment-width)
-    (if draco-colorize-modeline
-	(add-hook 'change-log-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "bisque3" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"
-					  (current-buffer)))))
     (setq auto-mode-alist
 	  (append
 	   '(("ChangeLog"  . change-log-mode)
@@ -666,13 +637,9 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
     (autoload 'shell-mode "shell-mode" "Interactive Shell Mode" t)
-    (if draco-colorize-modeline
-	(add-hook 'shell-mode-hook
-		  '(lambda () ;; M-x list-colors-display
-		     (set-face-background 'modeline
-					  "thistle" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
+    (set-fill-column draco-code-comment-width)
+    (require 'fill-column-indicator)
+    (fci-mode)
     (add-hook 'shell-mode-hook 'turn-on-draco-mode)
     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
     (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)

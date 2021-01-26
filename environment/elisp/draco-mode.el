@@ -75,7 +75,7 @@ to anything else will generate errors."
   :group 'draco-mode)
 
 (defcustom draco-code-comment-width
-  92
+  100
   "The number of colums wide to use for inserted comment blocks."
   :group 'draco-mode)
 
@@ -633,9 +633,9 @@ c-------------------------------------------------------------------------------
   (interactive)
   (beginning-of-line)
 
-  (insert "#")
-  (insert (make-string (- draco-code-comment-width 2) ?-))
-  (insert "#\n")
+  (insert "# ")
+  (insert (make-string (- draco-code-comment-width 4) ?-))
+  (insert " #\n")
   (end-of-line)
 )
 
