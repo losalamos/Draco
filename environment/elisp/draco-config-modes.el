@@ -77,9 +77,9 @@ and add turn-on-auto-fill to the yaml-mode-hook."
       (turn-off-auto-fill)
       (set-fill-column draco-code-comment-width)
       (if (> emacs-major-version 24)
-          (require 'fill-column-indicator)
-        (fci-mode)
-        ))
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode))))
     (add-hook 'yaml-mode-hook 'draco-yaml-mode-hook)))
 
 ;; ========================================
@@ -129,8 +129,9 @@ auto-mode-alist."
         (set-fill-column draco-code-comment-width)
 	(turn-on-auto-fill)
         (if (> emacs-major-version 24)
-            (require 'fill-column-indicator)
-        (fci-mode)))
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode))))
       (add-hook 'python-mode-hook 'draco-python-mode-hook)))
 
 ;; ========================================
@@ -159,8 +160,9 @@ auto-mode-alist."
       (turn-on-auto-fill)
       (set-fill-column draco-code-comment-width)
       (if (> emacs-major-version 24)
-          (require 'fill-column-indicator)
-        (fci-mode)))
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode))))
     (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
 
 ;; ========================================
@@ -351,8 +353,9 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(draco-mode-update-menu (draco-menu-insert-comments-cc))
 	(turn-on-font-lock)
         (if (> emacs-major-version 24)
-            (require 'fill-column-indicator)
-          (fci-mode))
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode)))
 	(turn-on-auto-fill))
       ;; register the draco-c-mode-hook
       (add-hook 'c-mode-common-hook 'draco-c-mode-hook)
@@ -467,8 +470,9 @@ auto-mode-alist."
       (setq f90-beginning-ampersand nil)
       (setq f90-associate-indent 0)
         (if (> emacs-major-version 24)
-            (require 'fill-column-indicator)
-          (fci-mode)))
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode))))
      ;; let .F denone Fortran and not freeze files
     (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'draco-f90-mode-hook)
@@ -580,8 +584,9 @@ customizations for DRACO."
       (local-set-key [(control c)(control c)] 'comment-region)
       (set-fill-column draco-code-comment-width)
       (if (> emacs-major-version 24)
-          (require 'fill-column-indicator)
-        (fci-mode t))
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode t)))
       )
     (add-hook 'emacs-lisp-mode-hook 'turn-on-draco-mode)
     (add-hook 'emacs-lisp-mode-hook 'draco-elisp-mode-hook)
@@ -598,8 +603,10 @@ customizations for DRACO."
   (progn
     (autoload 'shell-mode "shell-mode" "Interactive Shell Mode" t)
     (set-fill-column draco-code-comment-width)
-    (require 'fill-column-indicator)
-    (fci-mode)
+    (if (> emacs-major-version 24)
+        (progn
+          (require 'fill-column-indicator)
+          (fci-mode)))
     (add-hook 'shell-mode-hook 'turn-on-draco-mode)
     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
     (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
