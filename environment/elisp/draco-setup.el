@@ -374,7 +374,6 @@ compilation-mode?"
 (if draco-want-cc-mode         (draco-setup-cc-mode))
 (if draco-want-change-log-mode (draco-setup-change-log-mode))
 (if draco-want-compilation-mode (draco-setup-compilation-mode))
-(if draco-want-cvs-mode        (draco-setup-cvs-mode))
 (if draco-want-dired-mode      (draco-setup-dired-mode))
 (if draco-want-perl-mode       (draco-setup-perl-mode))
 ;(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
