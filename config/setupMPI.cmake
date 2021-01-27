@@ -265,7 +265,7 @@ macro( setupOpenMPI )
   # https://www.ibm.com/support/knowledgecenter/SSZTET_EOS/eos/guide_101.pdf
   if( "${MPIEXEC_EXECUTABLE}" MATCHES "smpi" )
     string(REPLACE "-bind-to none" "-bind-to core" MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS})
-    string(REPLACE "-bind-to none" "-bind-to core" MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS})
+    # string(REPLACE "-bind-to none" "-bind-to core" MPIEXEC_OMP_PREFLAGS ${MPIEXEC_OMP_PREFLAGS})
     set(smpi-sm-only "-intra sm -aff off --report-bindings")
     string(APPEND MPIEXEC_PREFLAGS     " ${smpi-sm-only}")
     string(APPEND MPIEXEC_OMP_PREFLAGS " ${smpi-sm-only}")
