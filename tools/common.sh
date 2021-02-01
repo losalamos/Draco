@@ -85,12 +85,14 @@ function machineName
       rzmanta*) sysName=rzmanta ;;
       sierra*) sysName=sierra ;;
     esac
+  else
+    sysName=$(uname -n | sed -e 's/[.].*//')
   fi
   if [[ "$sysName" == "unknown" ]]; then
-    echo "Unable to determine machine name, please edit scripts/common.sh."
+    echo "Unable to determine machine name, please edit tools/common.sh."
     return 1
   fi
-  echo $sysName
+  echo "$sysName"
 }
 
 # Logic taken from /usr/projects/hpcsoft/templates/header
@@ -111,6 +113,9 @@ function osName
     elif [[ -d /usr/gapps/jayenne ]]; then
       osName=$(uname -p)
     fi
+  fi
+  if [[ ${osName} == "unknown" ]]; then
+    osName=$(uname -p)
   fi
   if [[ "$osName" == "unknown" ]]; then
     echo "Unable to determine system OS, please edit scripts/common.sh."
@@ -268,6 +273,11 @@ function flavor
       # CCS-NET machines or generic Linux?
       if [[ $MPI_NAME ]]; then
         mpiflavor="$MPI_NAME-$MPI_VERSION"
+      elif [[ $LMOD_MPI_NAME ]]; then
+        mpiflavor="$LMOD_MPI_NAME"
+        if [[ $LMOD_MPI_VERSION ]]; then
+          mpiflavor+="-${LMOD_MPI_VERSION//-*/}"
+        fi
       else
         mpiflavor="unknown"
       fi

@@ -33,7 +33,8 @@ fi
 modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-  source /usr/share/lmod/lmod/init/bash || die "ERROR: The module command was not found. No modules will be loaded."
+  source /usr/share/lmod/lmod/init/bash || die \
+    "ERROR: The module command was not found. No modules will be loaded."
 fi
 modcmd=`declare -f module`
 
@@ -41,45 +42,11 @@ modcmd=`declare -f module`
 if [[ ! ${modcmd} ]]; then
   echo "ERROR: The module command was not found. No modules will be loaded."
 else
-
-  module use /usr/gapps/user_contrib/spack.20200402/share/spack/lmod/linux-rhel7-ppc64le/Core
   module use --append /usr/gapps/jayenne/Modules
-
   module unuse /usr/share/lmod/lmod/modulefiles/Core
   module unuse /collab/usr/global/tools/modulefiles/blueos_3_ppc64le_ib_p9/Core
   module load draco/xl2020.08.19-cuda-11.0.2
-
 fi
-
-# function dracoenv()
-# {
-#   module --force purge
-#   module load StdEnv
-#   module unload spectrum-mpi xl cuda
-#   for m in $dracomodules; do
-#     module load $m
-#   done
-#   unset MPI_ROOT
-#   export CXX=`which g++`
-#   export CC=`which gcc`
-#   export FC=`which gfortran`
-#   export MPIRUN="lrun"
-#   export OMP_NUM_THREADS=10
-# }
-
-# function rmdracoenv()
-# {
-#   unset MPIRUN
-#   unset FC
-#   unset CC
-#   unset CXX
-
-#   # unload in reverse order.
-#   mods=( ${dracomodules} )
-#   for ((i=${#mods[@]}-1; i>=0; i--)); do
-#     module unload ${mods[$i]}
-#   done
-# }
 
 # Do not escape $ for bash completion
 shopt -s direxpand
