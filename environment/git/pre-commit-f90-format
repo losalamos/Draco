@@ -113,8 +113,8 @@ prefix="pre-commit-f90-format"
 suffix="$(date +%s)"
 
 # clean up any older f90-format patches
-$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.*
-$DELETE_OLD_PATCHES && rm -f /tmp/f90-format-*
+$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.* &> /dev/null
+$DELETE_OLD_PATCHES && rm -f /tmp/f90-format-* &> /dev/null
 
 patch=$(mktemp "/tmp/${prefix}-${suffix}.patch.XXXXXXXX")
 

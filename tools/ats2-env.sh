@@ -75,7 +75,6 @@ case $ddir in
       CXX=$(which g++)
       CC=$(which gcc)
       FC=$(which gfortran)
-      unset MPI_ROOT
       export CXX CC FC
     }
     function xl20200819env()
@@ -90,7 +89,6 @@ case $ddir in
       run "module load draco/xl2020.08.19-cuda-11.0.2"
       run "module list"
       export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
-      unset MPI_ROOT
     }
     ;;
 
