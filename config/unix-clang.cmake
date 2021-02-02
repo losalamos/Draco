@@ -42,9 +42,12 @@ if( NOT CXX_FLAGS_INITIALIZED )
     " -Wno-deprecated-declarations -Wno-missing-noreturn -Wno-unreachable-code"
     " -Wno-documentation-deprecated-sync -Wno-documentation -Wno-undefined-func-template"
     " -Wno-weak-template-vtables -Wno-comma")
-  if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
+
+  if( (NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv) AND
+      (NOT ${CMAKE_GENERATOR} MATCHES Xcode) AND HAS_MARCH_NATIVE)
     string( APPEND CMAKE_C_FLAGS " -march=native" )
   endif()
+
   set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -O0 -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
@@ -54,6 +57,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # might not be called if the type can be deduced.
   string( APPEND CMAKE_CXX_FLAGS " ${CMAKE_C_FLAGS} -Wno-undefined-var-template"
     " -Wno-potentially-evaluated-expression" )
+
   if( DEFINED CMAKE_CXX_COMPILER_WRAPPER AND "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
   else()

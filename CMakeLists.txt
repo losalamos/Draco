@@ -77,6 +77,11 @@ query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
 query_have_restrict_keyword()
 query_fma_on_hardware()
 
+# Find any globally required libraries
+include( FeatureSummary )
+include( vendor_libraries )
+setupVendorLibraries()
+
 # Set compiler options
 include( compilerEnv )
 dbsSetupCompilers()
@@ -85,11 +90,6 @@ dbsSetupFortran()
 dbsSetupCuda()
 dbsSetupProfilerTools()
 dbsSetupStaticAnalyzers()
-
-# Find any globally required libraries
-include( FeatureSummary )
-include( vendor_libraries )
-setupVendorLibraries()
 
 #
 # Build Draco components:

@@ -122,7 +122,11 @@ endfunction()
 macro( setupQt )
   message( STATUS "Looking for Qt SDK...." )
 
-  option (USE_QT "Build QT support for Draco" ON)
+  if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
+    option (USE_QT "Build QT support for Draco" OFF)
+  else()
+    option (USE_QT "Build QT support for Draco" ON)
+  endif()
 
   if( USE_QT )
     # Find the QtWidgets library
