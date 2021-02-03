@@ -609,6 +609,14 @@ Looking for Draco...\")
   # CMake macros that check the system for features like 'gethostname', etc.
   include( platform_checks )
 
+  # CMake macros to query the availability of TPLs.
+  # - Must do this before adding compiler flags. Otherwise find_package(MPI) will fail for LLVM
+  #   when using flags '-Werror -Weverything'.
+  include( vendor_libraries )
+
+  # Provide targets for MPI, Metis, etc.
+  setupVendorLibraries()
+
   # Set compiler options
   include( compilerEnv )
   dbsSetupCxx()
@@ -618,12 +626,6 @@ Looking for Draco...\")
 
   # CMake macros like 'add_component_library' and 'add_component_executable'
   include( component_macros )
-
-  # CMake macros to query the availability of TPLs.
-  include( vendor_libraries )
-
-  # Provide targets for MPI, Metis, etc.
-  setupVendorLibraries()
 
 endmacro()
 
