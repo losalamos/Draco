@@ -512,7 +512,7 @@ class CDI {
   std_string matID;
 
   //! Extend integration to place low and high tails in low and high groups?
-  static bool extend;
+  DLL_PUBLIC_cdi static bool extend;
 
   // IMPLELEMENTATION
   // ================

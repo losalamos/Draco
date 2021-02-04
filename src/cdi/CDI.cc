@@ -51,7 +51,7 @@ CDI::~CDI() = default;
 //------------------------------------------------------------------------------------------------//
 
 std::vector<double> CDI::frequencyGroupBoundaries = std::vector<double>();
-bool CDI::extend = false;
+DLL_PUBLIC_cdi bool CDI::extend = false;
 
 //------------------------------------------------------------------------------------------------//
 // STATIC FUNCTIONS
