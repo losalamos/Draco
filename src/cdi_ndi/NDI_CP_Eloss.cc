@@ -204,7 +204,7 @@ void NDI_CP_Eloss::load_ndi() {
   stopping_data_1d.resize(n_energy * n_density * n_temperature);
   if (target.get_zaid() == -1) {
     ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_DEDX, stopping_data_1d.data(),
-      static_cast<int>(stopping_data_1d.size()));
+                                     static_cast<int>(stopping_data_1d.size()));
   } else {
     ndi_error = NDI2_get_float64_vec_x(
         dataset_handle, NDI_TARGET_DEDX, std::to_string(target.get_zaid()).c_str(),
@@ -241,6 +241,10 @@ void NDI_CP_Eloss::load_ndi() {
   for (auto &temperature : temperatures) {
     temperature = exp(temperature);
   }
+
+  //! Close datafile
+  ndi_error = NDI2_close_gendir(gendir_handle);
+  Require(ndi_error == 0);
 #else
   Insist(0,
          "NDI version " + std::string(NDI_VERSION_STRING) + " does not support stopping powers!");
