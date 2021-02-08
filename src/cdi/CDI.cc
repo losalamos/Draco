@@ -51,6 +51,7 @@ CDI::~CDI() = default;
 //------------------------------------------------------------------------------------------------//
 
 std::vector<double> CDI::frequencyGroupBoundaries = std::vector<double>();
+DLL_PUBLIC_cdi bool CDI::extend = false;
 
 //------------------------------------------------------------------------------------------------//
 // STATIC FUNCTIONS
@@ -221,7 +222,7 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds, double
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
-  double planck_value = integrate_planck(scaled_frequency);
+  double planck_value = extend ? 0.0 : integrate_planck(scaled_frequency);
 
   for (size_t group = 0; group < groups; ++group) {
     // Shift the data down:
@@ -237,6 +238,9 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds, double
     planck[group] = planck_value - last_planck;
     Ensure(planck[group] >= 0.0);
     Ensure(planck[group] <= 1.0);
+  }
+  if (extend) {
+    planck[groups - 1] += 1 - planck_value;
   }
   return;
 }
@@ -264,7 +268,7 @@ std::vector<double> CDI::integrate_Planckian_Spectrum(std::vector<double> const 
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
-  double planck_value = integrate_planck(scaled_frequency);
+  double planck_value = extend ? 0.0 : integrate_planck(scaled_frequency);
 
   for (size_t group = 0; group < groups; ++group) {
     // Shift the data down:
@@ -280,6 +284,9 @@ std::vector<double> CDI::integrate_Planckian_Spectrum(std::vector<double> const 
     planck[group] = planck_value - last_planck;
     Ensure(planck[group] >= 0.0);
     Ensure(planck[group] <= 1.0);
+  }
+  if (extend) {
+    planck[groups - 1] += 1 - planck_value;
   }
   return planck;
 }
@@ -306,11 +313,16 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds, double
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
-  double exp_scaled_frequency = std::exp(-scaled_frequency);
+  double exp_scaled_frequency = extend ? 0.0 : std::exp(-scaled_frequency);
 
   double planck_value(-42.0);
   double rosseland_value(-42.0);
-  integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency, planck_value, rosseland_value);
+  if (!extend) {
+    integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency, planck_value,
+                               rosseland_value);
+  } else {
+    planck_value = rosseland_value = 0.0;
+  }
 
   for (size_t group = 0; group < groups; ++group) {
 
@@ -329,6 +341,9 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds, double
     rosseland[group] = rosseland_value - last_rosseland;
     Ensure(rosseland[group] >= 0.0);
     Ensure(rosseland[group] <= 1.0);
+  }
+  if (extend) {
+    rosseland[groups - 1] += 1 - rosseland_value;
   }
   return;
 }
@@ -359,11 +374,16 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(std::vector<double> const &boun
 
   // Initialize the loop:
   double scaled_frequency = bounds[0] / T;
-  double exp_scaled_frequency = std::exp(-scaled_frequency);
+  double exp_scaled_frequency = extend ? 0.0 : std::exp(-scaled_frequency);
 
   double planck_value(-42.0);
   double rosseland_value(-42.0);
-  integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency, planck_value, rosseland_value);
+  if (!extend) {
+    integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency, planck_value,
+                               rosseland_value);
+  } else {
+    planck_value = rosseland_value = 0.0;
+  }
 
   for (size_t group = 0; group < groups; ++group) {
 
@@ -386,6 +406,10 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(std::vector<double> const &boun
     Ensure(planck[group] <= 1.0);
     Ensure(rosseland[group] >= 0.0);
     Ensure(rosseland[group] <= 1.0);
+  }
+  if (extend) {
+    planck[groups - 1] += 1 - planck_value;
+    rosseland[groups - 1] += 1 - rosseland_value;
   }
   return;
 }

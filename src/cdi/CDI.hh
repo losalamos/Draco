@@ -511,6 +511,9 @@ class CDI {
   //! Material ID.
   std_string matID;
 
+  //! Extend integration to place low and high tails in low and high groups?
+  DLL_PUBLIC_cdi static bool extend;
+
   // IMPLELEMENTATION
   // ================
 
@@ -553,6 +556,9 @@ public:
 
   //! Clear all data objects
   void reset();
+
+  //! Set extended group boundaries flag
+  static void setExtend() { extend = true; }
 
   // GETTERS
   // -------
@@ -605,6 +611,9 @@ public:
 
   //! Returns the number of frequency groups in the stored frequency vector.
   static size_t getNumberFrequencyGroups();
+
+  //! Returns the extended group boundaries flag.
+  static bool getExtend() { return extend; }
 
   // INTEGRATORS:
   // ===========

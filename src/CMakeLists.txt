@@ -152,16 +152,13 @@ message("Library Type: ${DRACO_LIBRARY_TYPE}
 if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
   message("Cray system detected: CC -craype-verbose -V|--version:
 ")
-  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" OR
-      ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
-    set( ver_opt "--version")
-  else( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" AND NOT DEFINED ENV{CRAY_PE_USE_CLANG} )
     set( ver_opt "-V")
+  else()
+    set( ver_opt "--version")
   endif()
-  execute_process(
-    COMMAND ${CMAKE_CXX_COMPILER} -craype-verbose ${ver_opt}
-    OUTPUT_VARIABLE tmp
-    )
+  execute_process( COMMAND ${CMAKE_CXX_COMPILER} -craype-verbose ${ver_opt}
+    OUTPUT_VARIABLE tmp )
   message("${tmp}")
 endif()
 

@@ -202,20 +202,25 @@ void NDI_CP_Eloss::load_ndi() {
   max_temperature = exp(min_log_temperature + d_log_temperature * n_temperature);
 
   stopping_data_1d.resize(n_energy * n_density * n_temperature);
-  ndi_error = NDI2_get_float64_vec_x(
-      dataset_handle, NDI_TARGET_DEDX, std::to_string(target.get_zaid()).c_str(),
-      stopping_data_1d.data(), static_cast<int>(stopping_data_1d.size()));
+  if (target.get_zaid() == -1) {
+    ndi_error = NDI2_get_float64_vec(dataset_handle, NDI_DEDX, stopping_data_1d.data(),
+                                     static_cast<int>(stopping_data_1d.size()));
+  } else {
+    ndi_error = NDI2_get_float64_vec_x(
+        dataset_handle, NDI_TARGET_DEDX, std::to_string(target.get_zaid()).c_str(),
+        stopping_data_1d.data(), static_cast<int>(stopping_data_1d.size()));
+  }
   Require(ndi_error == 0);
 
   // Check for uniform log spacing
   for (uint32_t n = 1; n < n_energy; n++) {
-    Require(rtt_dsxx::soft_equiv(d_log_energy, energies[n] - energies[n - 1], 1.e-5));
+    Require(rtt_dsxx::soft_equiv(d_log_energy, energies[n] - energies[n - 1], 1.e-4));
   }
   for (uint32_t n = 1; n < n_density; n++) {
-    Require(rtt_dsxx::soft_equiv(d_log_density, densities[n] - densities[n - 1], 1.e-5));
+    Require(rtt_dsxx::soft_equiv(d_log_density, densities[n] - densities[n - 1], 1.e-4));
   }
   for (uint32_t n = 1; n < n_temperature; n++) {
-    Require(rtt_dsxx::soft_equiv(d_log_temperature, temperatures[n] - temperatures[n - 1], 1.e-5));
+    Require(rtt_dsxx::soft_equiv(d_log_temperature, temperatures[n] - temperatures[n - 1], 1.e-4));
   }
 
   // Convert units on table to match those of getEloss:
@@ -236,6 +241,10 @@ void NDI_CP_Eloss::load_ndi() {
   for (auto &temperature : temperatures) {
     temperature = exp(temperature);
   }
+
+  //! Close datafile
+  ndi_error = NDI2_close_gendir(gendir_handle);
+  Require(ndi_error == 0);
 #else
   Insist(0,
          "NDI version " + std::string(NDI_VERSION_STRING) + " does not support stopping powers!");

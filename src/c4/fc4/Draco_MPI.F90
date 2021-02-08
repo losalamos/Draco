@@ -4,8 +4,6 @@
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
 ! \note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
-!
-! This is a modified version of jayenne/src/api/ftest/API_MPI.F90
 !--------------------------------------------------------------------------------------------------!
 
 module draco_mpi
