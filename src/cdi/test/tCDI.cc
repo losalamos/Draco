@@ -1155,6 +1155,60 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
+void test_cold(rtt_dsxx::UnitTest &ut) {
+  // Test common corner case of cold cell
+
+  std::vector<double> planck, rosseland;
+
+  unsigned const ng = 3;
+  std::vector<double> energyBoundary(ng + 1);
+  energyBoundary[0] = 0.05;
+  energyBoundary[1] = 0.5;
+  energyBoundary[2] = 5.0;
+  energyBoundary[3] = 50.0;
+
+  cout << "cold case tests:" << endl;
+
+  CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0, planck);
+  double norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 0.0), "planck extended integral, first form");
+
+  planck = CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 0.0), "planck extended integral, second form");
+
+  CDI::integrate_Rosseland_Spectrum(energyBoundary, 0.0, rosseland);
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 0.0), "rosseland extended integral");
+
+  CDI::integrate_Rosseland_Planckian_Spectrum(energyBoundary, 0.0, planck, rosseland);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 0.0), "planck extended integral, paired");
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 0.0), "rosseland extended integral, paired");
+
+  energyBoundary[0] = 0.0;
+
+  CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0, planck);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, first form");
+
+  planck = CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, second form");
+
+  CDI::integrate_Rosseland_Spectrum(energyBoundary, 0.0, rosseland);
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral");
+
+  CDI::integrate_Rosseland_Planckian_Spectrum(energyBoundary, 0.0, planck, rosseland);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, paired");
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral, paired");
+}
+
+//------------------------------------------------------------------------------------------------//
 void test_extend(rtt_dsxx::UnitTest &ut) {
   // Test extended integration option
 
@@ -1169,6 +1223,8 @@ void test_extend(rtt_dsxx::UnitTest &ut) {
   energyBoundary[1] = 0.5;
   energyBoundary[2] = 5.0;
   energyBoundary[3] = 50.0;
+
+  cout << "extended tests:" << endl;
 
   CDI::integrate_Planckian_Spectrum(energyBoundary, 10.0, planck);
   double norm = std::accumulate(planck.begin(), planck.end(), 0.0);
@@ -1190,6 +1246,59 @@ void test_extend(rtt_dsxx::UnitTest &ut) {
 }
 
 //------------------------------------------------------------------------------------------------//
+void test_extend_cold(rtt_dsxx::UnitTest &ut) {
+  // Test extended integration option
+
+  std::vector<double> planck, rosseland;
+
+  unsigned const ng = 3;
+  std::vector<double> energyBoundary(ng + 1);
+  energyBoundary[0] = 0.05;
+  energyBoundary[1] = 0.5;
+  energyBoundary[2] = 5.0;
+  energyBoundary[3] = 50.0;
+
+  cout << "extended cold case tests:" << endl;
+
+  CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0, planck);
+  double norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, first form");
+
+  planck = CDI::integrate_Planckian_Spectrum(energyBoundary, 5.0);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, second form");
+
+  CDI::integrate_Rosseland_Spectrum(energyBoundary, 0.0, rosseland);
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral");
+
+  CDI::integrate_Rosseland_Planckian_Spectrum(energyBoundary, 5.0, planck, rosseland);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, paired");
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral, paired");
+
+  energyBoundary[0] = 0.0;
+  CDI::integrate_Planckian_Spectrum(energyBoundary, 0.0, planck);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, first form");
+
+  planck = CDI::integrate_Planckian_Spectrum(energyBoundary, 5.0);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, second form");
+
+  CDI::integrate_Rosseland_Spectrum(energyBoundary, 0.0, rosseland);
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral");
+
+  CDI::integrate_Rosseland_Planckian_Spectrum(energyBoundary, 5.0, planck, rosseland);
+  norm = std::accumulate(planck.begin(), planck.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "planck extended integral, paired");
+  norm = std::accumulate(rosseland.begin(), rosseland.end(), 0.0);
+  ut.check(soft_equiv(norm, 1.0), "rosseland extended integral, paired");
+}
+
+//------------------------------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -1197,7 +1306,9 @@ int main(int argc, char *argv[]) {
     test_planck_integration(ut);
     test_rosseland_integration(ut);
     test_mgopacity_collapse(ut);
+    test_cold(ut);
     test_extend(ut);
+    test_extend_cold(ut);
   }
   UT_EPILOG(ut);
 }
