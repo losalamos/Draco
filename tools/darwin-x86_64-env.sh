@@ -3,7 +3,7 @@
 # Darwin Environment setups (x86_64 + gpu)
 #--------------------------------------------------------------------------------------------------#
 
-# shellcheck source=tools/darwin-env.sh.
+# shellcheck source=tools/darwin-env.sh
 source "${draco_script_dir:-unknown}/darwin-env.sh"
 
 # symlinks will be generated for each machine that point to the correct installation directory.
@@ -13,16 +13,16 @@ export siblings="darwin-x86_64"
 environments="x86gcc930env x86intel1905env"
 
 # Special setup for CTS-1: replace the 'draco-latest' symlink
-pushd "/usr/projects/$package" || exit
+pushd "/usr/projects/${package:-notset}" || exit
 if [[ -L draco-latest ]]; then rm draco-latest; fi
-ln -s "$source_prefix draco-latest"
-popd
+if [[ -d "${source_prefix:=notset}" ]]; then ln -s "${source_prefix} draco-latest"; fi
+popd || exit
 
 #--------------------------------------------------------------------------------------------------#
 # Specify environments (modules)
 #--------------------------------------------------------------------------------------------------#
 
-case "${ddir}" in
+case "${ddir:=notset}" in
 
   #---------------------------------------------------------------------------#
   draco-7_9*)
@@ -72,9 +72,9 @@ esac
 #--------------------------------------------------------------------------------------------------#
 
 for env in $environments; do
-  if [[ $(fn_exists $env) -gt 0 ]]; then
-    ! [[ -v "$verbose" ]] && [[ "${verbose}" != "false" ]] && echo "export -f $env"
-    export -f ${env?}
+  if [[ $(fn_exists "$env") -gt 0 ]]; then
+    [[ "${verbose:-notset}" != "notset" ]] && echo "export -f $env"
+    export -f "${env?}"
   else
     die "Requested environment $env is not defined."
   fi
