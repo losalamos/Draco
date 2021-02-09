@@ -3,7 +3,8 @@
 # Darwin Environment setups (Power9)
 #--------------------------------------------------------------------------------------------------#
 
-source $draco_script_dir/darwin-env.sh
+# shellcheck source=tools/darwin-env.sh
+source "${draco_script_dir:-unknown}/darwin-env.sh"
 
 # symlinks will be generated for each machine that point to the correct installation directory.
 export siblings="darwin-power9"
@@ -16,7 +17,7 @@ environments="p9gcc730env p9xl16117env"
 # Specify environments (modules)
 #--------------------------------------------------------------------------------------------------#
 
-case $ddir in
+case "${ddir}" in
 
   #---------------------------------------------------------------------------#
   draco-7_9*)
@@ -32,16 +33,23 @@ case $ddir in
       # https://rtt.lanl.gov/redmine/issues/1229
       # eliminates warnings: "there are more than one active ports on host"
       # export OMPI_MCA_btl=^openib
-      export UCX_NET_DEVICES=mlx5_0:1
-      export UCX_WARN_UNUSED_ENV_VARS=n
-      export OMPI_MCA_pml=ob1
-      export OMPI_MCA_btl=self,vader
+      UCX_NET_DEVICES=mlx5_0:1
+      UCX_WARN_UNUSED_ENV_VARS=n
+      OMPI_MCA_pml=ob1
+      OMPI_MCA_btl=self,vader
 
-      export CXX=`which g++`
-      export CC=`which gcc`
-      export FC=`which gfortran`
-      export MPIEXEC_EXECUTABLE=`which mpirun`
+      CC=$(which gcc)
+      FC=$(which gfortran)
+      MPIEXEC_EXECUTABLE=$(which mpirun)
       unset MPI_ROOT
+      export CXX
+      export CC
+      export FC
+      export MPIEXEC_EXECUTABLE
+      export UCX_NET_DEVICES
+      export UCX_WARN_UNUSED_ENV_VARS
+      export OMPI_MCA_pml
+      export OMPI_MCA_btl
     }
 
     function p9xl16117env()
@@ -58,12 +66,17 @@ case $ddir in
       # https://rtt.lanl.gov/redmine/issues/1229
       # eliminates warnings: "there are more than one active ports on host"
       # export OMPI_MCA_btl=^openib
-      export UCX_NET_DEVICES=mlx5_0:1
-      export UCX_WARN_UNUSED_ENV_VARS=n
-      export OMPI_MCA_pml=ob1
-      export OMPI_MCA_btl=self,vader
-      export MPIEXEC_EXECUTABLE=`which mpirun`
+      UCX_NET_DEVICES=mlx5_0:1
+      UCX_WARN_UNUSED_ENV_VARS=n
+      OMPI_MCA_pml=ob1
+      OMPI_MCA_btl=self,vader
+      MPIEXEC_EXECUTABLE=$(which mpirun)
       unset MPI_ROOT
+      export UCX_NET_DEVICES
+      export UCX_WARN_UNUSED_ENV_VARS
+      export OMPI_MCA_pml
+      export OMPI_MCA_btl
+      export MPIEXEC_EXECUTABLE
     }
     ;;
 
@@ -75,9 +88,9 @@ esac
 #--------------------------------------------------------------------------------------------------#
 
 for env in $environments; do
-  if [[ `fn_exists $env` -gt 0 ]]; then
-    if [[ $verbose ]]; then echo "export -f $env"; fi
-    export -f $env
+  if [[ $(fn_exists $env) -gt 0 ]]; then
+    ! [[ -v "$verbose" ]] && [[ "${verbose}" != "false" ]] && echo "export -f $env"
+    export -f ${env?}
   else
     die "Requested environment $env is not defined."
   fi

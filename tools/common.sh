@@ -212,7 +212,7 @@ function flavor
         mpiflavor="unknown"
       fi
       # Strip compiler options if they are defined in the module files. e.g. CC="xlc -F/full/path/file"
-      comp=$(echo $CC | awk '{print $1;}')
+      comp=$(echo "$CC" | awk '{print $1;}')
       if [[ ${comp} ]]; then
         if [[ ${comp} =~ "gcc" ]]; then
           compilerflavor=gnu-$("${comp}" --version | head -n 1 | sed -r 's%.* %%')

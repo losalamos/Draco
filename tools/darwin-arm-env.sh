@@ -3,7 +3,8 @@
 # Darwin Environment setups (ARM)
 #-------------------------------------------------------------------------------------------------#
 
-source $draco_script_dir/darwin-env.sh
+# shellcheck source=tools/darwin-env.sh
+source "${draco_script_dir:-unknown}/darwin-env.sh"
 
 # symlinks will be generated for each machine that point to the correct installation directory.
 export siblings="darwin-arm"
@@ -15,7 +16,7 @@ environments="armgcc930env"
 # Specify environments (modules)
 #--------------------------------------------------------------------------------------------------#
 
-case $ddir in
+case "${ddir}" in
 
   #---------------------------------------------------------------------------#
   draco-7_9*)
@@ -29,14 +30,20 @@ case $ddir in
       run "module load draco/arm-gcc930"
       run "module list"
 
-      export CXX=`which g++`
-      export CC=`which gcc`
-      export FC=`which gfortran`
-      export MPIEXEC_EXECUTABLE=`which mpirun`
+      CXX=$(which g++)
+      CC=$(which gcc)
+      FC=$(which gfortran)
+      MPIEXEC_EXECUTABLE=$(which mpirun)
       unset MPI_ROOT
       # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
-      export OMPI_MCA_btl=^openib
-      export UCX_NET_DEVICES=mlx5_0:1
+      OMPI_MCA_btl=^openib
+      UCX_NET_DEVICES=mlx5_0:1
+      export CXX
+      export CC
+      export FC
+      export MPIEXEC_EXECUTABLE
+      export OMPI_MCA_btl
+      export UCX_NET_DEVICES
     }
     ;;
 
@@ -53,9 +60,9 @@ esac
 #--------------------------------------------------------------------------------------------------#
 
 for env in $environments; do
-  if [[ `fn_exists $env` -gt 0 ]]; then
-    if [[ $verbose ]]; then echo "export -f $env"; fi
-    export -f $env
+  if [[ $(fn_exists $env) -gt 0 ]]; then
+    ! [[ -v "$verbose" ]] && [[ "${verbose}" != "false" ]] && echo "export -f $env"
+    export -f ${env?}
   else
     die "Requested environment $env is not defined."
   fi
