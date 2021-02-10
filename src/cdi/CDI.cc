@@ -219,6 +219,12 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds, double
   size_t const groups(bounds.size() - 1);
   planck.resize(groups, 0.0);
 
+  // The branches here ensure the function is robust in corner cases of a very hot or very
+  // cold T. For the special case T==0 there is a special branch. For finite T, we test the
+  // frequency against T * 50 to guarantee that the operation frequency / T cannot
+  // overflow. We take advantage of the fact that for frequency greater that about 48 * T,
+  // the integral is 1 to roundoff. We choose 50 to give just a little extra slack in case
+  // some optimizing compiler does something weird and wonderful.
   if (T > 0.0) {
     // Initialize the loop:
     double frequency = bounds[0];
@@ -244,6 +250,10 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds, double
       planck[groups - 1] += 1 - planck_value;
     }
   } else {
+    // For the somewhat ill-posed case of T == 0 and bounds[0] == 0, we have chosen
+    // to pretend bounds[0] == 0 as T -> 0. This is likely the least surprising behavior
+    // for clients. In practice, it matters little, since the spectrum will almost
+    // always be multiplied by a scaling factor that goes to zero as T -> 0.
     fill(planck.begin(), planck.end(), 0.0);
     if (extend || bounds[0] <= 0.0) {
       planck[0] = 1.0;
@@ -271,6 +281,12 @@ std::vector<double> CDI::integrate_Planckian_Spectrum(std::vector<double> const 
   size_t const groups(bounds.size() - 1);
   std::vector<double> planck(groups, 0.0);
 
+  // The branches here ensure the function is robust in corner cases of a very hot or very
+  // cold T. For the special case T==0 there is a special branch. For finite T, we test the
+  // frequency against T * 50 to guarantee that the operation frequency / T cannot
+  // overflow. We take advantage of the fact that for frequency greater that about 48 * T,
+  // the integral is 1 to roundoff. We choose 50 to give just a little extra slack in case
+  // some optimizing compiler does something weird and wonderful.
   if (T > 0.0) {
     // Initialize the loop:
     double frequency = bounds[0];
@@ -297,6 +313,10 @@ std::vector<double> CDI::integrate_Planckian_Spectrum(std::vector<double> const 
     }
   } else {
     // T==0
+    // For the somewhat ill-posed case of T == 0 and bounds[0] == 0, we have chosen
+    // to pretend bounds[0] == 0 as T -> 0. This is likely the least surprising behavior
+    // for clients. In practice, it matters little, since the spectrum will almost
+    // always be multiplied by a scaling factor that goes to zero as T -> 0.
     if (extend || bounds[0] <= 0.0)
       planck[0] = 1.0;
   }
@@ -322,6 +342,12 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds, double
   size_t const groups(bounds.size() - 1);
   rosseland.resize(groups, 0.0);
 
+  // The branches here ensure the function is robust in corner cases of a very hot or very
+  // cold T. For the special case T==0 there is a special branch. For finite T, we test the
+  // frequency against T * 50 to guarantee that the operation frequency / T cannot
+  // overflow. We take advantage of the fact that for frequency greater that about 48 * T,
+  // the integral is 1 to roundoff. We choose 50 to give just a little extra slack in case
+  // some optimizing compiler does something weird and wonderful.
   if (T > 0.0) {
     // Initialize the loop:
     double planck_value(-42.0);
@@ -366,6 +392,10 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds, double
     }
   } else {
     // T == 0
+    // For the somewhat ill-posed case of T == 0 and bounds[0] == 0, we have chosen
+    // to pretend bounds[0] == 0 as T -> 0. This is likely the least surprising behavior
+    // for clients. In practice, it matters little, since the spectrum will almost
+    // always be multiplied by a scaling factor that goes to zero as T -> 0.
     fill(rosseland.begin(), rosseland.end(), 0.0);
     if (extend || bounds[0] <= 0.0)
       rosseland[0] = 1.0;
@@ -397,6 +427,12 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(std::vector<double> const &boun
   planck.resize(groups, 0.0);
   rosseland.resize(groups, 0.0);
 
+  // The branches here ensure the function is robust in corner cases of a very hot or very
+  // cold T. For the special case T==0 there is a special branch. For finite T, we test the
+  // frequency against T * 50 to guarantee that the operation frequency / T cannot
+  // overflow. We take advantage of the fact that for frequency greater that about 48 * T,
+  // the integral is 1 to roundoff. We choose 50 to give just a little extra slack in case
+  // some optimizing compiler does something weird and wonderful.
   if (T > 0.0) {
     // Initialize the loop:
     double frequency = bounds[0];
@@ -447,6 +483,10 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(std::vector<double> const &boun
     }
   } else {
     // T==0
+    // For the somewhat ill-posed case of T == 0 and bounds[0] == 0, we have chosen
+    // to pretend bounds[0] == 0 as T -> 0. This is likely the least surprising behavior
+    // for clients. In practice, it matters little, since the spectrum will almost
+    // always be multiplied by a scaling factor that goes to zero as T -> 0.
     fill(planck.begin(), planck.end(), 0.0);
     fill(rosseland.begin(), rosseland.end(), 0.0);
     if (extend || bounds[0] <= 0.0)
