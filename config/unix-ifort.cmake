@@ -24,8 +24,11 @@ if( NOT Fortran_FLAGS_INITIALIZED )
   #    aobut ifort's non-standard name mangling for module procedures. Not sure if we need this yet.
 
   string( APPEND CMAKE_Fortran_FLAGS " -warn -fpp -implicitnone -diag-disable=11060" )
-  string( CONCAT CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -traceback -ftrapuv -check"
-    " -fno-omit-frame-pointer -DDEBUG" )
+  string( CONCAT CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -ftrapuv -check -fno-omit-frame-pointer -DDEBUG")
+  if( NOT DEFINED CMAKE_CXX_COMPILER_WRAPPER AND
+      NOT "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
+    string( APPEND CMAKE_Fortran_FLAGS_DEBUG " -traceback")
+  endif()
   string( CONCAT CMAKE_Fortran_FLAGS_RELEASE "-O2 -inline-level=2 -fp-speculation fast"
     " -fp-model=fast -align array32byte -funroll-loops -diag-disable=11021 -DNDEBUG" )
   set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
