@@ -832,8 +832,7 @@ endfunction()
 ## Examples:
 ##   toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG" )
 #--------------------------------------------------------------------------------------------------#
-macro( toggle_compiler_flag switch compiler_flag
-    compiler_flag_var_names build_modes )
+macro( toggle_compiler_flag switch compiler_flag compiler_flag_var_names build_modes )
 
   # generate names that are safe for CMake RegEx MATCHES commands
   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})
@@ -850,11 +849,10 @@ macro( toggle_compiler_flag switch compiler_flag
       message(FATAL_ERROR "When calling "
 "toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names), "
 "compiler_flag_var_names must be set to one or more of these valid "
-"names: C;CXX;EXE_LINKER.")
+"names: C;CXX;Fortran;EXE_LINKER;SHARED_LINKER.")
     endif()
 
-    string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS
-      "${CMAKE_${comp}_FLAGS}" )
+    string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" )
 
     if( "${build_modes}x" STREQUAL "x" ) # set flags for all build modes
 

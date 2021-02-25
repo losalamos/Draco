@@ -332,6 +332,9 @@ macro( setupCrayMPI )
 
   set(preflags " ") # -N 1 --cpu_bind=verbose,cores
   string(APPEND preflags " --gres=craynetwork:0") # --exclusive
+  if( SITENAME_FAMILY STREQUAL "IC-ARM")
+    string(APPEND preflags " --exclusive")
+  endif()
   set( MPIEXEC_PREFLAGS ${preflags} CACHE STRING "extra mpirun flags (list)." FORCE)
   # consider adding '-m=cyclic'
   set( MPIEXEC_PREFLAGS_PERFBENCH ${preflags} CACHE STRING "extra mpirun flags (list)." FORCE)
