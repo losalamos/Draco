@@ -53,10 +53,15 @@ if( NOT "${CMAKE_CXX_COMPILER_VERSION}x" STREQUAL "x" )
     ${CMAKE_CXX_COMPILER_VERSION} )
 endif()
 
-# Is this a KNL
-if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv AND
-    "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
-  set( draco_isKNL ON )
+if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
+  # Is this a KNL
+  if( "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
+    set( draco_isKNL ON )
+  endif()
+  # Is this CCE
+  if( DEFINED ENV{CRAY_PE_CCE_VARIANT} )
+    set(CRAYPE_CCE TRUE)
+  endif()
 endif()
 
 # Information about the current machine

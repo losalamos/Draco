@@ -244,6 +244,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     global_max(xflt);
     FAIL_IF_NOT(soft_equiv(xflt, static_cast<double>(rtt_c4::nodes()) - 0.3));
   }
+#ifndef CRAYPE_CCE
   { // T = long double
 
     long double xld = static_cast<long double>(rtt_c4::node()) + 0.1l;
@@ -282,7 +283,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
 
     FAIL_IF_NOT(soft_equiv(xld, static_cast<long double>(rtt_c4::nodes()) - 0.3l));
   }
-
+#endif
   { // T = int
 
     xint = rtt_c4::node() + 1;
@@ -730,6 +731,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
+#ifndef CRAYPE_CCE
   { // T = long double
 
     // make a vector of long doubles
@@ -775,6 +777,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
+#endif
   { // T = int
 
     // make a vector of ints
