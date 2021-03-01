@@ -749,42 +749,39 @@ endmacro()
 #--------------------------------------------------------------------------------------------------#
 macro(dbsSetupCuda)
 
-  # Toggle if we should try to build Cuda parts of the project.  This will be
-  # set to true if $ENV{FC} points to a working compiler.
+  # Toggle if we should try to build Cuda parts of the project. Will be enabled if ENV{CUDACXX} is
+  # set.
   option( HAVE_CUDA "Should we build Cuda parts of the project?" OFF )
 
   # Is Cuda enabled (it is considered 'optional' for draco)?
   get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
   if( _LANGUAGES_ MATCHES CUDA )
-
     # We found Cuda, keep track of this information.
     set( HAVE_CUDA ON )
-
     # User option to disable Cuda, even when it is available.
     option(USE_CUDA "Use Cuda?" ON)
-
   endif()
 
   # Save the results
-  set( HAVE_CUDA ${HAVE_CUDA} CACHE BOOL
-    "Should we build CUDA portions of this project?" FORCE )
+  set( HAVE_CUDA ${HAVE_CUDA} CACHE BOOL "Should we build CUDA portions of this project?" FORCE )
   if( HAVE_CUDA AND USE_CUDA )
-    # Use this string in 'project(foo ${CUDA_DBS_STRING})' commands to enable
-    # cuda per project.
-    set( CUDA_DBS_STRING "CUDA" CACHE STRING
-      "If CUDA is available, this variable is 'CUDA'")
-    # Use this string as a toggle when calling add_component_library or
-    # add_scalar_tests to force compiling with nvcc.
+    # Use this string in 'project(foo ${CUDA_DBS_STRING})' commands to enable cuda per project.
+    set( CUDA_DBS_STRING "CUDA" CACHE STRING "If CUDA is available, this variable is 'CUDA'")
+    # Use this string as a toggle when calling add_component_library or add_scalar_tests to force
+    # compiling with nvcc.
     set( COMPILE_WITH_CUDA LINK_LANGUAGE CUDA )
 
     # setup flags
     if( "${CMAKE_CUDA_COMPILER_ID}" MATCHES "NVIDIA" )
       include( unix-cuda )
     else()
-      message(FATAL_ERROR "Build system does not support "
-        "CUDACXX=${CMAKE_CUDA_COMPILER}")
+      message(FATAL_ERROR "Build system does not support CUDACXX=${CMAKE_CUDA_COMPILER}")
     endif()
+  endif()
 
+  # Sanity Check
+  if( USE_CUDA AND NOT HAVE_CUDA )
+    message( FATAL_ERROR "==> Cuda requested but nvcc not found. Try loading a cuda module.")
   endif()
 
 endmacro()
@@ -835,8 +832,7 @@ endfunction()
 ## Examples:
 ##   toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG" )
 #--------------------------------------------------------------------------------------------------#
-macro( toggle_compiler_flag switch compiler_flag
-    compiler_flag_var_names build_modes )
+macro( toggle_compiler_flag switch compiler_flag compiler_flag_var_names build_modes )
 
   # generate names that are safe for CMake RegEx MATCHES commands
   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})
@@ -853,11 +849,10 @@ macro( toggle_compiler_flag switch compiler_flag
       message(FATAL_ERROR "When calling "
 "toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names), "
 "compiler_flag_var_names must be set to one or more of these valid "
-"names: C;CXX;EXE_LINKER.")
+"names: C;CXX;Fortran;EXE_LINKER;SHARED_LINKER.")
     endif()
 
-    string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS
-      "${CMAKE_${comp}_FLAGS}" )
+    string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" )
 
     if( "${build_modes}x" STREQUAL "x" ) # set flags for all build modes
 

@@ -60,6 +60,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   if( DEFINED CMAKE_CXX_COMPILER_WRAPPER AND "${CMAKE_CXX_COMPILER_WRAPPER}" STREQUAL "CrayPrgEnv" )
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
+    # Work around for broken ftn + CC linking (Redmine #1323) that results in
+    # > ld.lld: error: corrupt input file: version definition index 0 for symbol mpiprivc_ is out
+    # > of bounds
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=bfd")
   else()
     string(APPEND CMAKE_CXX_FLAGS " -stdlib=libc++")
   endif()
@@ -87,7 +91,7 @@ endif()
 # Ensure cache values always match current selection
 deduplicate_flags(CMAKE_C_FLAGS)
 deduplicate_flags(CMAKE_CXX_FLAGS)
-force_compiler_flags_to_cache("C;CXX")
+force_compiler_flags_to_cache("C;CXX;EXE_LINKER")
 
 #--------------------------------------------------------------------------------------------------#
 # End config/unix-clang.cmake

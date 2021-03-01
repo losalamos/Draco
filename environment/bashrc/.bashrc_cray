@@ -72,11 +72,20 @@ arch=`uname -m`
 # Use modules found in the draco directory
 sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
 module use --append /usr/projects/draco/Modules/$sysname
-module load draco/intel19
-
-if [[ ${SLURM_JOB_PARTITION} =~ "knl" ]]; then
-  module swap craype-haswell craype-mic-knl
-fi
+case $sysname in
+  capulin)
+    module unuse /usr/share/modules
+    module unuse /usr/projects/hpcsoft/modulefiles/cle7.0/capulin/libraries
+    module unuse /opt/cray/pe/perftools/21.02.0/modulefiles
+    module load draco
+    ;;
+  trinitite | trinity )
+    module load draco/intel19
+    if [[ ${SLURM_JOB_PARTITION} =~ "knl" ]]; then
+      module swap craype-haswell craype-mic-knl
+    fi
+    ;;
+esac
 
 #--------------------------------------------------------------------------------------------------#
 # end of .bashrc_cray

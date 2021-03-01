@@ -211,13 +211,15 @@ function flavor
       else
         mpiflavor="unknown"
       fi
-      if [[ $CC ]]; then
-        if [[ $CC =~ "gcc" ]]; then
-          compilerflavor=gnu-$("${CC}" --version | head -n 1 | sed -r 's%.* %%')
-        elif [[ $CC =~ "icc" ]]; then
-          compilerflavor=intel-$("${CC}" --version | head -n 1 | awk '{ print $3 }' | sed -r 's%([0-9]+).([0-9]+).([0-9]+).*%\1.\2.\3%')
-        elif [[ $CC =~ "IBM" ]] || [[ $CC =~ "xlc" ]]; then
-          compilerflavor=xl-$("${CC}" --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g')
+      # Strip compiler options if they are defined in the module files. e.g. CC="xlc -F/full/path/file"
+      comp=$(echo "$CC" | awk '{print $1;}')
+      if [[ ${comp} ]]; then
+        if [[ ${comp} =~ "gcc" ]]; then
+          compilerflavor=gnu-$("${comp}" --version | head -n 1 | sed -r 's%.* %%')
+        elif [[ $comp =~ "icc" ]]; then
+          compilerflavor=intel-$("${comp}" --version | head -n 1 | awk '{ print $3 }' | sed -r 's%([0-9]+).([0-9]+).([0-9]+).*%\1.\2.\3%')
+        elif [[ $comp =~ "IBM" ]] || [[ $comp =~ "xlc" ]]; then
+          compilerflavor=xl-$("${comp}" --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g')
         fi
       else
         compilerflavor="unknown"
