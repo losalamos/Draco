@@ -352,7 +352,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
 #endif
     }
   }
-
+#ifndef CRAYPE_CCE
   { // T=long double
 
     rtt_c4::global_barrier();
@@ -403,6 +403,7 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
 #endif
     }
   }
+#endif
   { // T=unsigned int
 
     rtt_c4::global_barrier();

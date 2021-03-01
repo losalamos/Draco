@@ -77,8 +77,9 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   broadcast(&s, 1, 0);
   broadcast(&f, 1, 0);
   broadcast(&d, 1, 0);
+#ifndef CRAYPE_CCE
   broadcast(&ld, 1, 0);
-
+#endif
   broadcast(v.begin(), v.end(), v.begin());
   broadcast(vempty.begin(), vempty.end(), vempty.begin());
   broadcast(msg.begin(), msg.end(), msg.begin());
@@ -95,8 +96,9 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   FAIL_IF_NOT(s == 1000);
   FAIL_IF_NOT(soft_equiv(f, 1.5f));
   FAIL_IF_NOT(soft_equiv(d, 2.5));
+#ifndef CRAYPE_CCE
   FAIL_IF_NOT(soft_equiv(ld, 3.5l));
-
+#endif
   // check array values
   FAIL_IF_NOT(soft_equiv(v.begin(), v.end(), vref.begin(), vref.end()));
   FAIL_IF_NOT(
