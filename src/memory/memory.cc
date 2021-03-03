@@ -51,6 +51,8 @@ static uint64_t check_select_count = 0U;
 static unsigned dump_count = 0;
 // indicates whether to dump the first few largest allocations and exit
 
+static uint64_t report_threshold = numeric_limits<uint64_t>::max();
+
 static bool is_active = false;
 
 #if DRACO_DIAGNOSTICS & 2
@@ -105,6 +107,9 @@ bool set_memory_checking(bool new_status) {
 
   return Result;
 }
+
+//----------------------------------------------------------------------------------------//
+void set_report_threshold(uint64_t threshold) { report_threshold = threshold; }
 
 //------------------------------------------------------------------------------------------------//
 uint64_t total_allocation() { return total; }
@@ -172,14 +177,13 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
     if (failwithstacktrace) {
       std::set_new_handler(rtt_memory::out_of_memory_handler);
       rtt_memory::out_of_memory_handler();
-    } else {
-      new_handler global_handler = set_new_handler(0);
-      set_new_handler(global_handler);
-      if (global_handler)
-        global_handler();
-      else
-        throw bad_alloc();
     }
+    new_handler global_handler = set_new_handler(0);
+    set_new_handler(global_handler);
+    if (global_handler)
+      global_handler();
+    else
+      throw bad_alloc();
   }
 
   // If malloc was successful, do the book keeping and return the pointer.
@@ -239,6 +243,9 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
       // looking at the allocation map (st.alloc_map) to see the size and instance.
       cout << "Reached check select allocation" << endl;
     }
+    if (n > report_threshold) {
+      cout << "Memory allocation of size " << n << " was made." << endl;
+    }
     is_active = true;
   }
   return Result;
@@ -261,6 +268,9 @@ void operator delete(void *ptr) throw() {
         // when an allocation larger than check_large is deallocated. check_large is typically also
         // set in the debugger by the programmer.
         cout << "Deallocated check large value" << endl;
+      }
+      if (n > report_threshold) {
+        cout << "Memory allocation of size " << n << " was freed." << endl;
       }
       is_active = false;
       st.alloc_map.erase(i);
