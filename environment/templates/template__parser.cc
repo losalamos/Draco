@@ -47,7 +47,7 @@ SP << class >> Class_Parse_Table << class >> ::create_object() {
 
 //------------------------------------------------------------------------------------------------//
 template <> SP << class >> parse_class << class >> (Token_Stream & tokens) {
-  return parse_class_from_table<Class_Parse_Table << class> >> (tokens);
+  return parse_class_from_table<Class_Parse_Table << class>>> (tokens);
 }
 
 } // end namespace rtt_parser

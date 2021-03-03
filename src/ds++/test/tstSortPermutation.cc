@@ -134,7 +134,7 @@ template <typename F> struct evenIsLess {
 };
 
 //------------------------------------------------------------------------------------------------//
-int main(int /*argc*/, char * /*argv*/[]) {
+int main(int /*argc*/, char * /*argv*/ []) {
   cout << "Initiating test of the SortPermutation.\n";
 
   std::string name = "SortPermutation";

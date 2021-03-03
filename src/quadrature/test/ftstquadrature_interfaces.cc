@@ -11,7 +11,7 @@
 extern "C" void test_quadrature_interfaces(void);
 
 //------------------------------------------------------------------------------------------------//
-int main(int /*argc*/, char * /*argv*/[]) {
+int main(int /*argc*/, char * /*argv*/ []) {
   test_quadrature_interfaces();
   return 0;
 }

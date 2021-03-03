@@ -20,9 +20,8 @@ Contextual_Parse_Functor<Abstract_Class, Context, get_context>::Contextual_Parse
     : f_(parse_function) {}
 
 template <typename Abstract_Class, typename Context, Context const &get_context()>
-std::shared_ptr<Abstract_Class>
-Contextual_Parse_Functor<Abstract_Class, Context, get_context>::operator()(
-    Token_Stream &tokens) const {
+std::shared_ptr<Abstract_Class> Contextual_Parse_Functor<Abstract_Class, Context, get_context>::
+operator()(Token_Stream &tokens) const {
   return f_(tokens, get_context());
 }
 

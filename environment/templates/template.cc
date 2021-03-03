@@ -15,7 +15,7 @@ namespace<namespace> {
   // void foo() { return; };
   // class Bar { int i; };
 
-} // namespace >
+} // namespace <namespace>
 
 //------------------------------------------------------------------------------------------------//
 // end of <basename>.cc

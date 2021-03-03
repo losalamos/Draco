@@ -14,7 +14,7 @@
 extern "C" void drelf90(int &nf);
 
 //------------------------------------------------------------------------------------------------//
-int main(int /*argc*/, char * /*argv*/[]) {
+int main(int /*argc*/, char * /*argv*/ []) {
   bool const useColor = false;
   Term::DracoTerminal::is_initialized(useColor);
 

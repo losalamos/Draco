@@ -17,7 +17,7 @@ namespace<namespace> {
 
   // Explicit template instantiations go here.
 
-} // namespace >
+} // namespace <namespace>
 
 //------------------------------------------------------------------------------------------------//
 // end of <basename>_pt.cc

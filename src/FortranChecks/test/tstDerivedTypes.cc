@@ -12,7 +12,7 @@
 extern "C" void test_derived_types(void);
 
 //------------------------------------------------------------------------------------------------//
-int main(int /*argc*/, char * /*argv*/[]) {
+int main(int /*argc*/, char * /*argv*/ []) {
   test_derived_types();
   return 0;
 }
