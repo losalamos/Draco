@@ -20,7 +20,7 @@
 * Checks
   * [ ] Travis/Appveyor CI checks pass
   * [ ] Code coverage does not decrease
-  * [ ] [Valgrind test passes](https://rtt.lanl.gov/CDash/index.php?project=Draco)
-  * [ ] [Toss3 checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)
-  * [ ] [Trinitite checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)
+  * [ ] [Valgrind test passes](https://rtt.lanl.gov/cdash3/index.php?project=Draco)
+  * [ ] [Toss3 checks pass](https://rtt.lanl.gov/cdash3/index.php?project=Draco)
+  * [ ] [Trinitite checks pass](https://rtt.lanl.gov/cdash3/index.php?project=Draco)
   * [ ] Code reviewed/approved, sufficient DbC checks, testing, documentation
