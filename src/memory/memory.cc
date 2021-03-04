@@ -244,7 +244,7 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
       cout << "Reached check select allocation" << endl;
     }
     if (n > report_threshold) {
-      cout << "Memory allocation of size " << n << " was made." << endl;
+      cout << "Memory allocation of size " << n << " was made. Total now " << total << '.' << endl;
     }
     is_active = true;
   }
@@ -270,7 +270,8 @@ void operator delete(void *ptr) throw() {
         cout << "Deallocated check large value" << endl;
       }
       if (n > report_threshold) {
-        cout << "Memory allocation of size " << n << " was freed." << endl;
+        cout << "Memory allocation of size " << n << " was freed. Total now " << total << '.'
+             << endl;
       }
       is_active = false;
       st.alloc_map.erase(i);
