@@ -20,6 +20,7 @@
 #include <cstdint>       // cstdint not available on PGI
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 
 namespace rtt_memory {
 
@@ -31,6 +32,13 @@ void report_leaks(std::ostream &);
 
 //! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
 void out_of_memory_handler();
+
+// To set the peak at which to break
+uint64_t set_check_peak(uint64_t);
+void set_dump_and_exit(unsigned);
+
+//! To get a report on the console of all allocations over a threshold size.
+void set_report_threshold(uint64_t = std::numeric_limits<uint64_t>::max());
 
 } // namespace rtt_memory
 
