@@ -16,7 +16,14 @@ if [[ -n "$verbose" ]]; then echo "In draco/environment/bashrc/.bashrc_ccsnet"; 
 
 target=`uname -n`
 case $target in
-  ccscs[1-9]*)
+  ccscs[45]*)
+    [[ -z "${MODULEPATH}" ]] && export MODULEPATH=/ccs/opt/modulefiles
+    module unuse /usr/share/Modules/modulefiles /usr/local/lmod/lmod/modulefiles/Core
+    module load user_contrib/2021.03
+    module use --append /ccs/codes/radtran/Modules
+    module load draco/gcc1020
+    ;;
+  ccscs[1236789]*)
     [[ -z "${MODULEPATH}" ]] && export MODULEPATH=/ccs/opt/modulefiles
     module load user_contrib/2020.04
     module use --append /ccs/codes/radtran/Modules
