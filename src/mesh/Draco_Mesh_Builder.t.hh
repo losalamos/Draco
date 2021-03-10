@@ -158,9 +158,7 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
                std::minmax_element(cell_to_node_linkage.begin(), cell_to_node_linkage.end()));
   Remember(auto sn_minmax =
                std::minmax_element(side_to_node_linkage.begin(), side_to_node_linkage.end()));
-  Ensure(*cn_minmax.first >= 0);
   Ensure(*cn_minmax.second < num_nodes);
-  Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.first >= 0 : true);
   Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.second < num_nodes : true);
 
   // >>> CONSTRUCT THE MESH

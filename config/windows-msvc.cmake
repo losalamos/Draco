@@ -62,6 +62,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # - /wd 5105 After upgrading to VS2019 version 16.8.0 preview 3, warning C5105 is issued from many
   #            system headers like stdio.h. Suppress for now.
   # - /arch:[SSE|SSE2|AVX|AVX2|IA32]
+  # - /fsanitize=address
+  # - /RTC1 - check for unitialized variables.
 
   string( APPEND CMAKE_C_FLAGS " /nologo /Gy /fp:precise /DWIN32 /D_WINDOWS /MP /wd4251" )
   if(HAVE_HARDWARE_AVX2)
