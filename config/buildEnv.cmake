@@ -3,8 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016-2020 Triad National Security, LLC.
-#        All rights reserved.
+# note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -14,26 +13,29 @@ include_guard(GLOBAL)
 #--------------------------------------------------------------------------------------------------#
 macro( dbsSetDefaults )
 
+  # Work around for cmake-3.19+. Should be fixed in cmake-3.20+
+  # https://gitlab.kitware.com/cmake/cmake/-/issues/21894
+  if( DEFINED ENV{CRAY_CPU_TARGET} AND "${CMAKE_CXX_COMPILER_WRAPPER}notset" STREQUAL "notset" )
+    set(CMAKE_CXX_COMPILER_WRAPPER "CrayPrgEnv" CACHE STRING "CrayPrgEnv?" FORCE)
+  endif()
+
   # make install less verbose.
   set(CMAKE_INSTALL_MESSAGE LAZY)
 
   # if undefined, force build_type to "release"
   if( NOT CMAKE_CONFIGURATION_TYPES )
      if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-        set( CMAKE_BUILD_TYPE "Debug" CACHE STRING
-          "Release, Debug, RelWithDebInfo" FORCE )
+        set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Release, Debug, RelWithDebInfo" FORCE )
      endif()
      # constrain pull down values in cmake-gui
-     set_property( CACHE CMAKE_BUILD_TYPE
-        PROPERTY STRINGS Release Debug MinSizeRel RelWithDebInfo )
+     set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Release Debug MinSizeRel RelWithDebInfo )
   endif()
 
   # Provide default value for install_prefix
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )
      set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/../install" )
-     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-      ABSOLUTE )
+     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE )
      set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
         "Install path prefix, prepended onto install directories" FORCE)
   endif()
@@ -41,14 +43,13 @@ macro( dbsSetDefaults )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
   mark_as_advanced( DART_TESTING_TIMEOUT )
 
-  # For win32 platforms avoid copying all dependent dll libraries into the test
-  # directories by using a common runtime directory.
+  # For win32 platforms avoid copying all dependent dll libraries into the test directories by using
+  # a common runtime directory.
   if( WIN32 )
      if( CMAKE_CONFIGURATION_TYPES )
         set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR} )
      else() # nmake or mingw32-make
-        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY
-          ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
      endif()
   endif()
 
@@ -141,19 +142,19 @@ macro( dbsSetDefaults )
   # ----------------------------------------
   # Create shared-object libraries?
   #
-  # When enabled, all object files per directory will be installed in addition to the normal 
-  # installation of library files.  For some platforms, like KNL, linking objects instead of 
+  # When enabled, all object files per directory will be installed in addition to the normal
+  # installation of library files.  For some platforms, like KNL, linking objects instead of
   # libraries with IPO can produce ~10% more efficient code.
-  # 
+  #
   # This option is used in component_macros.cmake's add_component_library function.
   #
-  # It is currently disabled by default. It can be enabled by setting 
-  # -DDBS_GENERATE_OBJECT_LIBRARIES=ON.  This feature is not currently supported for Visual Studio 
+  # It is currently disabled by default. It can be enabled by setting
+  # -DDBS_GENERATE_OBJECT_LIBRARIES=ON.  This feature is not currently supported for Visual Studio
   # due to conflict in the way object libraries are generated for MSVC and CAFS subprojects.
   # ----------------------------------------
   option(DBS_GENERATE_OBJECT_LIBRARIES "When ON, also generate object-libraries." OFF)
   if( DBS_GENERATE_OBJECT_LIBRARIES AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    message(FATAL_ERROR 
+    message(FATAL_ERROR
       "The Draco build system doesn't currently allow the generation of object-libraries with"
       "Visual Studio projects.")
   endif()
