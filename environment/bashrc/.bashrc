@@ -187,13 +187,7 @@ if [[ ${INTERACTIVE} == true ]]; then
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_vm" ;;
 
-    # CCS-NET machines (insufficient space on ccscs5 for vendor+data).
-    ccscs5*)
-      echo "Draco developer environment not provided on this machine"
-      echo "(${target}) due to insufficient /scratch storage."
-      export NoModules=1
-      ;;
-    ccscs[1-4]* | ccscs[6-9]*)
+    ccscs[1-9]* | ccsnet[1-9]*)
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_ccsnet" ;;
 
