@@ -3,7 +3,7 @@
 # file   src/cdi_ipcress/python/ipcress_reader.py
 # author Alex Long <along@lanl.gov>
 # date   Monday, December 15, 2014, 5:44 pm
-# brief This script has fucntions that parse an IPCRESS file and returns a dictionary that contains
+# brief This script has functions that parse an IPCRESS file and returns a dictionary that contains
 #        data for each property and each material present in the file. This script also contains
 #        interpolation functions for opacity data.
 # note   Copyright (C) 2016, Triad National Security, LLC.,  All rights reserved.
@@ -11,10 +11,6 @@
 
 # import block
 # ------------------------------------------------------------------------------------------------ #
-# import re
-# from numpy import arange, sin, pi, min, max
-# import sys
-# import struct
 import numpy as np
 from struct import pack, unpack
 from math import log, exp
@@ -116,10 +112,11 @@ def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data,
             (log_op_T_G - log_op_T_L)
         interp_op.append(exp(log_op))
 
-    print("hnu(keV)            opacity(sq_cm/g)         opacity(1/cm)")
-    for i, hnu in enumerate(hnu_grid[:-1]):
-        print("{0}     {1}     {2}".format(0.5 * (hnu + hnu_grid[i + 1]), interp_op[i],
-                                           interp_op[i] * target_rho))
+    if (print_str is not None):
+        print("hnu(keV)            opacity(sq_cm/g)         opacity(1/cm)")
+        for i, hnu in enumerate(hnu_grid[:-1]):
+            print("{0}     {1}     {2}".format(0.5 * (hnu + hnu_grid[i + 1]), interp_op[i],
+                                               interp_op[i] * target_rho))
     return interp_op
 
 
