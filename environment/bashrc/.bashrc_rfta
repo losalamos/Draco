@@ -1,15 +1,11 @@
 ##-*- Mode: sh -*-
-##---------------------------------------------------------------------------##
-## .bashrc_ccs4_linux - my bash configuration file upon bash login
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# .bashrc_ccs4_linux - my bash configuration file upon bash login
+# ------------------------------------------------------------------------------------------------ #
 
-if test -n "$verbose"; then
-   echo "In .bashrc_rfta"
-fi
-
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# Environments
+# ------------------------------------------------------------------------------------------------ #
 
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
@@ -28,12 +24,11 @@ add_to_path $VENDOR_DIR/bin
 #
 # 1. Determine if the module command is available
 modcmd=`declare -f module`
-#    If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
    if test -f /usr/share/Modules/init/bash; then
       source /usr/share/Modules/init/bash
    else
-      echo "ERROR: The module command was not found. No modules will be loaded."
+      echo "ERROR: The module command was not found. No modules will be loaded (rfta e01)."
    fi
 fi
 modcmd=`declare -f module`
@@ -41,22 +36,18 @@ modcmd=`declare -f module`
 # 2. Use modules found in the draco directory
 
 if [[ ! ${modcmd} ]]; then
-   echo "ERROR: The module command was not found. No modules will be loaded."
+   echo "ERROR: The module command was not found. No modules will be loaded (rfta e02)."
 else
 
-  # If modulefiles is located at $HOME, assume that the current developer wants
-  # to use his/her own checkout of user_contrib modulefiles.
+  # If modulefiles is located at $HOME, assume that the current developer wants to use his/her own
+  # checkout of user_contrib modulefiles.
   if test -d $HOME/modulefiles; then
     export ucmf=$HOME/modulefiles
     module use --append $ucmf/fta
-#  else
-#    module load user_contrib
   fi
-
-#  export dracomodules="hsi psi svn"
 
 fi
 
-##---------------------------------------------------------------------------##
-## end of .bashrc_rfta
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# End
+# ------------------------------------------------------------------------------------------------ #

@@ -24,7 +24,7 @@ if [[ $(type dbs_pragma_once 2>&1 | grep -c "bash: type: ") != 0 ]]; then
 case ${-} in
 *i*)
    export INTERACTIVE=true
-   if test -n "${verbose}"; then echo "in draco/environment/bashrc/bashrc_slurm"; fi
+   [[ "${verbose:-false}" == "true" ]] && echo "in draco/environment/bashrc/bashrc_slurm"
 
    # Slurm related:
    # See http://hpcfaq.lanl.gov/faqs/view/58
