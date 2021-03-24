@@ -27,9 +27,7 @@
 case ${-} in
   *i*)
     export INTERACTIVE=true
-    if [[ "${verbose:=false}" == "true" ]]; then
-      echo "in draco/environment/bashrc/.bashrc";
-    fi
+    [[ "${verbose:=false}" == "true" ]] && echo "in draco/environment/bashrc/.bashrc"
 
     # Shell options
     shopt -s checkwinsize # autocorrect window size
@@ -60,7 +58,8 @@ case ${-} in
       export DRACO_SRC_DIR
       export DRACO_ENV_DIR="${DRACO_SRC_DIR}/environment"
     fi
-    [[ -z $DRACO_ENV_DIR ]]; echo "DRACO_ENV_DIR not set, some draco env will be disabled."
+    [[ "${DRACO_ENV_DIR:-notset}" == "notset" ]] && \
+      echo "DRACO_ENV_DIR not set, some draco env will be disabled."
 
     #----------------------------------------------------------------------------------------------#
     # Common aliases
