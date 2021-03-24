@@ -10,7 +10,7 @@
 
 #verbose=true
 
-[[ -n "$verbose" ]] && echo "In draco/environment/bashrc/.bashrc_cray"
+[[ "${verbose:=false}" == "true" ]] && echo "In draco/environment/bashrc/.bashrc_cray"
 
 #--------------------------------------------------------------------------------------------------#
 # ENVIRONMENTS

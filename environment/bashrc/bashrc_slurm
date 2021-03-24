@@ -88,7 +88,7 @@ case ${-} in
      # shellcheck disable=SC2086
      if ! [[ $(squeue ${squeue_args} -h -t R | wc -l) == 0 ]]; then
        echo -e "\n${boldface}RUNNING${normalface}":
-       echo " squeue ${squeue_args} -o \"%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S\" -S \"L\" -t R"
+       # echo " squeue ${squeue_args} -o \"%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S\" -S \"L\" -t R"
        # shellcheck disable=SC2086
        squeue ${squeue_args} -o "%.7i %.10u %.10a %.8q %.9P %.16j %.6D %.6C %.12L %S" -S "L" -t R | grep --color -E ".*${hluser}.*|$"
      fi

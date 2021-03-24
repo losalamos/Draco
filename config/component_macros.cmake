@@ -187,8 +187,7 @@ macro( add_component_executable )
   # Create the library and set the properties
   #
 
-  # Set the component name: If registered from a test directory, extract
-  # the parent's name.
+  # Set the component name: If registered from a test directory, extract the parent's name.
   get_filename_component( ldir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
   if( ${ldir} STREQUAL "test")
     get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
