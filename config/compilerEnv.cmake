@@ -498,6 +498,10 @@ macro(dbsSetupStaticAnalyzers)
           # See full list: `clang-tidy -check=* -list-checks'
           # Default: all modernize checks; except use-triling-return-type.
           set( CLANG_TIDY_CHECKS "-checks=modernize-*,-modernize-use-trailing-return-type" )
+          if( DEFINED ENV{CI} )
+            string(REPLACE "-checks=" "--warnings-as-errors=" tmp ${CLANG_TIDY_CHECKS} )
+            string(APPEND CLANG_TIDY_CHECKS ";${tmp}")
+          endif()
         endif()
         set( CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS}" CACHE STRING
           "clang-tidy check options (eg: -checks=bugprone-*,mpi-*)" FORCE )
