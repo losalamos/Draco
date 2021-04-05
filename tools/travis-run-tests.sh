@@ -108,6 +108,7 @@ elif [[ "${COMPILER:=GCC}" == "GCC" ]]; then
     for i in C CXX Fortran; do
       eval export ${i}_FLAGS+=\" -Werror\"
     done
+    eval export CUDA_FLAGS+=\" -Werror all-warnings\"
   fi
   if [[ ${COVERAGE:-OFF} == "ON" ]]; then
     CMAKE_OPTS="-DCODE_COVERAGE=ON"
@@ -184,6 +185,7 @@ elif [[ "${COMPILER}" == "LLVM" ]]; then
     for i in C CXX Fortran; do
       eval export ${i}_FLAGS+=\" -Werror\"
     done
+    eval export CUDA_FLAGS+=\" -Werror all-warnings\"
   fi
 
   echo -e "\n========== printenv =========="
