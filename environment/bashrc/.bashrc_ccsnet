@@ -22,14 +22,12 @@ case $target in
     module use --append /ccs/codes/radtran/Modules
     module load draco/gcc1020-ompi4
     ;;
-  ccsnet[23]*|rtt*)
-    module load user_contrib/2020.04
-    module use --append /ccs/codes/radtran/Modules
-    ;;
-  *)
-    die "I don't know how to setup modules for $target"
-    ;;
+  ccsnet[23]*|rtt*) module use --append /ccs/codes/radtran/Modules ;;
+  *) die "I don't know how to setup modules for $target" ;;
 esac
+
+# Enable auto-completion for <TAB> for git commands
+[[ -f /ccs/opt/bin/git-completion.bash ]] && source /ccs/opt/bin/git-completion.bash
 
 #--------------------------------------------------------------------------------------------------#
 # end of .bashrc_ccsnet

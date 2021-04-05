@@ -117,7 +117,7 @@ macro(dbsSetupCompilers)
     #    - EXE_LINKER_FLAGS
     # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
     #----------------------------------------------------------------------------------------------#
-    foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
+    foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER CUDA)
       if( DEFINED ENV{${lang}_FLAGS} )
         string(REPLACE "\"" "" tmp "$ENV{${lang}_FLAGS}" )
         string( APPEND ${lang}_FLAGS " ${tmp}")
