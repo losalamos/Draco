@@ -71,12 +71,15 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # Systems running CrayPE use compile wrappers to specify this option.
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  if (HAS_MARCH_NATIVE AND
-      NOT APPLE AND
-      NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
-    string( APPEND CMAKE_C_FLAGS " -march=native" )
-  elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
-    string( APPEND CMAKE_C_FLAGS " -mcpu=powerpc64le -mtune=powerpc64le" )
+  # Only add '-march=native' if -march and -mtune are not already requested. Spack will add -march=
+  # options if spacific target is requested (ie. target Haswell CPU when building on Skylake).
+  if( NOT ("${CC}" MATCHES "-mtune" OR "${CC}" MATCHES "-march" OR
+        "${CMAKE_C_FLAGS}" MATCHES "-mtune" OR "${CMAKE_C_FLAGS}" MATCHES "-march" ))
+    if (HAS_MARCH_NATIVE AND NOT APPLE AND NOT CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
+      string( APPEND CMAKE_C_FLAGS " -march=native" )
+    elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+      string( APPEND CMAKE_C_FLAGS " -mcpu=powerpc64le -mtune=powerpc64le" )
+    endif()
   endif()
 
   string( APPEND CMAKE_CXX_FLAGS      " ${CMAKE_C_FLAGS}")

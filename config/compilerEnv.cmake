@@ -1,7 +1,7 @@
 #--------------------------------------------*-cmake-*---------------------------------------------#
 # file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2019-2020 Triad National Security, LLC., All rights reserved.
+# note   Copyright (C) 2019-2021 Triad National Security, LLC., All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 
 include_guard(GLOBAL)
@@ -117,7 +117,7 @@ macro(dbsSetupCompilers)
     #    - EXE_LINKER_FLAGS
     # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
     #----------------------------------------------------------------------------------------------#
-    foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER)
+    foreach( lang C CXX Fortran EXE_LINKER SHARED_LINKER CUDA)
       if( DEFINED ENV{${lang}_FLAGS} )
         string(REPLACE "\"" "" tmp "$ENV{${lang}_FLAGS}" )
         string( APPEND ${lang}_FLAGS " ${tmp}")
@@ -848,12 +848,13 @@ macro( toggle_compiler_flag switch compiler_flag compiler_flag_var_names build_m
     if( NOT ${comp} STREQUAL "C" AND
         NOT ${comp} STREQUAL "CXX" AND
         NOT ${comp} STREQUAL "Fortran" AND
+        NOT ${comp} STREQUAL "CUDA" AND
         NOT ${comp} STREQUAL "EXE_LINKER" AND
         NOT ${comp} STREQUAL "SHARED_LINKER")
       message(FATAL_ERROR "When calling "
 "toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names), "
 "compiler_flag_var_names must be set to one or more of these valid "
-"names: C;CXX;Fortran;EXE_LINKER;SHARED_LINKER.")
+"names: C;CXX;Fortran;CUDA;EXE_LINKER;SHARED_LINKER.")
     endif()
 
     string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" )
