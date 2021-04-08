@@ -19,7 +19,7 @@ environments="armgcc930env"
 case "${ddir}" in
 
   #---------------------------------------------------------------------------#
-  draco-7_9*)
+  draco-7_10*)
     function armgcc930env()
     {
       export darwin_queue="-p arm"
@@ -61,8 +61,8 @@ esac
 
 for env in $environments; do
   if [[ $(fn_exists $env) -gt 0 ]]; then
-    ! [[ -v "$verbose" ]] && [[ "${verbose}" != "false" ]] && echo "export -f $env"
-    export -f ${env?}
+    if [[ "${verbose:-false}" != "false" ]]; then "export -f $env"; fi
+    export -f "${env?}"
   else
     die "Requested environment $env is not defined."
   fi
