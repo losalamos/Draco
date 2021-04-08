@@ -126,6 +126,13 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   for (int i = 0; i < local_size; i++) {
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
+    result[i] = log_inv_transform(result[i], log_bias);
+
+    if (rtt_dsxx::soft_equiv(result[i], distribution[i], 1e-12)) {
+      abs_result[i] = 0.0;
+    } else {
+      abs_result[i] = fabs(result[i]);
+    }
   }
 
   double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
@@ -135,16 +142,10 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     rtt_c4::global_sum(reconstruction_conservation);
   }
 
-  if (!rtt_dsxx::soft_equiv(reconstruction_conservation, 0.0) &&
-      !rtt_dsxx::soft_equiv(global_conservation, 0.0)) {
-    // Totals are non-zero so scale the result for conservation
-    for (int i = 0; i < local_size; i++)
-      result[i] *= global_conservation / reconstruction_conservation;
-  } else {
-    // a zero distribution is possible. If it occurs fall back to residual conservation;
+  if (abs_reconstruction_conservation > 0.0) {
     const double res = global_conservation - reconstruction_conservation;
     for (int i = 0; i < local_size; i++)
-      result[i] += res / double(size);
+      result[i] += res * abs_result[i] / abs_reconstruction_conservation;
   }
 
   return result;
