@@ -44,12 +44,19 @@ public:
   std::vector<double> reconstruction(const std::vector<double> &distribution,
                                      const std::vector<std::array<double, 3>> &position,
                                      const std::vector<std::array<double, 3>> &one_over_band_width,
-                                     const bool domain_decomposed) const;
+                                     const bool domain_decomposed,
+                                     const double discontinuity_cutoff=0.0) const;
 
   // STATICS
 
   //! Epanechikov Kernel
   double epan_kernel(const double x) const;
+
+  //! Transform the solution into log space
+  double log_transform(const double value, const double bias) const;
+
+  //! Move the solution back from log space
+  double log_inv_transform(const double log_value, const double bias) const;
 
 protected:
   // IMPLEMENTATION
@@ -67,7 +74,7 @@ template <>
 template <>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
-    const std::vector<std::array<double, 3>> &one_over_band_width, const bool dd) const;
+    const std::vector<std::array<double, 3>> &one_over_band_width, const bool dd, const double disconintinuity_cutoff) const;
 
 } // end namespace rtt_kde
 

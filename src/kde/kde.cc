@@ -49,7 +49,8 @@ template <>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
     const std::vector<std::array<double, 3>> &one_over_band_width,
-    const bool domain_decomposed) const {
+    const bool domain_decomposed,
+    const double discontinuity_cutoff) const {
   const int64_t local_size = distribution.size();
   Require(static_cast<int64_t>(position.size()) == local_size);
   Require(static_cast<int64_t>(one_over_band_width.size()) == local_size);
@@ -58,8 +59,12 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   int64_t size = local_size;
   double global_conservation = std::accumulate(distribution.begin(), distribution.end(), 0.0);
   std::vector<double> result(local_size, 0.0);
+  std::vector<double> abs_result(local_size, 0.0);
   std::vector<double> normal(local_size, 0.0);
+  double min_value = *std::min_element(distribution.begin(), distribution.end());
+  double log_bias = fabs(min_value) * (1.0 + 1e-12);
   if (domain_decomposed) {
+
     // minimize global values and only allocate them in DD problems
     int64_t global_lower_bound = 0;
     std::vector<double> global_distribution;
@@ -92,7 +97,10 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     rtt_c4::global_sum(global_x_position.data(), size);
     rtt_c4::global_sum(global_distribution.data(), size);
     rtt_c4::global_sum(global_conservation);
+    rtt_c4::global_min(min_value);
 
+    log_bias = fabs(min_value) * (1.0 + 1e-12);
+    log_bias = std::max(log_bias,1e-12);
     // now apply the kernel to the local ranks
     for (int i = 0; i < local_size; i++) {
       const double x0 = position[i][0];
@@ -102,11 +110,13 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
         const double x = global_x_position[j];
         const double u = (x0 - x) * one_over_h;
         const double weight = (epan_kernel(u)) * one_over_h;
-        result[i] += global_distribution[j] * weight;
+        result[i] += log_transform(global_distribution[j], log_bias) * weight;
         normal[i] += weight;
       }
     }
   } else { // local reconstruction only
+
+    log_bias = std::max(log_bias,1e-12);
     // now apply the kernel to the local ranks
     for (int i = 0; i < local_size; i++) {
       const double x0 = position[i][0];
@@ -115,8 +125,9 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
       for (int j = 0; j < local_size; j++) {
         const double x = position[j][0];
         const double u = (x0 - x) * one_over_h;
-        const double weight = (epan_kernel(u)) * one_over_h;
-        result[i] += distribution[j] * weight;
+        const double scale = one_over_h/one_over_band_width[j][0]<discontinuity_cutoff ? 0.0: 1.0;
+        const double weight = (epan_kernel(u)) * one_over_h * scale;
+        result[i] += log_transform(distribution[j], log_bias) * weight;
         normal[i] += weight;
       }
     }
@@ -127,26 +138,22 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
     result[i] = log_inv_transform(result[i], log_bias);
-
-    if (rtt_dsxx::soft_equiv(result[i], distribution[i], 1e-12)) {
-      abs_result[i] = 0.0;
-    } else {
-      abs_result[i] = fabs(result[i]);
-    }
+    abs_result[i] = fabs(result[i]);
   }
 
   double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
+  double abs_reconstruction_conservation =
+      std::accumulate(abs_result.begin(), abs_result.end(), 0.0);
 
   if (domain_decomposed) {
     // accumulate global contribution
     rtt_c4::global_sum(reconstruction_conservation);
+    rtt_c4::global_sum(abs_reconstruction_conservation);
   }
 
-  if (abs_reconstruction_conservation > 0.0) {
-    const double res = global_conservation - reconstruction_conservation;
-    for (int i = 0; i < local_size; i++)
-      result[i] += res * abs_result[i] / abs_reconstruction_conservation;
-  }
+  const double res = global_conservation - reconstruction_conservation;
+  for (int i = 0; i < local_size; i++)
+    result[i] += res * abs_result[i] / abs_reconstruction_conservation;
 
   return result;
 }
