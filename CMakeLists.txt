@@ -13,7 +13,7 @@
 cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 set(ddesc "An object-oriented component library supporting radiation")
 string(APPEND ddesc " transport applications.")
-project( Draco DESCRIPTION ${ddesc} VERSION 7.9 LANGUAGES CXX C)
+project( Draco DESCRIPTION ${ddesc} VERSION 7.10 LANGUAGES CXX C)
 
 # Export compile commands for compiler tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)

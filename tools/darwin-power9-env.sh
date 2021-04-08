@@ -10,8 +10,7 @@ source "${draco_script_dir:-unknown}/darwin-env.sh"
 export siblings="darwin-power9"
 
 # The following toolchains will be used when releasing code:
-environments="p9gcc730env p9xl16117env"
-#environments="p9gcc730env"
+environments="p9gcc930env p9xl16117env"
 
 #--------------------------------------------------------------------------------------------------#
 # Specify environments (modules)
@@ -20,13 +19,13 @@ environments="p9gcc730env p9xl16117env"
 case "${ddir}" in
 
   #---------------------------------------------------------------------------#
-  draco-7_9*)
-    function p9gcc730env()
+  draco-7_10*)
+    function p9gcc930env()
     {
       export darwin_queue="-p power9-asc -A asc-priority"
       run "module purge"
       run "module use --append /projects/draco/Modules"
-      run "module load draco/power9-gcc730"
+      run "module load draco/power9-gcc930-smpi"
       run "module list"
 
       # work around for known openmpi issues:
@@ -59,7 +58,7 @@ case "${ddir}" in
       echo "VENDOR_DIR = $VENDOR_DIR"
       echo "DRACO_ARCH = $DRACO_ARCH"
       run "module use --append /projects/draco/Modules"
-      run "module load draco/power9-xl16117"
+      run "module load draco/power9-xl16117-smpi"
       run "module list"
 
       # work around for known openmpi issues:
@@ -87,10 +86,10 @@ esac
 # Sanity check
 #--------------------------------------------------------------------------------------------------#
 
-for env in $environments; do
-  if [[ $(fn_exists $env) -gt 0 ]]; then
-    ! [[ -v "$verbose" ]] && [[ "${verbose}" != "false" ]] && echo "export -f $env"
-    export -f ${env?}
+for env in ${environments}; do
+  if [[ $(fn_exists "$env") -gt 0 ]]; then
+    if [[ "${verbose:-false}" != false ]]; then echo "export -f $env"; fi
+    export -f "${env?}"
   else
     die "Requested environment $env is not defined."
   fi

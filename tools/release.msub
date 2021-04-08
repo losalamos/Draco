@@ -31,7 +31,7 @@ export build_pe
 verbose=1
 if test $verbose == 1; then
   echo -ne "\nStarting release build for ${package:-unknown} - ${rttversion:-unknown} "
-  echo "- ${buildflavor} - ${TARGET:-unknown}:"
+  echo "- ${buildflavor}:"
   echo "================================================================================"
   echo "install_prefix = ${install_prefix:-unknown}/$rttversion"
   echo "build_prefix   = ${build_prefix:-unknown}/$rttversion"

@@ -15,7 +15,7 @@ environments="x86gcc930env x86intel1905env"
 # Special setup for CTS-1: replace the 'draco-latest' symlink
 pushd "/usr/projects/${package:-notset}" || exit
 if [[ -L draco-latest ]]; then rm draco-latest; fi
-if [[ -d "${source_prefix:=notset}" ]]; then ln -s "${source_prefix} draco-latest"; fi
+if [[ -d "${source_prefix:=notset}" ]]; then ln -s "${source_prefix}" draco-latest; fi
 popd || exit
 
 #--------------------------------------------------------------------------------------------------#
@@ -25,7 +25,7 @@ popd || exit
 case "${ddir:=notset}" in
 
   #---------------------------------------------------------------------------#
-  draco-7_9*)
+  draco-7_10*)
     function x86gcc930env()
     {
       export darwin_queue="-p volta-x86"
@@ -33,7 +33,7 @@ case "${ddir:=notset}" in
       run "module use --append /projects/draco/Modules"
       run "module load draco/x64-gcc930"
       if [[ ${SLURM_JOB_PARTITION} =~ "volta-" || ${SLURM_JOB_PARTITION} =~ "gpu" ]]; then
-        run "module load cuda/11.2-beta"
+        run "module load cuda/11.0"
       fi
       run "module list"
 
@@ -55,7 +55,7 @@ case "${ddir:=notset}" in
       run "module use --append /projects/draco/Modules"
       run "module load draco/x64-intel1905"
       #if [[ ${SLURM_JOB_PARTITION} =~ "volta-" || ${SLURM_JOB_PARTITION} =~ "gpu" ]]; then
-      #  run "module load cuda/11.2-beta"
+      #  run "module load cuda/11.0"
       #fi
       run "module list"
       MPIEXEC_EXECUTABLE=$(which mpirun)

@@ -22,9 +22,14 @@ if( NOT Fortran_FLAGS_INITIALIZED )
    set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
    set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g ${CMAKE_Fortran_FLAGS_RELEASE}")
 
-   if (NOT APPLE AND HAS_MARCH_NATIVE)
+   # Only add '-march=native' if -march and -mtune are not already requested. Spack will add -march=
+  # options if spacific target is requested (ie. target Haswell CPU when building on Skylake).
+  if( NOT ("${FC}" MATCHES "-mtune" OR "${FC}" MATCHES "-march" OR
+        "${CMAKE_Fortran_FLAGS}" MATCHES "-mtune" OR "${CMAKE_Fortran_FLAGS}" MATCHES "-march" ))
+    if (NOT APPLE AND HAS_MARCH_NATIVE)
       set( CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS} -march=native" )
-   endif()
+    endif()
+  endif()
 endif()
 
 #--------------------------------------------------------------------------------------------------#
