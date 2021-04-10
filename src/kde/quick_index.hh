@@ -59,7 +59,7 @@ public:
   // Ordered list of local bins (indexes values are based on the global bin structure)
   std::vector<size_t> local_bins;
   // Size of ghost data buffer
-  size_t local_ghost_buffer_size;
+  int local_ghost_buffer_size;
   // Map used to index into a local ghost buffer
   std::map<size_t, std::vector<size_t>> local_ghost_index_map;
   // Local ghost locations (build at construction time)
@@ -69,7 +69,8 @@ private:
   // PRIVATE DATA
   // Map used to write local data to other processor ghost cells
   // put_window_map[global_id] = [put_rank, ghost_proc_buffer_size, ghost_proc_put_offset]
-  std::map<size_t, std::array<size_t, 3>> put_window_map;
+  // array is integers to accommodate mpi data types
+  std::map<size_t, std::vector<std::array<int, 3>>> put_window_map;
 };
 
 } // end namespace  rtt_kde
