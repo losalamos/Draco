@@ -11,6 +11,7 @@
 #include "kde/quick_index.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
+#include "ds++/dbc.hh"
 #include <numeric>
 
 using namespace rtt_dsxx;
@@ -35,8 +36,46 @@ void test_replication(ParallelUnitTest &ut) {
     const bool dd = false;
     quick_index<1> qindex = quick_index<1>(position_array, max_window_size, bins_per_dim, dd);
     // Check public data
-    //  if (!rtt_dsxx::soft_equiv(smooth_result[i], 0.1))
-    //    ITFAILS;
+    //------------------------
+    if (qindex.domain_decomposed)
+      ITFAILS;
+    if (qindex.coarse_bin_resolution != bins_per_dim)
+      ITFAILS;
+    if (!soft_equiv(qindex.max_window_size, max_window_size))
+      ITFAILS;
+    // Check global bounding box
+    if (!soft_equiv(qindex.bounding_box_min[0], 0.0))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_min[1], 1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_min[2], 1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[0], 4.5))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[1], -1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[2], -1e20))
+      ITFAILS;
+    // Check local coarse_index map
+    // build up a global gold to check the map
+    std::map<size_t, std::vector<size_t>> gold_map;
+    gold_map[0] = {0};
+    gold_map[1] = {5};
+    gold_map[2] = {1};
+    gold_map[3] = {6};
+    gold_map[4] = {2};
+    gold_map[5] = {7};
+    gold_map[6] = {3};
+    gold_map[7] = {8};
+    gold_map[8] = {4};
+    gold_map[9] = {9};
+    if (gold_map.size() != qindex.coarse_index_map.size())
+      ITFAILS;
+    for (auto mapItr = qindex.coarse_index_map.begin(); mapItr != qindex.coarse_index_map.end();
+         mapItr++)
+      for (size_t i = 0; i < mapItr->second.size(); i++)
+        if (gold_map[mapItr->first][i] != mapItr->second[i])
+          ITFAILS;
   }
 
   if (ut.numFails == 0) {
@@ -58,6 +97,8 @@ void test_decomposition(ParallelUnitTest &ut) {
   {
     std::vector<double> data{0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
     std::vector<std::array<double, 3>> position_array(10, std::array<double, 3>{0.0, 0.0, 0.0});
+    // This cell spatial ordering is difficult for this setup in that every
+    // rank requires a sub set of information from every other rank
     for (int i = 0; i < 10; i++) {
       position_array[i][0] = i < 5 ? i % 5 : i % 5 + 0.5;
       position_array[i][1] = i < 5 ? 0.5 : -0.5;
@@ -78,9 +119,93 @@ void test_decomposition(ParallelUnitTest &ut) {
     const size_t bins_per_dim = 10UL;
     const bool dd = true;
     quick_index<1> qindex = quick_index<1>(dd_position_array, max_window_size, bins_per_dim, dd);
-    // Check the reuslts
-    //  if (!rtt_dsxx::soft_equiv(smooth_result[i], 0.1))
-    //     ITFAILS;
+    // Check the local state data
+    if (!qindex.domain_decomposed)
+      ITFAILS;
+    if (qindex.coarse_bin_resolution != bins_per_dim)
+      ITFAILS;
+    if (!soft_equiv(qindex.max_window_size, max_window_size))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_min[0], 0.0))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_min[1], 1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_min[2], 1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[0], 4.5))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[1], -1e20))
+      ITFAILS;
+    if (!soft_equiv(qindex.bounding_box_max[2], -1e20))
+      ITFAILS;
+    // Check local coarse_index map
+    // local indexing will not match the domain replicated case (different
+    // number of points per rank so different local indexing)
+    std::map<size_t, std::vector<size_t>> gold_map;
+    if (rtt_c4::node() == 0) {
+      gold_map[0] = {0}; // 0.0
+      gold_map[2] = {1}; // 1.0
+      gold_map[4] = {2}; // 2.0
+    } else if (rtt_c4::node() == 1) {
+      gold_map[6] = {0}; // 3.0
+      gold_map[8] = {1}; // 4.0
+      gold_map[1] = {2}; // 0.5
+    } else {
+      gold_map[3] = {0}; // 1.5
+      gold_map[5] = {1}; // 2.5
+      gold_map[7] = {2}; // 3.5
+      gold_map[9] = {3}; // 4.5
+    }
+    if (gold_map.size() != qindex.coarse_index_map.size())
+      ITFAILS;
+    for (auto mapItr = qindex.coarse_index_map.begin(); mapItr != qindex.coarse_index_map.end();
+         mapItr++)
+      for (size_t i = 0; i < mapItr->second.size(); i++)
+        if (gold_map[mapItr->first][i] != mapItr->second[i])
+          ITFAILS;
+
+    // Check Domain Decomposed Data
+    // local bounding box extends beyond local data based on the window size
+    if (rtt_c4::node() == 0) {
+      if (!soft_equiv(qindex.local_bounding_box_min[0], 0.0))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[0], 2.5))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+        ITFAILS;
+    } else if (rtt_c4::node() == 1) {
+      if (!soft_equiv(qindex.local_bounding_box_min[0], 0.0))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[0], 4.5))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+        ITFAILS;
+    } else {
+      if (!soft_equiv(qindex.local_bounding_box_min[0], 1.0))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[0], 4.5))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+        ITFAILS;
+      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+        ITFAILS;
+    }
   }
 
   if (ut.numFails == 0) {

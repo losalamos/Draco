@@ -52,6 +52,23 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
     }
   }
 
+  if (domain_decomposed) {
+    // Store the local bounding box and extend to maximum non-local data size
+    local_bounding_box_min = bounding_box_min;
+    local_bounding_box_max = bounding_box_max;
+    for (size_t d = 0; d < dim; d++) {
+      local_bounding_box_min[d] -= max_window_size * 0.5;
+      local_bounding_box_max[d] += max_window_size * 0.5;
+    }
+    // Global reduce to get the global min and max
+    rtt_c4::global_min(&bounding_box_min[0], 3);
+    rtt_c4::global_max(&bounding_box_max[0], 3);
+    for (size_t d = 0; d < dim; d++) {
+      local_bounding_box_min[d] = std::max(local_bounding_box_min[d], bounding_box_min[d]);
+      local_bounding_box_max[d] = std::min(local_bounding_box_max[d], bounding_box_max[d]);
+    }
+  }
+
   // temp cast corse_bin_resolution to double for interpolation
   const double crd = static_cast<double>(coarse_bin_resolution);
 
@@ -77,17 +94,6 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
     // temporary cast of the nodes to prevent conversion warnings
     const size_t nodes = static_cast<size_t>(rtt_c4::nodes());
     const size_t node = static_cast<size_t>(rtt_c4::node());
-
-    // Store the local bounding box and extend to maximum non-local data size
-    local_bounding_box_min = bounding_box_min;
-    local_bounding_box_max = bounding_box_max;
-    for (size_t d = 0; d < dim; d++) {
-      local_bounding_box_min[d] -= max_window_size * 0.5;
-      local_bounding_box_max[d] += max_window_size * 0.5;
-    }
-    // Global reduce to get the global min and max
-    rtt_c4::global_min(&bounding_box_min[0], 3);
-    rtt_c4::global_max(&bounding_box_max[0], 3);
 
     // calculate the global index range that each processor needs to
     // accommodate the specified data window size
@@ -178,7 +184,7 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
             // build up map data
             put_window_map[mapItr->first].push_back(
                 std::array<int, 3>{rec_proc, proc_ghost_buffer_size[rec_proc], offset});
-            offset += mapItr->second.size();
+            offset += static_cast<int>(mapItr->second.size());
           }
         }
       }
