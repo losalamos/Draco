@@ -127,6 +127,8 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
 
     // build a global map for number of entries into the global bins on each processor
     // creates a (nbins**dim)*nranks sized array
+    // NOTE: If this gets to big we could stride over a subset of coarse bins
+    // and do multiple iterations of mpi communication to build up the map
     size_t nbins = coarse_bin_resolution;
     for (size_t d = 1; d < dim; d++)
       nbins = coarse_bin_resolution;
@@ -139,12 +141,10 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
     }
     rtt_c4::global_sum(&global_index_per_bin_per_proc[0], nbins * nodes);
 
-    std::vector<int> global_need_bins_per_proc(nbins * nodes, 0UL);
     // calculate local ghost buffer size
     local_ghost_buffer_size = 0;
-    for (auto binItr = local_bins.begin(); binItr != local_bins.end(); binItr++) {
-      global_need_bins_per_proc[*binItr + nbins * node] += 1;
-      for (size_t proc = 0; proc < nodes; proc++) {
+    for (size_t proc = 0; proc < nodes; proc++) {
+      for (auto binItr = local_bins.begin(); binItr != local_bins.end(); binItr++) {
         if (node != proc) {
           size_t gipbpp_index = *binItr + nbins * proc;
           // build up the local ghost index map
@@ -154,6 +154,12 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
           local_ghost_buffer_size += global_index_per_bin_per_proc[gipbpp_index];
         }
       }
+    }
+
+    std::vector<int> global_need_bins_per_proc(nbins * nodes, 0UL);
+    // global need bins
+    for (auto binItr = local_bins.begin(); binItr != local_bins.end(); binItr++) {
+      global_need_bins_per_proc[*binItr + nbins * node] += 1;
     }
     rtt_c4::global_sum(&global_need_bins_per_proc[0], nbins * nodes);
 
