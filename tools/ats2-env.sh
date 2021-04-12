@@ -86,7 +86,7 @@ case $ddir in
       unset CPATH
       unset LD_LIBRARY_PATH
       unset LIBRARY_PATH
-      run "module load draco/xl2020.11.12-cuda-11.2.0-beta"
+      run "module load draco/xl2020.08.19-cuda-11.0.2"
       run "module list"
       export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
     }

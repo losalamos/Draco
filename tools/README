@@ -52,7 +52,7 @@ source/tools/release.sh &> logs/release-darwin-power9.log &
 
 2. x64 + Volta
 
-salloc -N 1 -p volta-x86 -C cpu_family:broadwell
+salloc -N 1 -p volta-x86 -C cpu_family:haswell
 
 3. ARM
 

@@ -33,7 +33,7 @@ case "${ddir:=notset}" in
       run "module use --append /projects/draco/Modules"
       run "module load draco/x64-gcc930"
       if [[ ${SLURM_JOB_PARTITION} =~ "volta-" || ${SLURM_JOB_PARTITION} =~ "gpu" ]]; then
-        run "module load cuda/11.2-beta"
+        run "module load cuda/11.0"
       fi
       run "module list"
 
@@ -55,7 +55,7 @@ case "${ddir:=notset}" in
       run "module use --append /projects/draco/Modules"
       run "module load draco/x64-intel1905"
       #if [[ ${SLURM_JOB_PARTITION} =~ "volta-" || ${SLURM_JOB_PARTITION} =~ "gpu" ]]; then
-      #  run "module load cuda/11.2-beta"
+      #  run "module load cuda/11.0"
       #fi
       run "module list"
       MPIEXEC_EXECUTABLE=$(which mpirun)
