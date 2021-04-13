@@ -10,6 +10,7 @@
 #ifndef kde_kde_hh
 #define kde_kde_hh
 
+#include "quick_index.hh"
 #include "c4/global.hh"
 #include <array>
 #include <vector>
@@ -42,10 +43,16 @@ public:
   //! Reconstruct distribution
   template <int dim = 1>
   std::vector<double> reconstruction(const std::vector<double> &distribution,
-                                     const std::vector<std::array<double, 3>> &position,
                                      const std::vector<std::array<double, 3>> &one_over_band_width,
-                                     const bool domain_decomposed,
-                                     const double discontinuity_cutoff=0.0) const;
+                                     const quick_index<dim> &qindex,
+                                     const double discontinuity_cutoff = 0.0) const;
+
+  //! Reconstruct distribution in logarithmic space
+  template <int dim = 1>
+  std::vector<double>
+  log_reconstruction(const std::vector<double> &distribution,
+                     const std::vector<std::array<double, 3>> &one_over_band_width,
+                     const quick_index<dim> &qindex, const double discontinuity_cutoff = 0.0) const;
 
   // STATICS
 
@@ -73,8 +80,16 @@ private:
 template <>
 template <>
 std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
-    const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
-    const std::vector<std::array<double, 3>> &one_over_band_width, const bool dd, const double disconintinuity_cutoff) const;
+    const std::vector<double> &distribution,
+    const std::vector<std::array<double, 3>> &one_over_band_width, const quick_index<1> &qindex,
+    const double discontinuity_cutoff) const;
+
+template <>
+template <>
+std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
+    const std::vector<double> &distribution,
+    const std::vector<std::array<double, 3>> &one_over_band_width, const quick_index<1> &qindex,
+    const double discontinuity_cutoff) const;
 
 } // end namespace rtt_kde
 

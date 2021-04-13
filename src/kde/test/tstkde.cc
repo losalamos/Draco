@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "kde/kde.hh"
+#include "kde/quick_index.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <numeric>
@@ -40,8 +41,13 @@ void test_replication(ParallelUnitTest &ut) {
     std::vector<std::array<double, 3>> one_over_bandwidth_array(
         10, std::array<double, 3>{1.0 / 0.1, 0., 0.0});
     const bool dd = false;
+    // two bins per point
+    const size_t n_coarse_bins = 5;
+    const double max_window_size = 0.1;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < 10; i++) {
@@ -66,8 +72,12 @@ void test_replication(ParallelUnitTest &ut) {
     std::vector<std::array<double, 3>> one_over_bandwidth_array(
         10, std::array<double, 3>{1.0 / 4.0, 0., 0.0});
     const bool dd = false;
+    // one bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < 10; i++) {
@@ -92,8 +102,12 @@ void test_replication(ParallelUnitTest &ut) {
     std::vector<std::array<double, 3>> one_over_bandwidth_array(
         10, std::array<double, 3>{1.0 / 0.1, 0., 0.0});
     const bool dd = false;
+    // 2X bin per point
+    const size_t n_coarse_bins = 20;
+    const double max_window_size = 0.1;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < 10; i++) {
@@ -118,8 +132,12 @@ void test_replication(ParallelUnitTest &ut) {
     std::vector<std::array<double, 3>> one_over_bandwidth_array(
         10, std::array<double, 3>{1.0 / 4.0, 0., 0.0});
     const bool dd = false;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < 10; i++) {
@@ -145,8 +163,13 @@ void test_replication(ParallelUnitTest &ut) {
         10, std::array<double, 3>{1.0, 0., 0.0});
 
     const bool dd = false;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 1.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     std::vector<double> bench{0.01446,   0.0172074, 0.10425,  0.172074, 0.131586,
                               0.0172074, 0.040488,  0.172074, 0.131586, 0.15906};
@@ -180,8 +203,13 @@ void test_replication(ParallelUnitTest &ut) {
     one_over_bandwidth_array[4] = {1.0 / 0.5, 0., 0.};
     one_over_bandwidth_array[2] = {1.0 / 2.0, 0., 0.};
     const bool dd = false;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 2.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     std::vector<double> bench{0.0139053, 0.0165473, 0.0953673, 0.194674, 0.0973372,
                               0.0165473, 0.0389349, 0.165473,  0.126538, 0.194674};
@@ -222,8 +250,13 @@ void test_replication(ParallelUnitTest &ut) {
     one_over_bandwidth_array[8] = {1.0 / 1.75, 0., 0.};
     one_over_bandwidth_array[9] = {1.0 / 2.75, 0., 0.};
     const bool dd = false;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 3.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     std::vector<double> bench{0.01588,   0.0177126, 0.101982, 0.157172, 0.154663,
                               0.0163707, 0.010198,  0.177126, 0.153908, 0.154988};
@@ -253,8 +286,13 @@ void test_replication(ParallelUnitTest &ut) {
 
     // lets make the array a little bit more complicated
     const bool dd = false;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(data, position_array, one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(data, one_over_bandwidth_array, qindex);
 
     for (int i = 0; i < 10; i++) {
       if (!rtt_dsxx::soft_equiv(smooth_result[i], 0.0, 1e-2))
@@ -315,8 +353,13 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1 bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 0.1;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -357,8 +400,13 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1/2 bin per point
+    const size_t n_coarse_bins = 5;
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -399,8 +447,13 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 2x bin per point
+    const size_t n_coarse_bins = 20;
+    const double max_window_size = 0.1;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -441,8 +494,14 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1x bin per point
+    const size_t n_coarse_bins = 10;
+    // window size must be 2X bigger then biggest bandwidth
+    const double max_window_size = 9.0;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -485,8 +544,13 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1x bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 1.0;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -536,8 +600,14 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1x bin per point
+    const size_t n_coarse_bins = 10;
+    // max window size must be 2x the max bandwidth size
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     // Check smooth result
     for (int i = 0; i < local_size; i++) {
@@ -578,8 +648,13 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
 
     const bool dd = true;
+    // 1x bin per point
+    const size_t n_coarse_bins = 10;
+    const double max_window_size = 4.0;
+    quick_index<1> qindex(dd_position_array, max_window_size, n_coarse_bins, dd);
+
     std::vector<double> smooth_result =
-        test_kde.reconstruction<1>(dd_data, dd_position_array, dd_one_over_bandwidth_array, dd);
+        test_kde.reconstruction<1>(dd_data, dd_one_over_bandwidth_array, qindex);
 
     for (int i = 0; i < local_size; i++) {
       if (!rtt_dsxx::soft_equiv(smooth_result[i], 0.0, 1e-2))

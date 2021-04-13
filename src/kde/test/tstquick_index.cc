@@ -46,15 +46,15 @@ void test_replication(ParallelUnitTest &ut) {
     // Check global bounding box
     if (!soft_equiv(qindex.bounding_box_min[0], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_min[1], 1e20))
+    if (!soft_equiv(qindex.bounding_box_min[1], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_min[2], 1e20))
+    if (!soft_equiv(qindex.bounding_box_min[2], 0.0))
       ITFAILS;
     if (!soft_equiv(qindex.bounding_box_max[0], 4.5))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_max[1], -1e20))
+    if (!soft_equiv(qindex.bounding_box_max[1], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_max[2], -1e20))
+    if (!soft_equiv(qindex.bounding_box_max[2], 0.0))
       ITFAILS;
     // Check local coarse_index map
     // build up a global gold to check the map
@@ -95,7 +95,7 @@ void test_decomposition(ParallelUnitTest &ut) {
     local_size = 4;
 
   {
-    std::vector<double> data{0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+    std::vector<double> data{3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0};
     std::vector<std::array<double, 3>> position_array(10, std::array<double, 3>{0.0, 0.0, 0.0});
     // This cell spatial ordering is difficult for this setup in that every
     // rank requires a sub set of information from every other rank
@@ -119,6 +119,22 @@ void test_decomposition(ParallelUnitTest &ut) {
     const size_t bins_per_dim = 10UL;
     const bool dd = true;
     quick_index<1> qindex = quick_index<1>(dd_position_array, max_window_size, bins_per_dim, dd);
+
+    // Check collect_ghost_data vector call
+    std::vector<double> ghost_data = qindex.collect_ghost_data(dd_data);
+
+    std::vector<double> gold_ghost_data;
+    if (rtt_c4::node() == 0) {
+      gold_ghost_data = {8.0, 9.0, 10.0};
+    } else if (rtt_c4::node() == 1) {
+      gold_ghost_data = {3.0, 4.0, 5.0, 9.0, 10.0, 11.0, 12.0}; // 0.0
+    } else {
+      gold_ghost_data = {4.0, 5.0, 6.0, 7.0}; // 0.0
+    }
+    for (size_t i = 0; i < ghost_data.size(); i++)
+      if (!rtt_dsxx::soft_equiv(ghost_data[i], gold_ghost_data[i]))
+        ITFAILS;
+
     // Check the local state data
     if (!qindex.domain_decomposed)
       ITFAILS;
@@ -128,15 +144,15 @@ void test_decomposition(ParallelUnitTest &ut) {
       ITFAILS;
     if (!soft_equiv(qindex.bounding_box_min[0], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_min[1], 1e20))
+    if (!soft_equiv(qindex.bounding_box_min[1], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_min[2], 1e20))
+    if (!soft_equiv(qindex.bounding_box_min[2], 0.0))
       ITFAILS;
     if (!soft_equiv(qindex.bounding_box_max[0], 4.5))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_max[1], -1e20))
+    if (!soft_equiv(qindex.bounding_box_max[1], 0.0))
       ITFAILS;
-    if (!soft_equiv(qindex.bounding_box_max[2], -1e20))
+    if (!soft_equiv(qindex.bounding_box_max[2], 0.0))
       ITFAILS;
     // Check local coarse_index map
     // local indexing will not match the domain replicated case (different
@@ -169,41 +185,41 @@ void test_decomposition(ParallelUnitTest &ut) {
     if (rtt_c4::node() == 0) {
       if (!soft_equiv(qindex.local_bounding_box_min[0], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 0.0))
         ITFAILS;
       if (!soft_equiv(qindex.local_bounding_box_max[0], 2.5))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[2], 0.0))
         ITFAILS;
     } else if (rtt_c4::node() == 1) {
       if (!soft_equiv(qindex.local_bounding_box_min[0], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 0.0))
         ITFAILS;
       if (!soft_equiv(qindex.local_bounding_box_max[0], 4.5))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[2], 0.0))
         ITFAILS;
     } else {
       if (!soft_equiv(qindex.local_bounding_box_min[0], 1.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[1], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_min[2], 1e20))
+      if (!soft_equiv(qindex.local_bounding_box_min[2], 0.0))
         ITFAILS;
       if (!soft_equiv(qindex.local_bounding_box_max[0], 4.5))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[1], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[1], 0.0))
         ITFAILS;
-      if (!soft_equiv(qindex.local_bounding_box_max[2], -1e20))
+      if (!soft_equiv(qindex.local_bounding_box_max[2], 0.0))
         ITFAILS;
     }
     // global bins that span the local domains
@@ -215,6 +231,7 @@ void test_decomposition(ParallelUnitTest &ut) {
     } else {
       gold_bins = {2, 3, 4, 5, 6, 7, 8, 9};
     }
+
     if (gold_bins.size() != qindex.local_bins.size())
       ITFAILS;
     for (size_t i = 0; i < qindex.local_bins.size(); i++)
@@ -273,8 +290,8 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
   }
 
-  if (ut.numFails == 0) {
-    PASSMSG("quick_index DD checks pass");
+    if (ut.numFails == 0) {
+      PASSMSG("quick_index DD checks pass");
   } else {
     FAILMSG("quick_index DD checks failed");
   }

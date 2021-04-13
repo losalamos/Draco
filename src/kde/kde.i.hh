@@ -23,9 +23,9 @@ namespace rtt_kde {
  * \tparam coord enumerated value to specify KDE coordinate system
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] distribution 
- * \param[in] position
  * \param[in] one_over_band_width
- * \param[in] domain_decomposed
+ * \param[in] quick_index
+ * \param[in] discontinuity_cutoff
  * \return final local function distribution
  *
  */
@@ -34,9 +34,8 @@ template <int coord>
 template <int dim>
 std::vector<double>
 kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
-                           const std::vector<std::array<double, 3>> & /*position*/,
                            const std::vector<std::array<double, 3>> & /*one_over_band_width*/,
-                           const bool /*domain_decomposed*/,
+                           const quick_index<dim> & /*qindex*/,
                            const double /*discontinuity_cutoff*/) const {
 
   Insist(false, "kde::reconstruction has not been implemented for this coordinate system and or "
@@ -44,6 +43,35 @@ kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
   return std::vector<double>(1, 0.0);
 }
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief
+ * DEFAULT reconstruction in logarithmic space to return error if instantiation
+ * is not found
+ *
+ * \tparam coord enumerated value to specify KDE coordinate system
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] distribution 
+ * \param[in] one_over_band_width
+ * \param[in] quick_index
+ * \param[in] discontinuity_cutoff
+ * \return final local function distribution
+ *
+ */
+
+template <int coord>
+template <int dim>
+std::vector<double>
+kde<coord>::log_reconstruction(const std::vector<double> & /*distribution*/,
+                               const std::vector<std::array<double, 3>> & /*one_over_band_width*/,
+                               const quick_index<dim> & /*qindex*/,
+                               const double /*discontinuity_cutoff*/) const {
+
+  Insist(false,
+         "kde::log_reconstruction has not been implemented for this coordinate system and or "
+         "dimension combination");
+  return std::vector<double>(1, 0.0);
+}
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief
@@ -95,7 +123,7 @@ template <int coord> double kde<coord>::log_transform(const double value, const 
 
 template <int coord>
 double kde<coord>::log_inv_transform(const double log_value, const double bias) const {
-  Require(log_value <= 0.0);
+  Require(!(log_value < 0.0));
   return exp(log_value) - bias;
 }
 

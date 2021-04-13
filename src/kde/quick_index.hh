@@ -37,6 +37,17 @@ public:
   quick_index(const std::vector<std::array<double, 3>> &locations, const double max_window_size,
               const size_t bins_per_dimension, const bool domain_decomposed);
 
+  //! Collect Ghost Data
+  std::vector<double> collect_ghost_data(const std::vector<double> &local_data) const;
+
+  //! Override function of 3D array data.
+  std::vector<std::array<double, 3>>
+  collect_ghost_data(const std::vector<std::array<double, 3>> &local_data) const;
+
+  //! Fetch list of coarse index values bound by the window
+  std::vector<size_t> window_coarse_index_list(const std::array<double, 3> &window_min,
+                                               const std::array<double, 3> &window_max) const;
+
   // PUBLIC DATA
   // Quick index initialization data
   const bool domain_decomposed;
