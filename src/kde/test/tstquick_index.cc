@@ -106,11 +106,15 @@ void test_decomposition(ParallelUnitTest &ut) {
 
     // map to dd arrays with simple stride
     std::vector<double> dd_data(local_size, 0.0);
+    std::vector<std::vector<double>> dd_3x_data(3, std::vector<double>(local_size, 0.0));
     std::vector<std::array<double, 3>> dd_position_array(local_size,
                                                          std::array<double, 3>{0.0, 0.0, 0.0});
 
     for (int i = 0; i < local_size; i++) {
       dd_data[i] = data[i + rtt_c4::node() * 3];
+      dd_3x_data[0][i] = data[i + rtt_c4::node() * 3];
+      dd_3x_data[1][i] = data[i + rtt_c4::node() * 3] + 1;
+      dd_3x_data[2][i] = -data[i + rtt_c4::node() * 3];
       dd_position_array[i] = position_array[i + rtt_c4::node() * 3];
     }
 
@@ -119,21 +123,6 @@ void test_decomposition(ParallelUnitTest &ut) {
     const size_t bins_per_dim = 10UL;
     const bool dd = true;
     quick_index<1> qindex = quick_index<1>(dd_position_array, max_window_size, bins_per_dim, dd);
-
-    // Check collect_ghost_data vector call
-    std::vector<double> ghost_data = qindex.collect_ghost_data(dd_data);
-
-    std::vector<double> gold_ghost_data;
-    if (rtt_c4::node() == 0) {
-      gold_ghost_data = {8.0, 9.0, 10.0};
-    } else if (rtt_c4::node() == 1) {
-      gold_ghost_data = {3.0, 4.0, 5.0, 9.0, 10.0, 11.0, 12.0}; // 0.0
-    } else {
-      gold_ghost_data = {4.0, 5.0, 6.0, 7.0}; // 0.0
-    }
-    for (size_t i = 0; i < ghost_data.size(); i++)
-      if (!rtt_dsxx::soft_equiv(ghost_data[i], gold_ghost_data[i]))
-        ITFAILS;
 
     // Check the local state data
     if (!qindex.domain_decomposed)
@@ -286,6 +275,469 @@ void test_decomposition(ParallelUnitTest &ut) {
     for (size_t i = 0; i < qindex.local_ghost_locations.size(); i++) {
       for (size_t d = 0; d < 3; d++)
         if (!rtt_dsxx::soft_equiv(gold_ghost_locations[i][d], qindex.local_ghost_locations[i][d]))
+          ITFAILS;
+    }
+
+    // Check collect_ghost_data vector call
+    std::vector<double> ghost_data = qindex.collect_ghost_data(dd_data);
+    std::vector<std::vector<double>> ghost_3x_data = qindex.collect_ghost_data(dd_3x_data);
+
+    std::vector<double> gold_ghost_data;
+    std::vector<std::vector<double>> gold_3x_ghost_data(3);
+    if (rtt_c4::node() == 0) {
+      gold_ghost_data = {8.0, 9.0, 10.0};
+      gold_3x_ghost_data[0] = {8.0, 9.0, 10.0};
+      gold_3x_ghost_data[1] = {9.0, 10.0, 11.0};
+      gold_3x_ghost_data[2] = {-8.0, -9.0, -10.0};
+    } else if (rtt_c4::node() == 1) {
+      gold_ghost_data = {3.0, 4.0, 5.0, 9.0, 10.0, 11.0, 12.0};
+      gold_3x_ghost_data[0] = {3.0, 4.0, 5.0, 9.0, 10.0, 11.0, 12.0};
+      gold_3x_ghost_data[1] = {4.0, 5.0, 6.0, 10.0, 11.0, 12.0, 13.0};
+      gold_3x_ghost_data[2] = {-3.0, -4.0, -5.0, -9.0, -10.0, -11.0, -12.0};
+    } else {
+      gold_ghost_data = {4.0, 5.0, 6.0, 7.0};
+      gold_3x_ghost_data[0] = {4.0, 5.0, 6.0, 7.0};
+      gold_3x_ghost_data[1] = {5.0, 6.0, 7.0, 8.0};
+      gold_3x_ghost_data[2] = {-4.0, -5.0, -6.0, -7.0};
+    }
+    for (size_t i = 0; i < ghost_data.size(); i++)
+      if (!rtt_dsxx::soft_equiv(ghost_data[i], gold_ghost_data[i]))
+        ITFAILS;
+    for (size_t i = 0; i < ghost_3x_data[0].size(); i++)
+      if (!rtt_dsxx::soft_equiv(ghost_3x_data[0][i], gold_3x_ghost_data[0][i]))
+        ITFAILS;
+    for (size_t i = 0; i < ghost_3x_data[1].size(); i++)
+      if (!rtt_dsxx::soft_equiv(ghost_3x_data[1][i], gold_3x_ghost_data[1][i]))
+        ITFAILS;
+    for (size_t i = 0; i < ghost_3x_data[2].size(); i++)
+      if (!rtt_dsxx::soft_equiv(ghost_3x_data[2][i], gold_3x_ghost_data[2][i]))
+        ITFAILS;
+
+    // check max window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "max";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0, 0.0, 9.0};
+        gold_window_3x_data[2] = {0.0, 0.0, -3.0, 0.0, -8.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[0] = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[1] = {11.0, 0.0, 7.0, 0.0, 12.0};
+        gold_window_3x_data[2] = {-10.0, 0.0, -6.0, 0.0, -11.0};
+      } else {
+        gold_window_data = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[0] = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[1] = {5.0, 0.0, 10.0, 0.0, 6.0};
+        gold_window_3x_data[2] = {-4.0, 0.0, -9.0, 0.0, -5.0};
+      }
+
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+      for (size_t v = 0; v < 3; v++)
+        for (size_t i = 0; i < bin_sizes[0]; i++)
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+    }
+
+    // check min window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "min";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0, 0.0, 9.0};
+        gold_window_3x_data[2] = {0.0, 0.0, -3.0, 0.0, -8.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[0] = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[1] = {11.0, 0.0, 7.0, 0.0, 12.0};
+        gold_window_3x_data[2] = {-10.0, 0.0, -6.0, 0.0, -11.0};
+      } else {
+        gold_window_data = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[0] = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[1] = {5.0, 0.0, 10.0, 0.0, 6.0};
+        gold_window_3x_data[2] = {-4.0, 0.0, -9.0, 0.0, -5.0};
+      }
+
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+      for (size_t v = 0; v < 3; v++)
+        for (size_t i = 0; i < bin_sizes[0]; i++)
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+    }
+
+    // check mean window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "mean";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0, 0.0, 9.0};
+        gold_window_3x_data[2] = {0.0, 0.0, -3.0, 0.0, -8.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[0] = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[1] = {11.0, 0.0, 7.0, 0.0, 12.0};
+        gold_window_3x_data[2] = {-10.0, 0.0, -6.0, 0.0, -11.0};
+      } else {
+        gold_window_data = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[0] = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[1] = {5.0, 0.0, 10.0, 0.0, 6.0};
+        gold_window_3x_data[2] = {-4.0, 0.0, -9.0, 0.0, -5.0};
+      }
+
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+      for (size_t v = 0; v < 3; v++)
+        for (size_t i = 0; i < bin_sizes[0]; i++)
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+    }
+
+    // check normalize window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = true;
+      const bool bias = false;
+      const std::string map_type = "mean";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0 / 11.0, 0.0, 8.0 / 11.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0 / 11.0, 0.0, 8.0 / 11.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0 / 13.0, 0.0, 9.0 / 13.0};
+        gold_window_3x_data[2] = {0.0, 0.0, 3.0 / 11.0, 0.0, 8.0 / 11.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0 / 27.0, 0.0, 6.0 / 27.0, 0.0, 11.0 / 27.0};
+        gold_window_3x_data[0] = {10.0 / 27.0, 0.0, 6.0 / 27.0, 0.0, 11.0 / 27.0};
+        gold_window_3x_data[1] = {11.0 / 30.0, 0.0, 7.0 / 30.0, 0.0, 12.0 / 30.0};
+        gold_window_3x_data[2] = {10.0 / 27.0, 0.0, 6.0 / 27.0, 0.0, 11.0 / 27.0};
+      } else {
+        gold_window_data = {4.0 / 18.0, 0.0, 9.0 / 18.0, 0.0, 5.0 / 18.0};
+        gold_window_3x_data[0] = {4.0 / 18.0, 0.0, 9.0 / 18.0, 0.0, 5.0 / 18.0};
+        gold_window_3x_data[1] = {5.0 / 21.0, 0.0, 10.0 / 21.0, 0.0, 6.0 / 21.0};
+        gold_window_3x_data[2] = {4.0 / 18.0, 0.0, 9.0 / 18.0, 0.0, 5.0 / 18.0};
+      }
+
+      for (size_t v = 0; v < 3; v++)
+        for (size_t i = 0; i < bin_sizes[0]; i++)
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check bias window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = false;
+      const bool bias = true;
+      const std::string map_type = "mean";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0, 0.0, 8.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0, 0.0, 9.0};
+        gold_window_3x_data[2] = {0.0, 0.0, 8.0 - 3.0, 0.0, 8.0 - 8.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[0] = {10.0, 0.0, 6.0, 0.0, 11.0};
+        gold_window_3x_data[1] = {11.0, 0.0, 7.0, 0.0, 12.0};
+        gold_window_3x_data[2] = {11.0 - 10.0, 0.0, 11.0 - 6.0, 0.0, 11.0 - 11.0};
+      } else {
+        gold_window_data = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[0] = {4.0, 0.0, 9.0, 0.0, 5.0};
+        gold_window_3x_data[1] = {5.0, 0.0, 10.0, 0.0, 6.0};
+        gold_window_3x_data[2] = {9.0 - 4.0, 0.0, 9.0 - 9.0, 0.0, 9.0 - 5.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check bias and normal window mapping (more bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{5, 0, 0};
+      const bool normalize = true;
+      const bool bias = true;
+      const std::string map_type = "mean";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 0.0, 3.0 / 11.0, 0.0, 8.0 / 11.0};
+        gold_window_3x_data[0] = {0.0, 0.0, 3.0 / 11.0, 0.0, 8.0 / 11.0};
+        gold_window_3x_data[1] = {0.0, 0.0, 4.0 / 13.0, 0.0, 9.0 / 13.0};
+        gold_window_3x_data[2] = {0.0, 0.0, 1.0, 0.0, 0.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0 / 27.0, 0.0, 6.0 / 27.0, 0.0, 11.0 / 27.0};
+        gold_window_3x_data[0] = {10.0 / 27.0, 0.0, 6.0 / 27.0, 0.0, 11.0 / 27.0};
+        gold_window_3x_data[1] = {11.0 / 30.0, 0.0, 7.0 / 30.0, 0.0, 12.0 / 30.0};
+        gold_window_3x_data[2] = {1.0 / 6.0, 0.0, 5.0 / 6.0, 0.0, 0.0};
+      } else {
+        gold_window_data = {4.0 / 18.0, 0.0, 9.0 / 18.0, 0.0, 5.0 / 18.0};
+        gold_window_3x_data[0] = {4.0 / 18.0, 0.0, 9.0 / 18.0, 0.0, 5.0 / 18.0};
+        gold_window_3x_data[1] = {5.0 / 21.0, 0.0, 10.0 / 21.0, 0.0, 6.0 / 21.0};
+        gold_window_3x_data[2] = {5.0 / 9.0, 0.0, 0.0, 0.0, 4.0 / 9.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check max mapping (fewer bins then data) functions
+    {
+      // put two particles in the topmost bin
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{2, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "max";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 8.0};
+        gold_window_3x_data[0] = {0.0, 8.0};
+        gold_window_3x_data[1] = {0.0, 9.0};
+        gold_window_3x_data[2] = {0.0, -3.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 11.0};
+        gold_window_3x_data[0] = {10.0, 11.0};
+        gold_window_3x_data[1] = {11.0, 12.0};
+        gold_window_3x_data[2] = {-10.0, -6.0};
+      } else {
+        gold_window_data = {4.0, 9.0};
+        gold_window_3x_data[0] = {4.0, 9.0};
+        gold_window_3x_data[1] = {5.0, 10.0};
+        gold_window_3x_data[2] = {-4.0, -5.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check min mapping (fewer bins then data) functions
+    {
+      // put two particles in the topmost bin
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{2, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "min";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 3.0};
+        gold_window_3x_data[0] = {0.0, 3.0};
+        gold_window_3x_data[1] = {0.0, 4.0};
+        gold_window_3x_data[2] = {0.0, -8.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0, 6.0};
+        gold_window_3x_data[0] = {10.0, 6.0};
+        gold_window_3x_data[1] = {11.0, 7.0};
+        gold_window_3x_data[2] = {-10.0, -11.0};
+      } else {
+        gold_window_data = {4.0, 5.0};
+        gold_window_3x_data[0] = {4.0, 5.0};
+        gold_window_3x_data[1] = {5.0, 6.0};
+        gold_window_3x_data[2] = {-4.0, -9.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check mean mapping (fewer bins then data) functions
+    {
+      // put two particles in the topmost bin
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{2, 0, 0};
+      const bool normalize = false;
+      const bool bias = false;
+      const std::string map_type = "ave";
+      // use the negative data for the single array operations this time
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_3x_data[2], ghost_3x_data[2], min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, -5.5};
+        gold_window_3x_data[0] = {0.0, 5.5};
+        gold_window_3x_data[1] = {0.0, 6.5};
+        gold_window_3x_data[2] = {0.0, -5.5};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {-10.0, -8.5};
+        gold_window_3x_data[0] = {10.0, 8.5};
+        gold_window_3x_data[1] = {11.0, 9.5};
+        gold_window_3x_data[2] = {-10.0, -8.5};
+      } else {
+        gold_window_data = {-4.0, -7.0};
+        gold_window_3x_data[0] = {4.0, 7.0};
+        gold_window_3x_data[1] = {5.0, 8.0};
+        gold_window_3x_data[2] = {-4.0, -7.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
+          ITFAILS;
+    }
+
+    // check bias and normal window mapping (fewer bins then data) functions
+    {
+      // build a length=1.0 window around the first point on each node
+      const std::array<double, 3> min{dd_position_array[0][0] - 0.5, 0.0, 0.0};
+      const std::array<double, 3> max{dd_position_array[0][0] + 0.5, 0.0, 0.0};
+      const std::array<size_t, 3> bin_sizes{2, 0, 0};
+      const bool normalize = true;
+      const bool bias = true;
+      const std::string map_type = "max";
+      std::vector<double> window_data = qindex.map_data_to_grid_window(
+          dd_data, ghost_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<std::vector<double>> window_3x_data = qindex.map_data_to_grid_window(
+          dd_3x_data, ghost_3x_data, min, max, bin_sizes, map_type, normalize, bias);
+      std::vector<double> gold_window_data;
+      std::vector<std::vector<double>> gold_window_3x_data(3);
+      if (rtt_c4::node() == 0) {
+        gold_window_data = {0.0, 1.0};
+        gold_window_3x_data[0] = {0.0, 1.0};
+        gold_window_3x_data[1] = {0.0, 1.0};
+        // this one is a bit tricky the bias causes the negative value to go to
+        // zero so there is nothing to rescale to one.
+        gold_window_3x_data[2] = {0.0, 0.0};
+      } else if (rtt_c4::node() == 1) {
+        gold_window_data = {10.0 / 21.0, 11.0 / 21.0};
+        gold_window_3x_data[0] = {10.0 / 21.0, 11.0 / 21.0};
+        gold_window_3x_data[1] = {11.0 / 23.0, 12.0 / 23.0};
+        gold_window_3x_data[2] = {0.0, 1.0};
+      } else {
+        gold_window_data = {4.0 / 13.0, 9.0 / 13.0};
+        gold_window_3x_data[0] = {4.0 / 13.0, 9.0 / 13.0};
+        gold_window_3x_data[1] = {5.0 / 15.0, 10.0 / 15.0};
+        gold_window_3x_data[2] = {1.0, 0.0};
+      }
+
+      for (size_t v = 0; v < 3; v++) {
+        for (size_t i = 0; i < bin_sizes[0]; i++) {
+          if (!rtt_dsxx::soft_equiv(window_3x_data[v][i], gold_window_3x_data[v][i]))
+            ITFAILS;
+        }
+      }
+      for (size_t i = 0; i < bin_sizes[0]; i++)
+        if (!rtt_dsxx::soft_equiv(window_data[i], gold_window_data[i]))
           ITFAILS;
     }
   }

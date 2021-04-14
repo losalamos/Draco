@@ -43,9 +43,29 @@ public:
   std::vector<std::array<double, 3>>
   collect_ghost_data(const std::vector<std::array<double, 3>> &local_data) const;
 
+  //! Override function for vector<vector<double> array ghost data.
+  std::vector<std::vector<double>>
+  collect_ghost_data(const std::vector<std::vector<double>> &local_data) const;
+
   //! Fetch list of coarse index values bound by the window
   std::vector<size_t> window_coarse_index_list(const std::array<double, 3> &window_min,
                                                const std::array<double, 3> &window_max) const;
+
+  //! Map local+ghost data to grid window
+  std::vector<double> map_data_to_grid_window(const std::vector<double> &local_data,
+                                              const std::vector<double> &ghost_data,
+                                              const std::array<double, 3> &window_min,
+                                              const std::array<double, 3> &window_max,
+                                              const std::array<size_t, 3> &grid_bins,
+                                              const std::string &map_type, const bool normalize,
+                                              const bool bias) const;
+
+  //! Map local+ghost data to grid window for multi-dimensional data
+  std::vector<std::vector<double>> map_data_to_grid_window(
+      const std::vector<std::vector<double>> &local_data,
+      const std::vector<std::vector<double>> &ghost_data, const std::array<double, 3> &window_min,
+      const std::array<double, 3> &window_max, const std::array<size_t, 3> &grid_bins,
+      const std::string &map_type, const bool normalize, const bool bias) const;
 
   // PUBLIC DATA
   // Quick index initialization data

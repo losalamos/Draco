@@ -11,7 +11,9 @@
 #ifndef rtt_kde_quick_index_i_hh
 #define rtt_kde_quick_index_i_hh
 
+#include "ds++/dbc.hh"
 #include <math.h>
+#include <numeric>
 
 namespace rtt_kde {
 
@@ -249,6 +251,72 @@ quick_index<dim>::collect_ghost_data(const std::vector<std::array<double, 3>> &l
 /*!
  * \brief
  * 
+ * collect_ghost_data for vector<vector<double>> arrays. This function uses
+ * RMA and the local put_window_map to allow each rank to independently fill in
+ * its data to ghost cells of other ranks.
+ *
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] local_data the local 3 dimensional data that is required to be
+ * available as ghost cell data on other processors.
+ * \return local_ghost_data the resulting local ghost data provided by other ranks.
+ */
+template <size_t dim>
+std::vector<std::vector<double>>
+quick_index<dim>::collect_ghost_data(const std::vector<std::vector<double>> &local_data) const {
+  Insist(domain_decomposed, "Calling collect_ghost_data with a quick_index object that specified "
+                            "domain_decomposed=.false.");
+  size_t data_dim = local_data.size();
+  // allocate the ghost data
+  std::vector<std::vector<double>> local_ghost_data(
+      data_dim, std::vector<double>(local_ghost_buffer_size, 0.0));
+#ifdef C4_MPI // temporary work around until RMA is available in c4
+  // Use one sided MPI Put commands to fill up the ghost cell location data
+  std::vector<double> local_ghost_buffer(local_ghost_buffer_size);
+  MPI_Win win;
+  MPI_Win_create(&local_ghost_buffer[0], local_ghost_buffer_size * sizeof(double), sizeof(double),
+                 MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+
+  // working from my local data put the ghost data on the other ranks
+  for (size_t d = 0; d < data_dim; d++) {
+    Check(local_data[d].size() == n_locations);
+    MPI_Win_fence(0, win);
+    for (auto putItr = put_window_map.begin(); putItr != put_window_map.end(); putItr++) {
+      // use map.at() to allow const access
+      const auto &index_vector = coarse_index_map.at(putItr->first);
+      // fill up the current ghost cell data for this dimension
+      std::vector<double> put_buffer(index_vector.size());
+      int putIndex = 0;
+      for (auto indexItr = index_vector.begin(); indexItr != index_vector.end(); indexItr++) {
+        put_buffer[putIndex] = local_data[d][*indexItr];
+        putIndex++;
+      }
+      // loop over all ranks we need to send this buffer too.
+      for (auto rankItr = putItr->second.begin(); rankItr != putItr->second.end(); rankItr++) {
+        const std::array<int, 3> &putv = *rankItr;
+        int put_rank = putv[0];
+        int put_rank_buffer_size = putv[1];
+        int put_offset = putv[2];
+        MPI_Put(&put_buffer[0], static_cast<int>(put_buffer.size()), MPI_DOUBLE, put_rank,
+                put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
+      }
+    }
+    MPI_Win_fence(0, win);
+    // alright move the position buffer to the final correct vector positions
+    int posIndex = 0;
+    for (auto posItr = local_ghost_buffer.begin(); posItr != local_ghost_buffer.end(); posItr++) {
+      local_ghost_data[d][posIndex] = *posItr;
+      posIndex++;
+    }
+  }
+  MPI_Win_free(&win);
+#endif
+  return local_ghost_data;
+}
+
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief
+ * 
  * collect_ghost_data for vector of 3 dimensional arrays. This function uses
  * RMA and the local put_window_map to allow each rank to independently fill in
  * its data to ghost cells of other ranks.
@@ -358,6 +426,359 @@ quick_index<dim>::window_coarse_index_list(const std::array<double, 3> &window_m
     }
   }
   return bin_list;
+}
+
+template <size_t dim>
+std::vector<double> quick_index<dim>::map_data_to_grid_window(
+    const std::vector<double> &local_data, const std::vector<double> &ghost_data,
+    const std::array<double, 3> &window_min, const std::array<double, 3> &window_max,
+    const std::array<size_t, 3> &grid_bins, const std::string &map_type, const bool normalize,
+    const bool bias) const {
+  Require(local_data.size() == n_locations);
+  Require(!(window_max[0] < window_min[0]));
+  Require(!(window_max[1] < window_min[1]));
+  Require(!(window_max[2] < window_min[2]));
+  Require(domain_decomposed ? ghost_data.size() == static_cast<size_t>(local_ghost_buffer_size)
+                            : true);
+  Require(domain_decomposed ? !((window_max[0] - window_min[0]) > max_window_size) : true);
+  Require(domain_decomposed ? !((window_max[1] - window_min[1]) > max_window_size) : true);
+  Require(domain_decomposed ? !((window_max[2] - window_min[2]) > max_window_size) : true);
+  // Grab the global bins that lie in this window
+  std::vector<size_t> global_bins = window_coarse_index_list(window_min, window_max);
+  size_t n_map_bins = 1;
+  for (size_t d = 0; d < dim; d++)
+    n_map_bins *= grid_bins[d];
+
+  std::vector<double> grid_data(n_map_bins, 0.0);
+  std::vector<int> data_count(n_map_bins, 0);
+  double bias_cell_count = 0.0;
+  // Loop over all possible bins
+  for (auto cbItr = global_bins.begin(); cbItr < global_bins.end(); cbItr++) {
+    // skip bins that aren't present in the map (can't use [] operator with constness)
+    // loop over the local data
+    auto mapItr = coarse_index_map.find(*cbItr);
+    if (mapItr != coarse_index_map.end()) {
+      for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
+        // calculate local bin index
+        bool valid = true;
+        std::array<size_t, 3> bin_id{0, 0, 0};
+        for (size_t d = 0; d < dim; d++) {
+          Check((window_max[d] - window_min[d]) > 0.0);
+          const double bin_value = static_cast<double>(grid_bins[d]) *
+                                   (locations[*iItr][d] - window_min[d]) /
+                                   (window_max[d] - window_min[d]);
+          if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+            valid = false;
+            break;
+          } else {
+            bin_id[d] = static_cast<size_t>(std::floor(bin_value));
+            // catch any values exactly on the edge of the top bin
+            bin_id[d] = std::min(grid_bins[d] - 1, bin_id[d]);
+          }
+        }
+
+        // If the bin is outside the window continue to the next poin
+        if (!valid)
+          continue;
+
+        size_t local_window_bin =
+            bin_id[0] + bin_id[1] * grid_bins[0] + bin_id[2] * grid_bins[0] * grid_bins[1];
+        Check(local_window_bin < n_map_bins);
+        // increment the data count
+        data_count[local_window_bin]++;
+
+        // regardless of map type if it is the first value to enter the bin it
+        // gets set to that value
+        if (data_count[local_window_bin] == 1) {
+          grid_data[local_window_bin] = local_data[*iItr];
+          bias_cell_count += 1.0;
+        } else if (map_type == "max") {
+          if (local_data[*iItr] > grid_data[local_window_bin])
+            grid_data[local_window_bin] = local_data[*iItr];
+        } else if (map_type == "min") {
+          if (local_data[*iItr] < grid_data[local_window_bin])
+            grid_data[local_window_bin] = local_data[*iItr];
+        } else if (map_type == "ave") {
+          grid_data[local_window_bin] += local_data[*iItr];
+        } else {
+          Insist(false, "Error: map_type=" + map_type + " is invalid. Must be max, min, or ave.");
+        }
+      } // end local point loop
+    }   // if valid local bin loop
+    if (domain_decomposed) {
+      // loop over the ghost data
+      auto gmapItr = local_ghost_index_map.find(*cbItr);
+      if (gmapItr != local_ghost_index_map.end()) {
+        // loop over ghost data
+        for (auto gItr = gmapItr->second.begin(); gItr != gmapItr->second.end(); gItr++) {
+          // calculate local bin index
+          bool valid = true;
+          std::array<size_t, 3> bin_id{0, 0, 0};
+          for (size_t d = 0; d < dim; d++) {
+            Check((window_max[d] - window_min[d]) > 0.0);
+            const double bin_value = static_cast<double>(grid_bins[d]) *
+                                     (local_ghost_locations[*gItr][d] - window_min[d]) /
+                                     (window_max[d] - window_min[d]);
+            if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+              valid = false;
+              break;
+            } else {
+              bin_id[d] = static_cast<size_t>(bin_value);
+              // catch any values exactly on the edge of the top bin
+              bin_id[d] = std::min(grid_bins[d] - 1, bin_id[d]);
+            }
+          }
+
+          // If the bin is outside the window continue to the next point
+          if (!valid)
+            continue;
+
+          size_t local_window_bin =
+              bin_id[0] + bin_id[1] * grid_bins[0] + bin_id[2] * grid_bins[0] * grid_bins[1];
+          Check(local_window_bin < n_map_bins);
+          // increment the data count
+          data_count[local_window_bin]++;
+
+          // regardless of map type if it is the first value to enter the bin it
+          // gets set to that value
+          if (data_count[local_window_bin] == 1) {
+            grid_data[local_window_bin] = ghost_data[*gItr];
+            bias_cell_count += 1.0;
+          } else if (map_type == "max") {
+            if (ghost_data[*gItr] > grid_data[local_window_bin])
+              grid_data[local_window_bin] = ghost_data[*gItr];
+          } else if (map_type == "min") {
+            if (ghost_data[*gItr] < grid_data[local_window_bin])
+              grid_data[local_window_bin] = ghost_data[*gItr];
+          } else if (map_type == "ave") {
+            grid_data[local_window_bin] += ghost_data[*gItr];
+          } else {
+            Insist(false, "Error: map_type=" + map_type + " is invalid. Must be max, min, or ave.");
+          }
+        } // end ghost point loop
+      }   // if valid ghost bin
+    }     // if dd
+  }       // end coarse bin loop
+
+  if (map_type == "ave") {
+    for (size_t i = 0; i < n_map_bins; i++) {
+      if (data_count[i] > 0)
+        grid_data[i] /= data_count[i];
+    }
+  }
+
+  if (bias && normalize) {
+    // return a positive normalized distribution
+    const double bias_value =
+        fabs(std::min(0.0, *std::min_element(grid_data.begin(), grid_data.end())));
+    const double sum =
+        std::accumulate(grid_data.begin(), grid_data.end(), 0.0) + bias_value * bias_cell_count;
+    // catch zero instance
+    const double scale = !rtt_dsxx::soft_equiv(sum, 0.0) ? 1.0 / sum : 1.0;
+    for (size_t i = 0; i < n_map_bins; i++)
+      grid_data[i] = (grid_data[i] + bias_value) * scale;
+  } else if (bias) {
+    // return a positive distribution
+    const double bias_value =
+        fabs(std::min(0.0, *std::min_element(grid_data.begin(), grid_data.end())));
+    for (size_t i = 0; i < n_map_bins; i++)
+      grid_data[i] += bias_value;
+  } else if (normalize) {
+    // return a normalized distribution
+    const double sum = std::accumulate(grid_data.begin(), grid_data.end(), 0.0);
+    // catch zero instance
+    const double scale = !rtt_dsxx::soft_equiv(sum, 0.0) ? 1.0 / sum : 1.0;
+    for (size_t i = 0; i < n_map_bins; i++)
+      grid_data[i] *= scale;
+  }
+  return grid_data;
+}
+
+template <size_t dim>
+std::vector<std::vector<double>> quick_index<dim>::map_data_to_grid_window(
+    const std::vector<std::vector<double>> &local_data,
+    const std::vector<std::vector<double>> &ghost_data, const std::array<double, 3> &window_min,
+    const std::array<double, 3> &window_max, const std::array<size_t, 3> &grid_bins,
+    const std::string &map_type, const bool normalize, const bool bias) const {
+  Require(domain_decomposed ? local_data.size() == ghost_data.size() : true);
+  Require(!(window_max[0] < window_min[0]));
+  Require(!(window_max[1] < window_min[1]));
+  Require(!(window_max[2] < window_min[2]));
+  Require(domain_decomposed ? !((window_max[0] - window_min[0]) > max_window_size) : true);
+  Require(domain_decomposed ? !((window_max[1] - window_min[1]) > max_window_size) : true);
+  Require(domain_decomposed ? !((window_max[2] - window_min[2]) > max_window_size) : true);
+  const size_t vsize = local_data.size();
+  // Grab the global bins that lie in this window
+  std::vector<size_t> global_bins = window_coarse_index_list(window_min, window_max);
+  size_t n_map_bins = 1;
+  for (size_t d = 0; d < dim; d++) {
+    Check(local_data[d].size() == n_locations);
+    Check(domain_decomposed ? ghost_data[d].size() == static_cast<size_t>(local_ghost_buffer_size)
+                            : true);
+    n_map_bins *= grid_bins[d];
+  }
+
+  // initialize grid data
+  std::vector<std::vector<double>> grid_data(vsize, std::vector<double>(n_map_bins, 0.0));
+  std::vector<int> data_count(n_map_bins, 0);
+  double bias_cell_count = 0.0;
+  // Loop over all possible bins
+  for (auto cbItr = global_bins.begin(); cbItr < global_bins.end(); cbItr++) {
+    // skip bins that aren't present in the map (can't use [] operator with constness)
+    // loop over the local data
+    auto mapItr = coarse_index_map.find(*cbItr);
+    if (mapItr != coarse_index_map.end()) {
+      for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
+        // calculate local bin index
+        bool valid = true;
+        std::array<size_t, 3> bin_id{0, 0, 0};
+        for (size_t d = 0; d < dim; d++) {
+          Check((window_max[d] - window_min[d]) > 0.0);
+          const double bin_value = static_cast<double>(grid_bins[d]) *
+                                   (locations[*iItr][d] - window_min[d]) /
+                                   (window_max[d] - window_min[d]);
+          if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+            valid = false;
+            break;
+          } else {
+            bin_id[d] = static_cast<size_t>(bin_value);
+            // catch any values exactly on the edge of the top bin
+            bin_id[d] = std::min(grid_bins[d] - 1, bin_id[d]);
+          }
+        }
+
+        // If the bin is outside the window continue to the next poin
+        if (!valid)
+          continue;
+
+        size_t local_window_bin =
+            bin_id[0] + bin_id[1] * grid_bins[0] + bin_id[2] * grid_bins[0] * grid_bins[1];
+        Check(local_window_bin < n_map_bins);
+        // increment the data count
+        data_count[local_window_bin]++;
+        for (size_t v = 0; v < vsize; v++) {
+          // regardless of map type if it is the first value to enter the bin it
+          // gets set to that value
+          if (data_count[local_window_bin] == 1) {
+            grid_data[v][local_window_bin] = local_data[v][*iItr];
+            if (v == 0)
+              bias_cell_count += 1.0;
+          } else if (map_type == "max") {
+            if (local_data[v][*iItr] > grid_data[v][local_window_bin])
+              grid_data[v][local_window_bin] = local_data[v][*iItr];
+          } else if (map_type == "min") {
+            if (local_data[v][*iItr] < grid_data[v][local_window_bin])
+              grid_data[v][local_window_bin] = local_data[v][*iItr];
+          } else if (map_type == "ave") {
+            grid_data[v][local_window_bin] += local_data[v][*iItr];
+          } else {
+            Insist(false, "Error: map_type=" + map_type + " is invalid. Must be max, min, or ave.");
+          }
+        }
+      } // end local point loop
+    }   // if valid local bin loop
+    if (domain_decomposed) {
+      // loop over the ghost data
+      auto gmapItr = local_ghost_index_map.find(*cbItr);
+      if (gmapItr != local_ghost_index_map.end()) {
+        // loop over ghost data
+        for (auto gItr = gmapItr->second.begin(); gItr != gmapItr->second.end(); gItr++) {
+          // calculate local bin index
+          bool valid = true;
+          std::array<size_t, 3> bin_id{0, 0, 0};
+          for (size_t d = 0; d < dim; d++) {
+            Check((window_max[d] - window_min[d]) > 0.0);
+            const double bin_value = static_cast<double>(grid_bins[d]) *
+                                     (local_ghost_locations[*gItr][d] - window_min[d]) /
+                                     (window_max[d] - window_min[d]);
+            if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+              valid = false;
+              break;
+            } else {
+              bin_id[d] = static_cast<size_t>(bin_value);
+              // catch any values exactly on the edge of the top bin
+              bin_id[d] = std::min(grid_bins[d] - 1, bin_id[d]);
+            }
+          }
+
+          // If the bin is outside the window continue to the next point
+          if (!valid)
+            continue;
+
+          size_t local_window_bin =
+              bin_id[0] + bin_id[1] * grid_bins[0] + bin_id[2] * grid_bins[0] * grid_bins[1];
+          Check(local_window_bin < n_map_bins);
+          // increment the data count
+          data_count[local_window_bin]++;
+          for (size_t v = 0; v < vsize; v++) {
+
+            // regardless of map type if it is the first value to enter the bin it
+            // gets set to that value
+            if (data_count[local_window_bin] == 1) {
+              grid_data[v][local_window_bin] = ghost_data[v][*gItr];
+              if (v == 0)
+                bias_cell_count += 1.0;
+            } else if (map_type == "max") {
+              if (ghost_data[v][*gItr] > grid_data[v][local_window_bin])
+                grid_data[v][local_window_bin] = ghost_data[v][*gItr];
+            } else if (map_type == "min") {
+              if (ghost_data[v][*gItr] < grid_data[v][local_window_bin])
+                grid_data[v][local_window_bin] = ghost_data[v][*gItr];
+            } else if (map_type == "ave") {
+              grid_data[v][local_window_bin] += ghost_data[v][*gItr];
+            } else {
+              Insist(false,
+                     "Error: map_type=" + map_type + " is invalid. Must be max, min, or ave.");
+            }
+          }
+        } // end ghost point loop
+      }   // if valid ghost bin
+    }     // if dd
+  }       // end coarse bin loop
+
+  if (map_type == "ave") {
+    for (size_t v = 0; v < vsize; v++) {
+      for (size_t i = 0; i < n_map_bins; i++) {
+        if (data_count[i] > 0)
+          grid_data[v][i] /= data_count[i];
+      }
+    }
+  }
+
+  if (bias && normalize) {
+    // return a positive normalized distribution
+    for (size_t v = 0; v < vsize; v++) {
+      const double bias_value =
+          fabs(std::min(0.0, *std::min_element(grid_data[v].begin(), grid_data[v].end())));
+      const double sum = std::accumulate(grid_data[v].begin(), grid_data[v].end(), 0.0) +
+                         bias_value * bias_cell_count;
+      // catch zero instance
+      const double scale = !rtt_dsxx::soft_equiv(sum, 0.0) ? 1.0 / sum : 1.0;
+      for (size_t i = 0; i < n_map_bins; i++)
+        if (data_count[i] > 0)
+          grid_data[v][i] = (grid_data[v][i] + bias_value) * scale;
+    }
+  } else if (bias) {
+    // return a positive distribution
+    for (size_t v = 0; v < vsize; v++) {
+      const double bias_value =
+          fabs(std::min(0.0, *std::min_element(grid_data[v].begin(), grid_data[v].end())));
+      for (size_t i = 0; i < n_map_bins; i++)
+        if (data_count[i] > 0)
+          grid_data[v][i] += bias_value;
+    }
+  } else if (normalize) {
+    // return a normalized distribution
+    for (size_t v = 0; v < vsize; v++) {
+      const double sum = std::accumulate(grid_data[v].begin(), grid_data[v].end(), 0.0);
+      // catch zero instance
+      const double scale = !rtt_dsxx::soft_equiv(sum, 0.0) ? 1.0 / sum : 1.0;
+      for (size_t i = 0; i < n_map_bins; i++)
+        if (data_count[i] > 0)
+          grid_data[v][i] *= scale;
+    }
+  }
+  return grid_data;
 }
 
 } // end namespace  rtt_kde
