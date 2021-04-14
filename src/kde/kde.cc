@@ -68,7 +68,6 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     std::vector<std::array<double, 3>> ghost_one_over_bandwidth =
         qindex.collect_ghost_data(one_over_bandwidth);
 
-
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
       const double x0 = qindex.locations[i][0];
@@ -205,7 +204,7 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
         qindex.collect_ghost_data(one_over_bandwidth);
 
     log_bias = fabs(min_value) * (1.0 + 1e-12);
-    log_bias = std::max(log_bias,1e-12);
+    log_bias = std::max(log_bias, 1e-12);
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
       const double x0 = qindex.locations[i][0];
@@ -246,7 +245,7 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
     }
   } else { // local reconstruction only
 
-    log_bias = std::max(log_bias,1e-12);
+    log_bias = std::max(log_bias, 1e-12);
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
       const double x0 = qindex.locations[i][0];

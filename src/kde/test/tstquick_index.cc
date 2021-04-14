@@ -290,8 +290,8 @@ void test_decomposition(ParallelUnitTest &ut) {
     }
   }
 
-    if (ut.numFails == 0) {
-      PASSMSG("quick_index DD checks pass");
+  if (ut.numFails == 0) {
+    PASSMSG("quick_index DD checks pass");
   } else {
     FAILMSG("quick_index DD checks failed");
   }

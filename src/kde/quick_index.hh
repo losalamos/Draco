@@ -9,7 +9,6 @@
  *         All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
-
 #ifndef rtt_kde_quick_index_hh
 #define rtt_kde_quick_index_hh
 
@@ -40,7 +39,7 @@ public:
   //! Collect Ghost Data
   std::vector<double> collect_ghost_data(const std::vector<double> &local_data) const;
 
-  //! Override function of 3D array data.
+  //! Override function of 3D array ghost data.
   std::vector<std::array<double, 3>>
   collect_ghost_data(const std::vector<std::array<double, 3>> &local_data) const;
 
@@ -93,4 +92,3 @@ private:
 //------------------------------------------------------------------------------------------------//
 // end of kde/quick_index.hh
 //------------------------------------------------------------------------------------------------//
-

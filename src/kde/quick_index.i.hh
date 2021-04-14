@@ -88,9 +88,9 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
                                                 (bounding_box_max[d] - bounding_box_min[d])));
       index[d] = std::min(index[d], coarse_bin_resolution - 1);
     }
-        // build up the local index hash
-        const size_t global_index = index[0] + index[1] * coarse_bin_resolution +
-                                    index[2] * coarse_bin_resolution * coarse_bin_resolution;
+    // build up the local index hash
+    const size_t global_index = index[0] + index[1] * coarse_bin_resolution +
+                                index[2] * coarse_bin_resolution * coarse_bin_resolution;
     coarse_index_map[global_index].push_back(locIndex);
     locIndex++;
   }
@@ -181,6 +181,19 @@ quick_index<dim>::quick_index(const std::vector<std::array<double, 3>> &location
   } // End domain decomposed data construction
 }
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief
+ * 
+ * collect_ghost_data for vector of 3 dimensional arrays. This function uses
+ * RMA and the local put_window_map to allow each rank to independently fill in
+ * its data to ghost cells of other ranks.
+ *
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] local_data the local 3 dimensional data that is required to be
+ * available as ghost cell data on other processors.
+ * \return local_ghost_data the resulting local ghost data provided by other ranks.
+ */
 template <size_t dim>
 std::vector<std::array<double, 3>>
 quick_index<dim>::collect_ghost_data(const std::vector<std::array<double, 3>> &local_data) const {
@@ -230,6 +243,19 @@ quick_index<dim>::collect_ghost_data(const std::vector<std::array<double, 3>> &l
   return local_ghost_data;
 }
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief
+ * 
+ * collect_ghost_data for vector of 3 dimensional arrays. This function uses
+ * RMA and the local put_window_map to allow each rank to independently fill in
+ * its data to ghost cells of other ranks.
+ *
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] local_data the local vector data that is required to be
+ * available as ghost cell data on other processors.
+ * \return local_ghost_data the resulting local ghost data provided by other ranks.
+ */
 template <size_t dim>
 std::vector<double>
 quick_index<dim>::collect_ghost_data(const std::vector<double> &local_data) const {
@@ -269,6 +295,18 @@ quick_index<dim>::collect_ghost_data(const std::vector<double> &local_data) cons
   return local_ghost_data;
 }
 
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief
+ * 
+ * window_coarse_index_list provides a list of global indecies that are
+ * required by any given window range.
+ *
+ * \tparam dim integer specifying the data dimensionality 
+ * \param[in] whindow_min the smallest corner point for every dimension
+ * \param[in] whindow_min the largest corner point for every dimension
+ * \return bin_list list of global bins requested for the current window.
+ */
 template <size_t dim>
 std::vector<size_t>
 quick_index<dim>::window_coarse_index_list(const std::array<double, 3> &window_min,
@@ -325,4 +363,3 @@ quick_index<dim>::window_coarse_index_list(const std::array<double, 3> &window_m
 //------------------------------------------------------------------------------------------------//
 // end of kde/quick_index.i.hh
 //------------------------------------------------------------------------------------------------//
-
