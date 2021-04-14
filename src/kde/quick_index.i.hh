@@ -202,6 +202,7 @@ quick_index<dim>::collect_ghost_data(const std::vector<std::array<double, 3>> &l
                             "domain_decomposed=.false.");
   // allocate the ghost data
   std::vector<std::array<double, 3>> local_ghost_data(local_ghost_buffer_size, {0.0, 0.0, 0.0});
+#ifdef C4_MPI // temporary work around until RMA is available in c4
   // Use one sided MPI Put commands to fill up the ghost cell location data
   std::vector<double> local_ghost_buffer(local_ghost_buffer_size);
   MPI_Win win;
@@ -240,6 +241,7 @@ quick_index<dim>::collect_ghost_data(const std::vector<std::array<double, 3>> &l
     }
   }
   MPI_Win_free(&win);
+#endif
   return local_ghost_data;
 }
 
@@ -264,6 +266,7 @@ quick_index<dim>::collect_ghost_data(const std::vector<double> &local_data) cons
                             "domain_decomposed=.false.");
   // allocate the ghost data
   std::vector<double> local_ghost_data(local_ghost_buffer_size, 0.0);
+#ifdef C4_MPI // temporary work around until RMA is available in c4
   MPI_Win win;
   MPI_Win_create(&local_ghost_data[0], local_ghost_buffer_size * sizeof(double), sizeof(double),
                  MPI_INFO_NULL, MPI_COMM_WORLD, &win);
@@ -292,6 +295,7 @@ quick_index<dim>::collect_ghost_data(const std::vector<double> &local_data) cons
   }
   MPI_Win_fence(0, win);
   MPI_Win_free(&win);
+#endif
   return local_ghost_data;
 }
 
