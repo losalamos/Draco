@@ -64,6 +64,9 @@ if( CMAKE_CXX_COMPILER_WRAPPER STREQUAL CrayPrgEnv )
   endif()
 endif()
 
+# Save the configure date
+string(TIMESTAMP Draco_BUILD_DATE "%Y %b %d")
+
 # Information about the current machine
 cmake_host_system_information(RESULT COMPILED_HOSTNAME QUERY HOSTNAME)
 cmake_host_system_information(RESULT COMPILED_FQDN QUERY FQDN)
