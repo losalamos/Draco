@@ -15,9 +15,7 @@
 #include <math.h>
 #include <numeric>
 
-namespace rtt_kde {
-
-} // end namespace  rtt_kde
+namespace rtt_kde {} // end namespace  rtt_kde
 
 #endif // rtt_kde_quick_index_i_hh
 

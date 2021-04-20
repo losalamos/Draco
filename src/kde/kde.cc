@@ -335,7 +335,7 @@ kde::log_reconstruction(const std::vector<double> &distribution,
     rtt_c4::global_sum(abs_reconstruction_conservation);
   }
 
-  if (abs_reconstruction_conservation>0.0){
+  if (abs_reconstruction_conservation > 0.0) {
     const double res = global_conservation - reconstruction_conservation;
     for (size_t i = 0; i < local_size; i++)
       result[i] += res * abs_result[i] / abs_reconstruction_conservation;
