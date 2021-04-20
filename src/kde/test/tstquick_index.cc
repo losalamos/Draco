@@ -34,7 +34,8 @@ void test_replication(ParallelUnitTest &ut) {
     const double max_window_size = 100.0;
     const size_t bins_per_dim = 10UL;
     const bool dd = false;
-    quick_index<1> qindex = quick_index<1>(position_array, max_window_size, bins_per_dim, dd);
+    const size_t dim = 1;
+    quick_index qindex(dim, position_array, max_window_size, bins_per_dim, dd);
     // Check public data
     //------------------------
     if (qindex.domain_decomposed)
@@ -122,7 +123,8 @@ void test_decomposition(ParallelUnitTest &ut) {
     const double max_window_size = 1.0;
     const size_t bins_per_dim = 10UL;
     const bool dd = true;
-    quick_index<1> qindex = quick_index<1>(dd_position_array, max_window_size, bins_per_dim, dd);
+    const size_t dim = 1;
+    quick_index qindex(dim, dd_position_array, max_window_size, bins_per_dim, dd);
 
     // Check the local state data
     if (!qindex.domain_decomposed)

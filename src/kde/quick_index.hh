@@ -30,11 +30,12 @@ namespace rtt_kde {
  */
 //================================================================================================//
 
-template <size_t dim> class quick_index {
+class quick_index {
 public:
   //! Default constructors.
-  quick_index(const std::vector<std::array<double, 3>> &locations, const double max_window_size,
-              const size_t bins_per_dimension, const bool domain_decomposed);
+  quick_index(const size_t dim, const std::vector<std::array<double, 3>> &locations,
+              const double max_window_size, const size_t bins_per_dimension,
+              const bool domain_decomposed);
 
   //! Collect Ghost Data
   std::vector<double> collect_ghost_data(const std::vector<double> &local_data) const;
@@ -69,6 +70,7 @@ public:
 
   // PUBLIC DATA
   // Quick index initialization data
+  const size_t dim;
   const bool domain_decomposed;
   const size_t coarse_bin_resolution;
   const double max_window_size;

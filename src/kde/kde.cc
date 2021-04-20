@@ -30,7 +30,7 @@ namespace rtt_kde {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Cartesian geometry KDE reconstruction of a 1D distribution
+ * \brief KDE reconstruction 
  * 
  * \pre The local reconstruction data is passed into this function which
  * includes the original data distribution, its spatial position, and the
@@ -44,12 +44,12 @@ namespace rtt_kde {
  *
  * \post the local reconstruction of the original data is returned.
  */
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
-    const std::vector<double> &distribution,
-    const std::vector<std::array<double, 3>> &one_over_bandwidth, const quick_index<1> &qindex,
-    const double discontinuity_cutoff) const {
+std::vector<double>
+kde::reconstruction(const std::vector<double> &distribution,
+                    const std::vector<std::array<double, 3>> &one_over_bandwidth,
+                    const quick_index &qindex, const double discontinuity_cutoff) const {
+  size_t dim = qindex.dim;
+  Require(dim < 3 && dim > 0);
   const size_t local_size = distribution.size();
   // be sure that the quick_index matches this data size
   Require(qindex.locations.size() == local_size);
@@ -70,10 +70,15 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
 
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
-      const double x0 = qindex.locations[i][0];
-      const double one_over_h = one_over_bandwidth[i][0];
-      const std::array<double, 3> win_min{x0 - 1.0 / one_over_h, 0.0, 0.0};
-      const std::array<double, 3> win_max{x0 + 1.0 / one_over_h, 0.0, 0.0};
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h[d];
+      }
       const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
       // fetch local contribution
       for (auto cbItr = coarse_bins.begin(); cbItr < coarse_bins.end(); cbItr++) {
@@ -82,11 +87,14 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
         if (mapItr != qindex.coarse_index_map.end()) {
           // loop over local data
           for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
-            const double x = qindex.locations[*iItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / one_over_bandwidth[*iItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.locations[*iItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / one_over_bandwidth[*iItr][d] < discontinuity_cutoff ? 0.0 : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += distribution[*iItr] * weight;
             normal[i] += weight;
           }
@@ -95,11 +103,15 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
         if (gmapItr != qindex.local_ghost_index_map.end()) {
           // loop over ghost data
           for (auto gItr = gmapItr->second.begin(); gItr != gmapItr->second.end(); gItr++) {
-            const double x = qindex.local_ghost_locations[*gItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / ghost_one_over_bandwidth[*gItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.local_ghost_locations[*gItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / ghost_one_over_bandwidth[*gItr][d] < discontinuity_cutoff ? 0.0
+                                                                                            : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += ghost_distribution[*gItr] * weight;
             normal[i] += weight;
           }
@@ -110,10 +122,15 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
 
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
-      const double x0 = qindex.locations[i][0];
-      const double one_over_h = one_over_bandwidth[i][0];
-      const std::array<double, 3> win_min{x0 - 1.0 / one_over_h, 0.0, 0.0};
-      const std::array<double, 3> win_max{x0 + 1.0 / one_over_h, 0.0, 0.0};
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h[d];
+      }
       const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
       for (auto cbItr = coarse_bins.begin(); cbItr < coarse_bins.end(); cbItr++) {
         // skip bins that aren't present in the map (can't use [] operator with constness)
@@ -121,11 +138,14 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
         if (mapItr != qindex.coarse_index_map.end()) {
           // loop over local data
           for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
-            const double x = qindex.locations[*iItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / one_over_bandwidth[*iItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.locations[*iItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / one_over_bandwidth[*iItr][d] < discontinuity_cutoff ? 0.0 : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += distribution[*iItr] * weight;
             normal[i] += weight;
           }
@@ -138,7 +158,8 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
   for (size_t i = 0; i < local_size; i++) {
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
-    abs_result[i] = fabs(result[i]);
+    if (!rtt_dsxx::soft_equiv(result[i], distribution[i], 1e-12))
+      abs_result[i] = fabs(result[i]);
   }
 
   double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
@@ -151,16 +172,18 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
     rtt_c4::global_sum(abs_reconstruction_conservation);
   }
 
-  const double res = global_conservation - reconstruction_conservation;
-  for (size_t i = 0; i < local_size; i++)
-    result[i] += res * abs_result[i] / abs_reconstruction_conservation;
+  if (abs_reconstruction_conservation > 0.0) {
+    const double res = global_conservation - reconstruction_conservation;
+    for (size_t i = 0; i < local_size; i++)
+      result[i] += res * abs_result[i] / abs_reconstruction_conservation;
+  }
 
   return result;
 }
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Cartesian geometry KDE reconstruction done in logarithmic data space of a 1D distribution
+ * \brief KDE reconstruction done in logarithmic data space
  * 
  * \pre The local reconstruction data is passed into this function which
  * includes the original data distribution, its spatial position, and the
@@ -177,12 +200,12 @@ std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
  *
  * \post the local reconstruction of the original data is returned.
  */
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
-    const std::vector<double> &distribution,
-    const std::vector<std::array<double, 3>> &one_over_bandwidth, const quick_index<1> &qindex,
-    const double discontinuity_cutoff) const {
+std::vector<double>
+kde::log_reconstruction(const std::vector<double> &distribution,
+                        const std::vector<std::array<double, 3>> &one_over_bandwidth,
+                        const quick_index &qindex, const double discontinuity_cutoff) const {
+  size_t dim = qindex.dim;
+  Require(dim < 3 && dim > 0);
   const size_t local_size = distribution.size();
   Require(qindex.locations.size() == local_size);
   Require(one_over_bandwidth.size() == local_size);
@@ -207,10 +230,15 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
     log_bias = std::max(log_bias, 1e-12);
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
-      const double x0 = qindex.locations[i][0];
-      const double one_over_h = one_over_bandwidth[i][0];
-      const std::array<double, 3> win_min{x0 - 1.0 / one_over_h, 0.0, 0.0};
-      const std::array<double, 3> win_max{x0 + 1.0 / one_over_h, 0.0, 0.0};
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h[d];
+      }
       const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
       // fetch local contribution
       for (auto cbItr = coarse_bins.begin(); cbItr < coarse_bins.end(); cbItr++) {
@@ -219,11 +247,14 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
         if (mapItr != qindex.coarse_index_map.end()) {
           // loop over local data
           for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
-            const double x = qindex.locations[*iItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / one_over_bandwidth[*iItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.locations[*iItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / one_over_bandwidth[*iItr][d] < discontinuity_cutoff ? 0.0 : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += log_transform(distribution[*iItr], log_bias) * weight;
             normal[i] += weight;
           }
@@ -232,11 +263,15 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
         if (gmapItr != qindex.local_ghost_index_map.end()) {
           // loop over ghost data
           for (auto gItr = gmapItr->second.begin(); gItr != gmapItr->second.end(); gItr++) {
-            const double x = qindex.local_ghost_locations[*gItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / ghost_one_over_bandwidth[*gItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.local_ghost_locations[*gItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / ghost_one_over_bandwidth[*gItr][d] < discontinuity_cutoff ? 0.0
+                                                                                            : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += log_transform(ghost_distribution[*gItr], log_bias) * weight;
             normal[i] += weight;
           }
@@ -248,10 +283,15 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
     log_bias = std::max(log_bias, 1e-12);
     // now apply the kernel to the local ranks
     for (size_t i = 0; i < local_size; i++) {
-      const double x0 = qindex.locations[i][0];
-      const double one_over_h = one_over_bandwidth[i][0];
-      const std::array<double, 3> win_min{x0 - 1.0 / one_over_h, 0.0, 0.0};
-      const std::array<double, 3> win_max{x0 + 1.0 / one_over_h, 0.0, 0.0};
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h[d];
+      }
       const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
       // fetch local contribution
       for (auto cbItr = coarse_bins.begin(); cbItr < coarse_bins.end(); cbItr++) {
@@ -260,11 +300,14 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
         if (mapItr != qindex.coarse_index_map.end()) {
           // loop over local data
           for (auto iItr = mapItr->second.begin(); iItr != mapItr->second.end(); iItr++) {
-            const double x = qindex.locations[*iItr][0];
-            const double u = (x0 - x) * one_over_h;
-            const double scale =
-                one_over_h / one_over_bandwidth[*iItr][0] < discontinuity_cutoff ? 0.0 : 1.0;
-            const double weight = scale * epan_kernel(u) * one_over_h;
+            double weight = 1.0;
+            for (size_t d = 0; d < dim; d++) {
+              const double r = qindex.locations[*iItr][d];
+              const double u = (r0[d] - r) * one_over_h[d];
+              const double scale =
+                  one_over_h[d] / one_over_bandwidth[*iItr][d] < discontinuity_cutoff ? 0.0 : 1.0;
+              weight *= scale * epan_kernel(u) * one_over_h[d];
+            }
             result[i] += log_transform(distribution[*iItr], log_bias) * weight;
             normal[i] += weight;
           }
@@ -278,7 +321,8 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
     result[i] = log_inv_transform(result[i], log_bias);
-    abs_result[i] = fabs(result[i]);
+    if (!rtt_dsxx::soft_equiv(result[i], distribution[i], 1e-12))
+      abs_result[i] = fabs(result[i]);
   }
 
   double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
@@ -291,9 +335,11 @@ std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
     rtt_c4::global_sum(abs_reconstruction_conservation);
   }
 
-  const double res = global_conservation - reconstruction_conservation;
-  for (size_t i = 0; i < local_size; i++)
-    result[i] += res * abs_result[i] / abs_reconstruction_conservation;
+  if (abs_reconstruction_conservation>0.0){
+    const double res = global_conservation - reconstruction_conservation;
+    for (size_t i = 0; i < local_size; i++)
+      result[i] += res * abs_result[i] / abs_reconstruction_conservation;
+  }
 
   return result;
 }

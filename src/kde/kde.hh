@@ -17,8 +17,6 @@
 
 namespace rtt_kde {
 
-enum kde_coordinates { CART, CYL, SPH };
-
 //================================================================================================//
 /*!
  * \class kde
@@ -30,7 +28,7 @@ enum kde_coordinates { CART, CYL, SPH };
  * Returns a KDE reconstruction of a multidimensional distribution
  */
 //================================================================================================//
-template <int coord> class kde {
+class kde {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
@@ -41,18 +39,16 @@ public:
   // SERVICES
 
   //! Reconstruct distribution
-  template <int dim = 1>
   std::vector<double> reconstruction(const std::vector<double> &distribution,
                                      const std::vector<std::array<double, 3>> &one_over_band_width,
-                                     const quick_index<dim> &qindex,
+                                     const quick_index &qindex,
                                      const double discontinuity_cutoff = 0.0) const;
 
   //! Reconstruct distribution in logarithmic space
-  template <int dim = 1>
   std::vector<double>
   log_reconstruction(const std::vector<double> &distribution,
                      const std::vector<std::array<double, 3>> &one_over_band_width,
-                     const quick_index<dim> &qindex, const double discontinuity_cutoff = 0.0) const;
+                     const quick_index &qindex, const double discontinuity_cutoff = 0.0) const;
 
   // STATICS
 
@@ -75,21 +71,6 @@ private:
 
   // DATA
 };
-
-//! Forward declaration of the reconstruction 1D Cartesian reconstruction.
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
-    const std::vector<double> &distribution,
-    const std::vector<std::array<double, 3>> &one_over_band_width, const quick_index<1> &qindex,
-    const double discontinuity_cutoff) const;
-
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::log_reconstruction<1>(
-    const std::vector<double> &distribution,
-    const std::vector<std::array<double, 3>> &one_over_band_width, const quick_index<1> &qindex,
-    const double discontinuity_cutoff) const;
 
 } // end namespace rtt_kde
 

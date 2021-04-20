@@ -18,63 +18,6 @@ namespace rtt_kde {
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief
- * DEFAULT reconstruction to return error if instantiation is not found
- *
- * \tparam coord enumerated value to specify KDE coordinate system
- * \tparam dim integer specifying the data dimensionality 
- * \param[in] distribution 
- * \param[in] one_over_band_width
- * \param[in] quick_index
- * \param[in] discontinuity_cutoff
- * \return final local function distribution
- *
- */
-
-template <int coord>
-template <int dim>
-std::vector<double>
-kde<coord>::reconstruction(const std::vector<double> & /*distribution*/,
-                           const std::vector<std::array<double, 3>> & /*one_over_band_width*/,
-                           const quick_index<dim> & /*qindex*/,
-                           const double /*discontinuity_cutoff*/) const {
-
-  Insist(false, "kde::reconstruction has not been implemented for this coordinate system and or "
-                "dimension combination");
-  return std::vector<double>(1, 0.0);
-}
-
-//------------------------------------------------------------------------------------------------//
-/*!
- * \brief
- * DEFAULT reconstruction in logarithmic space to return error if instantiation
- * is not found
- *
- * \tparam coord enumerated value to specify KDE coordinate system
- * \tparam dim integer specifying the data dimensionality 
- * \param[in] distribution 
- * \param[in] one_over_band_width
- * \param[in] quick_index
- * \param[in] discontinuity_cutoff
- * \return final local function distribution
- *
- */
-
-template <int coord>
-template <int dim>
-std::vector<double>
-kde<coord>::log_reconstruction(const std::vector<double> & /*distribution*/,
-                               const std::vector<std::array<double, 3>> & /*one_over_band_width*/,
-                               const quick_index<dim> & /*qindex*/,
-                               const double /*discontinuity_cutoff*/) const {
-
-  Insist(false,
-         "kde::log_reconstruction has not been implemented for this coordinate system and or "
-         "dimension combination");
-  return std::vector<double>(1, 0.0);
-}
-//------------------------------------------------------------------------------------------------//
-/*!
- * \brief
  * epan_kernel basis function used during reconstruction
  *
  * Epanechnikov kenrel to be used in reconstrtuction
@@ -84,7 +27,7 @@ kde<coord>::log_reconstruction(const std::vector<double> & /*distribution*/,
  *
  * Test of kde.
  */
-template <int coord> double kde<coord>::epan_kernel(const double x) const {
+double kde::epan_kernel(const double x) const {
   const double x2 = x * x;
   return x2 > 1.0 ? 0.0 : 0.75 * (1.0 - x2);
 }
@@ -102,7 +45,7 @@ template <int coord> double kde<coord>::epan_kernel(const double x) const {
  *
  * Test of kde.
  */
-template <int coord> double kde<coord>::log_transform(const double value, const double bias) const {
+double kde::log_transform(const double value, const double bias) const {
   Require(value + bias > 0.0);
   return log(value + bias);
 }
@@ -121,9 +64,7 @@ template <int coord> double kde<coord>::log_transform(const double value, const 
  * Test of kde.
  */
 
-template <int coord>
-double kde<coord>::log_inv_transform(const double log_value, const double bias) const {
-  Require(!(log_value < 0.0));
+double kde::log_inv_transform(const double log_value, const double bias) const {
   return exp(log_value) - bias;
 }
 
