@@ -53,13 +53,13 @@ public:
   // STATICS
 
   //! Epanechikov Kernel
-  double epan_kernel(const double x) const;
+  inline double epan_kernel(const double x) const;
 
   //! Transform the solution into log space
-  double log_transform(const double value, const double bias) const;
+  inline double log_transform(const double value, const double bias) const;
 
   //! Move the solution back from log space
-  double log_inv_transform(const double log_value, const double bias) const;
+  inline double log_inv_transform(const double log_value, const double bias) const;
 
 protected:
   // IMPLEMENTATION

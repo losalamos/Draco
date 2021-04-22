@@ -27,7 +27,7 @@ namespace rtt_kde {
  *
  * Test of kde.
  */
-double kde::epan_kernel(const double x) const {
+inline double kde::epan_kernel(const double x) const {
   const double x2 = x * x;
   return x2 > 1.0 ? 0.0 : 0.75 * (1.0 - x2);
 }
@@ -45,7 +45,7 @@ double kde::epan_kernel(const double x) const {
  *
  * Test of kde.
  */
-double kde::log_transform(const double value, const double bias) const {
+inline double kde::log_transform(const double value, const double bias) const {
   Require(value + bias > 0.0);
   return log(value + bias);
 }
@@ -64,7 +64,7 @@ double kde::log_transform(const double value, const double bias) const {
  * Test of kde.
  */
 
-double kde::log_inv_transform(const double log_value, const double bias) const {
+inline double kde::log_inv_transform(const double log_value, const double bias) const {
   return exp(log_value) - bias;
 }
 

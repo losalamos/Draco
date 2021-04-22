@@ -321,6 +321,9 @@ kde::log_reconstruction(const std::vector<double> &distribution,
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
     result[i] = log_inv_transform(result[i], log_bias);
+    // ZERO IS ZERO AND THE LOG TRANSFORM CAN MAKE THE ZEROS NOT MATCH... SO FIX IT LIKE THIS
+    if (rtt_dsxx::soft_equiv(result[i], 0.0) && rtt_dsxx::soft_equiv(distribution[i], 0.0))
+      result[i] = distribution[i];
     if (!rtt_dsxx::soft_equiv(result[i], distribution[i], 1e-12))
       abs_result[i] = fabs(result[i]);
   }
