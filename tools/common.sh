@@ -378,7 +378,7 @@ function npes_build
   elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
     np="${SLURM_CPUS_ON_NODE}"
   elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np="${SLURM_TSKS_PER_NODE}"
+    np="${SLURM_TASKS_PER_NODE}"
   elif [[ ${LSB_DJOB_NUMPROC} ]]; then
     np="${LSB_DJOB_NUMPROC}"
   elif [[ -f /proc/cpuinfo ]]; then
