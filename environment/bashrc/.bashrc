@@ -171,8 +171,8 @@ if [[ ${INTERACTIVE} == true ]]; then
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_rfta" ;;
 
-    # capulin, thunder, trinitite (tt-fey) | trinity (tr-fe)
-    cp-login* | th-login* |tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
+    # capulin, thunder, trinitite (tt-rfe) | trinity (tr-fe)
+    cp-rfe* | th-login* |tt-fey* | tt-rfe* | tt-login* | tr-fe* | tr-login* | nid* )
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_cray" ;;
 
