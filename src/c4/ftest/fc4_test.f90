@@ -10,7 +10,7 @@
 ! This is a modified version of jayenne/src/api/ftest/API_Test.F90.
 !------------------------------------------------------------------------------
 module fc4_test
-  use iso_c_binding, only : c_double
+  use iso_c_binding, only: c_double
   implicit none
 
   integer, save ::  f90_num_failures = 0
@@ -25,8 +25,8 @@ contains
     integer, intent(in) :: ierr
     integer, intent(in) :: rank
 
-    if (ierr .ne. 0 ) then
-       write (*,'("**** Test: FAILED on ", I3, " with error ", I3)') rank, ierr
+    if (ierr .ne. 0) then
+       write (*, '("**** Test: FAILED on ", I3, " with error ", I3)') rank, ierr
        f90_num_failures = f90_num_failures + 1
     end if
   end subroutine check_fail
@@ -39,7 +39,7 @@ contains
     integer, intent(in) :: rank
     character(*), intent(in) :: msg
 
-    write (*,'("**** Test: FAILED on ", I3, ":  ", A)') rank, msg
+    write (*, '("**** Test: FAILED on ", I3, ":  ", A)') rank, msg
 
     f90_num_failures = f90_num_failures + 1
 
@@ -53,7 +53,7 @@ contains
     integer, intent(in) :: rank
     character(*), intent(in) :: msg
 
-    write (*,'("**** Test: PASSED on ", I3, ":  ", A)') rank, msg
+    write (*, '("**** Test: PASSED on ", I3, ":  ", A)') rank, msg
 
   end subroutine pass_msg
 

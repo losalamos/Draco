@@ -7,7 +7,7 @@
 !--------------------------------------------------------------------------------------------------!
 
 module draco_mpi
-  use iso_c_binding, only : c_double, c_intptr_t
+  use iso_c_binding, only: c_double, c_intptr_t
   implicit none
 
   integer, public, save :: fc4_rank, fc4_num_ranks
@@ -20,6 +20,7 @@ module draco_mpi
 
   ! Make all the subroutines defined below public, though
   public check_mpi_error
+
   public fc4_mpi_init
   public fc4_mpi_finalize
   public fc4_mpi_barrier
@@ -49,7 +50,7 @@ contains
     ! Check and report a nonzero error code
     if (error .ne. 0) then
        call mpi_error_string(error, error_string, error_string_len, ierror)
-       write(*,"('*** mpi error = ',i18, ' (', a, ')')") error,trim(error_string)
+       write (*, "('*** mpi error = ',i18, ' (', a, ')')") error, trim(error_string)
        call MPI_Abort(MPI_COMM_WORLD, 1, ierror)
     end if
 #endif
@@ -100,7 +101,7 @@ contains
     integer, intent(out) :: ierr
 #ifdef C4_MPI
     external mpi_barrier
-    call mpi_barrier(MPI_COMM_WORLD,ierr)
+    call mpi_barrier(MPI_COMM_WORLD, ierr)
     call check_mpi_error(ierr)
 #endif
   end subroutine fc4_mpi_barrier
