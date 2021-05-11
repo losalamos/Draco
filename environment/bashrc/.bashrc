@@ -172,7 +172,7 @@ if [[ ${INTERACTIVE} == true ]]; then
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_rfta" ;;
 
     # capulin, thunder, trinitite (tt-rfe) | trinity (tr-fe)
-    cp-rfe* | th-login* |tt-fey* | tt-rfe* | tt-login* | tr-fe* | tr-login* | nid* )
+    cp-rfe* | cp-rlogin* | th-login* |tt-fey* | tt-rfe* | tt-login* | tr-fe* | tr-login* | nid* )
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_cray" ;;
 

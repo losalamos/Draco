@@ -19,13 +19,13 @@ if(NOT TARGET Lib_dsxx)
 
   # CAFS setup unique to this directory.
   #
-  # 1. create import targets that we will link against.
+  # Create import targets that we will link against.
   if(NOT fc4_BINARY_DIR)
     set(fc4_BINARY_DIR "${draco_BINARY_DIR}/src/c4/fc4")
   endif()
   cafs_create_imported_targets(Lib_c4_fc4 "librtt_fc4" "${fc4_BINARY_DIR}" CXX)
 
-  # 1. Vendor discovery is not needed for this package
+  # Vendor discovery is not needed for this package
   #
   # setupVendorLibraries()
 endif()

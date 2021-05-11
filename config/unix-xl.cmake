@@ -58,11 +58,10 @@ if(NOT CXX_FLAGS_INITIALIZED)
     string(
       CONCAT CMAKE_CXX_COMPILER_CONFIG_FILE
              "/projects/opt/ppc64le/ibm/xlc-${xlc_version}/xlC/${xlc_version_3}/etc/xlc.cfg.rhel."
-             "${redhat_version}.gcc.${gcc_version}.cuda.${cuda_version}"
-             CACHE
-             FILEPATH
-             "XL config file"
-             FORCE)
+             "${redhat_version}.gcc.${gcc_version}.cuda.${cuda_version}")
+    set(CMAKE_CXX_COMPILER_CONFIG_FILE
+        ${CMAKE_CXX_COMPILER_CONFIG_FILE}
+        CACHE FILEPATH "XL config file" FORCE)
     if(EXISTS ${CMAKE_CXX_COMPILER_CONFIG_FILE})
       string(APPEND CMAKE_C_FLAGS " -F${CMAKE_CXX_COMPILER_CONFIG_FILE}")
     else()

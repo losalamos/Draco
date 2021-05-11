@@ -25,7 +25,10 @@ function(dbs_set_sitename)
   if(${SITENAME} MATCHES "ba")
     set(SITENAME "Badger")
     set(SITENAME_FAMILY "CTS-1")
-  elseif(${SITENAME} MATCHES "cp-rfe" OR ${SITENAME} MATCHES "cp-login")
+  elseif(
+    ${SITENAME} MATCHES "cp-rfe"
+    OR ${SITENAME} MATCHES "cp-login"
+    OR ${SITENAME} MATCHES "cp-rlogin")
     set(SITENAME "Capulin")
     set(SITENAME_FAMILY "IC-ARM")
   elseif(${SITENAME} MATCHES "ccscs[0-9]+")
