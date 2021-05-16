@@ -419,6 +419,7 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(local-set-key "\C-c %" 'comment-region)
 	(draco-mode-update-menu (draco-menu-insert-comments-tex))
 	;(turn-on-bib-cite)
+        (set-fill-column draco-code-comment-width)
 	(turn-on-reftex)
         (turn-on-reftex)
         (setq reftex-plug-into-AUCTeX t)
