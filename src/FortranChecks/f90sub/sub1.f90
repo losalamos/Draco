@@ -13,7 +13,7 @@
 
 ! use iso_c_binding
 
-subroutine sub1(alpha,np,nf) bind(c)
+subroutine sub1(alpha, np, nf) bind(c)
   use iso_c_binding, only: c_double, c_size_t
   implicit none
   real(c_double), value, intent(in) :: alpha
@@ -24,18 +24,18 @@ subroutine sub1(alpha,np,nf) bind(c)
   double precision :: small
 
   !----------------------------------------
-  small=1.0d-13
+  small = 1.0d-13
 
-  write(*,'(a,f5.1,2i3)') "Hello, world.", alpha, np, nf
+  write (*, '(a,f5.1,2i3)') "Hello, world.", alpha, np, nf
 
-  if( alpha.gt.1.0-small.and.alpha.lt.1.0+small )then
-     print '(a)',"Test: passed"
-     print '(a)',"     alpha == 1.0"
-     np = np+1
+  if (alpha .gt. 1.0 - small.and.alpha .lt. 1.0 + small) then
+     print '(a)', "Test: passed"
+     print '(a)', "     alpha == 1.0"
+     np = np + 1
   else
-     print '(a)',"Test: failed"
-     print '(a)',"     alpha != 1.0"
-     nf = nf+1
+     print '(a)', "Test: failed"
+     print '(a)', "     alpha != 1.0"
+     nf = nf + 1
   endif
 
 end subroutine sub1

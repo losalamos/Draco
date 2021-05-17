@@ -39,8 +39,8 @@ Spack - Draco can be installed via the [spack package manager](https:://github.c
     read sesame files; Commonly used to access gray opacity data and heat capacities.
     (`EOSPAC_LIB_DIR=<path>`).
 * cdi_ipcress - Gray and multigroup opacities
-* The classes in this component will read and parse opacity values from an IPCRESS file produced by
-  TOPS.
+  * The classes in this component will read and parse opacity values from an IPCRESS file produced by
+    TOPS.
 * cdi_ndi - Wrapper around LANL's Nuclear Data Interface (NDI) library for accessing [nuclear data
   tables](https://xweb.lanl.gov/projects/data/nuclear/ndi/ndi.html).
 * compton_interface - Provides access to Compton scattering models and data as provided by the [CSK

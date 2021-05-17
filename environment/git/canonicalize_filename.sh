@@ -22,14 +22,15 @@ canonicalize_filename () {
   local physical_directory
   local result
   target_file=$1
+  # $(echo $1 | head -n 1)
   physical_directory=""
   result=""
 
   # Need to restore the working directory after work.
-  pushd "$(pwd)" > /dev/null || \
+  pushd "$(pwd)" &> /dev/null || \
     (echo "canonicalize_filename error 1: cannot access PWD" && return 1)
 
-  cd "$(dirname "$target_file")" || \
+  cd "$(dirname "$target_file")" &> /dev/null || \
     (echo "canonicalize_filename error 2: cannot access target_file PWD" && return 2)
   target_file=$(basename "$target_file")
 
@@ -49,7 +50,7 @@ canonicalize_filename () {
   # restore the working directory after work.
   popd > /dev/null || (echo "canonicalize_filename error 4: cannot popd" && return 4)
 
-  echo "$result"
+  echo "${result}"
 }
 
 #--------------------------------------------------------------------------------------------------#

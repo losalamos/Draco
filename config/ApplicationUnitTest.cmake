@@ -265,7 +265,7 @@ macro( aut_register_test )
   # Set arguments that don't change between python and CMake driver
   set (SHARED_ARGUMENTS
       -DAPP=${aut_APP}
-      -DARGVALUE=${argvalue}
+      -DARGVALUE=_av_${argvalue}_av_
       -DWORKDIR=${aut_WORKDIR}
       -DTESTNAME=${ctestname_base}${argname}
       -DDRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
@@ -520,6 +520,7 @@ macro( aut_runTests )
     string( REPLACE ".out" "-${numPE}.out" OUTFILE ${OUTFILE} )
     string( REPLACE ".err" "-${numPE}.err" ERRFILE ${ERRFILE} )
   endif()
+  string(REGEX REPLACE "_av_([A-z-]*)_av_" "\\1" ARGVALUE "${ARGVALUE}" )
   if( ARGVALUE )
     string( REGEX REPLACE "[-]" "" safe_argvalue ${ARGVALUE} )
     string( REPLACE ".out" "-${safe_argvalue}.out" OUTFILE ${OUTFILE} )

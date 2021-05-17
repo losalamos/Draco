@@ -1,0 +1,164 @@
+#!/bin/bash
+
+# git pre-commit hook that runs a cmake-format stylecheck.
+# Features:
+#  - abort commit when commit does not comply with the style guidelines
+
+#--------------------------------------------------------------------------------------------------#
+# SETTINGS
+#
+# set path to cmake-format binary. If cmake-format is not available, then don't run this hook. Style
+# issues will be caught during by the pull request process.
+#--------------------------------------------------------------------------------------------------#
+
+# make tmp file readable only by owner
+umask 0077
+
+debug=off
+function debugprint()
+{
+  if [[ "$debug" == "on" ]]; then echo "$@"; fi
+}
+
+# Allow developers to opt-out
+auto_apply=false
+if [[ ${DRACO_AUTO_CLANG_FORMAT:-YES} ]]; then
+  case $DRACO_AUTO_CLANG_FORMAT in
+    NO | OFF | FALSE | no | off | false ) exit 0 ;;
+    YES | ON | TRUE | yes | on | true) auto_apply=true ;;
+    DIFF | diff) auto_apply=false ;;
+  esac
+fi
+
+# remove any older patches from previous commits. Set to true or false.
+DELETE_OLD_PATCHES=true
+
+# file types to parse.
+FILE_EXTS=".cmake"
+FILE_ENDINGS_INCLUDE="CMakeLists.txt"
+# FILE_ENDINGS_EXCLUDE="_f.h _f77.h _cmake.h"
+export FILE_EXTS FILE_ENDINGS_INCLUDE
+
+# ------------------------------------------------------------------------------------------------ #
+# There should be no need to change anything below this line.
+# ------------------------------------------------------------------------------------------------ #
+
+# shellcheck source=environment/git/canonicalize_filename.sh
+source "$(dirname -- "$0")/canonicalize_filename.sh"
+
+# shellcheck source=tools/common.sh
+source "$(dirname -- "$0")/common.sh"
+
+# exit on error
+# set -e
+
+# Absolute path this script is in, thus /home/user/bin
+SCRIPT="$(canonicalize_filename "$0")"
+SCRIPTPATH="$(dirname -- "$SCRIPT")"
+
+# Disable check if cmake-format not found or too old.
+CMF=$(which cmake-format)
+if [[ $CMF ]]; then
+  CMFVER=$("$CMF" --version)
+  if version_gt "0.5.0" "${CMFVER}"; then
+    unset CMF
+    printf "Warning: cmake-format executable is too old (version < 0.5).\n"
+    printf "       skipping cmake format check. To enable this check set the correct path in\n"
+    printf "       %s.\n" "$(canonicalize_filename "$0")"
+    exit 0
+  fi
+else
+  printf "Warning: cmake-format executable not found..\n"
+  printf "       skipping cmake format check. To enable this check set the correct path in\n"
+  printf "       %s.\n" "$(canonicalize_filename "$0")"
+  exit 0
+fi
+if ! [[ -f "${SCRIPTPATH}/../../.cmake-format.py" ]]; then
+  unset CMF;
+  printf "Warning: .cmake-format.py config file not found..\n"
+  printf "       skipping cmake format check. To enable this check add .cmake-format.py\n"
+  printf "       at the top project directory."
+  exit 0
+fi
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# create a random filename to store our generated patch
+prefix="pre-commit-cmake-format"
+suffix="$(date +%s)"
+
+# clean up any older cmake-format patches
+$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.* &> /dev/null
+$DELETE_OLD_PATCHES && rm -f /tmp/cmake-format-* &> /dev/null
+
+patch=$(mktemp "/tmp/${prefix}-${suffix}.patch.XXXXXXXX")
+
+# create one patch containing all changes to the files
+
+# shellcheck disable=SC2162
+git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+do
+  # Only check cmake-files specified by FILE_EXTS and FILE_ENDINGS_INCLUDE
+  if ! matches_extension "$file"; then continue; fi
+
+  file_nameonly=$(basename "${file}")
+  tmpfile1=/tmp/cmake-format-$file_nameonly
+  debugprint "cp -f $file $tmpfile1"
+  cp -f "${file}" "${tmpfile1}"
+  debugprint "$CMF -i ${tmpfile1}"
+  $CMF -c "${SCRIPTPATH}/../../.cmake-format.py" -i "${tmpfile1}" &> /dev/null
+  diff -u "${file}" "${tmpfile1}" | \
+    sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
+  debugprint "rm $tmpfile1"
+  rm "${tmpfile1}"
+
+done
+
+# ------------------------------------------------------------------------------------------------ #
+# Pass/Fail
+# ------------------------------------------------------------------------------------------------ #
+
+# if no patch has been generated all is ok, clean up the file stub and exit
+if [ ! -s "$patch" ] ; then
+    printf "Files in this commit comply with the cmake-format rules.\n"
+    rm -f "$patch"
+    exit 0
+fi
+
+# There are files that don't comply...
+#
+# If user wants to automatically apply these changes, then do it, otherwise, print the diffs and
+# reject the commit.
+if test $auto_apply = true; then
+  git apply "$patch"
+  printf "\nFiles in this commit were updated to comply with the cmake-format rules. You must "
+  printf "check and test\nthese changes and then stage these updates to be part of your current "
+  printf "current change-set and retry\nthe commit.\n\n"
+  git status
+  rm -f "$patch"
+  exit 1
+fi
+
+# a patch has been created, notify the user and exit
+printf "\nThe following differences were found between the code to commit and the cmake-format "
+printf "rules:\n\n"
+cat "$patch"
+
+printf "\nYou can apply these changes with:\n git apply %s\n" "${patch}"
+printf "(may need to be called from the root directory of your repository)\n"
+printf "Aborting commit. Apply changes and commit again or skip checking with --no-verify (not "
+printf "recommended).\n"
+printf "\nYou can also manually update format by running\n"
+printf "  cmake-format -i <file>"
+
+exit 1
+
+# ------------------------------------------------------------------------------------------------ #
+# End pre-commit-cmake-format
+# ------------------------------------------------------------------------------------------------ #

@@ -378,7 +378,7 @@ function npes_build
   elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
     np="${SLURM_CPUS_ON_NODE}"
   elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np="${SLURM_TSKS_PER_NODE}"
+    np="${SLURM_TASKS_PER_NODE}"
   elif [[ ${LSB_DJOB_NUMPROC} ]]; then
     np="${LSB_DJOB_NUMPROC}"
   elif [[ -f /proc/cpuinfo ]]; then
@@ -423,7 +423,7 @@ function npes_test
         elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
           np="${SLURM_CPUS_ON_NODE}"
         elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-          np="${SLURM_TSKS_PER_NODE}"
+          np="${SLURM_TASKS_PER_NODE}"
         elif [[ $(uname -p) == "ppc" ]]; then
           # sinfo --long --partition=pdebug (show limits)
           np=64
@@ -713,11 +713,10 @@ function version_gt()
 # Example:
 #
 # FILE_EXTS=".f90 .F90"
-# FILE_ENDINGS="_f.h _f77.h _f90.h"
+# FILE_ENDINGS_INCLUDE="CMakeLists.txt"
+# FILE_ENDINGS_EXCLUDE="_f.h _f77.h _f90.h"
 # for file in $modified_files; do
-#   if ! matches_extension $file; then
-#      continue;
-#   fi
+#   if ! matches_extension $file; then continue; fi
 #   <do stuff>
 # done
 #--------------------------------------------------------------------------------------------------#
@@ -728,7 +727,8 @@ matches_extension() {
   local ext
   filename=$(basename "$1")
   extension=".${filename##*.}"
-  for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
+  for end in $FILE_ENDINGS_EXCLUDE; do [[ "$filename" == *"$end" ]] && return 1; done
+  for end in $FILE_ENDINGS_INCLUDE; do [[ "$filename" == *"$end" ]] && return 0; done
   for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
   return 1
 }

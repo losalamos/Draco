@@ -44,8 +44,8 @@ alias mul='module unload'
 alias msh='module show'
 
 # machines
-alias sierra='ssh -t redcap ssh sierra.llnl.gov'
-alias rzansel='ssh -t ihpc-gate1.lanl.gov ssh rzansel.llnl.gov'
+# alias sierra='ssh -t redcap ssh sierra.llnl.gov'
+alias rzansel='ssh -t ihpc-gate.lanl.gov ssh rzansel.llnl.gov'
 
 #--------------------------------------------------------------------------------------------------#
 # Color Prompt

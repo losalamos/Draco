@@ -15,7 +15,7 @@
 !-------------------------------------------------------------------------------------------------!
 
 module quadrature_interfaces
-  use iso_c_binding, only : c_double, c_int, c_ptr, c_null_ptr
+  use iso_c_binding, only: c_double, c_int, c_ptr, c_null_ptr
   implicit none
   ! ---------------------------------------------------------------------------------------
   ! This *must* exactly match the layout in Quadrature_Interface.hh Quadrature Data Struct
