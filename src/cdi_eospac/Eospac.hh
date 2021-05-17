@@ -104,7 +104,7 @@ class Eospac : public rtt_cdi::EoS {
    * corresponding matID value is the material identifier extracted from the associated SesameTables
    * object.
    */
-  mutable std::vector<int> matIDs;
+  mutable std::vector<EOS_INTEGER> matIDs;
 
   /*!
    * \brief List of available EoS data tables that can be queried.
