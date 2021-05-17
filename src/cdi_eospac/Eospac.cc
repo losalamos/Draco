@@ -463,7 +463,7 @@ void Eospac::expandEosTable() const {
     eos_GetErrorMessage(&errorCode, errorMessage.data());
     outputString << "\n   An unsuccessful request was made to initialize the EOSPAC table area by "
                  << "expandEosTable().\n  The error code returned by eos_CreateTables(...) was "
-                 << "\"" << errorCode << "\".\n  The associated error message is:\n\t\"" 
+                 << "\"" << errorCode << "\".\n  The associated error message is:\n\t\""
                  << std::string(errorMessage.data()) << ".\"\n";
     for (size_t i = 0; i < returnTypes.size(); ++i) {
       EOS_INTEGER tableHandleErrorCode(EOS_OK);
