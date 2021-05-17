@@ -402,9 +402,9 @@ quick_index::window_coarse_index_list(const std::array<double, 3> &window_min,
   // Fill up bin list
   size_t count = 0;
   std::vector<size_t> bin_list(nbins);
-  for (size_t i = index_min[0]; i <= index_max[0]; i++) {
+  for (size_t k = index_min[2]; k <= index_max[2]; k++) {
     for (size_t j = index_min[1]; j <= index_max[1]; j++) {
-      for (size_t k = index_min[2]; k <= index_max[2]; k++) {
+      for (size_t i = index_min[0]; i <= index_max[0]; i++) {
         size_t bin_index =
             i + j * coarse_bin_resolution + k * coarse_bin_resolution * coarse_bin_resolution;
         bin_list[count] = bin_index;
@@ -446,9 +446,19 @@ std::vector<double> quick_index::map_data_to_grid_window(
   Require(!(window_max[2] < window_min[2]));
   Require(domain_decomposed ? ghost_data.size() == static_cast<size_t>(local_ghost_buffer_size)
                             : true);
-  Require(domain_decomposed ? !((window_max[0] - window_min[0]) > max_window_size) : true);
-  Require(domain_decomposed ? !((window_max[1] - window_min[1]) > max_window_size) : true);
-  Require(domain_decomposed ? !((window_max[2] - window_min[2]) > max_window_size) : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[0] - window_min[0]) - max_window_size) / max_window_size < 1e-6
+              : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[1] - window_min[1]) - max_window_size) / max_window_size < 1e-6
+              : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[2] - window_min[2]) - max_window_size) / max_window_size < 1e-6
+              : true);
+
+  for (size_t d = 0; d < dim; d++)
+    Insist(grid_bins[d] > 0, "Bin size must be greater then zero for each active dimension");
+
   // Grab the global bins that lie in this window
   std::vector<size_t> global_bins = window_coarse_index_list(window_min, window_max);
   size_t n_map_bins = 1;
@@ -629,17 +639,23 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
   Require(!(window_max[0] < window_min[0]));
   Require(!(window_max[1] < window_min[1]));
   Require(!(window_max[2] < window_min[2]));
-  Require(domain_decomposed ? !((window_max[0] - window_min[0]) > max_window_size) : true);
-  Require(domain_decomposed ? !((window_max[1] - window_min[1]) > max_window_size) : true);
-  Require(domain_decomposed ? !((window_max[2] - window_min[2]) > max_window_size) : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[0] - window_min[0]) - max_window_size) / max_window_size < 1e-6
+              : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[1] - window_min[1]) - max_window_size) / max_window_size < 1e-6
+              : true);
+  Require(domain_decomposed
+              ? (fabs(window_max[2] - window_min[2]) - max_window_size) / max_window_size < 1e-6
+              : true);
+  for (size_t d = 0; d < dim; d++)
+    Insist(grid_bins[d] > 0, "Bin size must be greater then zero for each active dimension");
+
   const size_t vsize = local_data.size();
   // Grab the global bins that lie in this window
   std::vector<size_t> global_bins = window_coarse_index_list(window_min, window_max);
   size_t n_map_bins = 1;
   for (size_t d = 0; d < dim; d++) {
-    Check(local_data[d].size() == n_locations);
-    Check(domain_decomposed ? ghost_data[d].size() == static_cast<size_t>(local_ghost_buffer_size)
-                            : true);
     n_map_bins *= grid_bins[d];
   }
 
