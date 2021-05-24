@@ -340,7 +340,7 @@ std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
 
   // There is one piece of returned information for each (density, temperature) tuple.
   Check(vtemperature.size() < INT32_MAX);
-  EOS_INTEGER returnSize = static_cast<int>(vtemperature.size());
+  auto returnSize = static_cast<EOS_INTEGER>(vtemperature.size());
 
   std::vector<double> returnVals(returnSize);
   std::vector<double> dFx(returnSize);
