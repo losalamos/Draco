@@ -113,6 +113,7 @@ do
   cp -f "${file}" "${tmpfile1}"
   debugprint "$CMF -i ${tmpfile1}"
   $CMF -c "${SCRIPTPATH}/../../.cmake-format.py" -i "${tmpfile1}" &> /dev/null
+  printf "==> cmake-format -c .cmake-format.py -i %s\n" "$file_nameonly"
   diff -u "${file}" "${tmpfile1}" | \
     sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
   debugprint "rm $tmpfile1"

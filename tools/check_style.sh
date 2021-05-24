@@ -1,10 +1,18 @@
 #!/bin/bash
+# -*- Mode: sh -*-
 
+# ------------------------------------------------------------------------------------------------ #
+# File  : tools/check_style.sh
+# Date  : Tuesday, May 31, 2016, 14:48 pm
+# Author: Kelly Thompson <kgt@lanl.gov>
+# Note  : Copyright (C) 2016-2021, Triad National Security, LLC., All rights are reserved.
+#
 # Runs various lint programs in the current directory and list locally modified files that are not
 # compliant with the current coding standard (see .clang_format in the top level source directory.)
 # - clang-format for C and C++ code.
 # - emacs for Fortran90
 # - cmake-format and cmake-tidy for CMake scripts.
+# ------------------------------------------------------------------------------------------------ #
 
 #--------------------------------------------------------------------------------------------------#
 # Environment
@@ -48,9 +56,8 @@ print_use()
     echo " "
     echo "All arguments are optional."
     echo "  -f Show diff and fix files (when possible)."
-    echo -n "  -t Run as a pre-commit check, print list of non-conformant "
-    echo "files and return"
-    echo "     with exit code = 1 (implies -d)."
+    echo -n "  -t Run as a pre-commit check, print list of non-conformant files and return with"
+    echo "     exit code = 1 (implies -d)."
     echo " "
 }
 
@@ -68,14 +75,14 @@ fi
 gcf=$(which "git-clang-format${cfver}")
 cf=$(which "clang-format${cfver}")
 # if not found, try to find applications w/o version postfix.
-if ! [[ -f ${gcf} ]]; then
+if ! [[ -f "${gcf}" ]]; then
   gcf=$(which git-clang-format)
 fi
-if ! [[ -f ${cf} ]]; then
+if ! [[ -f "${cf}" ]]; then
   gcf=$(which clang-format)
 fi
 # if still not found, abort.
-if [[ ! ${gcf} ]]; then
+if [[ ! "${gcf}" ]]; then
    echo "ERROR: git-clang-format${cfver} was not found in your PATH."
    echo "pwd="
    pwd
@@ -85,7 +92,7 @@ if [[ ! ${gcf} ]]; then
 #else
 #  echo "Using $gcf --binary $cf"
 fi
-if [[ ! ${cf} ]]; then
+if [[ ! "${cf}" ]]; then
    echo "ERROR: clang-format${cfver} was not found in your PATH."
    echo "pwd="
    pwd
@@ -105,12 +112,12 @@ foundissues=0  # 0 == ok
 #--------------------------------------------------------------------------------------------------#
 # Command options
 #--------------------------------------------------------------------------------------------------#
+
 while getopts ":fht" opt; do
 case $opt in
 f) fix_mode=1 ;; # also modify code (as possible)
 h) print_use; exit 0 ;;
-t) fix_mode=0
-   ;;
+t) fix_mode=0 ;;
 \?) echo "" ;echo "invalid option: -$OPTARG"; print_use; exit 1 ;;
 :)  echo "" ;echo "option -$OPTARG requires an argument."; print_use; exit 1 ;;
 esac
@@ -119,6 +126,7 @@ done
 #--------------------------------------------------------------------------------------------------#
 # Test C++ code with git-clang-format
 #--------------------------------------------------------------------------------------------------#
+
 echo -ne "\n--------------------------------------------------------------------------------\n"
 echo -ne "Checking modified C/C++ code for style conformance...\n\n"
 
@@ -160,7 +168,7 @@ fi
 rm -f "${patchfile_c}"
 
 # ------------------------------------------------------------------------------------------------ #
-# List of modified files
+# Liast of modified files
 # - Used for cmake-format and Emacs F90 processing.
 # ------------------------------------------------------------------------------------------------ #
 
@@ -312,7 +320,7 @@ if [[ $EMACS ]]; then
   fi
 fi
 
-if [[ -x $EMACS ]]; then
+if [[ -x "$EMACS" ]]; then
 
   echo -ne "\n--------------------------------------------------------------------------------\n"
   echo -e "Checking modified F90 code for style conformance (indentation)..\n"
@@ -320,9 +328,9 @@ if [[ -x $EMACS ]]; then
   patchfile_f90=$(mktemp /tmp/emf90.patch.XXXXXXXX)
 
   # file types to parse.
-  FILE_EXTS=".f90 .F90"
-  # FILE_ENDINGS_INCLUDE="foobar"
-  # FILE_ENDINGS_EXLUCDE="_f.h _f77.h _f90.h"
+  FILE_EXTS=".f90 .F90 .f .F"
+  # FILE_ENDINGS_INCLUDE="CMakeLists.txt"
+  # FILE_ENDINGS_EXLCUDE=".cmake.in"
 
   # Loop over all modified F90 files.  Create one patch containing all changes to these files
   for file in $modifiedfiles; do
@@ -334,7 +342,7 @@ if [[ -x $EMACS ]]; then
     file_nameonly=$(basename "${file}")
     tmpfile1="/tmp/f90-format-${file_nameonly}"
     cp -f "${file}" "${tmpfile1}"
-    $EMACS -batch "${tmpfile1}" -l "${rscriptdir}/../environment/git/f90-format.el" \
+    "$EMACS" -batch "${tmpfile1}" -l "${rscriptdir}/../environment/git/f90-format.el" \
       -f emacs-format-f90-sources &> /dev/null
     # color output is possible if diff -version >= 3.4 with option `--color`
     diff ${DIFFCOLOR} -u "${file}" "${tmpfile1}" | \
@@ -343,25 +351,21 @@ if [[ -x $EMACS ]]; then
 
   done
 
-  unset FILE_EXTS
-  unset FILE_ENDINGS_INCLUDE
-  unset FILE_ENDINGS_EXCLUDE
-
   # If the patch file is size 0, then no changes are needed.
   if [[ -s "$patchfile_f90" ]]; then
     foundissues=1
-    echo "FAIL: some F90 files do not conform to this project's style requirements:"
+    echo -n "FAIL: some F90 files do not conform to this project's style requirements:"
     # Modify files, if requested
-    if [[ ${fix_mode} == 1 ]]; then
+    if [[ "${fix_mode}" == 1 ]]; then
       echo -e "      The following patch has been applied to your file.\n"
       run "git apply $patchfile_f90"
-      cat "${patchfile_f90}"
+      cat "$patchfile_f90"
     else
-      echo -e "      run ${0##*/} with option -f to automatically apply this patch.\n"
-      cat "${patchfile_f90}"
+      echo -ne "      run ${0##*/} with option -f to automatically apply this patch.\n"
+      cat "$patchfile_f90"
     fi
   else
-    echo "PASS: Changes to F90 sources conform to this project's style requirements."
+    echo -n "PASS: Changes to F90 sources conform to this project's style requirements."
   fi
   rm -f "${patchfile_f90}"
 
@@ -370,15 +374,11 @@ fi
 #--------------------------------------------------------------------------------------------------#
 # Check mode (Test F90 code line length with bash)
 #--------------------------------------------------------------------------------------------------#
-echo -e "\n--------------------------------------------------------------------------------"
+
+echo -ne "\n--------------------------------------------------------------------------------"
 echo -e "Checking modified F90 code for style conformance (line length)..\n"
 
 tmpfile2=$(mktemp /tmp/f90-format-line-len.XXXXXXXX)
-
-# file types to parse.
-FILE_EXTS=".f90 .F90"
-# FILE_ENDINGS_INCLUDE="foobar"
-# FILE_ENDINGS_EXCLUDE="_f.h _f77.h _f90.h"
 
 # Loop over all modified F90 files.  Create one patch containing all changes to these files
 for file in $modifiedfiles; do
@@ -388,6 +388,7 @@ for file in $modifiedfiles; do
   if ! matches_extension "$file"; then continue; fi
 
   header_printed=0
+  lineno=0
 
   # shellcheck disable=SC2162
   while read line; do
@@ -419,10 +420,10 @@ unset FILE_ENDINGS_EXCLUDE
 # If there are issues, report them
 if [[ $(wc -l < "${tmpfile2}") -gt 0 ]]; then
     foundissues=1
-    echo -e "FAIL: some F90 files do not conform to this project's style requirements:\n"
-    cat "${tmpfile2}"
-    echo -ne "\nPlease reformat lines listed above to fit into 100 columns and attempt running"
-    echo -ne "\n${0##*/} again. These issues cannot be fixed with the -f option."
+    echo -ne "FAIL: some F90 files do not conform to this project's style requirements:\n"
+    cat "$tmpfile2"
+    echo -ne "\nPlease reformat lines listed above to fit into 80 columns and attempt running\n"
+    echo -ne "${0##*/} again. These issues cannot be fixed with the -f option."
 fi
 
 #--------------------------------------------------------------------------------------------------#
