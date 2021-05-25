@@ -453,7 +453,7 @@ void Eospac::expandEosTable() const {
 
   EOS_INTEGER errorCode(0);
   Check(returnTypes.size() < INT32_MAX);
-  EOS_INTEGER nTables(static_cast<EOS_INTEGER>(returnTypes.size()));
+  auto nTables(static_cast<EOS_INTEGER>(returnTypes.size()));
   eos_CreateTables(&nTables, &returnTypes[0], &matIDs[0], &tableHandles[0], &errorCode);
 
   // Check for errors
