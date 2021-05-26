@@ -86,9 +86,11 @@ contains
   subroutine fc4_mpi_finalize(ierr)
     implicit none
     integer, intent(out) :: ierr
-    ierr = 0
 #ifdef C4_MPI
     external mpi_finalize
+#endif
+    ierr = 0
+#ifdef C4_MPI
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
@@ -100,9 +102,11 @@ contains
   subroutine fc4_mpi_barrier(ierr)
     implicit none
     integer, intent(out) :: ierr
-    ierr = 0
 #ifdef C4_MPI
     external mpi_barrier
+#endif
+    ierr = 0
+#ifdef C4_MPI
     call mpi_barrier(MPI_COMM_WORLD, ierr)
     call check_mpi_error(ierr)
 #endif
