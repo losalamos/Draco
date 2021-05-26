@@ -86,6 +86,7 @@ contains
   subroutine fc4_mpi_finalize(ierr)
     implicit none
     integer, intent(out) :: ierr
+    ierr = 0
 #ifdef C4_MPI
     external mpi_finalize
     call mpi_finalize(ierr)
@@ -99,6 +100,7 @@ contains
   subroutine fc4_mpi_barrier(ierr)
     implicit none
     integer, intent(out) :: ierr
+    ierr = 0
 #ifdef C4_MPI
     external mpi_barrier
     call mpi_barrier(MPI_COMM_WORLD, ierr)
