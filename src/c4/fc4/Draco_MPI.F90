@@ -88,6 +88,9 @@ contains
     integer, intent(out) :: ierr
 #ifdef C4_MPI
     external mpi_finalize
+#endif
+    ierr = 0
+#ifdef C4_MPI
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
@@ -101,6 +104,9 @@ contains
     integer, intent(out) :: ierr
 #ifdef C4_MPI
     external mpi_barrier
+#endif
+    ierr = 0
+#ifdef C4_MPI
     call mpi_barrier(MPI_COMM_WORLD, ierr)
     call check_mpi_error(ierr)
 #endif

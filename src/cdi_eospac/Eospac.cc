@@ -340,12 +340,12 @@ std::vector<double> Eospac::getF(std::vector<double> const &vdensity,
 
   // There is one piece of returned information for each (density, temperature) tuple.
   Check(vtemperature.size() < INT32_MAX);
-  int returnSize = static_cast<int>(vtemperature.size());
+  auto returnSize = static_cast<EOS_INTEGER>(vtemperature.size());
 
   std::vector<double> returnVals(returnSize);
   std::vector<double> dFx(returnSize);
   std::vector<double> dFy(returnSize);
-  int errorCode = 0;
+  EOS_INTEGER errorCode = 0;
   std::vector<double> nc_vx(vdensity);
   std::vector<double> nc_vy(vtemperature);
 
@@ -453,7 +453,7 @@ void Eospac::expandEosTable() const {
 
   EOS_INTEGER errorCode(0);
   Check(returnTypes.size() < INT32_MAX);
-  int nTables(static_cast<int>(returnTypes.size()));
+  auto nTables(static_cast<EOS_INTEGER>(returnTypes.size()));
   eos_CreateTables(&nTables, &returnTypes[0], &matIDs[0], &tableHandles[0], &errorCode);
 
   // Check for errors
@@ -461,19 +461,18 @@ void Eospac::expandEosTable() const {
     std::ostringstream outputString;
     std::array<EOS_CHAR, EOS_MaxErrMsgLen> errorMessage;
     eos_GetErrorMessage(&errorCode, errorMessage.data());
-    outputString << "\n   An unsuccessful request was made to initialize the EOSPAC ta"
-                 << "ble area by expandEosTable().\n  The error code returned by eos_C"
-                 << "reateTables(...) was \"" << errorCode << "\".\n  The associated e"
-                 << "rror message is:\n\t\"" << std::string(errorMessage.data()) << ".\"\n";
+    outputString << "\n   An unsuccessful request was made to initialize the EOSPAC table area by "
+                 << "expandEosTable().\n  The error code returned by eos_CreateTables(...) was "
+                 << "\"" << errorCode << "\".\n  The associated error message is:\n\t\""
+                 << std::string(errorMessage.data()) << ".\"\n";
     for (size_t i = 0; i < returnTypes.size(); ++i) {
       EOS_INTEGER tableHandleErrorCode(EOS_OK);
       eos_GetErrorCode(&tableHandles[i], &tableHandleErrorCode);
       eos_GetErrorMessage(&tableHandleErrorCode, errorMessage.data());
 
       outputString << "\n   The error code associated with tableHandle = " << tableHandles[i]
-                   << " was \"" << tableHandleErrorCode
-                   << "\".\n   The associated error message is:\n\t\""
-                   << std::string(errorMessage.data()) << "\"\n";
+                   << " was \"" << tableHandleErrorCode << "\".\n   The associated error message "
+                   << "is:\n\t\"" << std::string(errorMessage.data()) << "\"\n";
     }
 
     // Clean up temporaries before we throw the exception.

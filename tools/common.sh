@@ -1,10 +1,10 @@
 #!/bin/bash -l
 # -*- Mode: sh -*-
 #--------------------------------------------------------------------------------------------------#
-# File  : regression/sripts/common.sh
+# File  : tools/common.sh
 # Date  : Tuesday, May 31, 2016, 14:48 pm
 # Author: Kelly Thompson
-# Note  : Copyright (C) 2016-2020, Triad National Security, LLC., All rights are reserved.
+# Note  : Copyright (C) 2016-2021, Triad National Security, LLC., All rights are reserved.
 #
 # Summary: Misc bash functions useful during development of code.
 #--------------------------------------------------------------------------------------------------#
