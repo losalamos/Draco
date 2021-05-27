@@ -438,7 +438,7 @@ quick_index::window_coarse_index_list(const std::array<double, 3> &window_min,
 std::vector<double> quick_index::map_data_to_grid_window(
     const std::vector<double> &local_data, const std::vector<double> &ghost_data,
     const std::array<double, 3> &window_min, const std::array<double, 3> &window_max,
-    const std::array<size_t, 3> &grid_bins, const std::string &map_type, const bool normalize,
+    const std::array<size_t, 3> &grid_bins, const std::string &map_type_in, const bool normalize,
     const bool bias) const {
   Require(local_data.size() == n_locations);
   Require(!(window_max[0] < window_min[0]));
@@ -455,6 +455,31 @@ std::vector<double> quick_index::map_data_to_grid_window(
   Require(domain_decomposed
               ? (fabs(window_max[2] - window_min[2]) - max_window_size) / max_window_size < 1e-6
               : true);
+
+  bool fill = false;
+  std::string map_type = map_type_in;
+  if (map_type_in == "max_fill") {
+    Insist((grid_bins[0] > 1 && grid_bins[1] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[1] > 1 && grid_bins[0] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[2] > 1 && grid_bins[0] <= 1 && grid_bins[1] <= 1),
+           "one of grid bins must be == 1, Grid must be 1D to use max_fill option");
+    fill = true;
+    map_type = "max";
+  } else if (map_type_in == "min_fill") {
+    Insist((grid_bins[0] > 1 && grid_bins[1] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[1] > 1 && grid_bins[0] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[2] > 1 && grid_bins[0] <= 1 && grid_bins[1] <= 1),
+           "one of grid bins must be == 1, Grid must be 1D to use min_fill option");
+    fill = true;
+    map_type = "min";
+  } else if (map_type_in == "ave_fill") {
+    Insist((grid_bins[0] > 1 && grid_bins[1] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[1] > 1 && grid_bins[0] <= 1 && grid_bins[2] <= 1) ||
+               (grid_bins[2] > 1 && grid_bins[0] <= 1 && grid_bins[1] <= 1),
+           "one of grid bins must be == 1, Grid must be 1D to use ave_fill option");
+    fill = true;
+    map_type = "ave";
+  }
 
   for (size_t d = 0; d < dim; d++)
     Insist(grid_bins[d] > 0, "Bin size must be greater then zero for each active dimension");
@@ -577,9 +602,29 @@ std::vector<double> quick_index::map_data_to_grid_window(
   }       // end coarse bin loop
 
   if (map_type == "ave") {
+    double last_val = 0.0;
+    int last_data_count = 0;
     for (size_t i = 0; i < n_map_bins; i++) {
-      if (data_count[i] > 0)
+      if (data_count[i] > 0) {
         grid_data[i] /= data_count[i];
+        last_val = grid_data[i];
+        last_data_count = data_count[i];
+      } else if (fill) {
+        grid_data[i] = last_val;
+        data_count[i] = last_data_count;
+      }
+    }
+  } else if (fill) {
+    double last_val = 0.0;
+    int last_data_count = 0;
+    for (size_t i = 0; i < n_map_bins; i++) {
+      if (data_count[i] > 0) {
+        last_val = grid_data[i];
+        last_data_count = data_count[i];
+      } else {
+        grid_data[i] = last_val;
+        data_count[i] = last_data_count;
+      }
     }
   }
 
@@ -634,7 +679,7 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
     const std::vector<std::vector<double>> &local_data,
     const std::vector<std::vector<double>> &ghost_data, const std::array<double, 3> &window_min,
     const std::array<double, 3> &window_max, const std::array<size_t, 3> &grid_bins,
-    const std::string &map_type, const bool normalize, const bool bias) const {
+    const std::string &map_type_in, const bool normalize, const bool bias) const {
   Require(domain_decomposed ? local_data.size() == ghost_data.size() : true);
   Require(!(window_max[0] < window_min[0]));
   Require(!(window_max[1] < window_min[1]));
@@ -648,6 +693,20 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
   Require(domain_decomposed
               ? (fabs(window_max[2] - window_min[2]) - max_window_size) / max_window_size < 1e-6
               : true);
+
+  bool fill = false;
+  std::string map_type = map_type_in;
+  if (map_type_in == "max_fill") {
+    fill = true;
+    map_type = "max";
+  } else if (map_type_in == "min_fill") {
+    fill = true;
+    map_type = "min";
+  } else if (map_type_in == "ave_fill") {
+    fill = true;
+    map_type = "ave";
+  }
+
   for (size_t d = 0; d < dim; d++)
     Insist(grid_bins[d] > 0, "Bin size must be greater then zero for each active dimension");
 
@@ -779,9 +838,33 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
 
   if (map_type == "ave") {
     for (size_t v = 0; v < vsize; v++) {
+      double last_val = 0.0;
+      int last_data_count = 0;
       for (size_t i = 0; i < n_map_bins; i++) {
-        if (data_count[i] > 0)
+        if (data_count[i] > 0) {
           grid_data[v][i] /= data_count[i];
+          last_val = grid_data[v][i];
+          last_data_count = data_count[i];
+        } else if (fill) {
+          grid_data[v][i] = last_val;
+          if (v == vsize - 1)
+            data_count[i] = last_data_count;
+        }
+      }
+    }
+  } else if (fill) {
+    for (size_t v = 0; v < vsize; v++) {
+      double last_val = 0.0;
+      int last_data_count = 0;
+      for (size_t i = 0; i < n_map_bins; i++) {
+        if (data_count[i] > 0) {
+          last_val = grid_data[v][i];
+          last_data_count = data_count[i];
+        } else {
+          grid_data[v][i] = last_val;
+          if (v == vsize - 1)
+            data_count[i] = last_data_count;
+        }
       }
     }
   }
