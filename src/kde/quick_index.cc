@@ -511,7 +511,7 @@ std::vector<double> quick_index::map_data_to_grid_window(
           const double bin_value = static_cast<double>(grid_bins[d]) *
                                    (locations[*iItr][d] - window_min[d]) /
                                    (window_max[d] - window_min[d]);
-          if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+          if (bin_value < 0.0 || bin_value > static_cast<double>(grid_bins[d])) {
             valid = false;
             break;
           } else {
@@ -563,7 +563,7 @@ std::vector<double> quick_index::map_data_to_grid_window(
             const double bin_value = static_cast<double>(grid_bins[d]) *
                                      (local_ghost_locations[*gItr][d] - window_min[d]) /
                                      (window_max[d] - window_min[d]);
-            if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+            if (bin_value < 0.0 || bin_value > static_cast<double>(grid_bins[d])) {
               valid = false;
               break;
             } else {
@@ -740,7 +740,7 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
           const double bin_value = static_cast<double>(grid_bins[d]) *
                                    (locations[*iItr][d] - window_min[d]) /
                                    (window_max[d] - window_min[d]);
-          if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+          if (bin_value < 0.0 || bin_value > static_cast<double>(grid_bins[d])) {
             valid = false;
             break;
           } else {
@@ -794,7 +794,7 @@ std::vector<std::vector<double>> quick_index::map_data_to_grid_window(
             const double bin_value = static_cast<double>(grid_bins[d]) *
                                      (local_ghost_locations[*gItr][d] - window_min[d]) /
                                      (window_max[d] - window_min[d]);
-            if (bin_value < 0.0 or bin_value > static_cast<double>(grid_bins[d])) {
+            if (bin_value < 0.0 || bin_value > static_cast<double>(grid_bins[d])) {
               valid = false;
               break;
             } else {
