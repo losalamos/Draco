@@ -107,8 +107,6 @@ private:
 
 } // end namespace  rtt_kde
 
-#include "quick_index.i.hh"
-
 #endif // rtt_kde_quick_index_hh
 
 //------------------------------------------------------------------------------------------------//
