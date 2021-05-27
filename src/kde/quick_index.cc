@@ -8,6 +8,9 @@
 //------------------------------------------------------------------------------------------------//
 
 #include "quick_index.hh"
+#include "ds++/dbc.hh"
+#include <cmath>
+#include <numeric>
 
 namespace rtt_kde {
 //------------------------------------------------------------------------------------------------//
@@ -42,8 +45,7 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
     bounding_box_max[d] = -1e20;
   }
 
-  for (auto locItr = locations.begin(); locItr != locations.end(); locItr++) {
-    auto &loc = *locItr;
+  for (auto &loc : locations) {
     for (size_t d = 0; d < dim; d++) {
       if (loc[d] < bounding_box_min[d])
         bounding_box_min[d] = loc[d];
@@ -74,8 +76,7 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
 
   // build up the local hash table of into global bins
   size_t locIndex = 0;
-  for (auto locItr = locations.begin(); locItr != locations.end(); locItr++) {
-    auto &loc = *locItr;
+  for (auto &loc : locations) {
     std::array<size_t, 3> index{0UL, 0UL, 0UL};
     for (size_t d = 0; d < dim; d++) {
       index[d] = static_cast<size_t>(std::floor(crd * (loc[d] - bounding_box_min[d]) /
@@ -143,6 +144,8 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
 
     // calculate the put map so each node knows which processor to send data
     // and where to index that data
+    // PERFORMANCE NOTE: This would be more efficient to use a MPI_SCAN and
+    // std::partial_sum but I need to think how this would actually look.
     for (int rec_proc = 0; rec_proc < rtt_c4::nodes(); rec_proc++) {
       // calculating the offset SUCKS!!! If anyone can find a better way please help.
       int offset = 0;
