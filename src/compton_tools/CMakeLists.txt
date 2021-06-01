@@ -3,57 +3,57 @@
 # author Andrew Till
 # date   2020 May 11
 # brief  Generate build project files for compton_tools
-# note   Copyright (C) 2020 Triad National Security, LLC. All rights reserved.
+# note   Copyright (C) 2020-2021 Triad National Security, LLC. All rights reserved.
 #--------------------------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.17.0)
-project( compton_tools CXX )
+project(compton_tools CXX)
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # Source files
-#--------------------------------------------------------------------------------------------------#
-set( sources ${PROJECT_SOURCE_DIR}/Compton_Native.cc )
-set( headers ${PROJECT_SOURCE_DIR}/Compton_Native.hh )
+# ------------------------------------------------------------------------------------------------ #
+set(sources ${PROJECT_SOURCE_DIR}/Compton_Native.cc)
+set(headers ${PROJECT_SOURCE_DIR}/Compton_Native.hh)
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # Build package library
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 add_component_library(
-  TARGET       Lib_compton_tools
-  TARGET_DEPS  "Lib_c4;Lib_units;Lib_cdi_analytic"
+  TARGET Lib_compton_tools
+  TARGET_DEPS "Lib_c4;Lib_units;Lib_cdi_analytic"
   INCLUDE_DIRS "PUBLIC;$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
   LIBRARY_NAME compton_tools
-  SOURCES      "${sources}"
-  HEADERS      "${headers}" )
+  SOURCES "${sources}"
+  HEADERS "${headers}")
 
 add_component_executable(
-  TARGET      Exe_CSKrw
+  TARGET Exe_CSKrw
   TARGET_DEPS "Lib_units;Lib_compton_tools"
-  SOURCES     ${PROJECT_SOURCE_DIR}/cskrw.cc)
+  SOURCES ${PROJECT_SOURCE_DIR}/cskrw.cc)
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # Installation instructions
-#--------------------------------------------------------------------------------------------------#
-set( CMAKE_INSTALL_DO_STRIP NO )
-install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton_tools )
-install( TARGETS Exe_CSKrw EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
-install( PROGRAMS
-    python/common_compton.py
-    python/csk_reader.py
-    python/merge_csk.py
-  DESTINATION ${DBSCFGDIR}bin )
+# ------------------------------------------------------------------------------------------------ #
+set(CMAKE_INSTALL_DO_STRIP NO)
+install(FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton_tools)
+install(
+  TARGETS Exe_CSKrw
+  EXPORT draco-targets
+  DESTINATION ${DBSCFGDIR}bin)
+install(PROGRAMS python/common_compton.py python/csk_reader.py python/merge_csk.py
+        DESTINATION ${DBSCFGDIR}bin)
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # Unit tests
-#--------------------------------------------------------------------------------------------------#
-if( BUILD_TESTING )
-  add_subdirectory( test )
+# ------------------------------------------------------------------------------------------------ #
+if(BUILD_TESTING)
+  add_subdirectory(test)
 endif()
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # Autodoc
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 process_autodoc_pages()
 
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #
 # End compton_tools/CMakeLists.txt
-#--------------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------ #

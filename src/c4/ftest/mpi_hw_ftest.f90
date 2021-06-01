@@ -13,7 +13,7 @@ subroutine tst_mpi_hw_f(nf) bind(C, name="tst_mpi_hw")
   use draco_mpi
   use fc4_test
 
-  use iso_c_binding, only : c_int, c_double
+  use iso_c_binding, only: c_int, c_double
 
   implicit none
 
@@ -30,10 +30,10 @@ subroutine tst_mpi_hw_f(nf) bind(C, name="tst_mpi_hw")
   ! Run the problem
   ! ------------------------------------
 
-  if ( fc4_rank < fc4_num_ranks ) then
-     call pass_msg( fc4_rank, "MPI rank index ok" )
+  if (fc4_rank < fc4_num_ranks) then
+     call pass_msg(fc4_rank, "MPI rank index ok")
   else
-     call it_fails( fc4_rank, "MPI rank > max" )
+     call it_fails(fc4_rank, "MPI rank > max")
   endif
 
   call fc4_mpi_barrier(ierr)
