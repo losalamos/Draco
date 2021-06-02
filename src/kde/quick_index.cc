@@ -207,7 +207,8 @@ quick_index::collect_ghost_data(const std::vector<std::array<double, 3>> &local_
 
   // working from my local data put the ghost data on the other ranks
   for (size_t d = 0; d < dim; d++) {
-    MPI_Win_fence(0, win);
+    int errorcode = MPI_Win_fence(MPI_MODE_NOSTORE, win);
+    Check(errorcode == MPI_SUCCESS);
     for (auto putItr = put_window_map.begin(); putItr != put_window_map.end(); putItr++) {
       // use map.at() to allow const access
       const auto &index_vector = coarse_index_map.at(putItr->first);
@@ -228,7 +229,9 @@ quick_index::collect_ghost_data(const std::vector<std::array<double, 3>> &local_
                 put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
       }
     }
-    MPI_Win_fence(0, win);
+    errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
+    Check(errorcode == MPI_SUCCESS);
+
     // alright move the position buffer to the final correct array positions
     int posIndex = 0;
     for (auto posItr = local_ghost_buffer.begin(); posItr != local_ghost_buffer.end(); posItr++) {
@@ -272,7 +275,8 @@ quick_index::collect_ghost_data(const std::vector<std::vector<double>> &local_da
   // working from my local data put the ghost data on the other ranks
   for (size_t d = 0; d < data_dim; d++) {
     Check(local_data[d].size() == n_locations);
-    MPI_Win_fence(0, win);
+    int errorcode = MPI_Win_fence(MPI_MODE_NOSTORE, win);
+    Check(errorcode == MPI_SUCCESS);
     for (auto putItr = put_window_map.begin(); putItr != put_window_map.end(); putItr++) {
       // use map.at() to allow const access
       const auto &index_vector = coarse_index_map.at(putItr->first);
@@ -293,7 +297,8 @@ quick_index::collect_ghost_data(const std::vector<std::vector<double>> &local_da
                 put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
       }
     }
-    MPI_Win_fence(0, win);
+    errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
+    Check(errorcode == MPI_SUCCESS);
     // alright move the position buffer to the final correct vector positions
     int posIndex = 0;
     for (auto posItr = local_ghost_buffer.begin(); posItr != local_ghost_buffer.end(); posItr++) {
@@ -331,7 +336,8 @@ std::vector<double> quick_index::collect_ghost_data(const std::vector<double> &l
                  MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
   // working from my local data put the ghost data on the other ranks
-  MPI_Win_fence(0, win);
+  int errorcode = MPI_Win_fence(MPI_MODE_NOSTORE, win);
+  Check(errorcode == MPI_SUCCESS);
   for (auto putItr = put_window_map.begin(); putItr != put_window_map.end(); putItr++) {
     // use map.at() to allow const access
     const auto &index_vector = coarse_index_map.at(putItr->first);
@@ -352,7 +358,8 @@ std::vector<double> quick_index::collect_ghost_data(const std::vector<double> &l
               put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
     }
   }
-  MPI_Win_fence(0, win);
+  errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
+  Check(errorcode == MPI_SUCCESS);
   MPI_Win_free(&win);
 #endif
   return local_ghost_data;
