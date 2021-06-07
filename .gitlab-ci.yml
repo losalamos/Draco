@@ -1,0 +1,27 @@
+#--------------------------------------------------------------------------------------------------#
+# File:    .gitlab-ci.yml
+# Author:  Kelly Thompson <kgt@lanl.gov>
+# Date:    Tuesday, Dec 04, 2018, 15:13 pm
+# Purpose: Instructions for Travis continuous integration testing on GitLab.  This script wil be run
+#          to test pull requests
+# Note:    Copyright (C) 2018-2021 Triad National Security, LLC.  All rights reserved.
+#--------------------------------------------------------------------------------------------------#
+
+variables:
+  PROJECT: Draco
+
+stages:
+  - fasttest
+  - test
+  - slowtest
+  - optional
+
+include:
+  - local: /.gitlab/ci/ccscs-jobs.yml
+#  - local: /.gitlab/ci/darwin-jobs.yml
+  - local: /.gitlab/ci/superlinter.yml
+#  - local: /.gitlab/ci/msvc-jobs.yml
+
+#--------------------------------------------------------------------------------------------------#
+# End .gitlab-ci.yml
+#--------------------------------------------------------------------------------------------------#

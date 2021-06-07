@@ -1,0 +1,50 @@
+#--------------------------------------------------------------------------------------------------#
+# File:    .gitlab/ci/superlinter.yml
+# Author:  Kelly Thompson <kgt@lanl.gov>
+# Date:    Wednesday, Jan 13, 2021, 20:57 pm
+# Purpose: gitlab suid runner commands for superlinter (https://github.com/github/super-linter).
+# Note:    Copyright (C) 2020-2021 Triad National Security, LLC., All rights reserved.
+#
+# See Also: https://gitlab.com/snippets/1988376
+#--------------------------------------------------------------------------------------------------#
+
+superlinter:
+  stage: fasttest
+  image: github/super-linter:latest
+  script: [ "true" ]
+  only:
+    - merge_requests
+#  allow_failure: true
+  variables:
+    RUN_LOCAL: "true"
+    DEFAULT_WORKSPACE: $CI_PROJECT_DIR
+    ANSIBLE_DIRECTORY: $CI_PROJECT_PATH
+    LINTER_RULES_PATH: $CI_PROJECT_PATH/.github/linters
+    DEFAULT_BRANCH: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    ERROR_ON_MISSING_EXEC_BIT: "true"
+    FILTER_REGEX_EXCLUDE: (.*[.]cc$|/test/)
+    PYTHON_FLAKE8_CONFIG_FILE: .flake8
+    SUPPRESS_POSSUM: "true"
+    LOG_LEVEL: "VERBOSE"
+    VALIDATE_ALL_CODEBASE: "false"
+    VALIDATE_BASH: "true"
+    VALIDATE_BASH_EXEC: "true"
+    VALIDATE_DOCKERFILE: "true"
+    VALIDATE_ENV: "true"
+    VALIDATE_HTML: "true"
+    VALIDATE_JSON: "true"
+    VALIDATE_LATEX: "true"
+    VALIDATE_LUA: "true"
+    VALIDATE_MARKDOWN: "true"
+    VALIDATE_PERL: "true"
+    VALIDATE_PYTHON: "true"
+    VALIDATE_PYTHON_FLAKE8: "true"
+    VALIDATE_POWERSHELL: "true"
+    VALIDATE_RUBY: "true"
+    VALIDATE_SHELL_SHFMT: "true"
+    VALIDATE_XML: "true"
+    VALIDATE_YAML: "true"
+
+#--------------------------------------------------------------------------------------------------#
+# end .gitlab/ci/superlinter.yml
+#--------------------------------------------------------------------------------------------------#

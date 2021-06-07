@@ -1,0 +1,251 @@
+#--------------------------------------------------------------------------------------------------#
+# File:    .gitlab/ci/ccscs-jobs.yml
+# Author:  Kelly Thompson <kgt@lanl.gov>
+# Date:    Monday, Jun 01, 2020, 15:00 pm
+# Purpose: gitlab suid runner commands for LANL ccs-net machines. This script will be run to test
+#          pull requests.
+# Note:    Copyright (C) 2020-2021 Triad National Security, LLC.,  All rights reserved.
+#--------------------------------------------------------------------------------------------------#
+
+#--------------------------------------------------------------------------------------------------#
+# Machine-wide default job settings
+#--------------------------------------------------------------------------------------------------#
+
+.ccscs:
+  variables:
+    http_proxy: "http://proxyout.lanl.gov:8080"
+    https_proxy: "http://proxyout.lanl.gov:8080"
+    DRACO_SOURCE_DIR: ${CI_PROJECT_DIR}
+    DRACO_BINARY_DIR: ${CI_PROJECT_DIR}/build/j
+    DRACO_BINARY_DIR: ${CI_PROJECT_DIR}/build/d
+    DRACO_SOURCE_DIR: ${CI_PROJECT_DIR}/draco
+    DEPLOY: "FALSE"
+
+#--------------------------------------------------------------------------------------------------#
+# Build Templates
+#--------------------------------------------------------------------------------------------------#
+
+.ccscs_merge:
+  extends: .ccscs
+  variables:
+    CTEST_MODE: Experimental
+  script:
+    - /bin/bash -l -c ${CI_PROJECT_DIR}/.gitlab/ci/gitlab-ci-run-tests.sh
+  only:
+    - merge_requests
+
+.ccscs_style_checks:
+  extends: .ccscs
+  variables:
+    CTEST_MODE: Experimental
+  script:
+    - /bin/bash -l -c ${CI_PROJECT_DIR}/.gitlab/ci/gitlab-ci-style-checks.sh
+  only:
+    - merge_requests
+
+.ccscs_nightly:
+  extends: .ccscs
+  variables:
+    CTEST_MODE: Nightly
+    CTEST_BUILD_NAME: ${DRACO_ENV}-${CMAKE_BUILD_TYPE}
+  script:
+    - /bin/bash -l -c ${CI_PROJECT_DIR}/.gitlab/ci/gitlab-nightly-regress.sh
+  only:
+    - schedules
+
+#--------------------------------------------------------------------------------------------------#
+# Merge Requests
+#--------------------------------------------------------------------------------------------------#
+
+# FAST TEST
+
+ccs1_style_cxx:
+  tags:
+    - ccscs1-setuid-shared
+  stage: fasttest
+  extends: .ccscs_style_checks
+  variables:
+    CMAKE_BUILD_TYPE: Release
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    SITE_ID: ccscs1
+
+ccs3_deb_gcc_1020:
+  tags:
+    - ccscs3-setuid-shared
+  stage: fasttest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    CTEST_NPROC: 32
+    SITE_ID: ccscs3
+
+ccs2_c4_scalar:
+  tags:
+    - ccscs2-setuid-shared
+  stage: fasttest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    EXTRA_CMAKE_ARGS: -DDRACO_C4=SCALAR
+    CTEST_NPROC: 56
+    SITE_ID: ccscs2
+
+# ---------- regular TEST (only starts if all FASTTEST pass) ---------- #
+
+ccs3_deb_llvm11:
+  tags:
+    - ccscs3-setuid-shared
+  stage: test
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: llvm11
+    ARCH: x86_64
+    CTEST_NPROC: 32
+    SITE_ID: ccscs3
+
+ccs2_autodoc:
+  tags:
+    - ccscs2-setuid-shared
+  stage: test
+  extends: .ccscs_merge
+  allow_failure: true
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    AUTODOC: "ON"
+    SITE_ID: ccscs2
+
+
+# ---------- SLOW TEST (only starts if all regular TEST pass) ---------- #
+
+ccs3_rel_llvm11:
+  tags:
+    - ccscs3-setuid-shared
+  stage: slowtest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Release
+    DRACO_ENV: llvm11
+    ARCH: x86_64
+    CTEST_NPROC: 32
+    SITE_ID: ccscs3
+
+ccs3_rel_gcc_1020:
+  tags:
+    - ccscs3-setuid-shared
+  stage: slowtest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Release
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    CTEST_NPROC: 32
+    SITE_ID: ccscs3
+
+ccs3_fulldiag:
+  tags:
+    - ccscs3-setuid-shared
+  stage: slowtest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    # DRACO_TIMING=1 enables caliper timers.
+    # DRACO_DIAGNOSTICS=7 enables FPE traps.
+    EXTRA_CMAKE_ARGS: -DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1 -DDRACO_LIBRARY_TYPE=STATIC
+    CTEST_NPROC: 32
+    SITE_ID: ccscs3
+
+ccs2_gcov:
+  tags:
+    - ccscs2-setuid-shared
+  stage: slowtest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    # --> Overall coverage rate:
+    # --> lines......: 91.2% (34056 of 37338 lines)
+    # --> functions..: 56.7% (8676 of 15304 functions)
+    # ...
+    # -->   Total:|91.2% 37338|56.7% 15k|
+    EXTRA_CMAKE_ARGS: -DCODE_COVERAGE=ON
+    CTEST_NPROC: 56
+    SITE_ID: ccscs2
+
+ccs2_valgrind:
+  tags:
+    - ccscs2-setuid-shared
+  stage: slowtest
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    EXTRA_CMAKE_ARGS: -DENABLE_MEMORYCHECK=ON -DCTEST_MEMORYCHECK_SUPPRESSIONS_FILE=/scratch/regress/ccsradregress/valgrind_suppress.txt
+    EXTRA_CTEST_ARGS: -L memcheck -LE nomemcheck
+    CTEST_NPROC: 20
+    SITE_ID: ccscs2
+
+# ---------- Optional ---------- #
+
+ccs3_clangtidy:
+  tags:
+    - ccscs3-setuid-shared
+  # stage: optional
+  stage: fasttest
+  # allow_failure: true
+  extends: .ccscs_merge
+  variables:
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: llvm11
+    ARCH: x86_64
+    CTEST_NPROC: 32
+    EXTRA_CMAKE_ARGS: -DDRACO_STATIC_ANALYZER=clang-tidy
+    SITE_ID: ccscs3
+
+#--------------------------------------------------------------------------------------------------#
+# Nightly Regression
+#--------------------------------------------------------------------------------------------------#
+
+rel_gcc_10.2.0_regress:
+  tags:
+    - ccscs2-setuid-shared
+  extends: .ccscs_nightly
+  variables:
+    SITE_ID: ccscs2
+    CMAKE_BUILD_TYPE: Release
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    # EXTRA_CMAKE_ARGS: -DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1 -DDRACO_LIBRARY_TYPE=STATIC
+    BUILD_FLAGS: -j 20
+    CTEST_NPROC: 32
+    # TEST_EXCLUSIONS: tracking_tstU3
+
+deb_gcc_10.2.0_regress:
+  tags:
+    - ccscs2-setuid-shared
+  extends: .ccscs_nightly
+  variables:
+    SITE_ID: ccscs2
+    CMAKE_BUILD_TYPE: Debug
+    DRACO_ENV: gcc1020-ompi4
+    ARCH: x86_64
+    # EXTRA_CMAKE_ARGS: -DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1 -DDRACO_LIBRARY_TYPE=STATIC
+    BUILD_FLAGS: -j 20
+    CTEST_NPROC: 32
+    # TEST_EXCLUSIONS: tracking_tstU3
+    AUTODOCDIR: /ccs/codes/radtran/autodoc
+
+#--------------------------------------------------------------------------------------------------#
+# end .gitlab/ci/ccscs-jobs.yml
+#--------------------------------------------------------------------------------------------------#

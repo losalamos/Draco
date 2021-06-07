@@ -10,10 +10,10 @@ with section("parse"):  # noqa: F821
 
         "add_component_library": {
             "pargs": 1,
-            "flags": ["NOEXPORT"],
-            "kwargs": {"TARGET": '*', "LIBRARY_NAME": '*', "SOURCES": '*', "HEADERS": '*',
-                       "INCLUDE_DIRS": '*', "TARGET_DEPS": '*', "LINK_LANGUAGE": '*',
-                       "LIBRARY_TYPE": '*'}},
+            "flags": ["NOEXPORT", "${COMPILE_WITH_CUDA}"],
+            "kwargs": {"EXPORT_NAME": '*', "HEADERS": '*', "INCLUDE_DIRS": '*', "LIBRARY_NAME": '*',
+                       "LIBRARY_NAME_PREFIX": '*', "LIBRARY_TYPE": '*', "LINK_LANGUAGE": '*',
+                       "SOURCES": '*', "TARGET": '*', "TARGET_DEPS": '*'}},
 
         "add_component_executable": {
             "kwargs": {"TARGET": '*', "LIBRARY_NAME": '*', "SOURCES": '*', "HEADERS": '*',
@@ -25,8 +25,9 @@ with section("parse"):  # noqa: F821
 
         "add_parallel_tests": {
             "flags": ["MPI_PLUS_OMP"],
-            "kwargs": {"SOURCES": '*', "DEPS": '*', "TEST_ARGS": '*', "PASS_REGEX": '*',
-                       "FAIL_REGEX": '*', "LABEL": '*', "PE_LIST": '*'}},
+            "kwargs": {"DEPS": '*', "FAIL_REGEX": '*', "LABEL": '*', "PASS_REGEX": '*', "PE_LIST":
+                       '*', "RESOURCE_LOCK": '*', "RUN_AFTER": '*', "SOURCES": '*', "TEST_ARGS":
+                       '*'}},
 
         "add_app_unit_test": {
             "kwargs": {"DRIVER": '*', "APPS": '*', "TEST_ARGS": '*', "LABELS": '*', "APP": '*',
