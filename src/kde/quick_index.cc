@@ -178,6 +178,33 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
   } // End domain decomposed data construction
 }
 
+#ifdef C4_MPI
+// call MPI_put using a chunk style write to avoid error in MPI_put with large local buffers.
+auto put_lambda = [](auto &putItr, auto &put_buffer, auto &win) {
+  // temporary work around until RMA is available in c4
+  // loop over all ranks we need to send this buffer too.
+  for (auto rankItr = putItr->second.begin(); rankItr != putItr->second.end(); rankItr++) {
+    const std::array<int, 3> &putv = *rankItr;
+    int put_rank = putv[0];
+    int put_rank_buffer_size = putv[1];
+    int put_offset = putv[2];
+    // This is dumb, but we need to write in chunks because MPI_Put writes
+    // junk with large (>10,000) buffer sizes.
+    int chunk_size = 1000;
+    int nchunks =
+        std::ceil(static_cast<double>(put_buffer.size()) / static_cast<double>(chunk_size));
+    int nput = 0;
+    for (int c = 0; c < nchunks; c++) {
+      chunk_size = std::min(chunk_size, static_cast<int>(put_buffer.size()) - nput);
+      Check(chunk_size > 0);
+      MPI_Put(&put_buffer[nput], chunk_size, MPI_DOUBLE, put_rank, put_offset, put_rank_buffer_size,
+              MPI_DOUBLE, win);
+      nput += chunk_size;
+    }
+  }
+};
+#endif
+
 //------------------------------------------------------------------------------------------------//
 /*!
  * \brief
@@ -219,15 +246,7 @@ quick_index::collect_ghost_data(const std::vector<std::array<double, 3>> &local_
         put_buffer[putIndex] = local_data[*indexItr][d];
         putIndex++;
       }
-      // loop over all ranks we need to send this buffer too.
-      for (auto rankItr = putItr->second.begin(); rankItr != putItr->second.end(); rankItr++) {
-        const std::array<int, 3> &putv = *rankItr;
-        int put_rank = putv[0];
-        int put_rank_buffer_size = putv[1];
-        int put_offset = putv[2];
-        MPI_Put(put_buffer.data(), static_cast<int>(put_buffer.size()), MPI_DOUBLE, put_rank,
-                put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
-      }
+      put_lambda(putItr, put_buffer, win);
     }
     errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
     Check(errorcode == MPI_SUCCESS);
@@ -287,15 +306,7 @@ quick_index::collect_ghost_data(const std::vector<std::vector<double>> &local_da
         put_buffer[putIndex] = local_data[d][*indexItr];
         putIndex++;
       }
-      // loop over all ranks we need to send this buffer too.
-      for (auto rankItr = putItr->second.begin(); rankItr != putItr->second.end(); rankItr++) {
-        const std::array<int, 3> &putv = *rankItr;
-        int put_rank = putv[0];
-        int put_rank_buffer_size = putv[1];
-        int put_offset = putv[2];
-        MPI_Put(put_buffer.data(), static_cast<int>(put_buffer.size()), MPI_DOUBLE, put_rank,
-                put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
-      }
+      put_lambda(putItr, put_buffer, win);
     }
     errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
     Check(errorcode == MPI_SUCCESS);
@@ -348,15 +359,7 @@ std::vector<double> quick_index::collect_ghost_data(const std::vector<double> &l
       put_buffer[putIndex] = local_data[*indexItr];
       putIndex++;
     }
-    // loop over all ranks we need to send this buffer too.
-    for (auto rankItr = putItr->second.begin(); rankItr != putItr->second.end(); rankItr++) {
-      const std::array<int, 3> &putv = *rankItr;
-      int put_rank = putv[0];
-      int put_rank_buffer_size = putv[1];
-      int put_offset = putv[2];
-      MPI_Put(put_buffer.data(), static_cast<int>(put_buffer.size()), MPI_DOUBLE, put_rank,
-              put_offset, put_rank_buffer_size, MPI_DOUBLE, win);
-    }
+    put_lambda(putItr, put_buffer, win);
   }
   errorcode = MPI_Win_fence((MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED), win);
   Check(errorcode == MPI_SUCCESS);
