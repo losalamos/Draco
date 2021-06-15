@@ -282,7 +282,7 @@ void quick_index::collect_ghost_data(const std::vector<std::array<double, 3>> &l
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local multi-dimensional data that is required to be
  * available as ghost cell data on other processors.
- * \param[in|out] local_ghost_data the resulting multi-dimensional ghost data
+ * \param[in,out] local_ghost_data the resulting multi-dimensional ghost data
  */
 void quick_index::collect_ghost_data(const std::vector<std::vector<double>> &local_data,
                                      std::vector<std::vector<double>> &local_ghost_data) const {
@@ -346,7 +346,7 @@ void quick_index::collect_ghost_data(const std::vector<std::vector<double>> &loc
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local vector data that is required to be
  * available as ghost cell data on other processors.
- * \param[in|out] ghost_data the resulting ghost data
+ * \param[in,out] ghost_data the resulting ghost data
  */
 void quick_index::collect_ghost_data(const std::vector<double> &local_data,
                                      std::vector<double> &local_ghost_data) const {
@@ -454,7 +454,7 @@ quick_index::window_coarse_index_list(const std::array<double, 3> &window_min,
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local data on the processor to be mapped to the window
  * \param[in] ghost_data the ghost data on the processor to be mapped to the window
- * \param[in|out] grid_data the resulting data map
+ * \param[in,out] grid_data the resulting data map
  * \param[in] whindow_min the smallest corner point for every dimension
  * \param[in] whindow_min the largest corner point for every dimension
  * \param[in] grid_bins number of equally spaced bins in each dir
@@ -692,7 +692,7 @@ void quick_index::map_data_to_grid_window(
  * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local data on the processor to be mapped to the window
  * \param[in] ghost_data the ghost data on the processor to be mapped to the window
- * \param[in|out] grid_data the resulting data map
+ * \param[in,out] grid_data the resulting data map
  * \param[in] whindow_min the smallest corner point for every dimension
  * \param[in] whindow_min the largest corner point for every dimension
  * \param[in] grid_bins number of equally spaced bins in each dir
