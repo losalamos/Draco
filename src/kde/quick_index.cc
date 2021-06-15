@@ -198,7 +198,7 @@ auto put_lambda = [](auto &put, auto &put_buffer, auto &put_size, auto &win) {
     const int put_offset = putv[2];
     // This is dumb, but we need to write in chunks because MPI_Put writes
     // junk with large (>10,000) buffer sizes.
-    const int chunk_size = 1000;
+    int chunk_size = 1000;
     const auto nchunks = static_cast<int>(
         std::ceil(static_cast<double>(put_size) / static_cast<double>(chunk_size)));
     int nput = 0;
