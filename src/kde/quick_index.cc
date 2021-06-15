@@ -221,7 +221,6 @@ auto put_lambda = [](auto &put, auto &put_buffer, auto &put_size, auto &win) {
  * RMA and the local put_window_map to allow each rank to independently fill in
  * its data to ghost cells of other ranks.
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local 3 dimensional data that is required to be
  * available as ghost cell data on other processors.
  * \param[in] local_ghost_data the resulting 3 dimensional ghost data data. 
@@ -279,7 +278,6 @@ void quick_index::collect_ghost_data(const std::vector<std::array<double, 3>> &l
  * RMA and the local put_window_map to allow each rank to independently fill in
  * its data to ghost cells of other ranks.
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local multi-dimensional data that is required to be
  * available as ghost cell data on other processors.
  * \param[in,out] local_ghost_data the resulting multi-dimensional ghost data
@@ -343,7 +341,6 @@ void quick_index::collect_ghost_data(const std::vector<std::vector<double>> &loc
  * RMA and the local put_window_map to allow each rank to independently fill in
  * its data to ghost cells of other ranks.
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local vector data that is required to be
  * available as ghost cell data on other processors.
  * \param[in,out] ghost_data the resulting ghost data
@@ -389,7 +386,6 @@ void quick_index::collect_ghost_data(const std::vector<double> &local_data,
  * window_coarse_index_list provides a list of global indecies that are
  * required by any given window range.
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] whindow_min the smallest corner point for every dimension
  * \param[in] whindow_min the largest corner point for every dimension
  * \return bin_list list of global bins requested for the current window.
@@ -451,7 +447,6 @@ quick_index::window_coarse_index_list(const std::array<double, 3> &window_min,
  * positively biased on the grid.
  * 
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local data on the processor to be mapped to the window
  * \param[in] ghost_data the ghost data on the processor to be mapped to the window
  * \param[in,out] grid_data the resulting data map
@@ -689,7 +684,6 @@ void quick_index::map_data_to_grid_window(
  * positively biased on the grid.
  * 
  *
- * \tparam dim integer specifying the data dimensionality 
  * \param[in] local_data the local data on the processor to be mapped to the window
  * \param[in] ghost_data the ghost data on the processor to be mapped to the window
  * \param[in,out] grid_data the resulting data map
