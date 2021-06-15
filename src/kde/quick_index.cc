@@ -26,11 +26,11 @@ namespace rtt_kde {
  * local domain will have access to all points that should fall into the
  * spatial window centered on any given local point.
  *
- * \param[in] dim specifying the data dimensionality 
- * \param[in] locations data locations.
- * \param[in] max_window_size maximum supported window size
- * \param[in] bins_per_dimension number of bins in each dimension
- * \param[in] domain_decomposed
+ * \param[in] dim_ specifying the data dimensionality 
+ * \param[in] locations_ data locations.
+ * \param[in] max_window_size_ maximum supported window size
+ * \param[in] bins_per_dimension_ number of bins in each dimension
+ * \param[in] domain_decomposed_
  */
 quick_index::quick_index(const size_t dim_, const std::vector<std::array<double, 3>> &locations_,
                          const double max_window_size_, const size_t bins_per_dimension_,
@@ -74,7 +74,7 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
   }
 
   // temp cast corse_bin_resolution to double for interpolation
-  const double crd = static_cast<double>(coarse_bin_resolution);
+  const auto crd = static_cast<double>(coarse_bin_resolution);
 
   // build up the local hash table of into global bins
   size_t locIndex = 0;
@@ -95,8 +95,8 @@ quick_index::quick_index(const size_t dim_, const std::vector<std::array<double,
   // Now we need to build up ghost location map data for domain decomposed mode
   if (domain_decomposed) {
     // temporary cast of the nodes to prevent conversion warnings
-    const size_t nodes = static_cast<size_t>(rtt_c4::nodes());
-    const size_t node = static_cast<size_t>(rtt_c4::node());
+    const auto nodes = static_cast<size_t>(rtt_c4::nodes());
+    const auto node = static_cast<size_t>(rtt_c4::node());
 
     // build list of local bins based on the local bounds
     local_bins = window_coarse_index_list(local_bounding_box_min, local_bounding_box_max);
@@ -193,13 +193,13 @@ auto put_lambda = [](auto &put, auto &put_buffer, auto &put_size, auto &win) {
   // temporary work around until RMA is available in c4
   // loop over all ranks we need to send this buffer too.
   for (auto &putv : put.second) {
-    int put_rank = putv[0];
-    int put_rank_buffer_size = putv[1];
-    int put_offset = putv[2];
+    const int put_rank = putv[0];
+    const int put_rank_buffer_size = putv[1];
+    const int put_offset = putv[2];
     // This is dumb, but we need to write in chunks because MPI_Put writes
     // junk with large (>10,000) buffer sizes.
-    int chunk_size = 1000;
-    int nchunks = static_cast<int>(
+    const int chunk_size = 1000;
+    const auto nchunks = static_cast<int>(
         std::ceil(static_cast<double>(put_size) / static_cast<double>(chunk_size)));
     int nput = 0;
     for (int c = 0; c < nchunks; c++) {
@@ -290,6 +290,8 @@ void quick_index::collect_ghost_data(const std::vector<std::vector<double>> &loc
                             "domain_decomposed=.false.");
   size_t data_dim = local_data.size();
   size_t ghost_data_dim = local_ghost_data.size();
+  Insist(data_dim == ghost_data_dim,
+         "The local_data.size() and the local_ghost_data.size() vectors much match");
   // Check ghost data
   for (size_t d = 0; d < ghost_data_dim; d++) {
     Insist(local_ghost_data[d].size() == local_ghost_buffer_size,
@@ -400,7 +402,7 @@ quick_index::window_coarse_index_list(const std::array<double, 3> &window_min,
   Require(window_min[2] <= window_max[2]);
 
   // temp cast corse_bin_resolution to double for interpolation
-  const double crd = static_cast<double>(coarse_bin_resolution);
+  const auto crd = static_cast<double>(coarse_bin_resolution);
 
   // calculate the global index range that each processor needs to
   // accommodate the specified data window size
