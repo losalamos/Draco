@@ -343,7 +343,7 @@ void quick_index::collect_ghost_data(const std::vector<std::vector<double>> &loc
  *
  * \param[in] local_data the local vector data that is required to be
  * available as ghost cell data on other processors.
- * \param[in,out] ghost_data the resulting ghost data
+ * \param[in,out] local_ghost_data the resulting ghost data
  */
 void quick_index::collect_ghost_data(const std::vector<double> &local_data,
                                      std::vector<double> &local_ghost_data) const {
