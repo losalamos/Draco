@@ -27,9 +27,7 @@
 case ${-} in
   *i*)
     export INTERACTIVE=true
-    if [[ "${verbose:=false}" == "true" ]]; then
-      echo "in draco/environment/bashrc/.bashrc";
-    fi
+    [[ "${verbose:=false}" == "true" ]] && echo "in draco/environment/bashrc/.bashrc"
 
     # Shell options
     shopt -s checkwinsize # autocorrect window size
@@ -60,6 +58,8 @@ case ${-} in
       export DRACO_SRC_DIR
       export DRACO_ENV_DIR="${DRACO_SRC_DIR}/environment"
     fi
+    [[ "${DRACO_ENV_DIR:-notset}" == "notset" ]] && \
+      echo "DRACO_ENV_DIR not set, some draco env will be disabled."
 
     #----------------------------------------------------------------------------------------------#
     # Common aliases
@@ -94,15 +94,16 @@ if [[ ${INTERACTIVE} ]]; then
 
   # Common bash functions and alias definitions
   # shellcheck source=/dev/null
-  source "${DRACO_ENV_DIR}/bashrc/bash_functions.sh"
+  [[ -f "${DRACO_ENV_DIR}/bashrc/bash_functions.sh" ]] && \
+    source "${DRACO_ENV_DIR}/bashrc/bash_functions.sh"
   # shellcheck source=/dev/null
-  source "${DRACO_ENV_DIR}/../tools/common.sh"
+  [[ -f "${DRACO_ENV_DIR}/../tools/common.sh" ]] && source "${DRACO_ENV_DIR}/../tools/common.sh"
 
   # aliases and bash functions for working with slurm
   if !  [[ $(which squeue 2>&1 | grep -c "no squeue") == 1 ]] &&
     [[ $(which squeue | grep -c squeue) -gt 0 ]]; then
     # shellcheck source=/dev/null
-    source "${DRACO_ENV_DIR}/bashrc/bashrc_slurm"
+    [[ -f "${DRACO_ENV_DIR}/bashrc/bashrc_slurm" ]] && source "${DRACO_ENV_DIR}/bashrc/bashrc_slurm"
   fi
 fi
 
@@ -170,8 +171,8 @@ if [[ ${INTERACTIVE} == true ]]; then
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_rfta" ;;
 
-    # capulin, thunder, trinitite (tt-fey) | trinity (tr-fe)
-    cp-login* | th-login* |tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
+    # capulin, thunder, trinitite (tt-rfe) | trinity (tr-fe)
+    cp-rfe* | cp-rlogin* | th-login* |tt-fey* | tt-rfe* | tt-login* | tr-fe* | tr-login* | nid* )
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_cray" ;;
 
@@ -185,13 +186,7 @@ if [[ ${INTERACTIVE} == true ]]; then
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_vm" ;;
 
-    # CCS-NET machines (insufficient space on ccscs5 for vendor+data).
-    ccscs5*)
-      echo "Draco developer environment not provided on this machine"
-      echo "(${target}) due to insufficient /scratch storage."
-      export NoModules=1
-      ;;
-    ccscs[1-4]* | ccscs[6-9]*)
+    ccscs[1-9]* | ccsnet[1-9]*)
       # shellcheck source=/dev/null
       source "${DRACO_ENV_DIR}/bashrc/.bashrc_ccsnet" ;;
 
@@ -201,7 +196,8 @@ if [[ ${INTERACTIVE} == true ]]; then
   esac
 
   # shellcheck source=/dev/null
-  source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
+  [[ -f "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh" ]] && \
+    source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
 
 fi
 
@@ -209,7 +205,8 @@ fi
 # sessions.
 
 # shellcheck source=/dev/null
-source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
+[[ -f "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh" ]] && \
+  source "${DRACO_ENV_DIR}/bashrc/bash_functions2.sh"
 
 if [[ "${verbose:=false}" == "true" ]]; then
   echo "in draco/environment/bashrc/.bashrc ... done";

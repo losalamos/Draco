@@ -4,7 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
- * \note   Copyright (C) 2016-2020 Triad National Security, LLC., All rights reserved. */
+ * \note   Copyright (C) 2016-2021 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Release.hh"
@@ -99,35 +99,36 @@ const std::string author_list(bool const use_doxygen_formatting) {
 
   mmdevs current_developers;
   // not totally fair... KT got credit for LOC when svn repository was converted to git.
-  current_developers.insert(fomdev(178350, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(23628, "Kent G. Budge"));
-  current_developers.insert(fomdev(6252, "Matt A. Cleveland"));
-  current_developers.insert(fomdev(3862, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(3488, "Alex R. Long"));
-  current_developers.insert(fomdev(3411, "Ben R. Ryan"));
-  current_developers.insert(fomdev(1930, "Kendra P. Long"));
-  current_developers.insert(fomdev(1430, "James S. Warsa"));
-  current_developers.insert(fomdev(817, "Tim Kelley"));
-  current_developers.insert(fomdev(404, "Jae H. Chang"));
-  current_developers.insert(fomdev(173, "Andrew T. Till"));
-  current_developers.insert(fomdev(98, "Seth D. Cook"));
-  current_developers.insert(fomdev(94, "Ondrej Certik"));
-  current_developers.insert(fomdev(1, "David A. Dixon"));
+  current_developers.insert(fomdev(173050, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(23098, "Kent G. Budge"));
+  current_developers.insert(fomdev(7000, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(4177, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(3545, "Ben R. Ryan"));
+  current_developers.insert(fomdev(3047, "Alex R. Long"));
+  current_developers.insert(fomdev(1571, "Kendra P. Long"));
+  current_developers.insert(fomdev(1270, "James S. Warsa"));
+  current_developers.insert(fomdev(905, "Tim Kelley"));
+  current_developers.insert(fomdev(360, "Jae H. Chang"));
+  current_developers.insert(fomdev(127, "Andrew T. Till"));
+  current_developers.insert(fomdev(91, "Ondrej Certik"));
+  current_developers.insert(fomdev(15, "David A. Dixon"));
+  current_developers.insert(fomdev(4, "Howard Pritchard"));
 
   mmdevs prior_developers;
 
-  prior_developers.insert(fomdev(3886, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(1934, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(421, "Rob B. Lowrie"));
-  prior_developers.insert(fomdev(287, "Paul W. Talbot"));
-  prior_developers.insert(fomdev(194, "Katherine J. Wang"));
-  prior_developers.insert(fomdev(66, "Peter Ahrens"));
-  prior_developers.insert(fomdev(24, "Daniel Holladay"));
+  prior_developers.insert(fomdev(3631, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(1753, "Allan B. Wollaber"));
+  prior_developers.insert(fomdev(407, "Rob B. Lowrie"));
+  prior_developers.insert(fomdev(282, "Paul W. Talbot"));
+  prior_developers.insert(fomdev(184, "Katherine J. Wang"));
+  prior_developers.insert(fomdev(98, "Seth D. Cook"));
+  prior_developers.insert(fomdev(65, "Peter Ahrens"));
+
+  // Previous authors with no current LOC attribution (less than 10):
   prior_developers.insert(fomdev(9, "Massimiliano Rosa"));
   prior_developers.insert(fomdev(7, "Todd J. Urbatsch"));
-  prior_developers.insert(fomdev(6, "Jeff D. Densmore"));
-
-  // Previous authors with no current LOC attribution:
+  prior_developers.insert(fomdev(6, "Daniel Holladay"));
+  prior_developers.insert(fomdev(5, "Jeff D. Densmore"));
   prior_developers.insert(fomdev(1, "Jeff Furnish"));
   prior_developers.insert(fomdev(1, "John McGhee"));
   prior_developers.insert(fomdev(1, "Kris C. Garrett"));
@@ -175,7 +176,7 @@ const std::string copyright() {
 
   msg << author_list() << "\n"
       << Term::ccolor(Term::fg::green)
-      << "Copyright (C) 2016-2020 Triad National Security, LLC. "
+      << "Copyright (C) 2016-2021 Triad National Security, LLC. "
          "(C19028, LA-CC-16-016),\n     Released under a 3-Clause BSD License."
       << Term::ccolor(Term::fg::reset) << std::endl;
 

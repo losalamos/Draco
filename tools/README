@@ -7,8 +7,8 @@ tools
 Release Scripts
 ========================================
 
-The install scripts are desiged for LANL CTS-1, ATS-2 and Cray platforms.  They
-are also provided for LLNL ATS-2 and LANL's Darwin machine.
+The install scripts are desiged for LANL CTS-1, ATS-2 and Cray platforms.  They are also provided
+for LLNL ATS-2 and LANL's Darwin machine.
 
 Assumptions:
 
@@ -31,8 +31,7 @@ Usage:
    mkdir logs
    git clone git@github.com:lanl/Draco.git source
    (cd source; git checkout -b draco-NN_NN_NN origin/draco-NN_NN_NN)
-2. Update machinefamily settings and configuration option in
-   scripts/<family>-env.sh.
+2. Update machinefamily settings and configuration option in scripts/<family>-env.sh.
 3. Update Draco specific settings in draco-cmake-options.sh
 4. Update scripts/*-env.sh scripts to setup modulefiles and configure modes.
 5. Build and test the release (run this from the front-end -- except for darwin)
@@ -41,17 +40,27 @@ Usage:
 
 
 Usage (Darwin):
+--------------------
+Same as above, except you must already have an allocation and be logged onto the back end before
+running the release script.
 
-Same as above, except you must already have an allocation and be logged onto
-the back end before running the release script.
+1. power9
 
-salloc -N 1 -p power9
+salloc -N 1 -p power9-asc -A asc-priority
 cd /usr/projects/draco/draco-7_5_0
 source/tools/release.sh &> logs/release-darwin-power9.log &
 
+2. x64 + Volta
+
+salloc -N 1 -p volta-x86 -C cpu_family:haswell
+
+3. ARM
+
+salloc -N 1 -p arm
+
 
 Usage (ATS-2)
-
+--------------------
 Same as above but run the script from within an allocation.
 lalloc 1 -W 240
 cd /usr/gapps/jayenne/draco-7_8_0

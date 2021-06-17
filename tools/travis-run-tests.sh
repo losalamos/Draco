@@ -20,11 +20,13 @@ source tools/common.sh
 if [[ ${STYLE} ]]; then
   echo "checking style conformance..."
 
+  run "git branch -a"
+
   # Return integer > 0 if 'develop' branch is found.
   function find_dev_branch
   {
     set -f
-    git branch -a | grep -c develop
+    git branch -a | grep -v origin | grep -c develop
     set +f
   }
 
@@ -108,6 +110,7 @@ elif [[ "${COMPILER:=GCC}" == "GCC" ]]; then
     for i in C CXX Fortran; do
       eval export ${i}_FLAGS+=\" -Werror\"
     done
+    eval export CUDA_FLAGS+=\" -Werror all-warnings\"
   fi
   if [[ ${COVERAGE:-OFF} == "ON" ]]; then
     CMAKE_OPTS="-DCODE_COVERAGE=ON"
@@ -184,6 +187,7 @@ elif [[ "${COMPILER}" == "LLVM" ]]; then
     for i in C CXX Fortran; do
       eval export ${i}_FLAGS+=\" -Werror\"
     done
+    eval export CUDA_FLAGS+=\" -Werror all-warnings\"
   fi
 
   echo -e "\n========== printenv =========="

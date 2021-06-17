@@ -350,8 +350,14 @@ template <typename T> void global_max(T &x);
 
 //------------------------------------------------------------------------------------------------//
 /*!
+ * \brief Do a global logical and (MPI_LAND) of a scalar variable
+ */
+template <typename T> void global_and(T &x);
+
+//------------------------------------------------------------------------------------------------//
+/*!
  * \brief Do an element-wise, global sum of an array.
- * 
+ *
  * Only instantiate this function for types L that are integral. Details of this pattern are at
  * https://en.cppreference.com/w/cpp/types/enable_if.
  */

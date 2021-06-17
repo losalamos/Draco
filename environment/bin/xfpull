@@ -37,11 +37,15 @@ for wantfile in $wantfiles; do
     filename=$(echo "${entry}" | sed -e 's/.*[ ]//')
     if [[ "${filename}" == "${wantfile}" ]]; then
       # -T makes filename matches less strict. (change.lanl.gov #192081)
-      echo "scp -T red@transfer.lanl.gov:${fileid} ."
-      scp -T "red@transfer.lanl.gov:${fileid}" .
-      echo "ssh red@transfer.lanl.gov delete ${fileid}"
-      # shellcheck disable=SC2029
-      ssh red@transfer.lanl.gov delete "${fileid}"
+      [[ ${CRAYPE_DIR} =~ cray ]] && scp_opt="-T"
+      echo "scp ${scp_opt} red@transfer.lanl.gov:${fileid} ."
+      scp ${scp_opt} "red@transfer.lanl.gov:${fileid}" .
+      status=$?
+      if [[ $status -eq 0 ]]; then
+        echo "ssh red@transfer.lanl.gov delete ${fileid}"
+        # shellcheck disable=SC2029
+        ssh red@transfer.lanl.gov delete "${fileid}"
+      fi
     fi
   done
 

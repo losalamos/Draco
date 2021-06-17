@@ -24,11 +24,11 @@ if [[ -n "$MODULESHOME" ]]; then
   module use --append /projects/draco/Modules
   case $DRACO_ARCH in
     arm)     module load draco/arm-gcc930 ;;
-    power9*) module load draco/power9-gcc730 ;;
+    power9*) module load draco/power9-gcc930-smpi ;;
     x86_64)
-      module load draco/x64-gcc730
+      module load draco/x64-gcc930
       if [[ "${SLURM_JOB_PARTITION}" =~ "volta" || "${SLURM_JOB_PARTITION}" =~ "gpu" ]]; then
-        module load cuda/10.2
+        module load cuda/11.0
       fi
       ;;
   esac

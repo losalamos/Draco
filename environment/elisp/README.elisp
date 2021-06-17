@@ -4,30 +4,31 @@
 >>> All rights reserved.
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-The XEmacs elisp files associated with this package make up a
-development enviornment used by CCS-4. To use these files add the
-elisp directory to your XEmacs load path and then load the
-ccs4defaults library.
+The XEmacs elisp files associated with this package make up a development enviornment used by
+CCS-2. To use these files add the elisp directory to your Emacs load path and then load the
+draco-setup package..
 
-In ~/.xemacs/init.el add the following elisp.  You should replace the
-path to the Draco environment (~/draco/environment) directory with the
-real path on your current machine.  The value shown below assumes that
-you have Draco checked out in your home space.  The directories should
-be listed in the order you want them searched for Draco elisp code.
-If you prefer to use the latest/greatest elisp code (instead of stable
-versions intalled at /codes/radtran) you should switch the order of
-the first two entries.
+Follow the example provided by sample.emacs in your own $HOME/.emacs add the following elisp.  You
+should replace the path to the Draco environment (~/draco/environment) directory with the real path
+on your current machine.  The value shown below assumes that you have Draco checked out in your home
+space.  The directories should be listed in the order you want them searched for Draco elisp code.
 
 ;; Load Draco Elisp files
 
 (setq my-draco-env-dir "~/draco/environment/" )
 (load-library (concat my-draco-env-dir "/elisp/draco-setup"))
 
-It is recommended that you compile the .el files located at
-draco/environment/elisp for better XEmacs performance.  Simply run
-'make' from the draco/environment/elisp directory.  If you have a lot
-of elisp commands in your ~/.emacs.d directory, you may want to compile
-those files too.
+It is recommended that you compile the .el files located at draco/environment/elisp for better emacs
+performance.  Simply run 'make' from the draco/environment/elisp directory.  If you have a lot of
+elisp commands in your ~/.emacs.d directory, you may want to compile those files too.
+
+There are several packages that are recommended for instalation via Melpa (M-x package-list-packages):
+- cmake-mode
+- fill-column-indicator
+- highlight-doxygen
+- lua-mode
+- rtags
+- yaml-mode
 
 MELPA - Install extra Emacs modes
 ==============================

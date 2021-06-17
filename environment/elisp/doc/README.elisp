@@ -1,7 +1,5 @@
-A LaTeX document that describes much of the CCS-4 elisp archive exists
-in the Draco CVS repository:
+A LaTeX document that describes much of the CCS-2 elisp archive exists
+in the Draco git repository:
 
-   cvs -d /codes/radtran/cvsroot co draco
-   cd draco/src/doc/elisp
-   gmake
-
+   cd draco/environment/elisp
+   make

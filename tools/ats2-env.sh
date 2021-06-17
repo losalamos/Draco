@@ -21,7 +21,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="gcc831env xl20200819env"
+environments="gcc831env xl20201112env"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -59,7 +59,7 @@ fi
 case $ddir in
 
   #--------------------------------------------------------------------------------------------------#
-  draco-7_7*|draco-7_8*)
+  draco-7_10*)
     function gcc831env()
     {
       run "module purge"
@@ -69,16 +69,15 @@ case $ddir in
       unset CPATH
       unset LD_LIBRARY_PATH
       unset LIBRARY_PATH
-      run "module load draco/gcc831-cuda-11.0.2"
+      run "module load draco/gcc831-smpi202008-cuda1102"
       run "module list"
       export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
       CXX=$(which g++)
       CC=$(which gcc)
       FC=$(which gfortran)
-      unset MPI_ROOT
       export CXX CC FC
     }
-    function xl20200819env()
+    function xl20201112env()
     {
       run "module purge"
       run "module use /usr/gapps/user_contrib/spack.20200402/share/spack/lmod/linux-rhel7-ppc64le/Core"
@@ -90,7 +89,6 @@ case $ddir in
       run "module load draco/xl2020.08.19-cuda-11.0.2"
       run "module list"
       export JSM_JSRUN_NO_WARN_OVERSUBSCRIBE=1
-      unset MPI_ROOT
     }
     ;;
 

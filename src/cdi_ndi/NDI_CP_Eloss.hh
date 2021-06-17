@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//--------------------------------------------*-C++-*---------------------------------------------//
 /*!
  * \file   cdi_ndi/NDI_CP_Eloss.hh
  * \author Ben R. Ryan
@@ -6,7 +6,7 @@
  * \brief  NDI_CP_Eloss class definition.
  * \note   Copyright (C) 2019-2020 Triad National Security, LLC.
  *         All rights reserved. */
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 
 #ifndef cdi_ndi_NDI_CP_Eloss_hh
 #define cdi_ndi_NDI_CP_Eloss_hh
@@ -21,20 +21,19 @@
 
 namespace rtt_cdi_ndi {
 
-//============================================================================//
+//================================================================================================//
 /*!
  * \class NDI_CP_Eloss
  *
- * \brief Derived rtt_cdi::CPEloss class for tabular eloss.
- *        This class implements the interface found in cdi/CPEloss.hh for
- *        the case where CP energy loss data is in tabular form, retrieved
- *        from NDI.
+ * \brief Derived rtt_cdi::CPEloss class for tabular eloss.  This class implements the interface
+ *        found in cdi/CPEloss.hh for the case where CP energy loss data is in tabular form,
+ *        retrieved from NDI.
  */
-//============================================================================//
+//================================================================================================//
 
 class NDI_CP_Eloss : public rtt_cdi::CPEloss, public NDI_Base {
 public:
-  typedef std::vector<double> sf_double;
+  using sf_double = std::vector<double>;
 
 public:
   //! Constructor (default gendir path)
@@ -127,6 +126,6 @@ private:
 
 #endif // cdi_ndi_NDI_CP_Eloss_hh
 
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
 // End cdi_ndi/NDI_CP_Eloss.hh
-//----------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//

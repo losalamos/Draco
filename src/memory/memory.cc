@@ -48,6 +48,11 @@ static uint64_t check_select_size = 504U;
 static uint64_t check_select_count = 0U;
 // normally set in debugger to trigger a breakpoint
 
+static unsigned dump_count = 0;
+// indicates whether to dump the first few largest allocations and exit
+
+static uint64_t report_threshold = numeric_limits<uint64_t>::max();
+
 static bool is_active = false;
 
 #if DRACO_DIAGNOSTICS & 2
@@ -103,6 +108,9 @@ bool set_memory_checking(bool new_status) {
   return Result;
 }
 
+//----------------------------------------------------------------------------------------//
+void set_report_threshold(uint64_t threshold) { report_threshold = threshold; }
+
 //------------------------------------------------------------------------------------------------//
 uint64_t total_allocation() { return total; }
 
@@ -135,6 +143,16 @@ void report_leaks(ostream &out) {
   }
 }
 
+//----------------------------------------------------------------------------------------//
+uint64_t set_check_peak(uint64_t new_peak) {
+  uint64_t Result = check_peak;
+  check_peak = new_peak;
+  return Result;
+}
+
+//----------------------------------------------------------------------------------------//
+void set_dump_and_exit(unsigned new_dump_count) { dump_count = new_dump_count; }
+
 } // end namespace rtt_memory
 
 using namespace rtt_memory;
@@ -159,14 +177,13 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
     if (failwithstacktrace) {
       std::set_new_handler(rtt_memory::out_of_memory_handler);
       rtt_memory::out_of_memory_handler();
-    } else {
-      new_handler global_handler = set_new_handler(0);
-      set_new_handler(global_handler);
-      if (global_handler)
-        global_handler();
-      else
-        throw bad_alloc();
     }
+    new_handler global_handler = set_new_handler(0);
+    set_new_handler(global_handler);
+    if (global_handler)
+      global_handler();
+    else
+      throw bad_alloc();
   }
 
   // If malloc was successful, do the book keeping and return the pointer.
@@ -182,6 +199,28 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
         // total memory exceeds the check_peak value (which the programmer typically also sets in
         // the debugger).
         cout << "Reached check peak value" << endl;
+        if (dump_count > 0) {
+          map<size_t, size_t> alloc_sizes;
+          for (auto v : st.alloc_map) {
+            if (alloc_sizes.find(v.second.size) == alloc_sizes.end()) {
+              alloc_sizes[v.second.size] = 1;
+            } else {
+              alloc_sizes[v.second.size]++;
+            }
+          }
+          auto iter = alloc_sizes.rbegin();
+          if (alloc_sizes.find(n) == alloc_sizes.end()) {
+            alloc_sizes[n] = 1;
+          } else {
+            alloc_sizes[n]++;
+          }
+
+          for (unsigned i = 0; i < dump_count; ++i) {
+            cout << (*iter).first << ' ' << (*iter).second << endl;
+            ++iter;
+          }
+          exit(EXIT_SUCCESS);
+        }
       }
     }
     if (n >= check_large) {
@@ -203,6 +242,9 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc) {
       // in on a potential memory leak, by identifying exactly which allocation is being leaked by
       // looking at the allocation map (st.alloc_map) to see the size and instance.
       cout << "Reached check select allocation" << endl;
+    }
+    if (n > report_threshold) {
+      cout << "Memory allocation of size " << n << " was made. Total now " << total << '.' << endl;
     }
     is_active = true;
   }
@@ -226,6 +268,10 @@ void operator delete(void *ptr) throw() {
         // when an allocation larger than check_large is deallocated. check_large is typically also
         // set in the debugger by the programmer.
         cout << "Deallocated check large value" << endl;
+      }
+      if (n > report_threshold) {
+        cout << "Memory allocation of size " << n << " was freed. Total now " << total << '.'
+             << endl;
       }
       is_active = false;
       st.alloc_map.erase(i);

@@ -1,15 +1,15 @@
-;; ======================================================================
+;; =================================================================================================
 ;; draco-config-modes.el
 ;;
 ;; Copyright (C) 2016-2020 Triad National Security, LLC
 ;;
 ;; Configure a variety of packages, upon request of user.
 ;;
-;; Must load the draco-setup.el package from XEmacs startup files
-;; (init.el or .emacs).   Then use the XEmacs menubar to select
-;; Options --> Advanced --> Group.  At the prompt enter "draco".  Set
-;; and save options for Draco elisp setup.
-;; ======================================================================
+;; Must load the draco-setup.el package from XEmacs startup files (init.el or .emacs).  Then use the
+;; XEmacs menubar to select Options --> Advanced --> Group.  At the prompt enter "draco".  Set and
+;; save options for Draco elisp setup.
+
+;; =================================================================================================
 
 (require (quote draco-mode))
 
@@ -76,8 +76,10 @@ and add turn-on-auto-fill to the yaml-mode-hook."
       (turn-on-draco-mode)
       (turn-off-auto-fill)
       (set-fill-column draco-code-comment-width)
-      (require 'fill-column-indicator)
-      (fci-mode))
+      (if (> emacs-major-version 24)
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode))))
     (add-hook 'yaml-mode-hook 'draco-yaml-mode-hook)))
 
 ;; ========================================
@@ -125,7 +127,11 @@ auto-mode-alist."
 	(local-set-key [(f6)] 'draco-makefile-comment-divider)
 	(turn-on-draco-mode)
         (set-fill-column draco-code-comment-width)
-	(turn-on-auto-fill))
+	(turn-on-auto-fill)
+        (if (> emacs-major-version 24)
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode))))
       (add-hook 'python-mode-hook 'draco-python-mode-hook)))
 
 ;; ========================================
@@ -153,8 +159,10 @@ auto-mode-alist."
       (turn-on-draco-mode)
       (turn-on-auto-fill)
       (set-fill-column draco-code-comment-width)
-      (require 'fill-column-indicator)
-      (fci-mode))
+      (if (> emacs-major-version 24)
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode))))
     (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
 
 ;; ========================================
@@ -241,23 +249,18 @@ auto-mode-alist.
   "Autoload c++-mode, c-mode and append the appropriate suffixes to
 auto-mode-alist.
 
-- Autoload c-mode, c++-mode and doxymacs-mode.
+- Autoload c-mode, c++-mode.
 - Associate files *.C, *.cc, *.pt, *.hh, *.hpp, *.cpp, *.hh.in,
   *.h.in, *.c, *.h, *.dcc, *.dcc.in and *.dot with this mode.
 - Create and install menu items for inserting C++/C/Doxygen comment
   blocks.
 - Set the C++ indentation style to match Draco source code.
-- Setup colorized modeline (if requested).
 - Set fill-column to (draco-code-comment-width).
 - Set hotkeys:
   [ f5 ]   - Insert C++ divider
   [ f6 ]   - Insert C++ comment divider
   [ M-f5 ] - Insert C++ function comment
   [ M-f6 ] - Insert C++ class comment
-  [ S-f5 ] - Insert doxygen function comment
-  [ S-f6 ] - Insert doxygen file comment
-  [ C-f5 ] - Insert doxygen multiline comment
-  [ C-f6 ] - Insert doxygen singleline comment
 - Turn on font lock.
 - Turn on auto fill.
 - Turn on draco-mode."
@@ -265,7 +268,6 @@ auto-mode-alist.
     (progn
       (autoload 'c++-mode "cc-mode" "C++ Editing Mode" t)
       (autoload 'c-mode   "cc-mode" "C Editing Mode" t)
-      (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
       (setq auto-mode-alist
 	    (append '(("\\.C$"      . c++-mode)
 		      ("\\.cc$"     . c++-mode)
@@ -290,21 +292,9 @@ auto-mode-alist.
 	      ["Insert C++ comment block"   draco-cc-divider t]
 	      ["Insert C++ function divider" draco-insert-function-doc t]
 	      ["Insert C++ class comment block"   draco-insert-class-doc       t]
-	      ["Insert Doxygen singleline comment" doxymacs-insert-blank-singleline-comment t ]
-	      ["Insert Doxygen multiline comment" doxymacs-insert-blank-multiline-comment t ]
-	      ["Insert Doxygen file comment" doxymacs-insert-file-comment t ]
-	      ["Insert Doxygen function comment" doxymacs-insert-function-comment t ]
-	      ["Insert Doxygen member comment" doxymacs-insert-member-comment t ]
-	      ["Insert Doxygen grouping comment" doxymacs-insert-grouping-comment t ]
 	      ["Insert C divider" draco-c-comment-divider t]
 	      ["Insert C comment block"   draco-c-divider t]
 	      ))
-
-            ;; Borrowed from
-            ;; http://www.esperi.demon.co.uk/nix/xemacs/personal/init-prog-modes.html
-
-            ;; Also see help for XEmacs variable c-offsets-alist
-            ;; \C-h v c-offset-alist
       (defun draco-setup-c-mode ()
 	"Setup C, C++ mode for Draco Developers.
 
@@ -345,21 +335,6 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
          )
         )
 
-      (if draco-colorize-modeline
-	  (add-hook 'c++-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "skyblue" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer)))))
-      (if draco-colorize-modeline
-	  (add-hook 'c-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "pink" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer)))))
-
       (defun draco-c-mode-hook ()
 	"DRACO hooks added to C/C++ mode.
 
@@ -371,29 +346,26 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-set-style "draco")
 	(local-set-key "\C-m" 'newline-and-indent)
 	(set-fill-column draco-code-comment-width)
-        (require 'fill-column-indicator)
-        (fci-mode)
 	(local-set-key [(f5)] 'draco-cc-divider)
 	(local-set-key [(f6)] 'draco-insert-comment-divider)
 	(local-set-key [(meta f5)] 'draco-insert-function-doc)
 	(local-set-key [(meta f6)] 'draco-insert-class-doc)
-	(local-set-key [(shift f5)] 'doxymacs-insert-function-comment)
-	(local-set-key [(shift f6)] 'doxymacs-insert-file-comment)
-	(local-set-key [(control f5)] 'doxymacs-insert-blank-multiline-comment)
-	(local-set-key [(control f6)] 'doxymacs-insert-blank-singleline-comment)
 	(draco-mode-update-menu (draco-menu-insert-comments-cc))
 	(turn-on-font-lock)
+        (if (> emacs-major-version 24)
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode)))
 	(turn-on-auto-fill))
+      ;; register the draco-c-mode-hook
       (add-hook 'c-mode-common-hook 'draco-c-mode-hook)
       (add-hook 'c-mode-common-hook 'imenu-add-menubar-index)
-;      (add-hook 'c-mode-common-hook 'draco-add-style)
       (add-hook 'c-mode-common-hook 'turn-on-draco-mode)
       (add-hook 'font-lock-mode-hook
 		'(lambda ()
 		   (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
 		       (draco-font-lock))))
       ))
-
 
 ;; ========================================
 ;; AUCTEX
@@ -447,6 +419,7 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(local-set-key "\C-c %" 'comment-region)
 	(draco-mode-update-menu (draco-menu-insert-comments-tex))
 	;(turn-on-bib-cite)
+        (set-fill-column draco-code-comment-width)
 	(turn-on-reftex)
         (turn-on-reftex)
         (setq reftex-plug-into-AUCTeX t)
@@ -477,13 +450,6 @@ auto-mode-alist."
 	    ["Insert f90 subroutine divider" draco-f90-subroutine-divider       t]
 	    ["Insert f90 comment divider" draco-f90-comment-divider t]))
 
-    (if draco-colorize-modeline
-	(add-hook 'f90-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "orange" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
     (setq auto-mode-alist
 	  (append
 	   '(("\\.f90$"  . f90-mode)
@@ -504,20 +470,15 @@ auto-mode-alist."
       (setq f90-font-lock-keywords f90-font-lock-keywords-3)
       (setq f90-beginning-ampersand nil)
       (setq f90-associate-indent 0)
-      (require 'fill-column-indicator)
-      (fci-mode))
+        (if (> emacs-major-version 24)
+            (progn
+              (require 'fill-column-indicator)
+              (fci-mode))))
      ;; let .F denone Fortran and not freeze files
     (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'draco-f90-mode-hook)
     (add-hook 'f90-mode-hook 'turn-on-draco-mode)
     (add-hook 'f90-mode-hook 'turn-on-auto-fill)
-    ; should add this sometime
-    ; (add-hook 'font-lock-mode-hook
-    ;          '(lambda ()
-    ;             (if (major-mode 'f90-mode)
-    ;                 (draco-f90-font-lock)))) ; create this function
-                                        ; based on draco-font-lock but
-                                        ; for f90
     ))
 
 ;; ========================================
@@ -536,14 +497,6 @@ auto-mode-alist."
 	    ["Insert f77 subroutine divider" draco-f77-subroutine-divider t]
 	    ["Insert f77 comment divider" draco-f77-comment-divider t]))
 
-    (if draco-colorize-modeline
-	(add-hook 'fortran-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "orange" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"
-					  (current-buffer)))))
     ;; let .F denone Fortran and not freeze files
     (defvar crypt-freeze-vs-fortran nil)
     (setq auto-mode-alist
@@ -581,26 +534,13 @@ auto-mode-alist."
     ))
 
 (defun draco-setup-change-log-mode ()
-  "Autoload change-log-mode and append the approriate suffixes to
-auto-mode-alist."
+  "Autoload change-log-mode and append the approriate suffixes to auto-mode-alist."
   (interactive)
   (progn
-    (autoload 'change-log-mode "change-log-mode"
-      "ChangeLog Editing Mode" t)
+    (autoload 'change-log-mode "change-log-mode" "ChangeLog Editing Mode" t)
     (require 'add-log)
     (set-fill-column draco-code-comment-width)
-    (if draco-colorize-modeline
-	(add-hook 'change-log-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "bisque3" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"
-					  (current-buffer)))))
-    (setq auto-mode-alist
-	  (append
-	   '(("ChangeLog"  . change-log-mode)
-	     ) auto-mode-alist))
+    (setq auto-mode-alist (append '(("ChangeLog"  . change-log-mode)) auto-mode-alist))
     (add-hook 'change-log-mode-hook 'turn-on-font-lock)
     (add-hook 'font-lock-mode-hook
 	      '(lambda ()
@@ -619,8 +559,8 @@ auto-mode-alist."
 ;; ========================================
 
 (defun draco-setup-emacs-lisp-mode ()
-  "Autoload emacs-lisp-mode, append the approriate suffixes to
-auto-mode-alist and set up some customizations for DRACO."
+  "Autoload emacs-lisp-mode, append the approriate suffixes to auto-mode-alist and set up some
+customizations for DRACO."
   (interactive)
   (progn
     (autoload 'emacs-lisp-mode "emacs-lisp-mode" "Emacs Lisp Editing Mode" t)
@@ -637,19 +577,18 @@ auto-mode-alist and set up some customizations for DRACO."
 	     (".emacs$"  . emacs-lisp-mode)
 	     ) auto-mode-alist))
 
-    (if draco-colorize-modeline
-	(add-hook 'emacs-lisp-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "tan" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
     (defun draco-elisp-mode-hook ()
       "Hooks added to Elisp mode"
       (local-set-key [(f5)] 'draco-elisp-divider)
       (local-set-key [(f6)] 'draco-elisp-comment-divider)
       (draco-mode-update-menu (draco-menu-insert-comments-elisp))
-      (local-set-key [(control c)(control c)] 'comment-region))
+      (local-set-key [(control c)(control c)] 'comment-region)
+      (set-fill-column draco-code-comment-width)
+      (if (> emacs-major-version 24)
+          (progn
+            (require 'fill-column-indicator)
+            (fci-mode t)))
+      )
     (add-hook 'emacs-lisp-mode-hook 'turn-on-draco-mode)
     (add-hook 'emacs-lisp-mode-hook 'draco-elisp-mode-hook)
     (add-hook 'emacs-lisp-mode-hook 'turn-on-font-lock)
@@ -664,86 +603,15 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
     (autoload 'shell-mode "shell-mode" "Interactive Shell Mode" t)
-    (if draco-colorize-modeline
-	(add-hook 'shell-mode-hook
-		  '(lambda () ;; M-x list-colors-display
-		     (set-face-background 'modeline
-					  "thistle" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
+    (set-fill-column draco-code-comment-width)
+    (if (> emacs-major-version 24)
+        (progn
+          (require 'fill-column-indicator)
+          (fci-mode)))
     (add-hook 'shell-mode-hook 'turn-on-draco-mode)
     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
     (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
     (add-hook 'shell-mode-hook 'turn-on-font-lock)))
-
-;; ========================================
-;; CVS Mode
-;; http://www.xemacs.org/Documentation/packages/html/pcl-cvs_5.html#SEC13
-;; ========================================
-
-(defun draco-setup-cvs-mode ()
-  "Autoload cvs-mode and set up some customizations for DRACO."
-  (interactive)
-  (progn
-;    (autoload 'cvs-examine "pcl-cvs" "CVS mode" t)
-;    (require 'pcl-cvs)
-    ;; (require 'psvn)
-    ;; (setq svn-status-verbose nil)
-
-    ;; (defun draco-menu-extras-cvs ()
-    ;;   "Submenu for inserting comments (context sensitive)."
-    ;;   (list "CVS extras..."
-    ;;         ["CVS help" cvs-help t]))
-
-    ;; (defun draco-cvs-edit-mode-hook ()
-    ;;   "Setup the PCL-CVS cvs-edit-mode with draco prefs."
-    ;;   (auto-fill-mode t)
-    ;;   (setq fill-prefix "  ")
-    ;;   (draco-mode-update-menu (draco-menu-extras-cvs)))
-    ;; (add-hook 'cvs-mode-hook 'draco-cvs-edit-mode-hook)
-    ;; (add-hook 'cvs-mode-hook 'turn-on-draco-mode)
-    ;; (if draco-colorize-modeline
-    ;;     (add-hook 'cvs-mode-hook
-    ;;     	  '(lambda () ;; M-x list-colors-display
-    ;;     	     (set-face-background 'modeline
-    ;;     				  "honeydew" (current-buffer))
-    ;;     	     (set-face-foreground 'modeline
-    ;;     				  "black"   (current-buffer)))))
-    ;; (setq cvs-erase-input-buffer        nil
-    ;;       cvs-inhibit-copyright-message t
-    ;;       cvs-status-flags "-q"
-    ;;       vc-dired-terse-display nil )
-    ;; ; If this variable is set to any non-nil value
-    ;; ; `cvs-mode-remove-handled' will be called every time you check in
-    ;; ; files, after the check-in is ready. See section 5.11 Removing handled
-    ;; ; entries.
-    ;; (setq cvs-auto-remove-handled t)
-
-    ;; ; If this variable is set to any non-nil value, directories that do not
-    ;; ; contain any files to be checked in will not be listed in the `*cvs*'
-    ;; ; buffer.
-    ;; (setq cvs-auto-remove-handled-directories t)
-    ))
-
-;; ========================================
-;; Doxymacs Mode
-;; ========================================
-
-(require 'doxymacs)
-(defun draco-setup-doxymacs-mode ()
-  "Autoload doxymacs-mode and set up some customizations for DRACO."
-  (interactive)
-  (progn
-    (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
-    (require 'doxymacs)
-    (defvar doxymacs-doxygen-style "Qt")
-    (add-hook 'c-mode-common-hook 'doxymacs-mode)
-    (defun draco-doxymacs-font-lock-hook ()
-      (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-	  (doxymacs-font-lock)))
-     (add-hook 'font-lock-mode-hook 'draco-doxymacs-font-lock-hook)
-    )
-  )
 
 ;; ========================================
 ;; Shell mode
@@ -762,13 +630,6 @@ auto-mode-alist and set up some customizations for DRACO."
 	    ["Insert Makefile divider"         draco-makefile-divider         t]
 	    ["Insert Makefile comment divider" draco-makefile-comment-divider t]))
 
-    (if draco-colorize-modeline
-	(add-hook 'sh-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "palegoldenrode" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
     (setq auto-mode-alist
 	  (append
 	   '(("\\.bash." . sh-mode)
@@ -798,13 +659,6 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
     (autoload 'sgml-mode "sgml-mode" "SGML Shell Editing Mode" t)
-    (if draco-colorize-modeline
-	(add-hook 'sgml-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "thistle" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
     (setq auto-mode-alist
 	  (append
 	   '(("\\.sgml$" . sh-mode)
@@ -824,13 +678,6 @@ auto-mode-alist and set up some customizations for DRACO."
   (progn
     (autoload 'text-mode "text-mode" "Text Editing Mode" t)
     (require 'ansi-color)
-    (if draco-colorize-modeline
-	(add-hook 'text-mode-hook
-		  '(lambda ()
-		     (set-face-background 'modeline
-					  "wheat" (current-buffer))
-		     (set-face-foreground 'modeline
-					  "black"   (current-buffer)))))
     (setq auto-mode-alist
 	  (append
 	   '(("\\.text$" . text-mode)
@@ -868,14 +715,7 @@ auto-mode-alist and set up some customizations for DRACO."
     (defun draco-dired-mode-hook ()
       "Hooks added to dired-mode"
       (local-set-key [(f5)] 'dired-redisplay-subdir)
-      (setq dired-listing-switches "-alh")
-      (if draco-colorize-modeline
-	  (add-hook 'dired-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "thistle" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer))))))
+      (setq dired-listing-switches "-alh"))
     (add-hook 'dired-setup-keys-hook 'draco-dired-mode-hook)
     (add-hook 'dired-mode-hook 'turn-on-draco-mode)))
 
@@ -892,14 +732,7 @@ auto-mode-alist and set up some customizations for DRACO."
     (add-hook 'perl-mode-hook 'turn-on-font-lock)
     (defun draco-perl-mode-hook ()
       "Hooks added to perl-mode"
-      (local-set-key [(f5)] 'dired-redisplay-subdir)
-      (if draco-colorize-modeline
-	  (add-hook 'perl-mode-hook
-		    '(lambda ()
-		       (set-face-background 'modeline
-					    "thistle" (current-buffer))
-		       (set-face-foreground 'modeline
-					    "black"   (current-buffer))))))
+      (local-set-key [(f5)] 'dired-redisplay-subdir))
     (setq auto-mode-alist
           (append
            '(("\\.perl$" . perl-mode)
@@ -907,7 +740,6 @@ auto-mode-alist and set up some customizations for DRACO."
     (add-hook 'perl-mode-hook 'turn-on-draco-mode)
     )
   )
-
 
 ;; ========================================
 ;; ECB & CEDET

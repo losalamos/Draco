@@ -309,6 +309,14 @@ template <typename T> void global_max(T &x) {
 
 //------------------------------------------------------------------------------------------------//
 
+template <typename T> void global_and(T &x) {
+
+  // do global MPI reduction (result is on all processors) into x
+  MPI_Allreduce(MPI_IN_PLACE, &x, 1, MPI_Traits<T>::element_type(), MPI_LAND, communicator);
+}
+
+//------------------------------------------------------------------------------------------------//
+
 template <typename T> void global_prod(T *x, int n) {
   Require(x != nullptr);
   Require(n > 0);

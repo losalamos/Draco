@@ -1,0 +1,122 @@
+#!/bin/bash
+
+# git pre-commit hook that runs a cmake-lint stylecheck.
+# Features:
+#  - abort commit when commit does not comply with the style guidelines
+
+#--------------------------------------------------------------------------------------------------#
+# SETTINGS
+#
+# set path to cmake-lint binary. If cmake-lint is not available, then don't run this hook. Style
+# issues will be caught during by the pull request process.
+#--------------------------------------------------------------------------------------------------#
+
+# make tmp file readable only by owner
+umask 0077
+
+# remove any older patches from previous commits. Set to true or false.
+DELETE_OLD_PATCHES=true
+
+# file types to parse.
+FILE_EXTS=".cmake"
+FILE_ENDINGS_INCLUDE="CMakeLists.txt"
+# FILE_ENDINGS_EXCLUDE="_f.h _f77.h _cmake.h"
+export FILE_EXTS FILE_ENDINGS_INCLUDE
+
+# ------------------------------------------------------------------------------------------------ #
+# There should be no need to change anything below this line.
+# ------------------------------------------------------------------------------------------------ #
+
+# shellcheck source=environment/git/canonicalize_filename.sh
+source "$(dirname -- "$0")/canonicalize_filename.sh"
+
+# shellcheck source=tools/common.sh
+source "$(dirname -- "$0")/common.sh"
+
+# exit on error
+# set -e
+
+# Absolute path this script is in, thus /home/user/bin
+SCRIPT="$(canonicalize_filename "$0")"
+SCRIPTPATH="$(dirname -- "$SCRIPT")"
+
+# Disable check if cmake-lint not found or too old.
+CML=$(which cmake-lint)
+if [[ $CML ]]; then
+  CMLVER=$("$CML" --version)
+  if version_gt "0.5.0" "${CMLVER}"; then unset CML; fi
+fi
+if ! [[ -f "${SCRIPTPATH}/../../.cmake-format.py" ]]; then unset CML; fi
+if [ ! -x "$CML" ] ; then
+  printf "Warning: cmake-lint executable not found or is too old (version < 0.5).\n"
+  printf "       skipping cmake format check. To enable this check\n"
+  printf "       set the correct path in %s.\n" "$(canonicalize_filename "$0")"
+  exit 0
+fi
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# create a random filename to store our generated patch
+prefix="pre-commit-clang-lint"
+suffix="$(date +%s)"
+patch=$(mktemp "/tmp/$prefix-$suffix.patch.XXXXXXXX")
+
+# clean up any older clang-format patches
+$DELETE_OLD_PATCHES && rm -f "/tmp/$prefix*.patch" &> /dev/null
+$DELETE_OLD_PATCHES && rm -f "/tmp/$prefix-$suffix.patch.*" &> /dev/null
+
+cml_issues=0
+
+# shellcheck disable=SC2162
+git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+do
+  # Only check cmake-files specified by FILE_EXTS and FILE_ENDINGS_INCLUDE
+  if ! matches_extension "$file"; then continue; fi
+
+  $CML --suppress-decoration "${file}" &> "$patch"
+  if [[ -s "$patch" ]]; then
+    printf "==> cmake-lint %s\n" "${file}"
+    # shellcheck disable=SC2030
+    cml_issues=1
+  else
+    echo -ne "==> cmake-lint ${file} ... OK\n"
+  fi
+
+done
+
+# ------------------------------------------------------------------------------------------------ #
+# Pass/Fail
+# ------------------------------------------------------------------------------------------------ #
+
+# shellcheck disable=SC2031
+if [[ $cml_issues == 0 ]]; then
+  rm "$patch"
+  exit 0
+fi
+
+# There are files that don't comply...
+
+# a patch has been created, notify the user and exit
+printf "\nThe following differences were found between the code to commit and the cmake-lint "
+printf "rules:\n\n"
+cat "$patch"
+
+printf "\nYou can apply these changes with:\n git apply %s\n" "${patch}"
+printf "(may need to be called from the root directory of your repository)\n"
+printf "Aborting commit. Apply changes and commit again or skip checking with --no-verify (not "
+printf "recommended).\n"
+printf "\nYou can also manually update format by running\n"
+printf "  cmake-lint <file>"
+
+rm "$patch"
+exit 1
+
+# ------------------------------------------------------------------------------------------------ #
+# End pre-commit-cmake-lint
+# ------------------------------------------------------------------------------------------------ #

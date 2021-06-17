@@ -52,8 +52,8 @@ void ofpstream::mpibuf::send() {
     for (unsigned i = 1; i < pids; ++i) {
       unsigned N(0);
       receive(&N, 1, i);
+      buffer_.resize(N);
       if (N > 0) {
-        buffer_.resize(N); // N could be 0
         rtt_c4::receive(&buffer_[0], N, i);
       }
       if (mode_ == ios_base::binary) {

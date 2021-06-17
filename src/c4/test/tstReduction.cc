@@ -14,6 +14,7 @@
 using namespace std;
 
 using rtt_c4::C4_Req;
+using rtt_c4::global_and;
 using rtt_c4::global_isum;
 using rtt_c4::global_max;
 using rtt_c4::global_min;
@@ -27,6 +28,14 @@ using rtt_dsxx::soft_equiv;
 //------------------------------------------------------------------------------------------------//
 
 void elemental_reduction(rtt_dsxx::UnitTest &ut) {
+
+  // test bools with with blocking mpi_land
+  bool are_all_proc_even = (rtt_c4::node() + 1) % 2 == 0;
+  global_and(are_all_proc_even);
+
+  // at least one processor index must be odd (adding 1)
+  FAIL_IF(are_all_proc_even);
+
   // test ints with blocking and non-blocking sums
   int xint = rtt_c4::node() + 1;
   global_sum(xint);
@@ -235,6 +244,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     global_max(xflt);
     FAIL_IF_NOT(soft_equiv(xflt, static_cast<double>(rtt_c4::nodes()) - 0.3));
   }
+#ifndef CRAYPE_CCE
   { // T = long double
 
     long double xld = static_cast<long double>(rtt_c4::node()) + 0.1l;
@@ -273,7 +283,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
 
     FAIL_IF_NOT(soft_equiv(xld, static_cast<long double>(rtt_c4::nodes()) - 0.3l));
   }
-
+#endif
   { // T = int
 
     xint = rtt_c4::node() + 1;
@@ -721,6 +731,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
+#ifndef CRAYPE_CCE
   { // T = long double
 
     // make a vector of long doubles
@@ -766,6 +777,7 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
       FAIL_IF_NOT(soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end(), eps));
     }
   }
+#endif
   { // T = int
 
     // make a vector of ints

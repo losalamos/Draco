@@ -5,10 +5,9 @@
 ;; Created: 30 Nov 2004
 ;; Version: 0.0.1
 ;;
-;; Copyright (C) 2016-2020 Triad National Security, LLC.
-;; All rights reserved.
+;; Copyright (C) 2016-2020 Triad National Security, LLC.  All rights reserved.
 ;;
-;;============================================================
+;;==================================================================================================
 ;; Commentary:
 ;;
 ;; - Optional: Customize the variable draco-env-dirs
@@ -22,9 +21,8 @@
 ;;
 ;;   (load-library "/fully/qualified/path/to/draco-setup")
 ;;
-;; - Invoke draco-mode with M-x turn-on-draco-mode.  To have
-;;   draco-mode invoked automatically when you start XEmacs add the
-;;   following line to your init.el somewhere after you have loaded
+;; - Invoke draco-mode with M-x turn-on-draco-mode.  To have draco-mode invoked automatically when
+;;   you start XEmacs add the following line to your init.el somewhere after you have loaded
 ;;   "draco-setup":
 ;;
 ;;   (turn-on-draco-mode)
@@ -32,16 +30,15 @@
 ;; - Customize the mode by giving the command
 ;;   M-x customize-group <ret> draco-mode <ret>
 ;;
-;; - NOTE: Fundamental mode will not autoload any of the draco-mode
-;;   settings!  If you want all new XEmacs buffers to have these
-;;   settings applied (including fonts/colors) you can set the
-;;   default-mode in XEmacs to be text-mode.  Edit ~/.xemacs/custom.el
-;;   and add the following command:
+;; - NOTE: Fundamental mode will not autoload any of the draco-mode settings!  If you want all new
+;;   XEmacs buffers to have these settings applied (including fonts/colors) you can set the
+;;   default-mode in XEmacs to be text-mode.  Edit ~/.xemacs/custom.el and add the following
+;;   command:
 ;;
 ;;   (custom-set-variables
 ;;      '(default-major-mode ('text-mode) t))
 ;;
-;;============================================================
+;;==================================================================================================
 
 ;; Customizable values (paths, basic setup options, etc.)
 
@@ -55,6 +52,7 @@ prepended to the load-path if they exist.  The directories <dir>/elisp
 will also be examined and prepended to the the load-path if they
 exist.  \nAdd to this list by using the following command in personal
 elisp files: \n\t(setq draco-env-dirs (cons \"/path/to/extra/dir/\"))"
+
 :group 'draco-mode
 :type 'list)
 
@@ -239,20 +237,6 @@ shell-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
-(defcustom draco-want-cvs-mode t
-  "*Does the user want to have the Draco minor mode enabled for
-cvs-mode?"
-:group 'draco-mode
-:type '(radio	(const :tag "Yes" t)
-		(const :tag "No"  nil)))
-
-(defcustom draco-want-doxymacs-mode nil
-  "*Does the user want to have the Draco minor mode enabled for
-doxymacs-mode?"
-:group 'draco-mode
-:type '(radio	(const :tag "Yes" t)
-		(const :tag "No"  nil)))
-
 (defcustom draco-want-sh-mode t
   "*Does the user want to have the Draco minor mode enabled for
 sh-mode?"
@@ -390,10 +374,9 @@ compilation-mode?"
 (if draco-want-cc-mode         (draco-setup-cc-mode))
 (if draco-want-change-log-mode (draco-setup-change-log-mode))
 (if draco-want-compilation-mode (draco-setup-compilation-mode))
-(if draco-want-cvs-mode        (draco-setup-cvs-mode))
 (if draco-want-dired-mode      (draco-setup-dired-mode))
 (if draco-want-perl-mode       (draco-setup-perl-mode))
-(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
+;(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
 (if draco-want-emacs-lisp-mode (draco-setup-emacs-lisp-mode))
 (if draco-want-f90-mode        (draco-setup-f90-mode))
 (if draco-want-fortran-mode    (draco-setup-fortran-mode))

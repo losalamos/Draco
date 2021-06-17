@@ -24,7 +24,7 @@ else
 fi
 
 # The following toolchains will be used when releasing code
-environments="intel1904env intel1904env-knl"
+environments="cce11env intel1904env intel1904env-knl"
 
 # Extra cmake options
 export CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -49,7 +49,27 @@ fi
 case "$ddir" in
 
   #------------------------------------------------------------------------------------------------#
-  draco-7_8*)
+  draco-7_9* | draco-7_10*)
+    function cce11env()
+    {
+      unset partition
+      unset jobnameext
+
+      sysname=$(/usr/projects/hpcsoft/utilities/bin/sys_name)
+      module use --append "/usr/projects/draco/Modules/${sysname}"
+
+      run "module unload draco"
+      run "module unload PrgEnv-intel"
+      run "module load PrgEnv-cray"
+      run "module load draco/cce1101"
+      run "module list"
+      CC=$(which cc)
+      CXX=$(which CC)
+      FC=$(which ftn)
+      # export LD_LIBRARY_PATH="$CRAY_LD_LIBRARY_PATH":"$LD_LIBRARY_PATH"
+      export CC CXX FC
+    }
+
     function intel1904env()
     {
       unset partition
@@ -58,9 +78,9 @@ case "$ddir" in
       sysname=$(/usr/projects/hpcsoft/utilities/bin/sys_name)
       module use --append "/usr/projects/draco/Modules/${sysname}"
 
-      if [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
-        run "module swap craype-mic-knl craype-haswell"
-      fi
+      run "module unload draco"
+      run "module unload PrgEnv-cray"
+      run "module load PrgEnv-intel"
       run "module load draco/intel19"
       run "module list"
       CC=$(which cc)
@@ -78,10 +98,13 @@ case "$ddir" in
       sysname=$(/usr/projects/hpcsoft/utilities/bin/sys_name)
       module use --append "/usr/projects/draco/Modules/${sysname}"
 
+      run "module unload draco"
+      run "module unload PrgEnv-cray"
+      run "module load PrgEnv-intel"
+      run "module load draco/intel19"
       if ! [[ "${CRAY_CPU_TARGET}" == mic-knl ]]; then
         run "module swap craype-haswell craype-mic-knl"
       fi
-      run "module load draco/intel19"
       run "module list"
       CC=$(which cc)
       CXX=$(which CC)

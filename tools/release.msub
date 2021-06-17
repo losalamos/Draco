@@ -1,40 +1,47 @@
 #!/bin/bash
 
-# For config and build steps, this file is run as a bash script on the
-# front-end.  For the test step, this file is submitted to the batch system.
-# This file is designed to be called from scripts/release_cray.sh.
+# For config and build steps, this file is run as a bash script on the front-end.  For the test
+# step, this file is submitted to the batch system.  This file is designed to be called from
+# scripts/release_cray.sh.
 
-##---------------------------------------------------------------------------##
-## Generic setup
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# Generic setup
+# ------------------------------------------------------------------------------------------------ #
 
-source $draco_script_dir/common.sh
-export buildflavor=`flavor`
-export build_pe=`npes_build`
-export test_pe=`npes_test`
-case `uname -n` in
-rzansel* | sierra* )  export test_pe=80 ;;
-esac
+# shellcheck source=tools/common.sh
+source "${draco_script_dir:-unknown}/common.sh"
+buildflavor=$(flavor)
+build_pe=$(npes_build)
+test_pe=$(npes_test)
 
+# For Darwin and ATS-2, if the cuda module is loaded, then limit testing parallelism to avoid
+# crashing the GPU.
+if [[ $(echo "${_LMFILES_}" | grep -c /cuda/) -gt 0 ]]; then
+  test_pe=12
+fi
 
-##---------------------------------------------------------------------------##
-## Print a summary of this build
-##---------------------------------------------------------------------------##
+export test_pe
+export buildflavor
+export build_pe
+
+# ------------------------------------------------------------------------------------------------ #
+# Print a summary of this build
+# ------------------------------------------------------------------------------------------------ #
 
 verbose=1
 if test $verbose == 1; then
-  echo
-  echo "Starting release build for $package - $rttversion - $buildflavor - $TARGET:"
+  echo -ne "\nStarting release build for ${package:-unknown} - ${rttversion:-unknown} "
+  echo "- ${buildflavor}:"
   echo "================================================================================"
-  echo "install_prefix = $install_prefix/$rttversion"
-  echo "build_prefix   = $build_prefix/$rttversion"
+  echo "install_prefix = ${install_prefix:-unknown}/$rttversion"
+  echo "build_prefix   = ${build_prefix:-unknown}/$rttversion"
   echo
   echo "make command = make -j $build_pe -l $build_pe"
   echo "test command = ctest -j $test_pe"
-  echo "steps        = ${steps}"
-  echo "queue        = $access_queue"
-  echo "cmake opts   = $CONFIG_EXTRA"
-  echo
+  echo "steps        = ${steps:-unknown}"
+  # shellcheck disable=SC2154
+  echo "queue        = ${access_queue}"
+  echo -e "cmake opts   = $CONFIG_EXTRA\n"
 fi
 
 # dry_run=1
@@ -42,6 +49,6 @@ install_versions
 
 echo -e "\nAll done with $0\n"
 
-##---------------------------------------------------------------------------##
-## End
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# End
+# ------------------------------------------------------------------------------------------------ #

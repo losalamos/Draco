@@ -12,31 +12,41 @@ include_guard(GLOBAL)
 # Compiler Flags
 #
 
-if( NOT Fortran_FLAGS_INITIALIZED )
-   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+if(NOT Fortran_FLAGS_INITIALIZED)
+  set(Fortran_FLAGS_INITIALIZED
+      "yes"
+      CACHE INTERNAL "using draco settings.")
 
-   string( APPEND CMAKE_Fortran_FLAGS " -ffree-line-length-none -cpp" )
-   string( CONCAT CMAKE_Fortran_FLAGS_DEBUG "-g -fbounds-check -frange-check"
-     " -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-character=127 -DDEBUG")
-   set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG" )
-   set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
-   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g ${CMAKE_Fortran_FLAGS_RELEASE}")
+  string(APPEND CMAKE_Fortran_FLAGS " -ffree-line-length-none -cpp")
+  string(CONCAT CMAKE_Fortran_FLAGS_DEBUG "-g -fbounds-check -frange-check"
+                " -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-character=127 -DDEBUG")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG")
+  set(CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}")
+  set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g ${CMAKE_Fortran_FLAGS_RELEASE}")
 
-   if (NOT APPLE AND HAS_MARCH_NATIVE)
-      set( CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS} -march=native" )
-   endif()
+  # Only add '-march=native' if -march and -mtune are not already requested. Spack will add -march=
+  # options if spacific target is requested (ie. target Haswell CPU when building on Skylake).
+  if(NOT
+     ("${FC}" MATCHES "-mtune"
+      OR "${FC}" MATCHES "-march"
+      OR "${CMAKE_Fortran_FLAGS}" MATCHES "-mtune"
+      OR "${CMAKE_Fortran_FLAGS}" MATCHES "-march"))
+    if(NOT APPLE AND HAS_MARCH_NATIVE)
+      set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -march=native")
+    endif()
+  endif()
 endif()
 
-#--------------------------------------------------------------------------------------------------#
+# --------------------------------------------------------------------------------------------------#
 # Ensure cache values always match current selection
 deduplicate_flags(CMAKE_Fortran_FLAGS)
 force_compiler_flags_to_cache("Fortran")
 
 # Toggle compiler flags for optional features
-if( OpenMP_Fortran_FLAGS )
-  toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
+if(OpenMP_Fortran_FLAGS)
+  toggle_compiler_flag(OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "")
 endif()
 
-#-------------------------------------------------------------------------------------------------#
+# -------------------------------------------------------------------------------------------------#
 # End config/unix-gfortran.cmake
-#-------------------------------------------------------------------------------------------------#
+# -------------------------------------------------------------------------------------------------#

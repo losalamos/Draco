@@ -1,0 +1,12 @@
+indent = 2
+line-length = 100
+whitespace = 2
+whitespace-comma = true
+whitespace-assignment = true
+whitespace-relational = true
+whitespace-logical = false
+whitespace-plusminus = true
+whitespace-multdiv = true
+whitespace-print = true
+whitespace-type = true
+whitespace-intrinsics = true

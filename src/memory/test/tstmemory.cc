@@ -10,7 +10,6 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "memory/memory.hh"
-#include <limits>
 #include <sstream>
 
 using namespace std;
@@ -168,6 +167,21 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
+//----------------------------------------------------------------------------------------//
+void tst_report(rtt_dsxx::UnitTest &) {
+  // No good way to test automatically, alas. All we check is that the calls go in and
+  // don't crash anything.
+  {
+    vector<unsigned char> d1(1000);
+    rtt_memory::set_report_threshold(1500);
+    d1.resize(2000);
+    d1.clear();
+    rtt_memory::set_report_threshold(100);
+    d1.resize(3000);
+  }
+  rtt_memory::set_report_threshold();
+}
+
 //------------------------------------------------------------------------------------------------//
 // Some compilers are clever enough to figure out that if you pass
 // std::numeric_limits<size_t>::max() to the new operator, you will always blow
@@ -181,6 +195,7 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     tst_memory(ut);
+    tst_report(ut);
     tst_bad_alloc(ut);
   }
   UT_EPILOG(ut);

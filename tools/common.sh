@@ -1,10 +1,10 @@
 #!/bin/bash -l
 # -*- Mode: sh -*-
 #--------------------------------------------------------------------------------------------------#
-# File  : regression/sripts/common.sh
+# File  : tools/common.sh
 # Date  : Tuesday, May 31, 2016, 14:48 pm
 # Author: Kelly Thompson
-# Note  : Copyright (C) 2016-2020, Triad National Security, LLC., All rights are reserved.
+# Note  : Copyright (C) 2016-2021, Triad National Security, LLC., All rights are reserved.
 #
 # Summary: Misc bash functions useful during development of code.
 #--------------------------------------------------------------------------------------------------#
@@ -85,12 +85,14 @@ function machineName
       rzmanta*) sysName=rzmanta ;;
       sierra*) sysName=sierra ;;
     esac
+  else
+    sysName=$(uname -n | sed -e 's/[.].*//')
   fi
   if [[ "$sysName" == "unknown" ]]; then
-    echo "Unable to determine machine name, please edit scripts/common.sh."
+    echo "Unable to determine machine name, please edit tools/common.sh."
     return 1
   fi
-  echo $sysName
+  echo "$sysName"
 }
 
 # Logic taken from /usr/projects/hpcsoft/templates/header
@@ -111,6 +113,9 @@ function osName
     elif [[ -d /usr/gapps/jayenne ]]; then
       osName=$(uname -p)
     fi
+  fi
+  if [[ ${osName} == "unknown" ]]; then
+    osName=$(uname -p)
   fi
   if [[ "$osName" == "unknown" ]]; then
     echo "Unable to determine system OS, please edit scripts/common.sh."
@@ -206,13 +211,15 @@ function flavor
       else
         mpiflavor="unknown"
       fi
-      if [[ $CC ]]; then
-        if [[ $CC =~ "gcc" ]]; then
-          compilerflavor=gnu-$("${CC}" --version | head -n 1 | sed -r 's%.* %%')
-        elif [[ $CC =~ "icc" ]]; then
-          compilerflavor=intel-$("${CC}" --version | head -n 1 | awk '{ print $3 }' | sed -r 's%([0-9]+).([0-9]+).([0-9]+).*%\1.\2.\3%')
-        elif [[ $CC =~ "IBM" ]] || [[ $CC =~ "xlc" ]]; then
-          compilerflavor=xl-$("${CC}" --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g')
+      # Strip compiler options if they are defined in the module files. e.g. CC="xlc -F/full/path/file"
+      comp=$(echo "$CC" | awk '{print $1;}')
+      if [[ ${comp} ]]; then
+        if [[ ${comp} =~ "gcc" ]]; then
+          compilerflavor=gnu-$("${comp}" --version | head -n 1 | sed -r 's%.* %%')
+        elif [[ $comp =~ "icc" ]]; then
+          compilerflavor=intel-$("${comp}" --version | head -n 1 | awk '{ print $3 }' | sed -r 's%([0-9]+).([0-9]+).([0-9]+).*%\1.\2.\3%')
+        elif [[ $comp =~ "IBM" ]] || [[ $comp =~ "xlc" ]]; then
+          compilerflavor=xl-$("${comp}" --version | grep Version | sed -r 's%.* %%' | sed -r 's%0+([1-9])%\1%g')
         fi
       else
         compilerflavor="unknown"
@@ -268,6 +275,11 @@ function flavor
       # CCS-NET machines or generic Linux?
       if [[ $MPI_NAME ]]; then
         mpiflavor="$MPI_NAME-$MPI_VERSION"
+      elif [[ $LMOD_MPI_NAME ]]; then
+        mpiflavor="$LMOD_MPI_NAME"
+        if [[ $LMOD_MPI_VERSION ]]; then
+          mpiflavor+="-${LMOD_MPI_VERSION//-*/}"
+        fi
       else
         mpiflavor="unknown"
       fi
@@ -366,7 +378,7 @@ function npes_build
   elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
     np="${SLURM_CPUS_ON_NODE}"
   elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np="${SLURM_TSKS_PER_NODE}"
+    np="${SLURM_TASKS_PER_NODE}"
   elif [[ ${LSB_DJOB_NUMPROC} ]]; then
     np="${LSB_DJOB_NUMPROC}"
   elif [[ -f /proc/cpuinfo ]]; then
@@ -400,7 +412,7 @@ function npes_test
         cps=$(lscpu | grep "^Core(s)" | awk '{ print $4 }')
         # number of sockets
         ns=$(lscpu | grep "^Socket(s):" | awk '{ print $2 }')
-        np=$(("$cps"*"$ns"))
+        np=$(( cps * ns))
 
       else
 
@@ -411,7 +423,7 @@ function npes_test
         elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
           np="${SLURM_CPUS_ON_NODE}"
         elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-          np="${SLURM_TSKS_PER_NODE}"
+          np="${SLURM_TASKS_PER_NODE}"
         elif [[ $(uname -p) == "ppc" ]]; then
           # sinfo --long --partition=pdebug (show limits)
           np=64
@@ -701,11 +713,10 @@ function version_gt()
 # Example:
 #
 # FILE_EXTS=".f90 .F90"
-# FILE_ENDINGS="_f.h _f77.h _f90.h"
+# FILE_ENDINGS_INCLUDE="CMakeLists.txt"
+# FILE_ENDINGS_EXCLUDE="_f.h _f77.h _f90.h"
 # for file in $modified_files; do
-#   if ! matches_extension $file; then
-#      continue;
-#   fi
+#   if ! matches_extension $file; then continue; fi
 #   <do stuff>
 # done
 #--------------------------------------------------------------------------------------------------#
@@ -716,7 +727,8 @@ matches_extension() {
   local ext
   filename=$(basename "$1")
   extension=".${filename##*.}"
-  for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
+  for end in $FILE_ENDINGS_EXCLUDE; do [[ "$filename" == *"$end" ]] && return 1; done
+  for end in $FILE_ENDINGS_INCLUDE; do [[ "$filename" == *"$end" ]] && return 0; done
   for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
   return 1
 }

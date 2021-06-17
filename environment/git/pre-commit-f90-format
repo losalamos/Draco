@@ -20,12 +20,36 @@ function debugprint()
   if [[ "$debug" == "on" ]]; then echo "$@"; fi
 }
 
-function version_gt()
-{
-  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
-}
+# Allow developers to opt-out
+auto_apply=false
+if [[ ${DRACO_AUTO_CLANG_FORMAT:-YES} ]]; then
+  case $DRACO_AUTO_CLANG_FORMAT in
+    NO | OFF | FALSE | no | off | false ) exit 0 ;;
+    YES | ON | TRUE | yes | on | true) auto_apply=true ;;
+    DIFF | diff) auto_apply=false ;;
+  esac
+fi
 
-# Defaults ----------------------------------------
+# remove any older patches from previous commits. Set to true or false.
+DELETE_OLD_PATCHES=true
+
+# file types to parse.
+FILE_EXTS=".f90 .F90"
+#FILE_ENDINGS_INCLUDE="_f.h _f77.h _f90.h"
+FILE_ENDINGS_EXCLUDE="_f.h _f77.h _f90.h"
+export FILE_EXTS FILE_ENDINGS_EXCLUDE
+
+##################################################################
+# There should be no need to change anything below this line.
+# shellcheck source=environment/git/canonicalize_filename.sh
+source "$(dirname -- "$0")/canonicalize_filename.sh"
+
+# shellcheck source=tools/common.sh
+source "$(dirname -- "$0")/common.sh"
+
+# exit on error
+# set -e
+
 unalias emacs 2> /dev/null
 EMACS=$(which emacs 2> /dev/null)
 if [[ -x "$EMACS" ]]; then
@@ -38,56 +62,6 @@ if [[ -x "$EMACS" ]]; then
 else
   unset EMACS
 fi
-
-# Allow developers to opt-out
-auto_apply=false
-if [[ ${DRACO_AUTO_CLANG_FORMAT:-YES} ]]; then
-  case $DRACO_AUTO_CLANG_FORMAT in
-    NO | OFF | FALSE | no | off | false ) exit 0 ;;
-    YES | ON | TRUE | yes | on | true) auto_apply=true ;;
-    DIFF | diff) auto_apply=false ;;
-  esac
-fi
-
-# remove any older patches from previous commits. Set to true or false.
-# DELETE_OLD_PATCHES=false
-DELETE_OLD_PATCHES=true
-
-# only parse files with the extensions in FILE_EXTS. Set to true or false.  if false every changed
-# file in the commit will be parsed with f90-format.  if true only files matching one of the
-# extensions are parsed with f90-format.  PARSE_EXTS=true
-PARSE_EXTS=true
-
-# file types to parse. Only effective when PARSE_EXTS is true.
-# FILE_EXTS=".c .h .cpp .hpp"
-FILE_EXTS=".f90 .F90"
-
-# file endings for files to exclude from parsing when PARSE_EXTS is true.
-FILE_ENDINGS="_f.h _f77.h _f90.h"
-
-##################################################################
-# There should be no need to change anything below this line.
-# shellcheck source=environment/git/canonicalize_filename.sh
-source "$(dirname -- "$0")/canonicalize_filename.sh"
-
-# exit on error
-# set -e
-
-# check whether the given file matches any of the set extensions
-matches_extension() {
-    local filename
-    local extension
-    local end
-    local ext
-
-    filename=$(basename "$1")
-    extension=".${filename##*.}"
-
-    for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
-    for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
-
-    return 1
-}
 
 # Absolute path this script is in, thus /home/user/bin
 SCRIPT="$(canonicalize_filename "$0")"
@@ -113,8 +87,8 @@ prefix="pre-commit-f90-format"
 suffix="$(date +%s)"
 
 # clean up any older f90-format patches
-$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.*
-$DELETE_OLD_PATCHES && rm -f /tmp/f90-format-*
+$DELETE_OLD_PATCHES && rm -f /tmp/$prefix-*.patch.* &> /dev/null
+$DELETE_OLD_PATCHES && rm -f /tmp/f90-format-* &> /dev/null
 
 patch=$(mktemp "/tmp/${prefix}-${suffix}.patch.XXXXXXXX")
 
@@ -122,24 +96,21 @@ patch=$(mktemp "/tmp/${prefix}-${suffix}.patch.XXXXXXXX")
 # shellcheck disable=SC2162
 git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
 do
-    # ignore file if we do check for file extensions and the file does not match any of the
-    # extensions specified in $FILE_EXTS
-    if $PARSE_EXTS && ! matches_extension "$file"; then
-        continue;
-    fi
+  # only process f90 files.
+  if ! matches_extension "$file"; then continue; fi
 
-    file_nameonly=$(basename "${file}")
-    tmpfile1=/tmp/f90-format-$file_nameonly
-    debugprint "cp -f $file $tmpfile1"
-    cp -f "${file}" "${tmpfile1}"
-    debugprint "$EMACS -batch ${tmpfile1} --no-site-file -q  -l ${SCRIPTPATH}/f90-format.el " \
-               "-f emacs-format-f90-sources"
-    $EMACS -batch "${tmpfile1}" --no-site-file -q -l "${SCRIPTPATH}/f90-format.el" \
-           -f emacs-format-f90-sources
-    diff -u "${file}" "${tmpfile1}" | \
-        sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
-    debugprint "rm $tmpfile1"
-    rm "${tmpfile1}"
+  file_nameonly=$(basename "${file}")
+  tmpfile1=/tmp/f90-format-$file_nameonly
+  debugprint "cp -f $file $tmpfile1"
+  cp -f "${file}" "${tmpfile1}"
+  debugprint "$EMACS -batch ${tmpfile1} --no-site-file -q  -l ${SCRIPTPATH}/f90-format.el " \
+             "-f emacs-format-f90-sources"
+  $EMACS -batch "${tmpfile1}" --no-site-file -q -l "${SCRIPTPATH}/f90-format.el" \
+         -f emacs-format-f90-sources
+  diff -u "${file}" "${tmpfile1}" | \
+    sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patch"
+  debugprint "rm $tmpfile1"
+  rm "${tmpfile1}"
 
 done
 
@@ -163,7 +134,7 @@ if [[ $found_issue == 0 ]]; then
 
     # ignore file if we do check for file extensions and the file does not match any of the
     # extensions specified in $FILE_EXTS
-    if $PARSE_EXTS && ! matches_extension "$file"; then
+    if ! matches_extension "$file"; then
       continue;
     fi
 

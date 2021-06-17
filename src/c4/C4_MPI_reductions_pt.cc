@@ -80,6 +80,8 @@ template void global_min<double>(double &);
 template void global_min<long double>(long double &);
 template void global_min<unsigned long long>(unsigned long long &);
 
+template void global_and<bool>(bool &);
+
 template void global_prod<short>(short *, int);
 template void global_prod<unsigned short>(unsigned short *, int);
 template void global_prod<int>(int *, int);

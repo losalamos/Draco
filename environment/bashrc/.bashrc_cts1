@@ -1,13 +1,13 @@
 ##-*- Mode: sh -*-
-##---------------------------------------------------------------------------##
-## .bashrc_cts1 - my bash configuration file upon bash login
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# .bashrc_cts1 - my bash configuration file upon bash login
+# ------------------------------------------------------------------------------------------------ #
 
 [[ -n "$verbose" ]] && echo "In .bashrc_cts1"
 
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# Environments
+# ------------------------------------------------------------------------------------------------ #
 
 # Where is the vendor directory
 if [[ ! ${VENDOR_DIR} ]]; then
@@ -43,14 +43,14 @@ modcmd=`declare -f module`
 #    If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
    [[ -f /usr/share/lmod/lmod/init/bash ]] && source /usr/share/lmod/lmod/init/bash || \
-     echo "ERROR: The module command was not found. No modules will be loaded."
+     echo "ERROR: The module command was not found. No modules will be loaded (cts-1, e01)."
 fi
 modcmd=`declare -f module`
 
 # 2. Use modules found in the draco directory
 
 if [[ ! ${modcmd} ]]; then
-   echo "ERROR: The module command was not found. No modules will be loaded."
+   echo "ERROR: The module command was not found. No modules will be loaded (cts-1, e02)."
 else
 
   if [[ -d /usr/projects/draco/Modules/cts1 ]]; then
@@ -60,6 +60,6 @@ else
 
 fi
 
-##---------------------------------------------------------------------------##
-## end of .bashrc_cts1
-##---------------------------------------------------------------------------##
+# ------------------------------------------------------------------------------------------------ #
+# End
+# ------------------------------------------------------------------------------------------------ #

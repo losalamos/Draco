@@ -4,12 +4,10 @@
 ! \date   Mon Jul 30 07:06:24 MDT 2012
 ! \brief  Helper functions to support scalar vs. distributed MPI tests.
 ! \note   Copyright (c) 2016-2020 Triad National Security, LLC., All rights reserved.
-!
-! This is a modified version of jayenne/src/api/ftest/API_MPI.F90
 !--------------------------------------------------------------------------------------------------!
 
 module draco_mpi
-  use iso_c_binding, only : c_double, c_intptr_t
+  use iso_c_binding, only: c_double, c_intptr_t
   implicit none
 
   integer, public, save :: fc4_rank, fc4_num_ranks
@@ -22,6 +20,7 @@ module draco_mpi
 
   ! Make all the subroutines defined below public, though
   public check_mpi_error
+
   public fc4_mpi_init
   public fc4_mpi_finalize
   public fc4_mpi_barrier
@@ -46,11 +45,12 @@ contains
 #ifdef C4_MPI
     integer                         :: error_string_len, ierror
     character(MPI_MAX_ERROR_STRING) :: error_string
+    external mpi_error_string, MPI_Abort
 
     ! Check and report a nonzero error code
     if (error .ne. 0) then
        call mpi_error_string(error, error_string, error_string_len, ierror)
-       write(*,"('*** mpi error = ',i18, ' (', a, ')')") error,trim(error_string)
+       write (*, "('*** mpi error = ',i18, ' (', a, ')')") error, trim(error_string)
        call MPI_Abort(MPI_COMM_WORLD, 1, ierror)
     end if
 #endif
@@ -62,6 +62,7 @@ contains
   subroutine fc4_mpi_init(ierr)
     implicit none
     integer, intent(out) :: ierr
+    external mpi_init, mpi_comm_size, mpi_comm_rank
 
     ierr = 0
     fc4_rank = 0
@@ -86,6 +87,10 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
+    external mpi_finalize
+#endif
+    ierr = 0
+#ifdef C4_MPI
     call mpi_finalize(ierr)
     call check_mpi_error(ierr)
 #endif
@@ -98,7 +103,11 @@ contains
     implicit none
     integer, intent(out) :: ierr
 #ifdef C4_MPI
-    call mpi_barrier(MPI_COMM_WORLD,ierr)
+    external mpi_barrier
+#endif
+    ierr = 0
+#ifdef C4_MPI
+    call mpi_barrier(MPI_COMM_WORLD, ierr)
     call check_mpi_error(ierr)
 #endif
   end subroutine fc4_mpi_barrier

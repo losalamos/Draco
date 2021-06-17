@@ -124,7 +124,7 @@ static inline double taylor_series_planck(double x) {
  */
 static double polylog_series_minus_one_planck(double const x, double const eix) {
   Require(x >= 0.0);
-  Require(x < rtt_dsxx::ce_sqrt(std::numeric_limits<double>::max()));
+  Require(x < 1.0e154); // value will be squared, make sure it's less than sqrt of max double
   Require(rtt_dsxx::soft_equiv(std::exp(-x), eix));
 
   double const xsqrd = x * x;
@@ -511,6 +511,9 @@ class CDI {
   //! Material ID.
   std_string matID;
 
+  //! Extend integration to place low and high tails in low and high groups?
+  DLL_PUBLIC_cdi static bool extend;
+
   // IMPLELEMENTATION
   // ================
 
@@ -553,6 +556,9 @@ public:
 
   //! Clear all data objects
   void reset();
+
+  //! Set extended group boundaries flag
+  static void setExtend() { extend = true; }
 
   // GETTERS
   // -------
@@ -605,6 +611,9 @@ public:
 
   //! Returns the number of frequency groups in the stored frequency vector.
   static size_t getNumberFrequencyGroups();
+
+  //! Returns the extended group boundaries flag.
+  static bool getExtend() { return extend; }
 
   // INTEGRATORS:
   // ===========
