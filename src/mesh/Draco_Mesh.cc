@@ -125,7 +125,7 @@ const std::vector<unsigned> Draco_Mesh::get_cell_nodes(const unsigned cell) cons
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Return a flattended version of the cell-node tensor
+ * \brief Return a flattened version of the cell-node tensor
  *
  * \return a flattened cell-node linkage vector
  */
@@ -165,12 +165,12 @@ const std::vector<unsigned> Draco_Mesh::get_flat_cell_node_linkage() const {
 std::vector<std::vector<double>>
 Draco_Mesh::compute_node_coord_vec(const std::vector<double> &coordinates) const {
 
-  Require(coordinates.size() == dimension * num_nodes);
+  Require(coordinates.size() == dimension * static_cast<size_t>(num_nodes));
 
   // resize this class's coordinate data member
   std::vector<std::vector<double>> ret_node_coord_vec(num_nodes, std::vector<double>(dimension));
 
-  // de-serialize the vector of node coordinates
+  // deserialize the vector of node coordinates
   auto ncv_first = coordinates.begin();
   for (unsigned node = 0; node < num_nodes; ++node) {
 
@@ -206,7 +206,7 @@ Draco_Mesh::compute_cell_to_node_tensor(const std::vector<unsigned> &num_faces_p
 
   std::vector<std::vector<std::vector<unsigned>>> ret_cn_tensor(num_cells);
 
-  // de-serialize the cell-node linkage vector
+  // deserialize the cell-node linkage vector
   auto cfn_first = cell_to_node_linkage.begin();
   unsigned cf_indx = 0;
   for (unsigned cell = 0; cell < num_cells; ++cell) {
@@ -398,7 +398,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 /*!
  * \brief Build a map of node vectors to indices map for boundary layouts.
  *
- * Note: the ordering of the nodes in the mesh ctor must match the node ordering of the
+ * Note: the ordering of the nodes in the mesh constructor must match the node ordering of the
  * corresponding (local) cell face.
  *
  * \param[in] indx_type vector of number of nodes, subscripted by index.
@@ -620,7 +620,7 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   // get this (my) rank
   const unsigned my_rank = rtt_c4::node();
 
-  // generate dual gost layout
+  // generate dual ghost layout
   for (unsigned rank = 0; rank < num_ranks; ++rank) {
 
     // exclude this rank
@@ -641,7 +641,7 @@ void Draco_Mesh::compute_node_to_cell_linkage(
     auto last_v2 = std::unique(v2.begin(), v2.end());
     v2.erase(last_v2, v2.end());
 
-    // perform set intsection of my rank global nodes with this rank's global nodes
+    // perform set intersection of my rank global nodes with this rank's global nodes
     std::vector<unsigned> rank_my_rank_node_intersect;
     std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(),
                           std::back_inserter(rank_my_rank_node_intersect));

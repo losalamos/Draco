@@ -57,7 +57,7 @@ void CellData::readData(ifstream &meshfile) {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Reads and validate the end_celldat block keyworde.
+ * \brief Reads and validate the end_celldat block keyword.
  * \param meshfile Mesh file name.
  */
 void CellData::readEndKeyword(ifstream &meshfile) {

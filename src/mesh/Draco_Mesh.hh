@@ -180,11 +180,6 @@ private:
                                     const std::vector<unsigned> &ghost_cell_type,
                                     const std::vector<unsigned> &ghost_cell_to_node_linkage);
 
-  //! Calculate a map of node to vectors of indices (cells, sides, ghost cells)
-  std::map<unsigned, std::vector<unsigned>>
-  compute_node_indx_map(const std::vector<unsigned> &indx_type,
-                        const std::vector<unsigned> &indx_to_node_linkage) const;
-
   //! Calculate a map of node vectors to indices (sides, ghost cells)
   std::map<std::set<unsigned>, unsigned>
   compute_node_vec_indx_map(const std::vector<unsigned> &indx_type,

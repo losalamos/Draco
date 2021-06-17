@@ -148,7 +148,7 @@ void build_cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // successful test output
   if (ut.numFails == 0)
-    PASSMSG("2D Cartesian Draco_Mesh_Builder tests ok.");
+    PASSMSG("2D Cartesian Draco_Mesh_Builder tests okay.");
   return;
 }
 
