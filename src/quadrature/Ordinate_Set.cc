@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2020 Triad National Security, LLC., All rights reserved. */
+ * \note   Copyright (C)  2016-2021 Triad National Security, LLC., All rights reserved. */
 //------------------------------------------------------------------------------------------------//
 
 #include "Ordinate_Set.hh"
@@ -140,9 +140,6 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, rtt_mesh_element::Geometry 
   case OCTANT_ORDERED:
     sort(ordinates_.begin(), ordinates_.end(), octant_compare);
     break;
-
-  default:
-    Insist(false, "bad case");
   }
 
   Ensure(check_class_invariants());
