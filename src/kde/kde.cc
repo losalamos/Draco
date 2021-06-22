@@ -30,124 +30,344 @@ namespace rtt_kde {
 
 //------------------------------------------------------------------------------------------------//
 /*!
- * \brief Cartesian geometry KDE reconstruction of a 1D distribution
+ * \brief calculate weight
+ * 
+ * \pre Calculate the effective weight from a given location to the current kernel 
+ *
+ * \param[in] r0 current kernel center location
+ * \param[in] one_over_h0 current kernel width
+ * \param[in] r data location
+ * \param[in] one_over_h kernel width at this data location
+ * \param[in] qindex quick indexing class
+ * \param[in] discontinuity_cutoff maximum size of value discrepancies to include in the reconstruction
+ *
+ * \return weight contribution to the current kernel
+ *
+ * \post the local reconstruction of the original data is returned.
+ */
+double kde::calc_weight(const std::array<double, 3> &r0, const std::array<double, 3> &one_over_h0,
+                        const std::array<double, 3> &r, const std::array<double, 3> &one_over_h,
+                        const quick_index &qindex, const double &discontinuity_cutoff) const {
+  double weight = 1.0;
+  for (size_t d = 0; d < qindex.dim; d++) {
+    const double u = (r0[d] - r[d]) * one_over_h0[d];
+    const double scale =
+        fabs(one_over_h0[d] - one_over_h[d]) / std::max(one_over_h0[d], one_over_h[d]) >
+                discontinuity_cutoff
+            ? 0.0
+            : 1.0;
+    // Apply Boundary Condition Weighting
+    double bc_weight = 1.0;
+    const bool low_reflect = reflect_boundary[d * 2];
+    const bool high_reflect = reflect_boundary[d * 2 + 1];
+    if (low_reflect) {
+      const double low_u =
+          ((r0[d] - qindex.bounding_box_min[d]) + (r[d] - qindex.bounding_box_min[d])) *
+          one_over_h0[d];
+      bc_weight += epan_kernel(low_u);
+    }
+    if (high_reflect) {
+      const double high_u =
+          ((qindex.bounding_box_max[d] - r0[d]) + (qindex.bounding_box_max[d] - r[d])) *
+          one_over_h0[d];
+      bc_weight += epan_kernel(high_u);
+    }
+    weight *= scale * bc_weight * epan_kernel(u) * one_over_h0[d];
+  }
+  return weight;
+}
+
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief KDE reconstruction 
  * 
  * \pre The local reconstruction data is passed into this function which
  * includes the original data distribution, its spatial position, and the
  * optimal bandwidth to be used at each point.
  *
  * \param[in] distribution original data to be reconstructed
- * \param[in] position local of the original data 
- * \param[in] one_over_band_width inverse bandwidth size to be used at each data location
- * \param[in] domain_decomposed bool flag to switch between domain replicated and decomposed data
+ * \param[in] one_over_bandwidth inverse bandwidth size to be used at each data location
+ * \param[in] qindex quick_index class to be used for data access.
+ * \param[in] discontinuity_cutoff maximum size of value discrepancies to include in the reconstruction
  * \return final local KDE function distribution reconstruction
  *
  * \post the local reconstruction of the original data is returned.
  */
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
-    const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
-    const std::vector<std::array<double, 3>> &one_over_band_width,
-    const bool domain_decomposed) const {
-  const int64_t local_size = distribution.size();
-  Require(static_cast<int64_t>(position.size()) == local_size);
-  Require(static_cast<int64_t>(one_over_band_width.size()) == local_size);
+std::vector<double>
+kde::reconstruction(const std::vector<double> &distribution,
+                    const std::vector<std::array<double, 3>> &one_over_bandwidth,
+                    const quick_index &qindex, const double discontinuity_cutoff) const {
+  size_t dim = qindex.dim;
+  Require(dim < 3 && dim > 0);
+  const size_t local_size = distribution.size();
+  // be sure that the quick_index matches this data size
+  Require(qindex.locations.size() == local_size);
+  Require(one_over_bandwidth.size() == local_size);
 
   // used for the zero accumulation conservation
-  int64_t size = local_size;
-  double global_conservation = std::accumulate(distribution.begin(), distribution.end(), 0.0);
   std::vector<double> result(local_size, 0.0);
   std::vector<double> normal(local_size, 0.0);
-  if (domain_decomposed) {
-    // minimize global values and only allocate them in DD problems
-    int64_t global_lower_bound = 0;
-    std::vector<double> global_distribution;
-    std::vector<double> global_x_position;
+  if (qindex.domain_decomposed) {
 
-    // calculate global off sets
-    int n_ranks = rtt_c4::nodes();
-    int64_t izero(0);
-    std::vector<int64_t> rank_size(rtt_c4::nodes(), izero);
-    rank_size[rtt_c4::node()] = local_size;
-    rtt_c4::global_sum(rank_size.data(), n_ranks);
-    size = std::accumulate(rank_size.begin(), rank_size.end(), izero);
-    std::vector<int64_t> accum_rank_size(rank_size);
-    std::partial_sum(rank_size.begin(), rank_size.end(), accum_rank_size.begin());
-
-    if (rtt_c4::node() > 0) {
-      global_lower_bound = accum_rank_size[rtt_c4::node() - 1];
-    }
-
-    // set up global arrays
-    global_distribution.resize(size, 0.0);
-    global_x_position.resize(size, 0.0);
-
-    // build up global positions
-    for (int i = 0; i < local_size; i++) {
-      global_x_position[i + global_lower_bound] = position[i][0];
-      global_distribution[i + global_lower_bound] = distribution[i];
-    }
-
-    rtt_c4::global_sum(global_x_position.data(), size);
-    rtt_c4::global_sum(global_distribution.data(), size);
-    rtt_c4::global_sum(global_conservation);
+    std::vector<double> ghost_distribution(qindex.local_ghost_buffer_size);
+    qindex.collect_ghost_data(distribution, ghost_distribution);
+    std::vector<std::array<double, 3>> ghost_one_over_bandwidth(qindex.local_ghost_buffer_size,
+                                                                {0.0, 0.0, 0.0});
+    qindex.collect_ghost_data(one_over_bandwidth, ghost_one_over_bandwidth);
 
     // now apply the kernel to the local ranks
-    for (int i = 0; i < local_size; i++) {
-      const double x0 = position[i][0];
-      const double one_over_h = one_over_band_width[i][0];
+    for (size_t i = 0; i < local_size; i++) {
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h0 = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h0[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h0[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h0[d];
+      }
+      const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
       // fetch local contribution
-      for (int j = 0; j < size; j++) {
-        const double x = global_x_position[j];
-        const double u = (x0 - x) * one_over_h;
-        const double weight = (epan_kernel(u)) * one_over_h;
-        result[i] += global_distribution[j] * weight;
-        normal[i] += weight;
+      for (auto &cb : coarse_bins) {
+        // skip bins that aren't present in the map (for constness)
+        auto mapItr = qindex.coarse_index_map.find(cb);
+        if (mapItr != qindex.coarse_index_map.end()) {
+          // loop over local data
+          for (auto &l : mapItr->second) {
+            const double weight = calc_weight(r0, one_over_h0, qindex.locations[l],
+                                              one_over_bandwidth[l], qindex, discontinuity_cutoff);
+            result[i] += distribution[l] * weight;
+            normal[i] += weight;
+          }
+        }
+        auto gmapItr = qindex.local_ghost_index_map.find(cb);
+        if (gmapItr != qindex.local_ghost_index_map.end()) {
+          // loop over ghost data
+          for (auto &g : gmapItr->second) {
+            const double weight =
+                calc_weight(r0, one_over_h0, qindex.local_ghost_locations[g],
+                            ghost_one_over_bandwidth[g], qindex, discontinuity_cutoff);
+            result[i] += ghost_distribution[g] * weight;
+            normal[i] += weight;
+          }
+        }
       }
     }
   } else { // local reconstruction only
+
     // now apply the kernel to the local ranks
-    for (int i = 0; i < local_size; i++) {
-      const double x0 = position[i][0];
-      const double one_over_h = one_over_band_width[i][0];
-      // fetch local contribution
-      for (int j = 0; j < local_size; j++) {
-        const double x = position[j][0];
-        const double u = (x0 - x) * one_over_h;
-        const double weight = (epan_kernel(u)) * one_over_h;
-        result[i] += distribution[j] * weight;
-        normal[i] += weight;
+    for (size_t i = 0; i < local_size; i++) {
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h0 = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h0[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h0[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h0[d];
+      }
+      const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
+      for (auto &cb : coarse_bins) {
+        // skip bins that aren't present in the map (can't use [] operator with constness)
+        auto mapItr = qindex.coarse_index_map.find(cb);
+        if (mapItr != qindex.coarse_index_map.end()) {
+          // loop over local data
+          for (auto &l : mapItr->second) {
+            const double weight = calc_weight(r0, one_over_h0, qindex.locations[l],
+                                              one_over_bandwidth[l], qindex, discontinuity_cutoff);
+            result[i] += distribution[l] * weight;
+            normal[i] += weight;
+          }
+        }
       }
     }
   }
 
   // normalize the integrated weight contributions
-  for (int i = 0; i < local_size; i++) {
+  for (size_t i = 0; i < local_size; i++) {
     Check(normal[i] > 0.0);
     result[i] /= normal[i];
   }
 
-  double reconstruction_conservation = std::accumulate(result.begin(), result.end(), 0.0);
+  return result;
+}
 
-  if (domain_decomposed) {
-    // accumulate global contribution
-    rtt_c4::global_sum(reconstruction_conservation);
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief KDE reconstruction done in logarithmic data space
+ * 
+ * \pre The local reconstruction data is passed into this function which
+ * includes the original data distribution, its spatial position, and the
+ * optimal bandwidth to be used at each point. The original data distribution
+ * is transformed into log space prior and post reconstruction. This is helpful
+ * for strongly peaked data and should be exact for exponential distributions.
+ *
+ * \param[in] distribution original data to be reconstructed
+ * \param[in] one_over_bandwidth inverse bandwidth size to be used at each data location
+ * \param[in] qindex quick_index class to be used for data access.
+ * \param[in] discontinuity_cutoff maximum size of value discrepancies to include in the reconstruction
+ * \return final local KDE function distribution reconstruction
+ *
+ * \post the local reconstruction of the original data is returned.
+ */
+std::vector<double>
+kde::log_reconstruction(const std::vector<double> &distribution,
+                        const std::vector<std::array<double, 3>> &one_over_bandwidth,
+                        const quick_index &qindex, const double discontinuity_cutoff) const {
+  size_t dim = qindex.dim;
+  Require(dim < 3 && dim > 0);
+  const size_t local_size = distribution.size();
+  Require(qindex.locations.size() == local_size);
+  Require(one_over_bandwidth.size() == local_size);
+
+  // used for the zero accumulation conservation
+  std::vector<double> result(local_size, 0.0);
+  std::vector<double> normal(local_size, 0.0);
+  double min_value = *std::min_element(distribution.begin(), distribution.end());
+  double log_bias = fabs(min_value) * (1.0 + 1e-12);
+  if (qindex.domain_decomposed) {
+
+    rtt_c4::global_min(min_value);
+
+    std::vector<double> ghost_distribution(qindex.local_ghost_buffer_size);
+    qindex.collect_ghost_data(distribution, ghost_distribution);
+    std::vector<std::array<double, 3>> ghost_one_over_bandwidth(qindex.local_ghost_buffer_size,
+                                                                {0.0, 0.0, 0.0});
+    qindex.collect_ghost_data(one_over_bandwidth, ghost_one_over_bandwidth);
+
+    log_bias = fabs(min_value) * (1.0 + 1e-12);
+    log_bias = std::max(log_bias, 1e-12);
+    // now apply the kernel to the local ranks
+    for (size_t i = 0; i < local_size; i++) {
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h0 = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h0[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h0[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h0[d];
+      }
+      const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
+      // fetch local contribution
+      for (auto &cb : coarse_bins) {
+        // skip bins that aren't present in the map (can't use [] operator with constness)
+        auto mapItr = qindex.coarse_index_map.find(cb);
+        if (mapItr != qindex.coarse_index_map.end()) {
+          // loop over local data
+          for (auto &l : mapItr->second) {
+            const double weight = calc_weight(r0, one_over_h0, qindex.locations[l],
+                                              one_over_bandwidth[l], qindex, discontinuity_cutoff);
+            result[i] += log_transform(distribution[l], log_bias) * weight;
+            normal[i] += weight;
+          }
+        }
+        auto gmapItr = qindex.local_ghost_index_map.find(cb);
+        if (gmapItr != qindex.local_ghost_index_map.end()) {
+          // loop over ghost data
+          for (auto &g : gmapItr->second) {
+            const double weight =
+                calc_weight(r0, one_over_h0, qindex.local_ghost_locations[g],
+                            ghost_one_over_bandwidth[g], qindex, discontinuity_cutoff);
+            result[i] += log_transform(ghost_distribution[g], log_bias) * weight;
+            normal[i] += weight;
+          }
+        }
+      }
+    }
+  } else { // local reconstruction only
+
+    log_bias = std::max(log_bias, 1e-12);
+    // now apply the kernel to the local ranks
+    for (size_t i = 0; i < local_size; i++) {
+      const std::array<double, 3> r0 = qindex.locations[i];
+      const std::array<double, 3> one_over_h0 = one_over_bandwidth[i];
+      std::array<double, 3> win_min{0.0, 0.0, 0.0};
+      std::array<double, 3> win_max{0.0, 0.0, 0.0};
+      for (size_t d = 0; d < dim; d++) {
+        Check(one_over_h0[d] > 0.0);
+        win_min[d] = r0[d] - 1.0 / one_over_h0[d];
+        win_max[d] = r0[d] + 1.0 / one_over_h0[d];
+      }
+      const std::vector<size_t> coarse_bins = qindex.window_coarse_index_list(win_min, win_max);
+      // fetch local contribution
+      for (auto &cb : coarse_bins) {
+        // skip bins that aren't present in the map (can't use [] operator with constness)
+        auto mapItr = qindex.coarse_index_map.find(cb);
+        if (mapItr != qindex.coarse_index_map.end()) {
+          // loop over local data
+          for (auto &l : mapItr->second) {
+            const double weight = calc_weight(r0, one_over_h0, qindex.locations[l],
+                                              one_over_bandwidth[l], qindex, discontinuity_cutoff);
+            result[i] += log_transform(distribution[l], log_bias) * weight;
+            normal[i] += weight;
+          }
+        }
+      }
+    }
   }
 
-  if (!rtt_dsxx::soft_equiv(reconstruction_conservation, 0.0) &&
-      !rtt_dsxx::soft_equiv(global_conservation, 0.0)) {
-    // Totals are non-zero so scale the result for conservation
-    for (int i = 0; i < local_size; i++)
-      result[i] *= global_conservation / reconstruction_conservation;
-  } else {
-    // a zero distribution is possible. If it occurs fall back to residual conservation;
-    const double res = global_conservation - reconstruction_conservation;
-    for (int i = 0; i < local_size; i++)
-      result[i] += res / double(size);
+  // normalize the integrated weight contributions
+  for (size_t i = 0; i < local_size; i++) {
+    Check(normal[i] > 0.0);
+    result[i] /= normal[i];
+    result[i] = log_inv_transform(result[i], log_bias);
+    // ZERO IS ZERO AND THE LOG TRANSFORM CAN MAKE THE ZEROS NOT MATCH... SO FIX IT LIKE THIS
+    if (rtt_dsxx::soft_equiv(result[i], 0.0) && rtt_dsxx::soft_equiv(distribution[i], 0.0))
+      result[i] = distribution[i];
   }
 
   return result;
+}
+
+//------------------------------------------------------------------------------------------------//
+/*!
+ * \brief KDE apply conservation
+ * 
+ * \pre Apply conservation fix to the new distribution so
+ * sum(original_distribution) == sum(new_distribution)
+ *
+ * \param[in] original_distribution original data to be reconstructed
+ * \param[in,out] new_distribution original data to be reconstructed
+ * \param[in] domain_decomposed bool
+ *
+ */
+void kde::apply_conservation(const std::vector<double> &original_distribution,
+                             std::vector<double> &new_distribution,
+                             const bool domain_decomposed) const {
+
+  const size_t local_size = original_distribution.size();
+  Insist(new_distribution.size() == local_size,
+         "Original and new distributions must be the same size");
+
+  // compute absolute solution
+  std::vector<double> abs_distribution(local_size, 0.0);
+  for (size_t i = 0; i < local_size; i++) {
+    if (!rtt_dsxx::soft_equiv(new_distribution[i], original_distribution[i], 1e-12))
+      abs_distribution[i] = fabs(new_distribution[i]);
+  }
+
+  // compute totals to be used in residual calculation
+  double original_conservation =
+      std::accumulate(original_distribution.begin(), original_distribution.end(), 0.0);
+  double reconstruction_conservation =
+      std::accumulate(new_distribution.begin(), new_distribution.end(), 0.0);
+  double abs_distribution_conservation =
+      std::accumulate(abs_distribution.begin(), abs_distribution.end(), 0.0);
+
+  if (domain_decomposed) {
+    // accumulate global contribution
+    rtt_c4::global_sum(original_conservation);
+    rtt_c4::global_sum(reconstruction_conservation);
+    rtt_c4::global_sum(abs_distribution_conservation);
+  }
+
+  // Apply residual
+  if (abs_distribution_conservation > 0.0) {
+    const double res = original_conservation - reconstruction_conservation;
+    for (size_t i = 0; i < local_size; i++)
+      new_distribution[i] += res * abs_distribution[i] / abs_distribution_conservation;
+  }
 }
 
 } // end namespace rtt_kde

@@ -10,13 +10,12 @@
 #ifndef kde_kde_hh
 #define kde_kde_hh
 
+#include "quick_index.hh"
 #include "c4/global.hh"
 #include <array>
 #include <vector>
 
 namespace rtt_kde {
-
-enum kde_coordinates { CART, CYL, SPH };
 
 //================================================================================================//
 /*!
@@ -29,45 +28,50 @@ enum kde_coordinates { CART, CYL, SPH };
  * Returns a KDE reconstruction of a multidimensional distribution
  */
 //================================================================================================//
-template <int coord> class kde {
+class kde {
 public:
-  // NESTED CLASSES AND TYPEDEFS
-
-  // CREATORS
-
-  // ACCESSORS
-
-  // SERVICES
+  //! Constructor
+  kde(const std::array<bool, 6> reflect_boundary_ = {false, false, false, false, false, false})
+      : reflect_boundary(reflect_boundary_) {}
 
   //! Reconstruct distribution
-  template <int dim = 1>
   std::vector<double> reconstruction(const std::vector<double> &distribution,
-                                     const std::vector<std::array<double, 3>> &position,
                                      const std::vector<std::array<double, 3>> &one_over_band_width,
-                                     const bool domain_decomposed) const;
+                                     const quick_index &qindex,
+                                     const double discontinuity_cutoff = 1.0) const;
 
+  //! Reconstruct distribution in logarithmic space
+  std::vector<double>
+  log_reconstruction(const std::vector<double> &distribution,
+                     const std::vector<std::array<double, 3>> &one_over_band_width,
+                     const quick_index &qindex, const double discontinuity_cutoff = 1.0) const;
+
+  //! Apply conservation to reconstructed distribution
+  void apply_conservation(const std::vector<double> &original_distribution,
+                          std::vector<double> &new_distribution, const bool domain_decompsed) const;
   // STATICS
 
   //! Epanechikov Kernel
-  double epan_kernel(const double x) const;
+  inline double epan_kernel(const double x) const;
+
+  //! Transform the solution into log space
+  inline double log_transform(const double value, const double bias) const;
+
+  //! Move the solution back from log space
+  inline double log_inv_transform(const double log_value, const double bias) const;
 
 protected:
   // IMPLEMENTATION
 
 private:
-  // NESTED CLASSES AND TYPEDEFS
-
-  // IMPLEMENTATION
-
+  //! Private function to calculate kernel weight
+  double calc_weight(const std::array<double, 3> &r0, const std::array<double, 3> &one_over_h0,
+                     const std::array<double, 3> &r, const std::array<double, 3> &one_over_h,
+                     const quick_index &qindex, const double &discontinuity_cutoff) const;
   // DATA
+  //! reflecting boundary conditions [lower_x, upper_x, lower_y, upper_y, lower_z, upper_z]
+  const std::array<bool, 6> reflect_boundary;
 };
-
-//! Forward declaration of the reconstruction 1D Cartesian reconstruction.
-template <>
-template <>
-std::vector<double> kde<kde_coordinates::CART>::reconstruction<1>(
-    const std::vector<double> &distribution, const std::vector<std::array<double, 3>> &position,
-    const std::vector<std::array<double, 3>> &one_over_band_width, const bool dd) const;
 
 } // end namespace rtt_kde
 
