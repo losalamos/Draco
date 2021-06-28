@@ -66,6 +66,9 @@ function(setMPIflavorVer)
   elseif(DEFINED ENV{LMOD_MPI_VERSION})
     # Toss3 with srun
     string(REGEX REPLACE "-[a-z0-9]+" "" MPI_VERSION "$ENV{LMOD_MPI_VERSION}")
+  elseif(DEFINED ENV{LMOD_FAMILY_MPI_VERSION})
+    # ATS-2 with lrun
+    string(REGEX REPLACE "-[a-z0-9]+" "" MPI_VERSION "$ENV{LMOD_FAMILY_MPI_VERSION}")
   else()
     execute_process(
       COMMAND ${MPIEXEC_EXECUTABLE} --version
@@ -74,7 +77,6 @@ function(setMPIflavorVer)
     set(DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
     string(REPLACE "\n" ";" TEMP ${DBS_MPI_VER})
     foreach(line ${TEMP})
-
       # extract the version...
       if(${line} MATCHES "Version"
          OR ${line} MATCHES "OpenRTE"
