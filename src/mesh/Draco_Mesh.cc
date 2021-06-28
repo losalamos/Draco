@@ -87,10 +87,12 @@ Draco_Mesh::Draco_Mesh(
       num_faces_per_cell_, cell_to_node_linkage_, num_nodes_per_face_per_cell_, side_node_count_,
       side_to_node_linkage_, ghost_cell_type_, ghost_cell_to_node_linkage_);
 
-  // build cell-to-corner-cell layout
-  compute_node_to_cell_linkage(num_faces_per_cell_, cell_to_node_linkage_,
-                               num_nodes_per_face_per_cell_, ghost_cell_type_,
-                               ghost_cell_to_node_linkage_, global_node_number_);
+  // build cell-to-corner-cell layout (\todo: extend to 3D)
+  if (dimension_ == 2) {
+    compute_node_to_cell_linkage(num_faces_per_cell_, cell_to_node_linkage_,
+                                 num_nodes_per_face_per_cell_, ghost_cell_type_,
+                                 ghost_cell_to_node_linkage_, global_node_number_);
+  }
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -453,7 +455,11 @@ void Draco_Mesh::compute_node_to_cell_linkage(
 
   // (1a) create map of (single) nodes to set of cells
 
+  std::map<unsigned, std::set<std::pair<unsigned, std::vector<unsigned>>>> node_to_cell_nodes;
   std::map<unsigned, std::set<unsigned>> node_to_cells;
+
+  // \todo: add this procedure for a node_to_node with consistent ordering (only 2D)
+  // looping throuch cells, catch each node sharing a face with the node in question...
 
   // initialize cell face counter and cell-node iterator
   unsigned cf_counter = 0;
@@ -462,12 +468,16 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   // convert cell-node linkage to map of cell face to
   for (unsigned cell = 0; cell < num_cells; ++cell) {
     for (unsigned face = 0; face < num_faces_per_cell[cell]; ++face) {
+
+      // \todo: for the first node on each face, create pairing of cell and nodes that are mutually
+      // adjacent...
+
       for (unsigned node = 0; node < num_nodes_per_face_per_cell[cf_counter]; ++node) {
+
+        // \todo: for this node,
 
         // add cell to the set for the node at this point in the cell-node linkage vector
         node_to_cells[cell_to_node_linkage[cn_counter]].insert({cell});
-
-        // each
 
         // increment cell node counter
         cn_counter++;
@@ -520,12 +530,11 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   // create map of global node to vector of adjacent ranks
   std::map<unsigned, std::vector<unsigned>> global_node_to_local_cells;
 
-  // first append this ranks index onto the map
-  // initialize cell face counter and cell-node iterator
-  unsigned gcn_counter = 0;
-
   // short-cut to number of ghost faces (i.e. cells across a face on a rank boundary)
   const unsigned num_ghost_cells = safe_convert_from_size_t(ghost_cell_type.size());
+
+  // initialize cell face counter and cell-node iterator
+  unsigned gcn_counter = 0;
 
   // create the pre-comm map of global ghost nodes to local cells
   for (unsigned ghost = 0; ghost < num_ghost_cells; ++ghost) {
