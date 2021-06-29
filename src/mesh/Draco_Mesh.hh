@@ -53,12 +53,14 @@ public:
   using Layout =
       std::map<unsigned int, std::vector<std::pair<unsigned int, std::vector<unsigned int>>>>;
 
-  // e.g.: (key: node, value: vector of local or ghost cell indices)
-  using Dual_Layout = std::map<unsigned int, std::vector<unsigned int>>;
+  // e.g.: (key: node, value: vector of local or ghost cell indices), only 2D
+  using CellNodes_Pair = std::pair<unsigned int, std::array<unsigned int, 2>>;
+  using Dual_Layout = std::map<unsigned int, std::vector<CellNodes_Pair>>;
 
   // e.g.: (key: node, value: vector of pairs of rank and local cell index on the rank)
+  // vectors of pairs are ordered in increasing rank, by construction (see Draco_Mesh.cc)
   using Dual_Ghost_Layout =
-      std::map<unsigned int, std::vector<std::pair<unsigned int, unsigned int>>>;
+      std::map<unsigned int, std::vector<std::pair<CellNodes_Pair, unsigned int>>>;
 
 protected:
   // >>> DATA
@@ -107,7 +109,7 @@ protected:
   Layout cell_to_ghost_cell_linkage;
 
   // Node map to vector of local cells
-  Dual_Layout node_to_cell_linkage;
+  Dual_Layout node_to_cellnode_linkage;
 
   // Node map to vector of ghost cells
   Dual_Ghost_Layout node_to_ghost_cell_linkage;
@@ -150,7 +152,7 @@ public:
   Layout get_cc_linkage() const { return cell_to_cell_linkage; }
   Layout get_cs_linkage() const { return cell_to_side_linkage; }
   Layout get_cg_linkage() const { return cell_to_ghost_cell_linkage; }
-  Dual_Layout get_nc_linkage() const { return node_to_cell_linkage; }
+  Dual_Layout get_nc_linkage() const { return node_to_cellnode_linkage; }
   Dual_Ghost_Layout get_ngc_linkage() const { return node_to_ghost_cell_linkage; }
 
   // >>> SERVICES
@@ -191,10 +193,7 @@ private:
                             const std::vector<unsigned> &indx_to_node_linkage) const;
 
   //! Calculate cell-corner-cell layouts (adjacent cells not sharing a face)
-  void compute_node_to_cell_linkage(const std::vector<unsigned> &num_faces_per_cell,
-                                    const std::vector<unsigned> &cell_to_node_linkage,
-                                    const std::vector<unsigned> &num_nodes_per_face_per_cell,
-                                    const std::vector<unsigned> &ghost_cell_type,
+  void compute_node_to_cell_linkage(const std::vector<unsigned> &ghost_cell_type,
                                     const std::vector<unsigned> &ghost_cell_to_node_linkage,
                                     const std::vector<unsigned> &global_node_number);
 };
