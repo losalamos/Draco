@@ -10,6 +10,7 @@
 #include "Test_Mesh_Interface.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using rtt_mesh::Draco_Mesh;
 using rtt_mesh_test::Test_Mesh_Interface;
@@ -186,15 +187,15 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(1).size() == 1);
       FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
       // ... coordinate pair of lower right node (index 1)
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[1], 1.0));
       // ... coordinate pair of upper right node (index 3)
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[1], 1.0));
 
     } else {
 
@@ -223,15 +224,15 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(0).size() == 1);
       FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
       // ... coordinate pair of lower left node (index 0)
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[1], 0.0));
       // ... coordinate pair of upper left node (index 2)
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 0.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[1], 0.0));
     }
   }
 
@@ -444,28 +445,28 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(3).size() == 3);
       FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
       // ... coordinate pair of lower right node (index 1)
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[1], 1.0));
       // ... coordinate pair of upper right node (index 3)
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[1].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[1].first[1] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[1].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[1].second[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[2].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[2].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[2].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[2].second[1] == 2.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[1].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[1].first[1], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[1].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[1].second[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[2].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[2].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[2].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[2].second[1], 2.0));
       // ... coordinate pair of upper left node (index 2)
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 2.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[1], 2.0));
 
     } else if (rtt_c4::node() == 1) {
 
@@ -511,28 +512,28 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(2).size() == 3);
       FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
       // ... coordinate pair of lower left node (index 0)
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[1], 0.0));
       // ... coordinate pair of upper left node (index 2)
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[1].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[1].first[1] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[1].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[1].second[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[2].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[2].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[2].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[2].second[1] == 2.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[1].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[1].first[1], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[1].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[1].second[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[2].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[2].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[2].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[2].second[1], 2.0));
       // ... coordinate pair of upper right node (index 3)
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[1], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[1], 1.0));
 
     } else if (rtt_c4::node() == 2) {
 
@@ -578,28 +579,28 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(1).size() == 3);
       FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
       // ... coordinate pair of lower left node (index 0)
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[1], 1.0));
       // ... coordinate pair of lower right node (index 1)
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[1].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[1].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[1].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[1].second[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[2].first[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[2].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[2].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[2].second[1] == 2.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[1].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[1].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[1].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[1].second[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[2].first[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[2].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[2].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[2].second[1], 2.0));
       // ... coordinate pair of upper right node (index 3)
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 2.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(3)[0].second[1], 2.0));
 
     } else if (rtt_c4::node() == 3) {
 
@@ -638,28 +639,28 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngcoord_layout.at(1).size() == 1);
       FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
       // ... coordinate pair of lower left node (index 0)
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[1].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[1].first[1] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[1].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[1].second[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[2].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[2].first[1] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[2].second[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(0)[2].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[0].second[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[1].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[1].first[1], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[1].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[1].second[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[2].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[2].first[1], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[2].second[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(0)[2].second[1], 1.0));
       // ... coordinate pair of lower right node (index 1)
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 0.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].first[1], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[0], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(1)[0].second[1], 0.0));
       // ... coordinate pair of upper left node (index 2)
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 2.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
-      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 1.0);
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[0], 0.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].first[1], 2.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[0], 1.0));
+      FAIL_IF_NOT(rtt_dsxx::soft_equiv(ngcoord_layout.at(2)[0].second[1], 1.0));
     }
   }
 
