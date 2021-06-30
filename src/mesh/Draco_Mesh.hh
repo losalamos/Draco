@@ -28,12 +28,15 @@ namespace rtt_mesh {
  * (cell adjacency) information.  This class also provides basic services, including access to cell
  * information.  This mesh is based on an unstructured mesh implementation by Kent Budge.
  *
- * Two important features for a fully realized Draco_Mesh are the following:
- * 1) Layout, which stores cell connectivity and hence the mesh topology.
+ * Important features for a fully realized Draco_Mesh are the following:
+ * 1) Geometry, which implies a metric for distance between points.
+ * 2) Layout, which stores cell connectivity and hence the mesh topology.
  *    a) It has an internal layout containing local cell-to-cell linkage,
- *    b) and a boundary layout with side off-process linkage, and
+ *    b) a boundary layout with true-boundary linkage, and
  *    c) a ghost layout containing cell-to-ghost-cell linkage.
- * 2) Geometry, which implies a metric for distance between points.
+ * 3) Dual_Layout, which stores node connectivity and effectively inverts Layout
+ * 4) Dual_Ghost_Layout, which stores node connectivity to off-process adjacent cells and nodes.
+ *    This an has additional field for the MPI rank index the neighboring cell and nodes are on.
  *
  * Possibly temporary features:
  * 1) The num_faces_per_cell_ vector (argument to the constructor) is currently taken to be the
