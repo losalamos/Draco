@@ -478,6 +478,8 @@ void Draco_Mesh::compute_node_to_cell_linkage(
     return;
 
   //----------------------------------------------------------------------------------------------//
+  // \todo: Can this ghost data all gather procedure be split into sensible member functions?
+  //
   // When domain-decomposed, the following creates a map of local nodes to all ghost cells.
   // The procedure makes use of existing ghost data across cell faces, as follows:
   //
@@ -543,22 +545,35 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   const size_t num_serial = cellnodes_per_serial.size() / 3;
 
   //----------------------------------------------------------------------------------------------//
-  // initialize a serial array of global node indices
+  // initialize a serial array of global node indices and neighbor node coordinates
   std::vector<unsigned> global_node_per_serial(num_serial);
+  std::vector<double> coord_nbrs_per_serial(4 * num_serial);
 
   // map global ghost node indices to serial index
   size_t serial_count = 0;
   for (const auto &global_node_cellnode_pair : global_node_to_local_cellnodes) {
 
     // get the number of local cells for this node
-    const size_t num_node_cells = global_node_cellnode_pair.second.size();
+    const size_t num_cell_nbrs = global_node_cellnode_pair.second.size();
 
-    // set to the global node at the serial index for this local cell
-    for (size_t node_cell = 0; node_cell < num_node_cells; ++node_cell)
-      global_node_per_serial[serial_count + node_cell] = global_node_cellnode_pair.first;
+    // set the global and neighbor node coordinates per serial index
+    for (size_t j = 0; j < num_cell_nbrs; ++j) {
+
+      // set to the global node at the serial index for this local cell
+      global_node_per_serial[serial_count + j] = global_node_cellnode_pair.first;
+
+      // set the neighbor node coordinates
+      const unsigned node1 = global_node_cellnode_pair.second[j].second[0];
+      const unsigned node2 = global_node_cellnode_pair.second[j].second[1];
+      const size_t cnbrs_offset = 4 * (serial_count + j);
+      coord_nbrs_per_serial[cnbrs_offset] = node_coord_vec[node1][0];
+      coord_nbrs_per_serial[cnbrs_offset + 1] = node_coord_vec[node1][1];
+      coord_nbrs_per_serial[cnbrs_offset + 2] = node_coord_vec[node2][0];
+      coord_nbrs_per_serial[cnbrs_offset + 3] = node_coord_vec[node2][1];
+    }
 
     // increment count over serial index
-    serial_count += num_node_cells;
+    serial_count += num_cell_nbrs;
   }
 
   // check that serial vector has been filled
@@ -587,9 +602,21 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   rtt_c4::determinate_allgatherv(cellnodes_per_serial, cellnodes_per_serial_per_rank);
 
   //----------------------------------------------------------------------------------------------//
+  // gather the local coordinate values for neighbor nodes per serial per rank
+
+  // resize gather target for neighbor node coordinates
+  std::vector<std::vector<double>> coord_nbrs_per_serial_per_rank(num_ranks);
+  for (unsigned rank = 0; rank < num_ranks; ++rank)
+    coord_nbrs_per_serial_per_rank[rank].resize(4 * global_node_per_serial_per_rank[rank].size());
+
+  // gather the global ghost node indices per serial index per rank
+  rtt_c4::determinate_allgatherv(coord_nbrs_per_serial, coord_nbrs_per_serial_per_rank);
+
+  //----------------------------------------------------------------------------------------------//
   // merge global_node_per_serial_per_rank and cells_per_serial_per_rank into map per rank
 
   std::vector<std::map<unsigned, std::vector<CellNodes_Pair>>> ghost_dualmap_per_rank(num_ranks);
+  std::vector<std::map<unsigned, std::vector<Coord_NBRS>>> ghost_coord_nbrs_per_rank(num_ranks);
   for (unsigned rank = 0; rank < num_ranks; ++rank) {
 
     // short-cut to serialized vector size from rank
@@ -605,8 +632,15 @@ void Draco_Mesh::compute_node_to_cell_linkage(
       const std::array<unsigned, 2> node_nbrs = {cellnodes_per_serial_per_rank[rank][3 * i + 1],
                                                  cellnodes_per_serial_per_rank[rank][3 * i + 2]};
 
-      // accumulate local cells (for rank) adjacent to this global node
+      // accumulate local cells and neighbor nodes (for rank) adjacent to this global node
       ghost_dualmap_per_rank[rank][global_node].push_back(std::make_pair(local_cell, node_nbrs));
+
+      // accumulate neighbor node coordinates (in same order as node indices about global_node)
+      const std::array<double, 2> crd_nbr1 = {coord_nbrs_per_serial_per_rank[rank][4 * i],
+                                              coord_nbrs_per_serial_per_rank[rank][4 * i + 1]};
+      const std::array<double, 2> crd_nbr2 = {coord_nbrs_per_serial_per_rank[rank][4 * i + 2],
+                                              coord_nbrs_per_serial_per_rank[rank][4 * i + 3]};
+      ghost_coord_nbrs_per_rank[rank][global_node].push_back(std::make_pair(crd_nbr1, crd_nbr2));
     }
   }
 
@@ -616,10 +650,13 @@ void Draco_Mesh::compute_node_to_cell_linkage(
   for (unsigned node = 0; node < num_nodes; ++node)
     global_to_local_node[global_node_number[node]] = node;
 
+  //----------------------------------------------------------------------------------------------//
+  // generate dual ghost layout and coordinates by setting each ranks nodes back to local values
+
   // get this (my) rank
   const unsigned my_rank = rtt_c4::node();
 
-  // generate dual gost layout
+  // generate dual ghost layout
   for (unsigned rank = 0; rank < num_ranks; ++rank) {
 
     // exclude this rank
@@ -654,11 +691,16 @@ void Draco_Mesh::compute_node_to_cell_linkage(
       // append each local-cell-rank pair to dual ghost layout
       for (auto local_cellnodes : ghost_dualmap_per_rank[rank].at(gl_node))
         node_to_ghost_cell_linkage[node].push_back(std::make_pair(local_cellnodes, rank));
+
+      // append each ghost coordinate pair bounding a ghost cell neighboring this node
+      for (auto coord_nbrs : ghost_coord_nbrs_per_rank[rank].at(gl_node))
+        node_to_ghost_coord_linkage[node].push_back(coord_nbrs);
     }
   }
 
   // since this mesh was constructed with ghost data, the resulting map must have non-zero size
   Ensure(node_to_ghost_cell_linkage.size() > 0);
+  Ensure(node_to_ghost_coord_linkage.size() > 0);
 }
 
 } // end namespace rtt_mesh

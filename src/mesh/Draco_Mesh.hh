@@ -63,8 +63,10 @@ public:
 
   // e.g.: (key: node, value: vector of pairs of rank and local cell index on the rank)
   // vectors of pairs are ordered in increasing rank, by construction (see Draco_Mesh.cc)
+  using Coord_NBRS = std::pair<std::array<double, 2>, std::array<double, 2>>;
   using Dual_Ghost_Layout =
       std::map<unsigned int, std::vector<std::pair<CellNodes_Pair, unsigned int>>>;
+  using Dual_Ghost_Layout_Coords = std::map<unsigned int, std::vector<Coord_NBRS>>;
 
 protected:
   // >>> DATA
@@ -118,6 +120,9 @@ protected:
   // Node map to vector of ghost cells
   Dual_Ghost_Layout node_to_ghost_cell_linkage;
 
+  // Node map to vector of adjacent coordinates bounding adjacent ghost cells
+  Dual_Ghost_Layout_Coords node_to_ghost_coord_linkage;
+
 public:
   //! Constructor.
   Draco_Mesh(unsigned dimension_, Geometry geometry_,
@@ -158,6 +163,7 @@ public:
   Layout get_cg_linkage() const { return cell_to_ghost_cell_linkage; }
   Dual_Layout get_nc_linkage() const { return node_to_cellnode_linkage; }
   Dual_Ghost_Layout get_ngc_linkage() const { return node_to_ghost_cell_linkage; }
+  Dual_Ghost_Layout_Coords get_ngcoord_linkage() const { return node_to_ghost_coord_linkage; }
 
   // >>> SERVICES
 

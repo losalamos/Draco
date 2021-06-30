@@ -20,6 +20,18 @@ using rtt_mesh_test::Test_Mesh_Interface;
 
 // 2D Cartesian domain-decomposed mesh construction test
 void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
+  //----------------------------------------------------------------------------------------------//
+  // Two-rank mesh schematic for this test:
+  //    y
+  //    ^
+  //    |
+  //  1 -----------
+  //    |    |    |
+  //    | r0 | r1 |
+  //    |    |    |
+  //  0 ------------> x
+  //    0    1    2
+  //----------------------------------------------------------------------------------------------//
 
   Insist(rtt_c4::nodes() == 2, "This test only uses 2 PE.");
 
@@ -141,6 +153,7 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
   {
     // access the layout
     const Draco_Mesh::Dual_Ghost_Layout ngc_layout = mesh->get_ngc_linkage();
+    const Draco_Mesh::Dual_Ghost_Layout_Coords ngcoord_layout = mesh->get_ngcoord_linkage();
 
     // check size (should be number of nodes per rank on processor boundaries)
     FAIL_IF_NOT(ngc_layout.size() == 2);
@@ -168,6 +181,21 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngc_layout.at(1)[0].second == 1);
       FAIL_IF_NOT(ngc_layout.at(3)[0].second == 1);
 
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(1).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
+      // ... coordinate pair of lower right node (index 1)
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 1.0);
+      // ... coordinate pair of upper right node (index 3)
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
+
     } else {
 
       // check sizes at local node indices on right face (only one ghost cell overall)
@@ -189,6 +217,21 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
       // check that the other rank is rank 0
       FAIL_IF_NOT(ngc_layout.at(0)[0].second == 0);
       FAIL_IF_NOT(ngc_layout.at(2)[0].second == 0);
+
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(0).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
+      // ... coordinate pair of lower left node (index 0)
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
+      // ... coordinate pair of upper left node (index 2)
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 0.0);
     }
   }
 
@@ -200,6 +243,22 @@ void cartesian_mesh_2d_dd(rtt_c4::ParallelUnitTest &ut) {
 
 // test 2D dual layouts in 4 cell mesh decomposed on 4 ranks
 void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
+  //----------------------------------------------------------------------------------------------//
+  // Four-rank mesh schematic for this test:
+  //    y
+  //    ^
+  //    |
+  //  2 -----------
+  //    |    |    |
+  //    | r2 | r3 |
+  //    |    |    |
+  //  1 -----------
+  //    |    |    |
+  //    | r0 | r1 |
+  //    |    |    |
+  //  0 ------------> x
+  //    0    1    2
+  //----------------------------------------------------------------------------------------------//
 
   Insist(rtt_c4::nodes() == 4, "This test only uses 4 PE.");
 
@@ -335,6 +394,7 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
   {
     // access the layout
     const Draco_Mesh::Dual_Ghost_Layout ngc_layout = mesh->get_ngc_linkage();
+    const Draco_Mesh::Dual_Ghost_Layout_Coords ngcoord_layout = mesh->get_ngcoord_linkage();
 
     // check size (should be number of nodes per rank on processor boundaries)
     FAIL_IF_NOT(ngc_layout.size() == 3);
@@ -378,6 +438,35 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngc_layout.at(3)[2].second == 3);
       FAIL_IF_NOT(ngc_layout.at(2)[0].second == 2);
 
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(1).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(3).size() == 3);
+      FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
+      // ... coordinate pair of lower right node (index 1)
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 1.0);
+      // ... coordinate pair of upper right node (index 3)
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[1].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[1].first[1] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[1].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[1].second[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[2].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[2].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[2].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[2].second[1] == 2.0);
+      // ... coordinate pair of upper left node (index 2)
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 2.0);
+
     } else if (rtt_c4::node() == 1) {
 
       // check sizes at local node indices
@@ -415,6 +504,35 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngc_layout.at(2)[1].second == 2);
       FAIL_IF_NOT(ngc_layout.at(2)[2].second == 3);
       FAIL_IF_NOT(ngc_layout.at(3)[0].second == 3);
+
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(0).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(2).size() == 3);
+      FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
+      // ... coordinate pair of lower left node (index 0)
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
+      // ... coordinate pair of upper left node (index 2)
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[1].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[1].first[1] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[1].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[1].second[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[2].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[2].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[2].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[2].second[1] == 2.0);
+      // ... coordinate pair of upper right node (index 3)
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 1.0);
 
     } else if (rtt_c4::node() == 2) {
 
@@ -454,6 +572,35 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngc_layout.at(1)[2].second == 3);
       FAIL_IF_NOT(ngc_layout.at(3)[0].second == 3);
 
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(0).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(1).size() == 3);
+      FAIL_IF_NOT(ngcoord_layout.at(3).size() == 1);
+      // ... coordinate pair of lower left node (index 0)
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 1.0);
+      // ... coordinate pair of lower right node (index 1)
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[1].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[1].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[1].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[1].second[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[2].first[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[2].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[2].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[2].second[1] == 2.0);
+      // ... coordinate pair of upper right node (index 3)
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(3)[0].second[1] == 2.0);
+
     } else if (rtt_c4::node() == 3) {
 
       // check sizes at local node indices
@@ -484,6 +631,35 @@ void dual_layout_2d_dd_4pe(rtt_c4::ParallelUnitTest &ut) {
       FAIL_IF_NOT(ngc_layout.at(0)[2].second == 2);
       FAIL_IF_NOT(ngc_layout.at(1)[0].second == 1);
       FAIL_IF_NOT(ngc_layout.at(2)[0].second == 2);
+
+      // check coordinates ...
+      // ... number of coordinate pairs
+      FAIL_IF_NOT(ngcoord_layout.at(0).size() == 3);
+      FAIL_IF_NOT(ngcoord_layout.at(1).size() == 1);
+      FAIL_IF_NOT(ngcoord_layout.at(2).size() == 1);
+      // ... coordinate pair of lower left node (index 0)
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[0].second[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[1].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[1].first[1] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[1].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[1].second[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[2].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[2].first[1] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[2].second[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(0)[2].second[1] == 1.0);
+      // ... coordinate pair of lower right node (index 1)
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].first[1] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[0] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(1)[0].second[1] == 0.0);
+      // ... coordinate pair of upper left node (index 2)
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[0] == 0.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].first[1] == 2.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[0] == 1.0);
+      FAIL_IF_NOT(ngcoord_layout.at(2)[0].second[1] == 1.0);
     }
   }
 
