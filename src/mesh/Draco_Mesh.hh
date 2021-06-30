@@ -12,6 +12,7 @@
 
 #include "ds++/config.h"
 #include "mesh_element/Geometry.hh"
+#include <array>
 #include <map>
 #include <set>
 #include <vector>
