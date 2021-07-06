@@ -633,14 +633,14 @@ void Draco_Mesh::compute_node_to_cell_linkage(
                                                  cellnodes_per_serial_per_rank[rank][3 * i + 2]};
 
       // accumulate local cells and neighbor nodes (for rank) adjacent to this global node
-      ghost_dualmap_per_rank[rank][global_node].push_back(std::make_pair(local_cell, node_nbrs));
+      ghost_dualmap_per_rank[rank][global_node].emplace_back(std::make_pair(local_cell, node_nbrs));
 
       // accumulate neighbor node coordinates (in same order as node indices about global_node)
       const std::array<double, 2> crd_nbr1 = {coord_nbrs_per_serial_per_rank[rank][4 * i],
                                               coord_nbrs_per_serial_per_rank[rank][4 * i + 1]};
       const std::array<double, 2> crd_nbr2 = {coord_nbrs_per_serial_per_rank[rank][4 * i + 2],
                                               coord_nbrs_per_serial_per_rank[rank][4 * i + 3]};
-      ghost_coord_nbrs_per_rank[rank][global_node].push_back(std::make_pair(crd_nbr1, crd_nbr2));
+      ghost_coord_nbrs_per_rank[rank][global_node].emplace_back(std::make_pair(crd_nbr1, crd_nbr2));
     }
   }
 
@@ -690,11 +690,11 @@ void Draco_Mesh::compute_node_to_cell_linkage(
 
       // append each local-cell-rank pair to dual ghost layout
       for (auto local_cellnodes : ghost_dualmap_per_rank[rank].at(gl_node))
-        node_to_ghost_cell_linkage[node].push_back(std::make_pair(local_cellnodes, rank));
+        node_to_ghost_cell_linkage[node].emplace_back(std::make_pair(local_cellnodes, rank));
 
       // append each ghost coordinate pair bounding a ghost cell neighboring this node
       for (auto coord_nbrs : ghost_coord_nbrs_per_rank[rank].at(gl_node))
-        node_to_ghost_coord_linkage[node].push_back(coord_nbrs);
+        node_to_ghost_coord_linkage[node].emplace_back(coord_nbrs);
     }
   }
 
