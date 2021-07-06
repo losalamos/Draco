@@ -503,7 +503,7 @@ void tstDeterminateAllGatherv(UnitTest &ut) {
 
     // check values gathered from each rank (and check on each rank of course)
     for (unsigned p = 0; p < number_of_processors; ++p) {
-      const double p_dbl = static_cast<double>(p);
+      const auto p_dbl = static_cast<double>(p);
       for (unsigned i = 0; i < p; ++i) {
         if (!rtt_dsxx::soft_equiv(receive[p][i], p_dbl))
           FAILMSG("NOT correct values in allgatherv");
