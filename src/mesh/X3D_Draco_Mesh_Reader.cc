@@ -389,7 +389,7 @@ void X3D_Draco_Mesh_Reader::read_bdy_files() {
     std::sort(flag_node_vec.begin(), flag_node_vec.end());
 
     // find the mesh faces that have nodes in this flags set
-    for (auto const face_nodes : x3d_facenode_map) {
+    for (auto const &face_nodes : x3d_facenode_map) {
 
       // sort vector of nodes associated with this face
       std::vector<unsigned> fnode_vec = get_facenodes(face_nodes.first);
